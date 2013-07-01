@@ -1,4 +1,8 @@
 {
-    "version": "0.1",
+    "version": "0.3",
     "author": "Pierre Bellon",
+    "repository": {
+        "type": "git",
+        "url": "git@git.jplusplus.org:dw-plugin-zip-export.git"
+    }
 }
