@@ -1,6 +1,6 @@
 {
     "name": "color-gradient-selector",
-    "version": "0.2",
+    "version": "0.4",
     "repository": {
         "type": "git",
         "url": "git@bitbucket.org:datawrapper/dw-plugin-color-gradient-selector.git"
