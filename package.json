@@ -1,8 +1,8 @@
 {
     "name": "color-gradient-selector",
-    "version": "0.0.2",
+    "version": "0.2",
     "repository": {
         "type": "git",
-        "url": "git@git.jplusplus.org:datawrapper/dw-plugin-color-gradient-selector"
+        "url": "git@bitbucket.org:datawrapper/dw-plugin-color-gradient-selector.git"
     }
 }
