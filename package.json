@@ -4,6 +4,6 @@
     "author": "Pierre Bellon",
     "repository": {
         "type": "git",
-        "url": "git@bitbucket.org/datawrapper/dw-plugin-export-zip.git"
+        "url": "git@bitbucket.org/datawrapper/plugin-export-zip.git"
     }
 }
