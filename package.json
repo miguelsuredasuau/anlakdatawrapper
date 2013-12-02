@@ -1,8 +1,10 @@
 {
     "name": "color-gradient-selector",
-    "version": "0.4",
+    "version": "1.0",
+    "author": "Edouard Richard & Gregor Aisch",
     "repository": {
         "type": "git",
         "url": "git@bitbucket.org:datawrapper/plugin-color-gradient-selector.git"
-    }
+    },
+    "description": "Provides a new visualization option for selecting a color gradient."
 }
