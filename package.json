@@ -1,7 +1,8 @@
 {
     "name": "color-category-selector",
     "description": "Provides a new option type for selecting and customizing colors for categorical values, eg for usage in maps.",
-    "version": "0.1.1",
+    "version": "1.0",
+    "author": "Gregor Aisch",
     "dependencies": {
         "core": "1.6.2"
     },
