@@ -4,7 +4,7 @@
     "version": "1.0",
     "author": "Gregor Aisch",
     "dependencies": {
-        "core": "1.6.2"
+        "core": "1.7.0"
     },
     "repository": {
         "type": "git",
