@@ -8,6 +8,6 @@
     },
     "repository": {
         "type": "git",
-        "url": "git@git.jplusplus.org:datawrapper/plugin-color-gradient-selector"
+        "url": "git@bitbucket.org:datawrapper/plugin-color-category-selector.git"
     }
 }
