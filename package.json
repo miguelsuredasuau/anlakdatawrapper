@@ -5,5 +5,6 @@
     "repository": {
         "type": "git",
         "url": "git@bitbucket.org/datawrapper/plugin-export-zip.git"
-    }
+    },
+    "description": "Allows users to export their charts as stand-alone ZIP archive for self-hosting."
 }
