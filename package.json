@@ -1,0 +1,9 @@
+{
+    "name": "chart-locale-select",
+    "version": "0.1.0",
+    "description": "Adds a language selector to visualize step.",
+    "repository": {
+        "type": "git",
+        "url": "git@bitbucket.org:jpp-cologne/plugin-chart-locale-select.git"
+    }
+}
