@@ -5,5 +5,8 @@
     "repository": {
         "type": "git",
         "url": "git@bitbucket.org:jpp-cologne/plugin-chart-locale-select.git"
+    },
+    "dependencies": {
+      "core": "1.7.10"
     }
 }
