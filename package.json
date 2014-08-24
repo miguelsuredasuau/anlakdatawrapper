@@ -1,0 +1,10 @@
+{
+    "name": "export-image",
+    "version": "1.0.1",
+    "author": "Gregor Aisch",
+    "description": "This plugin allows users to export their charts as static images (PNG, PDF).",
+    "repository": {
+    	"type": "git",
+    	"url": "git@bitbucket.org:jpp-cologne/plugin-export-image.git"
+    }
+}
