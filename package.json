@@ -1,10 +1,10 @@
 {
     "name": "export-zip",
-    "version": "0.3.1",
-    "author": "Pierre Bellon",
+    "version": "1.0.1",
+    "author": "Gregor Aisch",
     "repository": {
         "type": "git",
-        "url": "git@bitbucket.org/datawrapper/plugin-export-zip.git"
+        "url": "git@bitbucket.org/jpp-cologne/plugin-export-zip.git"
     },
     "description": "Allows users to export their charts as stand-alone ZIP archive for self-hosting."
 }
