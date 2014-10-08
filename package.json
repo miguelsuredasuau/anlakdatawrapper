@@ -1,0 +1,12 @@
+{
+  "name": "visualization-scatterplot",
+  "description": "A scatterplot for Datawrapper",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "devDependencies": {
+    "less": "^1.7.5"
+  }
+}
