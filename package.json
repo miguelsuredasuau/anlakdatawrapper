@@ -4,9 +4,6 @@
   "version": "1.0.0",
   "repository": {
     "type": "git",
-    "url": ""
-  },
-  "devDependencies": {
-    "less": "^1.7.5"
+    "url": "git@bitbucket.org:jpp-cologne/plugin-visualization-scatterplot.git"
   }
 }
