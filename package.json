@@ -5,5 +5,9 @@
   "repository": {
     "type": "git",
     "url": "git@bitbucket.org:jpp-cologne/plugin-visualization-scatterplot.git"
+  },
+  "dependencies": {
+    "core": "1.5.0",
+    "visualization-raphael-chart": "1.5.1"
   }
 }
