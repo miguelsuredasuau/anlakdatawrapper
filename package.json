@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "express": "^4.9.7",
+    "nomnom": "^1.8.0",
     "request": "^2.45.0",
     "underscore": "^1.7.0"
   }
