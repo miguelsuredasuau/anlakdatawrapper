@@ -1,0 +1,12 @@
+{
+  "name": "pixel-tracker",
+  "version": "0.1.1",
+  "description": "Simple node server for counting chart hits (and nothing else)",
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:datawrapper/pixel-tracker.git"
+  },
+  "dependencies": {
+    "express": "^4.9.7"
+  }
+}
