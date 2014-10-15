@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "express": "^4.9.7",
+    "js-yaml": "^3.2.2",
     "nomnom": "^1.8.0",
     "request": "^2.45.0",
     "toobusy": "^0.2.4",
