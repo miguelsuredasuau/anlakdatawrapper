@@ -1,6 +1,6 @@
 {
   "name": "pixel-tracker",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "Simple node server for counting chart hits (and nothing else)",
   "repository": {
     "type": "git",
