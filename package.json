@@ -1,0 +1,6 @@
+{
+    "name": "analytics-piwik",
+	"version": "0.2.1",
+	"author": "Gregor Aisch",
+    "description": "Adds the Piwik tracking code to Datawrapper pages."
+}
