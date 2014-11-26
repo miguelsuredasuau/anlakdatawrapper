@@ -1,6 +1,6 @@
 {
     "name": "admin-products",
     "author": "Christian Zozmann",
-    "version": "1.0",
+    "version": "1.0.1",
     "description": "Shows a list of all products with editing options."
 }
