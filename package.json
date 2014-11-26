@@ -1,7 +1,7 @@
 {
     "name": "admin-plugins",
     "author": "Gregor Aisch",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "description": "The plugin kindly providing the very page you're looking at right now. Pro Tip: Try not to disable it.",
     "repository": {
         "type": "git",
