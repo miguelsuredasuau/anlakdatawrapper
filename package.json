@@ -1,7 +1,7 @@
 {
   "name": "visualization-scatterplot",
-  "description": "A scatterplot for Datawrapper",
-  "version": "1.1.0",
+  "description": "Simple scatterplot for Datawrapper.",
+  "version": "1.1.1",
   "repository": {
     "type": "git",
     "url": "git@bitbucket.org:jpp-cologne/plugin-visualization-scatterplot.git"
