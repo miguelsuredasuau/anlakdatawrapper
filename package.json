@@ -7,7 +7,8 @@
     "url": "git@bitbucket.org:jpp-cologne/plugin-visualization-scatterplot.git"
   },
   "dependencies": {
-    "core": "1.8.0",
-    "visualization-raphael-chart": "1.5.1"
+    "core": "1.8.2",
+    "visualization-raphael-chart": "1.5.1",
+    "color-category-selector": "*"
   }
 }
