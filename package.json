@@ -1,0 +1,5 @@
+{
+   "name": "custom-tooltop",
+   "version": "1.0.0",
+   "description": "Visualizations like our maps and the scatterplot need a simple way to allow custom tooltips. This plugin provides that"
+}
