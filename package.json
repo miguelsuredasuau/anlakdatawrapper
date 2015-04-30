@@ -1,6 +1,6 @@
 {
   "name": "swr-maps",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "Custom D3 maps for SWR",
   "devDependencies": {
     "mapshaper": "^0.2.17"
