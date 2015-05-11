@@ -1,0 +1,6 @@
+{
+    "name": "admin-stats",
+    "author": "Gregor Aisch",
+    "version": "1.0.0",
+    "description": "NEW: Provides the admin dashboard showing metrics such as new visualizations per day"
+}
