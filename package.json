@@ -1,0 +1,6 @@
+{
+	"name": "export-svg",
+	"author": "Gregor Aisch",
+	"version": "1.0.0",
+	"description": "SVG export of charts"
+}
