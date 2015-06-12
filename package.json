@@ -1,7 +1,7 @@
 {
-  "name": "swr-maps",
+  "name": "d3-maps",
   "version": "0.4.1",
-  "description": "Custom D3 maps for SWR",
+  "description": "New version of Datawrapper maps. Based on D3.js instead of Kartograph.js. Supports zooming and more new features. Not compatible to IE<9.",
   "devDependencies": {
     "mapshaper": "^0.2.17"
   }
