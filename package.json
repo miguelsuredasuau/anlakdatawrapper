@@ -1,9 +1,9 @@
 {
   "name": "d3-maps",
-  "version": "0.5.1",
+  "version": "0.6.1",
   "dependencies": {
-  	"d3-color-scale": "*",
-  	"custom-tooltip": "*"
+    "d3-color-scale": "*",
+    "custom-tooltip": "*"
   },
   "description": "New version of Datawrapper maps. Based on D3.js. Supports zooming and more new features. Not compatible to IE<9."
 }
