@@ -2,7 +2,5 @@
   "name": "snapshot",
   "version": "0.1.0",
   "dependencies": {
-    "canvas": "^1.2.7",
-    "canvg": "0.0.8"
   }
 }
