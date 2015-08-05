@@ -1,6 +1,7 @@
 {
   "name": "snapshot",
   "version": "0.1.0",
+  "description": "Supports client-side thumbnail generation by not creating the thumbnails on the client entirely. Currently uses ImageMagick's convert to render svg to png.",
   "dependencies": {
   }
 }
