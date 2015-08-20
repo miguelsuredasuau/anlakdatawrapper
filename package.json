@@ -1,0 +1,8 @@
+{
+   "name": "gallery-pro",
+   "version": "1.0.0",
+   "description": "A better public gallery, curated by us",
+   "dependencies": {
+      "analytics-pixeltracker": "*"
+   }
+}
