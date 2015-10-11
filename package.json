@@ -1,5 +1,10 @@
 {
    "name": "custom-tooltip",
+   "author": "Gregor Aisch",
    "version": "1.0.0",
-   "description": "Visualizations like our maps and the scatterplot need a simple way to allow custom tooltips. This plugin provides that"
+   "description": "Visualizations like our maps and the scatterplot need a simple way to allow custom tooltips. This plugin provides that",
+   "repository": {
+      "type" : "git",
+      "url" : "https://bitbucket.org/jpp-cologne/plugin-custom-tooltip.git"
+   }
 }
