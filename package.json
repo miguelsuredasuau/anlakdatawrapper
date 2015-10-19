@@ -1,5 +1,8 @@
 {
 	"name": "user-dashboard",
 	"author": "Gregor Aisch",
-	"version": "0.1.0"
+	"version": "0.1.0",
+	"dependencies": {
+		"core": "1.10.x"
+	}
 }
