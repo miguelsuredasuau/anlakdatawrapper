@@ -1,5 +1,6 @@
 {
 	"name": "user-dashboard",
+	"description": "dashboard showing more useful information than the homepage we have now",
 	"author": "Gregor Aisch",
 	"version": "0.1.0",
 	"dependencies": {
