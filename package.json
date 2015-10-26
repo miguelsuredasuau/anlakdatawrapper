@@ -1,7 +1,7 @@
 {
     "name": "analytics-pixeltracker",
     "description": "A highly scalable chart tracking solution for Datawrapper",
-    "version": "0.5.1",
+    "version": "0.6.1",
     "author": "Gregor Aisch",
     "repository": {
     	"type": "git",
