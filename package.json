@@ -1,5 +1,5 @@
 {
-    "name": "email-sendwithus",
+    "name": "email-postmark",
     "version": "0.0.1",
     "author": "David Kokkelink",
     "description": "This plugin sends out transactional emails triggered via Hooks.",
