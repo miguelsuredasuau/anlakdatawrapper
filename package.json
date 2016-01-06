@@ -1,0 +1,9 @@
+{
+    "name": "social-sharing",
+    "version": "0.2.1",
+    "description": "Adds facebook & twitter sharing to charts",
+    "repository": {
+        "type": "git",
+        "url": "git@bitbucket.org:jpp-cologne/plugin-social-sharing.git"
+    }
+}
