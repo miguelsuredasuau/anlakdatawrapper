@@ -1,0 +1,10 @@
+{
+  "name": "simple-maps",
+  "version": "0.0.1",
+  "author": "David Kokkelink",
+  "dependencies": {
+    "d3-color-scale": "*",
+    "custom-tooltip": "*"
+  },
+  "description": "New frontend for d3-maps"
+}
