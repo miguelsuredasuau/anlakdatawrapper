@@ -1,0 +1,9 @@
+{
+	"name": "d3-lines",
+	"description": "The second generation of line charts in Datawrapper. Build in d3.js, HTML only. Provides four kinds of bar charts: normal bars, split bars, stacked bars and bullet bars. Actually eight types, since each one supports grouping of rows.",
+	"author": "Gregor Aisch",
+	"version": "0.1.1",
+	"dependencies": {
+		"options": "0.5.*"
+	}
+}
