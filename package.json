@@ -1,6 +1,6 @@
 {
     "name": "export-image",
-    "version": "1.2.8",
+    "version": "1.2.9",
     "author": "Gregor Aisch",
     "description": "This plugin allows users to export their charts as static images (PNG, PDF).",
     "repository": {
