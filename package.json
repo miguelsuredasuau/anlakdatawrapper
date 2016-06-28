@@ -1,16 +1,15 @@
 {
+
   "name": "pixel-tracker",
-  "version": "0.2.2",
-  "description": "Simple node server for counting chart hits (and nothing else)",
-  "repository": {
-    "type": "git",
-    "url": "git@bitbucket.org:datawrapper/pixel-tracker.git"
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app"
   },
   "dependencies": {
-    "express": "^4.9.7",
-    "js-yaml": "^3.2.2",
-    "nomnom": "^1.8.0",
-    "request": "^2.45.0",
-    "underscore": "^1.7.0"
-  }
+    "express": "3.1.0",    
+    "mysql": "*",
+    "async": "*",
+    "underscore": "*"
+  } 
 }
