@@ -1,5 +1,4 @@
 {
-
   "name": "pixel-tracker",
   "version": "0.0.1",
   "private": true,
@@ -7,9 +6,10 @@
     "start": "node app"
   },
   "dependencies": {
-    "express": "3.1.0",    
-    "mysql": "*",
     "async": "*",
+    "express": "3.1.0",
+    "mysql": "*",
+    "slackbots": "^0.5.1",
     "underscore": "*"
-  } 
+  }
 }
