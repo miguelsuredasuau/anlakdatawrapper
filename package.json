@@ -1,0 +1,10 @@
+{
+    "name": "subscriptions",
+    "author": "David Kokkelink",
+    "version": "0.0.1",
+    "description": "Checkout with ChargeBee",
+    "repository": {
+       "type": "git",
+       "url": "ssh://git@bitbucket.org/jpp-cologne/plugin-subscriptions.git"
+    }
+}
