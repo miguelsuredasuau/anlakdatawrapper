@@ -1,0 +1,12 @@
+{
+    "name": "chart-display",
+    "version": "0.1.1",
+    "description": "A langing page for a single chart (with fork button)",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:datawrapper/plugin-chart-display.git"
+    },
+    "dependencies": {
+      "core": "*"
+    }
+}
