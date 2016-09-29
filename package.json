@@ -8,6 +8,7 @@
   "dependencies": {
     "async": "*",
     "express": "3.1.0",
+    "moment": "^2.15.1",
     "mysql": "*",
     "slackbots": "^0.5.1",
     "underscore": "*"
