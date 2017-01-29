@@ -2,7 +2,7 @@
 	"name": "d3-lines",
 	"description": "The second generation of line charts in Datawrapper. Build in d3.js. Intended to fully replace visualization-line-chart after a while.",
 	"author": "Gregor Aisch",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"dependencies": {
 		"options": "0.5.*"
 	}
