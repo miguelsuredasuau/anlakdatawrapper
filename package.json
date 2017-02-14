@@ -1,0 +1,6 @@
+{
+	"name": "export-jspdf",
+	"author": "David Kokkelink",
+	"version": "1.0.0",
+	"description": "PDF export of charts using PDF.js"
+}
