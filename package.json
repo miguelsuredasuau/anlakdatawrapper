@@ -1,0 +1,6 @@
+{
+    "name": "admin-activity-log",
+    "author": "Gregor Aisch",
+    "version": "1.0.0",
+    "description": "Gives an overview about last 24 hours of activity on Datawrapper"
+}
