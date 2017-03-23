@@ -1,0 +1,10 @@
+{
+    "name": "external-data",
+    "version": "1.0.0",
+    "author": "Gregor Aisch",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:datawrapper/plugin-external-data.git"
+    },
+    "description": "Adds external data UI"
+}
