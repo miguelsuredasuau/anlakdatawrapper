@@ -1,6 +1,6 @@
 {
-    "name": "admin-themes",
+    "name": "themes",
     "author": "David Kokkelink",
-    "version": "1.0",
-    "description": "Admin interface for managing themes"
+    "version": "0.1",
+    "description": "Interface for managing themes in Datawrapper"
 }
