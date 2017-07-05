@@ -8,6 +8,10 @@
     },
     "description": "Adds UI for forkable charts",
     "scripts": {
-    	"less": "lessc less/forkable-charts.less > static/forkable-charts.css"
+        "less": "lessc less/forkable-charts.less > static/forkable-charts.css",
+        "doc": "md2html templates/what-is-this.md > templates/what-is-this.twig"
+    },
+    "devDependencies": {
+        "markdown": "^0.5.0"
     }
 }
