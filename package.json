@@ -6,5 +6,8 @@
         "type": "git",
         "url": "git@github.com:datawrapper/plugin-forkable-charts.git"
     },
-    "description": "Adds UI for forkable charts"
+    "description": "Adds UI for forkable charts",
+    "scripts": {
+    	"less": "lessc less/forkable-charts.less > static/forkable-charts.css"
+    }
 }
