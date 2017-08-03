@@ -6,7 +6,7 @@
         "type": "git",
         "url": "git@github.com:datawrapper/plugin-forkable-charts.git"
     },
-    "description": "Adds UI for forkable charts",
+    "description": "Adds UI for forkable charts and the River(tm)",
     "scripts": {
         "less": "lessc less/forkable-charts.less > static/forkable-charts.css",
         "doc": "md2html templates/what-is-this.md > templates/what-is-this.twig"
