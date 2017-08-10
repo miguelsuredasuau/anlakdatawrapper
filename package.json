@@ -8,10 +8,11 @@
     },
     "description": "Adds UI for forkable charts and the River(tm)",
     "scripts": {
-        "less": "lessc less/forkable-charts.less > static/forkable-charts.css",
+        "watch": "watch 'make less' less",
         "doc": "md2html templates/what-is-this.md > templates/what-is-this.twig"
     },
     "devDependencies": {
-        "markdown": "^0.5.0"
+        "markdown": "^0.5.0",
+        "watch": "^1.0.2"
     }
 }
