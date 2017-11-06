@@ -1,7 +1,7 @@
 {
-  "name": "snapshot",
+  "name": "screenshots",
   "version": "0.1.0",
-  "description": "Supports client-side thumbnail generation by not creating the thumbnails on the client entirely. Currently uses ImageMagick's convert to render svg to png.",
+  "description": "Triggers new chart screenshot jobs for all charts that have been recently modified",
   "dependencies": {
   }
 }
