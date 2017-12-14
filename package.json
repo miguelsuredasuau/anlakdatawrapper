@@ -4,6 +4,7 @@
 	"author": "Gregor Aisch",
 	"version": "1.2.2",
 	"dependencies": {
-		"options": "0.5.*"
+		"options": "0.5.*",
+		"custom-tooltip": "1.0.*"
 	}
 }
