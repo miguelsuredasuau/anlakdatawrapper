@@ -12,7 +12,6 @@
         "doc": "md2html templates/what-is-this.md > templates/what-is-this.twig"
     },
     "devDependencies": {
-        "markdown": "^0.5.0",
         "watch": "^1.0.2"
     }
 }
