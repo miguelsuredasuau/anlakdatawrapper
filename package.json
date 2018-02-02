@@ -1,0 +1,6 @@
+{
+    "name": "copy-to-local",
+    "version": "1.0.0",
+    "author": "David Kokkelink",
+    "description": "Provides an endpoint to copy charts across Datawrapper instances"
+}
