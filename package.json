@@ -1,6 +1,6 @@
 {
   "name": "d3-maps",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "author": "Gregor Aisch",
   "dependencies": {
     "d3-color-scale": "*",
