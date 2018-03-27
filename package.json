@@ -1,7 +1,7 @@
 {
-   "name": "gallery-pro",
+   "name": "signin",
    "version": "1.0.2",
-   "description": "our new signin page",
+   "description": "our new signin page with a nice gallery back drop",
    "dependencies": {
       "analytics-pixeltracker": "*"
    }
