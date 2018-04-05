@@ -1,6 +1,6 @@
 {
   "name": "simple-maps",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "author": "David Kokkelink",
   "dependencies": {
     "d3-color-scale": "*",
