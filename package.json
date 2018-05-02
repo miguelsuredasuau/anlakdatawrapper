@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "aws-sdk": "^2.230.1",
+    "mysql": "^2.15.0",
+    "queue-async": "^1.2.1",
+    "request": "^2.85.0"
+  }
+}
