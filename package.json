@@ -6,5 +6,6 @@
         "type": "git",
         "url": "git@github.com:datawrapper/plugin-external-data.git"
     },
-    "description": "Adds external data UI"
+    "description": "Adds external data UI",
+    "svelte": true
 }
