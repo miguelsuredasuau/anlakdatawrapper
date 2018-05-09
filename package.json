@@ -6,5 +6,6 @@
     "d3-color-scale": "*",
     "custom-tooltip": "*"
   },
-  "description": "New frontend for d3-maps"
+  "description": "New frontend for d3-maps",
+  "svelte": true
 }
