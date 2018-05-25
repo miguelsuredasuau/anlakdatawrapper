@@ -1,6 +1,6 @@
 {
     "name": "api-tokens",
     "version": "0.2.2",
-    "description": "Shows a privacy policy footer",
+    "description": "Adds a section to the 'My account' page that allows users to create access tokens to use our API",
     "svelte": true
 }
