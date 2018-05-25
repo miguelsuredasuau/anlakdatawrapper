@@ -1,5 +1,6 @@
 {
     "name": "privacy-policy",
-	"version": "0.2.2",
-    "description": "Shows a privacy policy footer"
+    "version": "1.0.0",
+    "author": "Ivan Lokhov",
+    "description": "Displays the privacy policy notification"
 }
