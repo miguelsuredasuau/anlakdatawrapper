@@ -2,5 +2,6 @@
 	"name": "export-pdf",
 	"author": "Gregor Aisch",
 	"version": "1.0.0",
-	"description": "PDF export of charts using PDFKit"
+	"description": "PDF export of charts using PDFKit",
+	"svelte": true
 }
