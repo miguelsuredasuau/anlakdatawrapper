@@ -6,5 +6,8 @@
     "repository": {
        "type": "git",
        "url": "ssh://git@bitbucket.org/jpp-cologne/plugin-subscriptions.git"
+    },
+    "dependencies": {
+        "onetime-access": "*"
     }
 }
