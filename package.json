@@ -1,5 +1,6 @@
 {
 	"name": "locator-maps",
 	"version": "1.0.0",
-	"svelte": true
+	"svelte": true,
+	"dependencies": {}
 }
