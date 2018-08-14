@@ -1,0 +1,6 @@
+{
+    "name": "auth-tokens",
+    "version": "1.0.0",
+    "author": "David Kokkelink",
+    "description": "Allows users to generate one-time login urls with their API token."
+}
