@@ -1,8 +1,8 @@
 {
 	"name": "d3-bars",
-	"description": "The second generation of bar charts in Datawrapper. Build in d3.js, HTML only. Provides four kinds of bar charts: normal bars, split bars, stacked bars and bullet bars. Actually eight types, since each one supports grouping of rows.",
+	"description": "Second generation of bar charts in Datawrapper, built with D3.js. Provides 7 chart types: normal bars, split bars, stacked bars, bullet bars, dot plot, range plot and arrow plot.",
 	"author": "Gregor Aisch",
-	"version": "0.7.7",
+	"version": "0.8.0",
 	"dependencies": {
 		"options": "0.5.*"
 	}
