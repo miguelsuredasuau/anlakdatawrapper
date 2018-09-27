@@ -38,6 +38,7 @@
     "moment": "^2.19.4",
     "node-extend": "*",
     "node.extend": "*",
+    "polylabel": "^1.0.2",
     "rfc7946-to-d3": "^1.0.1",
     "rollup-plugin-json": "*",
     "rollup-plugin-string": "^2.0.2",
