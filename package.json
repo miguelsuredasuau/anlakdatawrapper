@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/datawrapper/tileserver#readme",
   "dependencies": {
-    "express": "^4.16.3",
-    "mbtiles": "^0.9.0"
+    "@mapbox/mbtiles": "^0.10.0",
+    "express": "^4.16.3"
   }
 }
