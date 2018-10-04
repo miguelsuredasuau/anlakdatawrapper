@@ -22,9 +22,7 @@
     "@mapbox/mbtiles": "^0.10.0",
     "aws-sdk": "^2.327.0",
     "cors": "^2.8.4",
-    "express": "^4.16.3",
-    "polka": "^0.5.1",
-    "tee": "^0.2.0"
+    "polka": "^0.5.1"
   },
   "devDependencies": {
     "nodemon": "^1.18.4"
