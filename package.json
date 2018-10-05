@@ -2,6 +2,7 @@
   "name": "svelte-app",
   "version": "1.0.1",
   "devDependencies": {
+    "@turf/rewind": "^5.1.5",
     "mapbox-gl": "^0.48.0",
     "rollup": "*",
     "rollup-plugin-buble": "*",
