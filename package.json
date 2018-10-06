@@ -18,6 +18,7 @@
         "rollup-plugin-node-builtins": "^2.1.2",
         "rollup-plugin-node-resolve": "^3.3.0",
         "rollup-plugin-svelte": "^4.1.0",
+        "less": "*",
         "rollup-plugin-uglify": "^4.0.0",
         "svelte": "^2.7.0",
         "underscore-es": "^1.9.8"
