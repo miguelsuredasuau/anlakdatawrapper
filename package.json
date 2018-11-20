@@ -26,6 +26,7 @@
     "@turf/boolean-point-in-polygon": "^6.0.1",
     "@turf/boolean-within": "^6.0.1",
     "@turf/difference": "^6.0.0",
+    "@turf/great-circle": "^5.1.5",
     "@turf/length": "^6.0.2",
     "@turf/simplify": "^5.1.5",
     "@turf/union": "^6.0.2",
