@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/datawrapper/render-client#readme",
   "dependencies": {
+    "gm": "^1.23.1",
     "puppeteer": "^1.10.0"
   }
 }
