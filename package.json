@@ -1,0 +1,21 @@
+{
+  "name": "render-client",
+  "version": "1.0.0",
+  "description": "the Node app running on each client/worker in our pdf/png/svg export render farm. Uses Pupeteer & Chromium for client-side rendering of charts. Formerlly known as \"chromeshot\" ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datawrapper/render-client.git"
+  },
+  "author": "Gregor Aisch",
+  "bugs": {
+    "url": "https://github.com/datawrapper/render-client/issues"
+  },
+  "homepage": "https://github.com/datawrapper/render-client#readme",
+  "dependencies": {
+    "puppeteer": "^1.10.0"
+  }
+}
