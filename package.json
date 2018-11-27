@@ -1,0 +1,23 @@
+{
+  "name": "render-server",
+  "version": "1.0.0",
+  "description": "The server app that is orchestrating the render-clients",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datawrapper/datawrapper-api.git"
+  },
+  "author": "Datawrapper GmbH",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "datawrapper-orm": "git+ssh://git@github.com/datawrapper/datawrapper-orm.git",
+    "express": "^4.16.4",
+    "lodash.shuffle": "^4.2.0",
+    "mysql2": "^1.6.4",
+    "node-cron": "^2.0.3",
+    "sequelize": "^4.41.2"
+  }
+}
