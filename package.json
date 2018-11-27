@@ -1,0 +1,21 @@
+{
+  "name": "datawrapper-crons",
+  "version": "1.0.0",
+  "description": "A collection of tasks that our server performs regularly in the background",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datawrapper/datawrapper-crons.git"
+  },
+  "author": "Datawrapper GmbH",
+  "dependencies": {
+    "datawrapper-orm": "git+ssh://git@github.com/datawrapper/datawrapper-orm.git",
+    "lodash.shuffle": "^4.2.0",
+    "mysql2": "^1.6.4",
+    "node-cron": "^2.0.3",
+    "sequelize": "^4.41.2"
+  }
+}
