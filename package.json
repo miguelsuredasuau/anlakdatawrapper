@@ -4,7 +4,8 @@
   "description": "A collection of tasks that our server performs regularly in the background",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "bin/install-plugins"
   },
   "repository": {
     "type": "git",
