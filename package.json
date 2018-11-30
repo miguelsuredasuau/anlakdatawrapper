@@ -1,5 +1,5 @@
 {
-    "name": "export-pdf",
+    "name": "datawrapper-plugin-export-pdf",
     "dependencies": {
     },
     "scripts": {
