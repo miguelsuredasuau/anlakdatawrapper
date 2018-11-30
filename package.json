@@ -1,5 +1,6 @@
 {
     "name": "datawrapper-plugin-export-pdf",
+    "version": "1.0.0",
     "dependencies": {
     },
     "scripts": {
