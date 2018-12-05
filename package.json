@@ -30,5 +30,4 @@
   },
   "devDependencies": {},
   "license": "MIT"
->>>>>>> register cron plugins with core db
 }
