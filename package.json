@@ -13,8 +13,8 @@
   },
   "author": "Datawrapper GmbH",
   "dependencies": {
+    "@datawrapper/orm": "^1.0.0",
     "d3-array": "^2.0.2",
-    "datawrapper-orm": "git+ssh://git@github.com/datawrapper/datawrapper-orm.git",
     "lodash.shuffle": "^4.2.0",
     "mysql2": "^1.6.4",
     "node-cron": "^2.0.3",
