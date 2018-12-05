@@ -1,5 +1,5 @@
 {
-  "name": "datawrapper-crons",
+  "name": "@datawrapper/crons",
   "version": "1.0.0",
   "description": "A collection of tasks that our server performs regularly in the background",
   "main": "index.js",
@@ -20,5 +20,15 @@
     "node-cron": "^2.0.3",
     "sequelize": "^4.41.2",
     "underscore": "^1.9.1"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/datawrapper/datawrapper-crons/issues"
+  },
+  "homepage": "https://github.com/datawrapper/datawrapper-crons#readme",
+  "directories": {
+    "doc": "docs"
+  },
+  "devDependencies": {},
+  "license": "MIT"
+>>>>>>> register cron plugins with core db
 }
