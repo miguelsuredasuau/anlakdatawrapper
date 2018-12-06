@@ -16,9 +16,8 @@
   },
   "homepage": "https://github.com/datawrapper/render-client#readme",
   "dependencies": {
+    "@datawrapper/orm": "^1.1.1",
     "aws-sdk": "^2.359.0",
-    "crypto": "^1.0.1",
-    "datawrapper-orm": "git+ssh://git@github.com/datawrapper/datawrapper-orm.git",
     "gm": "^1.23.1",
     "json-socket": "^0.3.0",
     "puppeteer": "^1.10.0",
