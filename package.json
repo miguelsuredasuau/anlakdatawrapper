@@ -1,5 +1,5 @@
 {
-  "name": "d3-lines-build",
+  "name": "@datawrapper/plugin-d3-lines",
   "version": "1.0.1",
   "scripts": {
     "build": "rollup -c",
