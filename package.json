@@ -1,9 +1,10 @@
 {
   "name": "@datawrapper/blocks",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Collection of charting primitives used and developed by Datawrapper.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
+    "build": "rm -rf lib/* && node scripts/compile.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
@@ -22,7 +23,11 @@
     }
   },
   "lint-staged": {
-    "*.js": ["prettier --write", "eslint --fix", "git add"]
+    "*.js": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",
@@ -47,6 +52,7 @@
     "@babel/core": "~7.2.0",
     "@storybook/html": "~4.0.12",
     "babel-loader": "~8.0.4",
+    "buble": "^0.19.6",
     "eslint": "~5.10.0",
     "eslint-config-standard": "~12.0.0",
     "eslint-plugin-import": "~2.14.0",
