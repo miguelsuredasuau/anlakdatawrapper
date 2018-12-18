@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w"
+    "dev": "rollup -c -w",
+    "watch-css": "chokidar ./src/styles/d3-pies.src.css -c \"npm run process-css\"",
+    "process-css": "postcss ./src/styles/d3-pies.src.css --no-map --use autoprefixer -o ./static/d3-pies.css"
   },
   "devDependencies": {
     "autoprefixer": "^9.4.2",
+    "chokidar-cli": "^1.2.1",
     "postcss-cli": "^6.0.1",
     "rollup": "^0.65.0",
     "rollup-plugin-alias": "^1.5.1",
