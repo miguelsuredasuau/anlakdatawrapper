@@ -1,7 +1,10 @@
 {
     "name": "@datawrapper/plugin-export-pdf",
     "version": "1.0.3",
-    "dependencies": {},
+    "dependencies": {
+        "nanoid": "^2.0.0",
+        "request": "^2.88.0"
+    },
     "scripts": {
         "build": "rollup -c",
         "dev": "rollup -c -w"
