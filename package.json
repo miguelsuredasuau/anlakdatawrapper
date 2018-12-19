@@ -2,6 +2,7 @@
     "name": "@datawrapper/plugin-export-pdf",
     "version": "1.0.3",
     "dependencies": {
+        "aws-sdk": "^2.379.0",
         "nanoid": "^2.0.0",
         "request": "^2.88.0"
     },
