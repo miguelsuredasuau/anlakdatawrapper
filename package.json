@@ -1,6 +1,6 @@
 {
   "name": "@datawrapper/blocks",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Collection of charting primitives used and developed by Datawrapper.",
   "main": "lib/index.js",
   "files": [
