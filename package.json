@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w & npm run watch",
+    "dev": "rollup -c -w | npm run watch",
     "watch": "watch 'make assets' less"
   },
   "devDependencies": {
