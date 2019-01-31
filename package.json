@@ -11,11 +11,11 @@
     "postinstall": "scripts/install",
     "postupgrade": "scripts/install",
     "dev": "nodemon src/index.js",
-    "start": "datawrapper-crons",
-    "sync": "datawrapper-orm-sync"
+    "sync": "datawrapper-orm-sync",
+    "crons": "crons"
   },
   "bin": {
-    "datawrapper-crons": "scripts/start"
+    "crons": "scripts/start"
   },
   "files": [
     "src",
