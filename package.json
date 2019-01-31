@@ -1,6 +1,6 @@
 {
   "name": "@datawrapper/render-client",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "the Node app running on each client/worker in our pdf/png/svg export render farm. Uses Pupeteer & Chromium for client-side rendering of charts. Formerlly known as \"chromeshot\" ",
   "main": "index.js",
   "scripts": {
