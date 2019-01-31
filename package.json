@@ -8,8 +8,7 @@
     "format": "prettier src/**/*.js --write && eslint src --fix",
     "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "scripts/install",
-    "postupgrade": "scripts/install",
+    "postinstall": "scripts/install --crons-postinstall",
     "dev": "nodemon src/index.js",
     "sync": "datawrapper-orm-sync",
     "crons": "crons"
