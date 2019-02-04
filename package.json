@@ -30,7 +30,7 @@
     "@turf/great-circle": "^5.1.5",
     "@turf/length": "^6.0.2",
     "@turf/simplify": "^5.1.5",
-    "@turf/union": "^6.0.3",
+    "@turf/union": "^5.1.5",
     "cheerio": "^1.0.0-rc.2",
     "chroma-js": "^1.4.1",
     "d3-color": "^1.2.3",
