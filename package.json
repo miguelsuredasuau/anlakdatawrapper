@@ -2,15 +2,31 @@
   "name": "d3-pies",
   "version": "1.0.5",
   "scripts": {
+    "format": "prettier src/**/*.js --write && eslint src --fix",
+    "lint": "eslint src",
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "watch-css": "chokidar ./src/styles/d3-pies.src.css -c \"npm run process-css\"",
     "process-css": "postcss ./src/styles/d3-pies.src.css --no-map --use autoprefixer -o ./static/d3-pies.css"
   },
+  "prettier": {
+    "tabWidth": 4,
+    "semi": true,
+    "printWidth": 100,
+    "singleQuote": true
+  },
   "devDependencies": {
     "autoprefixer": "^9.4.7",
+    "babel-eslint": "^10.0.1",
     "chokidar-cli": "^1.2.1",
+    "eslint": "^5.13.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
     "postcss-cli": "^6.1.1",
+    "prettier": "^1.16.4",
     "rollup": "^1.1.2",
     "rollup-plugin-alias": "^1.5.1",
     "rollup-plugin-buble": "^0.19.6",
