@@ -16,11 +16,13 @@
     "singleQuote": true
   },
   "devDependencies": {
+    "@tivac/eslint-plugin-svelte": "^1.2.1",
     "autoprefixer": "^9.4.7",
     "babel-eslint": "^10.0.1",
     "chokidar-cli": "^1.2.1",
     "eslint": "^5.13.0",
     "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-html": "^5.0.3",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
