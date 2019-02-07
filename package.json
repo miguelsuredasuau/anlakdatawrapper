@@ -106,6 +106,7 @@
         "ignore": [
             "*.min.js",
             "**/vendor/**/.js",
+            "static/*.js",
             "www/static/js/svelte/**/*.js"
         ]
     }
