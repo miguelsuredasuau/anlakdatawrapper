@@ -1,0 +1,22 @@
+{
+  "name": "@datawrapper/plugin-admin-plugins",
+  "version": "1.0.0",
+  "description": "Provides a UI admin for managing Datawrapper plugins.",
+  "main": "index.js",
+  "files": [
+    "plugin.php",
+    "plugin.json",
+    "static",
+    "locale",
+    "templates",
+    "vendor"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Datawrapper GmbH",
+  "license": "ISC",
+  "dependencies": {
+    "npm-registry-client": "^8.6.0"
+  }
+}
