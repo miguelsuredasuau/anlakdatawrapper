@@ -1,6 +1,6 @@
 {
   "name": "@datawrapper/plugin-random-data",
-  "version": "0.1.2",
+  "version": "0.1.2-feature.foo",
   "description": "",
   "main": "index.js",
   "scripts": {
