@@ -52,10 +52,15 @@
         }
     },
     "lint-staged": {
-        "*.js": [
-            "prettier --write",
-            "eslint --fix",
-            "git add"
+        "linters": {
+            "*.js": [
+                "prettier --write",
+                "healthier",
+                "git add"
+            ]
+        },
+        "ignore": [
+            "**/static/*"
         ]
     },
     "prettier": {
