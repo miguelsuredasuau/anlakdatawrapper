@@ -1,68 +1,91 @@
 {
-  "name": "@datawrapper/render-server",
-  "version": "1.4.2",
-  "description": "The server app that is orchestrating the render-clients",
-  "main": "index.js",
-  "scripts": {
-    "format": "prettier src/**/*.js --write && eslint src --fix",
-    "lint": "eslint src",
-    "postinstall": "scripts/install",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "render-server"
-  },
-  "bin": {
-    "render-server": "scripts/start"
-  },
-  "files": [
-    "src",
-    "scripts",
-    "config.tpl.js"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/datawrapper/datawrapper-api.git"
-  },
-  "author": "Datawrapper GmbH",
-  "dependencies": {
-    "@datawrapper/orm": "^1.3.0",
-    "body-parser": "^1.18.3",
-    "chalk": "^2.4.2",
-    "express": "^4.16.4",
-    "lodash.shuffle": "^4.2.0",
-    "mysql2": "^1.6.4",
-    "node-cron": "^2.0.3",
-    "sequelize": "^4.42.0",
-    "winston": "^3.2.0"
-  },
-  "devDependencies": {
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.12.1",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "husky": "^1.3.1",
-    "lint-staged": "^8.1.1",
-    "nodemon": "^1.18.7",
-    "prettier": "^1.16.1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
+    "name": "@datawrapper/render-server",
+    "version": "1.4.2",
+    "description": "The server app that is orchestrating the render-clients",
+    "main": "index.js",
+    "bin": {
+        "render-server": "scripts/start"
+    },
+    "scripts": {
+        "format": "prettier 'src/**/*.js' --write",
+        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "postinstall": "scripts/install",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "render-server"
+    },
+    "files": [
+        "src",
+        "scripts",
+        "config.tpl.js"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/datawrapper/datawrapper-api.git"
+    },
+    "author": "Datawrapper GmbH",
+    "dependencies": {
+        "@datawrapper/orm": "^1.3.0",
+        "aws-sdk": "^2.407.0",
+        "body-parser": "^1.18.3",
+        "chalk": "^2.4.2",
+        "express": "^4.16.4",
+        "lodash.shuffle": "^4.2.0",
+        "mysql2": "^1.6.4",
+        "node-cron": "^2.0.3",
+        "sequelize": "^4.42.0",
+        "winston": "^3.2.0"
+    },
+    "devDependencies": {
+        "babel-eslint": "^10.0.1",
+        "eslint": "^5.12.1",
+        "eslint-config-standard": "^12.0.0",
+        "eslint-plugin-import": "^2.16.0",
+        "eslint-plugin-node": "^8.0.1",
+        "eslint-plugin-promise": "^4.0.1",
+        "eslint-plugin-standard": "^4.0.0",
+        "healthier": "^2.0.0",
+        "husky": "^1.3.1",
+        "lint-staged": "^8.1.4",
+        "nodemon": "^1.18.7",
+        "prettier": "^1.16.4"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier",
+            "git add"
+        ]
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 100,
+        "singleQuote": true
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ]
+        }
     }
-  },
-  "lint-staged": {
-    "*.js": [
-      "prettier --write",
-      "eslint --fix",
-      "git add"
-    ]
-  },
-  "prettier": {
-    "tabWidth": 4,
-    "semi": true,
-    "printWidth": 100,
-    "singleQuote": true
-  }
 }
