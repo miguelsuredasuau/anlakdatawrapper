@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/render-server",
-    "version": "1.4.2",
+    "version": "1.5.0",
     "description": "The server app that is orchestrating the render-clients",
     "main": "index.js",
     "bin": {
