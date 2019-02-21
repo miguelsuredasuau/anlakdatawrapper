@@ -6,13 +6,6 @@
     "bin": {
         "render-client": "scripts/start"
     },
-    "scripts": {
-        "format": "prettier 'src/**/*.js' --write",
-        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
-        "postinstall": "scripts/install",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "render-client"
-    },
     "files": [
         "src",
         "scripts",
@@ -65,6 +58,13 @@
             "healthier",
             "git add"
         ]
+    },
+    "scripts": {
+        "format": "prettier 'src/**/*.js' --write",
+        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "postinstall": "scripts/install",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "render-client"
     },
     "prettier": {
         "tabWidth": 4,
