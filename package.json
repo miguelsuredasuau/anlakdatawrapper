@@ -1,6 +1,6 @@
 {
   "name": "simple-maps",
-  "version": "0.3.8",
+  "version": "0.4.0",
   "devDependencies": {
     "rollup-plugin-buble": "^0.19.2",
     "rollup-plugin-commonjs": "^8.4.1",
