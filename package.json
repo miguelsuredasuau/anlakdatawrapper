@@ -1,0 +1,29 @@
+{
+  "name": "@datawrapper/user-dashboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "rollup.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datawrapper/plugin-user-dashboard.git"
+  },
+  "devDependencies": {
+    "lodash.range": "^3.2.0",
+    "rollup": "^1.2.2",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-svelte": "^5.0.3",
+    "rollup-plugin-terser": "^4.0.4",
+    "svelte": "^3.0.0-beta.15"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/datawrapper/plugin-user-dashboard/issues"
+  },
+  "homepage": "https://github.com/datawrapper/plugin-user-dashboard#readme"
+}
