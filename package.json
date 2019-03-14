@@ -4,6 +4,8 @@
   "description": "",
   "main": "rollup.config.js",
   "scripts": {
+    "dev": "rollup -cw",
+    "build": "rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -11,7 +13,9 @@
     "url": "git+https://github.com/datawrapper/plugin-user-dashboard.git"
   },
   "devDependencies": {
+    "lodash.groupby": "^4.6.0",
     "lodash.range": "^3.2.0",
+    "lodash.values": "^4.3.0",
     "rollup": "^1.2.2",
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-node-resolve": "^4.0.1",
