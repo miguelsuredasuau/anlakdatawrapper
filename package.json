@@ -94,6 +94,7 @@
         "rollup-plugin-string": "^2.0.2",
         "rollup-plugin-terser": "^4.0.4",
         "svelte-upgrade": "^1.0.14",
+        "svg-path-bounds": "^1.0.1",
         "topojson-client": "^3.0.0",
         "topojson-server": "^3.0.0",
         "underscore-es": "^1.9.8"
