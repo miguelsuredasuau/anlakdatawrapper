@@ -1,31 +1,88 @@
 {
-  "name": "@datawrapper/shared",
-  "version": "0.0.1",
-  "description": "shared functions used throughout datawrapper",
-  "main": "index.js",
-  "scripts": {
-    "test": "ava"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/datawrapper/shared.git"
-  },
-  "keywords": [
-    "js",
-    "shared",
-    "utils"
-  ],
-  "author": "Datawrapper GmbH",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/datawrapper/shared/issues"
-  },
-  "homepage": "https://github.com/datawrapper/shared#readme",
-  "devDependencies": {
-    "ava": "^1.3.1"
-  },
-  "dependencies": {
-    "fontfaceobserver": "^2.1.0",
-    "underscore": "^1.9.1"
-  }
+    "name": "@datawrapper/shared",
+    "version": "0.0.1",
+    "description": "shared functions used throughout datawrapper",
+    "keywords": [
+        "js",
+        "shared",
+        "utils"
+    ],
+    "homepage": "https://github.com/datawrapper/shared#readme",
+    "bugs": {
+        "url": "https://github.com/datawrapper/shared/issues"
+    },
+    "license": "MIT",
+    "author": "Datawrapper GmbH",
+    "main": "index.js",
+    "scripts": {
+        "format": "prettier '**/*.js' --write",
+        "lint": "prettier --check '**/*.{js,html}' && healthier '**/*.{js,html}'",
+        "test": "ava"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/datawrapper/shared.git"
+    },
+    "dependencies": {
+        "fontfaceobserver": "^2.1.0",
+        "underscore": "^1.9.1"
+    },
+    "devDependencies": {
+        "ava": "^1.3.1",
+        "babel-eslint": "^10.0.1",
+        "healthier": "^2.0.0",
+        "husky": "^1.3.1",
+        "lint-staged": "^8.1.5",
+        "prettier": "^1.16.4"
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier",
+            "git add"
+        ]
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 100,
+        "singleQuote": true
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ]
+        }
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "ava": {
+        "require": [
+            "esm"
+        ],
+        "files": [
+            "./*.test.js"
+        ],
+        "sources": [
+            "./*.{js,html}"
+        ]
+    }
 }
