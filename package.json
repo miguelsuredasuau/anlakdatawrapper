@@ -13,6 +13,9 @@
         "dev": "rollup -cw",
         "build": "rollup -c"
     },
+    "dependencies": {
+        "@datawrapper/controls": "^2.0.0"
+    },
     "devDependencies": {
         "babel-eslint": "^10.0.1",
         "healthier": "^2.0.0",
@@ -28,6 +31,7 @@
         "rollup-plugin-buble": "^0.19.6",
         "rollup-plugin-commonjs": "^9.2.1",
         "rollup-plugin-json": "^3.1.0",
+        "rollup-plugin-less": "^1.1.2",
         "rollup-plugin-node-resolve": "^4.0.1",
         "rollup-plugin-svelte": "^5.0.3",
         "rollup-plugin-terser": "^4.0.4",
