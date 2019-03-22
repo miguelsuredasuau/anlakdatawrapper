@@ -12,7 +12,9 @@
         "git add"
       ]
     },
-    "ignore": ["**/static/*"]
+    "ignore": [
+      "**/static/*"
+    ]
   },
   "scripts": {
     "format": "prettier src/**/*.js --write && eslint src --fix",
