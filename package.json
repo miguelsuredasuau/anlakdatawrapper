@@ -55,7 +55,7 @@
         }
     },
     "name": "@datawrapper/blocks",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "description": "Collection of charting primitives used and developed by Datawrapper.",
     "main": "dist/index.js",
     "umd:main": "dist/index.umd.js",
