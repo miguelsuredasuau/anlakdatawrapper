@@ -50,7 +50,14 @@
                 }
             ],
             "no-unneeded-ternary": "off"
-        }
+        },
+        "extends": [
+            "plugin:@tivac/svelte/svelte"
+        ],
+        "plugins": [
+            "html",
+            "@tivac/svelte"
+        ]
     },
     "name": "d3-pies",
     "version": "1.0.8",
