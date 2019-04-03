@@ -17,7 +17,8 @@
     "scripts": {
         "format": "prettier '**/*.js' --write",
         "lint": "prettier --check '**/*.{js,html}' && healthier '**/*.{js,html}'",
-        "test": "ava"
+        "test": "ava",
+        "test:watch": "ava -w"
     },
     "repository": {
         "type": "git",
