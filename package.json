@@ -59,7 +59,7 @@
         "serve": "^10.1.2"
     },
     "dependencies": {
-        "@datawrapper/shared": "^0.3.1",
+        "@datawrapper/shared": "^0.3.2",
         "@turf/area": "^6.0.1",
         "@turf/bbox": "^6.0.1",
         "@turf/bbox-clip": "^6.0.3",
