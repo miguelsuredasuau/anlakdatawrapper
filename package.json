@@ -50,7 +50,7 @@
         }
     },
     "name": "simple-maps",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "devDependencies": {
         "babel-eslint": "^10.0.1",
         "healthier": "^2.0.0",
