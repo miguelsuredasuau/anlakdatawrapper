@@ -9,6 +9,7 @@
         "dev": "rollup -c -w"
     },
     "dependencies": {
+        "@datawrapper/controls": "^2.1.2",
         "aws-sdk": "^2.379.0",
         "file-api": "^0.10.4",
         "nanoid": "^2.0.0",
