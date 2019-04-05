@@ -18,7 +18,8 @@
         "format": "prettier '**/*.js' --write",
         "lint": "prettier --check '**/*.{js,html}' && healthier '**/*.{js,html}'",
         "test": "ava",
-        "test:watch": "ava -w"
+        "test:watch": "ava -w",
+        "prepublishOnly": "npm test && npm run lint"
     },
     "repository": {
         "type": "git",
