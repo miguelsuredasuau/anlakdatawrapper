@@ -60,6 +60,7 @@
     },
     "dependencies": {
         "@datawrapper/blocks": "^0.5.0",
+        "@datawrapper/controls": "^2.2.2",
         "@turf/area": "^6.0.1",
         "@turf/bbox": "^6.0.1",
         "@turf/bbox-clip": "^6.0.3",
