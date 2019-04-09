@@ -1,10 +1,10 @@
 {
     "name": "@datawrapper/plugin-tables",
-    "version": "0.1.0",
-    "description": "",
+    "version": "0.2.0",
+    "description": "One table to rule them all, powered by Svelte",
     "keywords": [],
     "license": "ISC",
-    "author": "",
+    "author": "Datawrapper GmbH",
     "main": "index.js",
     "scripts": {
         "format": "prettier 'src/**/*.js' --write",
