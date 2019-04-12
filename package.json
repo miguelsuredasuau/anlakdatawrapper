@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/plugin-tables",
-    "version": "0.2.0",
+    "version": "2.0.0",
     "description": "One table to rule them all, powered by Svelte",
     "keywords": [],
     "license": "ISC",
