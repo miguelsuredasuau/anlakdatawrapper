@@ -33,11 +33,17 @@
     "devDependencies": {
         "ava": "^1.3.1",
         "babel-eslint": "^10.0.1",
+        "chalk": "^2.4.2",
         "healthier": "^2.0.0",
         "husky": "^1.3.1",
+        "joi": "^14.3.1",
         "jsdoc-to-markdown": "^4.0.1",
         "lint-staged": "^8.1.5",
         "prettier": "^1.16.4"
+    },
+    "peerDependencies": {
+        "chalk": "2.x",
+        "joi": "14.x"
     },
     "lint-staged": {
         "*.js": [
