@@ -1,0 +1,28 @@
+{
+  "name": "svelte-app",
+  "version": "1.0.0",
+  "devDependencies": {
+    "rollup": "^1.6.0",
+    "rollup-plugin-buble": "^0.19.6",
+    "rollup-plugin-commonjs": "^9.2.1",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-svelte": "^5.0.3",
+    "rollup-plugin-uglify": "^2.0.1",
+    "rollup-watch": "^4.3.1",
+    "serve": "^6.0.6"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
+  },
+  "dependencies": {
+    "@datawrapper/shared": "^0.5.1",
+    "luxon": "^0.0.22",
+    "moment": "^2.19.4",
+    "node-extend": "^0.2.0",
+    "node.extend": "^2.0.2",
+    "rollup-plugin-json": "^2.3.0",
+    "svelte": "^2.16.1",
+    "underscore-es": "^1.9.8"
+  }
+}
