@@ -27,7 +27,10 @@
         "url": "git+ssh://git@github.com/datawrapper/shared.git"
     },
     "dependencies": {
+        "d3-array": "^2.0.3",
         "fontfaceobserver": "^2.1.0",
+        "svelte": "^2.16.1",
+        "svelte-extras": "^2.0.2",
         "underscore": "^1.9.1"
     },
     "devDependencies": {
@@ -92,7 +95,8 @@
             "esm"
         ],
         "files": [
-            "./*.test.js"
+            "./*.test.js",
+            "./**/*.test.js"
         ],
         "sources": [
             "./*.{js,html}"
