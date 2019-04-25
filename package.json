@@ -10,8 +10,12 @@
         "format": "prettier 'src/**/*.js' --write",
         "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "rollup -cw",
-        "build": "rollup -c"
+        "render-dev": "cd src/render && npm run dev",
+        "render-build": "cd src/render && npm run build",
+        "controls-dev": "cd src/controls && npm run dev",
+        "controls-build": "cd src/controls && npm run build",
+        "dev": "npm run controls-dev & npm run render-dev",
+        "build": "npm run controls-build && npm run render-build"
     },
     "dependencies": {
     },
