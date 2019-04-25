@@ -43,6 +43,7 @@
         "sinon": "^7.3.2"
     },
     "peerDependencies": {
+        "chroma-js": "^2.0.3",
         "chalk": "2.x",
         "joi": "14.x"
     },
