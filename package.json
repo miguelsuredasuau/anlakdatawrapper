@@ -9,7 +9,9 @@
         "build": "rollup -c",
         "dev": "rollup -c -w",
         "format": "prettier 'src/**/*.js' --write",
-        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'"
+        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "test": "ava",
+        "test:watch": "ava --watch --verbose"
     },
     "repository": {
         "type": "git",
@@ -20,7 +22,10 @@
         "@datawrapper/shared": "^0.6.1"
     },
     "devDependencies": {
+        "ava": "^1.4.1",
         "babel-eslint": "^10.0.1",
+        "browser-env": "^3.2.6",
+        "esm": "^3.2.22",
         "healthier": "^2.0.0",
         "husky": "^1.3.1",
         "less": "^3.9.0",
@@ -78,5 +83,18 @@
                 }
             ]
         }
+    },
+    "ava": {
+        "require": [
+            "esm",
+            "./test/helpers/setup-browser-env.js",
+            "./test/helpers/setup-svelte-compiler.js"
+        ],
+        "files": [
+            "./src/**/*.test.js"
+        ],
+        "sources": [
+            "./src/**/*.{js,html}"
+        ]
     }
 }
