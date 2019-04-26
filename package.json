@@ -17,8 +17,7 @@
         "dev": "npm run controls-dev & npm run render-dev",
         "build": "npm run controls-build && npm run render-build"
     },
-    "dependencies": {
-    },
+    "dependencies": {},
     "husky": {
         "hooks": {
             "pre-commit": "lint-staged"
@@ -62,5 +61,8 @@
                 }
             ]
         }
+    },
+    "devDependencies": {
+        "eslint-plugin-svelte3": "^1.0.0"
     }
 }
