@@ -1,0 +1,28 @@
+{
+    "name": "@datawrapper/plugin-email-postmark",
+    "version": "1.1.0",
+    "description": "This plugin sends out emails triggered by email hooks via postmark.",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "files": [
+        "index.js"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/datawrapper/plugin-email-postmark.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/datawrapper/plugin-email-postmark/issues"
+    },
+    "homepage": "https://github.com/datawrapper/plugin-email-postmark#readme",
+    "dependencies": {
+        "postmark": "2.2.4"
+    },
+    "peerDependencies": {
+        "@datawrapper/api": "~2.0"
+    }
+}
