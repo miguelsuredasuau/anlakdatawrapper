@@ -63,6 +63,7 @@
         }
     },
     "devDependencies": {
-        "eslint-plugin-svelte3": "^1.0.0"
+        "eslint-plugin-svelte3": "^1.0.0",
+        "husky": "^2.1.0"
     }
 }
