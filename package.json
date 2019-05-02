@@ -1,93 +1,18 @@
 {
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "*.js": [
-            "prettier --write",
-            "healthier",
-            "git add"
-        ],
-        "*.css": [
-            "stylelint --fix",
-            "git add"
-        ]
-    },
-    "scripts": {
-        "format": "prettier 'src/**/*.js' --write",
-        "lint": "prettier --check 'src/**/*.js' && healthier 'src/**/*.js'",
-        "prepublishOnly": "npm test && npm run build && npm run bundle",
-        "build:js": "node scripts/compile.js",
-        "build:css": "postcss src/**/*.css -d lib",
-        "build": "rm -rf lib/* && npm run build:js & npm run build:css",
-        "bundle:js": "microbundle -i lib/index.js",
-        "bundle:css": "node scripts/compile-css.js | postcss > dist/index.css",
-        "bundle": "rm -rf dist/* && npm run bundle:js && npm run bundle:css",
-        "test": "ava --verbose",
-        "storybook": "start-storybook -p 6006",
-        "build-storybook": "build-storybook",
-        "lint:js": "eslint src",
-        "lint:css": "stylelint src/**/*.css"
-    },
-    "prettier": {
-        "tabWidth": 4,
-        "semi": true,
-        "printWidth": 100,
-        "singleQuote": true
-    },
-    "eslintConfig": {
-        "parser": "babel-eslint",
-        "rules": {
-            "no-console": [
-                "error",
-                {
-                    "allow": [
-                        "warn",
-                        "error"
-                    ]
-                }
-            ],
-            "camelcase": [
-                "warn"
-            ]
-        }
-    },
     "name": "@datawrapper/blocks",
     "version": "0.6.0",
     "description": "Collection of charting primitives used and developed by Datawrapper.",
-    "main": "dist/index.js",
-    "umd:main": "dist/index.umd.js",
-    "module": "dist/index.mjs",
-    "files": [
-        "lib",
-        "dist"
-    ],
-    "browserslist": [
-        "last 2 versions",
-        "not IE 10"
-    ],
-    "ava": {
-        "snapshotDir": "./test/__SNAPSHOTS__",
-        "require": [
-            "esm",
-            "./test/helpers/setup-browser-env.js"
-        ]
-    },
-    "stylelint": {
-        "extends": "stylelint-config-standard"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/datawrapper/blocks.git"
-    },
     "keywords": [
         "visualisation",
         "d3",
         "data",
         "viz"
     ],
+    "homepage": "https://github.com/datawrapper/blocks#readme",
+    "bugs": {
+        "url": "https://github.com/datawrapper/blocks/issues"
+    },
+    "license": "UNLICENSED",
     "author": "Datawrapper GmbH",
     "contributors": [
         {
@@ -97,20 +22,38 @@
             "name": "Gregor Aisch"
         }
     ],
-    "license": "UNLICENSED",
-    "bugs": {
-        "url": "https://github.com/datawrapper/blocks/issues"
+    "files": [
+        "lib",
+        "dist"
+    ],
+    "main": "dist/index.js",
+    "scripts": {
+        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "format": "prettier 'src/**/*.js' --write",
+        "prepublishOnly": "npm test && npm run build && npm run bundle",
+        "build:js": "node scripts/compile.js",
+        "build:css": "postcss src/**/*.css -d lib",
+        "build": "rm -rf lib/* && npm run build:js & npm run build:css",
+        "bundle:js": "microbundle -i lib/index.js",
+        "bundle:css": "node scripts/compile-css.js | postcss > dist/index.css",
+        "bundle": "rm -rf dist/* && npm run bundle:js && npm run bundle:css",
+        "test": "ava --verbose",
+        "test:watch": "ava --watch",
+        "storybook": "start-storybook -p 6006",
+        "build-storybook": "build-storybook",
+        "lint:js": "eslint src",
+        "lint:css": "stylelint src/**/*.css"
     },
-    "homepage": "https://github.com/datawrapper/blocks#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/datawrapper/blocks.git"
+    },
     "dependencies": {
         "budu": "1.0.0",
         "d3-jetpack": "^2.0.20",
         "d3-scale": "2.2.2",
         "d3-selection": "1.4.0",
         "lodash": "4.17.11"
-    },
-    "peerDependencies": {
-        "d3-array": "1.2.4 || ^2.0.0"
     },
     "devDependencies": {
         "@babel/core": "~7.4.0",
@@ -140,5 +83,67 @@
         "stylelint": "~9.10.1",
         "stylelint-config-standard": "~18.2.0",
         "tap-xunit": "~2.3.0"
-    }
+    },
+    "peerDependencies": {
+        "d3-array": "1.2.4 || ^2.0.0"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 100,
+        "singleQuote": true
+    },
+    "umd:main": "dist/index.umd.js",
+    "module": "dist/index.mjs",
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ]
+        }
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "ava": {
+        "snapshotDir": "./test/__SNAPSHOTS__",
+        "require": [
+            "esm",
+            "./test/helpers/setup-browser-env.js"
+        ]
+    },
+    "stylelint": {
+        "extends": "stylelint-config-standard"
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier",
+            "git add"
+        ],
+        "*.css": [
+            "stylelint --fix",
+            "git add"
+        ]
+    },
+    "browserslist": [
+        "last 2 versions",
+        "not IE 10"
+    ]
 }
