@@ -59,7 +59,7 @@
         "serve": "^10.1.2"
     },
     "dependencies": {
-        "@datawrapper/blocks": "^0.7.3",
+        "@datawrapper/blocks": "^0.7.4",
         "@datawrapper/controls": "^1.1.1",
         "@datawrapper/shared": "^0.8.2",
         "@turf/area": "^6.0.1",
