@@ -57,7 +57,7 @@
     },
     "devDependencies": {
         "@babel/core": "~7.4.0",
-        "@storybook/html": "~5.0.5",
+        "@storybook/html": "^5.0.11",
         "ava": "1.4.0",
         "babel-eslint": "~10.0.1",
         "babel-loader": "~8.0.5",
