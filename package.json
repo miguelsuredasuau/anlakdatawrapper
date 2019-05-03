@@ -7,14 +7,14 @@
     "author": "Datawrapper GmbH",
     "main": "index.js",
     "scripts": {
-        "format": "prettier 'src/**/*.{js,html}' --write",
-        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "format": "prettier 'src/{render,controls}/*.{js,html}' --write",
+        "lint": "prettier --check 'src/{render,controls}/*.{js,html}' && healthier 'src/{render,controls}/*.{js,html}'",
         "test": "echo \"Error: no test specified\" && exit 1",
         "render-dev": "cd src/render && npm run dev",
         "render-build": "cd src/render && npm run build",
         "controls-dev": "cd src/controls && npm run dev",
         "controls-build": "cd src/controls && npm run build",
-        "dev": "npm run controls-dev & npm run render-dev",
+        "dev": "echo \"please run `npm run dev` in src/render or src/controls separately\"",
         "build": "npm run controls-build && npm run render-build"
     },
     "dependencies": {},
