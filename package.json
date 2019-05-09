@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/plugin-visualization-column-charts",
-    "version": "1.3.2",
+    "version": "1.6.2",
     "scripts": {
         "format": "prettier 'src/**/*.js' --write",
         "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
