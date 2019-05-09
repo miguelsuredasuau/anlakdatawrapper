@@ -10,6 +10,7 @@
         "format": "prettier 'src/{render,controls}/*.{js,html}' --write",
         "lint": "prettier --check 'src/{render,controls}/*.{js,html}' && healthier 'src/{render,controls}/*.{js,html}'",
         "test": "cd src/render && npm test",
+        "test:watch": "cd src/render && npm run test:watch",
         "dev:render": "cd src/render && npm run dev",
         "build:render": "cd src/render && npm run build",
         "dev:controls": "cd src/controls && npm run dev",
