@@ -9,18 +9,18 @@
     "scripts": {
         "format": "prettier 'src/{render,controls}/*.{js,html}' --write",
         "lint": "prettier --check 'src/{render,controls}/*.{js,html}' && healthier 'src/{render,controls}/*.{js,html}'",
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "cd src/render && npm test",
         "dev:render": "cd src/render && npm run dev",
         "build:render": "cd src/render && npm run build",
         "dev:controls": "cd src/controls && npm run dev",
         "build:controls": "cd src/controls && npm run build",
         "dev": "echo \"please run `npm run dev` in src/render or src/controls separately\"",
-        "build": "npm run controls-build && npm run render-build"
+        "build": "make build"
     },
     "dependencies": {},
     "husky": {
         "hooks": {
-            "pre-commit": "lint-staged && npm run build && git add static/*"
+            "pre-commit": "lint-staged && npm test && npm run build && git add static/*"
         }
     },
     "lint-staged": {
