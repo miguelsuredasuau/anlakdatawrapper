@@ -20,7 +20,8 @@
     "dependencies": {
         "@datawrapper/controls": "^2.3.1",
         "moment": "^2.24.0",
-        "query-string": "^6.4.2"
+        "query-string": "^6.4.2",
+        "sinon": "^7.3.2"
     },
     "devDependencies": {
         "@tivac/eslint-plugin-svelte": "^1.2.1",
