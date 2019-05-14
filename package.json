@@ -9,7 +9,7 @@
       "*.js": [
         "eslint --fix",
         "git add"
-      ]      
+      ]
     },
     "ignore": [
       "static/*"
