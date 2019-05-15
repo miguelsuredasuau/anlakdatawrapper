@@ -15,7 +15,7 @@
         "build:render": "cd src/render && npm run build",
         "dev:controls": "cd src/controls && npm run dev",
         "build:controls": "cd src/controls && npm run build",
-        "dev": "echo \"please run `npm run dev` in src/render or src/controls separately\"",
+        "dev": "echo \"please run `npm run dev:render` and/or `npm run dev:controls`...\"",
         "build": "make build"
     },
     "dependencies": {},
