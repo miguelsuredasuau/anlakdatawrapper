@@ -1,0 +1,98 @@
+{
+    "name": "@datawrapper/plugin-screenshots",
+    "version": "1.0.0",
+    "description": "",
+    "keywords": [],
+    "homepage": "https://github.com/datawrapper/plugin-screenshots#readme",
+    "bugs": {
+        "url": "https://github.com/datawrapper/plugin-screenshots/issues"
+    },
+    "license": "ISC",
+    "author": "",
+    "main": "index.js",
+    "scripts": {
+        "format": "prettier 'src/**/*.js' --write",
+        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "rollup -cw",
+        "build": "rollup -c"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/datawrapper/plugin-screenshots.git"
+    },
+    "dependencies": {
+        "@datawrapper/controls": "^3.0.0",
+        "dayjs": "^1.8.12",
+        "lodash.uniq": "^4.5.0",
+        "npm-run-all": "^4.1.5",
+        "numeral": "^2.0.6",
+        "rollup": "^1.10.1",
+        "rollup-plugin-buble": "^0.19.6",
+        "rollup-plugin-commonjs": "^9.3.4",
+        "rollup-plugin-json": "^4.0.0",
+        "rollup-plugin-node-resolve": "^4.2.3",
+        "rollup-plugin-svelte": "^5.0.3",
+        "rollup-plugin-terser": "^4.0.4",
+        "sirv-cli": "^0.3.1",
+        "snarkdown": "^1.2.2",
+        "svelte": "^3.0.0"
+    },
+    "devDependencies": {
+        "babel-eslint": "^10.0.1",
+        "healthier": "^2.0.0",
+        "husky": "^2.3.0",
+        "lint-staged": "^8.1.7",
+        "lodash-es": "^4.17.11",
+        "prettier": "^1.17.1"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier",
+            "git add"
+        ],
+        "linters": {
+            "*.{js,html}": [
+                "prettier --write",
+                "healthier",
+                "git add"
+            ]
+        },
+        "ignore": [
+            "static/**/*.js"
+        ]
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 100,
+        "singleQuote": true
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ]
+        }
+    }
+}
