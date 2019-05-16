@@ -22,7 +22,7 @@
         "underscore-es": "^1.9.8"
     },
     "devDependencies": {
-        "@datawrapper/shared": "^0.4.0",
+        "@datawrapper/shared": "^0.9.5",
         "babel-eslint": "^10.0.1",
         "eslint": "^5.12.1",
         "eslint-config-standard": "^12.0.0",
