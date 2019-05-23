@@ -20,7 +20,6 @@
     "dependencies": {
         "@datawrapper/controls": "^2.3.1",
         "@datawrapper/shared": "^0.9.7",
-        "moment": "^2.24.0",
         "query-string": "^6.4.2",
         "sinon": "^7.3.2"
     },
@@ -46,7 +45,8 @@
         "rollup-plugin-node-resolve": "^4.2.3",
         "rollup-plugin-svelte": "^5.0.3",
         "rollup-plugin-terser": "^4.0.4",
-        "svelte": "^2.16.1"
+        "svelte": "^2.16.1",
+        "underscore-es": "^1.9.8"
     },
     "husky": {
         "hooks": {
