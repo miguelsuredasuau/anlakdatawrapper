@@ -30,6 +30,7 @@
         "babel-eslint": "^10.0.1",
         "browser-env": "^3.2.6",
         "cash-dom": "^3.1.0",
+        "dayjs": "^1.8.14",
         "eslint-plugin-html": "^5.0.3",
         "esm": "^3.2.22",
         "healthier": "^2.0.0",
