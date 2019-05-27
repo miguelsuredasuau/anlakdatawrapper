@@ -45,7 +45,7 @@
         "chroma-js": "^2.0.3"
     },
     "peerDependencies": {
-        "joi": "14.x",
+        "@hapi/joi": "15.x",
         "chalk": "2.x"
     },
     "lint-staged": {
