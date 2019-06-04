@@ -11,10 +11,7 @@
         "postinstall": "scripts/install",
         "dev": "nodemon src/index.js",
         "sync": "datawrapper-orm-sync",
-        "crons": "crons"
-    },
-    "bin": {
-        "crons": "scripts/start"
+        "start": "scripts/start"
     },
     "files": [
         "src",
