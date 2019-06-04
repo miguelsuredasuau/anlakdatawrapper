@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `pixeltracker_domain_month` (
 
 CREATE TABLE IF NOT EXISTS `pixeltracker_chart_embedurl` (
   `chart_id` varchar(5) NOT NULL DEFAULT '',
-  `url` varchar(1024) NOT NULL DEFAULT '',
+  `url` varchar(512) NOT NULL DEFAULT '',
   PRIMARY KEY (`chart_id`,`url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
