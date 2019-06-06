@@ -1,0 +1,65 @@
+{
+    "name": "@datawrapper/plugin-external-data",
+    "version": "1.0.0",
+    "description": "",
+    "keywords": [],
+    "license": "ISC",
+    "author": "",
+    "main": "crons.js",
+    "scripts": {
+        "format": "prettier 'src/**/*.{js,html}' '*.js' --write",
+        "lint": "prettier --check 'src/**/*.{js,html}' '*>js' && healthier '*.js' 'src/**/*.{js,html}'",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "aws-sdk": "^2.470.0",
+        "d3-queue": "^3.0.7",
+        "request": "^2.88.0"
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier",
+            "git add"
+        ]
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ]
+        }
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 100,
+        "singleQuote": true
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "devDependencies": {
+        "babel-eslint": "^10.0.1",
+        "healthier": "^2.0.0",
+        "husky": "^2.4.0",
+        "lint-staged": "^8.2.0",
+        "prettier": "^1.17.1"
+    }
+}
