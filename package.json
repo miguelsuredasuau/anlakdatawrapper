@@ -8,7 +8,7 @@
     "main": "crons.js",
     "scripts": {
         "format": "prettier 'src/**/*.{js,html}' '*.js' --write",
-        "lint": "prettier --check 'src/**/*.{js,html}' '*>js' && healthier '*.js' 'src/**/*.{js,html}'",
+        "lint": "prettier --check 'src/**/*.js' '*.js' && healthier '*.js' 'src/**/*.js'",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {
