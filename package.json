@@ -90,7 +90,7 @@
     },
     "dependencies": {
         "@datawrapper/controls": "^2.0.10",
-        "@datawrapper/shared": "^0.9.2",
+        "@datawrapper/shared": "^0.10.1",
         "d3-color": "^1.2.3",
         "d3-jetpack": "^2.0.20",
         "d3-selection": "^1.4.0",
