@@ -104,6 +104,7 @@
         "require": [
             "esm",
             "./test/helpers/setup-browser-env.js",
+            "./test/helpers/setup-i18n.js",
             "./test/helpers/setup-svelte-compiler.js"
         ],
         "files": [
