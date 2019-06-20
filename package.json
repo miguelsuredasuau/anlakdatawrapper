@@ -1,0 +1,26 @@
+{
+    "name": "@datawrapper/plugin-stats",
+    "version": "1.0.0",
+    "description": "",
+    "main": "api.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/datawrapper/plugin-stats.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/datawrapper/plugin-stats/issues"
+    },
+    "homepage": "https://github.com/datawrapper/plugin-stats#readme",
+    "dependencies": {
+        "@hapi/joi": "^15.0.3",
+        "d3-dsv": "^1.1.1",
+        "sequelize": "^5.8.10",
+        "underscore": "^1.9.1"
+    }
+}
