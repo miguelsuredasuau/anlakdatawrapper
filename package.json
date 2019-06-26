@@ -1,0 +1,75 @@
+{
+    "name": "@datawrapper/schemas",
+    "version": "1.0.0",
+    "description": "JSON schemas for config and themes",
+    "author": "Datawrapper GmbH",
+    "scripts": {
+        "format": "prettier 'src/**/*.js' --write",
+        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "test": "ava",
+        "test:watch": "ava -w"
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ]
+        }
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier",
+            "git add"
+        ]
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 100,
+        "singleQuote": true
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "devDependencies": {
+        "ava": "^2.1.0",
+        "babel-eslint": "^10.0.2",
+        "healthier": "^2.0.0",
+        "husky": "^2.4.1",
+        "lint-staged": "^8.2.1",
+        "prettier": "^1.18.2"
+    },
+    "ava": {
+        "require": [
+            "esm"
+        ],
+        "files": [
+            "./*.test.js",
+            "./**/*.test.js"
+        ],
+        "sources": [
+            "./*.js"
+        ]
+    },
+    "dependencies": {
+        "@hapi/joi": "^15.1.0",
+        "chalk": "^2.4.2"
+    }
+}
