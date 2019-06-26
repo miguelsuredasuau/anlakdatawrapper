@@ -4,8 +4,8 @@
     "description": "JSON schemas for config and themes",
     "author": "Datawrapper GmbH",
     "scripts": {
-        "format": "prettier 'src/**/*.js' --write",
-        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "format": "prettier '*.js' --write",
+        "lint": "prettier --check '*.js' && healthier '*.js'",
         "test": "ava",
         "test:watch": "ava -w"
     },
