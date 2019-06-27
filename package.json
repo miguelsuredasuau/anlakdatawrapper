@@ -1,7 +1,7 @@
 {
     "name": "@datawrapper/crons",
     "author": "Datawrapper GmbH",
-    "version": "1.5.2",
+    "version": "1.5.3",
     "description": "A collection of tasks that our server performs regularly in the background",
     "main": "src/index.js",
     "scripts": {
