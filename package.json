@@ -2,10 +2,7 @@
     "name": "@datawrapper/render-client",
     "version": "1.5.6",
     "description": "the Node app running on each client/worker in our pdf/png/svg export render farm. Uses Pupeteer & Chromium for client-side rendering of charts. Formerlly known as \"chromeshot\" ",
-    "main": "index.js",
-    "bin": {
-        "render-client": "scripts/start"
-    },
+    "main": "scripts/start",
     "files": [
         "src",
         "scripts",
@@ -62,9 +59,8 @@
     "scripts": {
         "format": "prettier 'src/**/*.js' --write",
         "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
-        "postinstall": "scripts/install",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "render-client"
+        "start": "scripts/start"
     },
     "prettier": {
         "tabWidth": 4,
