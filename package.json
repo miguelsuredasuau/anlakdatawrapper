@@ -44,10 +44,6 @@
         "sinon": "^7.3.2",
         "chroma-js": "^2.0.3"
     },
-    "peerDependencies": {
-        "@hapi/joi": "15.x",
-        "chalk": "2.x"
-    },
     "lint-staged": {
         "*.js": [
             "prettier --write",
