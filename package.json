@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/shared",
-    "version": "0.10.1",
+    "version": "0.11.0",
     "description": "shared functions used throughout datawrapper",
     "keywords": [
         "js",
