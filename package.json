@@ -41,6 +41,7 @@
     "rollup-watch": "^4.3.1"
   },
   "dependencies": {
+    "@datawrapper/shared": "^0.10.0",
     "d3-array": "^1.2.1",
     "d3-collection": "^1.0.4",
     "d3-color": "^1.0.3",
