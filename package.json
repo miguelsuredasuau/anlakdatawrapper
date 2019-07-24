@@ -2,8 +2,5 @@
   "name": "d3-bars-grouped",
   "description": "Registers Grouped Bars type",
   "author": "Datawrapper GmbH",
-  "version": "1.0.0",
-  "dependencies": {
-    "options": "0.5.*"
-  }
+  "version": "1.0.0"
 }
