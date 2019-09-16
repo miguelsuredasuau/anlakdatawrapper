@@ -24,9 +24,9 @@
     ],
     "files": [
         "lib",
-        "dist"
+        "src"
     ],
-    "main": "dist/index.js",
+    "main": "lib/index.js",
     "scripts": {
         "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
         "format": "prettier 'src/**/*.js' --write",
@@ -61,8 +61,8 @@
         "@storybook/addon-actions": "5.1.9",
         "@storybook/addon-knobs": "5.1.9",
         "@storybook/html": "5.1.9",
-        "ava": "2.1.0",
-        "babel-eslint": "~10.0.2",
+        "ava": "2.4.0",
+        "babel-eslint": "~10.0.3",
         "babel-loader": "~8.0.6",
         "browser-env": "~3.2.6",
         "buble": "^0.19.8",
@@ -82,7 +82,6 @@
         "humps": "~2.0.1",
         "husky": "~2.4.1",
         "lint-staged": "~8.2.1",
-        "microbundle": "~0.11.0",
         "postcss-cli": "~6.1.2",
         "postcss-import": "~12.0.1",
         "postcss-loader": "~3.0.0",
