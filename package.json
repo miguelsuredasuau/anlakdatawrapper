@@ -9,7 +9,7 @@
         "compile": "npm run build"
     },
     "dependencies": {
-        "@datawrapper/blocks": "^0.9.1",
+        "@datawrapper/blocks": "^0.11.5",
         "@datawrapper/shared": "^0.10.0",
         "d3-array": "^1.2.1",
         "d3-collection": "^1.0.4",
