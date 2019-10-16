@@ -24,7 +24,7 @@
         "underscore-es": "^1.9.8"
     },
     "devDependencies": {
-        "@datawrapper/blocks": "^0.12.0",
+        "@datawrapper/blocks": "^0.12.1",
         "@datawrapper/shared": "^0.16.0",
         "babel-eslint": "^10.0.3",
         "eslint": "^5.12.1",
