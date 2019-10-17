@@ -40,12 +40,13 @@
         "raf": "^3.4.1"
     },
     "dependencies": {
+        "chroma-js": "^2.0.3",
         "d3-array": "^1.2.4",
+        "lodash-es": "^4.17.15",
+        "sinon": "^7.3.2",
         "svelte": "^2.16.1",
         "svelte-extras": "^2.0.2",
-        "underscore": "^1.9.1",
-        "sinon": "^7.3.2",
-        "chroma-js": "^2.0.3"
+        "underscore": "^1.9.1"
     },
     "lint-staged": {
         "*.js": [
