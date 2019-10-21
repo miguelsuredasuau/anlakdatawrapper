@@ -6,7 +6,9 @@
         "format": "prettier 'src/**/*.js' --write",
         "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
         "build": "rollup -c",
-        "dev": "rollup -c -w"
+        "dev": "rollup -c -w",
+        "build:settings": "cd src/settings && npm run build",
+        "dev:settings": "cd src/settings && npm run dev"
     },
     "dependencies": {
         "@datawrapper/controls": "^2.1.2",
