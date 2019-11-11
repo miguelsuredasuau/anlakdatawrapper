@@ -29,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/datawrapper/plugin-user-dashboard/issues"
   },
-  "homepage": "https://github.com/datawrapper/plugin-user-dashboard#readme"
+  "homepage": "https://github.com/datawrapper/plugin-user-dashboard#readme",
+  "dependencies": {
+    "@datawrapper/shared": "^0.19.3"
+  }
 }
