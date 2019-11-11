@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@datawrapper/shared": "^0.10.0",
+    "@datawrapper/blocks": "^0.12.2",
     "d3-array": "^1.2.4",
     "d3-collection": "^1.0.7",
     "d3-color": "^1.2.3",
