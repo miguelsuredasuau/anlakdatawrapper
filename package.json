@@ -16,7 +16,8 @@
         "dev:controls": "cd src/controls && npm run dev",
         "build:controls": "cd src/controls && npm run build",
         "dev": "echo \"please run `npm run dev:render` and/or `npm run dev:controls`...\"",
-        "build": "make build"
+        "build": "make build",
+        "postinstall": "cd src/render && npm install && cd ../controls && npm install"
     },
     "dependencies": {},
     "husky": {
