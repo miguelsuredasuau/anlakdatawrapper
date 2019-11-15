@@ -15,13 +15,29 @@
     "author": "Datawrapper GmbH",
     "main": "api.js",
     "scripts": {
-        "format": "prettier 'src/**/*.js' --write",
-        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "format": "prettier '*.js' 'src/**/*.js' --write",
+        "lint": "prettier --check '*.js' 'src/**/*.{js,html}' && healthier '*.js' 'src/**/*.{js,html}'",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
         "type": "git",
         "url": "git+ssh://git@github.com/datawrapper/plugin-publish-cloud.git"
+    },
+    "dependencies": {
+        "@google-cloud/storage": "^4.1.2",
+        "aws-sdk": "^2.572.0"
+    },
+    "devDependencies": {
+        "babel-eslint": "^10.0.3",
+        "healthier": "^3.2.0",
+        "husky": "^3.0.9",
+        "lint-staged": "^9.4.3",
+        "prettier": "^1.19.1"
+    },
+    "lint-staged": {
+        "*.js": [
+            "git add"
+        ]
     },
     "prettier": {
         "tabWidth": 4,
@@ -50,13 +66,9 @@
             ]
         }
     },
-    "devDependencies": {
-        "babel-eslint": "^10.0.3",
-        "healthier": "^3.2.0",
-        "prettier": "^1.19.1"
-    },
-    "dependencies": {
-        "@google-cloud/storage": "^4.1.2",
-        "aws-sdk": "^2.572.0"
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
     }
 }
