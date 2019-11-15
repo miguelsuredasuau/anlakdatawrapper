@@ -1,0 +1,62 @@
+{
+    "name": "@datawrapper/plugin-publish-cloud",
+    "version": "1.0.0",
+    "description": "Allows publishing of Datawrapper charts to various Cloud Storage providers ",
+    "keywords": [
+        "api",
+        "datawrapper",
+        "aws",
+        "s3"
+    ],
+    "homepage": "https://github.com/datawrapper/plugin-publish-cloud#readme",
+    "bugs": {
+        "url": "https://github.com/datawrapper/plugin-publish-cloud/issues"
+    },
+    "author": "Datawrapper GmbH",
+    "main": "api.js",
+    "scripts": {
+        "format": "prettier 'src/**/*.js' --write",
+        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/datawrapper/plugin-publish-cloud.git"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 100,
+        "singleQuote": true
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ]
+        }
+    },
+    "devDependencies": {
+        "babel-eslint": "^10.0.3",
+        "healthier": "^3.2.0",
+        "prettier": "^1.19.1"
+    },
+    "dependencies": {
+        "@google-cloud/storage": "^4.1.2",
+        "aws-sdk": "^2.572.0"
+    }
+}
