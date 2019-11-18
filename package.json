@@ -20,9 +20,19 @@
         "postinstall": "cd src/render && npm install && cd ../controls && npm install"
     },
     "dependencies": {},
+    "devDependencies": {
+        "@tivac/eslint-plugin-svelte": "^1.2.1",
+        "babel-eslint": "^10.0.1",
+        "eslint-plugin-html": "^5.0.3",
+        "eslint-plugin-svelte3": "^1.0.0",
+        "healthier": "^2.0.0",
+        "husky": "^2.1.0",
+        "lint-staged": "^8.1.5",
+        "prettier": "^1.16.4"
+    },
     "husky": {
         "hooks": {
-            "pre-commit": "lint-staged && npm run format && npm run lint && npm test && git add static/*"
+            "pre-commit": "lint-staged && npm run format && npm run lint && git add static/*"
         }
     },
     "lint-staged": {
@@ -70,15 +80,5 @@
             "html",
             "@tivac/svelte"
         ]
-    },
-    "devDependencies": {
-        "@tivac/eslint-plugin-svelte": "^1.2.1",
-        "babel-eslint": "^10.0.1",
-        "eslint-plugin-html": "^5.0.3",
-        "eslint-plugin-svelte3": "^1.0.0",
-        "healthier": "^2.0.0",
-        "husky": "^2.1.0",
-        "lint-staged": "^8.1.5",
-        "prettier": "^1.16.4"
     }
 }
