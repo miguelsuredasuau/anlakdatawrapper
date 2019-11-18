@@ -22,7 +22,7 @@
     "dependencies": {},
     "husky": {
         "hooks": {
-            "pre-commit": "lint-staged && npm test && git add static/*"
+            "pre-commit": "lint-staged && npm run format && npm run lint && npm test && git add static/*"
         }
     },
     "lint-staged": {
