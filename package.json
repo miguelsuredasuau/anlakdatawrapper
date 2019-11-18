@@ -2,27 +2,70 @@
     "name": "@datawrapper/plugin-chart-data-s3",
     "version": "2.0.0",
     "description": "API plugin to handle data storage of charts in S3.",
-    "main": "index.js",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/datawrapper/plugin-chart-data-s3.git"
-    },
     "keywords": [
         "api",
         "hapi",
         "s3",
         "aws"
     ],
-    "author": "Datawrapper GmbH",
-    "license": "ISC",
+    "homepage": "https://github.com/datawrapper/plugin-chart-data-s3#readme",
     "bugs": {
         "url": "https://github.com/datawrapper/plugin-chart-data-s3/issues"
     },
-    "homepage": "https://github.com/datawrapper/plugin-chart-data-s3#readme",
+    "license": "ISC",
+    "author": "Datawrapper GmbH",
+    "main": "index.js",
+    "scripts": {
+        "format": "prettier '*.js' 'src/**/*.js' --write",
+        "lint": "prettier --check '*.js' 'src/**/*.{js,html}' && healthier '*.js' 'src/**/*.{js,html}'"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/datawrapper/plugin-chart-data-s3.git"
+    },
     "dependencies": {
         "aws-sdk": "2.441.0"
     },
     "peerDependencies": {
         "@datawrapper/api": "2.x"
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier",
+            "git add"
+        ]
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ]
+        }
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 100,
+        "singleQuote": true
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
     }
 }
