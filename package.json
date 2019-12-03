@@ -77,6 +77,7 @@
     "devDependencies": {
         "@datawrapper/controls": "^2.13.1",
         "@datawrapper/shared": "^0.16.2",
+        "lodash-es": "^4.17.15",
         "rollup": "^1.25.1",
         "rollup-plugin-buble": "^0.19.8",
         "rollup-plugin-commonjs": "^10.1.0",
