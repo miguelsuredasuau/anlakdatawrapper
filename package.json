@@ -3,11 +3,56 @@
     "version": "1.2.0",
     "description": "JSON schemas for config and themes",
     "author": "Datawrapper GmbH",
+    "main": "index.js",
     "scripts": {
-        "format": "prettier '*.js' --write",
-        "lint": "prettier --check '*.js' && healthier '*.js'",
-        "test": "ava",
-        "test:watch": "ava -w"
+        "format": "prettier '*.js' '**/*.js' --write",
+        "lint": "prettier --check '*.js' '**/*.js' && healthier '*.js' '**/*.js'",
+        "test": "ava --verbose",
+        "test:watch": "ava -w",
+        "build": "node scripts/build.js",
+        "docs": "node scripts/generate-docs.js"
+    },
+    "dependencies": {
+        "@hapi/joi": "^16.1.7",
+        "chalk": "^2.4.2"
+    },
+    "devDependencies": {
+        "ava": "^2.1.0",
+        "babel-eslint": "^10.0.2",
+        "healthier": "^2.0.0",
+        "husky": "^2.4.1",
+        "lint-staged": "^8.2.1",
+        "prettier": "^1.18.2"
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier",
+            "git add"
+        ]
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 100,
+        "singleQuote": true
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged && npm run build && git add build/*.json"
+        }
+    },
+    "ava": {
+        "require": [
+            "esm"
+        ],
+        "files": [
+            "./*.test.js",
+            "./**/*.test.js"
+        ],
+        "sources": [
+            "./*.js"
+        ]
     },
     "eslintConfig": {
         "parser": "babel-eslint",
@@ -29,47 +74,5 @@
                 }
             ]
         }
-    },
-    "lint-staged": {
-        "*.js": [
-            "prettier --write",
-            "healthier",
-            "git add"
-        ]
-    },
-    "prettier": {
-        "tabWidth": 4,
-        "semi": true,
-        "printWidth": 100,
-        "singleQuote": true
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "devDependencies": {
-        "ava": "^2.1.0",
-        "babel-eslint": "^10.0.2",
-        "healthier": "^2.0.0",
-        "husky": "^2.4.1",
-        "lint-staged": "^8.2.1",
-        "prettier": "^1.18.2"
-    },
-    "ava": {
-        "require": [
-            "esm"
-        ],
-        "files": [
-            "./*.test.js",
-            "./**/*.test.js"
-        ],
-        "sources": [
-            "./*.js"
-        ]
-    },
-    "dependencies": {
-        "@hapi/joi": "^15.1.0",
-        "chalk": "^2.4.2"
     }
 }
