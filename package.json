@@ -29,7 +29,6 @@
         "lodash.shuffle": "^4.2.0",
         "mysql2": "^1.6.4",
         "node-cron": "^2.0.3",
-        "sequelize": "^4.44.1",
         "winston": "^3.2.0"
     },
     "devDependencies": {
