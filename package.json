@@ -2,7 +2,7 @@
     "name": "d3-maps-build",
     "version": "1.0.0",
     "scripts": {
-        "format": "prettier 'src/**/*.js' --write",
+        "format": "prettier 'src/**/*.{js,html}' --write",
         "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
         "build": "rollup -c",
         "dev": "rollup -c -w"
@@ -26,9 +26,11 @@
     "devDependencies": {
         "@datawrapper/blocks": "^0.12.2",
         "@datawrapper/shared": "^0.20.0",
+        "@tivac/eslint-plugin-svelte": "^1.3.0",
         "babel-eslint": "^10.0.3",
         "eslint": "^5.12.1",
         "eslint-config-standard": "^12.0.0",
+        "eslint-plugin-html": "^6.0.0",
         "eslint-plugin-import": "^2.15.0",
         "eslint-plugin-node": "^8.0.1",
         "eslint-plugin-promise": "^4.0.1",
@@ -96,7 +98,16 @@
                     "ignoreDestructuring": true,
                     "properties": "never"
                 }
-            ]
-        }
+            ],
+            "no-unneeded-ternary": "off",
+            "@tivac/svelte/property-ordering": "off"
+        },
+        "extends": [
+            "plugin:@tivac/svelte/svelte"
+        ],
+        "plugins": [
+            "html",
+            "@tivac/svelte"
+        ]
     }
 }
