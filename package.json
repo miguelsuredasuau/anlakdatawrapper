@@ -4,7 +4,7 @@
     "version": "2.3.0",
     "scripts": {
         "format": "prettier 'src/**/*.js' --write",
-        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "lint": "prettier --check 'src/**/*.js' && healthier 'src/**/*.js'",
         "build": "rollup -c",
         "dev": "rollup -c -w",
         "build:settings": "cd src/settings && npm run build",
@@ -61,9 +61,13 @@
         "rollup-plugin-uglify": "^4.0.0",
         "sinon": "^7.5.0",
         "svelte": "^2.7.0",
+        "tap-xunit": "^2.4.1",
         "underscore-es": "^1.9.8"
     },
     "ava": {
+        "helpers": [
+            "**/helpers/**/*"
+        ],
         "babel": {
             "testOptions": {
                 "plugins": [
@@ -71,7 +75,7 @@
                         "module-resolver",
                         {
                             "alias": {
-                                "jquery": "src/tests/_jquery.js"
+                                "jquery": "src/tests/helpers/jquery.js"
                             }
                         }
                     ]
@@ -80,7 +84,7 @@
         },
         "require": [
             "esm",
-            "./src/tests/_setup-browser-env.js"
+            "./src/tests/helpers/setup-browser-env.js"
         ]
     },
     "husky": {
