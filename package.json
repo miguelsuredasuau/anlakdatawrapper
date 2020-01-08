@@ -15,6 +15,8 @@
     "author": "Datawrapper GmbH",
     "main": "api.js",
     "scripts": {
+        "dev": "rollup -cw",
+        "build": "rollup -c",
         "format": "prettier '*.js' 'src/**/*.js' --write",
         "lint": "prettier --check '*.js' 'src/**/*.{js,html}' && healthier '*.js' 'src/**/*.{js,html}'",
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,11 +30,20 @@
         "aws-sdk": "^2.572.0"
     },
     "devDependencies": {
+        "@datawrapper/controls": "^2.16.3",
         "babel-eslint": "^10.0.3",
         "healthier": "^3.2.0",
         "husky": "^3.0.9",
         "lint-staged": "^9.4.3",
-        "prettier": "^1.19.1"
+        "prettier": "^1.19.1",
+        "rollup": "^1.25.0",
+        "rollup-plugin-buble": "^0.19.8",
+        "rollup-plugin-commonjs": "^10.1.0",
+        "rollup-plugin-json": "^4.0.0",
+        "rollup-plugin-node-resolve": "^5.2.0",
+        "rollup-plugin-svelte": "^5.1.1",
+        "rollup-plugin-terser": "^5.1.2",
+        "svelte": "^2.16.1"
     },
     "lint-staged": {
         "*.js": [
