@@ -4,6 +4,9 @@
 INSERT INTO `user` (id,email,pwd,activate_token,reset_password_token,`role`,deleted,`language`,created_at,name,website,sm_profile,oauth_signin,customer_id) VALUES
 (1,'admin@datawrapper.de','34738608dfa322bed9859978902a0050501c6aad204c9b61b53c2a86533e5b49','','',0,0,'en_US','2018-11-28 14:45:40.000',NULL,NULL,NULL,NULL,NULL);
 
+INSERT INTO auth_token (id,user_id,token,comment,created_at) VALUES
+(1,1,'34738608dfa322bed9859978902a0050501c6aad204c9b61b53c2a86533e5b49','default','2020-01-22 14:18:17.000');
+
 INSERT INTO theme (id,created_at,extend,title,`data`,less,assets) VALUES
 ('default','2017-05-04 12:00:00.000',NULL,'Datawrapper (2012)','{
     "typography": {
@@ -154,4 +157,5 @@ INSERT INTO theme (id,created_at,extend,title,`data`,less,assets) VALUES
 
 -- Down
 DELETE FROM user WHERE id = 1;
+DELETE FROM auth_token WHERE id = 1;
 DELETE FROM theme WHERE id = 'default';
