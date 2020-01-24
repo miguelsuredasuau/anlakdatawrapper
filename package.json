@@ -1,0 +1,28 @@
+{
+  "name": "@datawrapper/plugin-copy-to-local",
+  "version": "1.0.0",
+  "description": "utils for copying stuff from remote dw instances to your local instance",
+  "main": "api.js",
+  "scripts": {
+    "dev": "rollup -cw",
+    "build": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Datawrapper GmbH",
+  "license": "ISC",
+  "dependencies": {
+    "@datawrapper/controls": "^3.0.0",
+    "@hapi/boom": "^9.0.0",
+    "@hapi/joi": "^17.0.2",
+    "got": "^10.2.2"
+  },
+  "devDependencies": {
+    "@datawrapper/shared": "^0.21.0",
+    "rollup": "^1.2.2",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-svelte": "^5.1.1",
+    "rollup-plugin-terser": "^4.0.4",
+    "svelte": "^3.17.1"
+  }
+}
