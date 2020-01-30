@@ -30,9 +30,9 @@
         "eslint-plugin-node": "^9.1.0",
         "eslint-plugin-promise": "^4.1.1",
         "healthier": "^2.0.0",
-        "husky": "^2.3.0",
-        "lint-staged": "^8.1.7",
-        "prettier": "^1.17.1",
+        "husky": "^4.0.10",
+        "lint-staged": "^10.0.1",
+        "prettier": "^1.19.1",
         "rollup": "^1.16.4",
         "rollup-plugin-alias": "^1.5.1",
         "rollup-plugin-buble": "^0.19.6",
@@ -40,7 +40,7 @@
         "rollup-plugin-json": "^3.0.0",
         "rollup-plugin-node-resolve": "^4.0.0",
         "rollup-plugin-svelte": "^5.0.1",
-        "rollup-plugin-terser": "^5.0.0",
+        "rollup-plugin-terser": "^5.2.0",
         "svelte": "^2.16.0"
     },
     "husky": {
@@ -49,20 +49,10 @@
         }
     },
     "lint-staged": {
-        "*.js": [
+        "*.{js,html}": [
             "prettier --write",
             "healthier",
             "git add"
-        ],
-        "linters": {
-            "*.js": [
-                "prettier --write",
-                "eslint --fix",
-                "git add"
-            ]
-        },
-        "ignore": [
-            "**/static/*"
         ]
     },
     "prettier": {
