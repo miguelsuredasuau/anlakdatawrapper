@@ -21,7 +21,6 @@
         "@hapi/boom": "7.4.2",
         "@hapi/joi": "15.0.3",
         "d3-dsv": "1.1.1",
-        "sequelize": "6.0.0",
         "underscore": "1.9.1"
     }
 }
