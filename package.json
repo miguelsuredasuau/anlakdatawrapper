@@ -1,6 +1,7 @@
 {
     "name": "@datawrapper/plugin-subscriptions",
     "dependencies": {
+        "@hapi/joi": "^17.1.0",
         "chargebee": "^2.5.6"
     },
     "scripts": {
