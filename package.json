@@ -9,9 +9,20 @@
     "description": "Adds UI for forkable charts and the River(tm)",
     "scripts": {
         "watch": "watch 'make less' less",
-        "doc": "md2html templates/what-is-this.md > templates/what-is-this.twig"
+        "doc": "md2html templates/what-is-this.md > templates/what-is-this.twig",
+        "dev": "rollup -cw",
+        "build": "rollup -c"
     },
     "devDependencies": {
-        "watch": "^1.0.2"
+        "@datawrapper/shared": "^0.23.0",
+        "less": "^3.11.1",
+        "rollup": "^1.32.0",
+        "svelte": "^2.7.0",
+        "watch": "^1.0.2",
+        "@rollup/plugin-buble": "^0.21.1",
+        "@rollup/plugin-commonjs": "^11.0.2",
+        "@rollup/plugin-json": "^4.0.2",
+        "@rollup/plugin-node-resolve": "^7.1.1",
+        "rollup-plugin-svelte": "^5.1.1"
     }
 }
