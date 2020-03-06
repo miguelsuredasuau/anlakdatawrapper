@@ -7,7 +7,7 @@
     "scripts": {
         "format": "prettier src/**/*.js --write && eslint src --fix",
         "lint": "eslint src",
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "DW_CONFIG_PATH=test/_config.test.js ava",
         "dev": "nodemon src/index.js",
         "sync": "datawrapper-orm-sync",
         "start": "scripts/start"
@@ -22,7 +22,7 @@
         "url": "git+https://github.com/datawrapper/datawrapper-crons.git"
     },
     "dependencies": {
-        "@datawrapper/orm": "^3.8.2",
+        "@datawrapper/orm": "^3.9.0",
         "chalk": "^2.4.2",
         "d3-array": "^2.0.3",
         "lodash.shuffle": "^4.2.0",
@@ -39,7 +39,9 @@
         "doc": "docs"
     },
     "devDependencies": {
+        "ava": "^3.5.0",
         "babel-eslint": "^10.0.1",
+        "dotenv": "^8.2.0",
         "eslint": "^5.12.1",
         "eslint-config-standard": "^12.0.0",
         "eslint-plugin-import": "^2.16.0",
@@ -69,5 +71,11 @@
         "semi": true,
         "printWidth": 100,
         "singleQuote": true
+    },
+    "ava": {
+        "files": [
+            "**/*.test.js"
+        ],
+        "snapshotDir": "test/__snapshots__"
     }
 }
