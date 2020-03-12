@@ -1,0 +1,19 @@
+{
+    "name": "@datawrapper/plugin-visualization-bar-chart",
+    "version": "1.7.8",
+    "scripts": {
+        "build": "rollup -c",
+        "dev": "rollup -c -w"
+    },
+    "dependencies": {
+        "@datawrapper/raphael-chart": "^1.0.0"
+    },
+    "devDependencies": {
+        "@rollup/plugin-buble": "^0.21.1",
+        "@rollup/plugin-commonjs": "^11.0.2",
+        "@rollup/plugin-json": "^4.0.2",
+        "@rollup/plugin-node-resolve": "^7.1.1",
+        "rollup": "^1.32.1",
+        "rollup-plugin-terser": "^5.3.0"
+    }
+}
