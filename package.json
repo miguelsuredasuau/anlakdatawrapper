@@ -60,7 +60,7 @@
     },
     "dependencies": {
         "@datawrapper/blocks": "^0.8.0",
-        "@datawrapper/controls": "^2.16.4",
+        "@datawrapper/controls": "^2.17.4",
         "@datawrapper/shared": "^0.9.7",
         "@turf/area": "^6.0.1",
         "@turf/bbox": "^6.0.1",
