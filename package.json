@@ -1,0 +1,10 @@
+{
+  "name": "@datawrapper/plugin-themes",
+  "version": "1.0.0",
+  "main": "api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Datawrapper GmbH",
+  "license": "ISC"
+}
