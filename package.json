@@ -11,23 +11,21 @@
     "author": "",
     "license": "UNLICENSED",
     "dependencies": {
-        "@ava/babel": "^1.0.0",
-        "ava": "^3.4.0",
-        "got": "^10.5.5",
+        "got": "^10.7.0",
         "pixelmatch": "^5.1.0",
         "tap-xunit": "^2.4.1",
-        "yargs": "^15.1.0"
+        "yargs": "^15.3.1"
     },
     "devDependencies": {
         "@ava/babel": "^1.0.1",
-        "ava": "^3.5.0",
+        "ava": "^3.5.1",
         "babel-eslint": "^10.1.0",
         "esm": "^3.2.25",
         "healthier": "^3.3.0",
         "husky": "~2.4.1",
         "import-sort-style-eslint": "^6.0.0",
         "lint-staged": "^8.2.1",
-        "prettier": "^1.19.1",
+        "prettier": "^2.0.2",
         "prettier-plugin-import-sort": "0.0.3"
     },
     "ava": {
@@ -36,10 +34,12 @@
         ]
     },
     "prettier": {
-        "tabWidth": 4,
-        "semi": true,
+        "arrowParens": "avoid",
         "printWidth": 100,
-        "singleQuote": true
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "none"
     },
     "eslintConfig": {
         "parser": "babel-eslint",
