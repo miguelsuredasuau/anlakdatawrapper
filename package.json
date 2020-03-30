@@ -19,6 +19,13 @@
   "devDependencies": {
     "buble": "^0.20.0",
     "chalk": "^3.0.0",
-    "glob": "^7.1.6"
+    "glob": "^7.1.6",
+    "prettier": "^1.19.1"
+  },
+  "prettier": {
+    "tabWidth": 4,
+    "semi": true,
+    "printWidth": 150,
+    "singleQuote": true
   }
 }
