@@ -8,6 +8,7 @@
         "dev": "rollup -c -w"
     },
     "dependencies": {
+        "@datawrapper/chart-core": "8.6.0",
         "@datawrapper/raphael-chart": "^1.0.0",
         "numeral": "^2.0.6",
         "underscore-es": "^1.9.8"
@@ -61,7 +62,8 @@
             ]
         },
         "ignore": [
-            "static/**/*.js"
+            "static/**/*.js",
+            "src/render/shared/symbolPolyfill.js"
         ]
     },
     "prettier": {
