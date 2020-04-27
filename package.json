@@ -1,25 +1,23 @@
 {
-  "name": "team-custom-fields",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "dev": "rollup -cw",
-    "build": "rollup -c"
-  },
-  "devDependencies": {
-    "@datawrapper/controls": "^2.15.0",
-    "@datawrapper/shared": "^0.16.2",
-    "less": "^3.10.3",
-    "rollup": "^1.25.0",
-    "rollup-plugin-buble": "^0.19.8",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-svelte": "^5.1.0",
-    "rollup-plugin-terser": "^5.1.2",
-    "svelte": "^2.16.1"
-  },
-  "author": "",
-  "license": "ISC"
+    "name": "@datawrapper/plugin-team-custom-fields",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev:v3": "cd src/v3 && npm run dev",
+        "build:v3": "cd src/v3 && npm run build"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/datawrapper/plugin-team-custom-fields.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/datawrapper/plugin-team-custom-fields/issues"
+    },
+    "homepage": "https://github.com/datawrapper/plugin-team-custom-fields#readme",
+    "dependencies": {
+        "lodash": "^4.17.15"
+    }
 }
