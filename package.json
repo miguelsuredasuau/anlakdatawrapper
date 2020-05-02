@@ -1,0 +1,71 @@
+{
+    "name": "export-zip",
+    "version": "1.0.0",
+    "description": "",
+    "main": "api.js",
+    "scripts": {
+        "format": "prettier '**/*.js' --write",
+        "lint": "prettier --check '**/*.js' && healthier '**/*.js'",
+        "build": "rollup -c",
+        "dev": "rollup -cw"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@datawrapper/shared": "0.25.1",
+        "archiver": "4.0.1"
+    },
+    "devDependencies": {
+        "downloadjs": "^1.4.7",
+        "healthier": "3.3.0",
+        "husky": "4.2.5",
+        "lint-staged": "10.1.7",
+        "prettier": "2.0.5",
+        "rollup": "^2.7.2",
+        "rollup-plugin-buble": "^0.19.8",
+        "rollup-plugin-commonjs": "^10.1.0",
+        "rollup-plugin-json": "^4.0.0",
+        "rollup-plugin-node-resolve": "^5.2.0",
+        "rollup-plugin-svelte": "^5.2.1",
+        "rollup-plugin-uglify": "^6.0.4"
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier"
+        ]
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ]
+        }
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 100,
+        "singleQuote": true
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    }
+}
