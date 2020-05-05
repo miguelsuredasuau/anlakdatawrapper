@@ -14,7 +14,8 @@
     "license": "ISC",
     "dependencies": {
         "@datawrapper/shared": "0.25.1",
-        "archiver": "4.0.1"
+        "archiver": "4.0.1",
+        "got": "^11.1.0"
     },
     "devDependencies": {
         "downloadjs": "^1.4.7",
