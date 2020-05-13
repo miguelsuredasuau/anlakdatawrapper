@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@datawrapper/shared": "^0.10.0",
-    "@hapi/joi": "^17.1.1",
+    "@hapi/joi": "15.1.1",
     "d3-array": "^1.2.1",
     "d3-collection": "^1.0.4",
     "d3-color": "^1.0.3",
