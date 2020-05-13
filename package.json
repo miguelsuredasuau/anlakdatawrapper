@@ -2,7 +2,7 @@
     "name": "@datawrapper/chart-tests",
     "version": "1.0.0",
     "scripts": {
-        "main": "ava --verbose --serial --config chart-tests.config.js",
+        "main": "ava --verbose --serial --timeout 20s --config chart-tests.config.js",
         "test": "ava",
         "test:watch": "ava -w",
         "lint": "healthier 'src/**/*.js' && prettier --check 'src/**/*.js'",
@@ -66,8 +66,8 @@
     },
     "lint-staged": {
         "src/**/*.js": [
-            "prettier --check",
             "healthier",
+            "prettier --check",
             "git add"
         ]
     }
