@@ -60,8 +60,9 @@
     },
     "dependencies": {
         "@datawrapper/blocks": "^0.8.0",
+        "@datawrapper/chart-core": "^8.11.1",
         "@datawrapper/controls": "^2.19.1",
-        "@datawrapper/shared": "^0.9.7",
+        "@datawrapper/shared": "^0.25.4",
         "@turf/area": "^6.0.1",
         "@turf/bbox": "^6.0.1",
         "@turf/bbox-clip": "^6.0.3",
