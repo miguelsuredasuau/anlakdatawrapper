@@ -1,10 +1,66 @@
 {
-  "name": "@datawrapper/plugin-themes",
-  "version": "1.0.0",
-  "main": "api.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Datawrapper GmbH",
-  "license": "ISC"
+    "name": "@datawrapper/plugin-themes",
+    "version": "1.0.0",
+    "license": "ISC",
+    "author": "Datawrapper GmbH",
+    "main": "api.js",
+    "scripts": {
+        "format": "prettier 'api.js' --write",
+        "lint": "prettier --check 'api.js' && healthier 'api.js'",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "@hapi/boom": "^9.1.0",
+        "@hapi/joi": "^17.1.1",
+        "aws-sdk": "^2.689.0",
+        "lodash": "^4.17.15"
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier",
+            "git add"
+        ]
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ]
+        }
+    },
+    "prettier": {
+        "arrowParens": "avoid",
+        "printWidth": 100,
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "none"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "devDependencies": {
+        "babel-eslint": "^10.1.0",
+        "healthier": "^3.3.0",
+        "husky": "^4.2.5",
+        "lint-staged": "^10.2.9",
+        "prettier": "^2.0.5"
+    }
 }
