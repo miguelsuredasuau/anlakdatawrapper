@@ -6,10 +6,12 @@
         "dev": "rollup -cw"
     },
     "prettier": {
-        "tabWidth": 4,
-        "semi": true,
+        "arrowParens": "avoid",
         "printWidth": 130,
-        "singleQuote": true
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "none"
     },
     "eslintConfig": {
         "parser": "babel-eslint",
