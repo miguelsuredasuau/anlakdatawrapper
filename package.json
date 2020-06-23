@@ -11,7 +11,7 @@
     "author": "",
     "license": "UNLICENSED",
     "dependencies": {
-        "@datawrapper/controls": "^2.8.0",
+        "@datawrapper/controls": "^2.19.4",
         "@datawrapper/shared": "^0.12.2",
         "arg": "^2.0.0",
         "blob-stream": "^0.1.3",
