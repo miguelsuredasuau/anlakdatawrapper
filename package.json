@@ -27,7 +27,7 @@
     "devDependencies": {
         "@datawrapper/blocks": "^0.13.0",
         "@datawrapper/chart-core": "^8.13.1",
-        "@datawrapper/controls": "^2.19.2",
+        "@datawrapper/controls": "^2.19.5",
         "@datawrapper/shared": "^0.26.0",
         "@rollup/plugin-alias": "^3.1.1",
         "@rollup/plugin-buble": "^0.21.3",
