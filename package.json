@@ -61,13 +61,14 @@
         "rollup-plugin-jscc": "^1.0.0",
         "rollup-plugin-node-resolve": "^4.0.0",
         "rollup-plugin-svelte": "^4.3.2",
-        "serve": "^10.1.2"
+        "serve": "^10.1.2",
+        "svelte2": "npm:svelte@^2.16.1",
+        "@datawrapper/chart-core": "^8.13.1"
     },
     "dependencies": {
         "@datawrapper/blocks": "^0.8.0",
-        "@datawrapper/chart-core": "^8.11.1",
         "@datawrapper/controls": "^2.19.4",
-        "@datawrapper/shared": "^0.25.4",
+        "@datawrapper/shared": "^0.26.0",
         "@turf/area": "^6.0.1",
         "@turf/bbox": "^6.0.1",
         "@turf/bbox-clip": "^6.0.3",
@@ -105,7 +106,6 @@
         "rollup-plugin-node-builtins": "^2.1.2",
         "rollup-plugin-string": "^2.0.2",
         "rollup-plugin-terser": "^4.0.4",
-        "svelte": "^2.16.1",
         "svelte-upgrade": "^1.0.14",
         "svg-path-bounds": "^1.0.1",
         "topojson-client": "^3.0.0",
