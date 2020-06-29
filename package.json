@@ -54,7 +54,8 @@
         "d3-jetpack": "^2.0.20",
         "d3-scale": "^3.0.0",
         "d3-selection": "1.4.0",
-        "lodash": "^4.17.15"
+        "lodash": "^4.17.15",
+        "lodash.countby": "^4.6.0"
     },
     "devDependencies": {
         "@babel/core": "~7.4.5",
