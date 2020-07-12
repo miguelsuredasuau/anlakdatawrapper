@@ -36,8 +36,6 @@
     },
     "dependencies": {
         "@datawrapper/shared": "^0.26.1",
-        "@hapi/boom": "^9.1.0",
-        "@hapi/joi": "^17.1.1",
         "aws-sdk": "^2.706.0",
         "d3-queue": "^3.0.7",
         "got": "^11.3.0"
