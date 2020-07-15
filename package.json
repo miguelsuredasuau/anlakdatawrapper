@@ -1,9 +1,4 @@
 {
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
     "lint-staged": {
         "linters": {
             "*.js": [
@@ -15,6 +10,11 @@
         "ignore": [
             "**/static/*"
         ]
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
     },
     "scripts": {
         "format": "prettier 'src/**/*.js' --write",
