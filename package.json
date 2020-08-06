@@ -1,11 +1,11 @@
 {
-    "name": "@datawrapper/plugin-screenshots",
+    "name": "@datawrapper/plugin-image-publishing",
     "version": "1.0.0",
     "description": "",
     "keywords": [],
-    "homepage": "https://github.com/datawrapper/plugin-screenshots#readme",
+    "homepage": "https://github.com/datawrapper/plugin-image-publishing#readme",
     "bugs": {
-        "url": "https://github.com/datawrapper/plugin-screenshots/issues"
+        "url": "https://github.com/datawrapper/plugin-image-publishing/issues"
     },
     "scripts": {
         "clean:static": "rm static/*.map",
@@ -17,7 +17,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/datawrapper/plugin-screenshots.git"
+        "url": "git+https://github.com/datawrapper/plugin-image-publishing.git"
     },
     "dependencies": {
         "aws-sdk": "2.717.0",
