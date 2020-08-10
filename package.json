@@ -1,0 +1,29 @@
+{
+    "name": "svelte2",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "rollup -c",
+        "dev": "rollup -cw"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@babel/core": "^7.11.1",
+        "@babel/preset-env": "^7.11.0",
+        "@datawrapper/controls": "^2.21.2",
+        "@datawrapper/shared": "^0.26.2",
+        "@rollup/plugin-commonjs": "^14.0.0",
+        "@rollup/plugin-json": "^4.1.0",
+        "@rollup/plugin-node-resolve": "^8.4.0",
+        "babel-plugin-transform-async-to-promises": "^0.8.15",
+        "rollup": "^2.23.1",
+        "rollup-plugin-babel": "^4.4.0",
+        "rollup-plugin-svelte": "^5.2.3",
+        "rollup-plugin-terser": "^7.0.0",
+        "svelte": "^2.16.1"
+    }
+}
