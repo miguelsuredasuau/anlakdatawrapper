@@ -1,0 +1,17 @@
+{
+  "name": "@datawrapper/scaffold",
+  "version": "1.0.0",
+  "description": "Quick-start tempates for various Datawrapper related code setups",
+  "main": "index.js",
+  "bin": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/datawrapper/scaffold.git"
+  },
+  "author": "Datawrapper GmbH",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/datawrapper/scaffold/issues"
+  },
+  "homepage": "https://github.com/datawrapper/scaffold#readme"
+}
