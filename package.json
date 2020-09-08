@@ -23,8 +23,7 @@
         "d3-zoom": "^1.8.3",
         "got": "^10.7.0",
         "numeral": "^2.0.6",
-        "topojson": "^3.0.2",
-        "underscore-es": "^1.9.8"
+        "topojson": "^3.0.2"
     },
     "devDependencies": {
         "@datawrapper/blocks": "^0.14.3",
@@ -60,7 +59,7 @@
         "svelte2": "npm:svelte@^2.16.1",
         "topojson-client": "^3.0.0",
         "topojson-simplify": "^3.0.3",
-        "underscore": "^1.9.1"
+        "underscore": "^1.11.0"
     },
     "husky": {
         "hooks": {
