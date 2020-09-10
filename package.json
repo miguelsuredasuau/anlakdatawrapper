@@ -82,6 +82,36 @@
             "static/*"
         ]
     },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ],
+            "@tivac/svelte/property-ordering": "off",
+            "@tivac/svelte/onupdate": "off"
+        },
+        "extends": [
+            "plugin:@tivac/svelte/svelte"
+        ],
+        "plugins": [
+            "html",
+            "@tivac/svelte"
+        ]
+    },
     "prettier": {
         "arrowParens": "avoid",
         "printWidth": 100,
