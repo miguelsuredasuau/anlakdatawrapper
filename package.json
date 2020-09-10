@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/blocks",
-    "version": "0.14.4",
+    "version": "0.14.5",
     "description": "Collection of charting primitives used and developed by Datawrapper.",
     "keywords": [
         "visualisation",
@@ -46,7 +46,7 @@
         "url": "git+https://github.com/datawrapper/blocks.git"
     },
     "dependencies": {
-        "@datawrapper/shared": "^0.15.0",
+        "@datawrapper/shared": "^0.27.4",
         "budu": "1.0.0",
         "d3-array": "^2.3.1",
         "d3-color": "^1.2.3",
