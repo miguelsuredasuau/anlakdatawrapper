@@ -13,5 +13,10 @@
   "bugs": {
     "url": "https://github.com/datawrapper/scaffold/issues"
   },
-  "homepage": "https://github.com/datawrapper/scaffold#readme"
+  "homepage": "https://github.com/datawrapper/scaffold#readme",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "compare-versions": "^3.6.0",
+    "readline-promise": "^1.0.4"
+  }
 }
