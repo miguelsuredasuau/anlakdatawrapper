@@ -4,8 +4,8 @@
     "description": "",
     "main": "api.js",
     "scripts": {
-        "format": "prettier '**/*.js' --write",
-        "lint": "prettier --check '**/*.js' && healthier '**/*.js'",
+        "format": "prettier 'src/**/*.js' --write",
+        "lint": "prettier --check 'src/**/*.js' && healthier 'src/**/*.js'",
         "build": "rollup -c",
         "dev": "rollup -cw"
     },
@@ -13,9 +13,10 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@datawrapper/shared": "0.25.1",
+        "@datawrapper/shared": "^0.27.6",
         "archiver": "4.0.1",
-        "got": "^11.1.0"
+        "got": "^11.1.0",
+        "svelte": "^2.16.1"
     },
     "devDependencies": {
         "downloadjs": "^1.4.7",
@@ -32,7 +33,7 @@
         "rollup-plugin-uglify": "^6.0.4"
     },
     "lint-staged": {
-        "*.js": [
+        "src/**/*.js": [
             "prettier --write",
             "healthier"
         ]
