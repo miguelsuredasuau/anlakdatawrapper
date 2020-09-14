@@ -26,7 +26,7 @@
         "topojson": "^3.0.2"
     },
     "devDependencies": {
-        "@datawrapper/blocks": "^0.14.6",
+        "@datawrapper/blocks": "^0.14.7",
         "@datawrapper/chart-core": "^8.18.8",
         "@datawrapper/controls": "^2.26.9",
         "@datawrapper/shared": "^0.27.6",
