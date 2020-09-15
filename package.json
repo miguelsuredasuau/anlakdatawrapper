@@ -78,7 +78,7 @@
     },
     "prettier": {
         "arrowParens": "avoid",
-        "printWidth": 130,
+        "printWidth": 100,
         "semi": true,
         "singleQuote": true,
         "tabWidth": 4,
