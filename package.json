@@ -1,32 +1,49 @@
 {
-    "lint-staged": {
-        "linters": {
-            "*.js": [
-                "prettier --write",
-                "healthier",
-                "git add"
-            ]
-        },
-        "ignore": [
-            "**/static/*"
-        ]
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
+    "name": "simple-maps",
+    "version": "0.4.2",
     "scripts": {
         "format": "prettier 'src/**/*.js' --write",
-        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "lint": "prettier --check 'src/**/*.js' && healthier 'src/**/*.{js,html}'",
         "build": "rollup -c",
         "dev": "rollup -c -w"
     },
-    "prettier": {
-        "tabWidth": 4,
-        "semi": true,
-        "printWidth": 100,
-        "singleQuote": true
+    "dependencies": {
+        "@datawrapper/controls": "^2.26.12",
+        "@datawrapper/shared": "^0.27.6",
+        "d3-geo": "^1.10.0",
+        "d3-jetpack": "^2.0.16",
+        "d3-selection": "^1.3.0",
+        "json-size": "^1.0.0",
+        "topojson": "^3.0.2",
+        "underscore-es": "^1.9.8"
+    },
+    "devDependencies": {
+        "@tivac/eslint-plugin-svelte": "^1.3.0",
+        "@babel/core": "^7.10.0",
+        "@babel/plugin-transform-runtime": "^7.10.0",
+        "@babel/preset-env": "^7.8.4",
+        "@babel/runtime": "^7.10.0",
+        "@rollup/plugin-babel": "^5.0.2",
+        "babel-eslint": "^10.0.1",
+        "babel-plugin-transform-async-to-promises": "^0.8.15",
+        "eslint": "^6.6.0",
+        "eslint-config-standard": "^14.1.0",
+        "eslint-plugin-html": "^6.0.0",
+        "eslint-plugin-standard": "^4.0.1",
+        "healthier": "^2.0.0",
+        "husky": "^2.4.0",
+        "lint-staged": "^8.2.0",
+        "node-extend": "^0.2.0",
+        "node.extend": "^2.0.0",
+        "prettier": "^1.16.4",
+        "rollup": "^2.7.2",
+        "rollup-plugin-commonjs": "^10.1.0",
+        "rollup-plugin-json": "^4.0.0",
+        "rollup-plugin-node-resolve": "^5.2.0",
+        "rollup-plugin-svelte": "^5.2.1",
+        "rollup-plugin-terser": "^5.2.0",
+        "svelte": "^2.16.1",
+        "svelte-extras": "^2.0.2"
     },
     "eslintConfig": {
         "parser": "babel-eslint",
@@ -46,42 +63,42 @@
                     "ignoreDestructuring": true,
                     "properties": "never"
                 }
+            ],
+            "no-unused-vars": "warn",
+            "@tivac/svelte/property-ordering": "off",
+            "@tivac/svelte/onupdate": "off"
+        },
+        "extends": [
+            "plugin:@tivac/svelte/svelte"
+        ],
+        "plugins": [
+            "html",
+            "@tivac/svelte"
+        ]
+    },
+    "prettier": {
+        "arrowParens": "avoid",
+        "printWidth": 130,
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "none"
+    },
+    "lint-staged": {
+        "linters": {
+            "*.js": [
+                "prettier --write",
+                "healthier",
+                "git add"
             ]
+        },
+        "ignore": [
+            "**/static/*"
+        ]
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
         }
-    },
-    "name": "simple-maps",
-    "version": "0.4.2",
-    "devDependencies": {
-        "@babel/core": "^7.10.0",
-        "@babel/plugin-transform-runtime": "^7.10.0",
-        "@babel/preset-env": "^7.8.4",
-        "@rollup/plugin-babel": "^5.0.2",
-        "babel-plugin-transform-async-to-promises": "^0.8.15",
-        "babel-eslint": "^10.0.1",
-        "healthier": "^2.0.0",
-        "husky": "^2.4.0",
-        "lint-staged": "^8.2.0",
-        "node-extend": "^0.2.0",
-        "node.extend": "^2.0.0",
-        "prettier": "^1.16.4",
-        "rollup": "^2.7.2",
-        "rollup-plugin-terser": "^5.2.0",
-        "rollup-plugin-commonjs": "^10.1.0",
-        "rollup-plugin-json": "^4.0.0",
-        "rollup-plugin-node-resolve": "^5.2.0",
-        "rollup-plugin-svelte": "^5.2.1",
-        "svelte": "^2.16.1",
-        "@babel/runtime": "^7.10.0",
-        "svelte-extras": "^2.0.2"
-    },
-    "dependencies": {
-        "@datawrapper/controls": "^2.26.12",
-        "@datawrapper/shared": "^0.27.6",
-        "d3-geo": "^1.10.0",
-        "d3-jetpack": "^2.0.16",
-        "d3-selection": "^1.3.0",
-        "json-size": "^1.0.0",
-        "topojson": "^3.0.2",
-        "underscore-es": "^1.9.8"
     }
 }
