@@ -76,7 +76,7 @@
     },
     "dependencies": {
         "@datawrapper/controls": "^2.22.0",
-        "@datawrapper/shared": "^0.26.1",
+        "@datawrapper/shared": "^0.27.6",
         "d3-geo": "^1.10.0",
         "d3-jetpack": "^2.0.16",
         "d3-selection": "^1.3.0",
