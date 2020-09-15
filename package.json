@@ -75,7 +75,7 @@
         "svelte-extras": "^2.0.2"
     },
     "dependencies": {
-        "@datawrapper/controls": "^2.22.0",
+        "@datawrapper/controls": "^2.26.12",
         "@datawrapper/shared": "^0.27.6",
         "d3-geo": "^1.10.0",
         "d3-jetpack": "^2.0.16",
