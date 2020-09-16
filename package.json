@@ -18,7 +18,7 @@
     },
     "homepage": "https://github.com/datawrapper/render-client#readme",
     "dependencies": {
-        "@datawrapper/orm": "^3.17.2",
+        "@datawrapper/orm": "^3.18.5",
         "aws-sdk": "^2.745.0",
         "gm": "^1.23.1",
         "got": "^11.6.0",
