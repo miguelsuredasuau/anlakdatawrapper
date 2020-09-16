@@ -4,6 +4,9 @@
     "description": "",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "npm run build:v2 && npm run build:v3",
+        "dev:v2": "cd src/v2 && npm run dev",
+        "build:v2": "cd src/v2 && npm run build",
         "dev:v3": "cd src/v3 && npm run dev",
         "build:v3": "cd src/v3 && npm run build"
     },
