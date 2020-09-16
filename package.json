@@ -22,7 +22,7 @@
         "url": "git+https://github.com/datawrapper/datawrapper-crons.git"
     },
     "dependencies": {
-        "@datawrapper/orm": "^3.11.0",
+        "@datawrapper/orm": "^3.18.5",
         "chalk": "^2.4.2",
         "d3-array": "^2.0.3",
         "lodash.shuffle": "^4.2.0",
@@ -39,6 +39,7 @@
         "doc": "docs"
     },
     "devDependencies": {
+        "@datawrapper/shared": "^0.27.6",
         "ava": "^3.5.0",
         "babel-eslint": "^10.0.1",
         "dotenv": "^8.2.0",
