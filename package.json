@@ -12,8 +12,8 @@
         "build:src": "cd src && npm run build",
         "build:settings": "cd src/team-settings && npm run build",
         "build": "npm run build:src && npm run build:settings && npm run clean:static",
-        "lint": "healthier '**/*.{js,html}' && prettier --check '**/*.{js,html}'",
-        "format": "prettier '**/*.{js,html}' --write"
+        "lint": "healthier '**/*.{js,html}' && prettier --check '**/*.js'",
+        "format": "prettier '**/*.js' --write"
     },
     "repository": {
         "type": "git",
@@ -25,15 +25,15 @@
     },
     "devDependencies": {
         "@tivac/eslint-plugin-svelte": "1.3.0",
-        "eslint-plugin-html": "6.0.2",
+        "eslint-plugin-html": "^6.1.0",
         "healthier": "4.0.0",
         "husky": "4.2.5",
         "lint-staged": "10.2.11",
-        "prettier": "2.0.5"
+        "prettier": "^2.1.1"
     },
     "prettier": {
         "arrowParens": "avoid",
-        "printWidth": 130,
+        "printWidth": 100,
         "semi": true,
         "singleQuote": true,
         "tabWidth": 4,
