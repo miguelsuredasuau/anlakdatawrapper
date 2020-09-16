@@ -16,7 +16,7 @@
     "dev": "rollup -c -w"
   },
   "dependencies": {
-    "@datawrapper/shared": "^0.6.0",
+    "@datawrapper/shared": "^0.27.6",
     "luxon": "^0.0.22",
     "moment": "^2.19.4",
     "node-extend": "^0.2.0",
