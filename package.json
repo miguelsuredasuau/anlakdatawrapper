@@ -21,7 +21,7 @@
     },
     "author": "Datawrapper GmbH",
     "dependencies": {
-        "@datawrapper/orm": "^3.8.2",
+        "@datawrapper/orm": "^3.18.5",
         "aws-sdk": "^2.407.0",
         "body-parser": "^1.18.3",
         "chalk": "^2.4.2",
