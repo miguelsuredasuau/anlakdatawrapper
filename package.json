@@ -18,7 +18,7 @@
         "dev": "rollup -cw",
         "build": "rollup -c",
         "format": "prettier '*.js' 'src/**/*.js' --write",
-        "lint": "prettier --check '*.js' 'src/**/*.{js,html}' && healthier '*.js' 'src/**/*.{js,html}'",
+        "lint": "healthier '*.js' 'src/**/*.{js,html}' && prettier --check '*.js' 'src/**/*.js'",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
@@ -31,8 +31,16 @@
         "aws-sdk": "^2.572.0"
     },
     "devDependencies": {
-        "@datawrapper/controls": "^2.16.3",
+        "@datawrapper/controls": "^2.26.13",
+        "@tivac/eslint-plugin-svelte": "^1.2.1",
         "babel-eslint": "^10.0.3",
+        "eslint": "^5.16.0",
+        "eslint-config-standard": "^12.0.0",
+        "eslint-plugin-html": "^6.0.0",
+        "eslint-plugin-import": "^2.18.0",
+        "eslint-plugin-node": "^9.1.0",
+        "eslint-plugin-promise": "^4.1.1",
+        "eslint-plugin-standard": "^4.0.0",
         "healthier": "^3.2.0",
         "husky": "^3.0.9",
         "lint-staged": "^9.4.3",
@@ -60,23 +68,26 @@
     "eslintConfig": {
         "parser": "babel-eslint",
         "rules": {
-            "no-console": [
-                "error",
-                {
-                    "allow": [
-                        "warn",
-                        "error"
-                    ]
-                }
-            ],
+            "no-console": "warn",
             "camelcase": [
                 "warn",
                 {
                     "ignoreDestructuring": true,
                     "properties": "never"
                 }
-            ]
-        }
+            ],
+            "no-undef": "warn",
+            "no-unused-vars": "warn",
+            "@tivac/svelte/property-ordering": "off",
+            "@tivac/svelte/onupdate": "off"
+        },
+        "extends": [
+            "plugin:@tivac/svelte/svelte"
+        ],
+        "plugins": [
+            "html",
+            "@tivac/svelte"
+        ]
     },
     "husky": {
         "hooks": {
