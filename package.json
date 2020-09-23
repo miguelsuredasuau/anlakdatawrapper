@@ -7,8 +7,13 @@
     "author": "",
     "scripts": {
         "format": "prettier 'src/**/*.js' --write",
-        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "lint": "healthier 'src/**/*.{js,html}' && prettier --check 'src/**/*.js'",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "npm run build:v2 && npm run build:v3",
+        "dev:v2": "cd src/v2 && npm run dev",
+        "build:v2": "cd src/v2 && npm run build",
+        "dev:v3": "cd src/v3 && npm run dev",
+        "build:v3": "cd src/v3 && npm run build"
     },
     "repository": {
         "type": "git",
@@ -18,11 +23,55 @@
         "lodash": "^4.17.15"
     },
     "devDependencies": {
+        "@tivac/eslint-plugin-svelte": "^1.3.0",
         "babel-eslint": "^10.0.1",
-        "healthier": "^2.0.0",
+        "eslint": "^6.6.0",
+        "eslint-config-standard": "^14.1.0",
+        "eslint-plugin-html": "^6.0.0",
+        "eslint-plugin-standard": "^4.0.1",
+        "healthier": "^3.2.0",
         "husky": "^2.3.0",
         "lint-staged": "^8.1.7",
         "prettier": "^1.17.1"
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ],
+            "no-unused-vars": "warn",
+            "@tivac/svelte/property-ordering": "off",
+            "@tivac/svelte/onupdate": "off"
+        },
+        "extends": [
+            "plugin:@tivac/svelte/svelte"
+        ],
+        "plugins": [
+            "html",
+            "@tivac/svelte"
+        ]
+    },
+    "prettier": {
+        "arrowParens": "avoid",
+        "printWidth": 100,
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "none"
     },
     "husky": {
         "hooks": {
@@ -45,32 +94,5 @@
         "ignore": [
             "static/**/*.js"
         ]
-    },
-    "prettier": {
-        "tabWidth": 4,
-        "semi": true,
-        "printWidth": 100,
-        "singleQuote": true
-    },
-    "eslintConfig": {
-        "parser": "babel-eslint",
-        "rules": {
-            "no-console": [
-                "error",
-                {
-                    "allow": [
-                        "warn",
-                        "error"
-                    ]
-                }
-            ],
-            "camelcase": [
-                "warn",
-                {
-                    "ignoreDestructuring": true,
-                    "properties": "never"
-                }
-            ]
-        }
     }
 }
