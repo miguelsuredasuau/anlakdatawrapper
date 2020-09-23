@@ -2,8 +2,8 @@
     "name": "d3-pies",
     "version": "1.2.4",
     "scripts": {
-        "format": "prettier 'src/**/*.{js,html}' --write",
-        "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
+        "format": "prettier 'src/**/*.js' --write",
+        "lint": "prettier --check 'src/**/*.js' && healthier 'src/**/*.{js,html}'",
         "build": "rollup -c",
         "dev": "rollup -c -w",
         "watch-css": "chokidar ./src/styles/d3-pies.src.css -c \"npm run process-css\"",
@@ -36,10 +36,10 @@
         "svelte": "^2.16.1"
     },
     "dependencies": {
-        "@datawrapper/blocks": "^0.11.3",
-        "@datawrapper/chart-core": "^8.16.3",
-        "@datawrapper/controls": "^2.23.2",
-        "@datawrapper/shared": "^0.24.0",
+        "@datawrapper/blocks": "^0.14.8",
+        "@datawrapper/chart-core": "^8.18.8",
+        "@datawrapper/controls": "^2.26.13",
+        "@datawrapper/shared": "^0.27.6",
         "d3-color": "^1.2.3",
         "d3-jetpack": "^2.0.20",
         "d3-selection": "^1.4.0",
