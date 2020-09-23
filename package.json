@@ -31,6 +31,6 @@
   },
   "homepage": "https://github.com/datawrapper/plugin-user-dashboard#readme",
   "dependencies": {
-    "@datawrapper/shared": "^0.19.3"
+    "@datawrapper/shared": "^0.27.6"
   }
 }
