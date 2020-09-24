@@ -6,7 +6,7 @@
         "dev": "rollup -c -w"
     },
     "dependencies": {
-        "@datawrapper/raphael-chart": "^1.0.0",
+        "@datawrapper/raphael-chart": "^1.0.2",
         "chroma-js": "^2.1.0",
         "d3-scale": "^2.2.2"
     },
