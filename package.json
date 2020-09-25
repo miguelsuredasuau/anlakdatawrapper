@@ -1,8 +1,8 @@
 {
     "name": "@datawrapper/plugin-subscriptions",
     "scripts": {
-        "format": "prettier 'src/{v2,v3}/**/*.{js,html}' --write",
-        "lint": "prettier --check 'src/{v2,v3}/**/*.{js,html}' && healthier 'src/{v2,v3}/**/*.{js,html}'",
+        "format": "prettier 'src/{v2,v3}/**/*.js' --write",
+        "lint": "healthier 'src/{v2,v3}/**/*.{js,html}' && prettier --check 'src/{v2,v3}/**/*.js'",
         "build:v2": "cd src/v2 && npm run build",
         "dev:v2": "cd src/v2 && npm run dev",
         "build:v3": "cd src/v3 && npm run build",
@@ -21,28 +21,15 @@
     },
     "devDependencies": {
         "@tivac/eslint-plugin-svelte": "^1.3.0",
-        "babel-eslint": "^10.1.0",
+        "babel-eslint": "^10.0.1",
+        "eslint": "^6.6.0",
+        "eslint-config-standard": "^14.1.0",
         "eslint-plugin-html": "^6.0.0",
-        "healthier": "^3.3.0",
+        "eslint-plugin-standard": "^4.0.1",
+        "healthier": "^3.2.0",
         "husky": "^4.2.3",
         "lint-staged": "^10.0.8",
         "prettier": "^1.19.1"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "*.js": [
-            "git add"
-        ]
-    },
-    "prettier": {
-        "tabWidth": 4,
-        "semi": true,
-        "printWidth": 100,
-        "singleQuote": true
     },
     "eslintConfig": {
         "parser": "babel-eslint",
@@ -63,7 +50,9 @@
                     "properties": "never"
                 }
             ],
-            "@tivac/svelte/property-ordering": "off"
+            "no-unused-vars": "warn",
+            "@tivac/svelte/property-ordering": "off",
+            "@tivac/svelte/onupdate": "off"
         },
         "extends": [
             "plugin:@tivac/svelte/svelte"
@@ -71,6 +60,24 @@
         "plugins": [
             "html",
             "@tivac/svelte"
+        ]
+    },
+    "prettier": {
+        "arrowParens": "avoid",
+        "printWidth": 100,
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "none"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.js": [
+            "git add"
         ]
     }
 }
