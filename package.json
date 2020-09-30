@@ -38,7 +38,7 @@
         "@datawrapper/shared": "^0.27.6",
         "aws-sdk": "^2.706.0",
         "d3-queue": "^3.0.7",
-        "got": "^11.3.0",
+        "got": "^11.7.0",
         "lodash": "^4.17.19"
     },
     "lint-staged": {
