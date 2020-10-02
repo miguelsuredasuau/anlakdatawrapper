@@ -1,0 +1,14 @@
+{
+  "name": "basemaps",
+  "version": "1.0.0",
+  "description": "we now separated the _plugin_ `basemaps` (github.com/datawrapper/plugin-basemaps) from the repository `basemaps` (github.com/datawrapper/basemaps).",
+  "main": "api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "got": "^11.7.0"
+  }
+}
