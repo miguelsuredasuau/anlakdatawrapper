@@ -35,7 +35,7 @@
         "@babel/runtime": "^7.10.0"
     },
     "dependencies": {
-        "@datawrapper/shared": "^0.27.6",
+        "@datawrapper/shared": "^0.27.7",
         "aws-sdk": "^2.706.0",
         "d3-queue": "^3.0.7",
         "got": "^11.7.0",
