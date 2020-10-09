@@ -19,7 +19,6 @@
         "build": "make build",
         "postinstall": "cd src/render && npm install && cd ../controls && npm install"
     },
-    "dependencies": {},
     "devDependencies": {
         "@datawrapper/shared": "^0.27.6",
         "@tivac/eslint-plugin-svelte": "^1.2.1",
