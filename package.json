@@ -1,38 +1,13 @@
 {
-    "name": "external-data",
-    "version": "1.0.0",
-    "description": "",
-    "keywords": [],
-    "license": "ISC",
-    "author": "",
-    "main": "crons.js",
+    "name": "@datawrapper/plugin-external-data",
     "scripts": {
-        "build": "rollup -c",
-        "dev": "rollup -c -w"
-    },
-    "devDependencies": {
-        "@babel/core": "^7.10.0",
-        "@babel/plugin-transform-runtime": "^7.10.0",
-        "@babel/preset-env": "^7.8.4",
-        "@rollup/plugin-babel": "^5.0.2",
-        "babel-plugin-transform-async-to-promises": "^0.8.15",
-        "@tivac/eslint-plugin-svelte": "^1.3.0",
-        "babel-eslint": "^10.0.1",
-        "eslint-plugin-html": "^6.0.2",
-        "healthier": "^2.0.0",
-        "husky": "^2.4.0",
-        "less": "^3.11.2",
-        "lint-staged": "^8.2.0",
-        "lodash-es": "^4.17.15",
-        "prettier": "^1.17.1",
-        "rollup": "^2.7.2",
-        "rollup-plugin-terser": "^5.2.0",
-        "rollup-plugin-commonjs": "^10.1.0",
-        "rollup-plugin-json": "^4.0.0",
-        "rollup-plugin-node-resolve": "^5.2.0",
-        "rollup-plugin-svelte": "^5.2.1",
-        "svelte": "^2.16.1",
-        "@babel/runtime": "^7.10.0"
+        "format": "prettier 'src/{v2,v3}/**/*.{js,html,svelte}' --write",
+        "lint": "healthier 'src/{v2,v3}/**/*.{js,html}' && prettier --check 'src/{v2,v3}/**/*.{js,html,svelte}'",
+        "build:v2": "cd src/v2 && npm run build",
+        "dev:v2": "cd src/v2 && npm run dev",
+        "build:v3": "cd src/v3 && npm run build",
+        "dev:v3": "cd src/v3 && npm run dev",
+        "build": "npm run build:v2 && npm run build:v3"
     },
     "dependencies": {
         "@datawrapper/shared": "^0.27.7",
@@ -41,11 +16,18 @@
         "got": "^11.7.0",
         "lodash": "^4.17.19"
     },
-    "lint-staged": {
-        "*.js": [
-            "prettier --write",
-            "healthier"
-        ]
+    "devDependencies": {
+        "@tivac/eslint-plugin-svelte": "^1.3.0",
+        "babel-eslint": "^10.0.1",
+        "eslint": "^6.6.0",
+        "eslint-plugin-html": "^6.0.2",
+        "eslint-plugin-svelte3": "^2.7.3",
+        "healthier": "^3.2.0",
+        "husky": "^2.4.0",
+        "lint-staged": "^8.2.0",
+        "prettier": "^1.19.1",
+        "prettier-plugin-svelte": "^1.4.1",
+        "svelte": "^3.29.0"
     },
     "eslintConfig": {
         "parser": "babel-eslint",
@@ -65,25 +47,44 @@
                     "ignoreDestructuring": true,
                     "properties": "never"
                 }
-            ]
+            ],
+            "@tivac/svelte/property-ordering": "off",
+            "@tivac/svelte/onupdate": "off"
+        },
+        "parserOptions": {
+            "ecmaVersion": 2019,
+            "sourceType": "module"
+        },
+        "env": {
+            "es6": true,
+            "browser": true
         },
         "extends": [
             "plugin:@tivac/svelte/svelte"
         ],
         "plugins": [
             "html",
-            "@tivac/svelte"
+            "@tivac/svelte",
+            "svelte3"
         ]
     },
     "prettier": {
-        "tabWidth": 4,
-        "semi": true,
+        "arrowParens": "avoid",
         "printWidth": 100,
-        "singleQuote": true
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "none"
     },
     "husky": {
         "hooks": {
             "pre-commit": "lint-staged"
         }
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier"
+        ]
     }
 }
