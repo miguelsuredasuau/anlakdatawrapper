@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/plugin-tables",
-    "version": "2.0.4",
+    "version": "2.1.0",
     "description": "One table to rule them all, powered by Svelte",
     "keywords": [],
     "license": "ISC",
@@ -73,7 +73,9 @@
                     "ignoreDestructuring": true,
                     "properties": "never"
                 }
-            ]
+            ],
+            "@tivac/svelte/property-ordering": "off",
+            "@tivac/svelte/onupdate": "off"
         },
         "extends": [
             "plugin:@tivac/svelte/svelte"
@@ -82,5 +84,8 @@
             "html",
             "@tivac/svelte"
         ]
+    },
+    "dependencies": {
+        "@datawrapper/blocks": "^0.14.22"
     }
 }
