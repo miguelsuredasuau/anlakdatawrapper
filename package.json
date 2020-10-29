@@ -10,6 +10,7 @@
         "test": "ava",
         "test:watch": "ava -w",
         "test:coverage": "nyc --reporter=html --reporter=text ava",
+        "test:render": "ava --config render-tests.config.js",
         "lint": "healthier 'api.js src/**/*.{js,html}' && prettier --check api.js  'src/**/*.js'",
         "format": "prettier --write api.js  'src/**/*.js'"
     },
@@ -63,6 +64,7 @@
         "jquery": "1.11.0",
         "jsdom": "^16.2.1",
         "lint-staged": "^8.2.1",
+        "node-fetch": "^2.6.0",
         "nodemon": "^1.19.4",
         "nyc": "^15.0.0",
         "pdfkit": "^0.11.0",
@@ -81,7 +83,8 @@
     },
     "ava": {
         "files": [
-            "!./src/tests/helpers/**/*"
+            "!./src/tests/helpers/**/*",
+            "!./tests/**/*"
         ],
         "babel": {
             "compileAsTests": [
