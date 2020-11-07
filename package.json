@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/blocks",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "description": "Collection of charting primitives used and developed by Datawrapper.",
     "keywords": [
         "visualisation",
