@@ -46,6 +46,7 @@
         "d3-array": "^1.2.4",
         "js-cookie": "^2.2.1",
         "lodash-es": "^4.17.15",
+        "numeral": "^2.0.6",
         "sinon": "^7.3.2",
         "underscore": "^1.9.1"
     },
