@@ -41,7 +41,7 @@
         "url": "git+https://github.com/datawrapper/blocks.git"
     },
     "dependencies": {
-        "@datawrapper/shared": "^0.28.1",
+        "@datawrapper/shared": "^0.28.2",
         "@emotion/css": "^11.0.0",
         "budu": "1.0.0",
         "chroma-js": "^2.1.0",
