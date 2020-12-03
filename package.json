@@ -34,13 +34,13 @@
         "eslint-plugin-html": "^5.0.5",
         "eslint-plugin-svelte3": "^1.2.3",
         "healthier": "^2.0.0",
-        "husky": "^2.7.0",
+        "husky": "^4.3.0",
         "lint-staged": "^8.2.1",
         "prettier": "^1.19.1"
     },
     "husky": {
         "hooks": {
-            "pre-commit": "lint-staged && npm run format && npm run lint && git add static/*"
+            "pre-commit": "lint-staged && npm run format && npm run lint && git add static/* && git rev-parse HEAD > .githead && git add .githead"
         }
     },
     "lint-staged": {
