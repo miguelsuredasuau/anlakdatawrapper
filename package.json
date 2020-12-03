@@ -19,6 +19,14 @@
         "build": "make build",
         "postinstall": "cd src/render && npm install && cd ../controls && npm install"
     },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:datawrapper/plugin-tables.git"
+    },
+    "dependencies": {
+        "@datawrapper/block-color-legend": "^1.0.1",
+        "@datawrapper/block-color-scale": "^1.0.1"
+    },
     "devDependencies": {
         "@datawrapper/shared": "^0.27.6",
         "@tivac/eslint-plugin-svelte": "^1.2.1",
@@ -84,8 +92,5 @@
             "html",
             "@tivac/svelte"
         ]
-    },
-    "dependencies": {
-        "@datawrapper/blocks": "^0.14.22"
     }
 }
