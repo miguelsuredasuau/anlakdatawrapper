@@ -13,6 +13,7 @@
         "@hapi/boom": "^9.1.0",
         "@hapi/joi": "^17.1.1",
         "aws-sdk": "^2.689.0",
+        "fs-extra": "^9.0.1",
         "lodash": "^4.17.15"
     },
     "lint-staged": {
