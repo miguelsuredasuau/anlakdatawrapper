@@ -24,6 +24,7 @@
         "d3-zoom": "^1.8.3",
         "geo-albers-usa-territories": "^0.1.0",
         "got": "^10.7.0",
+        "lodash": "^4.17.20",
         "numeral": "^2.0.6",
         "topojson": "^3.0.2"
     },
