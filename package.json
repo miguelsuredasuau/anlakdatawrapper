@@ -1,0 +1,24 @@
+{
+  "name": "@datawrapper/plugin-scoop",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datawrapper/plugin-scoop.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/datawrapper/plugin-scoop/issues"
+  },
+  "homepage": "https://github.com/datawrapper/plugin-scoop#readme",
+  "dependencies": {
+    "@datawrapper/shared": "^0.28.3",
+    "lodash": "^4.17.20"
+  }
+}
