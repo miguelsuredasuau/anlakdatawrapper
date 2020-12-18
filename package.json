@@ -70,17 +70,10 @@
         }
     },
     "lint-staged": {
-        "*.js": [
+        "*.{js,html}": [
             "prettier --write",
             "healthier",
             "git add"
-        ],
-        "extends": [
-            "plugin:@tivac/svelte/svelte"
-        ],
-        "plugins": [
-            "html",
-            "@tivac/svelte"
         ]
     },
     "prettier": {
@@ -116,7 +109,14 @@
                     "vars": "all"
                 }
             ]
-        }
+        },
+        "extends": [
+            "plugin:@tivac/svelte/svelte"
+        ],
+        "plugins": [
+            "html",
+            "@tivac/svelte"
+        ]
     },
     "ava": {
         "require": [
