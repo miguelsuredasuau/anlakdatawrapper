@@ -1,0 +1,32 @@
+{
+  "name": "@datawrapper/icons",
+  "version": "1.0.0",
+  "description": "Icons for Datawrapper",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -Rf build/* && svg-sprite --symbol --symbol-render-css --symbol-example --defs --defs-render-css --defs-example --dest=build src/icons/*.svg",
+    "preview": "serve build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datawrapper/icons.git"
+  },
+  "keywords": [
+    "icons"
+  ],
+  "author": "Datawrapper GmbH",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/datawrapper/icons/issues"
+  },
+  "homepage": "https://github.com/datawrapper/icons#readme",
+  "dependencies": {
+    "@twbs/svg-sprite": "^1.6.0",
+    "glob": "^7.1.6"
+  },
+  "devDependencies": {
+    "serve": "^11.3.2"
+  }
+}
