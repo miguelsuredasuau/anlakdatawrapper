@@ -24,7 +24,7 @@
         "url": "git+https://github.com/datawrapper/plugin-chart-data-s3.git"
     },
     "dependencies": {
-        "aws-sdk": "2.441.0"
+        "aws-sdk": "^2.828.0"
     },
     "peerDependencies": {
         "@datawrapper/api": "2.x"
