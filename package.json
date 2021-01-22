@@ -9,7 +9,7 @@
     },
     "devDependencies": {
         "@datawrapper/chart-core": "^8.18.9",
-        "@datawrapper/controls": "^2.26.13",
+        "@datawrapper/controls": "^2.34.0",
         "@datawrapper/raphael-chart": "^1.0.0",
         "@datawrapper/shared": "^0.27.6",
         "@rollup/plugin-buble": "^0.21.3",
