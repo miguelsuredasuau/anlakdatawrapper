@@ -8,7 +8,7 @@
         "dev": "rollup -c -w"
     },
     "devDependencies": {
-        "@datawrapper/controls": "^2.30.0",
+        "@datawrapper/controls": "^2.34.0",
         "@rollup/plugin-buble": "^0.21.3",
         "@rollup/plugin-commonjs": "^14.0.0",
         "@rollup/plugin-json": "^4.1.0",
