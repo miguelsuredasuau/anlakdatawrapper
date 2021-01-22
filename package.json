@@ -28,7 +28,7 @@
         "@datawrapper/block-color-scale": "^1.0.1"
     },
     "devDependencies": {
-        "@datawrapper/shared": "^0.27.6",
+        "@datawrapper/shared": "^0.28.4",
         "@tivac/eslint-plugin-svelte": "^1.2.1",
         "babel-eslint": "^10.1.0",
         "eslint-plugin-html": "^5.0.5",
