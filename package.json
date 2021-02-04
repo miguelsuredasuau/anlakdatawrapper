@@ -11,8 +11,8 @@
         "test:watch": "ava -w",
         "test:coverage": "nyc --reporter=html --reporter=text ava",
         "test:render": "ava --config render-tests.config.js",
-        "lint": "healthier api.js 'src/**/*.{js,html}' && prettier --check api.js 'src/**/*.js'",
-        "format": "prettier --write api.js 'src/**/*.js'"
+        "lint": "healthier api.js 'src/**/*.{js,html}' && prettier --check api.js 'src/**/*.{js,html}'",
+        "format": "prettier --write api.js 'src/**/*.{js,html}'"
     },
     "dependencies": {
         "@datawrapper/controls": "^2.26.13",
