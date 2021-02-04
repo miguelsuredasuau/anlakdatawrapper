@@ -8,7 +8,7 @@
     "scripts": {
         "build": "rollup -c",
         "dev": "rollup -c -w",
-        "format": "prettier 'src/**/*.js' --write",
+        "format": "prettier 'src/**/*.{js,html}' --write",
         "lint": "prettier --check 'src/**/*.{js,html}' && healthier 'src/**/*.{js,html}'",
         "test": "ava",
         "test:watch": "ava --watch --verbose"
@@ -18,7 +18,7 @@
         "url": "git+https://github.com/datawrapper/plugin-admin-users.git"
     },
     "dependencies": {
-        "@datawrapper/controls": "^2.26.13",
+        "@datawrapper/controls": "^2.34.0",
         "@datawrapper/shared": "^0.27.6",
         "nanoid": "^3.1.12",
         "query-string": "^6.4.2",
@@ -50,7 +50,7 @@
         "svelte": "^2.16.1",
         "svelte-transitions": "^1.2.0",
         "tap-xunit": "^2.4.1",
-        "underscore-es": "^1.9.8"
+        "underscore": "^1.12.0"
     },
     "husky": {
         "hooks": {
