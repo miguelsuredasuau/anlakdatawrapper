@@ -24,7 +24,6 @@
     "scripts": {
         "lint": "lerna run lint",
         "format": "lerna run format",
-        "prepare": "lerna exec npm install",
         "prepublishOnly": "npm test",
         "test": "lerna run test",
         "test:watch": "lerna run test:watch --stream",
