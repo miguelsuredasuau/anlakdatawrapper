@@ -14,6 +14,7 @@
         "@ava/babel": "^1.0.1",
         "@datawrapper/block-annotations": "^1.0.2",
         "@datawrapper/block-xy-grid": "^1.1.5",
+        "@datawrapper/block-get-color": "^1.0.1",
         "@datawrapper/chart-core": "^8.21.5",
         "@datawrapper/controls": "^2.34.0",
         "@datawrapper/shared": "^0.28.5",
