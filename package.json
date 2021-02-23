@@ -10,12 +10,14 @@
         "test": "ava",
         "test:watch": "ava -w"
     },
+    "dependencies": {
+        "@datawrapper/blocks": "^2.0.4"
+    },
     "devDependencies": {
         "@babel/core": "^7.10.0",
         "@babel/plugin-transform-runtime": "^7.10.0",
         "@babel/preset-env": "^7.8.4",
         "@datawrapper/block-xy-grid": "^1.1.5",
-        "@datawrapper/blocks": "^2.0.4",
         "@datawrapper/controls": "^2.34.0",
         "@datawrapper/shared": "^0.28.2",
         "@rollup/plugin-alias": "^3.1.1",
