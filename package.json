@@ -55,7 +55,8 @@
         "postcss-loader": "~4.0.4",
         "postcss-preset-env": "~6.7.0",
         "prettier": "^2.2.0",
-        "stylelint": "~13.7.2"
+        "stylelint": "~13.7.2",
+        "stylelint-config-standard": "^20.0.0"
     },
     "prettier": {
         "arrowParens": "avoid",
@@ -104,7 +105,7 @@
             "healthier"
         ],
         "*.css": [
-            "stylelint --fix"
+            "stylelint --fix --allow-empty-input"
         ]
     },
     "browserslist": [
