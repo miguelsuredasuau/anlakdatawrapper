@@ -37,6 +37,7 @@
         "@datawrapper/block-color-scale": "^1.0.4",
         "@datawrapper/chart-core": "^8.21.0",
         "@datawrapper/controls": "^2.34.0",
+        "@datawrapper/eslint-config": "^0.1.0",
         "@datawrapper/shared": "^0.28.2",
         "@rollup/plugin-alias": "^3.1.1",
         "@rollup/plugin-babel": "^5.0.2",
@@ -44,7 +45,7 @@
         "@rollup/plugin-commonjs": "^15.0.0",
         "@rollup/plugin-json": "^4.1.0",
         "@rollup/plugin-node-resolve": "^9.0.0",
-        "@tivac/eslint-plugin-svelte": "^1.3.0",
+        "@tivac/eslint-plugin-svelte": "^2.0.0",
         "@types/babel__core": "^7.1.9",
         "ava": "^2.4.0",
         "babel-eslint": "^10.1.0",
@@ -53,13 +54,8 @@
         "d3-polygon": "^1.0.6",
         "d3-quadtree": "^1.0.7",
         "dayjs": "^1.8.13",
-        "eslint": "^5.16.0",
-        "eslint-config-standard": "^12.0.0",
-        "eslint-plugin-html": "^6.1.0",
-        "eslint-plugin-import": "^2.22.0",
-        "eslint-plugin-node": "^8.0.1",
-        "eslint-plugin-promise": "^4.2.1",
-        "eslint-plugin-standard": "^4.0.1",
+        "eslint": "^7.21.0",
+        "eslint-plugin-html": "^6.1.1",
         "healthier": "^4.0.0",
         "husky": "^1.3.1",
         "lint-staged": "^8.2.1",
@@ -83,7 +79,7 @@
     },
     "lint-staged": {
         "linters": {
-            "*.js": [
+            "*.{js,html}": [
                 "prettier --write",
                 "healthier",
                 "git add"
@@ -95,33 +91,18 @@
     },
     "eslintConfig": {
         "parser": "babel-eslint",
-        "rules": {
-            "no-console": [
-                "error",
-                {
-                    "allow": [
-                        "warn",
-                        "error"
-                    ]
-                }
-            ],
-            "camelcase": [
-                "warn",
-                {
-                    "ignoreDestructuring": true,
-                    "properties": "never"
-                }
-            ],
-            "@tivac/svelte/property-ordering": "off",
-            "@tivac/svelte/onupdate": "off"
-        },
         "extends": [
+            "@datawrapper/eslint-config/chart-plugin",
             "plugin:@tivac/svelte/svelte"
         ],
         "plugins": [
             "html",
             "@tivac/svelte"
-        ]
+        ],
+        "rules": {
+            "@tivac/svelte/property-ordering": "off",
+            "@tivac/svelte/onupdate": "off"
+        }
     },
     "prettier": {
         "arrowParens": "avoid",
