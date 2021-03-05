@@ -28,7 +28,8 @@
     "dependencies": {
         "@google-cloud/storage": "^4.7.0",
         "async": "^3.2.0",
-        "aws-sdk": "^2.572.0"
+        "aws-sdk": "^2.572.0",
+        "lodash": "^4.17.21"
     },
     "devDependencies": {
         "@datawrapper/controls": "^2.26.13",
