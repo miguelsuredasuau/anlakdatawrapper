@@ -17,7 +17,7 @@
         "@datawrapper/block-xy-grid": "^1.2.0",
         "@datawrapper/block-get-color": "^1.0.1",
         "@datawrapper/chart-core": "^8.23.6",
-        "@datawrapper/controls": "^2.34.5",
+        "@datawrapper/controls": "^2.34.6",
         "@datawrapper/shared": "^0.30.3",
         "@rollup/plugin-alias": "^3.1.0",
         "@rollup/plugin-buble": "^0.21.3",
