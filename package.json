@@ -30,7 +30,7 @@
         "eslint-plugin-html": "^6.0.0",
         "eslint-plugin-standard": "^4.0.1",
         "healthier": "^3.2.0",
-        "husky": "^2.3.0",
+        "husky": "^4.2.5",
         "lint-staged": "^8.1.7",
         "prettier": "^1.17.1"
     },
@@ -75,7 +75,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "lint-staged"
+            "pre-commit": "lint-staged && git rev-parse HEAD > .githead && git add .githead"
         }
     },
     "lint-staged": {
