@@ -72,7 +72,7 @@
     },
     "husky": {
         "hooks": {
-            "pre-commit": "lint-staged"
+            "pre-commit": "lint-staged && git rev-parse HEAD > .githead && git add .githead"
         }
     },
     "lint-staged": {
