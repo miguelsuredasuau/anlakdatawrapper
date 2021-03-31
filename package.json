@@ -22,5 +22,13 @@
     "homepage": "https://github.com/datawrapper/plugin-team-custom-fields#readme",
     "dependencies": {
         "lodash": "^4.17.15"
+    },
+    "devDependencies": {
+        "husky": "^4.2.5"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "git rev-parse HEAD > .githead && git add .githead"
+        }
     }
 }
