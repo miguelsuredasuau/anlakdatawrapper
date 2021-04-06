@@ -122,8 +122,7 @@
         "linters": {
             "*.{js,html}": [
                 "healthier",
-                "prettier --write",
-                "git add"
+                "prettier --write"
             ]
         },
         "ignore": [
