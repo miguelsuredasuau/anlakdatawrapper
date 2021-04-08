@@ -1,33 +1,34 @@
 {
     "name": "@datawrapper/plugin-external-data",
     "scripts": {
-        "format": "prettier 'src/{v2,v3}/**/*.{js,html,svelte}' --write",
-        "lint": "healthier 'src/{v2,v3}/**/*.{js,html}' && prettier --check 'src/{v2,v3}/**/*.{js,html,svelte}'",
+        "format:api": "prettier --plugin-search-dir=.  --write '*.js' 'src/lib/**/*.js'",
+        "format:v2": "cd src/v2 && npm run format",
+        "format:v3": "cd src/v3 && npm run format",
+        "format": "npm run format:api && npm run format:v2 && npm run format:v3",
+        "lint:api": "healthier '*.js' 'src/lib/**/*.js' && prettier --check '*.js' 'src/lib/*.js'",
+        "lint:v2": "cd src/v2 && npm run lint",
+        "lint:v3": "cd src/v3 && npm run lint",
+        "lint": "npm run lint:api && npm run lint:v2 && npm run lint:v3",
         "build:v2": "cd src/v2 && npm run build",
-        "dev:v2": "cd src/v2 && npm run dev",
         "build:v3": "cd src/v3 && npm run build",
-        "dev:v3": "cd src/v3 && npm run dev",
-        "build": "npm run build:v2 && npm run build:v3"
+        "build": "npm run build:v2 && npm run build:v3",
+        "dev:v2": "cd src/v2 && npm run dev",
+        "dev:v3": "cd src/v3 && npm run dev"
     },
     "dependencies": {
-        "@datawrapper/shared": "^0.27.7",
-        "aws-sdk": "^2.706.0",
+        "@datawrapper/shared": "^0.30.4",
+        "aws-sdk": "^2.881.0",
         "d3-queue": "^3.0.7",
-        "got": "^11.7.0",
+        "got": "^11.8.2",
         "lodash": "^4.17.19"
     },
     "devDependencies": {
-        "@tivac/eslint-plugin-svelte": "^1.3.0",
-        "babel-eslint": "^10.0.1",
-        "eslint": "^6.6.0",
-        "eslint-plugin-html": "^6.0.2",
-        "eslint-plugin-svelte3": "^2.7.3",
-        "healthier": "^3.2.0",
-        "husky": "^2.4.0",
-        "lint-staged": "^8.2.0",
-        "prettier": "^1.19.1",
-        "prettier-plugin-svelte": "^1.4.1",
-        "svelte": "^3.29.0"
+        "babel-eslint": "^10.1.0",
+        "eslint": "^7.23.0",
+        "healthier": "^4.0.0",
+        "husky": "^6.0.0",
+        "lint-staged": "^10.5.4",
+        "prettier": "^2.2.1"
     },
     "eslintConfig": {
         "parser": "babel-eslint",
@@ -47,26 +48,8 @@
                     "ignoreDestructuring": true,
                     "properties": "never"
                 }
-            ],
-            "@tivac/svelte/property-ordering": "off",
-            "@tivac/svelte/onupdate": "off"
-        },
-        "parserOptions": {
-            "ecmaVersion": 2019,
-            "sourceType": "module"
-        },
-        "env": {
-            "es6": true,
-            "browser": true
-        },
-        "extends": [
-            "plugin:@tivac/svelte/svelte"
-        ],
-        "plugins": [
-            "html",
-            "@tivac/svelte",
-            "svelte3"
-        ]
+            ]
+        }
     },
     "prettier": {
         "arrowParens": "avoid",
@@ -75,11 +58,6 @@
         "singleQuote": true,
         "tabWidth": 4,
         "trailingComma": "none"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     },
     "lint-staged": {
         "*.js": [
