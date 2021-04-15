@@ -13,7 +13,9 @@
         "build:v3": "cd src/v3 && npm run build",
         "build": "npm run build:v2 && npm run build:v3",
         "dev:v2": "cd src/v2 && npm run dev",
-        "dev:v3": "cd src/v3 && npm run dev"
+        "dev:v3": "cd src/v3 && npm run dev",
+        "test": "ava",
+        "test:watch": "ava -w"
     },
     "dependencies": {
         "@datawrapper/shared": "^0.30.4",
@@ -23,12 +25,22 @@
         "lodash": "^4.17.19"
     },
     "devDependencies": {
+        "ava": "^3.15.0",
         "babel-eslint": "^10.1.0",
         "eslint": "^7.23.0",
+        "esm": "^3.2.25",
         "healthier": "^4.0.0",
         "husky": "^6.0.0",
         "lint-staged": "^10.5.4",
         "prettier": "^2.2.1"
+    },
+    "ava": {
+        "files": [
+            "./src/**/tests/**"
+        ],
+        "require": [
+            "esm"
+        ]
     },
     "eslintConfig": {
         "parser": "babel-eslint",
