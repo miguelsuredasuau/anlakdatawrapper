@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/service-utils",
-    "version": "0.6.0-4",
+    "version": "0.6.0",
     "description": "Shared functions used throughout Datawrapper's server-side node components",
     "main": "index.js",
     "scripts": {
