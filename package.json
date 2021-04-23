@@ -15,7 +15,8 @@
         "access": "private"
     },
     "files": [
-        "build"
+        "build",
+        "src"
     ],
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
