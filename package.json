@@ -17,7 +17,7 @@
     "devDependencies": {
         "@datawrapper/block-annotations": "^1.0.2",
         "@datawrapper/block-get-color": "^1.0.1",
-        "@datawrapper/block-xy-grid": "^1.1.5",
+        "@datawrapper/block-xy-grid": "^2.1.0",
         "@datawrapper/controls": "^2.34.6",
         "@datawrapper/shared": "^0.30.3",
         "@rollup/plugin-replace": "^2.3.4",
