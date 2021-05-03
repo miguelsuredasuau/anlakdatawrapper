@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/service-utils",
-    "version": "0.6.4-alpha.0",
+    "version": "0.6.4-alpha.1",
     "description": "Shared functions used throughout Datawrapper's server-side node components",
     "license": "ISC",
     "author": "Datawrapper GmbH",
