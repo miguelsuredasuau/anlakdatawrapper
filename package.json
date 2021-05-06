@@ -10,16 +10,16 @@
         "test": "ava",
         "test:watch": "ava -w"
     },
-    "dependencies": {
-        "@datawrapper/block-annotations": "^2.0.3",
-        "@datawrapper/block-color-legend": "^1.1.0"
-    },
     "devDependencies": {
         "@babel/core": "^7.10.0",
         "@babel/plugin-transform-runtime": "^7.10.0",
         "@babel/preset-env": "^7.8.4",
+        "@datawrapper/block-annotations": "^2.0.3",
+        "@datawrapper/block-color-legend": "^1.1.0",
         "@datawrapper/block-xy-grid": "^2.1.0",
         "@datawrapper/controls": "^2.34.0",
+        "@datawrapper/eslint-config": "^0.1.0",
+        "@datawrapper/prettier-config": "^1.0.0",
         "@datawrapper/shared": "^0.31.0",
         "@rollup/plugin-alias": "^3.1.1",
         "@rollup/plugin-babel": "^5.0.2",
@@ -47,12 +47,8 @@
         "d3-voronoi": "^1.1.2",
         "d3-zoom": "^1.8.3",
         "dayjs": "^1.8.30",
-        "eslint": "^7.5.0",
-        "eslint-config-standard": "^14.1.1",
+        "eslint": "^7.21.0",
         "eslint-plugin-html": "^6.0.2",
-        "eslint-plugin-import": "^2.22.0",
-        "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-promise": "^4.2.1",
         "esm": "^3.2.25",
         "healthier": "^4.0.0",
         "husky": "^4.3.0",
@@ -78,41 +74,11 @@
             "healthier"
         ]
     },
-    "prettier": {
-        "arrowParens": "avoid",
-        "printWidth": 100,
-        "semi": true,
-        "singleQuote": true,
-        "tabWidth": 4,
-        "trailingComma": "none"
-    },
+    "prettier": "@datawrapper/prettier-config",
     "eslintConfig": {
         "parser": "babel-eslint",
-        "rules": {
-            "no-console": [
-                "error",
-                {
-                    "allow": [
-                        "warn",
-                        "error"
-                    ]
-                }
-            ],
-            "camelcase": [
-                "warn",
-                {
-                    "ignoreDestructuring": true,
-                    "properties": "never"
-                }
-            ],
-            "no-unused-vars": [
-                "error",
-                {
-                    "vars": "all"
-                }
-            ]
-        },
         "extends": [
+            "@datawrapper/eslint-config/chart-plugin",
             "plugin:@tivac/svelte/svelte"
         ],
         "plugins": [
