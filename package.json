@@ -9,15 +9,15 @@
         "test": "ava",
         "test:watch": "ava -w"
     },
-    "dependencies": {
-        "@datawrapper/block-annotations": "^2.0.3"
-    },
     "devDependencies": {
         "@ava/babel": "^1.0.1",
+        "@datawrapper/block-annotations": "^2.0.3",
         "@datawrapper/block-get-color": "^1.0.1",
         "@datawrapper/block-xy-grid": "^2.1.0",
         "@datawrapper/chart-core": "^8.23.6",
         "@datawrapper/controls": "^2.34.6",
+        "@datawrapper/eslint-config": "^0.1.1",
+        "@datawrapper/prettier-config": "^1.0.0",
         "@datawrapper/shared": "^0.30.3",
         "@rollup/plugin-alias": "^3.1.0",
         "@rollup/plugin-buble": "^0.21.3",
@@ -41,17 +41,13 @@
         "dayjs": "^1.10.2",
         "deepmerge": "^4.2.2",
         "eslint": "^7.0.0",
-        "eslint-config-standard": "^14.1.1",
-        "eslint-plugin-html": "^6.0.2",
-        "eslint-plugin-import": "^2.20.2",
-        "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-promise": "^4.2.1",
+        "eslint-plugin-html": "^6.1.1",
         "esm": "^3.2.25",
-        "healthier": "^2.0.0",
+        "healthier": "^4.0.0",
         "husky": "^4.2.5",
         "lint-staged": "^10.2.2",
         "numeral": "^2.0.6",
-        "prettier": "^1.19.1",
+        "prettier": "^2.2.1",
         "rollup": "^2.10.7",
         "rollup-plugin-livereload": "^1.3.0",
         "rollup-plugin-svelte": "^5.2.2",
@@ -86,35 +82,11 @@
             "healthier"
         ]
     },
-    "prettier": {
-        "arrowParens": "avoid",
-        "printWidth": 100,
-        "semi": true,
-        "singleQuote": true,
-        "tabWidth": 4,
-        "trailingComma": "none"
-    },
+    "prettier": "@datawrapper/prettier-config",
     "eslintConfig": {
         "parser": "babel-eslint",
-        "rules": {
-            "no-console": [
-                "error",
-                {
-                    "allow": [
-                        "warn",
-                        "error"
-                    ]
-                }
-            ],
-            "camelcase": [
-                "warn",
-                {
-                    "ignoreDestructuring": true,
-                    "properties": "never"
-                }
-            ]
-        },
         "extends": [
+            "@datawrapper/eslint-config/chart-plugin",
             "plugin:@tivac/svelte/svelte"
         ],
         "plugins": [
