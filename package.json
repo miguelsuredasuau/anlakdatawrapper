@@ -7,14 +7,18 @@
     "author": "Datawrapper GmbH",
     "main": "index.js",
     "scripts": {
-        "format": "prettier 'src/{render,controls}/*.{js,html}' --write",
-        "lint": "prettier --check 'src/{render,controls}/*.{js,html}' && healthier 'src/{render,controls}/*.{js,html}'",
+        "format": "prettier 'src/*.js' --write && npm run format:render && npm run format:controls",
+        "lint": "prettier --check 'src/*.js' && healthier 'src/*.js' && npm run lint:render && npm run lint:controls",
         "test": "cd src/render && npm test",
         "test:watch": "cd src/render && npm run test:watch",
         "dev:render": "cd src/render && npm run dev",
         "build:render": "cd src/render && npm run build",
         "dev:controls": "cd src/controls && npm run dev",
         "build:controls": "cd src/controls && npm run build",
+        "format:render": "cd src/render && npm run format",
+        "lint:render": "cd src/render && npm run lint",
+        "format:controls": "cd src/controls && npm run format",
+        "lint:controls": "cd src/controls && npm run lint",
         "dev": "echo \"please run `npm run dev:render` and/or `npm run dev:controls`...\"",
         "build": "make build",
         "postinstall": "cd src/render && npm install && cd ../controls && npm install"
@@ -25,18 +29,18 @@
     },
     "dependencies": {
         "@datawrapper/block-color-legend": "^1.0.1",
-        "@datawrapper/block-color-scale": "^1.0.1"
+        "@datawrapper/block-color-scale": "^1.0.1",
+        "babel-eslint": "^10.1.0"
     },
     "devDependencies": {
+        "@datawrapper/eslint-config": "^0.1.1",
+        "@datawrapper/prettier-config": "^1.0.0",
         "@datawrapper/shared": "^0.28.4",
-        "@tivac/eslint-plugin-svelte": "^1.2.1",
-        "babel-eslint": "^10.1.0",
-        "eslint-plugin-html": "^5.0.5",
-        "eslint-plugin-svelte3": "^1.2.3",
-        "healthier": "^2.0.0",
+        "eslint": "^7.22.0",
+        "healthier": "^4.0.0",
         "husky": "^4.3.7",
         "lint-staged": "^10.5.3",
-        "prettier": "^1.19.1"
+        "prettier": "^2.2.1"
     },
     "husky": {
         "hooks": {
@@ -49,42 +53,10 @@
             "healthier"
         ]
     },
-    "prettier": {
-        "arrowParens": "avoid",
-        "printWidth": 100,
-        "semi": true,
-        "singleQuote": true,
-        "tabWidth": 4,
-        "trailingComma": "none"
-    },
+    "prettier": "@datawrapper/prettier-config",
     "eslintConfig": {
-        "parser": "babel-eslint",
-        "rules": {
-            "no-console": [
-                "error",
-                {
-                    "allow": [
-                        "warn",
-                        "error"
-                    ]
-                }
-            ],
-            "camelcase": [
-                "warn",
-                {
-                    "ignoreDestructuring": true,
-                    "properties": "never"
-                }
-            ],
-            "@tivac/svelte/property-ordering": "off",
-            "@tivac/svelte/onupdate": "off"
-        },
         "extends": [
-            "plugin:@tivac/svelte/svelte"
-        ],
-        "plugins": [
-            "html",
-            "@tivac/svelte"
+            "@datawrapper/eslint-config/chart-plugin"
         ]
     }
 }
