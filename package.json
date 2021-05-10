@@ -20,7 +20,7 @@
     "dependencies": {
         "@datawrapper/orm": "^3.22.4",
         "aws-sdk": "^2.836.0",
-        "fs-extra": "^9.1.0",
+        "fs-extra": "^10.0.0",
         "gm": "^1.23.1",
         "got": "^11.8.2",
         "json-socket": "^0.3.0",
