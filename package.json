@@ -8,7 +8,7 @@
         "dev": "rollup -c -w"
     },
     "devDependencies": {
-        "@datawrapper/controls": "^2.34.0",
+        "@datawrapper/controls": "^2.35.2",
         "@datawrapper/eslint-config": "^0.1.1",
         "@datawrapper/prettier-config": "^1.0.0",
         "@rollup/plugin-buble": "^0.21.3",
