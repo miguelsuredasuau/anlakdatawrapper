@@ -11,7 +11,7 @@
         "@datawrapper/chart-core": "^8.18.9",
         "@datawrapper/controls": "^2.34.0",
         "@datawrapper/raphael-chart": "^1.0.0",
-        "@datawrapper/shared": "^0.27.6",
+        "@datawrapper/shared": "^0.32.5",
         "@rollup/plugin-buble": "^0.21.3",
         "@rollup/plugin-commonjs": "^14.0.0",
         "@rollup/plugin-json": "^4.1.0",
@@ -72,6 +72,7 @@
         "trailingComma": "none"
     },
     "dependencies": {
+        "dayjs": "^1.10.4",
         "svelte": "^2.16.1"
     }
 }
