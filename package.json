@@ -32,7 +32,7 @@
     },
     "dependencies": {
         "@datawrapper/blocks": "^0.14.8",
-        "@datawrapper/shared": "^0.31.2",
+        "@datawrapper/shared": "^0.32.3",
         "d3-array": "^1.2.4",
         "d3-collection": "^1.0.7",
         "d3-color": "^1.4.0",
