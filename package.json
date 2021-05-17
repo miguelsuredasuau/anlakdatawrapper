@@ -10,8 +10,10 @@
     },
     "dependencies": {
         "@datawrapper/raphael-chart": "^1.0.2",
+        "@datawrapper/shared": "^0.32.5",
         "chroma-js": "^2.1.0",
-        "d3-scale": "^2.2.2"
+        "d3-scale": "^2.2.2",
+        "dayjs": "^1.10.4"
     },
     "devDependencies": {
         "@datawrapper/chart-core": "^8.6.1",
