@@ -23,6 +23,7 @@
     },
     "dependencies": {
         "@datawrapper/orm": "^3.18.5",
+        "assign-deep": "^1.0.1",
         "chalk": "^2.4.2",
         "d3-array": "^2.0.3",
         "lodash.shuffle": "^4.2.0",
