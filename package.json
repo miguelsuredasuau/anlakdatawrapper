@@ -97,5 +97,8 @@
             "esm",
             "./test/helpers/setup-browser-env.js"
         ]
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }
