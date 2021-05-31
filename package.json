@@ -11,5 +11,8 @@
     "peerDependencies": {
         "eslint": ">= 5",
         "healthier": ">= 4"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }
