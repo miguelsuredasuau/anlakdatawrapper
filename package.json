@@ -8,6 +8,7 @@
         "dev": "rollup -c -w"
     },
     "devDependencies": {
+        "@datawrapper/block-get-color": "^1.0.1",
         "@datawrapper/controls": "^2.35.2",
         "@datawrapper/eslint-config": "^0.1.1",
         "@datawrapper/prettier-config": "^1.0.0",
@@ -31,8 +32,8 @@
         "svelte": "^2.16.1"
     },
     "dependencies": {
-        "@datawrapper/blocks": "^0.14.8",
-        "@datawrapper/shared": "^0.32.3",
+        "@datawrapper/block-color-legend": "^1.2.0",
+        "@datawrapper/shared": "^0.34.2",
         "d3-array": "^1.2.4",
         "d3-collection": "^1.0.7",
         "d3-color": "^1.4.0",
