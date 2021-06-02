@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "api.js",
-  "dependencies": {
-    "@hapi/joi": "^17.1.1"
-  },
+  "dependencies": {},
   "devDependencies": {},
+  "peerDependencies": {
+      "joi": "17.x"
+  },
   "license": "ISC"
 }
