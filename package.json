@@ -3,11 +3,23 @@
     "version": "1.0.0",
     "description": "Compatibility layer for Datawrapper's v1 API",
     "keywords": [],
+    "author": "Datawrapper GmbH",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:datawrapper/plugin-api-v1"
+    },
+    "dependencies": {
+        "@hapi/boom": "^9.1.0",
+        "lodash": "^4.17.20"
+    },
     "devDependencies": {
         "healthier": "^2.0.0",
         "less": "^3.11.2",
         "lint-staged": "^8.2.0",
         "prettier": "^1.17.1"
+    },
+    "peerDependencies": {
+        "joi": "17.x"
     },
     "lint-staged": {
         "*.js": [
@@ -25,10 +37,5 @@
         "hooks": {
             "pre-commit": "lint-staged"
         }
-    },
-    "dependencies": {
-        "@hapi/boom": "^9.1.0",
-        "@hapi/joi": "^17.1.1",
-        "lodash": "^4.17.20"
     }
 }
