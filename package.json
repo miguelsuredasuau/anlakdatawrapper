@@ -2,6 +2,13 @@
     "name": "@datawrapper/plugin-stats",
     "version": "1.0.1",
     "description": "",
+    "keywords": [],
+    "homepage": "https://github.com/datawrapper/plugin-stats#readme",
+    "bugs": {
+        "url": "https://github.com/datawrapper/plugin-stats/issues"
+    },
+    "license": "ISC",
+    "author": "Datawrapper GmbH",
     "main": "api.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,17 +17,12 @@
         "type": "git",
         "url": "git+https://github.com/datawrapper/plugin-stats.git"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/datawrapper/plugin-stats/issues"
-    },
-    "homepage": "https://github.com/datawrapper/plugin-stats#readme",
     "dependencies": {
         "@hapi/boom": "7.4.2",
-        "@hapi/joi": "15.0.3",
         "d3-dsv": "1.1.1",
         "underscore": "1.9.1"
+    },
+    "peerDependencies": {
+        "joi": "17.x"
     }
 }
