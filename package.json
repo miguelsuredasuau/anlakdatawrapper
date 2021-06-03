@@ -14,7 +14,6 @@
         "@datawrapper/shared": "^0.28.5",
         "@hapi/boom": "^9.1.1",
         "esm": "^3.2.25",
-        "joi": "^17.3.0",
         "node-fetch": "^2.6.1",
         "svelte": "^3.31.2"
     },
@@ -37,6 +36,9 @@
         "rollup-plugin-css-only": "^3.1.0",
         "rollup-plugin-svelte": "^7.0.0",
         "rollup-plugin-terser": "^7.0.2"
+    },
+    "peerDependencies": {
+        "joi": "17.x"
     },
     "eslintConfig": {
         "root": true,
