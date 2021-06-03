@@ -15,8 +15,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@hapi/boom": "7.4.2",
-        "@hapi/joi": "15.0.3"
+        "@hapi/boom": "7.4.2"
     },
     "devDependencies": {
         "@datawrapper/controls": "^2.34.0",
@@ -45,6 +44,9 @@
         "sinon": "^7.3.2",
         "svelte": "^2.16.1",
         "svelte-transitions": "^1.2.0"
+    },
+    "peerDependencies": {
+        "joi": "17.x"
     },
     "prettier": {
         "arrowParens": "avoid",
