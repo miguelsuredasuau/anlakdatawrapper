@@ -61,10 +61,12 @@
         ]
     },
     "prettier": {
-        "tabWidth": 4,
-        "semi": true,
+        "arrowParens": "avoid",
+        "singleQuote": true,
+        "trailingComma": "none",
         "printWidth": 100,
-        "singleQuote": true
+        "semi": true,
+        "tabWidth": 4
     },
     "eslintConfig": {
         "parser": "babel-eslint",
