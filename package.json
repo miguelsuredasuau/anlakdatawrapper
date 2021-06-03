@@ -1,16 +1,23 @@
 {
-  "name": "webtoprint",
-  "version": "1.0.0",
-  "description": "",
-  "main": "api.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@hapi/boom": "^9.1.0",
-    "@hapi/joi": "^17.1.1",
-    "lodash": "^4.17.19"
-  }
+    "name": "webtoprint",
+    "version": "1.0.0",
+    "description": "",
+    "license": "ISC",
+    "author": "Datawrapper GmbH",
+    "main": "api.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:datawrapper/plugin-webtoprint.git"
+    },
+    "dependencies": {
+        "@hapi/boom": "^9.1.0",
+        "@hapi/joi": "^17.1.1",
+        "lodash": "^4.17.19"
+    },
+    "peerDependencies": {
+        "joi": "17.x"
+    }
 }
