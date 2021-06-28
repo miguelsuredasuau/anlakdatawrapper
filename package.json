@@ -10,19 +10,20 @@
         "test": "ava --verbose",
         "test:watch": "ava -w",
         "build": "node scripts/build.js",
-        "docs": "node scripts/generate-docs.js"
+        "docs": "node scripts/generate-docs.js",
+        "prepare": "husky install"
     },
     "dependencies": {
-        "@hapi/joi": "^16.1.7",
-        "chalk": "^2.4.2"
+        "chalk": "^4.1.1",
+        "joi": "^17.4.0"
     },
     "devDependencies": {
-        "ava": "^2.1.0",
+        "ava": "^3.15.0",
         "babel-eslint": "^10.0.2",
-        "healthier": "^2.0.0",
-        "husky": "^2.4.1",
-        "lint-staged": "^8.2.1",
-        "prettier": "^1.18.2"
+        "healthier": "^4.0.0",
+        "husky": "^6.0.0",
+        "lint-staged": "^11.0.0",
+        "prettier": "^2.3.1"
     },
     "lint-staged": {
         "*.js": [
@@ -32,26 +33,17 @@
         ]
     },
     "prettier": {
-        "tabWidth": 4,
-        "semi": true,
+        "arrowParens": "avoid",
         "printWidth": 100,
-        "singleQuote": true
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged && npm run build && git add build/*.json"
-        }
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "none"
     },
     "ava": {
-        "require": [
-            "esm"
-        ],
         "files": [
-            "./*.test.js",
-            "./**/*.test.js"
-        ],
-        "sources": [
-            "./*.js"
+            "./*.test.mjs",
+            "./**/*.test.mjs"
         ]
     },
     "eslintConfig": {
