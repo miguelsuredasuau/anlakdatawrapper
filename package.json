@@ -1,5 +1,6 @@
 {
     "name": "@datawrapper/plugin-external-data",
+    "type": "module",
     "scripts": {
         "format:api": "prettier --plugin-search-dir=.  --write '*.js' 'src/lib/**/*.js'",
         "format:v2": "cd src/v2 && npm run format",
