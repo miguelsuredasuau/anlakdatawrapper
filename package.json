@@ -1,6 +1,7 @@
 {
     "name": "@datawrapper/plugin-subscriptions",
     "author": "Datawrapper GmbH",
+    "type": "module",
     "scripts": {
         "format": "prettier 'src/{v2,v3}/**/*.js' --write",
         "lint": "healthier 'src/{v2,v3}/**/*.{js,html}' && prettier --check 'src/{v2,v3}/**/*.js'",
