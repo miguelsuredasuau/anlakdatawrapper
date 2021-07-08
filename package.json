@@ -6,9 +6,10 @@
     "license": "ISC",
     "author": "Datawrapper GmbH",
     "main": "index.js",
+    "type": "module",
     "scripts": {
-        "format": "prettier 'src/*.js' --write && npm run format:render && npm run format:controls",
-        "lint": "prettier --check 'src/*.js' && healthier 'src/*.js' && npm run lint:render && npm run lint:controls",
+        "format": "prettier 'src/*.{js,cjs}' --write && npm run format:render && npm run format:controls",
+        "lint": "prettier --check 'src/*.{js,cjs}' && healthier 'src/*.{js,cjs}' && npm run lint:render && npm run lint:controls",
         "test": "cd src/render && npm test",
         "test:watch": "cd src/render && npm run test:watch",
         "dev:render": "cd src/render && npm run dev",
@@ -27,15 +28,10 @@
         "type": "git",
         "url": "git@github.com:datawrapper/plugin-tables.git"
     },
-    "dependencies": {
-        "@datawrapper/block-color-legend": "^1.0.1",
-        "@datawrapper/block-color-scale": "^1.0.1",
-        "babel-eslint": "^10.1.0"
-    },
     "devDependencies": {
         "@datawrapper/eslint-config": "^0.1.1",
         "@datawrapper/prettier-config": "^1.0.0",
-        "@datawrapper/shared": "^0.28.4",
+        "@datawrapper/shared": "^0.34.3",
         "eslint": "^7.22.0",
         "healthier": "^4.0.0",
         "husky": "^4.3.7",
