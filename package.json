@@ -1,6 +1,6 @@
 {
   "name": "@datawrapper/locales",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "a new home for our custom locales for third-party libraries such as dayjs & numeral ",
   "main": "index.js",
   "scripts": {
