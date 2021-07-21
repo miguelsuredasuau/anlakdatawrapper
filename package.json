@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/datawrapper/plugin-scoop#readme",
   "dependencies": {
-    "@datawrapper/shared": "^0.28.3"
+    "@datawrapper/service-utils": "^1.1.0"
   }
 }
