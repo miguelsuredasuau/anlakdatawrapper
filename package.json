@@ -13,12 +13,13 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@datawrapper/shared": "^0.27.6",
+        "@datawrapper/service-utils": "^1.1.0",
         "archiver": "4.0.1",
         "got": "^11.1.0",
         "svelte": "^2.16.1"
     },
     "devDependencies": {
+        "@datawrapper/shared": "^0.27.6",
         "downloadjs": "^1.4.7",
         "healthier": "3.3.0",
         "husky": "4.2.5",
