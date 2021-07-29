@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "format": "prettier *.js tests/*.js --write",
+    "lint": "eslint *.js tests/*.js"
   },
   "repository": {
     "type": "git",
@@ -18,9 +20,24 @@
   },
   "homepage": "https://github.com/datawrapper/tileserver#readme",
   "dependencies": {
-    "@mapbox/mbtiles": "^0.10.0",
     "aws-sdk": "^2.939.0",
+    "better-sqlite3": "^7.4.1",
     "cors": "^2.8.5",
     "polka": "^0.5.2"
-  }
+  },
+  "devDependencies": {
+    "@datawrapper/eslint-config": "^0.2.2",
+    "@datawrapper/prettier-config": "^1.0.0"
+  },
+  "eslintConfig": {
+    "extends": "@datawrapper/eslint-config",
+    "env": {
+      "es2020": true,
+      "node": true
+    },
+    "rules": {
+      "no-console": "off"
+    }
+  },
+  "prettier": "@datawrapper/prettier-config"
 }
