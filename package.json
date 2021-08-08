@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/scaffold",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Quick-start tempates for various Datawrapper related code setups",
     "homepage": "https://github.com/datawrapper/scaffold#readme",
     "bugs": {
