@@ -12,7 +12,7 @@
     },
     "devDependencies": {
         "@ava/babel": "^1.0.1",
-        "@datawrapper/block-annotations": "^2.1.0",
+        "@datawrapper/block-annotations": "^2.1.1",
         "@datawrapper/block-get-color": "^1.1.0",
         "@datawrapper/block-xy-grid": "^2.2.1",
         "@datawrapper/chart-core": "^8.36.0",
