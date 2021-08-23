@@ -23,6 +23,10 @@
     },
     "dependencies": {
         "@datawrapper/orm": "^3.18.5",
+        "@datawrapper/schemas": "^1.12.1",
+        "@hapi/catbox": "^11.1.1",
+        "@hapi/catbox-memory": "^5.0.1",
+        "@hapi/catbox-redis": "^6.0.2",
         "chalk": "^2.4.2",
         "d3-array": "^2.0.3",
         "lodash.shuffle": "^4.2.0",
