@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/schemas",
-    "version": "1.13.0",
+    "version": "1.13.1",
     "description": "JSON schemas for config and themes",
     "author": "Datawrapper GmbH",
     "main": "index.js",
