@@ -2,22 +2,21 @@
     "name": "@datawrapper/plugin-export-pdf",
     "author": "Datawrapper GmbH",
     "version": "2.3.0",
+    "type": "module",
     "scripts": {
         "build": "rollup -c",
         "dev": "rollup -c -w",
         "build:settings": "cd src/settings && npm run build",
         "dev:settings": "cd src/settings && npm run dev",
-        "test": "ava",
-        "test:watch": "ava -w",
+        "test": "ava --verbose",
+        "test:watch": "ava --watch --verbose",
         "test:coverage": "nyc --reporter=html --reporter=text ava",
         "test:render": "ava --config render-tests.config.js",
-        "lint": "healthier api.js 'src/**/*.{js,html}' && prettier --check api.js 'src/**/*.{js,html}'",
-        "format": "prettier --write api.js 'src/**/*.{js,html}'"
+        "lint": "healthier api.cjs 'src/**/*.{js,cjs,mjs,svelte,html}' && prettier --check api.cjs 'src/**/*.{js,cjs,mjs,svelte,html}'",
+        "format": "prettier --write api.cjs 'src/**/*.{js,cjs,mjs,svelte,html}'"
     },
     "dependencies": {
-        "@datawrapper/controls": "^2.34.0",
         "@datawrapper/service-utils": "^1.1.0",
-        "@datawrapper/shared": "^0.27.6",
         "@datawrapper/twemoji-svg": "^1.0.0",
         "@hapi/boom": "^8.0.1",
         "aws-sdk": "^2.625.0",
@@ -26,35 +25,36 @@
         "downloadjs": "^1.4.7",
         "file-api": "^0.10.4",
         "jquery": "^1.12.4",
-        "lodash": "^4.17.19",
+        "lodash": "^4.17.21",
         "nanoid": "^2.1.11",
         "opentype.js": "^1.3.3",
         "pdfkit": "^0.12.0",
         "queue": "^6.0.1",
-        "regenerator-runtime": "^0.13.5",
         "request": "^2.88.2",
         "ssh2-sftp-client": "^4.3.1",
-        "svelte": "^2.16.1",
+        "svelte": "^3.38.3",
         "svg-to-pdfkit": "^0.1.8",
         "svgpath": "^2.3.0",
         "twemoji": "^13.0.1"
     },
     "devDependencies": {
-        "@ava/babel": "^1.0.1",
-        "@babel/plugin-proposal-unicode-property-regex": "^7.12.1",
-        "@babel/plugin-transform-runtime": "^7.12.10",
-        "@babel/preset-env": "^7.12.11",
-        "@rollup/plugin-babel": "^5.2.2",
-        "@rollup/plugin-commonjs": "^17.0.0",
+        "@ava/babel": "^2.0.0",
+        "@babel/plugin-proposal-unicode-property-regex": "^7.14.5",
+        "@babel/plugin-transform-runtime": "^7.14.5",
+        "@babel/preset-env": "^7.14.7",
+        "@datawrapper/chart-core": "^8.36.2",
+        "@datawrapper/controls": "^3.9.2",
+        "@datawrapper/shared": "^0.35.0",
+        "@rollup/plugin-babel": "^5.3.0",
+        "@rollup/plugin-commonjs": "^19.0.0",
         "@rollup/plugin-json": "^4.1.0",
-        "@rollup/plugin-node-resolve": "^11.1.0",
-        "@rollup/plugin-replace": "^2.3.4",
+        "@rollup/plugin-node-resolve": "^13.0.0",
+        "@rollup/plugin-replace": "^2.4.2",
         "@tivac/eslint-plugin-svelte": "^2.0.0",
         "ava": "^3.15.0",
         "babel-eslint": "^10.1.0",
         "babel-plugin-module-resolver": "^4.1.0",
         "babel-plugin-transform-async-to-promises": "^0.8.15",
-        "browser-env": "^3.3.0",
         "eslint": "^7.18.0",
         "eslint-config-standard": "^16.0.2",
         "eslint-plugin-html": "^6.1.1",
@@ -62,20 +62,27 @@
         "eslint-plugin-node": "^11.1.0",
         "eslint-plugin-promise": "^4.2.1",
         "eslint-plugin-standard": "^5.0.0",
-        "esm": "^3.2.25",
+        "eslint-plugin-svelte3": "^3.2.0",
         "healthier": "^4.0.0",
         "husky": "^4.3.8",
-        "jsdom": "^16.4.0",
+        "jsdom": "^16.6.0",
+        "less": "^4.1.1",
         "lint-staged": "^10.5.4",
         "node-fetch": "^2.6.1",
         "nyc": "^15.1.0",
+        "pirates": "^4.0.1",
+        "postcss": "^8.3.5",
         "prettier": "^2.2.1",
-        "rollup": "^2.38.0",
+        "prettier-plugin-svelte": "^2.3.1",
+        "regenerator-runtime": "^0.13.7",
+        "rollup": "^2.53.1",
         "rollup-plugin-node-builtins": "^2.1.2",
         "rollup-plugin-node-globals": "^1.4.0",
-        "rollup-plugin-svelte": "^5.2.3",
+        "rollup-plugin-postcss": "^4.0.0",
         "rollup-plugin-terser": "^7.0.2",
-        "sinon": "^9.2.4",
+        "sinon": "^11.1.1",
+        "svelte-preprocess": "^4.7.4",
+        "svelte-translator": "^4.0.1",
         "tap-xunit": "^2.4.1",
         "underscore": "^1.12.0"
     },
@@ -84,14 +91,18 @@
     },
     "ava": {
         "files": [
-            "!./src/tests/helpers/**/*",
-            "!./tests/**/*"
+            "./src/**/*.test.js"
         ],
         "babel": {
-            "compileAsTests": [
-                "./src/tests/helpers/**/*"
-            ],
             "testOptions": {
+                "presets": [
+                    [
+                        "module:@ava/babel/stage-4",
+                        {
+                            "modules": false
+                        }
+                    ]
+                ],
                 "plugins": [
                     [
                         "babel-plugin-module-resolver",
@@ -106,37 +117,13 @@
             }
         },
         "require": [
-            "esm",
-            "./src/tests/helpers/setup-browser-env.js"
-        ]
-    },
-    "eslintConfig": {
-        "parser": "babel-eslint",
-        "rules": {
-            "no-console": [
-                "error",
-                {
-                    "allow": [
-                        "warn",
-                        "error"
-                    ]
-                }
-            ],
-            "camelcase": [
-                "warn",
-                {
-                    "ignoreDestructuring": true,
-                    "properties": "never"
-                }
-            ],
-            "no-unneeded-ternary": "off"
-        },
-        "extends": [
-            "plugin:@tivac/svelte/svelte"
+            "./src/tests/helpers/setup-browser-env.js",
+            "./src/tests/helpers/setup-global-dw.js"
         ],
-        "plugins": [
-            "html",
-            "@tivac/svelte"
+        "nodeArguments": [
+            "--experimental-json-modules",
+            "--experimental-loader=./src/tests/helpers/svelte-loader.js",
+            "--no-warnings"
         ]
     },
     "prettier": {
