@@ -57,6 +57,7 @@
     },
     "dependencies": {
         "@datawrapper/block-callout-line": "^1.2.0",
+        "@datawrapper/block-inset-map": "^1.0.0",
         "@datawrapper/controls": "^2.37.0",
         "@datawrapper/shared": "^0.34.4",
         "@turf/area": "^6.0.1",
