@@ -1,0 +1,6 @@
+{
+    "name": "api-v1",
+    "version": "1.0.0",
+    "author": "Datawrapper GmbH",
+    "description": "Compatibility layer for Datawrapper's v1 API"
+}
