@@ -1,0 +1,2 @@
+Brings package.json properties into a consistent order and fills in
+Datawrapper GmbH as author if missing.
