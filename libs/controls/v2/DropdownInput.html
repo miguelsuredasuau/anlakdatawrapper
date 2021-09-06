@@ -1,0 +1,89 @@
+<svelte:window on:click="windowClick(event)" />
+
+<div style="position: relative; display: inline-block;">
+    <a href="#dropdown-btn" ref:button on:click="toggle(event)" class="base-drop-btn">
+        <slot name="button">
+            <button class="btn btn-small"><i class="fa fa-chevron-{visible ? 'up' : 'down'}"></i></button>
+        </slot>
+    </a>
+    {#if visible}
+    <div style="width:{width}" class="dropdown-menu base-dropdown-content">
+        <slot name="content">
+            <div class="base-dropdown-inner">
+                DropdownControl content
+            </div>
+        </slot>
+    </div>
+    {/if}
+</div>
+<style>
+    .dropdown-menu {
+        display: block !important;
+    }
+    .base-dropdown-inner {
+        padding: 5px 10px;
+        font-size: 13px;
+    }
+    .base-dropdown-content {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 100002;
+        min-width: 160px;
+        padding: 5px 0;
+        margin: 2px 0 0;
+        list-style: none;
+        background-color: #ffffff;
+        border: 1px solid #ccc;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        box-shadow: 3px 3px 3px #eee;
+        border-radius: 4px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+
+        -webkit-background-clip: padding-box;
+        -moz-background-clip: padding;
+        background-clip: padding-box;
+    }
+    .base-drop-btn {
+        cursor: pointer;
+        display: inline-block;
+    }
+    .base-drop-btn :global(*) {
+        pointer-events: none;
+    }
+    .overlay {
+        position: absolute;
+        background: white;
+        padding: 1ex;
+        box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+    }
+</style>
+<script>
+    export default {
+        data() {
+            return {
+                visible: false,
+                disabled: false,
+                width: 'auto'
+            };
+        },
+        methods: {
+            toggle(event) {
+                event.preventDefault();
+                const { visible, disabled } = this.get();
+                if (disabled) return;
+                this.set({ visible: !visible });
+            },
+            windowClick(event) {
+                if (
+                    !event.target ||
+                    (this.refs && this.refs.button && (event.target === this.refs.button || this.refs.button.contains(event.target)))
+                )
+                    return;
+                // this is a hack for the colorpicker, need to find out how to get rid of
+                if (event.target.classList.contains('hex')) return;
+                this.set({ visible: false });
+            }
+        }
+    };
+</script>

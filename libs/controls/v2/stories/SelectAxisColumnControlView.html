@@ -1,0 +1,78 @@
+<SelectAxisColumnControl axis="category" label="Optional selection"></SelectAxisColumnControl>
+<SelectAxisColumnControl axis="category" filter="{filterColumns}" label="Filter columns"></SelectAxisColumnControl>
+<SelectAxisColumnControl axis="color" label="Mandatory selection"></SelectAxisColumnControl>
+<SelectAxisColumnControl axis="color" label="With help" help="Here you can get some help"></SelectAxisColumnControl>
+<SelectAxisColumnControl axis="group" label="Custom n/a label"></SelectAxisColumnControl>
+<SelectAxisColumnControl axis="x" label="User selection"></SelectAxisColumnControl>
+<SelectAxisColumnControl axis="y" label="Accept multiple types"></SelectAxisColumnControl>
+
+<script>
+    import SelectAxisColumnControl from '../SelectAxisColumnControl.html';
+
+    import Dataset from '@datawrapper/chart-core/lib/dw/dataset';
+    import Column from '@datawrapper/chart-core/lib/dw/dataset/column';
+    import Chart from '@datawrapper/chart-core/lib/dw/svelteChart';
+
+    const chart = new Chart({
+        title: '',
+        metadata: {
+            axes: {
+                x: 'more values' // user selection
+            }
+        },
+        dataset: Dataset([
+            Column('titles', ['foo', 'bar', 'baz'], 'text'),
+            Column('categories', ['a', 'b', 'a'], 'text'),
+            Column('country', ['a', 'b', 'a'], 'text'),
+            Column('continent', ['a', 'b', 'a'], 'text'),
+            Column('values', [4, 5, 6], 'number'),
+            Column('more values', [4, 5, 6], 'number'),
+            Column('dates', ['2018', '2017', '2016'], 'date')
+        ]),
+        visualization: {
+            axes: {
+                category: {
+                    accepts: ['text'],
+                    optional: true
+                },
+                color: {
+                    accepts: ['text'],
+                    optional: false
+                },
+                group: {
+                    accepts: ['text'],
+                    optional: true,
+                    'na-label': '(no selection)'
+                },
+                x: {
+                    accepts: ['number'],
+                    optional: true
+                },
+                y: {
+                    accepts: ['number', 'date'],
+                    optional: false
+                }
+            }
+        },
+        vis: {
+            axes() {
+                return {
+                    x: 'more values'
+                };
+            }
+        }
+    });
+
+    export default {
+        components: { SelectAxisColumnControl },
+        data() {
+            return { value: 'title' };
+        },
+        store: () => chart,
+        helpers: {
+            filterColumns({ value }) {
+                return value !== 'continent' && value !== 'titles';
+            }
+        }
+    };
+</script>

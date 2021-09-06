@@ -1,0 +1,34 @@
+# IconDisplay
+
+Use this to render icons using the SVG tiles provided by [@datawrapper/icons](https://github.com/datawrapper/icons).
+
+## Attributes
+
+-   `icon`: the icon name. See [@datawrapper/icons](https://github.com/datawrapper/icons) for more information.
+-   `size`: the size of the icon. Sets both width and height of the icon while keeping the correct aspect ratio.
+-   `color`: the color of the icon.
+-   `class`: for passing additional class names to the component, e.g. `mt-2` for some spacing.
+-   `valign`: vertical alignment with text. Uses the [`vertical-align`](https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align) CSS property.
+-   `assetURL`: the path to the SVG sprite file that holds the icons. You don't have to set `assetURL` if you are using the icons on the [app.datawrapper.de](https://app.datawrapper.de) domain, as they will default to the correct path.
+
+-   `duration`: How long a single rotation takes. Defaults to 1.5s.
+-   `timing`: Timing function to control the animation, e.g. for stepwise spinners. You can use any [`animation-timing-function`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timing-function) value.
+
+```html
+Simple icon:
+<IconDisplay icon="new" size="20px" color="#ff0000" />
+
+Simple icon spinner:
+<IconDisplay icon="refresh" spin />
+
+Icon spinner with custom animation timing:
+<IconDisplay icon="refresh" spin duration="3s" timing="ease-in-out" size="50px" />
+
+<script>
+    import { IconDisplay } from '@datawrapper/controls/IconDisplay.html';
+
+    export default {
+        components: { IconDisplay }
+    };
+</script>
+```

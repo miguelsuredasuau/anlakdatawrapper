@@ -1,0 +1,30 @@
+<div class="textarea-container" style="width:{width}">
+    <textarea bind:value="value" {id} {placeholder} {disabled} {autocomplete} style="height:{height};resize:{resize}" />
+</div>
+
+<style>
+    .textarea-container {
+        display: flex;
+    }
+
+    textarea {
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
+        line-height: 20px !important;
+    }
+</style>
+<script>
+    export default {
+        data() {
+            return {
+                id: '',
+                autocomplete: 'off',
+                placeholder: '',
+                width: '100%',
+                height: 'auto',
+                resize: 'both'
+            };
+        }
+    };
+</script>

@@ -1,0 +1,30 @@
+# TextInput
+
+A simple text field.
+
+This control supports dynamic multi-line text via the `expandable` attribute. When `expandable` is
+set, the height of the control increases vertically as the user types text. The maximum number of
+lines can be set using the `rows` property.
+
+For static multiline text, use [TextAreaInput].
+
+```html
+<TextInput
+    id="unique-identifier"
+    bind:value={name}
+    placeholder="e.g. William Playfair"
+    valign="top|middle|bottom"
+    autocomplete="on|off"
+    disabled={true|false}
+    expandable
+    rows="3"
+/>
+
+<script>
+    import { TextInput } from '@datawrapper/controls';
+    // or import directly via
+    // import TextInput from '@datawrapper/controls/TextInput.svelte;
+
+    let name = '';
+</script>
+```

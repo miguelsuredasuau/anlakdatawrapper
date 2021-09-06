@@ -1,0 +1,25 @@
+<SwitchControl
+    bind:value="$metadata.publish.blocks.logo"
+    disabled="{!$customLayouts}"
+    disabledMessage="{__('layout / logo / disabled')}"
+    label="{__('layout / logo')}"
+    help="{help}"
+    helpType="upgrade-info"
+/>
+
+<script>
+    import SwitchControl from '../SwitchControl.html';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        components: {
+            SwitchControl
+        },
+        computed: {
+            help({ $customLayouts }) {
+                return $customLayouts ? false : __('layout / logo / upgrade-info');
+            }
+        },
+        helpers: { __ }
+    };
+</script>

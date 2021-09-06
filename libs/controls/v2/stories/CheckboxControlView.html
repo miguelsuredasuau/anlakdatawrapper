@@ -1,0 +1,100 @@
+<CheckboxControl label="checked" value="{true}" />
+<CheckboxControl label="indeterminate" value="{false}" indeterminate />
+<CheckboxControl label="unchecked" bind:value="v1" />
+<CheckboxControl label="checked disabled" value="{true}" disabled />
+<CheckboxControl label="unchecked disabled" value="{false}" disabled />
+<CheckboxControl disabledMessage="This is why the checkbox is disabled." label="unchecked faded" value="{false}" disabled="{v1}" />
+<CheckboxControl label="checked faded" value="{true}" faded />
+<CheckboxControl label="unchecked faded" value="{false}" faded />
+<CheckboxControl label="some help" value="{false}" help="HelpDisplay help help" />
+<CheckboxControl
+    label="some help and a very, very long label that wraps into a second line without interfering with the help icon"
+    value="{false}"
+    help="Help help help"
+/>
+
+<h3>Two column view</h3>
+
+<div style="display: flex">
+    <div style="width: 50%; padding-right: 2em;">
+        <CheckboxControl label="checked" value="{true}" />
+        <CheckboxControl label="indeterminate" value="{false}" indeterminate />
+        <CheckboxControl label="unchecked" value="{false}" />
+        <CheckboxControl label="some help" value="{false}" help="Help help help" />
+        <CheckboxControl label="some help and a very, very long label " value="{false}" help="Help help help" />
+    </div>
+    <div style="width: 50%;">
+        <CheckboxControl label="checked disabled" value="{true}" disabled />
+        <CheckboxControl label="checked faded" value="{true}" faded />
+        <CheckboxControl label="unchecked faded" value="{false}" faded />
+        <CheckboxControl label="unchecked disabled" value="{false}" disabled />
+        <CheckboxControl disabledMessage="This is why the checkbox is disabled." label="unchecked faded" value="{false}" disabled="{v1}" />
+    </div>
+</div>
+
+<h3>"Compact" checkboxes</h3>
+
+<div style="display: flex">
+    <div style="width: 50%; padding-right: 2em;">
+        <CheckboxControl compact label="checked" value="{true}" />
+        <CheckboxControl compact label="indeterminate" value="{false}" indeterminate />
+        <CheckboxControl compact label="unchecked" value="{false}" />
+        <CheckboxControl compact label="some help" value="{false}" help="Help help help" />
+        <CheckboxControl compact label="some help and a very, very long label " value="{false}" help="Help help help" />
+    </div>
+    <div style="width: 50%;">
+        <CheckboxControl compact label="checked disabled" value="{true}" disabled />
+        <CheckboxControl compact label="checked faded" value="{true}" faded />
+        <CheckboxControl compact label="unchecked faded" value="{false}" faded />
+        <CheckboxControl compact label="unchecked disabled" value="{false}" disabled />
+        <CheckboxControl compact disabledMessage="This is why the checkbox is disabled." label="unchecked faded" value="{false}" disabled="{v1}" />
+    </div>
+</div>
+
+<h3>Checkboxes mixed with other controls</h3>
+<CheckboxControl label="Checked checkbox" value="{true}" />
+<CheckboxControl label="Indeterminate checkbox" value="{false}" indeterminate />
+<CheckboxControl label="Unchecked checkbox" value="{false}" />
+
+<RadioControl label="Radio group" value="foo" options="{[{label:'foo', value:'foo'}, {label:'bar', value:'bar'}]}" />
+
+<CheckboxControl label="Checked checkbox" value="{true}" />
+<CheckboxControl label="Indeterminate checkbox" value="{false}" indeterminate />
+<CheckboxControl label="Unchecked checkbox" value="{false}" />
+
+<SelectControl label="Select" options="{[{label:'foo', value:'foo'}, {label:'bar', value:'bar'}]}" />
+
+<CheckboxControl label="Checked checkbox" value="{true}" />
+<CheckboxControl label="Indeterminate checkbox" value="{false}" indeterminate />
+<CheckboxControl label="Unchecked checkbox" value="{false}" />
+
+<HelpDisplay> Help texts can include <b>HTML</b> and should be defined right before the UI control </HelpDisplay>
+<TextControl value="foo" bind:value label="Input with help" />
+
+<CheckboxControl label="Checked checkbox" value="{true}" />
+<CheckboxControl label="Indeterminate checkbox" value="{false}" indeterminate />
+<CheckboxControl label="Unchecked checkbox" value="{false}" />
+
+<script>
+    import CheckboxControl from '../CheckboxControl.html';
+    import RadioControl from '../RadioControl.html';
+    import SelectControl from '../SelectControl.html';
+    import TextControl from '../TextControl.html';
+    import HelpDisplay from '../HelpDisplay.html';
+
+    export default {
+        components: { CheckboxControl, RadioControl, SelectControl, TextControl, HelpDisplay },
+        data() {
+            return {
+                v1: true,
+                v2: false
+            };
+        }
+    };
+</script>
+
+<style type="text/css">
+    h3 {
+        margin-top: 2em;
+    }
+</style>

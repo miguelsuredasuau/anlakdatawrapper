@@ -1,0 +1,148 @@
+<script>
+    import DropdownControl from '../DropdownControl.svelte';
+    import SwitchControl from '../SwitchControl.svelte';
+
+    const options = [
+        {
+            value: 'foo',
+            label: 'Foo'
+        },
+        {
+            value: 'bar',
+            label: 'Bar'
+        }
+    ];
+
+    let initial = false;
+    let toggleData = null;
+</script>
+
+<style>
+    p {
+        font-style: italic;
+        color: #555;
+        font-size: 12px;
+    }
+</style>
+
+<SwitchControl label="checked" bind:value={initial}>
+    <div>
+        <label for="my-textarea">Some content</label>
+        <textarea id="my-textarea" />
+    </div>
+    <div>
+        <label for="my-text-input">Some more content</label>
+        <input type="text" id="my-text-input" />
+    </div>
+</SwitchControl>
+
+<SwitchControl label="inverted switch" inverted bind:value={initial}>
+    <div>
+        <label for="my-textarea">Some content</label>
+        <textarea id="my-textarea" />
+    </div>
+    <div>
+        <label for="my-text-input">Some more content</label>
+        <input type="text" id="my-text-input" />
+    </div>
+</SwitchControl>
+
+<SwitchControl label="unchecked" value={!initial}>
+    <p>
+        <b>DEMO CONTENT</b> — Dolore commodo sit proident reprehenderit culpa aliqua cupidatat anim ex amet. Ullamco ut ex eiusmod nostrud anim Lorem ea
+        reprehenderit aute irure veniam officia sint. Aliquip ullamco amet voluptate pariatur nulla ullamco ut excepteur fugiat. Ex Lorem eu velit aute
+        aliquip quis irure eiusmod anim aute laborum anim.
+    </p>
+</SwitchControl>
+
+<SwitchControl label="indeterminate" indeterminate bind:value={initial}>
+    <p>
+        <b>DEMO CONTENT</b> — Officia velit consectetur esse elit enim. Ut reprehenderit aliquip laboris sunt sint quis voluptate. Mollit ullamco deserunt
+        proident fugiat enim tempor reprehenderit quis irure. Cillum cillum magna aliquip culpa fugiat est magna et officia elit. Consequat aliquip irure
+        commodo magna cillum.
+    </p>
+</SwitchControl>
+
+<SwitchControl label="checked disabled" value={!initial} disabled>
+    <p>
+        <b>DEMO CONTENT</b> — Cillum reprehenderit tempor fugiat cupidatat proident et ea reprehenderit. Duis laborum sunt nostrud officia. Mollit laborum
+        enim ex eiusmod sint veniam velit duis qui non cillum aute ea. Nostrud ipsum culpa cillum nostrud ad. Nisi exercitation ea elit excepteur sunt
+        sunt nisi ad sint sit eiusmod. Commodo ut ad incididunt elit incididunt consectetur sint.
+    </p>
+</SwitchControl>
+
+<SwitchControl label="unchecked disabled" bind:value={initial} disabled>
+    <p>
+        <b>DEMO CONTENT</b> — Sit ex ea veniam incididunt sint officia Lorem. Nostrud sit sint duis incididunt veniam amet esse eu aliqua laborum adipisicing
+        magna labore. Ex aliqua deserunt aliqua ex minim proident irure magna duis enim laborum non. Quis voluptate et qui sit culpa.
+    </p>
+</SwitchControl>
+
+<SwitchControl
+    label="disabled with message"
+    bind:value={initial}
+    disabled
+    disabledMessage="Reprehenderit proident ad laboris laboris dolor sit. Sunt reprehenderit commodo est irure id nostrud occaecat."
+>
+    <p>
+        <b>DEMO CONTENT</b> — Exercitation consequat eiusmod pariatur cupidatat excepteur culpa dolore in consectetur nulla non ullamco dolor. Minim amet
+        consequat labore proident excepteur ex laborum ut ea cillum laborum voluptate. Deserunt deserunt cillum est nisi officia ipsum enim. Ut amet ea
+        proident ipsum adipisicing proident ipsum.
+    </p>
+</SwitchControl>
+
+<SwitchControl
+    label="disabled with extremely long label, message, and additional help bubble"
+    bind:value={initial}
+    disabled
+    help="Help texts can include <b>HTML</b> even when defined as attributes"
+    disabledMessage="Reprehenderit proident ad laboris laboris dolor sit. Sunt reprehenderit commodo est irure id nostrud occaecat tempor
+                     eiusmod voluptate voluptate. Dolore proident nisi ex culpa. Consequat ad irure dolore ex dolore duis proident."
+>
+    <p>
+        <b>DEMO CONTENT</b> — Exercitation consequat eiusmod pariatur cupidatat excepteur culpa dolore in consectetur nulla non ullamco dolor. Minim amet
+        consequat labore proident excepteur ex laborum ut ea cillum laborum voluptate. Deserunt deserunt cillum est nisi officia ipsum enim. Ut amet ea
+        proident ipsum adipisicing proident ipsum.
+    </p>
+</SwitchControl>
+
+<SwitchControl label="overflowing content" bind:value={initial}>
+    <DropdownControl {options} forcePlaceholder placeholder="click for overflowing content" />
+</SwitchControl>
+
+<SwitchControl label="floated content" bind:value={initial}>
+    <p style="float: left; width:100px; padding: 20px; background: #dadada">
+        <code>float: left</code>
+    </p>
+    <p style="float: right; width:100px; padding: 20px; background: #dadada">
+        <code>float: right</code>
+    </p>
+</SwitchControl>
+
+<SwitchControl label="empty" value={true} />
+
+<SwitchControl label="empty with help" value={true} help="Help texts can include <b>HTML</b> even when defined as attributes" />
+
+<SwitchControl label="unchecked with help" help="Help texts can include <b>HTML</b> even when defined as attributes">
+    <p>
+        <b>DEMO CONTENT</b> — Ad aliquip tempor proident enim aute aliquip in ex do ipsum elit occaecat in. Mollit ipsum dolor laborum cupidatat sit pariatur
+        ullamco sint tempor pariatur aute ad ut. Voluptate occaecat reprehenderit dolor ullamco non eu occaecat consectetur sint do aute. Commodo laborum
+        ullamco do cillum elit elit officia exercitation eiusmod voluptate.
+    </p>
+</SwitchControl>
+
+<SwitchControl label="checked with help" value={true} help="Help texts can include <b>HTML</b> even when defined as attributes">
+    <p>
+        <b>DEMO CONTENT</b> — Reprehenderit proident ad laboris laboris dolor sit. Sunt reprehenderit commodo est irure id nostrud occaecat tempor eiusmod
+        voluptate voluptate. Dolore proident nisi ex culpa. Consequat ad irure dolore ex dolore duis proident. Laborum ullamco quis esse qui.
+    </p>
+</SwitchControl>
+
+<SwitchControl label="trigger a <code>toggle</code> event" on:change={evt => (toggleData = evt.detail)} />
+
+{#if toggleData !== null}
+    <code>
+        <b>Event triggered:</b>
+        {toggleData}
+    </code>
+{/if}

@@ -1,0 +1,34 @@
+<SelectButtonsControl labelWidth="120px" options="{options}" label="simple text labels" bind:value inline="{false}" />
+<SelectButtonsControl disabled="1" labelWidth="120px" options="{options}" label="disabled" bind:value inline="{false}" />
+<SelectButtonsControl help="Here you can get some help" labelWidth="120px" options="{options}" label="with help" bind:value inline="{false}" />
+<SelectButtonsControl labelWidth="120px" options="{iconOptions}" label="icon labels" bind:value inline="{false}" />
+<SelectButtonsControl labelWidth="120px" options="{svgOptions}" label="svg labels" bind:value inline="{false}" />
+
+<script>
+    import SelectButtonsControl from '../SelectButtonsControl.html';
+
+    const icons = ['bug', 'bolt', 'car'];
+    const svg = ['M0,12 H24 v1 H0', 'M0,10 H24 v2.5 H0', 'M0,10 H24 v4 H0'];
+
+    export default {
+        components: { SelectButtonsControl },
+        data() {
+            return {};
+        },
+        computed: {
+            iconOptions({ options }) {
+                return options.map((o, i) => {
+                    return Object.assign({}, o, { label: `<i class="fa fa-fw fa-${icons[i]}"></i>` });
+                });
+            },
+            svgOptions({ options }) {
+                return options.map((o, i) => {
+                    return {
+                        value: o.value,
+                        svg: svg[i]
+                    };
+                });
+            }
+        }
+    };
+</script>

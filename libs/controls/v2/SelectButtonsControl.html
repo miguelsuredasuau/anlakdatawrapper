@@ -1,0 +1,70 @@
+<ControlGroup type="select" valign="middle" inline {disabled} {label} {labelWidth} {help} helpClass="mt-1">
+    <div class="btn-group mt-1">
+        {#each options as option}
+        <ToggleButtonInput notoggle="1" disabled="{disabled}" on:select="select(option)" value="{value === option.value}">
+            {#if option.label}
+            <span>{@html option.label}</span>
+            {/if} {#if option.svg}
+            <svg height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
+                <path
+                    class:stroke="option.stroke"
+                    style="stroke-width: {option.stroke || 0}"
+                    class:crisp="option.crisp"
+                    class:selected="value === option.value"
+                    d="{option.svg}"
+                />
+            </svg>
+            {/if}
+        </ToggleButtonInput>
+        {/each}
+    </div>
+    <slot></slot>
+</ControlGroup>
+
+<script>
+    import ControlGroup from './ControlGroup.html';
+    import ToggleButtonInput from './ToggleButtonInput.html';
+
+    export default {
+        components: { ControlGroup, ToggleButtonInput },
+        data() {
+            return {
+                disabled: false,
+                labelWidth: 'auto',
+                value: 'red',
+                options: [],
+                optgroups: [],
+                help: false
+            };
+        },
+        methods: {
+            select(option) {
+                this.set({ value: option.value });
+            }
+        }
+    };
+</script>
+
+<style>
+    svg {
+        vertical-align: text-top;
+        margin: 0 3px;
+    }
+    path {
+        fill: #222;
+    }
+    path.stroke {
+        fill: none;
+        stroke: #222;
+    }
+    path.selected {
+        fill: white;
+    }
+    path.stroke.selected {
+        stroke: white;
+        fill: none;
+    }
+    path.crisp {
+        shape-rendering: crispEdges;
+    }
+</style>

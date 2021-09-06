@@ -1,0 +1,30 @@
+<div>
+    <pre><code>limit (items per page): {limit} / offset: {offset}</code></pre>
+    <Pagination {limit} {offset} {total} {url} on:navigate="gotoPage(event)"></Pagination>
+</div>
+
+<script>
+    import Pagination from '../Pagination.html';
+
+    export default {
+        components: { Pagination },
+
+        data() {
+            return {
+                offset: 0,
+                limit: 20,
+                total: 1000
+            };
+        },
+
+        methods: {
+            gotoPage({ limit, offset }) {
+                this.set({ limit, offset });
+            },
+
+            url({ limit, offset }) {
+                return `/#limit=${limit}/offset=${offset}`;
+            }
+        }
+    };
+</script>

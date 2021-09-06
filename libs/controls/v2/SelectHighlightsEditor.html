@@ -1,0 +1,114 @@
+<Group label="{__('annotate / highlight element') }">
+    <div>
+        <SelectInput bind:value="selected" on:change="add(event.target.value)" options="{options}" width="100%" />
+    </div>
+    <ul class="highlights">
+        {#each highlights as item}
+        <li class="highlights-item" class:valid="item.valid">
+            <span class="highlights-text">{ item.value }</span>
+            <button aria-label="Remove" on:click="remove(item.value)" class="fa fa-remove remove-highlight" />
+        </li>
+        {/each}
+    </ul>
+</Group>
+
+<style>
+    .highlights {
+        margin: 5px 0;
+    }
+
+    .highlights-text {
+        display: inline-block;
+        max-width: 150px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 12px;
+    }
+
+    .highlights-item {
+        display: inline-flex;
+        align-items: center;
+        margin: 2px;
+        padding: 0 6px 0 8px;
+        border-radius: 10px;
+        border: 0;
+        color: #ffffff;
+        background: #949494;
+    }
+
+    .highlights-item.valid {
+        background: #1d81a2;
+    }
+
+    .remove-highlight {
+        padding: 2px;
+        margin: 0 0 0 2px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        opacity: 0.6;
+    }
+
+    .remove-highlight:hover {
+        opacity: 1;
+    }
+</style>
+
+<script>
+    import { uniq } from 'lodash-es';
+    import { __ } from '@datawrapper/shared/l10n';
+    import Group from './Group.html';
+    import SelectInput from './SelectInput.html';
+
+    export default {
+        components: {
+            Group,
+            SelectInput
+        },
+        data() {
+            return {
+                selected: '---',
+                value: []
+            };
+        },
+        computed: {
+            labels({ $vis }) {
+                return $vis.keys().sort();
+            },
+            options({ labels }) {
+                return [
+                    {
+                        label: `(${__('select element')})`,
+                        value: '---'
+                    },
+                    ...labels.map(label => ({
+                        value: label,
+                        label: label
+                    }))
+                ];
+            },
+            highlights({ value, labels }) {
+                return value.map(item => ({
+                    value: item,
+                    valid: labels.includes(item)
+                }));
+            }
+        },
+        helpers: { __ },
+        methods: {
+            add(item) {
+                const { value = [] } = this.get();
+                if (item) value.push(item);
+                this.set({ value: uniq(value) });
+                setTimeout(() => this.set({ selected: '---' }), 30);
+            },
+            remove(item) {
+                const { value } = this.get();
+                const index = value.indexOf(item);
+                if (index > -1) value.splice(index, 1);
+                this.set({ value });
+            }
+        }
+    };
+</script>

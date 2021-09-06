@@ -1,0 +1,13 @@
+<TypeAheadInput label="simple" placeholder="Select a country" items="{items}" bind:selectedItem /> {#if selectedItem} You selected
+<b>{selectedItem.name}</b> ({selectedItem.code}). {:else} Select an item from the list {/if}
+
+<script>
+    import TypeAheadInput from '../TypeAheadInput.html';
+
+    export default {
+        components: { TypeAheadInput },
+        data() {
+            return { selectedItem: false };
+        }
+    };
+</script>

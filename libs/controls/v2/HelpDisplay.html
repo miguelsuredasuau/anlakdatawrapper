@@ -1,0 +1,137 @@
+<div ref:helpDisplay on:mouseenter="show()" on:mouseleave="hide()" class="help {class} {type}">
+    <span class="help-icon {type}" class:visible="visible">
+        {@html helpIcon}
+    </span>
+    {#if visible}
+    <div class="content {type}">
+        {#if type === 'help'}
+        <i class="hat-icon im im-graduation-hat"></i>
+        {/if} {#if type === 'upgrade-info'}
+        <div class="content-header">{__('upgrade-available')}</div>
+        {/if}
+        <slot />
+    </div>
+    {/if}
+</div>
+
+<style type="text/css">
+    .help {
+        float: right;
+        position: relative;
+        top: 4px;
+    }
+    .help-icon {
+        display: inline-flex;
+        width: 1.3em;
+        height: 1.3em;
+        border-radius: 50%;
+        border: 1px solid #ddd;
+        background: transparent;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        color: #a5a5a5;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: default;
+    }
+    .help-icon.help:hover {
+        background: #18a1cd;
+        border: 1px solid #18a1cd;
+        color: #f9f9f9;
+    }
+    .hat-icon {
+        font-size: 16px;
+        color: #fff;
+        position: absolute;
+        left: -15px;
+        top: 12px;
+    }
+    .help-icon.upgrade-info {
+        position: relative;
+        border-width: 0px;
+        background-color: rgb(57, 243, 187, 0.25);
+        width: 18px;
+        height: 18px;
+    }
+    .help-icon.upgrade-info.visible {
+        z-index: 1001;
+        background: rgb(57, 243, 187);
+    }
+    .help-icon.upgrade-info :global(svg) {
+        width: 12px;
+    }
+    .help-icon.upgrade-info :global(svg path) {
+        fill: #09bb9f;
+    }
+    .content {
+        position: absolute;
+        z-index: 1000;
+        color: #fff;
+    }
+    .content :global(img) {
+        max-width: none;
+    }
+    .content :global(a) {
+        color: white;
+        text-decoration: underline;
+    }
+    .content.help {
+        background: #18a1cd;
+        border-radius: 2px;
+        box-shadow: 3px 2px 2px rgba(0, 0, 0, 0.1);
+        text-indent: 25px;
+        top: -8px;
+        left: -5px;
+        padding: 8px;
+        width: 240px;
+    }
+    .content.upgrade-info {
+        background: #09bb9f;
+        border-radius: 4px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.14);
+        top: -14px;
+        left: -14px;
+        padding: 14px;
+        width: 212px;
+    }
+    .content .content-header {
+        font-weight: bold;
+        text-indent: 28px;
+        margin-bottom: 5px;
+    }
+</style>
+
+<script>
+    import { __ } from '@datawrapper/shared/l10n';
+    import upgradeIcon from './utils/upgradeIconSvg';
+
+    export default {
+        data() {
+            return {
+                visible: false,
+                class: '',
+                type: 'help'
+            };
+        },
+        computed: {
+            helpIcon({ type }) {
+                return type === 'upgrade-info' ? upgradeIcon : '?';
+            }
+        },
+        methods: {
+            show() {
+                const t = setTimeout(() => {
+                    this.set({ visible: true });
+                }, 400);
+                this.set({ t });
+            },
+            hide() {
+                const { t } = this.get();
+                clearTimeout(t);
+                this.set({ visible: false });
+            }
+        },
+        helpers: { __ }
+    };
+</script>

@@ -1,0 +1,97 @@
+<div class="container">
+    <h3>Unpublished visualization</h3>
+    <PublishButton {assetURL} published="{false}" publishing="{false}" needsRepublish="{false}" />
+
+    <h3>Publish in progress</h3>
+    <PublishButton {assetURL} published="{false}" publishing="{true}" needsRepublish="{false}" />
+
+    <h3>Publish in progress (takes longer)</h3>
+    <PublishButton
+        {assetURL}
+        published="{false}"
+        publishing="{true}"
+        needsRepublish="{false}"
+        publishStarted="{Date.now()-10000}"
+        now="{Date.now()}"
+        progress="{['preparing', 'rendering', 'uploading']}"
+    />
+
+    <h3>Published successfully</h3>
+    <PublishButton {assetURL} published="{true}" publishing="{false}" needsRepublish="{false}" progress="{['done']}" />
+
+    <h3>Published successfully (later versions)</h3>
+    <PublishButton {assetURL} published="{true}" publishing="{false}" needsRepublish="{false}" progress="{['done']}" publicVersion="2" />
+
+    <h3>Published successfully (later versions, no redirect)</h3>
+    <PublishButton
+        {assetURL}
+        published="{true}"
+        publishing="{false}"
+        needsRepublish="{false}"
+        progress="{['done']}"
+        publicVersion="2"
+        redirectDisabled
+    />
+
+    <h3>Published visualization (after reload)</h3>
+    <PublishButton {assetURL} published="{true}" publishing="{false}" needsRepublish="{false}" />
+
+    <h3>Needs re-publish</h3>
+    <PublishButton {assetURL} published="{true}" publishing="{false}" needsRepublish="{true}" />
+
+    <h3>Re-publish in progress</h3>
+    <PublishButton {assetURL} published="{true}" publishing="{true}" needsRepublish="{false}" />
+
+    <h3>Re-publish in progress (takes longer)</h3>
+    <PublishButton
+        {assetURL}
+        published="{true}"
+        publishing="{true}"
+        needsRepublish="{false}"
+        publishStarted="{Date.now()-10000}"
+        now="{Date.now()}"
+        progress="{['preparing', 'rendering', 'uploading']}"
+    />
+
+    <h3>Un-publish in progress</h3>
+    <PublishButton {assetURL} published="{true}" unpublishing="{true}" />
+
+    <h3>Un-published successfully</h3>
+    <PublishButton {assetURL} published="{false}" unpublished="{true}" />
+
+    <h3>Publish error</h3>
+    <PublishButton {assetURL} published="{false}" publishError="Something went wrong (will contain specific error message provided by the server)" />
+
+    <h3>Re-publish error</h3>
+    <PublishButton
+        {assetURL}
+        published="{true}"
+        on:unpublish="console.log('Unpublish!')"
+        publishError="Something went wrong (will contain specific error message provided by the server)"
+    />
+</div>
+
+<script>
+    import PublishButton from '../publish/PublishButtonControl.html';
+
+    export default {
+        components: { PublishButton },
+        helpers: { assetURL: process.env.STORYBOOK_ICONS_URL },
+        data() {
+            return {};
+        }
+    };
+</script>
+
+<style>
+    h3 {
+        margin-top: 2em;
+    }
+    h3:first-child {
+        margin-top: 0;
+    }
+
+    .container {
+        max-width: 470px;
+    }
+</style>

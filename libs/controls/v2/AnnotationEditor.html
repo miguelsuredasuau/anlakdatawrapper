@@ -1,0 +1,475 @@
+<svelte:window on:keydown="handleWindowKeydown(event)" on:click="handleWindowClick(event)" />
+
+<div id="svelte-annotations-wrap" ref:wrap>
+    <Group label="{__('controls / annotations / text-annotations')}">
+        {#if editorState.disableControls}
+        <p class="mini-help">{@html editorState.messages.disableControls}</p>
+        {:else} {#if editorState.createMode === 'text'}
+        <div class="new-annotation">
+            <img src="/static/img/new-annotation-drag.gif" alt="Animation showing how to drag a new annotation" />
+            <p class="text">
+                {@html __(`controls / annotations / text-annotations / drag-note-${isMap ? 'map' : 'chart'}`)}
+            </p>
+            <button class="btn" on:click="exitCreateMode()">{__('ui / cancel')}</button>
+        </div>
+        {:else}
+        <button class="btn btn-primary btn-add block" class:disabled="editorState.createMode === 'range'" on:click="enterCreateTextMode()">
+            <i class="fa fa-plus"></i> {__('controls / annotations / text-annotations / add')}
+        </button>
+        {/if} {#if annotationList.length}
+        <ListInput
+            items="{annotationList}"
+            itemRenderer="{AnnotationListItem}"
+            draggable="{true}"
+            deselectable="{true}"
+            on:itemDrag="dragAnnotation(event)"
+            bind:selected="editorState.selectedTextAnnotations"
+        />
+        {/if} {#if editorState.selectedTextAnnotations.length === 1}
+        <AnnotationEditor
+            bind:selected="editorState.selectedTextAnnotations[0]"
+            bind:annotationData="$metadata.visualize['text-annotations']"
+            on:deleteAnnotations="deleteTextAnnotations(event)"
+            on:duplicateAnnotation="duplicateTextAnnotation(event)"
+            {isMap}
+            {editorState}
+        />
+        {:elseif editorState.selectedTextAnnotations.length > 1}
+        <MultiAnnotationEditor
+            bind:selected="editorState.selectedTextAnnotations"
+            bind:annotationData="$metadata.visualize['text-annotations']"
+            on:deleteAnnotations="deleteTextAnnotations(event)"
+        />
+        {/if} {/if}
+    </Group>
+</div>
+
+{#if rangeAnnotations}
+<div id="svelte-range-annotations-wrap" ref:rangeWrap>
+    <Group label="{__('controls / annotations / range-annotations')}">
+        {#if editorState.disableControls}
+        <p class="mini-help">{@html editorState.messages.disableControls}</p>
+        {:else} {#if editorState.createMode === 'range'}
+        <div class="new-annotation">
+            <img src="/static/img/new-highlight-drag.gif" alt="Animation showing how to drag a new range highlight" />
+            <p class="text">{@html __('controls / annotations / range-annotations / drag-note')}</p>
+            <button class="btn" on:click="exitCreateMode()">{__('ui / cancel')}</button>
+        </div>
+        {:else}
+        <button class="btn btn-add block" class:disabled="editorState.createMode === 'text'" on:click="enterCreateRangeMode()">
+            <i class="fa fa-plus"></i> {__('controls / annotations / range-annotations / add')}
+        </button>
+        {/if} {#if rangeAnnotationList.length}
+        <ListInput
+            items="{rangeAnnotationList}"
+            itemRenderer="{RangeAnnotationListItem}"
+            deselectable="{true}"
+            bind:selected="editorState.selectedRangeAnnotations"
+        />
+        {/if} {#if editorState.selectedRangeAnnotations.length === 1}
+        <RangeAnnotationEditor
+            bind:selected="editorState.selectedRangeAnnotations[0]"
+            bind:annotationData="$metadata.visualize['range-annotations']"
+            on:deleteAnnotations="deleteRangeAnnotations(event)"
+            {isMap}
+            {editorState}
+        />
+        {:elseif editorState.selectedRangeAnnotations.length > 1}
+        <MultiRangeAnnotationEditor
+            bind:selected="editorState.selectedRangeAnnotations"
+            bind:annotationData="$metadata.visualize['range-annotations']"
+            on:deleteAnnotations="deleteRangeAnnotations(event)"
+        />
+        {/if} {/if}
+    </Group>
+</div>
+{/if}
+
+<style>
+    .block {
+        display: block;
+    }
+    .btn-add {
+        margin-bottom: 10px;
+    }
+    .new-annotation {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+    .new-annotation img {
+        width: 60px;
+        height: 30px;
+        margin-right: 10px;
+    }
+    .new-annotation .text {
+        font-size: 12px;
+        line-height: 15px;
+        font-weight: 400;
+        color: #666;
+        margin: 0;
+    }
+    .new-annotation button {
+        margin-left: 2em;
+    }
+    :global(#svelte-annotations-wrap) .warning {
+        background: #ffe;
+        padding: 10px !important;
+        border: 1px solid #e9cc7f;
+        border-radius: 5px;
+        color: #614a0d;
+        margin: 10px 0 0;
+        margin-bottom: 10px;
+    }
+    :global(#svelte-annotations-wrap) .message-action {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    :global(#svelte-range-annotations-wrap) .mini-chart {
+        position: relative;
+        display: inline-block;
+        width: 23px;
+        height: 21px;
+        border-left: 1px solid #444;
+        border-bottom: 1px solid #444;
+        overflow: hidden;
+        margin: 1px 7px 0px;
+    }
+
+    :global(#svelte-range-annotations-wrap li) .mini-chart {
+        position: relative;
+        display: inline-block;
+        margin: 4px 4px 3px 4px;
+    }
+
+    :global(#svelte-range-annotations-wrap li) .mini-chart {
+        position: relative;
+        display: inline-block;
+        margin: 4px 7px 3px 3px;
+    }
+
+    :global(#svelte-range-annotations-wrap) .mini-chart * {
+        position: absolute;
+    }
+
+    :global(#svelte-range-annotations-wrap) .mini-chart .x {
+        height: 100%;
+    }
+
+    :global(#svelte-range-annotations-wrap) .mini-chart .y {
+        width: 100%;
+    }
+</style>
+
+<script>
+    /* globals dw */
+    import Group from './Group.html';
+    import ListInput from './ListInput.html';
+
+    import AnnotationEditor from './annotations/AnnotationEditor.html';
+    import MultiAnnotationEditor from './annotations/MultiAnnotationEditor.html';
+    import MultiRangeAnnotationEditor from './annotations/MultiRangeAnnotationEditor.html';
+
+    import AnnotationListItem from './annotations/AnnotationListItem.html';
+    import { defaultProps } from './annotations/lib/defaults.mjs';
+    import { mergeWithTheme, getRangeAnnotationIcon } from './annotations/lib/shared.mjs';
+
+    import RangeAnnotationEditor from './annotations/RangeAnnotationEditor.html';
+    import RangeAnnotationListItem from './annotations/RangeAnnotationListItem.html';
+
+    import get from '@datawrapper/shared/get';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import clone from '@datawrapper/shared/clone';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        components: { Group, ListInput, AnnotationEditor, MultiAnnotationEditor, RangeAnnotationEditor, MultiRangeAnnotationEditor },
+        data() {
+            return {
+                defaultProps: clone(defaultProps),
+                visType: null,
+                annotationLayer: null,
+                annotationLayerOff: null,
+                rangeAnnotations: false,
+                editorState: {
+                    defaults: {},
+                    selectedTextAnnotations: [],
+                    selectedRangeAnnotations: [],
+                    createMode: false,
+                    disableControls: false,
+                    hideConnectorLine: false,
+                    forceOffsetDrag: false,
+                    messages: {
+                        disableControls: ''
+                    }
+                }
+            };
+        },
+        helpers: {
+            __,
+            AnnotationListItem,
+            RangeAnnotationListItem
+        },
+        computed: {
+            annotationList({ $metadata }) {
+                const annotationData = get($metadata, 'visualize.text-annotations', []);
+                if (!annotationData.length) return [];
+
+                const annotationList = annotationData.map((a, i) => {
+                    return {
+                        id: i,
+                        text: purifyHtml(a.text || '', ''),
+                        showDesktop: a.showDesktop,
+                        showMobile: a.showMobile
+                    };
+                });
+
+                return annotationList;
+            },
+            rangeAnnotationList({ $metadata, editorState }) {
+                return get($metadata, 'visualize.range-annotations', []).map((el, i) => {
+                    return {
+                        id: i,
+                        icon: getRangeAnnotationIcon(el, editorState),
+                        ...el
+                    };
+                });
+            },
+            isMap({ visType }) {
+                if (visType === 'd3-maps-choropleth' || visType === 'd3-maps-symbols') return true;
+                return false;
+            }
+        },
+        methods: {
+            syncAnnotationLayer(annotationLayer) {
+                let { annotationLayerOff } = this.get();
+                if (typeof annotationLayerOff === 'function') annotationLayerOff();
+                annotationLayerOff = annotationLayer.$on('update', () => this.updateState());
+                this.set({ annotationLayer, annotationLayerOff });
+            },
+            updateState() {
+                const { $metadata, editorState } = this.get();
+                this.set({ $metadata, editorState });
+                // we need to manually save metadata changes since
+                // setting `$metadata` above does not cause a store state update
+                this.store.set({ metadata: $metadata });
+            },
+            setEditorState(propObj) {
+                const { editorState } = this.get();
+
+                Object.keys(propObj).forEach(key => {
+                    let value = propObj[key];
+                    editorState[key] = value;
+                });
+
+                this.set({ editorState });
+            },
+            enterCreateTextMode() {
+                this.setEditorState({ createMode: 'text', selectedTextAnnotations: [], selectedRangeAnnotations: [] });
+            },
+            enterCreateRangeMode() {
+                this.setEditorState({ createMode: 'range', selectedTextAnnotations: [], selectedRangeAnnotations: [] });
+            },
+            exitCreateMode() {
+                this.setEditorState({ createMode: false });
+            },
+            dragAnnotation(event) {
+                const { items } = event;
+
+                // don't do anything if order of items has stayed the same
+                if (items.every((item, index) => item.id === index)) return;
+
+                // save dragged annotation and deselect
+                // @todo: figure out why selection from `ListInput` doesn't automatically work properly
+                const { editorState } = this.get();
+                const selectedPrev = editorState.selectedTextAnnotations;
+                this.setEditorState({ selectedTextAnnotations: [] });
+
+                const annotationData = this.store.getMetadata('visualize.text-annotations');
+                // re-sort annotations using the new order of items in list
+                const updatedAnnotationData = items.map(item => annotationData[item.id]);
+                this.store.setMetadata('visualize.text-annotations', updatedAnnotationData);
+
+                // select dragged annotation
+                const selectedNew = items.findIndex(item => item.id === selectedPrev[0]);
+                this.setEditorState({ selectedTextAnnotations: [selectedNew] });
+            },
+            deleteTextAnnotations(ids) {
+                this.setEditorState({ selectedTextAnnotations: [] });
+                const annotationData = this.store.getMetadata('visualize.text-annotations');
+                const updatedAnnotationData = annotationData.slice();
+
+                // sort ids in descending order to enable removing them without messing up the index
+                ids.sort((a, b) => b - a);
+                ids.forEach(id => updatedAnnotationData.splice(id, 1));
+                this.store.setMetadata('visualize.text-annotations', updatedAnnotationData);
+            },
+            deleteRangeAnnotations(ids) {
+                this.setEditorState({ selectedRangeAnnotations: [] });
+                const annotationData = this.store.getMetadata('visualize.range-annotations');
+                const updatedAnnotationData = annotationData.slice();
+
+                // sort ids in descending order to enable removing them without messing up the index
+                ids.sort((a, b) => b - a);
+                ids.forEach(id => updatedAnnotationData.splice(id, 1));
+                this.store.setMetadata('visualize.range-annotations', updatedAnnotationData);
+            },
+            duplicateTextAnnotation(id) {
+                this.setEditorState({ selectedTextAnnotations: [] });
+                const annotationData = this.store.getMetadata('visualize.text-annotations');
+                const updatedAnnotationData = annotationData.slice();
+                const newAnnotation = clone(updatedAnnotationData[id]);
+                newAnnotation.text += ' (copy)';
+                updatedAnnotationData.unshift(newAnnotation);
+                this.store.setMetadata('visualize.text-annotations', updatedAnnotationData);
+                this.setEditorState({ selectedTextAnnotations: [0] });
+            },
+            handleWindowKeydown(event) {
+                const { editorState } = this.get();
+                if (editorState.createMode && event.key === 'Escape') {
+                    this.exitCreateMode();
+                }
+            },
+            handleWindowClick(event) {
+                if (typeof event.composedPath === 'function') {
+                    const path = event.composedPath();
+                    if (this.refs.wrap && !path.some(item => item.id === this.refs.wrap.id)) {
+                        setTimeout(() => this.setEditorState({ selectedTextAnnotations: [] }));
+                    }
+                    if (this.refs.rangeWrap && !path.some(item => item.id === this.refs.rangeWrap.id)) {
+                        setTimeout(() => this.setEditorState({ selectedRangeAnnotations: [] }));
+                    }
+                }
+            },
+            /**
+             * `addMessageAction` can be used by the vis plugin to include a function which will run
+             * when user clicks on a button included in the message. Both message and function
+             * are defined in vis plugin code.
+             *
+             * For example, say you want to disable controls based on some state in the visualisation.
+             * This is what your code in the vis plugin would look like:
+             *
+             * const { editorState } = annotationControls.get();
+             * editorState.disableControls = true;
+             * editorState.messages = {
+             *     disableControls: 'Please <span class="message-action">do this</span> to edit annotations.'
+             * };
+             * const actionFunc = () => { ... code which sets vis to a state where we can enable controls again ... }
+             * annotationControls.addMessageAction(actionFunc);
+             * annotationControls.set({ editorState });
+             */
+            addMessageAction(actionFunc) {
+                setTimeout(() => {
+                    const actionEl = document.querySelector('.message-action');
+                    if (!actionEl) return this.addMessageAction(actionFunc);
+                    actionEl.addEventListener('click', () => actionFunc());
+                }, 500);
+            }
+        },
+        oncreate() {
+            dw.backend.hooks.register('get-annotation-controls', () => {
+                const controls = this;
+
+                return {
+                    syncAnnotationLayer(annotationLayer) {
+                        controls.syncAnnotationLayer(annotationLayer);
+                    },
+                    set(prop) {
+                        controls.set(prop);
+                    },
+                    get() {
+                        return controls.get();
+                    },
+                    addMessageAction(actionFunc) {
+                        controls.addMessageAction(actionFunc);
+                    }
+                };
+            });
+
+            const register =
+                document.querySelector('#iframe-vis') &&
+                document.querySelector('#iframe-vis').contentWindow &&
+                document.querySelector('#iframe-vis').contentWindow.__registerAnnotationControls;
+
+            if (typeof register === 'function') register(dw.backend.hooks.call('get-annotation-controls').results[0]);
+
+            this.refs.wrap.addEventListener('deleteInList', e => {
+                this.deleteTextAnnotations([e.detail]);
+            });
+
+            if (this.refs.rangeWrap) {
+                this.refs.rangeWrap.addEventListener('deleteInList', e => {
+                    this.deleteRangeAnnotations([e.detail]);
+                });
+            }
+        },
+        ondestroy() {
+            dw.backend.hooks.unregister('get-annotation-controls');
+        },
+        onstate({ current, changed, previous }) {
+            // first load: we merge theme properties into defaults
+            // and populate any missing properties with these defaults
+            if (!previous) {
+                // @todo: :'( needed this fix for the annotate tab in d3maps
+                setTimeout(() => {
+                    // set vis type
+                    const { type } = this.store.get();
+                    this.set({ visType: type });
+
+                    const { defaultProps, editorState } = this.get();
+                    const { themeData } = this.store.get();
+
+                    // set defaults for the render app to use when creating new annotations
+                    editorState.defaults.text = clone(mergeWithTheme(defaultProps.text, themeData, 'text'));
+                    editorState.defaults.range = clone(mergeWithTheme(defaultProps.range, themeData, 'range'));
+                    editorState.defaults.line = clone(mergeWithTheme(defaultProps.line, themeData, 'line'));
+
+                    this.set({ editorState });
+
+                    // when controls app is opened, we populate annotation metadata
+                    // with an empty array in case no annotations exist yet.
+                    // this is needed so that annotations created in render app can be pushed somewhere.
+                    const annotationData = this.store.getMetadata('visualize.text-annotations', []);
+
+                    // populate annotations with default properties for any missing property
+                    // and store in chart metadata
+                    const updatedAnnotationData = annotationData.slice().map(a => {
+                        return { ...clone(mergeWithTheme(defaultProps.text, themeData)), ...a };
+                    });
+                    this.store.setMetadata('visualize.text-annotations', updatedAnnotationData);
+                }, 10);
+            }
+
+            // push state updates from controls to render layer
+            if (previous && current.annotationLayer) {
+                const textAnnotationData = this.store.getMetadata('visualize.text-annotations', []);
+                const rangeAnnotationData = this.store.getMetadata('visualize.range-annotations', []);
+                const { editorState } = this.get();
+                current.annotationLayer.$set({
+                    textAnnotations: textAnnotationData,
+                    rangeAnnotations: rangeAnnotationData,
+                    editorState
+                });
+            }
+
+            // this should be replaced
+            if (current.editorState && current.editorState.selectedAnnotationProps && current.editorState.selectedAnnotationProps.mobileFallback) {
+                if (document.querySelector('#iframe-vis')) {
+                    try {
+                        const { lastKeysHeight } = this.get();
+                        const keysHeight = document.querySelector('#iframe-vis').contentWindow.document.querySelector('.annotation-keys')
+                            .offsetHeight;
+
+                        if (lastKeysHeight !== keysHeight) {
+                            setTimeout(() => {
+                                document.querySelector('#iframe-vis').contentWindow.__dw.render();
+                                this.set({ lastKeysHeight: keysHeight });
+                            });
+                        }
+                    } catch (ex) {}
+                }
+            }
+        }
+    };
+</script>

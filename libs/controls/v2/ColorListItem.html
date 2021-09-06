@@ -1,0 +1,57 @@
+<div class="color-list-item" class:manual="item.manual" class:draggable="draggable">
+    <span class="color-swatch" style="background: {item.color}; border: 1px solid {chroma(item.color).darker().hex()}"></span>
+    <span class="color-label">{@html item.label}</span>
+    {#if item.label !== item.id}
+    <span class="original-label">({@html item.id})</span>
+    {/if}
+</div>
+
+<style>
+    .color-list-item {
+        overflow: hidden;
+        line-height: 1.2em;
+        margin: 3px 7px 3px 3px;
+    }
+
+    .manual.color-list-item {
+        line-height: 1.2;
+        margin: 0 3px 3px 0;
+    }
+
+    .color-swatch {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 5px;
+        margin: 0 3px 0 0;
+        box-sizing: border-box;
+        line-height: 10px;
+    }
+
+    .color-label,
+    .original-label {
+        color: #999;
+        font-style: italic;
+    }
+
+    .manual .color-swatch {
+        border-radius: 2px;
+        width: 15px;
+        height: 15px;
+        margin: 0 2px 0 0;
+        position: relative;
+        top: 2px;
+    }
+
+    .manual .color-label {
+        color: #111;
+        font-style: normal;
+    }
+</style>
+
+<script>
+    import chroma from 'chroma-js';
+    export default {
+        helpers: { chroma }
+    };
+</script>

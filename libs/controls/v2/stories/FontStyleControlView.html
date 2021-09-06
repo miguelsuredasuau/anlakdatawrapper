@@ -1,0 +1,95 @@
+<p
+    style="padding: 1ex; margin-bottom: 1em; font-size: {style.fontSize}px; font-weight: {style.bold ? 'bold' : 'normal'}; font-style: {style.italic ? 'italic' : 'normal'}; letter-spacing: {style.wide ? '0.2rem': '0'}; text-decoration: {style.underline ? 'underline' : 'none'}; color: {style.color || 'auto'}; background: {style.background || 'transparent'}; "
+>
+    Lorem Ipsum Dolor
+</p>
+
+<FontStyleControl bind:value="style" label="Format" labelWidth="50px" />
+<FontStyleControl bind:value="style" label="Format" labelWidth="50px" spacing="1" />
+<FontStyleControl bind:value="style" label="Format" labelWidth="50px" spacing="1" color="1" />
+<FontStyleControl
+    bind:value="style"
+    label="Format"
+    labelWidth="50px"
+    color="1"
+    background="1"
+    fontSize="1"
+    colorReset="Default"
+    backgroundReset="Transparent"
+/>
+<FontStyleControl bind:value="style" label="Format" labelWidth="50px" color="1" fontSize="1" />
+<FontStyleControl bind:value="style" label="Format" labelWidth="50px" fontSize="1" />
+<FontStyleControl bind:value="style" label="Format" labelWidth="50px" fontSize="1" />
+<FontStyleControl bind:value="style2" label="Format" labelWidth="50px" fontSize="1" fontSizePercent="1" />
+
+<p>Indeterminate:</p>
+<FontStyleControl indeterminate="{{bold: true}}" bind:value="style" label="Format" labelWidth="50px" fontSize="1" />
+<FontStyleControl indeterminate="{{italic: true}}" bind:value="style" label="Format" labelWidth="50px" fontSize="1" />
+<FontStyleControl indeterminate="{{underline: true}}" bind:value="style" label="Format" labelWidth="50px" fontSize="1" />
+
+<hr />
+<p>Disabled:</p>
+<FontStyleControl disabled="1" bind:value="style2" label="Format" labelWidth="50px" fontSize="1" fontSizePercent="1" />
+
+<hr />
+<p>Help:</p>
+<FontStyleControl
+    bind:value="style"
+    label="Format + Help"
+    labelWidth="50px"
+    spacing="1"
+    color="1"
+    defaultColor="black"
+    background="1"
+    defaultBackground="white"
+    fontSize="1"
+    colorReset="Default"
+    backgroundReset="Transparent"
+    help="This can hold a help text including some <b>HTML</b>"
+/>
+<hr />
+
+<script>
+    import FontStyleControl from '../FontStyleControl.html';
+
+    // needs a theme palette
+    import { Store } from 'svelte/store.js';
+    const store = new Store({
+        themeData: {
+            colors: {
+                palette: ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99']
+            }
+        }
+    });
+
+    export default {
+        components: { FontStyleControl },
+        data() {
+            return {
+                style: {
+                    bold: false,
+                    italic: false,
+                    underline: false,
+                    wide: false,
+                    color: '#000000',
+                    background: '#ffffff',
+                    fontSize: 13
+                },
+                style2: {
+                    bold: false,
+                    italic: false,
+                    underline: false,
+                    wide: false,
+                    color: '#000000',
+                    background: '#ffffff',
+                    fontSize: 1
+                },
+                indeterminate: {
+                    bold: true,
+                    underline: true
+                }
+            };
+        },
+        store: () => store
+    };
+</script>

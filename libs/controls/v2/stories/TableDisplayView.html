@@ -1,0 +1,104 @@
+<p><em>Automatic column widths (default):</em></p>
+
+<TableControl columnHeaders="{[{ title: 'City' }, { title: 'District' }]}">
+    <tr>
+        <td>Berlin</td>
+        <td>Märkisches Viertel</td>
+    </tr>
+    <tr>
+        <td>Eberswalde</td>
+        <td>Brandenburgisches Viertel</td>
+    </tr>
+    <tr>
+        <td>Stuttgart</td>
+        <td>Hallschlag</td>
+    </tr>
+</TableControl>
+
+<p><em>Explicit column width:</em></p>
+
+<TableControl columnHeaders="{[{ title: 'City', width: '50%' }, { title: 'District', width: '50%'  }]}">
+    <tr>
+        <td>Berlin</td>
+        <td>Märkisches Viertel</td>
+    </tr>
+    <tr>
+        <td>Eberswalde</td>
+        <td>Brandenburgisches Viertel</td>
+    </tr>
+    <tr>
+        <td>Stuttgart</td>
+        <td>Hallschlag</td>
+    </tr>
+</TableControl>
+
+<p><em>Sorting:</em></p>
+
+<TableControl {columnHeaders} on:sort="sort(event)" orderBy="0">
+    {#each sortedData as row}
+    <tr>
+        {#each row as value}
+        <td>{ value }</td>
+        {/each}
+    </tr>
+    {/each}
+</TableControl>
+
+<script>
+    import TableDisplay from '../TableDisplay.html';
+
+    const columnHeaders = [
+        {
+            title: 'Character',
+            orderBy: '0'
+        },
+        {
+            title: 'Number',
+            orderBy: '1'
+        },
+        {
+            title: 'Fruit',
+            orderBy: '2'
+        }
+    ];
+
+    const data = [
+        ['A', 9, 'Blackberry'],
+        ['B', 8, 'Apple'],
+        ['C', 7, 'Raspberry'],
+        ['D', 6, 'Pear'],
+        ['E', 5, 'Watermellon'],
+        ['F', 4, 'Strawberry'],
+        ['G', 3, 'Banana'],
+        ['H', 2, 'Elderberry'],
+        ['I', 1, 'Orange']
+    ];
+
+    export default {
+        components: { TableControl: TableDisplay },
+
+        data() {
+            return {
+                columnHeaders,
+                data,
+                orderBy: '0',
+                order: 'ASC'
+            };
+        },
+
+        computed: {
+            sortedData: ({ data, orderBy, order }) =>
+                data.sort((a, b) => {
+                    const direction = order === 'ASC' ? 1 : -1;
+                    const comparison = a[orderBy] > b[orderBy] ? 1 : -1;
+                    return direction * comparison;
+                })
+        },
+
+        methods: {
+            sort({ orderBy, order }) {
+                this.set({ orderBy, order });
+            }
+        }
+    };
+</script>

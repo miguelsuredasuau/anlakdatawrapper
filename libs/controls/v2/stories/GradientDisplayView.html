@@ -1,0 +1,28 @@
+<h3>Lots of funny gradients:</h3>
+
+<ul class="unstyled">
+    {#each gradients as stops}
+    <li><GradientDisplay stops="{stops}" width="300" height="17" /></li>
+    {/each}
+</ul>
+
+<script>
+    import GradientDisplay from '../GradientDisplay.html';
+    import chroma from 'chroma-js';
+
+    export default {
+        components: { GradientDisplay },
+        helpers: {
+            gradients: [
+                [{ color: '#ffffff', offset: 0 }, { color: '#000000', offset: 1 }],
+                [{ color: '#ffff00', offset: 0 }, { color: '#cc0055', offset: 0.5 }, { color: '#440000', offset: 1 }]
+            ]
+                // add some more from chroma.js/colorbrewer for fun
+                .concat(
+                    Object.keys(chroma.brewer)
+                        .slice(0, 10)
+                        .map(id => chroma.brewer[id].map((color, index) => ({ offset: index / (chroma.brewer[id].length - 1), color })))
+                )
+        }
+    };
+</script>

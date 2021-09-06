@@ -1,0 +1,114 @@
+<ColorScaleEditor
+    preview="{showPreview}"
+    usePalette="{usePalette}"
+    optional="{false}"
+    allowNumbers="{allowNumbers}"
+    bind:value
+    columns="{columns}"
+    column="{column}"
+/>
+
+<hr style="margin-top: 5em" />
+<div class="helper">
+    <SelectControl bind:value="column" label="column" options="{columns.map(c => ({value:c, label:c.name()}))}" />
+    <CheckboxControl label="accept numeric columns" bind:value="allowNumbers" />
+    <CheckboxControl label="use palette" bind:value="usePalette" />
+    <CheckboxControl label="show preview" bind:value="showPreview" />
+    <p class="mini-help">stored value</p>
+    <pre>
+    {JSON.stringify(value, null, 4)}
+    </pre>
+</div>
+
+<script>
+    import ColorScaleEditor from '../ColorScaleEditor.html';
+    import CheckboxControl from '../CheckboxControl.html';
+    import SelectControl from '../SelectControl.html';
+    import Column from '@datawrapper/chart-core/lib/dw/dataset/column';
+    import { randomNormal, randomLogNormal, randomInt } from 'd3-random';
+    import { range } from 'underscore';
+    import { simpleTheme } from './lib/themeStore';
+    import fruits from './lib/fruits';
+    const parties = ['CDU', 'SPD', 'GRÜNE', 'LINKE', 'FDP', 'AFD'];
+
+    const columns = [
+        Column('normal', range(400).map(randomNormal(50, 10)), 'number'),
+        Column(
+            'two normals',
+            range(300)
+                .map(randomNormal(30, 6))
+                .concat(range(200).map(randomNormal(60, 5))),
+            'number'
+        ),
+        Column(
+            'five normals',
+            [].concat.apply([], [20, 45, 60, 75, 100].map((mean, i) => range(50).map(randomNormal(mean, i % 2 === 0 ? 5 : 3)))),
+            'number'
+        ),
+        Column('log normal', range(300).map(randomLogNormal(0.35, 0.53)), 'number'),
+        Column(
+            'fruits',
+            range(300)
+                .map(randomInt(fruits.length))
+                .map(i => fruits[i], 'text')
+        ),
+        Column(
+            'parties',
+            range(200)
+                .map(randomInt(parties.length))
+                .map(i => parties[i], 'text')
+        )
+    ];
+
+    export default {
+        components: { ColorScaleEditor, CheckboxControl, SelectControl },
+        data() {
+            return {
+                customize: true,
+                allowNumbers: true,
+                usePalette: true,
+                showPreview: false,
+                colors: [],
+                column: columns[0],
+                value: {
+                    enabled: false,
+                    enabled2: false,
+                    mode: 'continuous',
+                    interpolation: 'equidistant',
+                    stops: 'pretty',
+                    map: { CDU: '#222222', SPD: '#dd0000' },
+                    stopCount: 5,
+                    rangeMin: '',
+                    rangeMax: '',
+                    rangeCenter: '',
+                    palette: [],
+                    colors: ['#b2182b', '#ef8a62', '#fddbc7', '#f8f6e9', '#d1e5f0', '#67a9cf', '#2166ac'].map((color, i) => ({
+                        color,
+                        position: i / 6
+                    })),
+                    categoryOrder: ['CDU', 'SPD'],
+                    categoryLabels: { CDU: 'CDU/CSU' }
+                }
+            };
+        },
+        store: () => simpleTheme,
+        helpers: {
+            columns
+        },
+        onstate({ changed, current }) {
+            if (changed.optional && current.optional && current.value.enabled) {
+                current.value.enabled = false;
+                this.set({ value: current.value });
+            }
+        }
+    };
+</script>
+
+<style>
+    .helper {
+        opacity: 0.4;
+    }
+    .helper:hover {
+        opacity: 1;
+    }
+</style>

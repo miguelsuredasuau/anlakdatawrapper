@@ -1,0 +1,71 @@
+# SnackbarDisplay
+
+Show a message positioned by the bottom of its container. The message will automatically disappear
+after a delay or when a Close button is clicked.
+
+Use `SnackbarText` to add text to the component:
+
+```html
+<script>
+    import SnackbarDisplay from '@datawrapper/controls/SnackbarDisplay.svelte';
+    import SnackbarText from '@datawrapper/controls/SnackbarText.svelte';
+</script>
+
+<SnackbarDisplay>
+    <SnackbarText>Successfully pasted your data into the table.</SnackbarText>
+</SnackbarDisplay>
+```
+
+Use `SnackbarButton` to add additional button(s) to the component:
+
+```html
+<script>
+    import SnackbarButton from '@datawrapper/controls/SnackbarButton.svelte';
+</script>
+
+<SnackbarDisplay>
+    <SnackbarText>Successfully pasted your data into the table.</SnackbarText>
+    <SnackbarButton on:click={handleClick}><i class="fa fa-undo" /> Revert</SnackbarButton>
+    <SnackbarButton on:click={handleClick}>Spam</SnackbarButton>
+</SnackbarDisplay>
+```
+
+Use the `delay` property to set the number of milliseconds after which the Snackbar will close
+itself:
+
+```html
+<SnackbarDisplay delay="5000">
+    <SnackbarText>Successfully pasted your data into the table.</SnackbarText>
+</SnackbarDisplay>
+```
+
+Set `delay` to zero to disable automatic closing (the component can still be closed using the Close
+button):
+
+```html
+<SnackbarDisplay delay="0">
+    <SnackbarText>Successfully pasted your data into the table.</SnackbarText>
+</SnackbarDisplay>
+```
+
+You can also manually close or show the component using the bound `closed` property:
+
+```html
+<script>
+    let closed = false;
+</script>
+
+<button on:click="{() => (closed = !closed)}">toggle</button>
+
+<SnackbarDisplay bind:closed>
+    <SnackbarText>Successfully pasted your data into the table.</SnackbarText>
+</SnackbarDisplay>
+```
+
+Use the `class` property to pass additional classes to the top-level element of the component:
+
+```html
+<SnackbarDisplay class="my-snackbar">
+    <SnackbarText>Successfully pasted your data into the table.</SnackbarText>
+</SnackbarDisplay>
+```

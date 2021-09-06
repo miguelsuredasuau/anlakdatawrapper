@@ -1,0 +1,75 @@
+<div style="margin-bottom: 1em; padding:1em;background: {palette[value0] || value0}">
+    You selected <b>{palette[value0] ? `palette color ${value0}` : value0}</b>
+</div>
+
+normal: <ColorPickerInput bind:color="value0" /><br />
+<hr />
+
+With prepended & appended colors:
+
+<ColorPickerInput bind:color="value4" prepend="{['#f2f3f0', '#c4d8dd','#e6e9e5','#eaeae5','#ffffff']}" append="{['#000000', '#ffffff']}" />
+<br />
+
+<hr />
+
+<div style="margin-bottom: 1em; padding:1em;background: {palette[value1] || value1}">
+    You selected <b>{palette[value1] ? `palette color ${value1}` : value1}</b>
+</div>
+
+with <tt>returnPaletteIndex="true"</tt>: <ColorPickerInput bind:color="value1" returnPaletteIndex="{true}" /><br />
+
+<div style="margin: 2em 0 1em; border: 1px solid #ddd; padding:1em;background: {palette[value2] || value2 || 'transparent'}">
+    You selected <b>{palette[value2] ? `palette color ${value2}` : value2}</b>
+</div>
+
+ColorControl reset with default color: <ColorPickerInput reset="Reset color" initial="hotpink" bind:color="value2" />
+
+<div style="margin: 2em 0 1em; border: 1px solid #ddd; padding:1em;background: {palette[value3] || value3 || 'transparent'}">
+    You selected <b>{palette[value3] ? `palette color ${value3}` : value3}</b>
+</div>
+
+ColorControl reset without default color: <ColorPickerInput reset="Reset color" initial="{false}" bind:color="value3" />
+
+<hr />
+
+<h4>Set colors externally:</h4>
+
+<RadioControl bind:value="active" label="select item" options="{options}" />
+<ColorPickerInput reset="Reset color" initial="{false}" bind:color="colors[active]" />
+<hr />
+ColorControl initialized with first theme color: <ColorPickerInput reset="Reset color" bind:color="value4" /><br />
+ColorControl initialized with second theme color: <ColorPickerInput reset="Reset color" bind:color="value5" />
+
+<script>
+    import ColorPickerInput from '../ColorPickerInput.html';
+    import RadioControl from '../RadioControl.html';
+    import { simpleTheme } from './lib/themeStore';
+
+    export default {
+        components: { ColorPickerInput, RadioControl },
+        data() {
+            return {
+                value0: '#a6cee3',
+                value1: 0,
+                value2: 'hotpink',
+                value3: false,
+                value4: 0,
+                value5: 1,
+                active: 'red',
+                colors: {
+                    red: '#dd0000',
+                    blue: '#0099cc',
+                    orange: '#dd8800'
+                }
+            };
+        },
+        store: () => simpleTheme,
+        helpers: { palette: simpleTheme.get().themeData.colors.palette }
+    };
+</script>
+
+<style>
+    hr {
+        border-top-color: #d2d2d2;
+    }
+</style>

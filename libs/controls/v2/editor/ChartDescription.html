@@ -1,0 +1,114 @@
+<div class="story-title">
+    <div style="position: relative;">
+        <label class="hide-title">
+            <input bind:checked="$metadata.describe['hide-title']" type="checkbox" expandable />&nbsp;{ __('annotate / hide-title')}
+        </label>
+
+        <label class="control-label" for="text-title">{__('Title')}</label>
+        <TextInput disabled="{disabled.title}" bind:value="$title" autocomplete="off" id="text-title" expandable />
+
+        <label class="control-label" for="text-intro">{__('Description')}</label>
+        <TextAreaInput disabled="{disabled.intro}" bind:value="$metadata.describe.intro" id="text-intro" />
+
+        <label class="control-label" for="text-notes">{__('Notes')}</label>
+        <TextInput disabled="{disabled.notes}" bind:value="$metadata.annotate.notes" id="text-notes" expandable />
+    </div>
+
+    <div class="control-split">
+        <div class="mr-1">
+            <label class="control-label" for="text-source">{__('Source name')}</label>
+            <TextInput
+                disabled="{disabled.sourceName}"
+                bind:value="$metadata.describe['source-name']"
+                id="text-source"
+                expandable
+                placeholder="{__('name of the organisation')}"
+            />
+        </div>
+        <div class="ml-1">
+            <label class="control-label" for="text-source-link">{__('Source URL')}</label>
+            <TextInput
+                disabled="{disabled.sourceUrl}"
+                bind:value="$metadata.describe['source-url']"
+                id="text-source-link"
+                placeholder="{__('URL of the dataset')}"
+            />
+        </div>
+    </div>
+
+    <label class="control-label" for="text-byline">{__('visualize / annotate / byline')}</label>
+    <TextInput
+        disabled="{disabled.byline}"
+        bind:value="$metadata.describe.byline"
+        id="text-byline"
+        expandable
+        placeholder="{__('visualize / annotate / byline / placeholder')}"
+    />
+
+    <HelpDisplay><span>{__('visualize / annotate / aria-description / help')}</span></HelpDisplay>
+    <label class="control-label" for="aria-desc"
+        >{__('visualize / annotate / aria-description')} <i class="im im-accessibility" style="font-size: 12px;color:#999"></i>
+    </label>
+    <TextAreaInput
+        disabled="{disabled.ariaDescription}"
+        bind:value="$metadata.describe['aria-description']"
+        placeholder="{__('visualize / annotate / aria-description / placeholder')}"
+        id="aria-desc"
+    />
+</div>
+
+<script>
+    import { __ } from '@datawrapper/shared/l10n';
+    import TextInput from '../TextInput.html';
+    import TextAreaInput from '../TextAreaInput.html';
+    import HelpDisplay from '../HelpDisplay.html';
+    import get from 'lodash/get';
+
+    export default {
+        components: { TextInput, TextAreaInput, HelpDisplay },
+        helpers: { __ },
+        computed: {
+            disabled({ $externalMetadata }) {
+                return {
+                    title: !!get($externalMetadata, 'title'),
+                    intro: !!get($externalMetadata, 'describe.intro'),
+                    notes: !!get($externalMetadata, 'annotate.notes'),
+                    sourceName: !!get($externalMetadata, 'describe.source-name'),
+                    sourceUrl: !!get($externalMetadata, 'describe.source-url'),
+                    byline: !!get($externalMetadata, 'describe.byline'),
+                    ariaDescription: !!get($externalMetadata, 'describe.aria-description')
+                };
+            }
+        }
+    };
+</script>
+
+<style>
+    .control-split {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .control-label {
+        padding-top: 10px;
+    }
+
+    .hide-title {
+        opacity: 0.5;
+        display: block;
+        position: absolute;
+        right: 0;
+        top: 5px;
+        font-size: 12px !important;
+        color: #777;
+    }
+
+    .hide-title:hover {
+        opacity: 1;
+    }
+
+    .hide-title input {
+        position: relative;
+        top: -2px;
+    }
+</style>

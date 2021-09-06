@@ -1,0 +1,91 @@
+<div class="container">
+    <div class="controls">
+        <AnnotationEditor rangeAnnotations="{true}" editorState="{editorState}" />
+    </div>
+    <div class="meta">
+        <p>Annotation metadata</p>
+        <pre>{JSON.stringify($metadata.visualize, null, 2)}</pre>
+    </div>
+</div>
+
+<hr />
+
+<div style="display: none;">
+    <div ref:iframeWindow>
+        <div>
+            <div id="chart"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        display: flex;
+    }
+    .controls {
+        width: 33% !important;
+        min-width: 385px;
+        margin-right: 20px;
+    }
+    .meta {
+        width: 500px;
+        min-width: 500px;
+    }
+    .meta > p {
+        color: #888;
+    }
+</style>
+
+<script>
+    /* globals dw */
+
+    import AnnotationEditor from '../AnnotationEditor.html';
+    import Chart from '@datawrapper/chart-core/lib/dw/svelteChart';
+    import metadata from './lib/annotationMetadata.mjs';
+
+    const themeData = {
+        colors: {
+            palette: ['#18a1cd', '#1d81a2', '#15607a', '#00dca6', '#09bb9f', '#009076', '#c4c4c4', '#c71e1d', '#fa8c00', '#ffca76', '#ffe59c'],
+            picker: {
+                rowCount: 6
+            }
+        }
+    };
+
+    dw.backend.hooks = {
+        register: function() {},
+        unregister: function() {}
+    };
+
+    const chart = new Chart({ metadata, themeData });
+
+    export default {
+        components: { AnnotationEditor },
+        data() {
+            return {
+                editorState: {
+                    defaults: {},
+                    selectedTextAnnotations: [],
+                    selectedRangeAnnotations: [],
+                    createMode: false,
+                    disableControls: false,
+                    hideConnectorLine: false,
+                    forceOffsetDrag: false,
+                    messages: {
+                        disableControls: ''
+                    },
+                    dataToPx: (x, y) => [x, y],
+                    width: 800,
+                    height: 600
+                }
+            };
+        },
+        store: () => chart,
+        oncreate() {
+            this.refs.iframeWindow.annotationLayer = {
+                $on() {},
+                $set() {}
+            };
+        }
+    };
+</script>

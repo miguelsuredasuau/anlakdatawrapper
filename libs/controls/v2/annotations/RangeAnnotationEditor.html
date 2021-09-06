@@ -1,0 +1,271 @@
+<div class="well">
+    <!-- orientation & type -->
+    <div>
+        <ControlGroup label="{__('controls / annotations / range / orientation')}" labelWidth="70px">
+            {#each orientationOptions as opt}
+            <button class="btn-orientation" class:active="annotationData[selected].type === opt.value" on:click="setOrientation(opt.value)">
+                {@html opt.label}
+            </button>
+            {/each}
+        </ControlGroup>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <RadioControl
+            {labelWidth}
+            label="{__('controls / annotations / range / type')}"
+            bind:value="annotationData[selected].display"
+            disabled="{false}"
+            inline="{true}"
+            options="{typeOptions}"
+        />
+    </div>
+
+    <!-- start & end -->
+    <div class="range-position">
+        <ControlGroup {labelWidth} label="{__('controls / annotations / range / position')}" inline="{true}" type="text">
+            <div class="controls-inline">
+                {#if annotationData[selected].display !== 'line' }
+                <label>{__('controls / annotations / range / position / start')}</label>
+                {/if}
+                <input
+                    type="text"
+                    bind:value="annotationData[selected][annotationData[selected].type+'0']"
+                    on:keydown="handlePositionKeydown(event, 'annotationData[selected].type')"
+                />
+            </div>
+            {#if annotationData[selected].display !== 'line'}
+            <div class="controls-inline">
+                <label>{__('controls / annotations / range / position / end')}</label>
+                <input
+                    type="text"
+                    bind:value="annotationData[selected][annotationData[selected].type+'1']"
+                    on:keydown="handlePositionKeydown(event, 'annotationData[selected].type')"
+                />
+            </div>
+            {/if}
+        </ControlGroup>
+    </div>
+
+    <!-- color -->
+    <div>
+        <ControlGroup {labelWidth} label="{__('controls / annotations / range / color')}" valign="middle" inline="{true}">
+            <div class="controls-inline">
+                <ColorPickerInput bind:color="annotationData[selected].color" />
+            </div>
+        </ControlGroup>
+    </div>
+
+    <!-- opacity -->
+    <div>
+        <NumberControl
+            labelWidth="70px"
+            label="{__('controls / annotations / range / opacity')}"
+            bind:value="annotationData[selected].opacity"
+            unit="%"
+            min="0"
+            max="100"
+            step="1"
+            slider="{true}"
+            allowUndefined="{false}"
+        />
+    </div>
+
+    {#if annotationData[selected].display === 'line'}
+    <ControlGroup {labelWidth} label="{__('controls / annotations / type / line')}">
+        <div class="line-style">
+            <SelectButtonsControl
+                label="{__('controls / annotations / line / width')}"
+                bind:value="annotationData[selected].strokeWidth"
+                options="{strokeWidthOptions}"
+            />
+            <SelectButtonsControl
+                label="{__('controls / annotations / line / dash')}"
+                bind:value="annotationData[selected].strokeType"
+                options="{strokeTypeOptions}"
+            />
+        </div>
+    </ControlGroup>
+    {/if}
+
+    <hr />
+
+    <div class="delete-group">
+        <button class="btn btn-small btn-delete" on:click="fire('deleteAnnotations', [selected])">
+            <i class="fa fa-trash"></i>
+            {__('controls / annotations / range / delete')}
+        </button>
+    </div>
+</div>
+
+<style>
+    .controls-inline {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .controls-inline:last-child {
+        margin-right: 0;
+    }
+    :global(#svelte-range-annotations-wrap .range-position .vis-option-group-text input) {
+        width: 60px;
+    }
+    :global(#svelte-range-annotations-wrap .line-style) {
+        margin-top: 5px;
+        display: flex;
+        flex-flow: row wrap;
+    }
+    :global(#svelte-range-annotations-wrap .line-style .control-group) {
+        width: 50%;
+        margin-right: 0;
+    }
+    :global(#svelte-range-annotations-wrap .line-style .control-group::before),
+    :global(#svelte-range-annotations-wrap .line-style .control-group::after) {
+        display: none;
+    }
+    :global(#svelte-range-annotations-wrap .line-style label) {
+        display: block;
+        margin-bottom: 5px;
+        padding-top: 0;
+    }
+    .delete-group {
+        margin-top: 20px;
+    }
+    .btn-delete {
+        color: #c71e1d;
+    }
+    .btn-orientation {
+        padding: 0;
+        border: none;
+        background: white;
+        line-height: 1;
+        height: 33px;
+        outline: 1px solid #dddddd;
+    }
+    .btn-orientation:focus,
+    .btn-orientation.active {
+        outline: 2px solid #18a1cd;
+    }
+
+    .btn-orientation:last-child {
+        margin-left: 10px;
+    }
+</style>
+
+<script>
+    import RadioControl from '../RadioControl.html';
+    import ColorPickerInput from '../ColorPickerInput.html';
+    import ControlGroup from '../ControlGroup.html';
+    import NumberControl from '../NumberControl.html';
+    import SelectButtonsControl from '../SelectButtonsControl.html';
+    import { getRangeAnnotationIcon } from '../annotations/lib/shared.mjs';
+    import clone from '@datawrapper/shared/clone';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        components: {
+            RadioControl,
+            ColorPickerInput,
+            ControlGroup,
+            NumberControl,
+            SelectButtonsControl
+        },
+        helpers: {
+            __,
+            typeOptions: [
+                {
+                    value: 'range',
+                    label: __('controls / annotations / type / range')
+                },
+                {
+                    value: 'line',
+                    label: __('controls / annotations / type / line')
+                }
+            ],
+            strokeWidthOptions: [
+                {
+                    value: 1,
+                    svg: 'M 1,23 L 23,1',
+                    stroke: 1
+                },
+                {
+                    value: 2,
+                    svg: 'M 1,23 L 23,1',
+                    stroke: 2.5
+                },
+                {
+                    value: 3,
+                    svg: 'M 1,23 L 23,1',
+                    stroke: 5
+                }
+            ],
+            strokeTypeOptions: [
+                {
+                    value: 'solid',
+                    svg: 'M 1,23 L 23,1',
+                    stroke: 2
+                },
+                {
+                    value: 'dotted',
+                    svg: 'M 1 23 L 3 21 M 5 19 L 7 17 M 9 15 L 11 13 M 21 3 L 23 1 M 13 11 L 15 9 M 17 7 L 19 5',
+                    stroke: 3
+                },
+                {
+                    value: 'dashed',
+                    svg: 'M 1 23 L 5 19 M 7 17 L 11 13 M 13 11 L 17 7 M 19 5 L 23 1',
+                    stroke: 2
+                }
+            ]
+        },
+        data() {
+            return {
+                labelWidth: '70px'
+            };
+        },
+        computed: {
+            orientationOptions({ annotationData, selected, editorState }) {
+                const item = annotationData[selected];
+
+                return [
+                    {
+                        value: 'x',
+                        label: `${editorState && getRangeAnnotationIcon(Object.assign(clone(item), { type: 'x' }), editorState)}`
+                    },
+                    {
+                        value: 'y',
+                        label: `${editorState && getRangeAnnotationIcon(Object.assign(clone(item), { type: 'y' }), editorState)}`
+                    }
+                ];
+            }
+        },
+        methods: {
+            setOrientation(orientation) {
+                const { annotationData, selected } = this.get();
+                annotationData[selected].type = orientation;
+                this.set({ annotationData });
+            },
+            handlePositionKeydown(event, input) {
+                const up = event.key === 'ArrowUp';
+                const down = event.key === 'ArrowDown';
+
+                // only track arrow up and down keys
+                if (up || down) {
+                    event.preventDefault();
+
+                    const { annotationData, selected, editorState } = this.get();
+                    const { selectedAnnotationProps, pxToData } = editorState;
+                    if (!selectedAnnotationProps || !pxToData) return;
+                    let { x, y } = selectedAnnotationProps;
+
+                    if (input === 'x') x += up ? 1 : -1;
+                    else if (input === 'y') y += up ? -1 : 1;
+
+                    const [dataX, dataY] = pxToData(x, y);
+                    annotationData[selected].x = dataX;
+                    annotationData[selected].y = dataY;
+
+                    this.set({ annotationData });
+                }
+            }
+        }
+    };
+</script>

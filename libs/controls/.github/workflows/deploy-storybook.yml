@@ -1,0 +1,75 @@
+name: deploy-storybook
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  deploy-storybook:
+    runs-on: ubuntu-latest  
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Create npmrc
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > ~/.npmrc
+
+      # build & deploy storybook (v2)
+      - name: Install dependencies (v2)
+        run: cd v2 && npm ci 
+        env:
+          HUSKY_SKIP_INSTALL: 1
+      - run: |
+          echo "branch=${{ github.ref }}" | sed 's|refs/heads/||g' | sed -r 's|refs/(pull/[0-9]+)/merge|\1|g' >> $GITHUB_ENV
+      - name: Build Storybook (v2)
+        run: cd v2 && STORYBOOK_ICONS_URL=//${{ env.S3_PATH }}/${{ env.branch }}/v2/lib/icons/symbol/svg/sprite.symbol.svg npm run build-storybook
+        env:
+          S3_PATH: docs.datawrapper.de/~repos/controls
+      - name: Deploy Storybook to S3
+        uses: ItsKarma/aws-cli@v1.70.0
+        with:
+          args: s3 sync ./v2/storybook-static s3://${{ env.S3_PATH }}/${{ env.branch }}/v2/  --delete --acl public-read
+        env:
+          GITHUB_REF: ${{ env.GITHUB_REF }}
+          S3_PATH: docs.datawrapper.de/~repos/controls
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}  
+
+      # build & deploy storybook (v3)
+      - name: Install dependencies (v3)
+        run: cd v3 && npm ci 
+        env:
+          HUSKY_SKIP_INSTALL: 1
+      - name: Build Storybook (v3)
+        run: cd v3 && npm run build-storybook
+      - run: |
+          echo "branch=${{ github.ref }}" | sed 's|refs/heads/||g' | sed -r 's|refs/(pull/[0-9]+)/merge|\1|g' >> $GITHUB_ENV
+      # check contents of 
+      - name: Check contents of ./v3/storybook-static
+        run: ls ./v3/storybook-static
+      - name: Deploy Storybook to S3
+        uses: ItsKarma/aws-cli@v1.70.0
+        with:
+          args: s3 sync ./v3/storybook-static s3://${{ env.S3_PATH }}/${{ env.branch }}/v3/  --delete --acl public-read
+        env:
+          GITHUB_REF: ${{ env.GITHUB_REF }}
+          S3_PATH: docs.datawrapper.de/~repos/controls
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}  
+          
+      # post comment 
+      - name: Post comment in PR
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: KeisukeYamashita/create-comment@v1
+        with:
+          comment: |
+            **The Storybook has been deployed!** 🎉 
+            * https://${{ env.S3_PATH }}/${{ env.branch }}/v2/
+            * https://${{ env.S3_PATH }}/${{ env.branch }}/v3/
+        env:
+          S3_PATH: docs.datawrapper.de/~repos/controls        
+

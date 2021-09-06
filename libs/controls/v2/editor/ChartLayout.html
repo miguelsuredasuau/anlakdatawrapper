@@ -1,0 +1,118 @@
+<!-- This actually is just output locale -->
+<HookBlocks key="design-blocks" />
+<!-- ----------------------------------- -->
+{#if groups.layout.length }
+<Group label="{__('layout / group-layout')}">
+    <LayoutBlocks bind:blocks="groups.layout" />
+</Group>
+{/if} {#if groups.footer.length }
+<Group label="{__('layout / group-footer')}">
+    <LayoutBlocks bind:blocks="groups.footer" />
+</Group>
+{/if} {#if groups.sharing.length }
+<Group label="{__('layout / group-sharing')}">
+    <LayoutBlocks bind:blocks="groups.sharing" />
+</Group>
+{/if}
+
+<script>
+    /* globals dw */
+    import { __ } from '@datawrapper/shared/l10n';
+    import get from '@datawrapper/shared/get';
+    import Group from '../Group.html';
+    import arrayToObject from '@datawrapper/shared/arrayToObject';
+    import HookBlocks from './HookBlocks.html';
+    import LayoutBlocks from './LayoutBlocks.html';
+    import GetTheDataControl from './GetTheDataControl.html';
+    import EmbedControl from './EmbedControl.html';
+    import ThemeSelectControl from './ThemeSelectControl.html';
+    import LogoControl from './LogoControl.html';
+
+    function getBlocks(allBlocks, group, props) {
+        return allBlocks
+            .filter(d => d.group === group)
+            .filter(d => (d.visible !== undefined ? d.visible : true))
+            .sort(byPriority);
+    }
+    function byPriority(a, b) {
+        return (a.priority !== undefined ? a.priority : 999) - (b.priority !== undefined ? b.priority : 999);
+    }
+
+    export default {
+        components: {
+            Group,
+            HookBlocks,
+            LayoutBlocks
+        },
+        data() {
+            return {
+                hooksBlocks: [],
+                exclude: [],
+                initialized: false
+            };
+        },
+        computed: {
+            groups({ allBlocks }) {
+                return {
+                    footer: getBlocks(allBlocks, 'footer'),
+                    layout: getBlocks(allBlocks, 'layout'),
+                    sharing: getBlocks(allBlocks, 'sharing')
+                };
+            },
+            requireUpgrade({ allBlocks }) {
+                return allBlocks.filter(d => d.requireUpgrade).length > 1;
+            },
+            themeHasLogo({ $theme, $themeData }) {
+                const logo = get($themeData, 'options.blocks.logo.data', {});
+                return logo.text || logo.imgSrc;
+            },
+            allBlocks({ coreBlocks, hooksBlocks, initialized, exclude }) {
+                return initialized ? coreBlocks.concat(hooksBlocks).filter(d => !exclude.includes(d.name)) : [];
+            },
+            coreBlocks({ $flags, $customLayouts, themeHasLogo }) {
+                return [
+                    {
+                        name: 'embed',
+                        ui: EmbedControl,
+                        visible: ($flags && $flags.embed) || !$flags,
+                        group: 'footer',
+                        priority: 10
+                    },
+                    {
+                        name: 'get-the-data',
+                        ui: GetTheDataControl,
+                        visible: ($flags && $flags.get_the_data) || !$flags,
+                        group: 'footer',
+                        priority: 0
+                    },
+                    {
+                        name: 'logo',
+                        ui: LogoControl,
+                        visible: themeHasLogo || !$customLayouts,
+                        requireUpgrade: !$customLayouts,
+                        group: 'layout',
+                        priority: 1
+                    },
+                    {
+                        name: 'theme-select',
+                        ui: ThemeSelectControl,
+                        visible: ($flags && $flags.layout_selector) || !$flags,
+                        group: 'layout',
+                        priority: 0
+                    }
+                ];
+            }
+        },
+        helpers: { __ },
+        oncreate() {
+            // set defaults
+            const options = arrayToObject(this.store.getMetadata('publish.blocks', {}));
+            this.store.setMetadata('publish.blocks', options);
+
+            const chart = this.store;
+            /* Get plugin blocks */
+            const { results } = dw.backend.hooks.call(`design-blocks-grouped`, [chart]);
+            this.set({ hooksBlocks: results, initialized: true });
+        }
+    };
+</script>

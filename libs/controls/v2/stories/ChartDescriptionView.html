@@ -1,0 +1,11 @@
+<ChartDescription />
+
+<script>
+    import ChartDescription from '../editor/ChartDescription.html';
+    import { simpleChart } from './lib/chartStore';
+
+    export default {
+        components: { ChartDescription },
+        store: () => simpleChart
+    };
+</script>

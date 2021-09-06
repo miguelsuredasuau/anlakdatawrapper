@@ -1,0 +1,67 @@
+<div class="form-block" class:success class:error style="width:{width}">
+    {#if label}
+    <label class="control-label">{@html label}</label>
+    {/if}
+    <div class="form-controls">
+        <slot />
+    </div>
+    {#if success}
+    <div class="help success">{@html success}</div>
+    {/if} {#if error}
+    <div class="help error">{@html error}</div>
+    {/if} {#if !success && !error && help}
+    <div class="help">{@html help}</div>
+    {/if}
+</div>
+
+<script>
+    export default {
+        data() {
+            return {
+                label: '',
+                help: '',
+                error: false,
+                success: false,
+                width: 'auto'
+            };
+        }
+    };
+</script>
+
+<style>
+    .form-block {
+        margin-bottom: 20px;
+    }
+    .form-block .help.success {
+        color: #09bb9f;
+    }
+    .form-block.error .control-label {
+        color: #c71e1d;
+    }
+    .form-block .help.error {
+        color: #c71e1d;
+    }
+    .form-block.error .form-controls :global(input) {
+        border-color: #c71e1d;
+        color: #c71e1d;
+    }
+    .form-block :global(.control-group) {
+        margin-bottom: 0 !important;
+        width: 100%;
+    }
+    .form-block :global(input) {
+        margin-bottom: 0;
+    }
+    label {
+        padding-left: 1px;
+        font-weight: bold !important;
+    }
+    .help {
+        padding-left: 2px;
+        font-weight: 400;
+        color: #888;
+    }
+    .form-controls {
+        margin: 5px 0;
+    }
+</style>

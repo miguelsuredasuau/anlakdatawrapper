@@ -1,0 +1,94 @@
+<h3>Inline selects</h3>
+<p>Use automatic label and control width unless specified</p>
+
+<SelectControl options="{options}" label="inline select" bind:value />
+
+<SelectControl options="{options}" label="inline select, longer label" bind:value />
+
+<SelectControl options="{options}" label="disabled" disabled="{true}" bind:value />
+
+<SelectControl options="{options}" label="on:change events" bind:value on:change="handleChange(event)" />
+
+<SelectControl options="{options}" label="inline select, help text" miniHelp="This is some help text on an inline control" bind:value />
+
+<SelectControl options="{options}" label="inline select, custom label width for multi-line label text" valign="top" bind:value labelWidth="140px" />
+
+<SelectControl options="{options}" label="custom label width, custom control width" bind:value width="130px" labelWidth="140px" />
+
+<SelectControl
+    options="{options}"
+    label="disabled select, help text custom label width"
+    miniHelp="You can't click this because I say so"
+    disabled="{true}"
+    bind:value
+    labelWidth="140px"
+/>
+
+<hr />
+
+<h3>Non-inline selects</h3>
+<p>Use default label and control width to be consistent with other select-style controls such as SelectAxisColumnControl</p>
+
+<SelectControl options="{options}" inline="{false}" label="non-inline select" bind:value />
+
+<SelectControl options="{options}" inline="{false}" label="non-inline select, custom control width" width="150px" valign="top" bind:value />
+
+<SelectControl options="{options}" inline="{false}" label="non-inline select, custom label width" labelWidth="150px" bind:value />
+
+<SelectControl
+    options="{options}"
+    inline="{false}"
+    label="non-inline select with help text"
+    miniHelp="This is some help text on a non-inline select control"
+    bind:value
+/>
+
+<SelectControl
+    options="{options}"
+    inline="{false}"
+    label="with help text & help display"
+    miniHelp="This is some help text on a non-inline select control"
+    help="This is even more help text on a non-inline select control. And it can contain<b>HTML</b>! (really)"
+    bind:value
+/>
+
+<SelectControl
+    options="{options}"
+    inline="{false}"
+    label="disabled with help text"
+    miniHelp="You can't click this because I say so"
+    disabled="{true}"
+    bind:value
+/>
+<hr />
+<p class="mini-help">SelectInput:</p>
+<SelectInput options="{options}" label="disabled select" bind:value labelWidth="100px" />
+
+<script>
+    import SelectControl from '../SelectControl.html';
+    import SelectInput from '../SelectInput.html';
+
+    export default {
+        components: { SelectControl, SelectInput },
+        data() {
+            return { value: 'red' };
+        },
+        computed: {
+            helpOptions({ options }) {
+                return options.map(o => {
+                    return Object.assign({}, o, { help: `help balloon for <b>${o.label}</b>` });
+                });
+            },
+            tooltipOptions({ options }) {
+                return options.map(o => {
+                    return Object.assign({}, o, { tooltip: `help text for ${o.label}` });
+                });
+            }
+        },
+        methods: {
+            handleChange(event) {
+                window.alert(`Selected: **${event.target.value}**`);
+            }
+        }
+    };
+</script>

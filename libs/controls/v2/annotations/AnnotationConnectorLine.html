@@ -1,0 +1,199 @@
+<SwitchControl label="{__('controls / annotations / connector-line')}" bind:value="enabled" {disabled}>
+    {#if editorState.hideConnectorLine}
+    <div class="warning">
+        {__(`controls / annotations / connector-line / too-close-warning-${circle ? 'circle' : 'anchor'}`)}
+    </div>
+    {/if}
+
+    <div class="connector-line">
+        <SelectButtonsControl
+            labelWidth="100px"
+            options="{typeOpts}"
+            label="{__('controls / annotations / connector-line / type')}"
+            bind:value="type"
+        />
+        <SelectButtonsControl
+            labelWidth="100px"
+            options="{strokeOpts}"
+            label="{__('controls / annotations / connector-line / width')}"
+            bind:value="stroke"
+        />
+        <SelectButtonsControl
+            labelWidth="100px"
+            options="{arrowHeadOpts}"
+            label="{__('controls / annotations / connector-line / line-end')}"
+            bind:value="arrowHead"
+        />
+        <div class="control-group vis-option-group">
+            <label>{__('controls / annotations / connector-line / distance')}</label>
+            <NumberInput slider="{false}" min="0" max="15" unit="px" step="1" bind:value="targetPadding" />
+        </div>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <HelpDisplay>{__('controls / annotations / connector-line / inherit-color / help')}</HelpDisplay>
+        <CheckboxControl label="{__('controls / annotations / connector-line / inherit-color')}" bind:value="inheritColor" />
+    </div>
+</SwitchControl>
+
+<SwitchControl
+    label="{__('controls / annotations / connector-line / circle')}"
+    disabled="{!enabled || disabled}"
+    disabledMessage="{__('controls / annotations / connector-line / circle / disabled')}"
+    bind:value="circle"
+    help="{circleHelpText}"
+>
+    <div class="connector-line-circle">
+        <SelectButtonsControl
+            labelWidth="100px"
+            options="{circleStyleOpts}"
+            label="{__('controls / annotations / connector-line / circle / style')}"
+            bind:value="circleStyle"
+        />
+        <div class="control-group">
+            <label>{__('controls / annotations / connector-line / circle / size')}</label>
+            <NumberInput slider="{false}" min="0" max="100" unit="px" step="1" bind:value="circleRadius" />
+        </div>
+    </div>
+</SwitchControl>
+
+<style>
+    :global(#svelte-annotations-wrap .connector-line),
+    :global(#svelte-annotations-wrap .connector-line-circle) {
+        margin-top: 5px;
+        display: flex;
+        flex-flow: row wrap;
+    }
+    :global(#svelte-annotations-wrap .connector-line .control-group),
+    :global(#svelte-annotations-wrap .connector-line-circle .control-group) {
+        width: 50%;
+        margin-right: 0;
+    }
+    :global(#svelte-annotations-wrap .connector-line label),
+    :global(#svelte-annotations-wrap .connector-line-circle label) {
+        display: block;
+        margin-bottom: 5px;
+        padding-top: 0;
+    }
+</style>
+
+<script>
+    import NumberInput from '../NumberInput.html';
+    import CheckboxControl from '../CheckboxControl.html';
+    import HelpDisplay from '../HelpDisplay.html';
+    import SelectButtonsControl from '../SelectButtonsControl.html';
+    import SwitchControl from '../SwitchControl.html';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        components: {
+            NumberInput,
+            CheckboxControl,
+            HelpDisplay,
+            SelectButtonsControl,
+            SwitchControl
+        },
+        data() {
+            return {
+                disabled: true
+            };
+        },
+        helpers: {
+            __,
+            typeOpts: [
+                {
+                    value: 'straight',
+                    svg: 'M 1,12 L 23,12 M 18,8 L 23,12 L 18,16',
+                    stroke: 3
+                },
+                {
+                    value: 'curveRight',
+                    svg: 'M 1,14 q 12 -12 23 0 M 18,14 L 23,14 L 23,9',
+                    stroke: 3
+                },
+                {
+                    value: 'curveLeft',
+                    svg: 'M 1,10 q 12 12 23 0 M 18,10 L 23,10 L23,16',
+                    stroke: 3
+                }
+            ],
+            strokeOpts: [
+                {
+                    value: 1,
+                    svg: 'M 0,24 L 24,0',
+                    stroke: 1
+                },
+                {
+                    value: 2,
+                    svg: 'M 0,24 L 24,0',
+                    stroke: 2
+                },
+                {
+                    value: 3,
+                    svg: 'M 0,24 L 24,0',
+                    stroke: 3
+                }
+            ],
+            arrowHeadOpts: [
+                {
+                    value: 'lines',
+                    svg: 'M 15,5 L 22,12 L 15,20 M 2,12 L 22,12',
+                    stroke: 2.5
+                },
+                {
+                    value: 'triangle',
+                    svg: 'M 0,14 L 0,10.5 L8,10.5 L8,5 L 24,12 L 8,20 L8,14 Z'
+                },
+                {
+                    value: false,
+                    svg: 'M 0,12 L 24,12',
+                    stroke: 2.5
+                }
+            ],
+            circleStyleOpts: [
+                {
+                    value: 'solid',
+                    svg: 'M1,25 C1,11 11,1 25,1',
+                    stroke: 2
+                },
+                {
+                    value: 'dashed',
+                    svg: 'M1,25 C1,24 1,22 1.75,19 M3,15 C3.75,13.5 3.5,13 6.25,9.5 M9.5,6.25 C13,3.5 13.5,3.75 15,3 M19,1.75 C22,1 24,1 25,1',
+                    stroke: 2
+                }
+            ]
+        },
+        computed: {
+            circleHelpText({ isMap }) {
+                return isMap ? __('controls / annotations / connector-line / circle / help') : null;
+            }
+        },
+        onstate({ changed, current, previous }) {
+            if (!previous || changed.selected) return;
+
+            const { align, editorState } = this.get();
+
+            if (current.enabled && !previous.enabled && !editorState.forceOffsetDrag) {
+                if (current.dx !== 0 || current.dy !== 0) return;
+
+                let dx = 0;
+                let dy = 0;
+
+                if (align.includes('l')) dx = 50;
+                else if (align.includes('r')) dx = -50;
+
+                if (align.includes('t')) dy = 50;
+                else if (align.includes('b')) dy = -50;
+
+                if (align === 'mc') {
+                    dx = 0;
+                    dy = -50;
+                }
+
+                this.set({ dx, dy });
+            }
+            if (!current.enabled && previous.enabled && [-50, 0, 50].includes(current.dx) && [-50, 0, 50].includes(current.dy)) {
+                this.set({ dx: 0, dy: 0 });
+            }
+        }
+    };
+</script>

@@ -1,0 +1,38 @@
+<ControlGroup disabled="{disabled}" type="textarea" {label} {labelWidth} {miniHelp} {help} helpClass="mt-1">
+    <div class="textarea-container mt-1" style="width:{width}">
+        <TextAreaInput bind:value="value" {placeholder} {disabled} {id} {autocomplete} {width} {height} {resize} />
+    </div>
+</ControlGroup>
+
+<style>
+    :global(.vis-option-group-textarea) label.control-label {
+        vertical-align: top !important;
+        position: relative;
+        top: 6px;
+    }
+</style>
+<script>
+    import ControlGroup from './ControlGroup.html';
+    import TextAreaInput from './TextAreaInput.html';
+
+    export default {
+        components: {
+            ControlGroup,
+            TextAreaInput
+        },
+        data() {
+            return {
+                id: '',
+                autocomplete: 'off',
+                placeholder: '',
+                disabled: false,
+                labelWidth: '100px',
+                width: '100%',
+                height: 'auto',
+                resize: 'both',
+                help: null,
+                miniHelp: null
+            };
+        }
+    };
+</script>

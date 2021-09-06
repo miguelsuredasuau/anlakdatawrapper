@@ -1,0 +1,412 @@
+{#if column && column.type() === 'number'} {#if sortedValues.length > 5 && preview}
+<div style="height: 105px">
+    <HistogramDisplay
+        densityPlot="{true}"
+        values="{sortedValues}"
+        color="{colorScaleFunction}"
+        discrete="{value.mode === 'discrete'}"
+        steps="{labeledStops}"
+    />
+</div>
+{/if}
+
+<RadioControl
+    labelWidth="100px"
+    inline="{false}"
+    bind:value="value.mode"
+    label="{__('controls / color-scale / type')}"
+    help="{__('controls / color-scale / type / help')}"
+    options="{modeOptions}"
+/>
+
+<!-- stops -->
+<HelpDisplay><div>{@html __('controls / color-scale / '+(mode === 'discrete' ? 'breaks' : 'interpolation')+' / help')}</div></HelpDisplay>
+<ControlGroup labelWidth="100px" label="{__('controls / color-scale / '+(mode === 'discrete' ? 'breaks' : 'interpolation'))}">
+    <div class="flex">
+        {#if mode === 'discrete'}<NumberInput min="2" max="20" slider="{false}" bind:value="value.stopCount" /> &nbsp;
+        <SelectInput bind:value="value.stops" width="140px" options="{stopsOptions.filter(d => mode === 'discrete' || !d.discreteOnly)}" />{:else}
+        <SelectInput bind:value="value.interpolation" width="140px" options="{inerpolOptions}" />
+        {/if}
+    </div>
+</ControlGroup>
+{#if mode === 'discrete' && value.stops === 'pretty' && colorScaleFunction._stops.length-1 !== value.stopCount}
+<p class="mini-help" style="margin-left: 118px;margin-bottom: -10px">{__('controls / color-scale / pretty-note')}</p>
+{/if}
+
+<!-- continuous or diverging -->
+{#if mode === 'continuous'}
+<HelpDisplay><div>{@html __('controls / color-scale / custom-range / help')}</div></HelpDisplay>
+<ControlGroup valign="top" label="{__('controls / color-scale / range')}" labelWidth="100px">
+    <div class="flex">
+        <label
+            ><input bind:value="value.rangeMin" class="input" type="text" placeholder="{autoMin}" />
+            {__('controls / color-scale / range / min')}
+        </label>
+        <label
+            ><input bind:value="value.rangeCenter" class="input" type="text" placeholder="{autoCenter}" />
+            {__('controls / color-scale / range / center')}
+        </label>
+        <label
+            ><input bind:value="value.rangeMax" class="input" type="text" placeholder="{autoMax}" />
+            {__('controls / color-scale / range / max')}
+        </label>
+    </div>
+</ControlGroup>
+{:elseif value.stops !== 'custom'}
+<ControlGroup valign="top" label="{__('controls / color-scale / range')}" labelWidth="100px">
+    <div class="flex">
+        <label
+            ><input bind:value="value.rangeMin" class="input" type="text" placeholder="{autoMin}" />
+            {__('controls / color-scale / range / min')}
+        </label>
+        <label
+            ><input bind:value="value.rangeMax" class="input" type="text" placeholder="{autoMax}" />
+            {__('controls / color-scale / range / max')}
+        </label>
+    </div>
+</ControlGroup>
+{/if}
+
+<!-- discrete -->
+{#if value.stops === 'custom' && mode === 'discrete'}
+<ControlGroup label="{__('controls / color-scale / custom-breaks')}" valign="top" labelWidth="100px">
+    <div class="custom-breaks">
+        <ul class="unstyled">
+            {#each range(stopCount) as i}
+            <li>
+                <span class="color" style="background: {classColors[i]}"></span> {#if i===0}<input
+                    type="text"
+                    disabled="{true}"
+                    value="min"
+                />{:else}<input type="text" class:invalid="invalidStops[i]" bind:value="value.customStops[i]" />{/if} - {#if i===stopCount-1}<input
+                    type="text"
+                    disabled="{true}"
+                    value="max"
+                />{:else}<input type="text" class:invalid="invalidStops[i+1]" bind:value="value.customStops[i+1]" />{/if}
+            </li>
+            {/each}
+        </ul>
+    </div>
+    {#if invalidStops.includes(true)}
+    <p class="mini-help error">
+        <i class="fa fa-exclamation-triangle" style="color: rgb(199, 30, 29)" aria-hidden="true"></i>
+        <!-- please please please, jsprettier, don't add a linebreak -->
+        {__('controls / color-scale / custom-breaks / warning')}
+    </p>
+    {/if}
+</ControlGroup>
+{/if}{/if}
+
+<div style="position: absolute;top:0;left:0">
+    <GradientDisplay height="{0}" stops="{contGradientStops}" bind:id="contGradientId" />
+</div>
+
+<script>
+    import RadioControl from './RadioControl.html';
+    import HistogramDisplay from './HistogramDisplay.html';
+    import GradientDisplay from './GradientDisplay.html';
+    import ControlGroup from './ControlGroup.html';
+    import SelectInput from './SelectInput.html';
+    import NumberInput from './NumberInput.html';
+    import HelpDisplay from './HelpDisplay.html';
+
+    import significantDimension from '@datawrapper/shared/significantDimension';
+    import smartRound from '@datawrapper/shared/smartRound';
+    import clone from '@datawrapper/shared/clone';
+    import round from '@datawrapper/shared/round';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    import { range } from 'underscore';
+
+    import createColorScale from '@datawrapper/blocks/lib/createColorScaleD3';
+    import chroma from 'chroma-js';
+
+    export default {
+        components: { ControlGroup, RadioControl, SelectInput, NumberInput, HistogramDisplay, GradientDisplay, HelpDisplay },
+        data() {
+            return {
+                value: {
+                    marginColumn: null,
+                    enabled: false,
+                    mode: 'continuous',
+                    stops: 'equidistant',
+                    interpolation: 'equidistant',
+                    customStops: [],
+                    stopCount: 5,
+                    multiply: 1,
+                    map: {},
+                    rangeMin: '',
+                    rangeCenter: '',
+                    rangeMax: '',
+                    colors: [],
+                    palette: [],
+                    categoryOrder: [],
+                    categoryLabels: {}
+                },
+                // public
+                columns: [],
+                column: null,
+                label: '',
+                stopsDisplay: '',
+                allowNumbers: true,
+                usePalette: true,
+                switchLabel: 'ColorControl bars by column',
+                // private
+                preview: true,
+                activeColor: '#000000',
+                selection: [],
+                customizePalette: false,
+                selectionLabel: ''
+            };
+        },
+        computed: {
+            numberColumns({ columns }) {
+                return columns.filter(col => col.type() === 'number');
+            },
+            sortedValues({ column, multiply }) {
+                return column
+                    .values()
+                    .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
+                    .filter(Number.isFinite)
+                    .map(d => d * multiply);
+            },
+            roundedValues({ sortedValues, column }) {
+                return column.type() === 'number' ? smartRound(sortedValues, 2) : sortedValues;
+            },
+            autoMin({ roundedValues }) {
+                return roundedValues[0];
+            },
+            autoMax({ roundedValues }) {
+                return roundedValues[roundedValues.length - 1];
+            },
+            autoCenter({ roundedValues }) {
+                const k = roundedValues.length; // 4 [0,1,2,3]
+                return k % 2 === 1 ? roundedValues[Math.floor(k / 2)] : 0.5 * (roundedValues[k / 2 - 1] + roundedValues[k / 2]);
+            },
+            colorScaleFunction({ sortedValues, value }) {
+                const opts = {
+                    ...value,
+                    values: sortedValues
+                };
+                if (value.mode === 'continuous') {
+                    opts.stops = value.interpolation.split('-')[0];
+                    opts.stopCount = value.interpolation.split('-')[1] || 5;
+                }
+                const opts2 = clone(opts);
+
+                if (opts.stops === 'custom' && value.mode === 'discrete') {
+                    const customStopsForScale = [-Infinity, ...opts.customStops.slice(1, opts.stopCount), Infinity];
+                    opts2.customStops = customStopsForScale;
+                }
+                return createColorScale(opts2);
+            },
+            stops({ value }) {
+                return value.stops;
+            },
+            categoryOrder({ value }) {
+                return value.categoryOrder;
+            },
+            categoryLabels({ value }) {
+                return value.categoryLabels;
+            },
+            labeledStops({ colorScaleFunction, previewValueDecimals }) {
+                return (colorScaleFunction._stops || []).map((x, i) => ({ x, label: round(x, previewValueDecimals + 1) }));
+            },
+            mode({ value }) {
+                return value.mode;
+            },
+            previewValueDecimals({ autoMin, autoMax }) {
+                const steps = 10;
+                const stepSize = (autoMax - autoMin) / steps;
+                if (!stepSize) return 0;
+                return significantDimension(range(autoMin, autoMax + stepSize, stepSize));
+            },
+            useCustomStops({ stops }) {
+                return stops === 'custom';
+            },
+            palette({ value }) {
+                return value.palette;
+            },
+            columnType({ column }) {
+                return column ? column.type() : 'n/a';
+            },
+            stopCount({ value }) {
+                return value.stopCount;
+            },
+            classCenters({ stopCount, colorScaleFunction }) {
+                const min = colorScaleFunction._stops[0];
+                const max = colorScaleFunction._stops[colorScaleFunction._stops.length - 1];
+                return smartRound(range(stopCount + 1).map(i => min + ((max - min) / stopCount) * i), 2);
+            },
+            colors({ value }) {
+                return value.colors || [];
+            },
+            classColors({ colors, stopCount }) {
+                return chroma
+                    .scale(colors.map(c => c.color))
+                    .mode('lab')
+                    .domain(colors.map(c => c.position))
+                    .colors(stopCount);
+            },
+            contGradientStops({ colors }) {
+                return colors.map(({ color, position }) => ({
+                    color,
+                    offset: position
+                }));
+            },
+            modeOptions({ classColors, contGradientId }) {
+                const fixedW = 55;
+                const sw = Math.floor(fixedW / classColors.length);
+                const w = sw * classColors.length - 1;
+                const h = 9;
+                const binPreview = `<div style="display:inline-block;width:${fixedW +
+                    10}px;"><div class="colormode-preview" style="width:${w}px;height:${h}px;">${classColors
+                    .map(
+                        (c, i) =>
+                            `<div style="margin-left:${i ? 1 : 0}px;display:inline-block;background:${c};width:${sw - 1}px;height:${h}px"></div>`
+                    )
+                    .join('')}</div></div>`;
+                const contPreview = `<div style="display:inline-block;width:${fixedW +
+                    10}px;"><div class="colormode-preview" style="width:${w}px;height:${h}px;"><svg width="${w}" height="${h}" ><rect style="fill:url(#${contGradientId});shape-rendering:crispEdges" width="${w}" height="${h}" /></svg></div></div>`;
+                return [
+                    { value: 'discrete', label: `${binPreview} ${__('controls / color-scale / interpolation / discrete')} ` },
+                    { value: 'continuous', label: `${contPreview} ${__('controls / color-scale / interpolation / linear')}` }
+                ];
+            },
+            customStops({ value }) {
+                return value.customStops || [];
+            },
+            invalidStops({ customStops, stopCount, autoMin, autoMax }) {
+                if (!Array.isArray(customStops)) return [];
+                return customStops.map((val, i) => {
+                    // first and last never invalid
+                    if (i === 0 || i > stopCount - 1) return false;
+                    return i && +val < +customStops[i - 1];
+                    // return val < autoMin || val > autoMax || (i && +val < +customStops[i - 1]);
+                });
+            }
+        },
+        helpers: {
+            __,
+            range,
+            stopsOptions: [
+                { value: 'equidistant', label: __('controls / color-scale / breaks / linear', 'core') },
+                { value: 'quantiles', label: __('controls / color-scale / breaks / quantiles', 'core') },
+                { value: 'pretty', discreteOnly: true, label: __('controls / color-scale / breaks / nice', 'core') },
+                { value: 'natural', label: __('controls / color-scale / breaks / natural', 'core') },
+                // { value: 'log', label: __('controls / color-scale / breaks / log', 'core') },
+                { value: 'custom', label: __('controls / color-scale / breaks / custom', 'core'), discreteOnly: true }
+            ],
+            inerpolOptions: [
+                { value: 'equidistant', label: 'linear' },
+                { value: 'quantiles-5', label: 'quartiles' },
+                { value: 'quantiles-6', label: 'quintiles' },
+                { value: 'quantiles-11', label: 'deciles' },
+                { value: 'natural-9', label: 'natural' }
+                // { value: 'log-10', label: 'logarithmic' }
+            ]
+        },
+        methods: {},
+        onstate({ changed, current, previous }) {
+            if (
+                (changed.stops || changed.stopCount || (changed.mode && current.mode === 'discrete')) &&
+                !current.useCustomStops &&
+                current.colorScaleFunction._stops &&
+                previous
+            ) {
+                // copy stops from scale
+                const stops = current.colorScaleFunction._stops.slice(0);
+                const newCustomStops = current.customStops.slice().concat(range(10).map(d => ''));
+                smartRound(stops, 2).forEach((v, i) => {
+                    newCustomStops[i] = i === 0 ? -Infinity : v;
+                });
+                newCustomStops[stops.length - 1] = Infinity;
+                current.value.customStops = newCustomStops.slice(0, current.stopCount + 4);
+                this.set({ value: current.value });
+            }
+            if (changed.mode && current.mode === 'continuous' && current.stops === 'pretty') {
+                current.value.stops = 'equidistant';
+                this.set({ value: current.value });
+            }
+            if (changed.selection && current.selection.length) {
+                this.set({
+                    activeColor: current.value.map[current.selection[0]] || false,
+                    selectionLabel: current.categoryLabels[current.selection[0]] || ''
+                });
+            }
+            if (changed.selectionLabel && current.selection.length) {
+                current.selection.forEach(id => {
+                    current.value.categoryLabels[id] = current.selectionLabel;
+                });
+                this.set({ value: current.value });
+            }
+            if (changed.optional && !current.optional) {
+                current.value.enabled = true;
+                this.set({ value: current.value });
+            }
+            if (changed.columnType && previous && previous.columnType) {
+                current.value.mode = current.columnType === 'text' ? 'categories' : 'continuous';
+                this.set({ value: current.value });
+            }
+        }
+    };
+</script>
+
+<style>
+    .flex {
+        display: flex;
+    }
+    :global(.colormode-preview) {
+        display: inline-block;
+        padding: 1px;
+        border: 1px solid #ddd;
+        background: #fff;
+        vertical-align: sub;
+    }
+    :global(.colormode-preview div),
+    :global(.colormode-preview svg) {
+        vertical-align: top;
+    }
+    .flex input {
+        width: 3em;
+        margin-bottom: 0;
+    }
+    .flex label {
+        width: 7em;
+        color: #777;
+        font-size: 11px;
+        text-transform: uppercase;
+    }
+    .custom-breaks {
+    }
+    .custom-breaks span {
+        vertical-align: baseline;
+        white-space: nowrap;
+        line-height: 30px;
+        color: #999;
+    }
+    .custom-breaks input {
+        display: inline-block;
+        text-align: center;
+        width: 6ex;
+        margin: 0 5px 5px 0;
+    }
+    .custom-breaks span.color {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        vertical-align: top;
+        border-radius: 8px;
+        position: relative;
+        top: 6px;
+        margin-right: 5px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+    }
+    input.invalid {
+        border-color: #c71e1d;
+        color: #c71e1d;
+    }
+    .mini-help.error {
+        color: #c71e1d;
+    }
+</style>

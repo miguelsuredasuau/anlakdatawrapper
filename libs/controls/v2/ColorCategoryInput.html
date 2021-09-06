@@ -1,0 +1,183 @@
+<div class="column-container">
+    <div class="column">
+        <ListInput
+            items="{swatches}"
+            bind:selected="selection"
+            itemRenderer="{ColorListItem}"
+            {draggable}
+            on:itemDrag="handleListItemDrag(event)"
+            compact="{true}"
+            selectable="{true}"
+            multiselectable="{true}"
+            deselectable="{true}"
+        />
+        <div style="font-size: 12px; text-align: left; margin-bottom: 10px;">
+            {__('Select:')} &nbsp; <a on:click|preventDefault="handleSelectAllClick()" href="#/select-all">{__('all')}</a> &nbsp;
+            <a on:click|preventDefault="handleSelectNoneClick()" href="#/select-none">{__('none')}</a> &nbsp;
+            <a on:click|preventDefault="handleSelectInvertClick()" href="#/select-invert">{__('invert')}</a>
+        </div>
+    </div>
+    <div class="column">
+        {#if selection.length}
+        <div class="well" style="margin-bottom:5px;padding: 9px">
+            <div style="margin-bottom:5px">
+                <label>{__('controls / color-category / color')}</label>
+                <ColorPickerInput on:change="handleColorPickerChange(event)" bind:color="activeColor" />
+            </div>
+            {#if allowLabeling}
+            <label
+                >{__('controls / color-category / text')}
+                <input bind:value="selectionLabel" type="text" style="width:93%" placeholder="{selection[0]}"
+            /></label>
+            {/if}
+            <button on:click="handleCloseClick()" class="btn btn-small">{__('Close')}</button>
+            <button on:click="handleResetClick()" class="btn btn-small">{__('Reset')}</button>
+        </div>
+        {:else}
+        <p class="mini-help" style="margin-top: 5px">
+            {__('controls / color-category / select-one-or-more'+(allowLabeling?'-w-label':''))}
+        </p>
+
+        <button on:click="handleResetAllClick()" class="btn btn-small">{__('controls / color / reset-all')}</button>
+
+        {/if}
+    </div>
+</div>
+
+<script>
+    import uniq from 'lodash-es/uniq';
+    import ListInput from './ListInput.html';
+    import ColorPickerInput from './ColorPickerInput.html';
+    import ColorListItem from './ColorListItem.html';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        components: { ListInput, ColorPickerInput },
+        data() {
+            return {
+                draggable: true,
+                allowLabeling: true,
+                palette: [],
+                baseColor: '#cccccc',
+                activeColor: false,
+                values: [],
+                selection: [],
+                selectionLabel: '',
+                value: {
+                    map: {},
+                    categoryOrder: [],
+                    categoryLabels: {}
+                }
+            };
+        },
+        computed: {
+            categoryOrder({ value }) {
+                return value.categoryOrder || [];
+            },
+            categoryLabels({ value }) {
+                return value.categoryLabels || {};
+            },
+            uniqueValues({ values }) {
+                return values && values.length ? uniq(values) : [];
+            },
+            swatches({ allowLabeling, uniqueValues, value, palette, categoryOrder, categoryLabels, baseColor }) {
+                let paletteUsed = 0;
+                // sort by categoryOrder
+                return uniqueValues
+                    .sort((a, b) => {
+                        const oa = categoryOrder.indexOf(a);
+                        const ob = categoryOrder.indexOf(b);
+                        if (oa < 0 && ob < 0) return a < b ? -1 : 1;
+                        if (oa < 0) return 1;
+                        if (ob < 0) return -1;
+                        return oa - ob;
+                    })
+                    .map((label, i) => ({
+                        label: allowLabeling ? categoryLabels[label] || label : label,
+                        id: label,
+                        manual: value.map[label],
+                        color: value.map[label] || (paletteUsed >= palette.length ? baseColor : palette[paletteUsed++])
+                    }));
+            }
+        },
+        helpers: { __, ColorListItem },
+        methods: {
+            handleSelectAllClick() {
+                const { swatches } = this.get();
+                this.set({ selection: swatches.map(d => d.id) });
+            },
+            handleSelectNoneClick() {
+                this.set({ selection: [] });
+            },
+            handleSelectInvertClick() {
+                const { swatches, selection } = this.get();
+                this.set({ selection: swatches.map(d => d.id).filter(d => selection.indexOf(d) < 0) });
+            },
+            handleCloseClick() {
+                this.set({ selection: [] });
+            },
+            handleResetClick() {
+                const { value, selection } = this.get();
+                selection.forEach(sel => {
+                    delete value.map[sel];
+                    delete value.categoryLabels[sel];
+                });
+                this.set({ value, selection: [] });
+            },
+            handleResetAllClick() {
+                const { value } = this.get();
+                value.map = {};
+                value.categoryOrder = [];
+                value.categoryLabels = {};
+                this.set({ value, selection: [] });
+            },
+            handleColorPickerChange(color) {
+                const { selection, value } = this.get();
+                selection.forEach(id => {
+                    value.map[id] = color;
+                });
+                this.set({ value });
+            },
+            handleListItemDrag({ items }) {
+                const { value } = this.get();
+                value.categoryOrder = items.map(d => d.id);
+                this.set({ value });
+            }
+        },
+        onstate({ changed, current }) {
+            if (changed.selection && current.selection.length) {
+                this.set({
+                    activeColor: current.value.map[current.selection[0]] || false,
+                    selectionLabel: current.categoryLabels[current.selection[0]] || ''
+                });
+            }
+            if (changed.selectionLabel && current.selection.length) {
+                current.selection.forEach(id => {
+                    current.value.categoryLabels[id] = current.selectionLabel;
+                });
+                this.set({ value: current.value });
+            }
+        }
+    };
+</script>
+
+<style>
+    .well label {
+        color: #555;
+        font-size: 11px;
+        text-transform: uppercase;
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 10px;
+    }
+
+    .column {
+        width: 50%;
+        padding-right: 20px;
+    }
+
+    .column-container {
+        display: flex;
+        padding-right: 15px;
+    }
+</style>

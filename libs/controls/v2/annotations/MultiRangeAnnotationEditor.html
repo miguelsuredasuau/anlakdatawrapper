@@ -1,0 +1,100 @@
+<div class="well">
+    <p class="header">{__('controls / annotations / range-multi-select').replace('%s', selected.length)}</p>
+
+    <!-- color -->
+    <div>
+        <ControlGroup label="{__('controls / annotations / range / color')}" {labelWidth} valign="middle" inline="{true}">
+            <div class="controls-inline">
+                <ColorPickerInput bind:color="color" />
+            </div>
+        </ControlGroup>
+    </div>
+
+    <!-- opacity -->
+    <div>
+        <NumberControl
+            label="{__('controls / annotations / range / opacity')}"
+            {labelWidth}
+            bind:value="opacity"
+            unit="%"
+            min="0"
+            max="100"
+            step="1"
+            slider="{true}"
+            allowUndefined="{false}"
+        />
+    </div>
+
+    <hr />
+
+    <div class="delete-group">
+        <button class="btn btn-small btn-danger" on:click="fire('deleteAnnotations', selected)">
+            <i class="fa fa-trash"></i>
+            {__('controls / annotations / range-delete-selected')}
+        </button>
+    </div>
+</div>
+
+<style>
+    .header {
+        font-weight: 700;
+    }
+    .delete-group {
+        margin-top: 20px;
+    }
+</style>
+
+<script>
+    import ColorPickerInput from '../ColorPickerInput.html';
+    import ControlGroup from '../ControlGroup.html';
+    import NumberControl from '../NumberControl.html';
+    import clone from '@datawrapper/shared/clone';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        components: {
+            NumberControl,
+            ColorPickerInput,
+            ControlGroup
+        },
+        data() {
+            return {
+                annotationData: [],
+                selected: false,
+                opacity: 0,
+                color: '#000',
+                labelWidth: '70px'
+            };
+        },
+        helpers: { __ },
+        computed: {
+            selectedAnnotationData({ selected, annotationData }) {
+                return selected.map(i => annotationData[i]);
+            }
+        },
+        onstate({ current, changed, previous }) {
+            const app = this;
+
+            if (!previous) {
+                this.set({
+                    color: current.annotationData[current.selected[0]].color,
+                    opacity: current.annotationData[current.selected[0]].opacity
+                });
+            } else {
+                if (previous.color && changed.color) {
+                    update('color');
+                } else if (previous.opacity && changed.opacity) {
+                    update('opacity');
+                }
+            }
+
+            function update(prop) {
+                const newAnnotationData = clone(current.annotationData);
+                current.selected.forEach(i => {
+                    newAnnotationData[i] = Object.assign(newAnnotationData[i], { [prop]: current[prop] });
+                });
+                app.set({ annotationData: newAnnotationData });
+            }
+        }
+    };
+</script>

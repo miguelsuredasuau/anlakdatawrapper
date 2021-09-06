@@ -1,0 +1,34 @@
+<select class="select-css {class}" disabled="{disabled}" bind:value="value" style="width:{ width }" on:change="fire('change', event)">
+    {#if options.length} {#each options as opt}
+    <option value="{opt.value}" selected="{opt.value === value}">{opt.label}</option>
+    {/each} {/if} {#if optgroups.length} {#each optgroups as optgroup}
+    <optgroup label="{optgroup.label}">
+        {#each optgroup.options as opt}
+        <option value="{opt.value}" selected="{opt.value === value}">{opt.label}</option>
+        {/each}
+    </optgroup>
+    {/each} {/if}
+</select>
+
+<style>
+    select[disabled] {
+        cursor: default;
+        color: #999;
+    }
+</style>
+
+<script>
+    export default {
+        data() {
+            return {
+                disabled: false,
+                width: 'auto',
+                labelWidth: 'auto',
+                options: [],
+                optgroups: [],
+                value: null,
+                class: ''
+            };
+        }
+    };
+</script>

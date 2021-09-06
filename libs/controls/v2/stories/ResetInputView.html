@@ -1,0 +1,36 @@
+<h3>ResetInput with NumberInput components</h3>
+
+<p>Default value is 80</p>
+<NumberInput unit="px" min="0" max="100" bind:value /><ResetInput bind:value defaultValue="{80}" />
+
+<p>Default value is 0</p>
+<NumberInput min="-100" max="100" bind:value="value2" /><ResetInput bind:value="value2" defaultValue="{0}" />
+
+<p>Default value is 40</p>
+<NumberInput min="0" max="200" bind:value="value3" slider="{false}" /><ResetInput bind:value="value3" defaultValue="{40}" />
+
+<script>
+    import ResetInput from '../ResetInput.html';
+    import NumberInput from '../NumberInput.html';
+
+    export default {
+        components: { ResetInput, NumberInput },
+        data() {
+            return {
+                v1: true
+            };
+        }
+    };
+</script>
+
+<style type="text/css">
+    h3 {
+        margin-top: 2em;
+    }
+    h3:first-child {
+        margin-top: 0;
+    }
+    p {
+        margin: 20px 0 0;
+    }
+</style>

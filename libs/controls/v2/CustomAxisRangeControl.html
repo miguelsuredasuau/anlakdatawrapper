@@ -1,0 +1,68 @@
+<ControlGroup type="custom-axis-range" {valign} {labelWidth} {label} {disabled} {miniHelp} {help} helpClass="mt-1">
+    <div class="range-container mt-1">
+        <input type="text" placeholder="{placeholder.min}" bind:value="value[0]" disabled="{disabled}" />
+        <span class="separator {disabled ? 'separator-disabled' : ''}">–</span>
+        <input type="text" placeholder="{placeholder.max}" bind:value="value[1]" disabled="{disabled}" />
+    </div>
+</ControlGroup>
+
+<style>
+    .range-container {
+        display: flex;
+    }
+
+    .separator {
+        cursor: default;
+        text-align: center;
+        line-height: 2em;
+        width: 2em;
+    }
+
+    .separator-disabled {
+        color: #999;
+    }
+
+    input {
+        width: 50%;
+        min-width: 0;
+        margin: 0 !important;
+        vertical-align: middle;
+    }
+
+    input[disabled] {
+        cursor: default;
+        color: #999;
+    }
+</style>
+
+<script>
+    import ControlGroup from './ControlGroup.html';
+
+    const defaultValue = ['', ''];
+
+    export default {
+        components: { ControlGroup },
+
+        data() {
+            return {
+                disabled: false,
+                value: defaultValue,
+                help: false,
+                miniHelp: false,
+                labelWidth: '100px',
+                valign: 'middle',
+                placeholder: {
+                    min: 'min',
+                    max: 'max'
+                }
+            };
+        },
+
+        onstate({ changed, current, previous }) {
+            // Maintain compatibility with legacy charts:
+            if (changed.value && !Array.isArray(current.value)) {
+                current.value = defaultValue;
+            }
+        }
+    };
+</script>

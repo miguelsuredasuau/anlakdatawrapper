@@ -1,0 +1,30 @@
+{#if visible}
+<div class="progress" style="height: {height}px;">
+    <div class="bar" style="width: {status}%;"></div>
+</div>
+{/if}
+
+<style>
+    .progress .bar {
+        background-image: none;
+        background-color: #15607a;
+    }
+
+    .progress {
+        background-color: #e5e5e5;
+        box-shadow: none;
+        background-image: none;
+    }
+</style>
+
+<script>
+    export default {
+        data() {
+            return {
+                visible: true,
+                status: 0,
+                height: 20
+            };
+        }
+    };
+</script>

@@ -1,0 +1,18 @@
+<SelectControl label="{__('layout / select-theme')}" options="{themeOptions}" labelWidth="100px" width="200px" bind:value="$theme" />
+
+<script>
+    import SelectControl from '../SelectControl.html';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        components: { SelectControl },
+        helpers: { __ },
+        computed: {
+            themeOptions({ $themes }) {
+                return $themes.map(t => {
+                    return { value: t.id, label: t.title };
+                });
+            }
+        }
+    };
+</script>

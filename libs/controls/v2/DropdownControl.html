@@ -1,0 +1,123 @@
+<ControlGroup inline {labelWidth} {valign} {label} {disabled} {help} helpClass="mt-1">
+    <DropdownInput disabled="{disabled}">
+        <span slot="button">
+            <div class="btn-group mt-1">
+                <button class="btn dropdown-toggle" class:disabled on:keydown="keydown(event)">
+                    {#if currentItem.isPlaceholder} {@html currentItem.label} {:else}
+                    <svelte:component this="{itemRenderer}" {...currentItem} />
+                    {/if}
+                    <span class="caret"></span>
+                </button>
+            </div>
+        </span>
+        <span slot="content">
+            <ul class="dropdown-menu" style="display: block">
+                {#if options.length} {#each options as opt}
+                <li class="{value==opt.value?'selected':''}">
+                    <a on:click="select(event, opt)" href="#/{opt.value}">
+                        <svelte:component this="{itemRenderer}" {...opt} />
+                    </a>
+                </li>
+                {/each} {/if}
+            </ul>
+        </span>
+    </DropdownInput>
+</ControlGroup>
+
+<style type="text/css">
+    ul.dropdown-menu {
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+        position: static;
+        max-height: 300px;
+        overflow: auto;
+        border-radius: 0;
+    }
+    li.selected {
+        background: #18a1cd33;
+    }
+    .dropdown-toggle {
+        background: white;
+    }
+    span.caret {
+        margin-left: 5px;
+    }
+    .dropdown-menu {
+        top: auto !important;
+        left: auto !important;
+    }
+    .dropdown-toggle.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+</style>
+
+<script type="text/javascript">
+    import ControlGroup from './ControlGroup.html';
+    import DropdownInput from './DropdownInput.html';
+    import DropdownListItem from './DropdownListItem.html';
+
+    export default {
+        components: {
+            ControlGroup,
+            DropdownInput
+        },
+        data() {
+            return {
+                forcePlaceholder: false,
+                disabled: false,
+                labelWidth: 'auto',
+                options: [],
+                optgroups: [],
+                placeholder: '(select an item)',
+                forceLabel: false,
+                passEvent: false,
+                itemRenderer: DropdownListItem,
+                valign: 'middle',
+                help: false
+            };
+        },
+        computed: {
+            currentItem({ value, options, placeholder, forcePlaceholder, forceLabel }) {
+                if (forceLabel) return typeof forceLabel === 'string' ? { label: forceLabel } : forceLabel;
+                if (!forcePlaceholder) {
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].value === value) {
+                            return options[i];
+                        }
+                    }
+                }
+                return {
+                    isPlaceholder: true,
+                    label: `<span style="color:#999;font-size:12px;">${placeholder}</span>`
+                };
+            }
+        },
+        methods: {
+            select(event, opt) {
+                event.preventDefault();
+                const { passEvent } = this.get();
+                this.set({ value: opt.value });
+                this.fire('change', passEvent ? { value: opt.value, event } : opt.value);
+            },
+            keydown(event) {
+                if (event.key === 'ArrowDown') {
+                    this.moveSelection(event, 1);
+                } else if (event.key === 'ArrowUp') {
+                    this.moveSelection(event, -1);
+                }
+            },
+            moveSelection(event, diff) {
+                const { value, options, passEvent } = this.get();
+                let selIndex = options.map(o => o.value).indexOf(value);
+                if (value < 0) selIndex = diff > 0 ? diff : options.length + diff;
+                else selIndex += diff;
+                const newVal = options[(selIndex + options.length) % options.length].value;
+                this.set({ value: newVal });
+                this.fire('change', passEvent ? { value: newVal, event } : newVal);
+            }
+        }
+    };
+</script>

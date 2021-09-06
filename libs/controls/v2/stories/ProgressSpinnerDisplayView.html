@@ -1,0 +1,33 @@
+<h4>ProgressSpinnerDisplay: default</h4>
+<ProgressSpinnerDisplay {assetURL} />
+
+<h4>ProgressSpinnerDisplay: custom color</h4>
+<ProgressSpinnerDisplay {assetURL} color="hotpink" />
+<ProgressSpinnerDisplay {assetURL} color="green" />
+<ProgressSpinnerDisplay {assetURL} color="#ff0000" />
+<ProgressSpinnerDisplay {assetURL} color="#0f7595" />
+<ProgressSpinnerDisplay {assetURL} color="#666" />
+
+<h4>ProgressSpinnerDisplay: custom size</h4>
+<ProgressSpinnerDisplay {assetURL} size="40px" />
+<ProgressSpinnerDisplay {assetURL} size="30px" />
+<ProgressSpinnerDisplay {assetURL} size="60px" />
+<ProgressSpinnerDisplay {assetURL} size="2em" />
+
+<script>
+    import ProgressSpinnerDisplay from '../ProgressSpinnerDisplay.html';
+
+    export default {
+        components: { ProgressSpinnerDisplay },
+        helpers: { assetURL: process.env.STORYBOOK_ICONS_URL }
+    };
+</script>
+
+<style>
+    h4 {
+        margin-top: 2em;
+    }
+    h4:first-child {
+        margin-top: 0;
+    }
+</style>

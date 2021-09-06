@@ -1,0 +1,43 @@
+<ControlGroup disabled="{disabled}" type="number" valign="middle" {label} {labelWidth} {help} helpClass="mt-1">
+    <NumberInput
+        ref:baseNumber
+        slider="{slider}"
+        unit="{unit}"
+        disabled="{disabled}"
+        multiply="{multiply}"
+        min="{min}"
+        max="{max}"
+        step="{step}"
+        allowUndefined="{allowUndefined}"
+        placeholder="{placeholder}"
+        bind:value
+        class="mt-1"
+    />
+</ControlGroup>
+
+<script>
+    import ControlGroup from './ControlGroup.html';
+    import NumberInput from './NumberInput.html';
+
+    export default {
+        components: {
+            ControlGroup,
+            NumberInput
+        },
+        data() {
+            return {
+                slider: true,
+                labelWidth: '100px',
+                unit: '',
+                disabled: false,
+                multiply: 1,
+                min: 0,
+                max: 100,
+                step: 1,
+                allowUndefined: false,
+                placeholder: null,
+                help: null
+            };
+        }
+    };
+</script>

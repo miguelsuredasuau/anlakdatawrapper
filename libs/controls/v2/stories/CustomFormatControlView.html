@@ -1,0 +1,73 @@
+<CustomFormatControl labelWidth="110px" axis="axis1" label="Date format, initial value" />
+<CustomFormatControl labelWidth="110px" axis="axis2" label="Number format, initial value" />
+<CustomFormatControl
+    labelWidth="110px"
+    axis="axis2"
+    label="Number format, help text"
+    miniHelp="This is some generic help text, with <b>support</b> for <a href='https://www.w3.org/html/'>basic HTML</a>."
+/>
+<CustomFormatControl labelWidth="110px" type="date" label="Date format" value="MMM" />
+<CustomFormatControl labelWidth="110px" type="number" label="Number format" value="0.000" />
+<CustomFormatControl labelWidth="110px" type="date" label="Custom date format" selected="custom" value="0.0000000" valign="top" />
+<CustomFormatControl labelWidth="110px" type="number" label="Custom number format" selected="custom" value="YYYY [foo]" valign="top" />
+<CustomFormatControl labelWidth="110px" type="number" label="Automatic format option" auto selected="auto" />
+<CustomFormatControl labelWidth="110px" disabled type="date" label="Disabled" />
+<CustomFormatControl labelWidth="110px" disabled type="date" label="Disabled, custom format" selected="custom" value="YY [foo]" valign="top" />
+<CustomFormatControl
+    disabled
+    label="Disabled, with message"
+    labelWidth="110px"
+    disabledMessage="This explains why this is disabled, with <b>support</b> for <a href='https://www.w3.org/html/'>basic HTML</a>."
+/>
+<CustomFormatControl
+    disabled
+    label="Disabled, custom, with message"
+    labelWidth="110px"
+    disabledMessage="This explains why this is disabled, with <b>support</b> for <a href='https://www.w3.org/html/'>basic HTML</a>."
+    selected="custom"
+    value="YY [foo]"
+/>
+<CustomFormatControl labelWidth="110px" axis="axis1" customOptions="{ customOptions }" label="Date format, custom options" />
+<CustomFormatControl labelWidth="110px" axis="axis2" customOptions="{ customOptions }" label="Number format, custom options" />
+
+<script>
+    import CustomFormatControl from '../CustomFormatControl.html';
+
+    // we're simulating the core chart editor store
+    // to get the CustomFormatControl component to behave properly
+    import { Store } from 'svelte/store.js';
+    const store = new Store({
+        vis: {
+            axes() {
+                return {
+                    axis1: 'date',
+                    axis2: 'number'
+                };
+            }
+        },
+        dataset: {
+            column(type) {
+                return { type: () => type };
+            },
+            hasColumn() {
+                return true;
+            }
+        },
+        teamSettings: {
+            controls: {
+                customFormats: {
+                    number: [{ label: '(0,0.[00])', value: '(0,0.[00])' }, { label: '1.23k', value: '0,0.00a' }],
+                    date: [{ label: 'Jan-22', value: 'MMM-dd' }, { label: '22/01/2019', value: 'MM/DD/YYYY' }]
+                }
+            }
+        }
+    });
+
+    export default {
+        components: { CustomFormatControl },
+        data() {
+            return { value1: 'YYYY', value2: '0.00' };
+        },
+        store: () => store
+    };
+</script>

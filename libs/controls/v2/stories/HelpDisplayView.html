@@ -1,0 +1,236 @@
+<script>
+    import HelpDisplay from '../HelpDisplay.html';
+    import TextControl from '../TextControl.html';
+    import CheckboxControl from '../CheckboxControl.html';
+    import RadioControl from '../RadioControl.html';
+    import SelectControl from '../SelectControl.html';
+    import DropdownControl from '../DropdownControl.html';
+    import ColorControl from '../ColorControl.html';
+    import SwitchControl from '../SwitchControl.html';
+    import CustomFormatControl from '../CustomFormatControl.html';
+    import CustomAxisRangeControl from '../CustomAxisRangeControl.html';
+    import NumberControl from '../NumberControl.html';
+    import TextAreaControl from '../TextAreaControl.html';
+
+    import { Store } from 'svelte/store.js';
+
+    const store = new Store({
+        themeData: {
+            colors: {
+                palette: [
+                    '#a6cee3',
+                    '#1f78b4',
+                    '#b2df8a',
+                    '#33a02c',
+                    '#fb9a99',
+                    '#e31a1c',
+                    '#fdbf6f',
+                    '#ff7f00',
+                    '#cab2d6',
+                    '#6a3d9a',
+                    '#ffff99',
+                    '#b15928'
+                ]
+            }
+        }
+    });
+
+    export default {
+        components: {
+            HelpDisplay,
+            TextControl,
+            CheckboxControl,
+            RadioControl,
+            SelectControl,
+            DropdownControl,
+            ColorControl,
+            SwitchControl,
+            CustomFormatControl,
+            CustomAxisRangeControl,
+            NumberControl,
+            TextAreaControl
+        },
+
+        store: () => store
+    };
+</script>
+
+<HelpDisplay>Help texts can be used individually</HelpDisplay>
+<label class="pt-1 pb-1">Individual help control</label>
+
+<hr />
+
+<HelpDisplay> Help texts can include <b>HTML</b> and should be defined right before the UI component they are related to.</HelpDisplay>
+<label class="pt-1 pb-1">Individual help control with HTML content</label>
+
+<hr />
+
+<TextControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    value="foo"
+    bind:value
+    label="Input with help"
+/>
+
+<TextAreaControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    value="foo"
+    bind:value
+    label="TextAreaControl with help"
+/>
+
+<SelectControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    bind:value
+    options="{options}"
+    width="100%"
+    labelWidth="100px"
+    label="Select with help"
+/>
+
+<SelectControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    bind:value
+    options="{options}"
+    labelWidth="100px"
+    inline="{true}"
+    label="Select with help (auto width)"
+/>
+
+<CustomFormatControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    type="number"
+    label="Number format with help"
+    value="0.000"
+/>
+
+<CustomFormatControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    type="number"
+    valign="top"
+    label="Custom format with help"
+    selected="custom"
+    value="YYYY [foo]"
+/>
+
+<CustomAxisRangeControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    label="Axis range with help"
+></CustomAxisRangeControl>
+
+<DropdownControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    bind:value
+    options="{options}"
+    labelWidth="100px"
+    label="Dropdown with help"
+/>
+
+<NumberControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    label="Number"
+    min="0"
+    max="100"
+    value="50"
+/>
+
+<NumberControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    label="Number + unit"
+    unit="pixels"
+    min="0"
+    max="100"
+    value="50"
+/>
+
+<CheckboxControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    value="foo"
+    label="Checkbox with help"
+/>
+
+<CheckboxControl
+    value="foo"
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    label="Checkbox with integrated help text and long label"
+/>
+
+<RadioControl
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+    options="{options}"
+    labelWidth="100px"
+    value="{options[0].value}"
+    label="Radio with help"
+/>
+
+<ColorControl
+    label="Custom colors"
+    bind:value
+    bind:custom
+    customizable="1"
+    help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+/>
+
+<SwitchControl label="Switch with help" help="Help texts can include <b>HTML</b> even when defined as attributes">
+    <p>[ this switch content spans over several lines to demonstrate the content width changes during the open/close transition ]</p>
+</SwitchControl>
+
+<SwitchControl label="Switch with help" help="Help texts can include <b>HTML</b> even when defined as attributes">
+    <p>[ this switch content spans over several lines to demonstrate the content width changes during the open/close transition ]</p>
+</SwitchControl>
+
+<SwitchControl label="Switch with help" help="Help texts can include <b>HTML</b> even when defined as attributes">
+    <p>[ this switch content spans over several lines to demonstrate the content width changes during the open/close transition ]</p>
+</SwitchControl>
+
+<SwitchControl label="Switch with help" help="Help texts can include <b>HTML</b> even when defined as attributes" value="{true}">
+    <CustomFormatControl
+        help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+        type="number"
+        label="Number format with help"
+        value="0.000"
+    />
+
+    <SelectControl
+        help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
+        bind:value
+        options="{options}"
+        width="100%"
+        labelWidth="100px"
+        label="Select with help"
+    />
+</SwitchControl>
+
+<h3>Two columns</h3>
+
+<div style="display: flex">
+    <div style="width:50%; padding-right: 2em;">
+        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
+        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
+        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
+        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
+        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
+    </div>
+    <div style="width:50%">
+        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
+        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
+        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
+        <CheckboxControl
+            value="foo"
+            help="Help texts can include <b>HTML</b> even when defined as attributes"
+            label="Checkbox with help and very long label"
+        />
+    </div>
+</div>
+
+<hr />
+
+<h3>Upsell Help</h3>
+<div style="margin-bottom:100px;">
+    <SwitchControl
+        disabled="true"
+        label="Switch with upsell help"
+        helpType="upgrade-info"
+        help="This is a help display that informs a user that an upgrade is required to use the feature"
+    />
+</div>

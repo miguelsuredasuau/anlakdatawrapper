@@ -1,0 +1,65 @@
+<DropdownListInput label="Your options" items="{items}" />
+
+<br /><br />
+
+Dropdown menus without labels:
+<DropdownListInput items="{items}" />
+
+<br /><br />
+
+Disabled dropdown:<br />
+<DropdownListInput label="Can't click me" disabled items="{items}" />
+
+<br /><br />
+
+Dropdown with disabled options:<br />
+<DropdownListInput label="Your options" items="{disabledItems}" />
+
+<br /><br />
+
+Dropdown with custom btn class:<br />
+<DropdownListInput label="Your options" btnClass="btn btn-small btn-primary" items="{disabledItems}" />
+
+<br /><br />
+
+Split dropdown button:<br />
+<DropdownListInput icon="fa fa-plus" split="{true}" label="Your options" items="{items}" />
+
+<script>
+    import DropdownListInput from '../DropdownListInput.html';
+
+    export default {
+        components: { DropdownListInput },
+        helpers: {
+            items: [
+                {
+                    label: 'Are you sure?',
+                    action() {
+                        window.confirm('Are you really sure?');
+                    }
+                },
+                {
+                    label: 'Alert!',
+                    action() {
+                        window.alert('ALERT!!!!');
+                    }
+                }
+            ],
+            disabledItems: [
+                {
+                    label: 'You can click me',
+                    action() {
+                        window.alert('Hello');
+                    }
+                },
+                {
+                    label: 'But not me',
+                    disabled: true,
+                    action() {
+                        window.alert('This will never happen');
+                    }
+                }
+            ]
+        }
+    };
+</script>

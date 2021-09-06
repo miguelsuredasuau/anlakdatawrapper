@@ -1,0 +1,358 @@
+<div
+    class="publish-status"
+    class:is-busy="publishing || unpublishing"
+    class:is-published="published && !unpublishing && !publishing && !needsRepublish && !publishSuccess"
+    class:alert="needsRepublish && !publishing"
+    class:alert-success="publishSuccess"
+>
+    <!-- Un-publish in progress -->
+    {#if unpublishing}
+    <IconDisplay {assetURL} icon="cloud-sync" color="#858585" size="30px" />
+    <div class="message">
+        {@html __("publish / progress / unpublishing") }
+    </div>
+
+    <!-- Un-published successfully -->
+    {:elseif unpublished}
+    <IconDisplay {assetURL} icon="cloud-dotted" color="#858585" size="30px" />
+    <div class="message">
+        {@html __("publish / progress / unpublished") }
+    </div>
+
+    <!-- Un-published visualization -->
+    {:elseif !published && !publishing}
+    <IconDisplay {assetURL} icon="cloud-dotted" color="#858585" size="30px" class="pt-2" />
+    <div class="message pt-2">
+        {@html __('publish / publish-btn-intro') }
+    </div>
+
+    <!-- Publish in progress -->
+    {:elseif publishing}
+    <IconDisplay {assetURL} icon="cloud-sync" color="#858585" size="30px" />
+    <div class="message">
+        {@html __("publish / progress / publishing") }
+    </div>
+
+    <!-- Needs re-publish -->
+    {:elseif needsRepublish && !publishing}
+    <IconDisplay {assetURL} icon="cloud-sync" color="#FFB800" size="30px" />
+    <div class="message">
+        {@html __('publish / republish') }
+    </div>
+
+    <!-- Published successfully -->
+    {:elseif published && publishSuccess && !needsRepublish}
+    <IconDisplay {assetURL} icon="cloud-check" color="#000000" size="30px" />
+    <div class="message">
+        {@html __('publish / publish-success') }
+    </div>
+
+    <!-- Published visualization (after reload) -->
+    {:elseif published && !needsRepublish}
+    <IconDisplay {assetURL} icon="cloud-check" color="#000000" size="30px" />
+    <div class="message">
+        {@html __('publish / published') }
+    </div>
+    {/if}
+
+    <div class="action">
+        <button disabled="{ publishing || unpublishing }" on:click="publish()" class="button-wrapper" class:is-unpublishing="unpublishing">
+            {#if unpublishing}
+            <span class="title">{ __('publish / unpublishing-btn') }</span>
+            {:elseif published}
+            <span class="button-republish">
+                {#if publishing}
+                <IconDisplay {assetURL} icon="refresh" spin size="28px" color="#ffffff" valign="middle" class="mr-1" />
+                <span>{ __('publish / publishing-btn') }</span>
+                {:else}
+                <IconDisplay {assetURL} icon="refresh" size="28px" color="#ffffff" valign="middle" class="mr-1" />
+                <span>{ __('publish / republish-btn') }</span>
+                {/if}
+            </span>
+            {:else}
+            <span class="button-publish" class:is-publishing="publishing">
+                {#if publishing}
+                <IconDisplay {assetURL} icon="refresh" spin size="28px" color="#ffffff" valign="middle" class="mr-1" />
+                <span>{ __('publish / publishing-btn') }</span>
+                {:else}
+                <IconDisplay {assetURL} icon="cloud-upload" size="30px" color="#ffffff" class="cloud" />
+                <span>{ __('publish / publish-btn') }</span>
+                {/if}
+            </span>
+            {/if}
+        </button>
+    </div>
+
+    <!-- show progress information after 3s -->
+    {#if publishing && publishWait > 3000}
+    <ul class="publish-progress unstyled">
+        {#each progress as step,i}
+        <li>
+            {#if i < progress.length-1}
+            <IconDisplay {assetURL} icon="check-circle" size="18px" color="#468847" valign="middle" class="mr-2" />
+            {:else}
+            <IconDisplay {assetURL} icon="loading-spinner" size="18px" valign="middle" class="mr-2" spin timing="steps(12)" duration="1.5s" />
+            {/if} {@html __('publish / status / '+step)}
+        </li>
+        {/each}
+    </ul>
+    {/if}
+</div>
+
+<!-- Unpublish -->
+{#if published && !publishing && !unpublishing}
+<p class="unpublish mt-2 mb-2">
+    {@html __('publish / unpublish-intro')}
+    <button class="plain-link unpublish-button" on:click="unpublish()">
+        <IconDisplay {assetURL} icon="undo" size="1.2em" valign="-0.2em" />{@html __('publish / unpublish-btn')}
+    </button>
+</p>
+{/if}
+
+<!-- Publish error -->
+{#if publishError}
+<AlertDisplay type="error" visible="true" class="mt-4 mb-2">
+    {publishError}
+</AlertDisplay>
+{/if}
+
+<!-- Additional info, only shown intially -->
+{#if !published && !unpublished}
+<p class="publish-info pt-3">{@html __('publish / publish-info-1')}</p>
+<p class="publish-info">{@html __('publish / publish-info-2')}</p>
+{/if}
+
+<!-- Alert: Publish successful, redirects may need updating -->
+<AlertDisplay type="{redirectDisabled ? 'warning' : 'info'}" visible="{published && publishSuccess && publicVersion > 1}" class="mt-4 mb-2">
+    {#if published && publishSuccess && publicVersion > 1}
+    <div class="embed-alert">
+        {#if redirectDisabled}
+        <IconDisplay {assetURL} icon="warning" size="20px" color="#FFB800" />
+        <p class="embed-message">{@html __('publish / replace-embed')}</p>
+        {:else}
+        <IconDisplay {assetURL} icon="info-circle" size="20px" color="#3a87ad" />
+        <p class="embed-message">{@html __('publish / update-embed')}</p>
+        {/if}
+    </div>
+    {/if}
+</AlertDisplay>
+
+<style>
+    .publish-status {
+        padding: 15px;
+        margin: 0;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        display: flex;
+        flex-wrap: wrap;
+        transition: all 0.3s;
+    }
+
+    .publish-status.is-busy {
+        opacity: 0.5;
+    }
+
+    .publish-status.is-published {
+        align-items: center;
+    }
+
+    .publish-progress {
+        width: 100%;
+        display: block;
+        padding-left: 50px;
+    }
+
+    .publish-progress li {
+        margin-top: 6px;
+        vertical-align: middle;
+        color: #000000;
+    }
+
+    .publish-progress li:last-child {
+        font-weight: bold;
+    }
+
+    .message {
+        flex: 1;
+        padding: 0 20px 0 15px;
+        color: #000000;
+    }
+
+    .message :global(em) {
+        color: #c71e1d;
+        font-weight: bold;
+        font-style: normal;
+    }
+
+    .publish-info {
+        font-weight: normal;
+    }
+
+    .unpublish {
+        font-size: 12px;
+        text-align: right;
+        font-weight: normal;
+        color: #858585;
+    }
+
+    .unpublish-button {
+        font-weight: bold;
+    }
+
+    .embed-alert {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .embed-message {
+        flex: 1;
+        margin: 0 12px;
+        font-weight: normal;
+    }
+
+    .button-publish {
+        min-height: 50px;
+        display: block;
+    }
+
+    .button-publish :global(.cloud) {
+        display: block;
+        margin: 0 auto;
+        position: relative;
+        top: -5px;
+    }
+
+    .button-publish.is-publishing {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .button-wrapper {
+        min-width: 100%;
+        padding: 15px;
+        margin-top: 15px;
+        color: white;
+        background: #1d81a2;
+        border: 0;
+        border: 1px solid #cccccc;
+        border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+        border-bottom-color: rgba(0, 0, 0, 0.25);
+        border-bottom-color: #b3b3b3;
+        border-radius: 4px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 21px;
+        vertical-align: middle;
+        transition: all 0.3s;
+    }
+
+    .button-wrapper:hover,
+    .button-wrapper:focus,
+    .button-wrapper:active {
+        background: #15607a;
+    }
+
+    .button-wrapper:disabled {
+        background: #15607a;
+        cursor: default;
+    }
+
+    .button-wrapper.is-unpublishing {
+        background: transparent;
+        color: #000000;
+    }
+
+    .action {
+        flex: 0 0 100%;
+    }
+
+    /* Small screens */
+    @media only screen and (min-width: 500px) {
+        .button-wrapper {
+            margin: 0;
+        }
+
+        .action {
+            flex: inherit;
+        }
+    }
+
+    /* Medium sized screens */
+    @media only screen and (min-width: 768px) and (max-width: 1200px) {
+        .button-wrapper {
+            min-width: 100%;
+            margin-top: 12px;
+        }
+
+        .action {
+            flex: 0 0 100%;
+        }
+    }
+
+    /* Large screens */
+    @media only screen and (min-width: 1200px) {
+        .button-wrapper {
+            min-width: 160px;
+            max-width: 200px;
+            margin-top: 0;
+        }
+
+        .action {
+            flex: inherit;
+        }
+    }
+</style>
+
+<script>
+    import { __ } from '@datawrapper/shared/l10n';
+    import { trackEvent } from '@datawrapper/shared/analytics';
+    import IconDisplay from '../IconDisplay.html';
+    import AlertDisplay from '../AlertDisplay.html';
+
+    export default {
+        components: {
+            IconDisplay,
+            AlertDisplay
+        },
+
+        data() {
+            return {
+                published: false,
+                publishing: false,
+                publishStarted: 0,
+                now: 0,
+                publishError: false,
+                publishSuccess: false,
+                needsRepublish: false,
+                progress: [],
+                redirectDisabled: false,
+                publicVersion: 0,
+                assetURL: null
+            };
+        },
+
+        computed: {
+            publishWait({ publishStarted, now }) {
+                return publishStarted > 0 ? now - publishStarted : 0;
+            },
+            publishSuccess({ progress, publishing }) {
+                return progress && progress.includes('done') && !publishing;
+            }
+        },
+
+        helpers: { __ },
+
+        methods: {
+            publish() {
+                trackEvent('Chart Editor', 'publish');
+                this.fire('publish');
+            },
+            unpublish() {
+                trackEvent('Chart Editor', 'unpublish');
+                this.fire('unpublish');
+            }
+        }
+    };
+</script>

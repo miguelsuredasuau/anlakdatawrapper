@@ -1,0 +1,66 @@
+<ControlGroup disabled="{disabled}" type="text" {labelWidth} {label} {valign} {miniHelp} {help} helpClass="mt-1">
+    <div class="flex mt-1">
+        {#if prepend}
+        <div class="prepend">{prepend}</div>
+        {/if}
+        <TextInput {expandable} {rows} {id} {autocomplete} {disabled} {placeholder} {width} bind:value></TextInput>
+        {#if append}
+        <div class="append">{append}</div>
+        {/if}
+    </div>
+</ControlGroup>
+
+{#if disabled && disabledMessage}
+<div transition:slide>
+    <div class="disabled-msg">
+        {@html disabledMessage}
+    </div>
+</div>
+{/if}
+
+<style>
+    .flex {
+        display: flex;
+    }
+
+    .disabled-msg {
+        font-size: 11px;
+        padding-top: 0;
+        padding-bottom: 5px;
+        font-style: italic;
+        color: #a8a8a8;
+        line-height: 1.2;
+    }
+</style>
+
+<script>
+    import TextInput from './TextInput.html';
+    import ControlGroup from './ControlGroup.html';
+    import slide from 'svelte-transitions-slide';
+
+    export default {
+        components: {
+            TextInput,
+            ControlGroup
+        },
+        data() {
+            return {
+                id: '',
+                autocomplete: 'off',
+                disabled: false,
+                disabledMessage: '',
+                expandable: false,
+                labelWidth: '100px',
+                width: '100%',
+                valign: 'middle',
+                help: '',
+                miniHelp: '',
+                placeholder: '',
+                prepend: '',
+                append: '',
+                rows: 5
+            };
+        },
+        transitions: { slide }
+    };
+</script>

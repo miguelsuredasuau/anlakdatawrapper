@@ -1,0 +1,137 @@
+{
+    "name": "@datawrapper/controls",
+    "version": "2.39.4",
+    "scripts": {
+        "format": "prettier '**/*.{js,html}' --write",
+        "lint": "prettier --check '**/*.{js,html}' && healthier '**/*.{js,html}'",
+        "test": "ava",
+        "test:watch": "ava --watch --verbose",
+        "storybook": "start-storybook --port 6009",
+        "build-storybook": "build-storybook",
+        "prepublishOnly": "npm run lint && npm test",
+        "update-locales": "cp ../../../services/api/locale/en_US.json stories/static/locale.en.json && cp ../../../services/api/locale/de_DE.json stories/static/locale.de.json"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/datawrapper/controls.git"
+    },
+    "files": [
+        "index.js",
+        "*.html",
+        "annotations/*.html",
+        "annotations/lib/*.mjs",
+        "editor/*.html",
+        "utils/*.mjs",
+        "publish/*.html"
+    ],
+    "dependencies": {
+        "@datawrapper/chart-core": "^8.35.4",
+        "@datawrapper/icons": "^1.3.1",
+        "@datawrapper/shared": "^0.35.0",
+        "chroma-js": "^2.0.6",
+        "d3-shape": "^1.3.5",
+        "svelte-transitions-fade": "^1.0.0",
+        "svelte-transitions-slide": "^1.0.0",
+        "underscore": "^1.13.1"
+    },
+    "optionalDependencies": {
+        "@datawrapper/blocks": "^0.14.6"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.4.0",
+        "@storybook/addon-knobs": "5.0.6",
+        "@storybook/addon-links": "5.0.6",
+        "@storybook/addon-notes": "5.0.6",
+        "@storybook/addons": "5.0.6",
+        "@storybook/svelte": "5.0.6",
+        "@tivac/eslint-plugin-svelte": "^1.2.1",
+        "ava": "^3.15.0",
+        "babel-eslint": "^10.0.1",
+        "babel-loader": "^8.0.5",
+        "browser-env": "^3.2.6",
+        "cash-dom": "^4.1.2",
+        "copy-webpack-plugin": "^6.4.1",
+        "d3-random": "^2.0.0",
+        "eslint-plugin-html": "^5.0.3",
+        "healthier": "^2.0.0",
+        "husky": "^1.3.1",
+        "lint-staged": "^8.1.5",
+        "pirates": "^4.0.1",
+        "prettier": "^1.16.4",
+        "sinon": "^11.1.1",
+        "svelte": "^2.16.1",
+        "svelte-loader": "^2.13.3",
+        "svelte-transitions": "^1.2.0"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "semi": true,
+        "printWidth": 150,
+        "singleQuote": true
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ],
+            "@tivac/svelte/property-ordering": "off",
+            "@tivac/svelte/onupdate": "off"
+        },
+        "extends": [
+            "plugin:@tivac/svelte/svelte"
+        ],
+        "plugins": [
+            "html",
+            "@tivac/svelte"
+        ]
+    },
+    "lint-staged": {
+        "linters": {
+            "*.{js,html}": [
+                "prettier --write",
+                "healthier",
+                "git add"
+            ]
+        },
+        "ignore": [
+            "*.min.js",
+            "**/dw-2.0.js",
+            "**/vendor/**/*.js",
+            "www/static/js/svelte/**/*.js"
+        ]
+    },
+    "ava": {
+        "require": [
+            "./test/helpers/setup-l10n.mjs",
+            "./test/helpers/setup-browser-env.mjs"
+        ],
+        "files": [
+            "./*.test.mjs"
+        ],
+        "nodeArguments": [
+            "--experimental-loader=./test/helpers/svelte-loader.mjs",
+            "--experimental-json-modules",
+            "--experimental-specifier-resolution=node",
+            "--no-warnings"
+        ]
+    }
+}

@@ -1,0 +1,92 @@
+<div class="pagination">
+    <ul>
+        {#each displayItems as item}{#if item.visible}
+        <li class="{isActive(item.state) ? 'active' : ''}">
+            <a href="{getUrl(item.state)}" on:click="navigate(event, item.state)">{item.text}</a>
+        </li>
+        {/if}{/each}
+    </ul>
+</div>
+
+<script>
+    const VISIBLE_RANGE = 5;
+
+    const isInVisibleRange = (index, currentPage, maxPageNum) => {
+        let top = currentPage + Math.floor(VISIBLE_RANGE / 2);
+        let bottom = currentPage - Math.floor(VISIBLE_RANGE / 2);
+
+        // handle boundaries where bottom < 0:
+        if (bottom < 0) {
+            bottom = 0;
+            top = VISIBLE_RANGE - 1;
+        }
+
+        // handle boundaries where top > page.length:
+        if (top >= maxPageNum) {
+            top = maxPageNum;
+            bottom = top - VISIBLE_RANGE + 1;
+        }
+
+        if (index <= top && index >= bottom) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    export default {
+        data() {
+            return {
+                total: null,
+                limit: 10,
+                offset: 0
+            };
+        },
+
+        computed: {
+            currentPage: ({ limit, offset }) => Math.ceil(+offset / +limit) || 0,
+
+            getUrl: ({ state, url }) => state => (url ? url(state) : '#'),
+
+            isActive: ({ currentPage }) => ({ offset, limit }) => offset / limit === currentPage,
+
+            displayItems: ({ total, limit, currentPage }) => {
+                // do not render pagination items if `total` isn't set:
+                if (!total) return [];
+
+                // generate an item for every page based on `total`, `limit`, and `offset`:
+                const pages = Array.from({ length: Math.ceil(total / limit) }, (v, i) => ({
+                    state: { limit, offset: i * limit }
+                }));
+
+                return [
+                    {
+                        text: '«',
+                        state: pages[0].state,
+                        visible: true
+                    },
+                    ...pages.map(({ state }, index) => {
+                        return {
+                            text: index + 1,
+                            state: state,
+                            visible: isInVisibleRange(index, currentPage, pages.length - 1)
+                        };
+                    }),
+                    {
+                        text: '»',
+                        state: pages[pages.length - 1].state,
+                        visible: true
+                    }
+                ];
+            }
+        },
+
+        methods: {
+            navigate(event, state) {
+                event.preventDefault();
+                this.set({ offset: state.offset });
+                this.fire('navigate', state);
+            }
+        }
+    };
+</script>

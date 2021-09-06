@@ -1,0 +1,404 @@
+<!--
+TODO for later:
+* allow limiting resizing to x or y direction
+-->
+<div ref:cont style="position:relative;">
+    <div
+        id="iframe-wrapper"
+        class:loading
+        class:resizable
+        class:resizing
+        style="width: {width}px; height: {height}px; overflow: visible; padding: {border}px; transform: scale({scale || 1}); background:{themeBackground};"
+    >
+        <iframe title="chart-preview" ref:iframe src="{url}" on:load="iframeLoaded(event)" id="iframe-vis"></iframe>
+        {#if resizable}
+        <div ref="resizer" on:mousedown="startDrag(event)" class="resizer resizer-both">
+            <i class="fa fa-arrows-h"></i>
+        </div>
+        {/if}
+    </div>
+    <div class="notifications">
+        {#each notifications as notification}
+        <AlertDisplay
+            visible="{true}"
+            type="{notification.type || 'info'}"
+            closeable="{notification.closeable === undefined ? true : notification.closeable}"
+            closeFunc="{notification.remove}"
+        >
+            <div>
+                {#if notification.icon}
+                <span>{@html purifyHtml(notification.icon) }</span>
+                {/if}
+                <span>{@html purifyHtml(notification.translateKey ? __(notification.translateKey) : notification.message) }</span>
+            </div>
+        </AlertDisplay>
+        {/each}
+    </div>
+</div>
+
+<style>
+    #iframe-wrapper {
+        margin: 20px auto 0;
+        transform-origin: top left;
+    }
+    #iframe-wrapper.loading {
+        opacity: 1;
+    }
+    #iframe-wrapper:before {
+        pointer-events: none;
+        display: block;
+        content: '';
+        position: absolute;
+        top: -1px;
+        right: -1px;
+        bottom: -1px;
+        left: -1px;
+        background: #f9f9f9;
+        background: #f3f3f3;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+    }
+    #iframe-wrapper.loading:before {
+        opacity: 0.95;
+    }
+    #iframe-wrapper.loading:after {
+        content: 'loading...';
+        display: block;
+        color: #999;
+        position: absolute;
+        top: 50%;
+        right: 0;
+        bottom: 0;
+        font-size: 20px;
+        left: 0;
+        text-align: center;
+        line-height: 0;
+    }
+    #iframe-wrapper.loading iframe {
+        /*filter: blur(5px);*/
+    }
+    .resizing iframe {
+        pointer-events: none;
+    }
+    .notifications {
+        margin-top: 15px;
+    }
+    .notifications :global(.alert) {
+        margin-bottom: 8px;
+    }
+</style>
+
+<script>
+    /* global dw */
+    import { throttle, isEqual } from 'underscore';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import clone from '@datawrapper/shared/clone';
+    import { __ } from '@datawrapper/shared/l10n';
+    import get from '@datawrapper/shared/get';
+    import AlertDisplay from '../AlertDisplay.html';
+
+    let startX;
+    let startY;
+    let startWidth;
+    let startHeight;
+
+    // Declare how to handle changes in the chart's attributes:
+    const UPDATE = [
+        'title',
+        'metadata.describe',
+        'metadata.annotate.notes',
+        'metadata.custom',
+        'metadata.publish.blocks',
+        'metadata.publish.force-attribution',
+        'metadata.visualize.sharing'
+    ];
+    const RELOAD = ['type', 'theme', 'language', 'metadata.data.transpose', 'metadata.axes'];
+    const RENDER = ['metadata.visualize'];
+    const IGNORE = ['metadata.visualize.text-annotations', 'metadata.visualize.range-annotations'];
+
+    export default {
+        components: {
+            AlertDisplay
+        },
+        helpers: { purifyHtml, __ },
+        data() {
+            return {
+                src: false,
+                loading: true,
+                // resize logic:
+                width: null,
+                height: null,
+                border: 10,
+                resizable: true,
+                resizing: false,
+                scale: 1,
+                // inline editing:
+                editable: true,
+                previousAttributes: null,
+                notifications: []
+            };
+        },
+        computed: {
+            url({ $id, src }) {
+                // eslint-disable-next-line
+                return src ? src : $id ? `/chart/${$id}/preview` : '';
+            },
+            themeBackground({ $themeData }) {
+                return get($themeData, 'colors.background', '#ffffff');
+            }
+        },
+        methods: {
+            iframeLoaded() {
+                const { editable } = this.get();
+                if (editable) {
+                    this.getContext((win, doc) => {
+                        activateInlineEditing(doc, this.store);
+                    });
+                }
+                this.set({ loading: false });
+                this.fire('iframeLoaded');
+            },
+
+            getContext(callback) {
+                const win = this.refs.iframe.contentWindow;
+                const doc = this.refs.iframe.contentDocument;
+
+                if (!win.__dw || !win.__dw.vis) {
+                    return setTimeout(() => {
+                        this.getContext(callback);
+                    }, 50);
+                }
+
+                callback(win, doc);
+            },
+
+            updateChart() {
+                // Update title, intro, byline, etc. in chart preview:
+                this.getContext(win => {
+                    win.__dwUpdate({ chart: this.store.serialize() });
+                });
+            },
+
+            renderChart: throttle(function(attributes) {
+                // Do not re-render in passive mode:
+                if (this.get().passiveMode) return;
+
+                this.getContext(win => {
+                    // Re-render chart with new attributes:
+                    win.__dw.vis.chart().set('metadata', attributes.metadata);
+                    win.__dw.vis.chart().load(win.__dw.params.data);
+                    win.__dw.render();
+                });
+            }, 50),
+
+            reloadChart() {
+                // Do not reload in passive moder:
+                if (this.get().passiveMode) return;
+
+                // Set loading state:
+                this.set({ loading: true });
+                const reloadOnce = this.store.on('save', () => {
+                    reloadOnce.cancel();
+                    this.refs.iframe.contentWindow.location.reload();
+                });
+            },
+
+            startDrag(event) {
+                startX = event.clientX;
+                startY = event.clientY;
+                startWidth = this.get().width;
+                startHeight = this.get().height;
+                this.set({ resizing: true });
+                this.fire('beforeResize');
+
+                const doDrag = event => {
+                    if (!this.get().resizing) return;
+                    this.set({
+                        width: startWidth + (event.clientX - startX) * (this.store.get().type === 'locator-map' ? 2 : 1),
+                        height: startHeight + event.clientY - startY
+                    });
+                    event.preventDefault();
+                    return false;
+                };
+
+                const stopDrag = () => {
+                    window.document.removeEventListener('mousemove', doDrag);
+                    window.document.removeEventListener('mouseup', stopDrag);
+                    this.set({ resizing: false });
+                    const { width, height } = this.get();
+                    const bbox = this.refs.iframe.contentDocument.querySelector('.dw-chart-body').getBoundingClientRect();
+                    const maxH = this.refs.iframe.contentWindow.dw.utils.getMaxChartHeight();
+                    const [chartWidth, chartHeight] = [bbox.width, maxH];
+                    this.fire('resize', { width, height, chartWidth, chartHeight });
+                };
+
+                window.document.addEventListener('mousemove', doDrag);
+                window.document.addEventListener('mouseup', stopDrag);
+            }
+        },
+        oncreate() {
+            // Set initial size:
+            this.set({
+                width: this.store.getMetadata('publish.embed-width'),
+                height: this.store.getMetadata('publish.embed-height')
+            });
+
+            dw.backend.events().on('notifications.change', notifications => {
+                this.set({ notifications });
+            });
+            // Resize when chart wants to resize itself:
+            window.addEventListener('message', e => {
+                var message = e.data;
+                const { resizing } = this.get();
+                if (resizing) return;
+
+                if (typeof message['datawrapper-height'] !== 'undefined') {
+                    var h;
+
+                    for (var chartId in message['datawrapper-height']) {
+                        h = message['datawrapper-height'][chartId];
+                    }
+
+                    this.set({ height: h });
+                }
+            });
+
+            this.store.on('update', ({ changed, current }) => {
+                const { previousAttributes } = this.get();
+
+                if (!previousAttributes) {
+                    this.set({
+                        previousAttributes: clone(this.store.serialize())
+                    });
+                    return;
+                }
+
+                let update, reload, render;
+                const attributes = this.store.serialize();
+
+                function hasChanged(key) {
+                    // we need to clone these as cloning removes 'undefined'
+                    let p0 = clone(attributes);
+                    let p1 = previousAttributes;
+                    const keys = key.split('.');
+                    keys.forEach(k => {
+                        p0 = p0[k] || {};
+                        p1 = p1[k] || {};
+                    });
+                    return !isEqual(p0, p1);
+                }
+
+                // Observe change in attributes that require the iframe to reload:
+                RELOAD.forEach(key => {
+                    if (hasChanged(key)) {
+                        reload = true;
+                    }
+                });
+
+                if (reload) {
+                    this.reloadChart();
+                } else {
+                    // Observe change in attributes that require the chart wrapper to be updated:
+                    UPDATE.forEach(key => {
+                        if (hasChanged(key)) {
+                            update = true;
+                        }
+                    });
+
+                    // Observe change in attributes that require the chart to re-render:
+                    RENDER.forEach(key => {
+                        if (hasChanged(key)) {
+                            render = true;
+                        }
+                    });
+
+                    IGNORE.forEach(key => {
+                        if (hasChanged(key)) {
+                            render = false;
+                        }
+                    });
+
+                    if (update) this.updateChart();
+                    if (render) this.renderChart(attributes);
+                }
+
+                // Clone attributes for checking whether there were changes:
+                this.set({
+                    previousAttributes: clone(this.store.serialize())
+                });
+            });
+        },
+        // eslint-disable-next-line
+        onupdate({ changed, current }) {
+            // sync embed height and width
+            if (changed.width) {
+                this.store.setMetadata('publish.embed-width', current.width);
+            }
+            if (changed.height) {
+                this.store.setMetadata('publish.embed-height', current.height);
+            }
+        }
+    };
+
+    function activateInlineEditing(doc, chart) {
+        if (!get(chart.get().externalMetadata, 'title')) {
+            makeElementEditable({
+                el: doc.querySelector('.headline-block .block-inner'),
+                updateContent(lbl) {
+                    chart.set({ passiveMode: true });
+                    chart.set({ title: lbl });
+                    chart.set({ passiveMode: false });
+                }
+            });
+        }
+
+        if (!get(chart.get().externalMetadata, 'describe.intro')) {
+            makeElementEditable({
+                el: doc.querySelector('.description-block .block-inner'),
+                updateContent: sync('describe.intro')
+            });
+        }
+
+        if (!get(chart.get().externalMetadata, 'annotate.notes')) {
+            makeElementEditable({
+                el: doc.querySelector('.notes-block .block-inner'),
+                updateContent: sync('annotate.notes')
+            });
+        }
+
+        function sync(key) {
+            return function(txt) {
+                chart.set({ passiveMode: true });
+                chart.setMetadata(key, txt);
+                chart.set({ passiveMode: false });
+            };
+        }
+
+        function makeElementEditable({ el, updateContent }) {
+            if (!el) return;
+            let lastValue = false;
+
+            el.setAttribute('contenteditable', true);
+
+            // Save old value for ESC key:
+            el.addEventListener('focus', () => {
+                lastValue = el.innerHTML;
+            });
+
+            // Revert last value when ESC is hit:
+            el.addEventListener('keydown', evt => {
+                if (evt.keyCode === 27) {
+                    evt.preventDefault();
+                    el.innerHTML = lastValue;
+                    el.blur();
+                }
+            });
+
+            // Persist changes when edited element loses focus:
+            el.addEventListener('blur', () => {
+                // Remove trailing line breaks
+                updateContent(purifyHtml(el.innerHTML));
+            });
+        }
+    }
+</script>

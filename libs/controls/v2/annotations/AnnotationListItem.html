@@ -1,0 +1,73 @@
+<div class="container">
+    <span class="text" class:empty="isTextEmpty">{text}</span>
+    <span class="pull-right">
+        {#if !item.showMobile && item.showDesktop}
+        <span class="mini-help">{__('controls / annotations / show-on / desktop').toUpperCase()}</span>
+        {/if} {#if item.showMobile && !item.showDesktop}
+        <span class="mini-help">{__('controls / annotations / show-on / mobile').toUpperCase()}</span>
+        {/if} {#if !item.showMobile && !item.showDesktop}
+        <i class="fa fa-fw fa-eye-slash"></i>
+        {/if}
+        <i on:click|stopPropagation="deleteAnnotation(item.id)" class="fa fa-fw fa-trash"></i>
+    </span>
+</div>
+
+<style>
+    .container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+    .text {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .empty {
+        color: #999;
+    }
+    .pull-right {
+        flex: 1 0 0;
+        text-align: right;
+        margin-left: 10px;
+        white-space: nowrap;
+    }
+    .pull-right .fa {
+        color: #999;
+    }
+    .pull-right .fa.fa-trash {
+        color: #c71e1d;
+        opacity: 0.2;
+        transition: opacity 0.1s;
+    }
+    .container:hover .pull-right .fa.fa-trash {
+        opacity: 1;
+    }
+</style>
+
+<script>
+    /* global CustomEvent */
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        computed: {
+            text({ item }) {
+                return item.text || '(no text)';
+            },
+            isTextEmpty({ item }) {
+                if (item.text.length === 0) return true;
+                return false;
+            }
+        },
+        helpers: { __ },
+        methods: {
+            deleteAnnotation(id) {
+                // @todo: there must be a better way to send delete event from here,
+                // without relying on custom events
+                const customEvent = new CustomEvent('deleteInList', { detail: id });
+                const annotationsWrapEl = document.getElementById('svelte-annotations-wrap');
+                annotationsWrapEl.dispatchEvent(customEvent);
+            }
+        }
+    };
+</script>

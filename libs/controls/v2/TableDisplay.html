@@ -1,0 +1,109 @@
+<div class="table-container">
+    <table class="table">
+        <colgroup>
+            {#each columnHeaders as item}
+            <col style="width: {item.width}" />
+            {/each}
+        </colgroup>
+
+        <thead>
+            <tr>
+                {#each columnHeaders as item}
+                <th class="{item.className ? item.className : ''}">
+                    {#if item.orderBy}
+                    <a
+                        class="sortable {isActive(item) ? isAscending ? 'sortable-asc' : 'sortable-desc' : ''}"
+                        href="{`?orderBy=${item.orderBy}`}"
+                        on:click="sort(event, item.orderBy)"
+                    >
+                        {item.title}
+                    </a>
+                    {:else}
+                    <span class="col">{item.title}</span>
+                    {/if}
+                </th>
+                {/each}
+            </tr>
+        </thead>
+
+        <tbody>
+            <slot></slot>
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .table {
+        min-width: 100%;
+        font-size: 100%;
+    }
+
+    .table-container {
+        width: 100%;
+        overflow-y: visible;
+        overflow-x: auto;
+    }
+
+    .col-num {
+        text-align: right;
+        padding-right: 1em;
+    }
+
+    .sortable {
+        color: #444;
+        text-decoration: none;
+    }
+
+    .sortable:after {
+        content: '▼';
+        font-size: 0.75em;
+        position: relative;
+        left: 0.25em;
+        color: #999;
+        vertical-align: bottom;
+    }
+
+    .sortable-asc:after {
+        color: #444;
+    }
+
+    .sortable-desc:after {
+        content: '▲';
+        color: #444;
+    }
+</style>
+
+<script>
+    const ORDER = { true: 'ASC', false: 'DESC' };
+    const DEFAULT_ORDER = ORDER.true;
+
+    export default {
+        data: () => ({
+            order: DEFAULT_ORDER,
+            orderBy: ''
+        }),
+
+        computed: {
+            isActive: ({ orderBy }) => item => orderBy === item.orderBy,
+            isAscending: ({ order }) => order === DEFAULT_ORDER
+        },
+
+        methods: {
+            sort(event, orderBy) {
+                event.preventDefault();
+
+                // if `orderBy` didn't change, invert sort order:
+                const order = (current => {
+                    if (orderBy === current.orderBy) {
+                        return ORDER[current.order !== DEFAULT_ORDER];
+                    } else {
+                        return DEFAULT_ORDER;
+                    }
+                })(this.get());
+
+                this.set({ orderBy, order });
+                this.fire('sort', { orderBy, order });
+            }
+        }
+    };
+</script>

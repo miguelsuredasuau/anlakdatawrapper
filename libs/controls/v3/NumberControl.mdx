@@ -1,0 +1,30 @@
+# NumberControl
+
+For numeric input via slider and/or stepper. If you want to put multiple number inputs into one
+line, use the [NumberInput] control.
+
+```html
+<NumberControl
+    bind:value="padding"
+    label="Padding"
+    labelWidth="100px"
+    unit="px"
+    min="0"
+    max="100"
+    step="5"
+    disabled={true|false}
+    slider={true|false}
+    multiply="1"
+    allowUndefined={true|false}
+    placeholder="text"
+    help="This can hold a longer explanation including some <b>HTML</b>"
+/>
+
+<script>
+    import { NumberControl } from '@datawrapper/controls';
+    // or import directly via:
+    // import NumberControl from '@datawrapper/controls/NumberControl.svelte;
+
+    let value = 42;
+</script>
+```

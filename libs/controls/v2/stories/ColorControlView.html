@@ -1,0 +1,76 @@
+<div style="margin-bottom: 1em; padding:1em;background: {palette[value] || value}">
+    You selected <b>{palette[value] ? `palette color ${value}` : value}</b>
+</div>
+
+<ColorControl labelWidth="90px" label="Custom colors" bind:value bind:custom customizable="1" />
+
+<pre>
+    {JSON.stringify(custom)}
+</pre>
+
+<hr />
+
+<ColorControl labelWidth="100px" label="Custom keys, no color" value="{false}" keys="{['foo', 'bar']}" bind:custom="custom2" customizable="1" />
+
+<pre>
+    {JSON.stringify(custom2)}
+</pre>
+
+<hr />
+
+<ColorControl labelWidth="90px" label="Compact mode" compact="1" value="{false}" keys="{['foo', 'bar']}" bind:custom="custom2" customizable="1" />
+
+<pre>
+    {JSON.stringify(custom2)}
+</pre>
+
+<ColorControl labelWidth="90px" label="Custom colors" bind:value="value2" bind:custom />
+<pre>
+    {JSON.stringify(value2)}
+</pre>
+
+<script>
+    import ColorControl from '../ColorControl.html';
+    import { Store } from 'svelte/store.js';
+
+    const palette = [
+        '#a6cee3',
+        '#1f78b4',
+        '#b2df8a',
+        '#33a02c',
+        '#fb9a99',
+        '#e31a1c',
+        '#fdbf6f',
+        '#ff7f00',
+        '#cab2d6',
+        '#6a3d9a',
+        '#ffff99',
+        '#b15928'
+    ];
+    const keys = ['Africa', 'Europe', 'Asia', 'North America', 'South America', 'Australia'];
+
+    const store = new Store({
+        vis: {
+            colorKeys() {
+                return keys;
+            }
+        },
+        themeData: { colors: { palette } }
+    });
+
+    export default {
+        components: { ColorControl },
+        data() {
+            return {
+                value: '#a6cee3',
+                value2: 0,
+                custom: {
+                    Europe: '#fc0'
+                },
+                custom2: {}
+            };
+        },
+        store: () => store,
+        helpers: { palette }
+    };
+</script>

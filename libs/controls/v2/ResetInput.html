@@ -1,0 +1,45 @@
+<button class:inactive="value === defaultValue" class="undo" on:click="onReset()" title="Reset"><i class="fa fa-undo"></i></button>
+
+<style>
+    button.undo {
+        cursor: pointer;
+        display: inline-block;
+        padding-left: 5px;
+        transition: opacity 0.3s ease;
+        font-weight: 300;
+        color: #999;
+    }
+    button.undo:hover {
+        color: #1d81a2;
+    }
+    button.undo.inactive {
+        opacity: 0;
+        pointer-events: none;
+        cursor: default;
+    }
+    button {
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;
+    }
+</style>
+
+<script>
+    export default {
+        data() {
+            return {
+                defaultValue: 0
+            };
+        },
+        methods: {
+            onReset() {
+                let { defaultValue } = this.get();
+                this.set({ value: defaultValue });
+            }
+        }
+    };
+</script>

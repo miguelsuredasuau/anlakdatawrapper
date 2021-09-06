@@ -1,0 +1,52 @@
+<div class="container">
+    {@html item.icon}
+    <span class="text">{item.type === 'x' ? item.x0 : item.y0} {item.display !== 'line' ? `- ${item.type === 'x' ? item.x1 : item.y1}` : ''}</span>
+    <span class="pull-right">
+        <i on:click|stopPropagation="deleteAnnotation(item.id)" class="fa fa-fw fa-trash"></i>
+    </span>
+</div>
+
+<style>
+    .container {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .text {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .pull-right {
+        flex: 1 0 0;
+        text-align: right;
+        margin-left: 10px;
+    }
+    .pull-right .fa {
+        color: #999;
+    }
+    .pull-right .fa.fa-trash {
+        color: #c71e1d;
+        opacity: 0.2;
+        transition: opacity 0.1s;
+    }
+    .container:hover .pull-right .fa.fa-trash {
+        opacity: 1;
+    }
+</style>
+
+<script>
+    /* globals CustomEvent */
+    export default {
+        methods: {
+            deleteAnnotation(id) {
+                // @todo: there must be a better way to send delete event from here,
+                // without relying on custom events
+                const customEvent = new CustomEvent('deleteInList', { detail: id });
+                const annotationsWrapEl = document.getElementById('svelte-range-annotations-wrap');
+                annotationsWrapEl.dispatchEvent(customEvent);
+            }
+        }
+    };
+</script>

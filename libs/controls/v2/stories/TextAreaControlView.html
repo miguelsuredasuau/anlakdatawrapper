@@ -1,0 +1,31 @@
+<TextAreaControl label="simple" bind:value />
+
+<TextAreaControl label="help text" miniHelp="Here you can get some help" bind:value />
+
+<TextAreaControl label="help text and help display" miniHelp="Here you can get some help" help="Here you can get even more help" bind:value />
+
+<TextAreaControl label="placeholder" placeholder="This is a placeholder" value="" />
+
+<TextAreaControl label="disabled text" bind:value disabled="1" />
+
+<TextAreaControl label="custom height" height="120px" value="" />
+
+<TextAreaControl label="custom label width" labelWidth="60px" value="" />
+
+<TextAreaControl label="custom control width, height, and custom label width" labelWidth="180px" width="120px" height="120px" value="" />
+
+<TextAreaControl label="vertical resizing only" resize="vertical" value="" />
+
+<TextAreaControl label="horizontal resizing only" resize="horizontal" value="" />
+
+<TextAreaControl label="no resizing" resize="none" value="" />
+
+<hr />
+
+<script>
+    import TextAreaControl from '../TextAreaControl.html';
+
+    export default {
+        components: { TextAreaControl }
+    };
+</script>

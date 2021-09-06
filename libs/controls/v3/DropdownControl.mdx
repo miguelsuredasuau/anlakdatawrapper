@@ -1,0 +1,40 @@
+# DropdownControl
+
+DropdownControl allows for customization of the control and custom HTML in dropdown items.
+
+## Attributes
+
+-   `options`: the options selectable in the dropdown
+-   `forcePlaceholder`: if true, the dropdown will never show the current value but always the placeholder
+-   `placeholder`: provide custom placeholder text
+-   `itemRenderer`: custom component for rendering each dropdown item
+
+```html
+<script>
+    import DropdownControl from '@datawrapper/controls/DropdownControl.svelte';
+    import MyRenderer from './MyDropdownItemRenderer.html';
+
+    let labelStyle = 'tl';
+    let labelStyleOptions = [
+        { value: 'tl', label: 'top left' },
+        { value: 'tr', label: 'top right' },
+        { value: 'bl', label: 'bottom left' },
+        { value: 'br', label: 'bottom right' }
+    ];
+</script>
+
+<DropdownControl
+    bind:value="{labelStyle}"
+    options="{labelStyleOptions}"
+    label="Label style"
+    labelWidth="100px"
+    width="150px"
+    valign="{middle|top|bottom}"
+    disabled="{true|false}"
+    help="This can hold a help text including some <b>HTML</b>"
+    itemRenderer="{MyRenderer}"
+    forcePlaceholder="{true|false}"
+    placeholder="This is a custom placeholder text"
+    forceLabel="Custom label text either as a string or object containing at least the `label` property"
+/>
+```

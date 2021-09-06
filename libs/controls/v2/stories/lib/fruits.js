@@ -1,0 +1,19 @@
+export default [
+    'Apple',
+    'Banana',
+    'Blueberry',
+    'Cherry',
+    'Date',
+    'Fig',
+    'Grape',
+    'Raisin',
+    'Kiwifruit',
+    'Lemon',
+    'Mango',
+    'Melon',
+    'Nectarine',
+    'Orange',
+    'Peach',
+    'Raspberry',
+    'Strawberry'
+];

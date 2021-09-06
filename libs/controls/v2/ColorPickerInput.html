@@ -1,0 +1,570 @@
+<svelte:window on:keydown="windowKeydown(event)" on:click="windowClick(event)" />
+
+<div class="color-picker-cont" ref:picker>
+    <DropdownInput bind:visible="open">
+        <span slot="button">
+            <slot>
+                <div class="base-color-picker color-picker">
+                    <div style="background: {validColor} none repeat scroll 0% 0%;" class="the-color">
+                        <div class="transparency" style="opacity: {1-alpha(validColor)}"></div>
+                    </div>
+                    <span class="caret"></span>
+                </div>
+            </slot>
+        </span>
+        <span slot="content">
+            {#if color_}
+            <div class="color-selector" on:click="event.stopPropagation()">
+                <div class="palette">
+                    {#each paletteGroups as group}
+                    <div class="color-group">
+                        {#if group.name}
+                        <div class="name">{group.name}</div>
+                        {/if} {#each group.colors as row}
+                        <div>
+                            {#each row as c}
+                            <div
+                                class="color"
+                                on:click="setColor(c, false)"
+                                on:dblclick="setColor(c, true)"
+                                class:selected="c === color_"
+                                data-color="{c}"
+                                style="     background: {c};
+                                                border-color: {borderColor2(c)};
+                                                width:{swatchDims}px;
+                                                height:{swatchDims}px;"
+                            >
+                                <div class="transparency" style="opacity: {1-alpha(c)}"></div>
+                            </div>
+                            {/each}
+                        </div>
+                        {/each}
+                    </div>
+                    {/each}
+                </div>
+                {#if colorAxesConfig.lightness }
+                <div class="color-axis lightness">
+                    {#each gradient_l as c}
+                    <div class="color {c == nearest_l?'selected':''}" on:click="setColor(c)" data-color="{c}" style="background: {c}"></div>
+                    {/each}
+                </div>
+                {/if} {#if colorAxesConfig.saturation }
+                <div class="color-axis saturation">
+                    {#each gradient_c as c}
+                    <div class="color {c == nearest_c?'selected':''}" on:click="setColor(c)" data-color="{c}" style="background: {c}"></div>
+                    {/each}
+                </div>
+                {/if} {#if colorAxesConfig.hue }
+                <div class="color-axis hue">
+                    {#each gradient_h as c}
+                    <div class="color {c == nearest_h?'selected':''}" on:click="setColor(c)" data-color="{c}" style="background: {c}"></div>
+                    {/each}
+                </div>
+                {/if} {#if reset}
+                <button on:click="resetColor()" class="btn btn-small reset"><i class="im im-drop"></i> {@html reset}</button>
+                {/if}
+                <div class="footer">
+                    <input
+                        type="text"
+                        style="background: {inputBgColor}; border-color: {borderColor(inputBgColor)}; color: {inputTextColor}"
+                        bind:value="inputColor"
+                        class="hex {readonly}"
+                        ref:input
+                        {readonly}
+                    />
+                    <button class="btn btn-small ok" on:click="setColor(color, true, true)">
+                        <i class="icon-ok"></i>
+                    </button>
+                    <div
+                        class="color selected previous"
+                        on:click="setColor(previousColor)"
+                        style="border-color: {borderColor(previousColor)}; background: {previousColor}"
+                    >
+                        <div class="transparency" style="opacity: {1-alpha(previousColor)}"></div>
+                    </div>
+                </div>
+            </div>
+            {/if}
+        </span>
+    </DropdownInput>
+</div>
+<script>
+    import chroma from 'chroma-js';
+    import get from '@datawrapper/shared/get';
+    import { uniq, isUndefined, defer } from 'underscore';
+    import DropdownInput from './DropdownInput.html';
+    import { storeColor, getColor } from './utils/colorPicker.mjs';
+
+    const noColor = '#00000000';
+
+    export default {
+        components: { DropdownInput },
+        data() {
+            return {
+                reset: false,
+                initial: false,
+                prepend: [],
+                append: [],
+                returnPaletteIndex: false,
+                // the public color
+                color: false,
+                // the internal color
+                color_: noColor,
+                // the text input color
+                inputColor: '',
+                // the last entered text input color which is valid
+                lastValidInputColor: noColor,
+                // the color when picker is opened
+                previousColor: false,
+                open: false
+            };
+        },
+        computed: {
+            paletteGroups({ $themeData, prepend, append }) {
+                let paletteGroups;
+                const groups = get($themeData, 'colors.groups', false);
+                prepend = prepend.length ? [{ colors: [prepend] }] : false;
+                if (groups) {
+                    append = append.length ? [{ colors: [append] }] : false;
+                    paletteGroups = groups;
+                    if (prepend) {
+                        paletteGroups = prepend.concat(groups);
+                    }
+                    if (append) {
+                        paletteGroups = paletteGroups.concat(append);
+                    }
+                } else {
+                    const showDuplicates = get($themeData, 'colors.picker.showDuplicates', false);
+                    const paletteColors = showDuplicates ? $themeData.colors.palette.concat(append) : uniq($themeData.colors.palette.concat(append));
+
+                    paletteGroups = prepend ? prepend.concat([{ colors: [paletteColors] }]) : [{ colors: [paletteColors] }];
+                }
+                return paletteGroups;
+            },
+            palette({ $themeData, prepend, append }) {
+                return get($themeData, 'colors.palette', []);
+            },
+            swatchDims({ $themeData }) {
+                const rowCount = get($themeData, 'colors.picker.rowCount', 6);
+                return (157 - 2 * rowCount) / rowCount;
+            },
+            colorAxesConfig({ $themeData }) {
+                const lightness = get($themeData, 'colors.picker.controls.lightness', true);
+                const saturation = get($themeData, 'colors.picker.controls.saturation', true);
+                const hue = get($themeData, 'colors.picker.controls.hue', true);
+                return { lightness: lightness, saturation: saturation, hue: hue };
+            },
+            readonly({ $themeData }) {
+                const hexEditable = get($themeData, 'colors.picker.controls.hexEditable', true);
+                return hexEditable ? '' : 'readonly';
+            },
+            validColor({ color_ }) {
+                try {
+                    return chroma(color_).hex();
+                } catch (e) {
+                    return '#000000';
+                }
+            },
+            gradient_l({ color_ }) {
+                if (!chroma.valid(color_)) return [];
+                const lch = chroma(color_).lch();
+                const sample = spread(70, 55, 7, 6).map(l => chroma.lch(l, lch[1], lch[2]).hex());
+                return chroma
+                    .scale(['#000000'].concat(sample).concat('#ffffff'))
+                    .mode('lch')
+                    .gamma(0.8)
+                    .padding(0.1)
+                    .colors(14);
+            },
+            gradient_c({ color_, palette }) {
+                if (!chroma.valid(color_)) return [];
+                let high = chroma(color_).set('lch.c', 120);
+                if (isNaN(high.get('lch.h'))) {
+                    high = chroma.lch(high.get('lch.l'), 50, chroma(palette[0] || '#d00').get('lch.h'));
+                }
+                const low = chroma(color_).set('lch.c', 3);
+                return chroma
+                    .scale([low, high])
+                    .mode('lch')
+                    .gamma(1.2)
+                    .colors(14);
+            },
+            gradient_h({ color_ }) {
+                if (!chroma.valid(color_)) return [];
+                const lch = chroma(color_).lch();
+                const sample = spread(lch[2], 75, 7, 6).map(h => chroma.lch(lch[0], lch[1], h).hex());
+                return chroma
+                    .scale(sample)
+                    .mode('lch')
+                    .colors(14);
+            },
+            nearest_l({ color_, gradient_l }) {
+                return findNearest(gradient_l, color_);
+            },
+            nearest_c({ color_, gradient_c }) {
+                return findNearest(gradient_c, color_);
+            },
+            nearest_h({ color_, gradient_h }) {
+                return findNearest(gradient_h, color_);
+            },
+            inputBgColor({ inputColor, palette, lastValidInputColor }) {
+                if (inputColor === '') return noColor;
+                inputColor = convertInputToHex(inputColor, palette);
+                try {
+                    return chroma(inputColor).hex();
+                } catch (e) {
+                    return lastValidInputColor;
+                }
+            },
+            inputTextColor({ inputBgColor, $themeData }) {
+                const hexEditable = get($themeData, 'colors.picker.controls.hexEditable', true);
+                if (inputBgColor === noColor) return '#000';
+                const c = chroma(inputBgColor);
+                return c.luminance() > 0.6 || c.alpha() < 0.3 ? `rgba(0,0,0,${hexEditable ? 1 : 0.3})` : `rgba(255,255,255,${hexEditable ? 1 : 0.6})`;
+            }
+        },
+        helpers: {
+            borderColor(c) {
+                if (!chroma.valid(c)) return '#ccc';
+                return c === noColor
+                    ? '#ddd'
+                    : chroma(c)
+                          .darker()
+                          .alpha(1)
+                          .hex();
+            },
+            borderColor2(c) {
+                if (!chroma.valid(c)) return '#ccc';
+                return chroma(c).hex('rgb') === '#ffffff' ? '#eeeeee' : c;
+            },
+            alpha(c) {
+                if (!chroma.valid(c)) return 0;
+                return chroma(c).alpha();
+            }
+        },
+        methods: {
+            windowClick(event) {
+                // user clicked somewhere inside picker - don't do anything
+                if (this.refs.picker.contains(event.target)) return;
+
+                // user clicked on a reset button from parent ColorControl component - don't do anything
+                // (parent component will take care of resetting)
+                if (event.target.classList.contains('btn-color-reset')) return;
+
+                const { open, color } = this.get();
+                if (open) this.setColor(color, true, true);
+            },
+            windowKeydown(event) {
+                const { open, color } = this.get();
+                if (open && event.key === 'Enter') this.setColor(color, false, true);
+                if (open && event.key === 'Escape') this.set({ open: false });
+            },
+            setColor(color, close = false, compareWithInputColor = false) {
+                const { palette, returnPaletteIndex, inputColor, lastValidInputColor } = this.get();
+                let colorToSet = color;
+
+                if (compareWithInputColor && inputColor !== '') {
+                    try {
+                        // when user has entered a valid color that we can convert to hex, use it
+                        colorToSet = chroma(convertInputToHex(inputColor, palette)).hex();
+                    } catch (e) {
+                        // when user has entered an invalid color, use last valid color instead
+                        colorToSet = lastValidInputColor;
+                    }
+                }
+
+                this.set({
+                    color: storeColor(colorToSet, palette, returnPaletteIndex),
+                    inputColor: colorToSet ? getColor(colorToSet, palette) : ''
+                });
+
+                this.fire('change', colorToSet);
+                if (close) this.set({ open: false });
+            },
+            resetColor() {
+                const { initial } = this.get();
+                this.set({ color_: noColor, inputColor: false });
+                this.setColor(initial, true);
+            }
+        },
+        onstate({ changed, current, previous }) {
+            // update internal color if external color changes
+            if (changed.color && current.color !== noColor && !previous) {
+                const newColor = getColor(isDefined(current.color) ? current.color : noColor, current.palette);
+                setTimeout(() => {
+                    this.set({
+                        color_: newColor,
+                        inputColor: !isDefined(current.color) ? '' : newColor
+                    });
+                }, 100);
+            } else if (changed.color && !isDefined(current.color)) {
+                this.set({
+                    color_: noColor,
+                    inputColor: ''
+                });
+            } else if (changed.color && isDefined(current.color) && previous) {
+                const newColor = getColor(current.color, current.palette);
+                this.set({
+                    color_: newColor,
+                    inputColor: newColor
+                });
+            }
+
+            if (changed.inputColor && previous) {
+                const inputColor = convertInputToHex(current.inputColor, current.palette);
+                try {
+                    this.set({ lastValidInputColor: chroma(inputColor).hex() });
+                } catch (e) {}
+            }
+
+            // color picker opened - let's set previous color
+            if (changed.open && current.open) {
+                this.set({ previousColor: getColor(current.color, current.palette) });
+            }
+        },
+        onupdate({ changed, current, previous }) {
+            // Set focus to text input when opening
+            if (changed.open && current.open) {
+                defer(() => this.refs.input.focus());
+            }
+        }
+    };
+
+    function findNearest(colors, color) {
+        let nearestIndex = -1;
+        let nearestDistance = 999999;
+        if (colors[0] === colors[1]) return '-';
+        colors.forEach((c, i) => {
+            const dist = chroma.distance(c, color, 'lab');
+            if (dist < nearestDistance) {
+                nearestDistance = dist;
+                nearestIndex = i;
+            }
+        });
+        return colors[nearestIndex];
+    }
+
+    function spread(center, width, num, num2, exp) {
+        const r = [center];
+        const s = width / num;
+        let a = 0;
+        num2 = isUndefined(num2) ? num : num2;
+        exp = exp || 1;
+        while (num-- > 0) {
+            a += s;
+            r.unshift(center - a);
+            if (num2-- > 0) r.push(center + a);
+        }
+        return r;
+    }
+
+    // check if entered value is a number;
+    // use it to check if it exists in palette
+    function convertInputToHex(inputColor, palette) {
+        const parsedInput = parseInt(inputColor, 10);
+        const isNum = !isNaN(parsedInput);
+        if (isNum) inputColor = parsedInput;
+        return getColor(inputColor, palette);
+    }
+
+    // Check if color value has been set
+    function isDefined(color) {
+        return !!color || color === 0;
+    }
+</script>
+
+<style>
+    .color-picker-cont {
+        display: inline-block;
+    }
+    input.hex {
+        margin-bottom: 0 !important;
+    }
+    .color-picker {
+        width: 30px;
+        height: 24px;
+        border: 2px solid #fff;
+        border-right-color: #ffffff;
+        border-right-style: solid;
+        border-right-width: 2px;
+        border-radius: 4px;
+        border-right: 20px solid #fff;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) !important;
+        position: relative;
+        display: inline-block;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+    .color-selector {
+        position: static;
+        background: transparent;
+        width: 157px;
+        padding: 5px 10px;
+        padding-right: 8px;
+        box-shadow: none;
+        border-radius: 0;
+        border: none;
+    }
+
+    .color-selector .palette {
+        line-height: 0px;
+        margin-bottom: 10px;
+        white-space: normal;
+    }
+
+    .color-selector .color-group:first-child {
+        margin-top: 0px;
+    }
+
+    .color-selector .color-group {
+        margin-top: 5px;
+    }
+
+    .color-selector .color-group .name {
+        line-height: 16px;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #6c6c6c;
+    }
+
+    .color-selector .palette .color {
+        display: inline-block;
+        width: 24px;
+        height: 23px;
+        margin: 0 2px 2px 0;
+        border-radius: 1px;
+    }
+    .color-selector .color {
+        cursor: pointer;
+    }
+    .color-selector .color.selected {
+        border: 2px solid #000;
+    }
+    .color-selector .color.selected.inverted {
+        border-color: #ddd;
+    }
+    .color-selector .palette .color.selected {
+        border-color: #000 !important;
+    }
+    .color-selector .color-axis {
+        height: 22px;
+        margin-bottom: 2px;
+    }
+    .color-selector .color-axis .color {
+        width: 11px;
+        height: 22px;
+        display: inline-block;
+    }
+    .color-selector .color-axis .color.selected {
+        width: 7px;
+        height: 18px;
+    }
+    .color-selector .color-axis.hue .color {
+        width: 11px;
+    }
+    .color-selector .color-axis.hue .color:last-child {
+        margin-right: 0;
+        width: 11px;
+    }
+    .color-selector .color-axis.hue .color.selected {
+        width: 7px;
+    }
+    .color-selector .hex {
+        border-radius: 0;
+        font-size: 12px;
+        width: 67px;
+        padding: 2px 4px;
+        text-transform: lowercase;
+        position: absolute;
+        left: 24px;
+        bottom: 0px;
+        margin: 0;
+        text-align: center;
+    }
+
+    .color-selector .hex.readonly {
+        cursor: not-allowed;
+    }
+
+    .color-selector .btn.ok {
+        position: absolute;
+        bottom: 0px;
+        right: 3px;
+    }
+    .color-selector .footer {
+        height: 40px;
+        position: relative;
+    }
+    .color-selector .footer .color {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 25px;
+        height: 26px;
+    }
+    .color-selector .footer .color.selected {
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+    .palette .color {
+        box-sizing: border-box;
+        border: 2px solid;
+        position: relative;
+        float: none;
+    }
+    .the-color {
+        width: 100%;
+        height: 100%;
+        border-radius: 3px;
+    }
+    .base-color-picker .caret {
+        position: absolute;
+        top: 10px;
+        right: -14px;
+        width: 0px;
+        cursor: pointer;
+        text-align: center;
+    }
+    .the-color .transparency,
+    .palette .color .transparency,
+    .footer .color .transparency {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4goIBSYyFZ4wKAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAuSURBVDjLY3zw4AEDbiAvL49HlomBAjCqeWRoZvz//z8e6YcPH44G2KhmSjQDAJ0BCMR1BUm0AAAAAElFTkSuQmCC');
+        background-size: 10px;
+        opacity: 0;
+    }
+    button.reset {
+        margin: 5px 0px 0px;
+        border-color: #fff;
+        background: white;
+        box-shadow: none;
+        font-size: 13px;
+        /*font-size: 13px;*/
+        width: 100%;
+        text-align: left;
+        padding-left: 5px;
+        position: relative;
+    }
+    button.reset:hover {
+        border-color: #ddd;
+    }
+    button.reset:after {
+        content: '';
+        width: 12px;
+        display: block;
+        position: absolute;
+        left: 5px;
+        top: 12px;
+        transform: rotate(35deg);
+        border-top: 1.4px solid white;
+        border-bottom: 1.4px solid #555;
+    }
+    button.reset .im {
+        font-size: 12px;
+        color: #555;
+    }
+</style>

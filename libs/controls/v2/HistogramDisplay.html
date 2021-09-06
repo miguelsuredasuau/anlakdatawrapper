@@ -1,0 +1,250 @@
+<svg height="{height}" bind:clientWidth="width">
+    <g transform="translate({[padding.left,padding.top]})">
+        <!-- x axis -->
+        <g class="axis x-axis" transform="translate(0, {innerHeight})">
+            {#each ticks as tick}
+            <g class="tick" transform="translate({xScale(tick.x)},0)">
+                <line y2="3" />
+                <text y="3">{tick.label}</text>
+            </g>
+            {/each}
+        </g>
+
+        {#if !densityPlot}
+        <g class="bars">
+            {#each coloredBins as bin, i}
+            <g class="bar" transform="translate({xScaleBand(bin.x0)},{yScale(bin.length)})">
+                <rect
+                    style="fill:{bin.fill}"
+                    width="{ bin.x1 != bin.x0 ? xScaleBand.bandwidth() : 20 }"
+                    height="{ innerHeight - yScale(bin.length) }"
+                ></rect>
+            </g>
+            {/each}
+        </g>
+        {:else}
+        <path class="density" d="{densityPath}" fill="url(#{gradientId})" />
+        <path class="density-line" d="{densityLine}" />
+        <path class="x-axis" d="M0,{yScale(0)}H{xScaleBand.step() * bins.length+1}" />
+        {/if} {#each steps as s}
+        <g class="step" transform="translate({xScale(s.x)},0)">
+            <line y1="0" y2="{innerHeight}" />
+            <text transform="rotate(-90)" y="-2">{s.label}</text>
+        </g>
+        {/each}
+    </g>
+</svg>
+<GradientDisplay height="0" width="0" bind:id="gradientId" stops="{gradientStops}" />
+
+<script>
+    import _countBy from 'lodash-es/countBy';
+    import _keys from 'lodash-es/keys';
+    import _range from 'lodash-es/range';
+    import _uniq from 'lodash-es/uniq';
+
+    import GradientDisplay from './GradientDisplay.html';
+    import toFixed from '@datawrapper/shared/toFixed';
+    import { scaleLinear, scaleBand } from 'd3-scale';
+    import { histogram, extent, max, mean } from 'd3-array';
+    import { area, line, curveBasis } from 'd3-shape';
+
+    const format = d => toFixed(d);
+
+    // Function to compute density
+    function kernelDensityEstimator(kernel, X) {
+        return V => X.map(x => [x, mean(V, v => kernel(x - v))]);
+    }
+    function kernelEpanechnikov(k) {
+        return v => (Math.abs((v /= k)) <= 1 ? (0.75 * (1 - v * v)) / k : 0);
+    }
+
+    export default {
+        components: { GradientDisplay },
+        data() {
+            return {
+                values: [],
+                highlights: [],
+                steps: [],
+                height: 100,
+                densityPlot: false,
+                discrete: false,
+                padding: {
+                    top: 10,
+                    left: 10,
+                    right: 10,
+                    bottom: 20
+                },
+                color: '#444',
+                format,
+                xScale_: scaleLinear(),
+                xScaleBand_: scaleBand(),
+                yScale_: scaleLinear(),
+                gradientId: ''
+            };
+        },
+        computed: {
+            validValues({ values }) {
+                return values.filter(d => typeof d === 'number' && !Number.isNaN(d));
+            },
+            ticks({ xScale, format }) {
+                return xScale.ticks(4).map(x => {
+                    return { x, label: format(x) };
+                });
+            },
+            coloredBins({ bins, color }) {
+                return bins.map(bin => ({
+                    ...bin,
+                    length: bin.length,
+                    fill: typeof color === 'function' ? color((bin.x0 + bin.x1) * 0.5) : color
+                }));
+            },
+            bins({ niceDomain, validValues, uniqueValues }) {
+                const tickCnt = Math.max(10, Math.min(_uniq(validValues).length, 50));
+                const dom = niceDomain;
+                // const classw = (s[1]-s[0]);
+                const bins = histogram()
+                    .domain(dom)
+                    .thresholds(tickCnt)(validValues);
+                const binWidths = _countBy(bins.map(b => b.x1 - b.x0));
+                if (bins.length > 2 && _keys(binWidths).length > 1) {
+                    // check first and last bin
+                    const binw = bins[1].x1 - bins[1].x0;
+                    const lst = dom[0] + Math.ceil((dom[1] - dom[0]) / binw) * binw;
+                    return histogram()
+                        .domain([dom[0], lst])
+                        .thresholds(_range(dom[0], lst + binw * 0.4, binw))(validValues);
+                }
+                return bins;
+            },
+            niceDomain({ validValues }) {
+                return scaleLinear()
+                    .domain(extent(validValues))
+                    .domain();
+            },
+            xScaleBand({ xScaleBand_, bins, innerWidth }) {
+                return xScaleBand_
+                    .domain(bins.map(d => d.x0))
+                    .paddingInner(0)
+                    .rangeRound([0, innerWidth])
+                    .align(0);
+            },
+            xScale({ xScale_, niceDomain, bins, xScaleBand }) {
+                return xScale_
+                    .domain(niceDomain)
+                    .rangeRound([0, xScaleBand.step() * bins.length])
+                    .clamp(false);
+            },
+            yScale({ yScale_, innerHeight, bins, density, densityPlot }) {
+                return yScale_.domain([0, densityPlot ? max(density, d => d[1]) : max(bins, d => d.length)]).range([innerHeight, 0]);
+            },
+
+            barWidth({ bins, xScale }) {
+                return xScale(bins[0].x1) - xScale(bins[0].x0) - 1;
+            },
+
+            innerWidth({ width, padding }) {
+                return width - padding.left - padding.right;
+            },
+            innerHeight({ height, padding }) {
+                return height - padding.bottom - padding.top;
+            },
+            kde({ xScale }) {
+                return kernelDensityEstimator(kernelEpanechnikov(1), xScale.ticks(40));
+            },
+            density({ kde, validValues, xScale }) {
+                const [dMin, dMax] = xScale.domain();
+                return [[dMin, 0], ...kde(validValues), [dMax, 0]];
+            },
+            densityPath({ density, xScale, yScale }) {
+                return area()
+                    .curve(curveBasis)
+                    .x(d => xScale(d[0]))
+                    .y0(yScale(0))
+                    .y1(d => yScale(d[1]))(density);
+            },
+            densityLine({ density, xScale, yScale }) {
+                return line()
+                    .curve(curveBasis)
+                    .x(d => xScale(d[0]))
+                    .y(d => yScale(d[1]))(density);
+            },
+            gradientStops({ color, xScale, discrete, width, steps }) {
+                const [fromX, toX] = xScale.range();
+                const [fromDomain, toDomain] = xScale.domain();
+                if (typeof color === 'string') {
+                    return [{ color, offset: 0 }, { color, offset: 1 }];
+                } else if (steps.length > 2) {
+                    const stops = [];
+                    let lastColor = null;
+                    steps.forEach(({ x }) => {
+                        const offset = (x - fromDomain) / (toDomain - fromDomain);
+                        if (lastColor && discrete) {
+                            stops.push({
+                                offset: offset - 0.001,
+                                color: lastColor
+                            });
+                        }
+                        lastColor = color(x);
+                        stops.push({
+                            offset: offset,
+                            color: lastColor
+                        });
+                    });
+                    return stops;
+                } else {
+                    return _range(fromX, toX).map(px => ({
+                        offset: (px - fromX) / (toX - fromX),
+                        color: color(xScale.invert(px))
+                    }));
+                }
+            }
+        }
+    };
+</script>
+
+<style type="text/css">
+    svg {
+        width: 100%;
+    }
+    rect {
+        shape-rendering: crispEdges;
+    }
+    g.tick text {
+        font-family: 'Roboto Mono';
+        text-anchor: middle;
+        font-size: 11px;
+        fill: #888;
+        dominant-baseline: hanging;
+    }
+    .tick line {
+        stroke: #999;
+        shape-rendering: crispEdges;
+    }
+    .step {
+        opacity: 0.4;
+    }
+    .step text {
+        font-family: 'Roboto Mono';
+        font-weight: 300;
+        text-anchor: end;
+        font-size: 10px;
+    }
+    .step line {
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .density-line {
+        fill: none;
+        stroke: black;
+        opacity: 0.85;
+        stroke-width: 0.25;
+    }
+
+    path.x-axis {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+        opacity: 0.5;
+    }
+</style>

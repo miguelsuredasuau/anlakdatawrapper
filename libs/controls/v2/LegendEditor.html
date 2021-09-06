@@ -1,0 +1,452 @@
+<SwitchControl label="{__('controls / legend / switch')}" bind:value="value.enabled">
+    <div class="mt-1"></div>
+    <TextControl {labelWidth} placeholder="Your title here" bind:value="value.title" label="{__('controls / legend / caption')}" />
+    <!-- label settings are different for number and text columns -->
+    {#if valueAxisColumnType === 'number'}
+    <!-- also different for discrete and continuous scales -->
+    {#if mode === 'discrete'}
+    <RadioControl bind:value="labelsDiscrete" {labelWidth} label="{__('controls / legend / labels')}" options="{discreteLabelOptions}" />
+    {:elseif mode === 'continuous'}
+    <RadioControl bind:value="labelsContinuous" {labelWidth} label="{__('controls / legend / labels')}" options="{continuousLabelOptions}" />
+    {/if}
+    <!-- if the custom mode is selected -->
+    {#if value.labels === 'custom'}
+    <!-- custom continuous labels -->
+    {#if mode === 'continuous'}
+    <ControlGroup {labelWidth} label="&nbsp;">
+        <div class="labels">
+            <label>
+                <input type="text" bind:value="value.labelMin" />
+                <span>min</span>
+            </label>
+            {#if isDiverging}
+            <label>
+                <input type="text" bind:value="value.labelCenter" />
+                <span>{__('controls / color-scale / range / center')}</span>
+            </label>
+            {/if}
+            <label>
+                <input type="text" bind:value="value.labelMax" />
+                <span>max</span>
+            </label>
+        </div>
+    </ControlGroup>
+    {:else}
+    <!--custom discrete labels (= custom ranges) -->
+    <ControlGroup
+        {labelWidth}
+        label="{__('controls / legend / edit-labels')}"
+        labelHelp="{__('controls / legend / edit-labels / mini-help-2')}"
+        valign="top"
+    >
+        <ListInput
+            compact="{true}"
+            itemRenderer="{CategoryLegendItem}"
+            items="{customLabelsItems}"
+            draggable="{false}"
+            on:change="handleCustomRangeLabelsListItemChange(event)"
+            selectable="{false}"
+            data="{{allowHiding:true}}"
+            multiselectable="{false}"
+        />
+    </ControlGroup>
+    <!-- end: if mode === 'continuous' -->
+    {/if}
+    <!-- if the custom mode is NOT selected -->
+    {:else}
+    <!-- let user change the label format -->
+    {#if axis}
+    <CustomFormatControl bind:value="value.labelFormat" axis="{axis}" label="Format" {labelWidth} />
+    {:else}
+    <CustomFormatControl bind:value="value.labelFormat" type="number" label="Format" {labelWidth} />
+    {/if}
+    <!-- end: if value.labels === 'custom' -->
+    {/if}
+    <!-- label settings for text columns, aka category scales -->
+    {:elseif valueAxisColumnType === 'text'}
+    <ControlGroup
+        {labelWidth}
+        label="<div style='margin:3px 0'>{__('controls / legend / edit-labels')}</div><p class='mini-help'>{__('controls / legend / edit-labels / mini-help-1')}</p>"
+        valign="top"
+    >
+        <ListInput
+            compact="{true}"
+            itemRenderer="{CategoryLegendItem}"
+            items="{uniqueValues}"
+            draggable="{true}"
+            on:itemDrag="handleListItemDrag(event)"
+            on:change="handleListItemChange(event)"
+            selectable="{true}"
+            multiselectable="{false}"
+        />
+    </ControlGroup>
+    <!-- end: if valueAxisColumnType === 'number' -->
+    {/if}
+
+    <MoreOptionsGroup>
+        <div class="mb-4">
+            {#if allowInteractive}
+            <HelpDisplay><div>{@html __('controls / legend / interactive / help')}</div></HelpDisplay>
+            <CheckboxControl label="{__('controls / legend / interactive')}" bind:value="value.interactive" />
+            {/if}
+            <!-- allow reversing of numeric legends  -->
+            {#if valueAxisColumnType === 'number'}
+            <CheckboxControl label="{__('controls / legend / reverse')}" bind:value="value.reverse" />
+            {/if}
+        </div>
+        {#if allowPosition}
+        <SelectControl
+            {labelWidth}
+            bind:value="value.position"
+            label="{__('controls / legend / position')}"
+            options="{allowPositionInside ? positionOptions : positionOptions.filter(o => !o.inside)}"
+        />
+
+        <HelpDisplay>
+            <div>
+                {@html __('controls / legend / offset / help')}
+            </div>
+        </HelpDisplay>
+
+        {#if allowOrientation}
+        <RadioControl
+            {labelWidth}
+            bind:value="value.orientation"
+            disabled="{outsideLegend}"
+            label="{__('controls / legend / orientation')}"
+            options="{orientationOptions}"
+        >
+        </RadioControl>
+        {/if}
+
+        <!-- allow resizing of legend  -->
+        {#if allowSizing}
+        <NumberControl
+            {labelWidth}
+            bind:value="value.size"
+            unit="px"
+            min="70"
+            disabled="{sizeControlDisabled}"
+            max="300"
+            label="{__('controls / legend / size')}"
+        />
+        {/if}
+        <!-- allow settting an offset for legends  -->
+        {#if allowOffset}
+        <ControlGroup {labelWidth} disabled="{outsideLegend}" label="{__('controls / legend / offset')}">
+            <div class="flex">
+                <label>
+                    <NumberInput disabled="{outsideLegend}" bind:value="value.offsetLeft" slider="{false}" min="{0}" max="{50}" unit="%" />
+                    <span>{__('controls / legend / offset / h')}</span>
+                </label>
+                <label>
+                    <NumberInput disabled="{outsideLegend}" bind:value="value.offsetTop" slider="{false}" min="{0}" max="{50}" unit="%" />
+                    <span>{__('controls / legend / offset / v')}</span>
+                </label>
+            </div>
+        </ControlGroup>
+        {/if}
+        <!-- show mobile positioning help  -->
+        {#if allowPositionInside}
+        <p class="mini-help">
+            {@html __('controls / legend / mobile-note')}
+        </p>
+        {/if}
+        <!-- end: if allowPosition -->
+        {/if}
+    </MoreOptionsGroup>
+</SwitchControl>
+{#if !value.enabled}
+<p class="mini-help">
+    {@html __('controls / legend / disabled-note')}
+</p>
+{/if}
+
+<script>
+    import ControlGroup from './ControlGroup.html';
+    import HelpDisplay from './HelpDisplay.html';
+    import TextControl from './TextControl.html';
+    import NumberInput from './NumberInput.html';
+    import RadioControl from './RadioControl.html';
+    import SelectControl from './SelectControl.html';
+    import SwitchControl from './SwitchControl.html';
+    import NumberControl from './NumberControl.html';
+    import CustomFormatControl from './CustomFormatControl.html';
+    import ListInput from './ListInput.html';
+    import CheckboxControl from './CheckboxControl.html';
+    import MoreOptionsGroup from './MoreOptionsGroup.html';
+    import CategoryLegendItem from './CategoryLegendItem.html';
+    import get from '@datawrapper/shared/get';
+    import { __ } from '@datawrapper/shared/l10n';
+    import toFixed from '@datawrapper/shared/toFixed';
+    import smartRound from '@datawrapper/shared/smartRound';
+    import { range, uniq } from 'underscore';
+    import chroma from 'chroma-js';
+
+    function numberToChar(i) {
+        return (i >= 26 ? numberToChar(((i / 26) >> 0) - 1) : '') + String.fromCharCode(65 + (i % 26 >> 0));
+    }
+
+    export default {
+        components: {
+            ControlGroup,
+            TextControl,
+            HelpDisplay,
+            NumberInput,
+            RadioControl,
+            SelectControl,
+            SwitchControl,
+            NumberControl,
+            CustomFormatControl,
+            ListInput,
+            CheckboxControl,
+            MoreOptionsGroup
+        },
+        data() {
+            return {
+                title: __('controls / legend / title'),
+                allowOrientation: true,
+                allowPosition: true,
+                allowSizing: true,
+                allowOffset: true,
+                allowInteractive: true,
+                allowPositionInside: true,
+                isDiverging: false,
+                labelWidth: '100px',
+                value: {},
+                hideItems: [],
+                customLabels: range(100).map(i => `${__('controls / legend / def-group')} ${numberToChar(i)}`),
+                labelsDiscrete: 'ruler',
+                labelsContinuous: 'ranges'
+            };
+        },
+        oncreate() {
+            const { value, colorscale, customLabels } = this.get();
+            if (colorscale.mode === 'discrete') {
+                value.customLabels.forEach((val, i) => {
+                    customLabels[i] = val;
+                });
+                this.set({ labelsDiscrete: value.labels, customLabels, hideItems: value.hideItems.slice(0) });
+            } else if (colorscale.mode === 'continuous') {
+                this.set({ labelsContinuous: value.labels });
+            }
+        },
+        helpers: {
+            __,
+            CategoryLegendItem,
+            orientationOptions: [
+                {
+                    value: 'horizontal',
+                    label: __('controls / legend / horizontal')
+                },
+                {
+                    value: 'vertical',
+                    label: __('controls / legend / vertical')
+                }
+            ],
+            positionOptions: [
+                { value: 'mt', label: __('controls / legend / above-vis') },
+                { value: 'tl', label: __('controls / legend / top-left'), inside: true },
+                { value: 'tr', label: __('controls / legend / top-right'), inside: true },
+                { value: 'bl', label: __('controls / legend / bottom-left'), inside: true },
+                { value: 'br', label: __('controls / legend / bottom-right'), inside: true },
+                { value: 'mb', label: __('controls / legend / below-vis') }
+            ],
+            discreteLabelOptions: [
+                { value: 'ruler', label: __('controls / legend / labels / ruler') },
+                { value: 'ranges', label: __('controls / legend / labels / ranges') },
+                { value: 'custom', label: __('controls / legend / labels / custom') }
+            ],
+            continuousLabelOptions: [
+                { value: 'ranges', label: __('controls / legend / labels / range') },
+                { value: 'custom', label: __('controls / legend / labels / custom') }
+            ]
+        },
+        computed: {
+            mode({ colorscale }) {
+                return colorscale ? colorscale.mode : null;
+            },
+            labelsMode({ value }) {
+                return value ? value.labels : null;
+            },
+            customLabels2({ mode, colorscale, value, customLabels }) {
+                return mode === 'discrete' ? range(colorscale.stopCount).map(i => customLabels[i] || '') : [];
+            },
+            colors({ colorscale }) {
+                return colorscale.colors || [];
+            },
+            stopCount({ colorscale }) {
+                return colorscale.stopCount || 5;
+            },
+            classColors({ colors, stopCount }) {
+                return chroma
+                    .scale(colors.map(c => c.color))
+                    .mode('lab')
+                    .domain(colors.map(c => c.position))
+                    .colors(stopCount);
+            },
+            customLabelsItems({ customLabels2, hideItems, classColors, colorScaleFunction, colorscale }) {
+                if (!colorScaleFunction) return [];
+                const stops = smartRound(colorScaleFunction._stops.map(d => +d).filter(d => d !== null), 3);
+                return customLabels2.map((s, i) => {
+                    const note =
+                        i === 0
+                            ? `< ${toFixed(+stops[i + 1])}`
+                            : i === stops.length - 2
+                            ? `≥ ${toFixed(+stops[i])}`
+                            : `${toFixed(+stops[i])} - ${toFixed(+stops[i + 1])}`;
+
+                    return {
+                        id: i,
+                        color: classColors[i],
+                        hidden: hideItems.includes(i),
+                        label: s,
+                        placeholder: `${__('controls / legend / def-group')} ${numberToChar(i)}`,
+                        note: note
+                    };
+                });
+            },
+            metadataAxes({ $metadata }) {
+                return $metadata.axes;
+            },
+            valueAxis({ metadataAxes }) {
+                return metadataAxes ? metadataAxes.values : null;
+            },
+            valueAxisColumn({ valueAxis, $dataset, column }) {
+                return valueAxis && $dataset.hasColumn(valueAxis) ? $dataset.column(valueAxis) : column;
+            },
+            valueAxisColumnType({ valueAxisColumn }) {
+                return valueAxisColumn ? valueAxisColumn.type() : null;
+            },
+            themeCategories({ $themeData }) {
+                return get($themeData, 'colors.categories', []);
+            },
+            uniqueValues({ valueAxisColumn, colorscale, themeCategories }) {
+                const palette = themeCategories[(colorscale.palette || 0) % themeCategories.length];
+                const categoryOrder = colorscale.categoryOrder || [];
+                let pIndex = 0;
+                return (valueAxisColumn ? uniq(valueAxisColumn.values().filter(v => v !== null && v !== undefined)) : [])
+                    .sort((a, b) => {
+                        return categoryOrder.indexOf(a) - categoryOrder.indexOf(b);
+                    })
+                    .map(id => ({
+                        id,
+                        label: colorscale.categoryLabels[id] || id,
+                        color: colorscale.map[id] ? colorscale.map[id] : palette[pIndex++]
+                    }));
+            },
+            sizeControlDisabled({ value, valueAxisColumnType, colorscale, labelsDiscrete, outsideLegend }) {
+                // enable size if position is not above/below
+                if (!outsideLegend) return false;
+                // disable size if we're showing categories
+                if (valueAxisColumnType !== 'number') return true;
+                // enable size if we're showing in continuous mode
+                if (colorscale.mode === 'continuous') return false;
+                // disable unless ruler
+                return labelsDiscrete !== 'ruler';
+            },
+            outsideLegend({ value }) {
+                return (value.position || 'mt').charAt(0) === 'm';
+            }
+        },
+        methods: {
+            makeHorizontal() {
+                const { value } = this.get();
+                value.orientation = 'horizontal';
+                this.set({ value });
+            },
+            handleListItemDrag({ items }) {
+                const { colorscale } = this.get();
+                colorscale.categoryOrder = items.map(d => d.id);
+                this.set({ colorscale });
+            },
+            handleListItemChange(item) {
+                const { colorscale } = this.get();
+                if (item.id === item.label) {
+                    delete colorscale.categoryLabels[item.id];
+                } else {
+                    colorscale.categoryLabels[item.id] = item.label;
+                }
+                this.set({ colorscale });
+            },
+            handleCustomRangeLabelsListItemChange(item) {
+                const { customLabels } = this.get();
+                const { hideItems } = this.get();
+
+                customLabels[+item.id] = item.label;
+
+                if (item.hidden) {
+                    !hideItems.includes(+item.id) && hideItems.push(+item.id);
+                } else {
+                    hideItems.includes(+item.id) && hideItems.splice(hideItems.indexOf(+item.id), 1);
+                }
+
+                this.set({ customLabels, hideItems });
+            }
+        },
+        onstate({ changed, current, previous }) {
+            if ((changed.labelsMode || changed.colorscale) && current.labelsMode === 'custom' && previous) {
+                // make sure initial custom labels are stored
+                if (current.value.customLabels.length === 0) {
+                    current.value.customLabels = current.customLabels2.slice(0);
+                    this.set({ value: current.value });
+                }
+
+                // make sure new custom labels are added, when stops are added
+                if (current.colorscale && current.colorscale.stopCount > current.value.customLabels.length) {
+                    current.value.customLabels = current.customLabels2.slice(0);
+                    this.set({ value: current.value });
+                }
+            }
+        },
+        onupdate({ changed, current, previous }) {
+            if (changed.mode) {
+                current.value.labels = current.mode === 'discrete' ? current.labelsDiscrete : current.labelsContinuous;
+                this.set({ value: current.value });
+            }
+            if (changed.customLabels) {
+                // save custom label values
+                current.value.customLabels = current.customLabels2;
+                this.set({ value: current.value });
+            }
+            if (changed.hideItems) {
+                current.value.hideItems = current.hideItems;
+                this.set({ value: current.value });
+            }
+            // sync changes to internal labelsDiscrete back to value
+            if (changed.labelsDiscrete && current.mode === 'discrete') {
+                current.value.labels = current.labelsDiscrete;
+                this.set({ value: current.value });
+            }
+            // sync changes to internal labelsContinuous back to value
+            if (changed.labelsContinuous && current.mode === 'continuous') {
+                current.value.labels = current.labelsContinuous;
+                this.set({ value: current.value });
+            }
+        }
+    };
+</script>
+
+<style>
+    .flex {
+        display: flex;
+    }
+    .labels {
+    }
+    .labels label {
+        display: inline-block;
+        width: 50px;
+        margin-right: 1em;
+    }
+    .labels label input {
+        max-width: 90%;
+        margin-bottom: 0;
+    }
+    label span {
+        width: 7em;
+        color: #777;
+        font-size: 11px;
+        text-transform: uppercase;
+        display: block;
+    }
+</style>

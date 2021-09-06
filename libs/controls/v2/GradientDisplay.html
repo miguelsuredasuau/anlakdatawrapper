@@ -1,0 +1,49 @@
+<svg width="{width}" height="{height}">
+    <defs>
+        <linearGradient id="{id}" x2="1">
+            {#each stops as stop}
+            <stop offset="{(stop.offset*100).toFixed(2)}%" stop-color="{stop.color}" />
+            {/each}
+        </linearGradient>
+    </defs>
+    <rect style="fill:url(#{id})" width="{width}" height="{height}" />
+</svg>
+{#if canDelete}
+<button class="btn btn-mini btn-delete">
+    <i class="fa fa-fw fa-trash"></i>
+</button>
+{/if}
+
+<script>
+    export default {
+        data() {
+            return {
+                id: 'gradient',
+                width: 105,
+                height: 22,
+                canDelete: false,
+                stops: []
+            };
+        },
+        oncreate() {
+            setTimeout(() => {
+                this.set({
+                    id: 'gradient-' + Math.floor(Math.random() * 1e6).toString(36)
+                });
+            });
+        }
+    };
+</script>
+
+<style>
+    svg {
+        display: inline-block;
+    }
+    button {
+        vertical-align: super;
+        margin-left: 10px;
+    }
+    .btn-delete .fa {
+        pointer-events: none;
+    }
+</style>

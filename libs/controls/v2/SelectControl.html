@@ -1,0 +1,33 @@
+<ControlGroup type="select" {label} {labelWidth} {valign} {disabled} {inline} {miniHelp} {help} helpClass="mt-1">
+    <SelectInput width="{controlWidth}" class="mt-1" bind:value bind:disabled bind:options bind:optgroups on:change="fire('change', event)" />
+</ControlGroup>
+
+<script>
+    import ControlGroup from './ControlGroup.html';
+    import SelectInput from './SelectInput.html';
+
+    export default {
+        components: {
+            ControlGroup,
+            SelectInput
+        },
+        data() {
+            return {
+                disabled: false,
+                width: null,
+                labelWidth: null,
+                options: [],
+                optgroups: [],
+                valign: 'middle',
+                inline: false,
+                help: null,
+                miniHelp: null
+            };
+        },
+
+        computed: {
+            controlWidth: ({ inline, width }) => (inline ? width || 'auto' : width),
+            labelWidth: ({ inline, labelWidth }) => (inline ? labelWidth || 'auto' : labelWidth)
+        }
+    };
+</script>

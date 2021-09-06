@@ -1,0 +1,84 @@
+<div class:hidden-item="item.hidden" style="display: flex">
+    <div class="swatch" style="background: {item.color}"></div>
+    <div>
+        <input
+            on:click|stopPropagation
+            type="text"
+            bind:value="item.label"
+            on:input="onChange(event)"
+            placeholder="{item.placeholder || ''}"
+            on:change="onChange(event)"
+        />{#if item.note}
+        <div class="note">{@html item.note}</div>
+        {/if}
+    </div>
+    {#if allowHiding}
+    <div class="pull-right">
+        <a href="#/hide" class="hide-item" on:click|preventDefault|stopPropagation="toggleItemVisibility(item)">
+            <i class="fa fa-fw {item.hidden ? 'fa-eye-slash' : 'fa-eye'}" style="color: {item.hidden ? '#9c9c9c' : '#797879'}"> </i>
+        </a>
+    </div>
+    {/if}
+</div>
+
+<script>
+    export default {
+        methods: {
+            onChange() {
+                const { item } = this.get();
+                this.fire('change', item);
+            },
+            toggleItemVisibility(item) {
+                item.hidden = !item.hidden;
+                this.fire('change', item);
+            }
+        },
+        computed: {
+            allowHiding({ data }) {
+                return data && data.allowHiding;
+            }
+        }
+    };
+</script>
+
+<style type="text/css">
+    .swatch {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        margin-right: 5px;
+        display: inline-block;
+        position: relative;
+        top: 5px;
+        vertical-align: top;
+    }
+    .note {
+        font-size: 12px;
+        line-height: 15px;
+        margin-left: 5px;
+        color: #ababab;
+    }
+    .hide-item {
+        position: relative;
+        top: 2px;
+    }
+    .hidden-item {
+        cursor: default !important;
+        opacity: 0.6;
+    }
+    .hidden-item input {
+        pointer-events: none;
+    }
+    input {
+        display: inline-block;
+        width: 100px;
+        padding: 2px 3px;
+        margin-bottom: 0 !important;
+        font-size: 13px;
+    }
+    input:not(:focus) {
+        background: transparent;
+        border-color: transparent;
+    }
+</style>

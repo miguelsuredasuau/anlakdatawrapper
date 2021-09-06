@@ -1,0 +1,88 @@
+<DropdownControl options="{options}" label="inline" bind:value />
+<DropdownControl options="{options}" label="longer label" bind:value />
+<DropdownControl options="{options}" labelWidth="110px" label="fixed label width" bind:value />
+<DropdownControl options="{options}" labelWidth="110px" label="fixed label width, long text" bind:value />
+<DropdownControl options="{options}" labelWidth="110px" label="fixed label width, very very long text" valign="top" bind:value />
+<DropdownControl options="{manyOptions}" labelWidth="110px" label="many options" bind:value />
+<DropdownControl options="{htmlOptions}" labelWidth="110px" label="html options" bind:value />
+<DropdownControl options="{options}" labelWidth="110px" label="force placeholder" forcePlaceholder="{true}" bind:value />
+<DropdownControl options="{options}" labelWidth="110px" label="force label" forceLabel="whatever" bind:value />
+<DropdownControl options="{options}" label="disabled" disabled="{true}" bind:value />
+<DropdownControl
+    options="{options}"
+    labelWidth="110px"
+    label="help"
+    forceLabel="(correctly aligns with help)"
+    help="Here you can get some help"
+    bind:value
+/>
+<DropdownControl itemRenderer="{CheckboxControl}" options="{dynamicOptions}" labelWidth="110px" label="dynamic" />
+
+<script>
+    import DropdownControl from '../DropdownControl.html';
+    import CheckboxControl from '../CheckboxControl.html';
+
+    export default {
+        components: { DropdownControl },
+        data() {
+            return { value: 'red' };
+        },
+        computed: {
+            htmlOptions({ options }) {
+                return options.map(d => {
+                    return Object.assign({}, d, {
+                        label: `<span style="color:${d.value}"><i class="fa fa-picture-o"></i> ${d.label}</span>`
+                    });
+                });
+            },
+            manyOptions({ options }) {
+                return options.concat(
+                    [
+                        'crimson',
+                        'pink',
+                        'coral',
+                        'tomato',
+                        'gold',
+                        'yellow',
+                        'khaki',
+                        'violet',
+                        'fuchsia',
+                        'magenta',
+                        'purple',
+                        'indigo',
+                        'lime',
+                        'green',
+                        'olive',
+                        'teal',
+                        'cyan',
+                        'turquoise',
+                        'navy',
+                        'wheat',
+                        'tan',
+                        'brown',
+                        'black',
+                        'white',
+                        'grey',
+                        'silver'
+                    ].map(value => {
+                        return { value, label: value, id: value };
+                    })
+                );
+            }
+        },
+        helpers: {
+            CheckboxControl,
+            dynamicOptions: [
+                {
+                    value: 'foo',
+                    label: 'Foo',
+                    disabled: true
+                },
+                {
+                    value: 'bar',
+                    label: 'Bar'
+                }
+            ]
+        }
+    };
+</script>

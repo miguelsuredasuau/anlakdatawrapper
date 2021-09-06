@@ -1,0 +1,36 @@
+<script>
+    import CheckboxControl from '../CheckboxControl.svelte';
+    import TextControl from '../TextControl.svelte';
+
+    export let value;
+
+    let lastDisabled = false;
+</script>
+
+<TextControl label="simple" bind:value />
+<TextControl label="explicit width" width="60%" bind:value />
+<TextControl label="explicit label width" labelWidth="120px" bind:value />
+<TextControl label="auto-aligned label (middle)" bind:value />
+<TextControl label="very, very long label, manually aligned (top)" valign="top" bind:value />
+<TextControl label="help text" miniHelp="Here you can get some help" bind:value />
+<TextControl label="help text with error" miniHelp="Here you can get some help" bind:value error={true} />
+<TextControl label="help text and help display" help="Here you can get even more help" miniHelp="Here you can get some help" bind:value />
+<TextControl label="help text and long label" miniHelp="Here you can get some help" bind:value />
+<TextControl
+    label="long help text"
+    miniHelp="Here you can get some more help. The help text can span multiple lines, even three ore more."
+    bind:value
+/>
+<TextControl label="placeholder" placeholder="This is a placeholder" value="" />
+<TextControl
+    label="multi line expandable (three lines max.)"
+    expandable
+    rows="3"
+    value="This is some very, very long text that will wrap into multiple lines."
+/>
+<TextControl label="disabled" bind:value disabled />
+
+<CheckboxControl label="check this box to see the disabled message" bind:value={lastDisabled} />
+<TextControl label="disabled message" bind:value disabled={lastDisabled} disabledMessage="This text explains why the field is disabled" />
+
+<TextControl label="block" help="Here you can get even more help" miniHelp="Here you can get some help" bind:value block={true} />

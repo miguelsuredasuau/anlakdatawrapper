@@ -1,0 +1,99 @@
+<p>Draggable items:</p>
+
+<ColorCategoryInput
+    draggable
+    baseColor="{usePalette ? '#cccccc' : '#18a1cd'}"
+    palette="{usePalette ? $themeData.colors.categories[0] : []}"
+    bind:value
+    values="{column ? column.values() : []}"
+/>
+
+<p>Non-draggable items:</p>
+
+<ColorCategoryInput
+    draggable="{false}"
+    baseColor="{usePalette ? '#cccccc' : '#18a1cd'}"
+    palette="{usePalette ? $themeData.colors.categories[0] : []}"
+    bind:value
+    values="{column ? column.values() : []}"
+/>
+
+<p>Non-draggable items and no re-labeling:</p>
+
+<ColorCategoryInput
+    draggable="{false}"
+    allowLabeling="{false}"
+    baseColor="{usePalette ? '#cccccc' : '#18a1cd'}"
+    palette="{usePalette ? $themeData.colors.categories[0] : []}"
+    bind:value
+    values="{column ? column.values() : []}"
+/>
+
+<hr style="margin-top: 5em" />
+<div class="helper">
+    <SelectControl bind:value="column" label="column" options="{columns.map(c => ({value:c, label:c.name()}))}" />
+    <CheckboxControl label="use palette" bind:value="usePalette" />
+    <p class="mini-help">stored value</p>
+    <pre>
+    {JSON.stringify(value, null, 4)}
+    </pre>
+</div>
+
+<script>
+    import ColorCategoryInput from '../ColorCategoryInput.html';
+    import CheckboxControl from '../CheckboxControl.html';
+    import SelectControl from '../SelectControl.html';
+
+    import Column from '@datawrapper/chart-core/lib/dw/dataset/column';
+    import { range } from 'underscore';
+    import fruits from './lib/fruits';
+    import { randomInt } from 'd3-random';
+
+    import { simpleTheme } from './lib/themeStore';
+    const parties = ['CDU', 'SPD', 'GRÜNE', 'LINKE', 'FDP', 'AFD (sogenannte "Alternative für Deutschland")'];
+
+    const columns = [
+        Column(
+            'parties',
+            range(200)
+                .map(randomInt(parties.length))
+                .map(i => parties[i], 'text')
+        ),
+        Column(
+            'fruits',
+            range(300)
+                .map(randomInt(fruits.length))
+                .map(i => fruits[i], 'text')
+        )
+    ];
+
+    export default {
+        components: { ColorCategoryInput, CheckboxControl, SelectControl },
+        data() {
+            return {
+                usePalette: true,
+                colors: [],
+                column: columns[0],
+                value: {
+                    map: { CDU: '#222222', SPD: '#dd0000' },
+                    palette: [],
+                    categoryOrder: ['CDU', 'SPD'],
+                    categoryLabels: { CDU: 'CDU/CSU' }
+                }
+            };
+        },
+        store: () => simpleTheme,
+        helpers: {
+            columns
+        }
+    };
+</script>
+
+<style>
+    .helper {
+        opacity: 0.4;
+    }
+    .helper:hover {
+        opacity: 1;
+    }
+</style>

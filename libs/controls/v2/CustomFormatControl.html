@@ -1,0 +1,165 @@
+<ControlGroup type="custom-format" {valign} {labelWidth} {label} {disabled} {miniHelp} {help} helpClass="mt-1">
+    <div class="mt-1" class:split-container="selected==='custom'">
+        <div class="select">
+            <SelectInput bind:value="selected" bind:disabled bind:options width="100%"></SelectInput>
+        </div>
+        {#if selected === 'custom'}
+        <input bind:value="custom" type="text" disabled="{disabled}" />
+        {/if}
+    </div>
+</ControlGroup>
+
+{#if disabled && disabledMessage}
+<div class="message" style="margin-left: {labelWidth}">
+    {@html disabledMessage}
+</div>
+{:elseif selected === 'custom' && customFormatHelp}
+<div class="message" class:disabled="disabled && !disabledMessage" style="margin-left: {labelWidth}">
+    {@html customFormatHelp}
+</div>
+{/if}
+
+<style>
+    .message {
+        position: relative;
+        top: -5px;
+        padding: 0 0 5px 20px;
+        font-size: 12px;
+        line-height: 14px;
+        font-style: italic;
+        color: #999;
+    }
+
+    /* Visually remove links in custom format help when control is disabled */
+    .message.disabled :global(a) {
+        color: inherit;
+        text-decoration: none;
+        cursor: text;
+    }
+
+    .split-container {
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+    .split-container .select {
+        width: calc(60% - 1em);
+    }
+
+    input[type='text'] {
+        margin: 0 0 0 0.5em;
+        width: calc(40% - 0.5em);
+    }
+
+    input[type='text'][disabled] {
+        opacity: 0.6;
+        cursor: default;
+    }
+</style>
+
+<script>
+    import { __ } from '@datawrapper/shared/l10n';
+    import get from '@datawrapper/shared/get';
+    import ControlGroup from './ControlGroup.html';
+    import SelectInput from './SelectInput.html';
+    import formats from './utils/formats';
+
+    export default {
+        components: { ControlGroup, SelectInput },
+
+        data() {
+            return {
+                auto: false,
+                axis: false,
+                value: '',
+                custom: '',
+                selected: null,
+                type: false,
+                disabled: false,
+                labelWidth: '100px',
+                valign: 'middle',
+                help: false,
+                miniHelp: false,
+                disabledMessage: ''
+            };
+        },
+
+        computed: {
+            customFormatHelp({ columnType }) {
+                switch (columnType) {
+                    case 'date':
+                        return __('controls / custom-format / custom / date', 'core');
+                    case 'number':
+                        return __('controls / custom-format / custom / number', 'core');
+                }
+            },
+            columnType({ axisCol, type }) {
+                if (axisCol) return axisCol.type();
+                if (type) return type;
+                return 'number';
+            },
+            axisCol({ $vis, $dataset, axis }) {
+                if (!$vis || !axis) return null;
+                const colids = $vis.axes()[axis];
+                const colname = typeof colids === 'object' ? colids[0] : colids;
+                return $dataset.hasColumn(colname) ? $dataset.column(colname) : null;
+            },
+            options({ columnType, $teamSettings, auto }) {
+                const teamCustomFormats = get($teamSettings || {}, `controls.customFormats.${columnType}`, []);
+                const formatOptions = teamCustomFormats.length
+                    ? [...teamCustomFormats]
+                    : formats(columnType).map(({ f, l }) => ({
+                          value: f,
+                          label: l
+                      }));
+
+                if (auto) {
+                    formatOptions.unshift({
+                        value: 'auto',
+                        label: __('controls / custom-format / auto', 'core')
+                    });
+                }
+                formatOptions.push({
+                    value: 'custom',
+                    label: __('controls / custom-format / custom', 'core')
+                });
+                return formatOptions;
+            }
+        },
+
+        oncreate() {
+            // initialize selected state from external value
+            const { value, options } = this.get();
+            if (value) {
+                const selectedOption = options.find(o => o.value === value);
+                if (selectedOption) {
+                    this.set({ selected: value, custom: '' });
+                } else {
+                    this.set({ selected: 'custom', custom: value });
+                }
+            }
+        },
+
+        onstate({ changed, previous, current: { selected, custom, value, options } }) {
+            // watch external value changes
+            if (changed.value && value && previous) {
+                const selectedOption = options.find(o => o.value === value);
+                if (selectedOption) {
+                    this.set({ selected: value, custom: '' });
+                } else {
+                    this.set({ selected: 'custom', custom: value });
+                }
+            }
+
+            // watch select changes
+            if (changed.selected && selected && previous) {
+                this.set({ value: selected !== 'custom' ? selected : custom + ' ' });
+            }
+
+            // watch input text changes
+            if (changed.custom && custom && previous) {
+                this.set({ value: custom });
+            }
+        }
+    };
+</script>

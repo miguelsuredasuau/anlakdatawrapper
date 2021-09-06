@@ -1,0 +1,22 @@
+<IconDisplay icon="loading-spinner" spin duration="1.5s" timing="steps(12)" {color} {size} {valign} {assetURL} />
+
+<script>
+    import IconDisplay from './IconDisplay.html';
+
+    export default {
+        components: { IconDisplay },
+
+        data() {
+            return {
+                timing: 'linear',
+                duration: '1.5s',
+                icon: null,
+                size: '30px',
+                color: 'inherit',
+                valign: 'middle',
+                class: '',
+                assetURL: null
+            };
+        }
+    };
+</script>

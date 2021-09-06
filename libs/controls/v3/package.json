@@ -1,0 +1,123 @@
+{
+    "name": "@datawrapper/controls",
+    "version": "3.10.1",
+    "type": "module",
+    "scripts": {
+        "format": "prettier --plugin-search-dir=. '**/*.{js,svelte}' --write",
+        "lint": "healthier '**/*.{js,svelte}' && prettier --check '**/*.{js,svelte}'",
+        "test": "ava --verbose",
+        "test:watch": "ava --watch --verbose",
+        "prepublishOnly": "npm run lint && npm test",
+        "storybook": "start-storybook -p 6006",
+        "build-storybook": "build-storybook",
+        "update-locales": "cp ../../../services/api/locale/en_US.json stories/static/locale.en.json && cp ../../../services/api/locale/de_DE.json stories/static/locale.de.json"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/datawrapper/controls.git"
+    },
+    "files": [
+        "index.js",
+        "*.svelte",
+        "editor/*.svelte",
+        "utils/*.mjs"
+    ],
+    "dependencies": {
+        "@datawrapper/shared": "^0.34.4"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.4.0",
+        "@storybook/addon-actions": "^6.3.7",
+        "@storybook/addon-essentials": "^6.3.7",
+        "@storybook/addon-links": "^6.3.7",
+        "@storybook/svelte": "^6.3.7",
+        "ava": "^3.15.0",
+        "babel-eslint": "^10.1.0",
+        "babel-loader": "^8.2.2",
+        "eslint": "^7.29.0",
+        "eslint-plugin-svelte3": "^3.2.0",
+        "healthier": "^4.0.0",
+        "husky": "^4.3.8",
+        "jsdom": "^16.6.0",
+        "lint-staged": "^10.5.3",
+        "prettier": "^2.3.1",
+        "prettier-plugin-svelte": "^2.3.1",
+        "svelte": "^3.38.3",
+        "svelte-loader": "^3.1.2",
+        "svelte-preprocess": "^4.7.3"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "prettier": {
+        "arrowParens": "avoid",
+        "printWidth": 150,
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "none",
+        "svelteSortOrder": "options-scripts-styles-markup"
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ]
+        },
+        "parserOptions": {
+            "ecmaVersion": 2019,
+            "sourceType": "module"
+        },
+        "env": {
+            "es6": true,
+            "browser": true
+        },
+        "plugins": [
+            "svelte3"
+        ],
+        "overrides": [
+            {
+                "files": [
+                    "*.svelte"
+                ],
+                "processor": "svelte3/svelte3"
+            }
+        ]
+    },
+    "lint-staged": {
+        "*.{js,svelte}": [
+            "prettier --write",
+            "healthier"
+        ]
+    },
+    "ava": {
+        "files": [
+            "./*.test.js"
+        ],
+        "require": [
+            "./test/helpers/setup-l10n.js",
+            "./test/helpers/setup-browser-env.js"
+        ],
+        "nodeArguments": [
+            "--experimental-json-modules",
+            "--experimental-loader=./test/helpers/svelte-loader.js",
+            "--no-warnings"
+        ]
+    }
+}

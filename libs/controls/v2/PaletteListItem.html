@@ -1,0 +1,20 @@
+<div style="display: inline-block;">
+    <div class="palette">
+        {#each colors as col}
+        <div class="color" style="background: {col}"></div>
+        {/each}
+    </div>
+</div>
+<style>
+    .palette {
+        display: flex;
+        position: relative;
+        top: 3px;
+        width: 100px;
+    }
+
+    .palette div {
+        flex-grow: 1;
+        height: 22px;
+    }
+</style>

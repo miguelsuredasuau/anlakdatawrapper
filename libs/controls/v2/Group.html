@@ -1,0 +1,38 @@
+<div class="vis-option-type-group svelte-group group-open">
+    <label class="group-title"> {@html label}</label>
+
+    <div class="option-group-content vis-option-type-chart-description">
+        <slot>content</slot>
+    </div>
+</div>
+
+<style>
+    .vis-option-type-group {
+        margin-bottom: 30px !important;
+    }
+    .vis-option-type-group .group-title {
+        font-size: 18px;
+        font-weight: 400 !important;
+        border-top: 0 !important;
+        padding-left: 0 !important;
+        cursor: default;
+        user-select: text;
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+    }
+    .vis-option-type-group label.group-title {
+        margin-bottom: 5px !important;
+    }
+</style>
+
+<script>
+    export default {
+        data() {
+            return {
+                id: false
+            };
+        },
+        oncreate() {}
+    };
+</script>

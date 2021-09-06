@@ -1,0 +1,58 @@
+<span
+    class="svg-icon {class}"
+    class:spin
+    style="animation-timing-function: {timing}; animation-duration: {duration}; height:{size}; width:{size}; vertical-align: {valign};"
+>
+    <svg style="height:{size}; width:{size}">
+        <use style="fill: {color}" xlink:href="{iconURL}" />
+    </svg>
+</span>
+
+<style>
+    svg {
+        fill: currentColor;
+        color: inherit;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(359deg);
+        }
+    }
+
+    .svg-icon {
+        display: inline-block;
+    }
+
+    .spin {
+        animation: spin 1.5s infinite linear;
+    }
+</style>
+
+<script>
+    // Path to SVG tile set on https://app.datawrapper.de:
+    const DEFAULT_ASSET_URL = '/lib/icons/symbol/svg/sprite.symbol.svg';
+
+    export default {
+        data() {
+            return {
+                icon: 'api',
+                size: '1em',
+                color: 'inherit',
+                valign: 'baseline',
+                class: '',
+                style: '',
+                assetURL: null,
+                spin: false,
+                timing: 'linear',
+                duration: '2s'
+            };
+        },
+        computed: {
+            iconURL: ({ icon, assetURL }) => `${assetURL || DEFAULT_ASSET_URL}#${icon}`
+        }
+    };
+</script>

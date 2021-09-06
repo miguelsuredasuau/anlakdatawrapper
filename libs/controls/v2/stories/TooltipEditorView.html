@@ -1,0 +1,35 @@
+<TooltipEditor columns="{columns}" bind:value />
+
+<hr style="margin-top: 100px" />
+<pre>
+{JSON.stringify(value, null, 4)}
+</pre>
+<script>
+    import TooltipEditor from '../TooltipEditor.html';
+    import Column from '@datawrapper/chart-core/lib/dw/dataset/column';
+
+    const columns = [
+        Column('Country Name', ['Germany', 'France', 'UK'], 'text'),
+        Column('Continent', ['Europe', 'Europe', 'Europe'], 'text'),
+        Column('Population', [80716000, 67210000, 64100000], 'number'),
+        Column('Pop. density', [226, 103.7, 263.1], 'number'),
+        Column('Date', ['2019-01-01', '2019-03-01', '2019-06-01'], 'date')
+    ];
+    export default {
+        components: { TooltipEditor },
+        data() {
+            return {
+                value: {
+                    enabled: true,
+                    title: '',
+                    migrated: true,
+                    body:
+                        'The big advantage of line charts is that they enable the comparison of slopes, which is not easily possible in a bar {{ population }}, for instance. The problem, however, is that the perceivable slopes are highly dependent on the aspect ratio of the chart. The Facebook stock data would have looked much more dramatic in a taller chart. So which aspect ratio to chose? Some years ago, William Cleveland suggested a technique called banking to solve this problem.The core idea is that the slopes in a line chart are most readable if they average t'
+                }
+            };
+        },
+        helpers: {
+            columns
+        }
+    };
+</script>

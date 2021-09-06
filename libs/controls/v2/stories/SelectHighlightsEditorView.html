@@ -1,0 +1,20 @@
+<SelectHighlightsEditor value="{['CDU', 'A really long item to show truncation']}" />
+
+<script>
+    import Chart from '@datawrapper/chart-core/lib/dw/svelteChart';
+    import SelectHighlightsEditor from '../SelectHighlightsEditor.html';
+
+    const LABELS = ['FDP', 'Grüne', 'CDU', 'SPD', 'Linke', 'A really long item to show truncation'];
+
+    // Mock minimal chart object:
+    const chart = new Chart({
+        vis: {
+            keys: () => LABELS
+        }
+    });
+
+    export default {
+        components: { SelectHighlightsEditor },
+        store: () => chart
+    };
+</script>

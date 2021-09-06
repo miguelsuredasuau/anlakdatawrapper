@@ -1,0 +1,217 @@
+<div class="vis-option-type-switch">
+    {#if help}
+    <HelpDisplay type="{helpType || 'help'}">
+        <div>{@html help}</div>
+    </HelpDisplay>
+    {/if}
+
+    <label class="switch-outer" class:disabled>
+        <button on:click="toggle()" class="switch">
+            <input
+                class="{disabled && disabledState == 'on' ? 'disabled-force-checked' : disabled && disabledState == 'off' ? 'disabled-force-unchecked' : ''}"
+                disabled="{disabled}"
+                checked="{effectiveValue}"
+                bind:indeterminate
+                type="checkbox"
+            />
+            <span class="slider"></span>
+        </button>
+        {@html label}
+    </label>
+
+    {#if disabled && disabledMessage}
+    <div transition:slide>
+        <div class="disabled-msg">
+            {@html disabledMessage}
+        </div>
+    </div>
+    {:else}
+
+    <!-- Render content only if slot content is set & control isn't disabled -->
+    {#if hasSlotContent && (!disabled || disabledState == 'on') && effectiveValue && !indeterminate}
+    <div transition:slide class="switch-content">
+        <slot></slot>
+    </div>
+    {/if} {/if}
+</div>
+
+<style>
+    .vis-option-type-switch {
+        padding: 4px 0;
+        transition: height 0.2s ease-in-out;
+        background: #ffffff00;
+    }
+
+    .vis-option-type-switch + .vis-option-type-switch {
+        border-top: 1px solid #ddd;
+    }
+
+    .switch-content {
+        position: relative;
+        top: 3px;
+        padding-left: 40px;
+    }
+
+    /* Prevents display issues with floated content & makes transition smoother: */
+    .switch-content::after {
+        content: '';
+        clear: both;
+        display: table;
+    }
+
+    .disabled-msg {
+        overflow: hidden;
+        font-size: 11px;
+        font-style: italic;
+        color: #a8a8a8;
+        line-height: 1.2;
+        padding: 0 0 5px 40px;
+    }
+
+    /* The switch - the box around the slider */
+    .switch {
+        position: absolute;
+        display: inline-block;
+        width: 30px;
+        left: 2px;
+        top: 7px;
+        height: 16px;
+        -webkit-appearance: none;
+        border: 0;
+        background: none;
+    }
+
+    .switch:focus {
+        outline: 1px dotted #222;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+        display: none;
+    }
+
+    .switch-outer {
+        display: inline-block;
+        position: relative;
+        padding: 7px 0 7px 40px;
+        max-width: calc(100% - 60px);
+        cursor: pointer;
+    }
+
+    .switch-outer.disabled,
+    .switch-outer.disabled * {
+        color: #999;
+        cursor: default;
+    }
+
+    /* The slider */
+    .slider {
+        border-radius: 16px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: 0.2s;
+        transition: 0.2s;
+    }
+
+    .slider:before {
+        border-radius: 50%;
+        position: absolute;
+        content: '';
+        height: 12px;
+        width: 12px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        -webkit-transition: 0.2s ease-in-out;
+        transition: 0.2s ease-in-out;
+    }
+
+    .switch-outer.disabled .slider:before {
+        background-color: #ededed;
+    }
+
+    input:checked + .slider {
+        background-color: #18a1cd;
+    }
+
+    input:checked:disabled + .slider {
+        background-color: #999;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #18a1cd;
+    }
+
+    input.disabled-force-checked + .slider:before,
+    input:checked + .slider:before {
+        -webkit-transform: translateX(13px);
+        -ms-transform: translateX(13px);
+        transform: translateX(13px);
+    }
+
+    input.disabled-force-unchecked + .slider:before {
+        -webkit-transform: translateX(0px);
+        -ms-transform: translateX(0px);
+        transform: translateX(0px);
+    }
+
+    input:indeterminate + .slider:before {
+        -webkit-transform: translateX(7px);
+        -ms-transform: translateX(7px);
+        transform: translateX(7px);
+    }
+
+    input:indeterminate + .slider {
+        background-color: #96d2e6;
+    }
+    input:indeterminate:disabled + .slider {
+        background-color: #b8b8b8;
+    }
+</style>
+
+<script>
+    import slide from 'svelte-transitions-slide';
+    import HelpDisplay from './HelpDisplay.html';
+
+    export default {
+        components: { HelpDisplay },
+        data() {
+            return {
+                value: false,
+                help: '',
+                helpType: false,
+                disabledMessage: '',
+                disabledState: 'auto',
+                disabled: false,
+                inverted: false,
+                highlight: false,
+                indeterminate: false,
+                hasSlotContent: false
+            };
+        },
+        computed: {
+            effectiveValue({ value, inverted }) {
+                return inverted ? !value : value;
+            }
+        },
+        methods: {
+            toggle() {
+                const { disabled, indeterminate, inverted, value } = this.get();
+                const updatedState = { value: indeterminate ? !inverted : !value, indeterminate: false };
+                if (disabled) return;
+                this.set(updatedState);
+                this.fire('change', updatedState);
+            }
+        },
+        transitions: { slide },
+        oncreate() {
+            this.set({
+                hasSlotContent: this.options.slots && this.options.slots.default
+            });
+        }
+    };
+</script>

@@ -1,0 +1,147 @@
+<ControlGroup labelWidth="70px" label="{__('controls / annotations / anchor-point')}" valign="top" type="anchor">
+    <svg width="90" height="66" fill="none">
+        <path class="frame" d="M5.5 5.5h79v55h-79v-55z" />
+        {#if textAlign === 'c'}
+        <path
+            class="text-bar"
+            d="M69 19a2 2 0 110 4H21a2 2 0 110-4h48zM63 27a2 2 0 110 4H53v-4h10zM37 27H27a2 2 0 100 4h10v-4zM37 35H23a2 2 0 100 4h14v-4zM53 39h14a2 2 0 100-4H53v4zM59 43a2 2 0 110 4H31a2 2 0 110-4h28z"
+        />
+        {:elseif textAlign === 'r'}
+        <path
+            class="text-bar"
+            d="M69 19a2 2 0 110 4H21a2 2 0 110-4h48zM69 27a2 2 0 110 4H53v-4h16zM37 27h-4a2 2 0 100 4h4v-4zM37 35H25a2 2 0 100 4h12v-4zM53 39h16a2 2 0 100-4H53v4zM69 43a2 2 0 110 4H41a2 2 0 110-4h28z"
+        />
+        {:else}
+        <path
+            class="text-bar"
+            d="M21 19a2 2 0 100 4h48a2 2 0 100-4H21zM21 27a2 2 0 100 4h16v-4H21zM53 27v4h4a2 2 0 100-4h-4zM37 35H21a2 2 0 100 4h16v-4zM53 39v-4h12a2 2 0 110 4H53zM21 43a2 2 0 100 4h28a2 2 0 100-4H21z"
+        />
+        {/if} {#each anchorNames as name, index}
+        <rect
+            class="point {name === value ? 'active' : ''}"
+            x="{pointPositions[index][0]}"
+            y="{pointPositions[index][1]}"
+            width="{pointSize}"
+            height="{pointSize}"
+            on:click="setNewAnchor(name)"
+        />
+        {/each}
+    </svg>
+</ControlGroup>
+
+<style>
+    .frame {
+        stroke: #ccc;
+    }
+    .text-bar {
+        fill: #ccc;
+    }
+    .point {
+        fill: #fff;
+        stroke: #b3b3b3;
+        cursor: pointer;
+    }
+    .point:hover {
+        fill: #ccc;
+    }
+    .point.active,
+    .point.active:hover {
+        fill: #18a1cd;
+        stroke: #1d81a2;
+    }
+</style>
+
+<script>
+    import ControlGroup from '../ControlGroup.html';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        components: { ControlGroup },
+        helpers: { __ },
+        data() {
+            return {
+                anchorNames: ['tl', 'tc', 'tr', 'ml', 'mc', 'mr', 'bl', 'bc', 'br'],
+                pointSize: 11,
+                repositionFactors: {
+                    t: 0,
+                    m: 0.5,
+                    b: 1,
+                    l: 0,
+                    c: 0.5,
+                    r: 1
+                },
+                pointsXY: {
+                    t: 0.5,
+                    m: 27.5,
+                    b: 54.5,
+                    l: 0.5,
+                    c: 39.5,
+                    r: 78.5
+                }
+            };
+        },
+        computed: {
+            textAlign({ value }) {
+                return value.substring(1, 2);
+            },
+            pointPositions({ anchorNames, pointsXY }) {
+                const out = [];
+                anchorNames.forEach(name => {
+                    const hAlign = name.substring(1, 2);
+                    const vAlign = name.substring(0, 1);
+                    out.push([pointsXY[hAlign], pointsXY[vAlign]]);
+                });
+                return out;
+            },
+            isOffsetZero({ dx, dy }) {
+                return dx === 0 && dy === 0;
+            }
+        },
+        methods: {
+            getNewXY(newAnchor, oldAnchor, x, y, width, height) {
+                const { repositionFactors } = this.get();
+
+                const newAlignX = newAnchor.substring(1, 2);
+                const oldAlignX = oldAnchor.substring(1, 2);
+                const newAlignY = newAnchor.substring(0, 1);
+                const oldAlignY = oldAnchor.substring(0, 1);
+
+                // need to shift horizontally
+                if (newAlignX !== oldAlignX) {
+                    const shiftX = repositionFactors[newAlignX] - repositionFactors[oldAlignX];
+                    x += shiftX * width;
+                }
+
+                // need to shift vertically
+                if (newAlignY !== oldAlignY) {
+                    const shiftY = repositionFactors[newAlignY] - repositionFactors[oldAlignY];
+                    y += shiftY * height;
+                }
+
+                return [x, y];
+            },
+            setNewAnchor(anchor) {
+                const { editorState, value, isOffsetZero } = this.get();
+                if (anchor === value) return;
+
+                const { selectedAnnotationProps, pxToData } = editorState;
+                if (!selectedAnnotationProps || !pxToData) return;
+
+                const { width, height } = selectedAnnotationProps;
+
+                if (isOffsetZero) {
+                    const { x, y } = selectedAnnotationProps;
+                    const [newX, newY] = this.getNewXY(anchor, value, x, y, width, height);
+                    const [dataX, dataY] = pxToData(newX, newY);
+                    this.set({ x: dataX, y: dataY });
+                } else {
+                    const { dx, dy } = this.get();
+                    const [newDx, newDy] = this.getNewXY(anchor, value, dx, dy, width, height);
+                    this.set({ dx: newDx, dy: newDy });
+                }
+
+                this.set({ value: anchor });
+            }
+        }
+    };
+</script>

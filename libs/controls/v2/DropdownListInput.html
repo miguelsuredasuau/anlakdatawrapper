@@ -1,0 +1,87 @@
+<script>
+    import DropdownInput from './DropdownInput.html';
+
+    export default {
+        components: { DropdownInput },
+        data() {
+            return {
+                label: '',
+                icon: false,
+                split: false,
+                items: [],
+                btnClass: 'btn'
+            };
+        },
+        methods: {
+            fireClick() {
+                this.fire('click');
+            },
+            action(item) {
+                if (!item.disabled) item.action(this);
+            }
+        }
+    };
+</script>
+
+<style>
+    ul {
+        list-style: none;
+        min-width: 50px;
+        font-size: 14px;
+        margin: 0;
+        padding: 0;
+    }
+    li {
+        line-height: 20px;
+        white-space: nowrap;
+    }
+    li a {
+        padding: 3px 20px 3px 8px;
+        display: block;
+        color: #222;
+    }
+    li a:hover {
+        background-color: #0081c2;
+        color: white;
+        text-decoration: none;
+        background-image: linear-gradient(to bottom, #0088cc, #0077b3);
+    }
+    li a.disabled {
+        pointer-events: none;
+        color: #bbb;
+    }
+    .split-button-label {
+        pointer-events: all !important;
+    }
+    .split-button-label i {
+        margin-right: 0.15em;
+    }
+</style>
+
+<DropdownInput disabled="{disabled}">
+    <div slot="button" class="btn-group">
+        {#if split}
+        <button on:click|stopPropagation|preventDefault="fireClick()" disabled="{disabled}" class="split-button-label {btnClass}">
+            {#if icon}<i class="{icon}"></i>{/if} {@html label}
+        </button>
+        {/if}
+        <button disabled="{disabled}" class="{btnClass}">
+            {#if split}
+            <span class="caret"></span>
+            {:else} {#if icon}<i class="{icon}"></i>{/if} {#if label} {@html label} <span class="caret" />
+            {:else}
+            <i class="im im-menu-dot-h"></i>
+            {/if} {/if}
+        </button>
+    </div>
+
+    <ul slot="content">
+        {#each items as item}
+        <li>
+            <a on:click|preventDefault="action(item)" class:disabled="item.disabled" href="#/action">
+                {@html item.label}
+            </a>
+        </li>
+        {/each}
+    </ul>
+</DropdownInput>

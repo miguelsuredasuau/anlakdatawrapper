@@ -1,0 +1,20 @@
+# DropdownInput
+
+The DropdownInput component is for generic click-to-open dropdown dialogs. It is used by the [DropdownControl](?path=/docs/controls-v3--dropdown-control) component. Its main task is to make sure that all dropdowns are closed as soon as the page or another dropdown is being clicked, but stay open if the the user clicks anywhere _inside_ the dropdown.
+
+```html
+<script>
+    import DropdownInput from '@datawrapper/controls/DropdownInput.svelte';
+
+    let open = false;
+</script>
+
+<DropdownInput bind:visible="{open}">
+    <div slot="button">
+        <button class="btn" class:btn-primary="{!open}">Custom dropdown button</button>
+    </div>
+    <div slot="content">
+        <p>Custom dropdown content</p>
+    </div>
+</DropdownInput>
+```

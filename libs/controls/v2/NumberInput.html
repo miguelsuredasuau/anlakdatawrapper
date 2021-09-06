@@ -1,0 +1,180 @@
+<div class="number-control {class}">
+    <div class="number-control-container">
+        {#if slider_}
+        <div class="slider">
+            <input
+                type="range"
+                disabled="{disabled}"
+                min="{min_*multiply_}"
+                max="{max_*multiply_}"
+                step="{step_*multiply_}"
+                on:input="update()"
+                bind:value="value2"
+            />
+        </div>
+        {/if}
+        <div class="value">
+            <input
+                ref:input
+                style="width:{width};"
+                type="number"
+                disabled="{disabled}"
+                min="{min_*multiply_}"
+                max="{max_*multiply_}"
+                step="{step_*multiply_}"
+                placeholder="{placeholder}"
+                on:input="update()"
+                bind:value="value2"
+            />
+            {#if unit_}
+            <span class="unit">{unit_}</span>
+            {/if}
+        </div>
+    </div>
+</div>
+
+<style>
+    .number-control {
+        display: inline-block;
+        width: auto;
+    }
+    .number-control-container {
+        display: flex;
+        width: 100%;
+    }
+    .slider {
+        flex: 1;
+        padding: 5px 10px 0 0;
+    }
+    .unit {
+        font-weight: 300;
+        color: #999;
+        display: inline-block;
+        min-width: 1em;
+        padding-right: 5px;
+    }
+    input[type='range'] {
+        margin-right: 10px;
+        width: 100%;
+    }
+    input[type='number'] {
+        text-align: right;
+        background: #fcfcfc;
+        -moz-appearance: textfield;
+        appearance: textfield;
+        margin: 0;
+    }
+    input[type='range'][disabled] {
+        opacity: 0.6;
+        cursor: default;
+    }
+    input[type='number'][disabled] {
+        color: #999;
+        background: #eee;
+        border-color: #ddd;
+        cursor: default;
+    }
+    input[type='number']::-webkit-inner-spin-button,
+    input[type='number']::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type='number']:hover {
+        -moz-appearance: textfield-multiline;
+        appearance: textfield-multiline;
+        text-align: center;
+    }
+    input[type='number'][disabled]:hover {
+        -webkit-appearance: none;
+        -moz-appearance: textfield;
+        appearance: textfield;
+        text-align: right;
+    }
+    input[type='number']:hover::-webkit-inner-spin-button,
+    input[type='number']:hover::-webkit-outer-spin-button {
+        -webkit-appearance: inner-spin-button;
+        margin: 0;
+    }
+    input[type='number'][disabled]:hover::-webkit-inner-spin-button,
+    input[type='number'][disabled]:hover::-webkit-outer-spin-button {
+        -webkit-appearance: unset;
+        margin: 0;
+    }
+</style>
+
+<script>
+    export default {
+        data() {
+            return {
+                value2: null,
+                width: '40px',
+                unit: '',
+                disabled: false,
+                multiply: 1,
+                min: 0,
+                max: 100,
+                step: 1,
+                allowUndefined: false,
+                placeholder: null,
+                class: ''
+            };
+        },
+        computed: {
+            // need to define default properties here
+            step_({ step }) {
+                return step || 1;
+            },
+            min_({ min }) {
+                return min !== undefined ? min : 0;
+            },
+            max_({ max }) {
+                return max !== undefined ? max : 100;
+            },
+            unit_({ unit }) {
+                return unit !== undefined ? unit : '';
+            },
+            slider_({ slider }) {
+                return slider !== undefined ? slider : true;
+            },
+            multiply_({ multiply }) {
+                return multiply || 1;
+            }
+        },
+        methods: {
+            update() {
+                // update outside world value
+                const { value2, multiply_, step_, allowUndefined } = this.get();
+                const decimals = Math.max(0, -Math.floor(Math.log(step_ * multiply_) / Math.LN10));
+                let value;
+                if (allowUndefined && value2 === undefined) value = undefined;
+                else value = value2 ? +value2.toFixed(decimals) / multiply_ : 0;
+                this.set({ value });
+            },
+            refresh() {
+                const { value, multiply_, step_, allowUndefined } = this.get();
+                const decimals = Math.max(0, -Math.floor(Math.log(step_ * multiply_) / Math.LN10));
+                let value2;
+                if (allowUndefined && value === undefined) value2 = undefined;
+                else value2 = +(value * multiply_).toFixed(decimals);
+                this.set({ value2 });
+            }
+        },
+        // eslint-disable-next-line
+        onupdate({ changed, current, previous }) {
+            if (!this.refs.input) {
+                // this is a workaround for a bug whereby the value is not initially set
+                // in Number component which is wrapped in an if statement
+                return setTimeout(() => {
+                    this.refresh();
+                }, 0);
+            }
+
+            if (changed.value || !previous) {
+                this.refresh();
+            }
+        },
+        oncreate() {
+            this.refresh();
+        }
+    };
+</script>

@@ -1,0 +1,84 @@
+<h3>Simple example</h3>
+<p>Before</p>
+<MoreOptionsGroup>
+    <CheckboxControl label="Now there is a lot of..." />
+    <CheckboxControl label="...extra space for..." />
+    <CheckboxControl label="...advanced features" />
+</MoreOptionsGroup>
+
+<h3>With optional bottom line</h3>
+<p>Here is the same example</p>
+<MoreOptionsGroup bottomLine="{true}">
+    <CheckboxControl label="Now there is a lot of..." />
+    <CheckboxControl label="...extra space for..." />
+    <CheckboxControl label="...advanced features" />
+</MoreOptionsGroup>
+<CheckboxControl label="I come after" />
+
+<h3>More options in a switch</h3>
+
+<SwitchControl value="{true}" label="More options inside a Switch">
+    <CheckboxControl label="I am a very important checkbox" />
+    <MoreOptionsGroup>
+        <CheckboxControl label="Now there is a lot of..." />
+        <CheckboxControl label="...extra space for..." />
+        <CheckboxControl label="...advanced features" />
+    </MoreOptionsGroup>
+</SwitchControl>
+
+<h3>More options in a box</h3>
+<p>Select item for options</p>
+<ListInput items="{items}" bind:selected maxHeight="130px" />
+{#if selected.length}
+<div class="well">
+    <RadioControl label="Options" labelWidth="80px" options="{radioItems}"></RadioControl>
+    <RadioControl label="Options" labelWidth="80px" options="{radioItems}"></RadioControl>
+    <RadioControl label="Options" labelWidth="80px" options="{radioItems}"></RadioControl>
+
+    <MoreOptionsGroup>
+        <RadioControl label="More" labelWidth="80px" options="{radioItems}"></RadioControl>
+        <CheckboxControl label="Now there is a lot of..." />
+        <CheckboxControl label="...extra space for..." />
+        <CheckboxControl label="...advanced features" />
+    </MoreOptionsGroup>
+</div>
+{/if}
+
+<h3>Disabled state</h3>
+<MoreOptionsGroup disabled="{true}">
+    <CheckboxControl label="Now there is a lot of..." />
+    <CheckboxControl label="...extra space for..." />
+    <CheckboxControl label="...advanced features" />
+</MoreOptionsGroup>
+
+<script>
+    import MoreOptionsGroup from '../MoreOptionsGroup.html';
+    import CheckboxControl from '../CheckboxControl.html';
+    import RadioControl from '../RadioControl.html';
+    import SwitchControl from '../SwitchControl.html';
+    import ListInput from '../ListInput.html';
+
+    export default {
+        components: { MoreOptionsGroup, CheckboxControl, RadioControl, SwitchControl, ListInput },
+        data() {
+            return {
+                v1: true,
+                selected: ['blue']
+            };
+        },
+        computed: {
+            radioItems({ items }) {
+                return items.slice(0, 3);
+            }
+        }
+    };
+</script>
+
+<style>
+    h3 {
+        margin-top: 2em;
+    }
+    h3:first-child {
+        margin-top: 0;
+    }
+</style>

@@ -1,0 +1,213 @@
+<div class="well">
+    <p class="header">{__('controls / annotations / multi-select').replace('%s', selected.length)}</p>
+
+    <FontStyleControl
+        colorReset="Reset"
+        bind:value
+        {indeterminate}
+        {labelWidth}
+        underline="{true}"
+        spacing="{false}"
+        fontSize="1"
+        fontSizePercent="{false}"
+        fontSizeKey="size"
+        color="1"
+        defaultColor="black"
+        background="{false}"
+        label="{__('controls / annotations / text-style')}"
+    />
+
+    <ControlGroup {labelWidth} label="&nbsp;" valign="middle" inline="{true}">
+        <div class="controls-inline">
+            <CheckboxControl label="{__('controls / annotations / text-outline')}" bind:value="bg" indeterminate="{indeterminate.bg}" />
+        </div>
+    </ControlGroup>
+
+    <ControlGroup {labelWidth} label="{__('controls / annotations / show-on')}" valign="middle" type="checkbox">
+        <CheckboxControl
+            label="{__('controls / annotations / show-on / mobile')}"
+            bind:value="value.showMobile"
+            indeterminate="{indeterminate.showMobile}"
+        />
+        <CheckboxControl
+            label="{__('controls / annotations / show-on / desktop')}"
+            bind:value="value.showDesktop"
+            indeterminate="{indeterminate.showDesktop}"
+        />
+    </ControlGroup>
+
+    <hr />
+
+    <div class="delete-group">
+        <button class="btn btn-small btn-danger" on:click="fire('deleteAnnotations', selected)">
+            <i class="fa fa-trash"></i>
+            {__('controls / annotations / delete-selected')}
+        </button>
+    </div>
+</div>
+
+<style>
+    .header {
+        font-weight: 700;
+    }
+    .controls-inline {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .controls-inline:last-child {
+        margin-right: 0;
+    }
+    :global(#svelte-annotations-wrap .number-control-container) {
+        display: inline-block;
+        width: auto;
+    }
+    :global(#svelte-annotations-wrap .vis-option-group-toggle .btn-group) {
+        margin-right: 10px;
+    }
+    :global(#svelte-annotations-wrap .vis-option-group-checkbox .vis-option-type-checkbox) {
+        display: inline-block;
+    }
+    .delete-group {
+        margin-top: 20px;
+    }
+</style>
+
+<script>
+    import CheckboxControl from '../CheckboxControl.html';
+    import ControlGroup from '../ControlGroup.html';
+    import FontStyleControl from '../FontStyleControl.html';
+
+    import { uniq } from 'underscore';
+
+    import clone from '@datawrapper/shared/clone';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    import { defaultProps } from './lib/defaults.mjs';
+    import { mergeWithTheme } from './lib/shared.mjs';
+
+    function isIndeterminate(values) {
+        const uniqueValues = uniq(values);
+        // all values are the same: not indeterminate
+        if (uniqueValues.length === 1) return false;
+        // more than one unique value: we have indeterminate state
+        return true;
+    }
+
+    function setInitBooleanPropValue(values) {
+        // if current state is indeterminate (some `true`, some `false`), set to `false`
+        if (isIndeterminate(values)) return false;
+
+        // if not indeterminate, then all values are the same
+        // we can use first value to find out what all values are
+
+        // if all values are `true`, set to `true`
+        if (values[0] === true) return true;
+        // otherwise (all values are `false`) set to `false`
+        return false;
+    }
+
+    export default {
+        components: {
+            CheckboxControl,
+            ControlGroup,
+            FontStyleControl
+        },
+        helpers: { __ },
+        data() {
+            return {
+                labelWidth: '70px',
+                propKeys: [],
+                booleanPropKeys: [],
+                value: {},
+                defaultProps: clone(defaultProps)
+            };
+        },
+        computed: {
+            bold({ value }) {
+                return value.bold;
+            },
+            italic({ value }) {
+                return value.italic;
+            },
+            underline({ value }) {
+                return value.underline;
+            },
+            color({ value }) {
+                return value.color;
+            },
+            size({ value }) {
+                return value.size;
+            },
+            bg({ value }) {
+                return value.bg;
+            },
+            showDesktop({ value }) {
+                return value.showDesktop;
+            },
+            showMobile({ value }) {
+                return value.showMobile;
+            },
+            selectedAnnotationData({ selected, annotationData }) {
+                return selected.map(i => annotationData[i]);
+            },
+            indeterminate({ selectedAnnotationData, booleanPropKeys }) {
+                const indeterminate = {};
+                for (const key of booleanPropKeys) {
+                    const values = selectedAnnotationData.map(a => a[key]);
+                    indeterminate[key] = isIndeterminate(values);
+                }
+                return indeterminate;
+            }
+        },
+        onstate({ current, changed, previous }) {
+            // when the component is first opened, we set some initial property values
+            // to show in controls depending on the values in metadata
+            if (!previous) {
+                const { defaultProps } = this.get();
+                const { themeData } = this.store.get();
+                const propsWithTheme = mergeWithTheme(defaultProps.text, themeData, 'text');
+
+                const propKeys = Object.keys(propsWithTheme);
+                const booleanPropKeys = Object.entries(propsWithTheme)
+                    .filter(entry => typeof entry[1] === 'boolean')
+                    .map(entry => entry[0]);
+                this.set({ propKeys, booleanPropKeys });
+
+                const { selectedAnnotationData } = this.get();
+                const value = current.value;
+                propKeys.forEach(key => {
+                    const values = selectedAnnotationData.map(a => a[key]);
+
+                    let valueToSet;
+                    if (booleanPropKeys.includes(key)) {
+                        valueToSet = setInitBooleanPropValue(values);
+                    } else {
+                        // if not a boolean property, use value from first selected annotation
+                        valueToSet = values[0];
+                    }
+                    value[key] = valueToSet;
+                });
+                this.set({ value });
+            }
+
+            if (previous) {
+                const { propKeys } = this.get();
+                const newEntries = {};
+                Object.keys(changed).forEach(key => {
+                    // only include text annotation properties
+                    if (!propKeys.includes(key)) return;
+                    newEntries[key] = current[key];
+                });
+                // if there are no new entries, then we have nothing to update
+                if (Object.entries(newEntries).length === 0) return;
+
+                const { annotationData, selected } = this.get();
+                const newAnnotationData = clone(annotationData);
+                selected.forEach(i => {
+                    newAnnotationData[i] = Object.assign(newAnnotationData[i], newEntries);
+                });
+                this.set({ annotationData: newAnnotationData });
+            }
+        }
+    };
+</script>

@@ -1,0 +1,89 @@
+<p>Default ListInput: use shift/ctrl to multi-select, no dragging:</p>
+<ListInput items="{items}" />
+
+<p>You can use a custom <code>itemRenderer</code> if you need icons or other buttons for each list item</p>
+<ListInput items="{items}" itemRenderer="{CustomListItemRenderer}" maxHeight="150px" />
+
+<div class="row">
+    <div class="span2">
+        <p>The <code>compact</code> mode is useful if you need a list in a tight space</p>
+        <ListInput compact="{true}" items="{items}" />
+    </div>
+</div>
+
+<p>If <code>multiselectable</code> is false, only a single item can be selected. ctrl-clicking or shift-clicking will have no effect</p>
+<ListInput multiselectable="{false}" items="{items}" />
+
+<p>If <code>draggable</code> is true, items can be re-ordered:</p>
+<ListInput draggable="{true}" items="{items}" on:itemDrag="dragged(event)" />
+<p class="mini-help">{#if order}(the new item order is {@html order.map(d => `<code>${d.id}</code>`).join(', ')}){/if}</p>
+
+<p>Single items can be deselected if <code>deselectable</code> is true:</p>
+<ListInput deselectable="{true}" items="{items}" maxHeight="150px" />
+
+<p>You can't do anything with a <code>disabled</code> ListInput:</p>
+<ListInput disabled="{true}" items="{items}" maxHeight="150px" />
+
+<p>Here's a full example</p>
+<ListInput draggable="{true}" multiselectable="{true}" items="{items}" itemRenderer="{CustomListItemRenderer}" maxHeight="150px" />
+
+<p>Here's how the list looks in a <code>ColorControl</code> control:</p>
+<div class="row">
+    <div class="span2">
+        <ListInput draggable="{true}" compact="{true}" multiselectable="{true}" items="{colors}" itemRenderer="{ColorListItem}" maxHeight="150px" />
+    </div>
+</div>
+
+<script>
+    import ListInput from '../ListInput.html';
+    import CustomListItemRenderer from './CustomListItemRenderer.html';
+    import ColorListItem from '../ColorListItem.html';
+
+    export default {
+        components: { ListInput },
+        data() {
+            return {
+                order: false
+            };
+        },
+        helpers: {
+            CustomListItemRenderer,
+            ColorListItem,
+            colors: [
+                {
+                    color: '#a6cee3',
+                    id: 1,
+                    label: 'Light blue',
+                    manual: true
+                },
+                {
+                    color: '#1f78b4',
+                    id: 2,
+                    label: 'Dark blue',
+                    manual: true
+                },
+                {
+                    color: '#b2df8a',
+                    id: 3,
+                    label: 'Light green',
+                    manual: true
+                },
+                {
+                    color: '#33a02c',
+                    id: 4,
+                    label: 'Dark green'
+                },
+                {
+                    color: '#fb9a99',
+                    id: 5,
+                    label: 'Pink'
+                }
+            ]
+        },
+        methods: {
+            dragged({ items }) {
+                this.set({ order: items });
+            }
+        }
+    };
+</script>

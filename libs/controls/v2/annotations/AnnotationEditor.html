@@ -1,0 +1,271 @@
+<div class="well">
+    {#if disable}
+    <div transition:slide class="alert alert-info">
+        {@html __('controls / annotations / mobile-note').replace('%s', __(`controls / annotations / mobile-note / ${isMap ? 'map' : 'chart'}`))}
+    </div>
+    {/if}
+
+    <TextAreaControl
+        label="{__('controls / annotations / text')}"
+        {labelWidth}
+        bind:value="annotationData[selected].text"
+        placeholder="{__('controls / annotations / text / placeholder')}"
+        resize="vertical"
+    />
+
+    <div class:disable>
+        <FontStyleControl
+            colorReset="Reset"
+            bind:value="annotationData[selected]"
+            {labelWidth}
+            underline="{true}"
+            spacing="{false}"
+            fontSize="1"
+            fontSizePercent="{false}"
+            fontSizeKey="size"
+            color="1"
+            defaultColor="black"
+            background="{false}"
+            label="{__('controls / annotations / text-style')}"
+        />
+        <ControlGroup {labelWidth} label="&nbsp;" valign="middle" inline="{true}">
+            <div class="controls-inline">
+                <CheckboxControl label="{__('controls / annotations / text-outline')}" bind:value="annotationData[selected].bg" />
+            </div>
+        </ControlGroup>
+    </div>
+
+    <ControlGroup {labelWidth} label="{__('controls / annotations / show-on')}" valign="middle" type="checkbox">
+        <CheckboxControl label="{__('controls / annotations / show-on / mobile')}" bind:value="annotationData[selected].showMobile" />
+        <CheckboxControl label="{__('controls / annotations / show-on / desktop')}" bind:value="annotationData[selected].showDesktop" />
+    </ControlGroup>
+
+    <div class:disable>
+        <HelpDisplay
+            >{__('controls / annotations / width / help').replace('%s', __(`controls / annotations / width / help-${isMap ? 'map' :
+            'chart'}`))}</HelpDisplay
+        >
+        <NumberControl
+            {labelWidth}
+            label="{__('controls / annotations / width')}"
+            bind:value="annotationData[selected].width"
+            unit="%"
+            min="1"
+            max="100"
+            step="0.01"
+            slider="{false}"
+            allowUndefined="true"
+            placeholder="auto"
+        />
+
+        <ControlGroup {labelWidth} label="Position" inline="{true}" type="text">
+            <div class="controls-inline">
+                <label>{isMap ? 'Lon' : 'X'}</label>
+                <input type="text" bind:value="annotationData[selected].x" on:keydown="handlePositionKeydown(event, 'x')" />
+            </div>
+            <div class="controls-inline">
+                <label>{isMap ? 'Lat' : 'Y'}</label>
+                <input type="text" bind:value="annotationData[selected].y" on:keydown="handlePositionKeydown(event, 'y')" />
+            </div>
+        </ControlGroup>
+
+        <div class="anchor-group">
+            <AnnotationAnchor
+                bind:value="annotationData[selected].align"
+                bind:x="annotationData[selected].x"
+                bind:y="annotationData[selected].y"
+                bind:dx="annotationData[selected].dx"
+                bind:dy="annotationData[selected].dy"
+                {editorState}
+            />
+
+            <div class="offset-group">
+                <div class="offset">
+                    <svg width="24" height="24" viewBox="-2 -2 28 28">
+                        <path
+                            d="M22.001 12.001l-4.596 4.596-1.273-1.273L18.457 13H5.547l2.323 2.323-1.273 1.273L2.001 12l4.596-4.596L7.87 8.676l-2.323 2.323h12.906l-2.321-2.321 1.273-1.273L22 12z"
+                        />
+                    </svg>
+                    <NumberInput bind:value="annotationData[selected].dx" unit="px" min="-9999" max="9999" slider="{false}" />
+                </div>
+                <div class="offset">
+                    <svg width="24" height="24" viewBox="-8 -2 28 28">
+                        <path
+                            d="M11.002 2l4.596 4.596-1.273 1.273L12 5.544v12.91l2.323-2.323 1.273 1.273L11 22l-4.596-4.596 1.273-1.273L10 18.454V5.548L7.679 7.869 6.406 6.596 11.002 2z"
+                        />
+                    </svg>
+                    <NumberInput bind:value="annotationData[selected].dy" unit="px" min="-9999" max="9999" slider="{false}" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <SwitchControl
+        label="{__('controls / annotations / mobile-key')}"
+        disabled="{!annotationData[selected].showMobile}"
+        disabledMessage="{__('controls / annotations / mobile-key / disabled')}"
+        bind:value="annotationData[selected].mobileFallback"
+        help="{mobileFallbackHelpText}"
+    >
+    </SwitchControl>
+
+    <AnnotationConnectorLine
+        bind:enabled="annotationData[selected].connectorLine.enabled"
+        bind:arrowHead="annotationData[selected].connectorLine.arrowHead"
+        bind:type="annotationData[selected].connectorLine.type"
+        bind:stroke="annotationData[selected].connectorLine.stroke"
+        bind:inheritColor="annotationData[selected].connectorLine.inheritColor"
+        bind:targetPadding="annotationData[selected].connectorLine.targetPadding"
+        bind:circle="annotationData[selected].connectorLine.circle"
+        bind:circleStyle="annotationData[selected].connectorLine.circleStyle"
+        bind:circleRadius="annotationData[selected].connectorLine.circleRadius"
+        bind:dx="annotationData[selected].dx"
+        bind:dy="annotationData[selected].dy"
+        bind:align="annotationData[selected].align"
+        {selected}
+        {editorState}
+        {isMap}
+        disabled="{disable}"
+    />
+    <hr />
+    <div class="actions-group">
+        <button class="btn btn-small" on:click="fire('duplicateAnnotation', [selected])">
+            <i class="fa fa-code-fork"></i>
+            {__('controls / annotations / duplicate')}
+        </button>
+
+        <button class="btn btn-small btn-delete" on:click="fire('deleteAnnotations', [selected])">
+            <i class="fa fa-trash"></i>
+            {__('controls / annotations / delete')}
+        </button>
+    </div>
+</div>
+
+<style>
+    .disable {
+        pointer-events: none;
+        user-select: none;
+        opacity: 0.4;
+    }
+    .controls-inline {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .controls-inline:last-child {
+        margin-right: 0;
+    }
+    .anchor-group {
+        display: flex;
+    }
+    .offset-group {
+        margin: 0 0 10px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .offset {
+        display: flex;
+        align-items: center;
+    }
+    .offset svg {
+        margin-right: 2px;
+    }
+    .offset path {
+        fill: #848484;
+    }
+    :global(#svelte-annotations-wrap .number-control-container) {
+        display: inline-block;
+        width: auto;
+    }
+    :global(#svelte-annotations-wrap .vis-option-group-toggle .btn-group) {
+        margin-right: 10px;
+    }
+    :global(#svelte-annotations-wrap .vis-option-group-checkbox .vis-option-type-checkbox) {
+        display: inline-block;
+    }
+    :global(#svelte-annotations-wrap .vis-option-group-text input) {
+        width: 60px;
+    }
+    .actions-group {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .btn-delete {
+        color: #c71e1d;
+    }
+</style>
+
+<script>
+    import NumberInput from '../NumberInput.html';
+    import CheckboxControl from '../CheckboxControl.html';
+    import ControlGroup from '../ControlGroup.html';
+    import FontStyleControl from '../FontStyleControl.html';
+    import HelpDisplay from '../HelpDisplay.html';
+    import NumberControl from '../NumberControl.html';
+    import SwitchControl from '../SwitchControl.html';
+    import TextAreaControl from '../TextAreaControl.html';
+
+    import AnnotationAnchor from './AnnotationAnchor.html';
+    import AnnotationConnectorLine from './AnnotationConnectorLine.html';
+
+    import slide from 'svelte-transitions-slide';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        components: {
+            NumberInput,
+            CheckboxControl,
+            ControlGroup,
+            FontStyleControl,
+            HelpDisplay,
+            NumberControl,
+            SwitchControl,
+            TextAreaControl,
+            AnnotationAnchor,
+            AnnotationConnectorLine
+        },
+        data() {
+            return {
+                labelWidth: '70px'
+            };
+        },
+        computed: {
+            disable({ editorState }) {
+                const { selectedAnnotationProps } = editorState;
+                if (!selectedAnnotationProps) return false;
+                return selectedAnnotationProps.mobileFallback;
+            },
+            mobileFallbackHelpText({ isMap }) {
+                return __(`controls / annotations / mobile-key / help-${isMap ? 'map' : 'chart'}`);
+            }
+        },
+        helpers: { __ },
+        methods: {
+            handlePositionKeydown(event, input) {
+                const up = event.key === 'ArrowUp';
+                const down = event.key === 'ArrowDown';
+
+                // only track arrow up and down keys
+                if (up || down) {
+                    event.preventDefault();
+
+                    const { annotationData, selected, editorState } = this.get();
+                    const { selectedAnnotationProps, pxToData } = editorState;
+                    if (!selectedAnnotationProps || !pxToData) return;
+                    let { x, y } = selectedAnnotationProps;
+
+                    if (input === 'x') x += up ? 1 : -1;
+                    else if (input === 'y') y += up ? -1 : 1;
+
+                    const [dataX, dataY] = pxToData(x, y);
+                    annotationData[selected].x = dataX;
+                    annotationData[selected].y = dataY;
+
+                    this.set({ annotationData });
+                }
+            }
+        },
+        transitions: { slide }
+    };
+</script>

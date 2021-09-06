@@ -1,0 +1,86 @@
+<ControlGroup type="select-axis-column" {label} {labelWidth} {valign} {help} helpClass="mt-1">
+    <SelectInput bind:value="selected" class="mt-1" {disabled} options="{columns}" width="100%"></SelectInput>
+</ControlGroup>
+
+<script>
+    import clone from '@datawrapper/shared/clone';
+    import arrayToObject from '@datawrapper/shared/arrayToObject';
+    import get from '@datawrapper/shared/get';
+
+    import ControlGroup from './ControlGroup.html';
+    import SelectInput from './SelectInput.html';
+
+    export default {
+        components: {
+            ControlGroup,
+            SelectInput
+        },
+        data() {
+            return {
+                disabled: false,
+                labelWidth: '100px',
+                valign: 'middle',
+                optional: true,
+                filter: false,
+                isInitialized: false,
+                selected: false,
+                help: false
+            };
+        },
+        computed: {
+            columns({ axis, optional, $visualization, $dataset, filter }) {
+                const columns = [];
+                const currentAxis = get($visualization, 'axes', {})[axis];
+
+                if (!$dataset || !currentAxis) return [];
+
+                // Add 'n/a option' when selection is optional:
+                if (currentAxis.optional && optional) {
+                    columns.push({
+                        value: '-',
+                        label: currentAxis['na-label'] || '--'
+                    });
+                }
+
+                // Add accepted columns:
+                $dataset.eachColumn(column => {
+                    if (currentAxis.accepts.indexOf(column.type()) > -1) {
+                        columns.push({
+                            value: column.name(),
+                            label: column.title().trim() || column.name()
+                        });
+                    }
+                });
+
+                return typeof filter === 'function' ? columns.filter(c => !!filter(c)) : columns;
+            }
+        },
+        oncreate() {
+            const { axis } = this.get();
+            const { vis } = this.store.get();
+            const selected = vis.axes(false, true)[axis];
+            this.set({ selected, isInitialized: true });
+        },
+        onstate({ changed, current, previous }) {
+            // Update axes property in store when user selects a new axis:
+            if (previous && changed.selected && current.selected && current.isInitialized) {
+                const { axis, selected } = this.get();
+                const { metadata } = this.store.get();
+                // arrayToObject is a workaround for a quirk in the PHP app that causes empty objects
+                // to be returned as arrays. TODO: Delete this once we've fixed the issue
+                const axes = arrayToObject(clone(metadata.axes)) || {};
+                if (selected === '-') delete axes[axis];
+                else axes[axis] = selected;
+                this.store.setMetadata('axes', axes);
+            }
+
+            // Reset selected column when columns change (e.g. when transposing data):
+            if (previous && changed.columns) {
+                const columns = current.columns.map(({ value }) => value);
+                if (!columns.includes(current.selected)) {
+                    this.set({ selected: columns[0] || false });
+                }
+            }
+        }
+    };
+</script>

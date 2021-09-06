@@ -1,0 +1,770 @@
+<script>
+    import HelpDisplay from './HelpDisplay.html';
+    import GradientDisplay from './GradientDisplay.html';
+    import DropdownControl from './DropdownControl.html';
+    import ColorPickerInput from './ColorPickerInput.html';
+    import chroma from 'chroma-js';
+    import { __ } from '@datawrapper/shared/l10n';
+    import clone from '@datawrapper/shared/clone';
+    import slide from 'svelte-transitions-slide';
+
+    let app;
+
+    export default {
+        components: { DropdownControl, HelpDisplay, ColorPickerInput },
+        data() {
+            return {
+                // public properties
+                label: '',
+                colors: [],
+                width: 318,
+                classes: 0,
+                themePresets: [],
+                userPresets: [],
+                // private
+                editIndex: -1,
+                editColor: '',
+                customize: false,
+                editPosition: 0,
+                colorOpen: false,
+                help: '',
+                wouldDelete: false,
+                dragging: false,
+                dragStartAt: 0,
+                gotIt: false,
+                focus: false,
+                mouseOverGradient: false,
+                mouseX: 0,
+                undoStack: [],
+                redoStack: []
+            };
+        },
+        computed: {
+            presets({ themePresets, userPresets }) {
+                return themePresets.concat(userPresets);
+            },
+            activeColors({ colors, dragging, wouldDelete }) {
+                return colors
+                    .filter(color => {
+                        return !wouldDelete || dragging !== color;
+                    })
+                    .sort((a, b) => a.position - b.position);
+            },
+            selectedPreset({ stops }) {
+                const colors = stops.map(c => c.color);
+                return {
+                    value: colors,
+                    ...presetAttributes(colors)
+                };
+            },
+            scale({ activeColors }) {
+                const colors = activeColors.slice(0);
+                if (colors.length) {
+                    if (colors[0].position > 0)
+                        colors.unshift({
+                            position: 0,
+                            color: colors[0].color
+                        });
+                    if (colors[colors.length - 1].position < 1)
+                        colors.push({
+                            position: 1,
+                            color: colors[colors.length - 1].color
+                        });
+                }
+                return chroma.scale(colors.map(c => c.color)).domain(colors.map(c => c.position));
+            },
+            presetOptions({ presets, themePresets }) {
+                return presets.map((colors, i) => {
+                    return {
+                        value: colors,
+                        ...presetAttributes(colors, i >= themePresets.length)
+                    };
+                });
+            },
+            stops({ scale }) {
+                const num = 80;
+                return scale.colors(num, 'hex').map((color, i) => {
+                    return {
+                        color,
+                        offset: i / (num - 1)
+                    };
+                });
+            },
+            ticks({ colors }) {
+                return colors.map((color, i) => i / (colors.length - 1));
+            },
+            classColors({ scale, colors, classes }) {
+                if (!classes || !colors.length) return [];
+                const out = [];
+                for (let i = 0; i < classes; i++) {
+                    out.push({
+                        position: i / (classes - 1),
+                        color: scale(i / (classes - 1)).hex()
+                    });
+                }
+                return out;
+            },
+            isMonotone({ colors, scale }) {
+                const numColors = colors.length;
+                if (numColors < 3) return true;
+                let sample = scale.colors(colors.length, null);
+                const sampleL = sample.map(s => s.get('lab.l'));
+                return sampleL.reduce(checkMonotone, true);
+            },
+            isDiverging({ colors, scale }) {
+                const numColors = colors.length;
+                if (numColors < 3) return false;
+                let sample = scale.colors(colors.length, null);
+                const sampleL = sample.map(s => s.get('lab.l'));
+                if (sampleL.reduce(checkMonotone, true)) return false;
+                return (
+                    sampleL.slice(0, Math.ceil(numColors * 0.5)).reduce(checkMonotone, true) &&
+                    sampleL.slice(Math.floor(numColors * 0.5)).reduce(checkMonotone, true)
+                );
+            },
+            lightnessFixable({ isMonotone, isDiverging }) {
+                return isMonotone || isDiverging;
+            }
+        },
+        helpers: {
+            __,
+            chroma,
+            GradientDisplay,
+            menuItems: [
+                [
+                    {
+                        icon: '<i class="fa fa-undo fa-fw"></i>',
+                        label: __('controls / gradient-editor / undo', 'core'),
+                        action() {
+                            app.undo();
+                        },
+                        disabled({ undoStack }) {
+                            return undoStack.length === 0;
+                        }
+                    },
+                    {
+                        icon: '<i class="fa fa-undo fa-flip-horizontal fa-fw"></i>',
+                        label: __('controls / gradient-editor / redo', 'core'),
+                        action() {
+                            app.redo();
+                        },
+                        disabled({ redoStack }) {
+                            return redoStack.length === 0;
+                        }
+                    }
+                ],
+                [
+                    {
+                        icon: '<i class="fa fa-random fa-fw"></i>',
+                        label: __('controls / gradient-editor / reverse', 'core'),
+                        action() {
+                            app.reverse();
+                        }
+                    }
+                ],
+                [
+                    {
+                        icon: '<i class="im im-wizard"></i> ',
+                        label: __('controls / gradient-editor / autocorrect', 'core'),
+                        action() {
+                            app.autoCorrect();
+                        },
+                        disabled({ lightnessFixable }) {
+                            return !lightnessFixable;
+                        }
+                    },
+                    {
+                        icon: '<i class="contrast-up"></i> <span>+</span> ',
+                        label: __('controls / gradient-editor / contrast-up', 'core'),
+                        action() {
+                            app.contrastUp();
+                        },
+                        disabled({ lightnessFixable }) {
+                            return !lightnessFixable;
+                        }
+                    },
+                    {
+                        icon: '<i class="contrast-down"></i> <span>−</span>',
+                        label: __('controls / gradient-editor / contrast-down', 'core'),
+                        action() {
+                            app.contrastDown();
+                        },
+                        disabled({ lightnessFixable }) {
+                            return !lightnessFixable;
+                        }
+                    }
+                ],
+                [
+                    {
+                        icon: '<i class="im im-floppy-disk"></i> ',
+                        label: __('controls / gradient-editor / save', 'core'),
+                        action() {
+                            app.savePreset();
+                        }
+                    },
+                    {
+                        icon: '<i class="im im-sign-in"></i> ',
+                        label: __('controls / gradient-editor / import', 'core'),
+                        action() {
+                            const colors = window.prompt(__('controls / gradient-editor / import / text', 'core')).split(/[, ]+/);
+                            app.select(colors);
+                        }
+                    },
+                    {
+                        icon: '<i class="im im-sign-out"></i> ',
+                        label: __('controls / gradient-editor / export', 'core'),
+                        action() {
+                            const { colors } = app.get();
+                            window.prompt(__('controls / gradient-editor / export / text', 'core'), colors.map(c => c.color));
+                        }
+                    }
+                ]
+            ],
+            isDisabled(item, state) {
+                return item.disabled ? item.disabled(state) : false;
+            }
+        },
+        methods: {
+            select(preset) {
+                this.set({
+                    dragging: false,
+                    wouldDelete: false,
+                    colors:
+                        typeof preset[0] === 'string'
+                            ? preset.map((color, i) => {
+                                  return {
+                                      color,
+                                      position: i / (preset.length - 1)
+                                  };
+                              })
+                            : clone(preset)
+                    // selectedPreset: preset
+                });
+            },
+            handleChange({ event, value }) {
+                // this is a wrapper around select() to detect when a user
+                // presses the delete button next to a user preset in the dropdown
+                if (event.target.classList.contains('btn-delete')) {
+                    const { userPresets } = this.get();
+                    userPresets.splice(userPresets.indexOf(value), 1);
+                    if (window.dw && window.dw.backend && window.dw.backend.setUserData) {
+                        window.dw.backend.setUserData({
+                            'gradienteditor-presets': JSON.stringify(userPresets)
+                        });
+                    }
+                    this.set({ userPresets });
+                } else {
+                    this.select(value);
+                }
+            },
+            saveState() {
+                const { colors, undoStack } = this.get();
+                undoStack.push(clone(colors));
+                this.set({ undoStack });
+            },
+            undo() {
+                const { undoStack, redoStack, colors } = this.get();
+                redoStack.push(clone(colors));
+                const last = undoStack.pop();
+                this.set({ colors: last, undoStack });
+            },
+            redo() {
+                const { colors, undoStack, redoStack } = this.get();
+                const last = redoStack.pop();
+                undoStack.push(clone(colors));
+                this.set({ colors: last, redoStack });
+            },
+            reverse() {
+                this.saveState();
+                let { colors } = this.get();
+                colors.forEach(c => (c.position = 1 - c.position));
+                colors.reverse();
+                this.set({ colors });
+            },
+            contrastUp() {
+                this.saveState();
+                let { colors, scale, isMonotone } = this.get();
+                const numColors = colors.length;
+                colors = scale.padding(-0.05).colors(numColors + 2, null);
+                const centerL = colors[Math.floor(numColors * 0.5)].luminance();
+                [0, numColors + 1].forEach(pos => {
+                    const darker = colors[pos].luminance() < centerL;
+                    colors[pos] = colors[pos].brighten(darker ? -0.5 : 0.5);
+                });
+                this.select(colors.map(c => c.hex()));
+                this.autoCorrect(Math.min(7, numColors + (isMonotone ? 1 : 2)));
+            },
+            contrastDown() {
+                this.saveState();
+                let { colors, scale, isDiverging } = this.get();
+                const numColors = colors.length;
+
+                colors = scale.padding(0.03).colors(numColors, 'hex');
+                this.select(colors);
+                this.autoCorrect(Math.max(isDiverging ? 5 : 2, numColors - (isDiverging ? 2 : 1)));
+            },
+            autoCorrect(forceNumColors) {
+                if (!forceNumColors) this.saveState();
+                const { colors, scale, isMonotone, isDiverging } = this.get();
+                const numColors = forceNumColors || colors.length;
+                if (forceNumColors === 2) {
+                    return this.select([colors[0].color, colors[colors.length - 1].color]);
+                }
+                if (numColors < 3) return;
+
+                let sample = scale.colors(numColors);
+                const sampleL = sample.map(s => chroma(s).get('lab.l'));
+                // no need to autoCorrect if not monotone or diverging
+                if (!isMonotone && !isDiverging) return;
+
+                if (isDiverging) {
+                    // autoCorrect lightness left and right
+                    for (let i = 0; i < numColors * 0.5; i++) {
+                        let avgL = 0.5 * (sampleL[i] + sampleL[numColors - 1 - i]);
+                        sample[i] = chroma(sample[i])
+                            .set('lab.l', avgL)
+                            .hex();
+                        sample[numColors - 1 - i] = chroma(sample[numColors - 1 - i])
+                            .set('lab.l', avgL)
+                            .hex();
+                    }
+                } else {
+                    sample = chroma
+                        .scale(scale.correctLightness())
+                        .gamma(sampleL[0] < sampleL[1] ? 0.73 : 1.3)
+                        .colors(numColors, 'hex');
+                }
+                this.select(sample);
+            },
+            savePreset() {
+                const { userPresets, colors } = this.get();
+                userPresets.push(colors);
+                if (window.dw && window.dw.backend && window.dw.backend.setUserData) {
+                    window.dw.backend.setUserData({
+                        'gradienteditor-presets': JSON.stringify(userPresets)
+                    });
+                }
+                this.set({ userPresets });
+            },
+            swatchClick(color, index) {
+                const { dragging, colorOpen } = this.get();
+                if (dragging) return;
+                if (colorOpen) {
+                    this.focus(color);
+                    return this.closePicker();
+                }
+                this.set({
+                    editIndex: index,
+                    editColor: color.color,
+                    editPosition: color.position,
+                    colorOpen: true
+                });
+            },
+            closePicker() {
+                this.set({
+                    editIndex: -1,
+                    editColor: '',
+                    colorOpen: false,
+                    editPosition: 0
+                });
+            },
+            dragStart(event, item, index) {
+                this.saveState();
+                const bbox = this.refs.gradient.getBoundingClientRect();
+                this.set({
+                    dragging: item,
+                    wouldDelete: false,
+                    dragStartAt: new Date().getTime(),
+                    dragStartPos: event.clientX,
+                    dragStartDelta: item.position - Math.max(0, Math.min(1, (event.clientX - bbox.left) / bbox.width))
+                });
+            },
+            handleMouseMove(event) {
+                const { dragging, colors, dragStartAt, dragStartPos, dragStartDelta, ticks } = this.get();
+                const delay = new Date().getTime() - dragStartAt;
+                const distance = Math.abs(dragStartPos - event.clientX);
+
+                if (dragging && (delay > 300 || distance > 5)) {
+                    const bbox = this.refs.gradient.getBoundingClientRect();
+                    dragging.position = +(dragStartDelta + Math.max(0, Math.min(1, (event.clientX - bbox.left) / bbox.width))).toFixed(4);
+                    const closest = ticks.sort((a, b) => Math.abs(a - dragging.position) - Math.abs(b - dragging.position))[0];
+                    if (!event.shiftKey && Math.abs(closest - dragging.position) < 0.015) dragging.position = closest;
+                    const wouldDelete = Math.abs(event.clientY - bbox.top) > 20 && colors.length > 2;
+                    this.set({ colors, wouldDelete });
+                }
+            },
+            handleMouseUp(event) {
+                const { dragging, wouldDelete, dragStartPos, dragStartAt } = this.get();
+                const delay = new Date().getTime() - dragStartAt;
+                const distance = Math.abs(dragStartPos - event.clientX);
+                if ((dragging && delay > 300) || distance > 5) {
+                    setTimeout(() => {
+                        this.set({ dragging: false, wouldDelete: false });
+                    });
+                    event.preventDefault();
+                    const { colors } = this.get();
+                    if (wouldDelete && colors.length > 2) {
+                        // remove color
+                        colors.splice(colors.indexOf(dragging), 1);
+                        this.set({ colors });
+                    }
+                    this.sortColors();
+                } else {
+                    this.set({ dragging: false, wouldDelete: false });
+                }
+                this.focus(dragging);
+            },
+            focus(color) {
+                const { colors } = this.get();
+                const index = colors.indexOf(color);
+                if (index > -1) {
+                    this.set({ focus: color });
+                    this.refs.swatches.querySelector(`a:nth-child(${index + 1}) path`).focus();
+                }
+            },
+            closeHelp() {
+                this.set({ gotIt: true });
+                if (window.dw && window.dw.backend && window.dw.backend.setUserData) {
+                    window.dw.backend.setUserData({
+                        'gradienteditor-help': 1
+                    });
+                }
+            },
+            handleGradientClick(event) {
+                // add new color stop to gradient
+                const { dragging, scale, colors } = this.get();
+                if (!dragging) {
+                    const bbox = this.refs.gradient.getBoundingClientRect();
+                    const position = Math.max(0, Math.min(1, (event.clientX - bbox.left) / bbox.width));
+                    const color = scale(position).hex();
+                    colors.push({ color, position });
+                    this.set({ colors });
+                    this.sortColors();
+                }
+            },
+            sortColors() {
+                const { colors } = this.get();
+                const sorted = colors.sort((a, b) => a.position - b.position);
+                this.set({ colors: sorted });
+            },
+            handleGradientMouseMove(event) {
+                // set mouse Xpgosition
+                const bbox = this.refs.gradient.getBoundingClientRect();
+                this.set({ mouseX: event.clientX - bbox.left });
+            },
+            handleKeyDown(event) {
+                const { focus, colors, width } = this.get();
+                if (focus && (event.keyCode === 37 || event.keyCode === 39)) {
+                    focus.position = +(focus.position + (1 / width) * (event.shiftKey ? 10 : 1) * (event.keyCode === 37 ? -1 : 1)).toFixed(5);
+                    this.set({ colors });
+                }
+                if (focus && event.keyCode === 46 && colors.length > 2) {
+                    colors.splice(colors.indexOf(focus), 1);
+                    this.set({ colors });
+                }
+                if (focus && event.keyCode === 61) {
+                    const { scale } = this.get();
+                    let i = colors.indexOf(focus);
+                    if (i === colors.length - 1) i--;
+                    const insertAt = (colors[i].position + colors[i + 1].position) * 0.5;
+                    const inserted = {
+                        position: insertAt,
+                        color: scale(insertAt).hex()
+                    };
+                    colors.splice(i + 1, 0, inserted);
+                    this.set({ colors });
+                }
+            },
+            action(item) {
+                item.action();
+            }
+        },
+        transitions: { slide },
+        oncreate() {
+            setTimeout(() => {
+                if (window.dw && window.dw.backend && window.dw.backend.__userData) {
+                    this.set({
+                        gotIt: window.dw.backend.__userData['gradienteditor-help'] || false,
+                        userPresets: JSON.parse(window.dw.backend.__userData['gradienteditor-presets'] || '[]')
+                    });
+                }
+                const { presets, colors } = this.get();
+                app = this;
+                if (!colors.length) {
+                    this.select(presets[0]);
+                }
+            });
+        },
+        onstate({ changed, current }) {
+            if (changed.editColor && current.editColor) {
+                current.colors[current.editIndex].color = current.editColor;
+                this.set({ colors: current.colors });
+            }
+        }
+    };
+
+    function checkMonotone(acc, cur, idx, a) {
+        return acc && (idx ? (a[1] > a[0] ? a[idx] > a[idx - 1] : a[idx] < a[idx - 1]) : true);
+    }
+
+    function presetAttributes(colors, isUserPreset) {
+        if (!colors.length)
+            return {
+                stops: []
+            };
+        const color = chroma
+            .scale(typeof colors[0] === 'string' ? colors : colors.map(c => c.color))
+            .domain(typeof colors[0] === 'string' ? [0, 10] : colors.map(c => c.position * 10))
+            .mode('lab');
+        return {
+            stops: [0, 2, 4, 5, 6, 8, 10].map(i => {
+                return { offset: i / 10, color: color(i).hex() };
+            }),
+            canDelete: isUserPreset
+        };
+    }
+</script>
+
+<style>
+    .preview {
+        margin-top: 10px;
+        position: relative;
+    }
+    path.swatch {
+        shape-rendering: crispEdges;
+        cursor: move;
+    }
+    g.line {
+        pointer-events: none;
+    }
+    g.line path {
+        stroke: black;
+        fill: none;
+        shape-rendering: crispEdges;
+        opacity: 0.3;
+    }
+    g.line text {
+        text-anchor: middle;
+        fill: black;
+        font-weight: bold;
+        opacity: 0.5;
+    }
+    path.swatch.delete {
+        stroke-dasharray: 2, 2;
+        fill-opacity: 0.25;
+        shape-rendering: initial;
+    }
+    path.swatch:hover,
+    path.swatch.focus {
+        stroke: black !important;
+    }
+    path.tick {
+        stroke: #aaa;
+        fill: none;
+        shape-rendering: crispEdges;
+    }
+    svg {
+        overflow: visible;
+        margin-left: 5px;
+    }
+    .picker-cont {
+        position: absolute;
+        top: 4px;
+    }
+    :global(.base-drop-btn .btn.btn-small) {
+        border-left: 0;
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+    }
+    :global(.base-drop-btn svg),
+    :global(.base-dropdown-content svg) {
+        position: relative;
+        top: 3px;
+    }
+    :global(i.contrast-up),
+    :global(i.contrast-down) {
+        display: inline-block;
+        width: 12px;
+        position: relative;
+        top: -1px;
+    }
+    :global(i.contrast-up) + span,
+    :global(i.contrast-down) + span {
+        font-weight: bold !important;
+    }
+    :global(i.contrast-up):before,
+    :global(i.contrast-down):before {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 6px;
+        height: 12px;
+        opacity: 1;
+        background: black;
+        top: -9px;
+        left: 6px;
+        border-radius: 0 6px 6px 0;
+    }
+    :global(i.contrast-down):after,
+    :global(i.contrast-up):after {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 6px;
+        height: 12px;
+        opacity: 1;
+        border: 1px solid black;
+        border-right: 0;
+        box-sizing: border-box;
+        top: -9px;
+        left: 0px;
+        border-radius: 6px 0 0 6px;
+    }
+    .btn-group .btn-small {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+    .btn-small .btn-help {
+        display: none;
+        position: absolute;
+        top: 28px;
+        left: 0px;
+        font-size: 14px;
+        background: #18a1cd;
+        color: #f9f9f9;
+        border-radius: 4px;
+        text-shadow: none;
+        padding: 4px 7px;
+        max-width: 200px;
+    }
+    .btn-small:hover .btn-help {
+        display: block;
+        box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+    }
+    .btn-small:hover .btn-help:before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        background: transparent;
+        width: 100%;
+        top: -5px;
+        left: 0;
+        height: 10px;
+    }
+    ref:gradientdropdown :global(.btn .caret) {
+        margin-top: 12px;
+    }
+</style>
+
+<svelte:window on:keydown="handleKeyDown(event)" on:mousemove="handleMouseMove(event)" on:mouseup="handleMouseUp(event)" />
+
+<div>
+    {#if gotIt}
+    <HelpDisplay class="mt-1">
+        <div>{@html __('controls / gradient-editor / help', 'core')}</div>
+    </HelpDisplay>
+    {/if}
+    <div style="white-space: nowrap;">
+        <div style="display: inline-block;" ref:gradientdropdown>
+            <DropdownControl
+                passEvent="{true}"
+                on:change="handleChange(event)"
+                label="{label}"
+                itemRenderer="{GradientDisplay}"
+                forceLabel="{selectedPreset}"
+                options="{presetOptions}"
+                placeholder="{__('controls / gradient-editor / preset / placeholder', 'core')}"
+                labelWidth="100px"
+            >
+            </DropdownControl>
+        </div>
+        <button class:active="customize" on:click="set({customize:!customize})" title="Customize" class="btn">
+            <i class="fa fa-wrench fa-fw"></i>
+        </button>
+    </div>
+</div>
+{#if customize}
+<div transition:slide>
+    {#if !gotIt}
+    <p style="min-height: 3em;margin-bottom: 20px" class="mini-help">
+        <b>{__('controls / gradient-editor / how-this-works', 'core')}</b> {@html __('controls / gradient-editor / help', 'core')}
+        <a href="#/closeHelp" on:click|preventDefault="closeHelp()"
+            ><i class="fa fa-check"></i> {__('controls / gradient-editor / got-it', 'core')}</a
+        >
+    </p>
+    {/if}
+    <div class="preview">
+        <svg width="{width}" height="35" style="position:relative;top:2px">
+            <defs>
+                <linearGradient id="grad-main" x2="1">
+                    {#each stops as stop}
+                    <stop offset="{(stop.offset*100).toFixed(2)}%" stop-color="{stop.color}" />
+                    {/each}
+                </linearGradient>
+            </defs>
+            <rect
+                ref:gradient
+                on:click="handleGradientClick(event)"
+                on:mousemove="handleGradientMouseMove(event)"
+                on:mouseenter="set({mouseOverGradient:true})"
+                on:mouseleave="set({mouseOverGradient:false})"
+                style="fill:url(#grad-main)"
+                width="{width}"
+                height="26"
+            />
+            {#if !dragging && mouseOverGradient}
+            <g class="line" transform="translate({Math.round(mouseX)+0.5},0)">
+                <path d="M-7,3 l7,7 l7,-7 v-12 h-14Z" />
+                <text y="4">+</text>
+            </g>
+            {/if}
+            <g ref:swatches class="swatches" on:focusout="set({focus:false})">
+                {#each colors as c,i}
+                <a xlink:href="#/color/{i}" draggable="{false}" on:focusin="set({focus:c})">
+                    <path
+                        on:mousedown|preventDefault="dragStart(event, c, i)"
+                        class="swatch"
+                        class:focus="focus === c"
+                        class:delete="c === dragging && wouldDelete"
+                        on:click|stopPropagation|preventDefault="swatchClick(c,i)"
+                        tabindex="{i+1}"
+                        d="M-7,3 l7,7 l7,-7 v-12 h-14Z"
+                        transform="translate({Math.round(width*c.position)+0.5},0)"
+                        style="fill: {c.color}; stroke: {chroma(c.color).darken().hex()}"
+                    />
+                </a>
+                {/each}
+            </g>
+            <g class="ticks">
+                {#each ticks as value}
+                <path class="tick" d="M0,26v4" transform="translate({Math.round(width*value)},0)" />
+                {/each}
+            </g>
+            <g class="classes">
+                {#each classColors as cl}
+                <circle
+                    r="3"
+                    style="fill:{cl.color};stroke: {chroma(cl.color).darken().hex()}"
+                    transform="translate({Math.round(width*cl.position)+0.5},26)"
+                />
+                {/each}
+            </g>
+        </svg>
+        <div style="left:{editPosition*width}px" class="picker-cont">
+            <ColorPickerInput on:close="closePicker()" bind:open="colorOpen" bind:color="editColor">
+                <!-- will be opened manually -->
+            </ColorPickerInput>
+        </div>
+    </div>
+    {#each menuItems as group}
+    <div class="btn-group" style="margin-top: 5px;margin-bottom: 15px">
+        {#each group as item}
+        <button disabled="{isDisabled(item, {undoStack, redoStack, lightnessFixable})}" on:click="action(item)" class="btn btn-small">
+            {@html item.icon}
+            <div class="btn-help">{@html item.label}</div>
+        </button>
+        {/each}
+    </div>
+    {/each}
+</div>
+{/if}
