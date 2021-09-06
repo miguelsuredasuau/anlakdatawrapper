@@ -1,0 +1,11 @@
+node_modules
+config.js
+*.pem
+create-api/test
+plugins/*
+!plugins/chart-data-local
+!plugins/email-local
+!plugins/hello-world
+plugins/chart-data-local/node_modules
+plugins/email-local/node_modules
+plugins/hello-world/node_modules
