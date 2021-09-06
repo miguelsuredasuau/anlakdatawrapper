@@ -50,12 +50,13 @@ module.exports = function createAuth(
         });
         if (user && includeTeams) {
             const activeTeam = await user.getActiveTeam();
-            if (activeTeam) user.teams.forEach(team => {
-                if (activeTeam.id === team.id) {
-                    team.active = true;
-                    team.dataValues.active = true;
-                }
-            });
+            if (activeTeam)
+                user.teams.forEach(team => {
+                    if (activeTeam.id === team.id) {
+                        team.active = true;
+                        team.dataValues.active = true;
+                    }
+                });
             user.activeTeam = activeTeam;
         }
 
