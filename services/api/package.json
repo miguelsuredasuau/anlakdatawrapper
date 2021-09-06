@@ -28,8 +28,7 @@
         "update-translations": "node scripts/update-translations.js",
         "dev": "NODE_ENV=development nodemon src/index.js",
         "api": "node src/index.js",
-        "start": "node src/index.js",
-        "prepare": "husky install"
+        "start": "node src/index.js"
     },
     "nodemonConfig": {
         "ignore": [
@@ -118,7 +117,6 @@
         "babel-eslint": "~10.1.0",
         "dotenv": "^10.0.0",
         "healthier": "^4.0.0",
-        "husky": "^6.0.0",
         "lint-staged": "^11.0.0",
         "nodemon": "~2.0.3",
         "nyc": "^15.1.0",

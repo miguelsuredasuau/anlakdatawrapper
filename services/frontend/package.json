@@ -5,7 +5,6 @@
     "scripts": {
         "format": "prettier --write 'src/**/*.{js,svelte}'",
         "lint": "eslint 'src/**/*.{js,svelte}' && prettier --check 'src/**/*.{js,svelte}'",
-        "prepare": "husky install",
         "build:css": "node-sass --omit-source-map-url src/styles/index.scss static/datawrapper.css",
         "watch:css": "npm run build:css -- --watch"
     },
