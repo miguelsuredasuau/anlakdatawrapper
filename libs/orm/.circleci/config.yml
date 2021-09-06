@@ -1,0 +1,61 @@
+version: 2.1
+
+# https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
+executors:
+    dw-executor:
+        working_directory: ~/repo
+        docker:
+            - image: circleci/node:12
+              environment:
+                  DW_CONFIG_PATH: /home/circleci/repo/tests/config.ci.js
+
+# https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-commands
+commands:
+    restore_npm_cache:
+        description: Restores .npm directory for faster installs
+        steps:
+            - restore_cache:
+                  keys:
+                      - v4-install-cache-{{ checksum "package-lock.json" }}
+                      - v4-install-cache
+
+jobs:
+    test:
+        executor: dw-executor
+        steps:
+            - checkout
+            - restore_npm_cache
+
+            - run:
+                  environment:
+                      HUSKY_SKIP_INSTALL: 1
+                  command: npm ci
+
+            - run:
+                  name: Lint code
+                  command: npm run lint
+            - run:
+                  name: Run tests
+                  command: |
+                      mkdir -p ~/reports/ava
+                      npx nyc --reporter=html --report-dir=$HOME/coverage ava --tap | tee /dev/stderr | npx tap-xunit > ~/reports/ava/results.xml
+            - store_test_results:
+                  path: ~/reports
+            - store_artifacts:
+                  path: ~/reports
+            - store_artifacts:
+                  path: ~/coverage
+
+            - save_cache:
+                  key: v4-install-cache-{{ checksum "package-lock.json" }}
+                  paths:
+                      - ~/.npm
+
+workflows:
+    test and publish:
+        jobs:
+            - test:
+                  context: Testing DB
+                  filters:
+                      tags:
+                          only: /^v.*/

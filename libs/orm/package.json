@@ -1,0 +1,96 @@
+{
+    "name": "@datawrapper/orm",
+    "version": "3.25.0",
+    "description": "A database abstraction layer for Datawrapper",
+    "homepage": "https://github.com/datawrapper/orm#readme",
+    "license": "MIT",
+    "author": "Datawrapper GmbH",
+    "files": [
+        "models",
+        "utils",
+        "index.js",
+        "sync.js"
+    ],
+    "main": "index.js",
+    "scripts": {
+        "format": "prettier 'models/**/*.js' --write",
+        "lint": "prettier --check 'models/**/*.{js,html}' && healthier 'models/**/*.{js,html}'",
+        "test": "DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} ava --verbose",
+        "test:coverage": "DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} nyc --reporter=html --reporter=text ava --verbose"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/datawrapper/orm.git"
+    },
+    "dependencies": {
+        "assign-deep": "^1.0.1",
+        "lodash": "^4.17.20",
+        "merge-deep": "^3.0.2",
+        "mysql2": "^2.2.5",
+        "nanoid": "2.1.6",
+        "sequelize": "^6.6.2",
+        "underscore": "1.9.1"
+    },
+    "devDependencies": {
+        "@datawrapper/shared": "^0.27.6",
+        "ava": "~2.4.0",
+        "babel-eslint": "~10.0.3",
+        "dotenv": "8.2.0",
+        "healthier": "~3.2.0",
+        "husky": "~1.3.1",
+        "lint-staged": "~9.4.2",
+        "nyc": "^15.1.0",
+        "prettier": "~1.18.2"
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write",
+            "healthier",
+            "git add"
+        ]
+    },
+    "eslintConfig": {
+        "parser": "babel-eslint",
+        "rules": {
+            "no-console": [
+                "error",
+                {
+                    "allow": [
+                        "warn",
+                        "error"
+                    ]
+                }
+            ],
+            "camelcase": [
+                "warn",
+                {
+                    "ignoreDestructuring": true,
+                    "properties": "never"
+                }
+            ],
+            "no-unused-vars": [
+                "off"
+            ]
+        },
+        "root": true
+    },
+    "prettier": {
+        "arrowParens": "avoid",
+        "printWidth": 100,
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "none"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "ava": {
+        "cache": false,
+        "files": [
+            "tests/**/*.test.js"
+        ]
+    }
+}
