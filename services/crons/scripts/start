@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+
+const ORM = require('@datawrapper/orm');
+const config = require('../src/config');
+const run = require('../src');
+
+ORM.init(config).then(run);
