@@ -1,0 +1,17 @@
+{
+  "name": "pixel-tracker",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "dependencies": {
+    "async": "*",
+    "express": "3.1.0",
+    "moment": "^2.15.1",
+    "mysql": "*",
+    "normalize-url": "^1.9.1",
+    "slackbots": "^0.5.1",
+    "underscore": "*"
+  }
+}
