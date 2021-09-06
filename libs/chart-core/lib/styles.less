@@ -1,0 +1,700 @@
+/* Reference: datawrapper/templates/chart-styles.less.twig */
+body {
+    margin: 0;
+    padding: 0;
+    background: @style_body_background;
+    &.vis-height-fit {
+        overflow: hidden;
+    }
+}
+
+.chart {
+    color: @typography_chart_color;
+
+    font-family: @typography_chart_typeface;
+    text-transform: @typography_chart_textTransform;
+    letter-spacing: @typography_chart_letterSpacing;
+    font-size: @typography_chart_fontSize;
+
+    padding: @style_body_padding;
+
+    margin: 0;
+    margin: @style_body_margin;
+
+    height: 100%;
+
+    &.vis-height-fit {
+        overflow: hidden;
+    }
+
+    a {
+        color: @typography_links_color;
+        text-decoration: if(@typography_links_underlined = 1, underline, none);
+    }
+
+    & when not (@typography_links_hoverColor = __UNDEFINED__) {
+        a:hover {
+            color: @typography_links_hoverColor;
+        }
+    }
+
+    .dw-chart-header {
+        min-height: 1px;
+        position: relative;
+        overflow: auto;
+
+        .header-right {
+            position: absolute;
+            right: 10px;
+            z-index: 20;
+        }
+
+        padding: @style_header_padding;
+        margin: @style_header_margin;
+        background: @style_header_background;
+        border-top: @style_header_border_top;
+        border-bottom: @style_header_border_bottom;
+        border-left: @style_header_border_left;
+        border-right: @style_header_border_right;
+        text-align: @style_header_textAlign;
+
+        .headline-block {
+            margin: 0 0 10px;
+            margin: @style_header_title_margin;
+            padding: @style_header_title_padding;
+            border-top: @style_header_title_border_top;
+            border-bottom: @style_header_title_border_bottom;
+            border-left: @style_header_title_border_left;
+            border-right: @style_header_title_border_right;
+        }
+
+        h1 {
+            font-family: @typography_headline_typeface;
+            font-weight: @typography_headline_fontWeight;
+            font-size: @typography_headline_fontSize;
+            & when not (@typography_headline_lineHeight = __UNDEFINED__) {
+                line-height: @typography_headline_lineHeight * 1px;
+            }
+            text-transform: @typography_headline_textTransform;
+            letter-spacing: @typography_headline_letterSpacing;
+            font-style: if(@typography_headline_cursive = 0, normal, italic);
+            text-decoration: if(@typography_headline_underlined = 0, none, underline);
+            color: @typography_headline_color;
+            text-align: @style_header_title_textAlign;
+
+            margin: 0px;
+        }
+
+        p {
+            font-family: @typography_description_typeface;
+            font-weight: @typography_description_fontWeight;
+            font-size: @typography_description_fontSize;
+            text-transform: @typography_description_textTransform;
+            & when not (@typography_description_lineHeight = __UNDEFINED__) {
+                line-height: @typography_description_lineHeight * 1px;
+            }
+            letter-spacing: @typography_description_letterSpacing;
+            font-style: if(@typography_description_cursive = 0, normal, italic);
+            text-decoration: if(@typography_description_underlined = 0, none, underline);
+            color: @typography_description_color;
+            margin: 0px;
+        }
+
+        .description-block {
+            margin: 5px 0 10px;
+            margin: @style_header_description_margin;
+            padding: @style_header_description_padding;
+            text-align: @style_header_description_textAlign;
+            border-bottom: @style_header_description_border_top;
+            border-left: @style_header_description_border_top;
+            border-right: @style_header_description_border_top;
+        }
+    }
+
+    .dw-chart-body {
+        font-weight: @typography_chart_fontWeight;
+
+        &.dark-bg .label span {
+            color: #f1f1f1;
+            color: @typography_chart_color;
+
+            fill: #f1f1f1;
+            fill: @typography_chart_color;
+        }
+
+        path.y-gridline,
+        line.gridline,
+        .major-grid-line line,
+        line.y-gridline,
+        line.y-tick {
+            stroke: @style_chart_axes_gridlines_color;
+        }
+        .bc-grid-line {
+            border-left-color: @style_chart_axes_gridlines_color;
+        }
+        .y-gridline {
+            border-top-color: @style_chart_axes_gridlines_color;
+        }
+
+        path.grid.x-axis,
+        line.x-axis,
+        .vis-frame line.axis,
+        line.x-tick,
+        line.theme-tick.y-tick,
+        line.y-axis {
+            stroke: @style_chart_axes_gridlines_baselineColor;
+        }
+        .bc-grid-baseline {
+            border-left-color: @style_chart_axes_gridlines_baselineColor;
+        }
+
+        path.y-gridline,
+        line.gridline,
+        .major-grid-line line,
+        line.y-gridline {
+            stroke-dasharray: @style_chart_axes_gridlines_style_strokeDasharray;
+            stroke-linecap: @style_chart_axes_gridlines_style_strokeLinecap;
+        }
+        .bc-grid-line {
+            border-left-style: solid;
+            border-left-style: @style_chart_axes_gridlines_style_style;
+        }
+
+        path.y-gridline,
+        line.gridline,
+        .major-grid-line line,
+        line.y-gridline,
+        line.y-tick,
+        path.grid.x-axis,
+        line.x-axis,
+        .vis-frame line.axis {
+            stroke-width: @style_chart_axes_gridlines_width;
+        }
+
+        .y-gridline {
+            border-top-width: @style_chart_axes_gridlines_width;
+        }
+
+        path.grid.x-axis,
+        .vis-frame line.axis,
+        line.x-axis,
+        line.axis.y-axis {
+            stroke-width: @style_chart_axes_gridlines_baselineWidth;
+        }
+
+        padding: @style_chart_padding;
+        margin: @style_chart_margin;
+
+        & when (@style_chart_margin = __UNDEFINED__) {
+            &.content-below-chart {
+                margin: 0px 0px 20px 0px;
+            }
+        }
+
+        border-top: @style_chart_border_top;
+        border-bottom: @style_chart_border_bottom;
+        border-left: @style_chart_border_left;
+        border-right: @style_chart_border_right;
+    }
+
+    .sr-only {
+        position: absolute;
+        left:-9999px;
+        height: 1px;
+    }
+
+    .labels text {
+        font-size: @typography_chart_fontSize;
+    }
+
+    .label {
+        font-size: @typography_chart_fontSize;
+
+        span,
+        tspan {
+            color: #333333;
+            color: @typography_chart_color;
+
+            fill: #333333;
+            fill: @typography_chart_color;
+        }
+
+        &.value,
+        &.value span {
+            & when (@style_chart_labels_values_tabularNums = 1) {
+                font-feature-settings: 'tnum';
+                -webkit-font-feature-settings: 'tnum';
+                -moz-font-feature-settings: 'tnum';
+            }
+
+            font-size: @style_chart_labels_values_fontSize;
+            letter-spacing: @style_chart_labels_values_letterSpacing;
+            color: @style_chart_labels_values_color;
+            font-family: @style_chart_labels_values_typeface;
+        }
+
+        span {
+            text-shadow: 0 0 2px @colors_background;
+        }
+
+        &.inverted span {
+            text-shadow: 0 0px 2px #000000;
+
+            color: #ffffff;
+            color: @style_chart_labels_inside_inverted;
+        }
+
+        &.inside:not(.inverted) span {
+            text-shadow: 0 0px 2px #ffffff;
+
+            color: #333333;
+            color: @style_chart_labels_inside_normal;
+        }
+
+        &.outline span {
+            text-shadow: ~'0 1px 0 @{colors_background}, 1px 0 0 @{colors_background}, 0 -1px 0 @{colors_background}, -1px 0 0 @{colors_background},1px 1px 0 @{colors_background}, 1px -1px 0 @{colors_background}, -1px -1px 0 @{colors_background}, -1px 1px 0 @{colors_background},0 2px 1px @{colors_background}, 2px 0 1px @{colors_background}, 0 -2px 1px @{colors_background}, -2px 0 1px @{colors_background},-1px 2px 0px @{colors_background}, 2px -1px 0px @{colors_background}, -1px -2px 0px @{colors_background}, -2px -1px 0px @{colors_background},1px 2px 0px @{colors_background}, 2px 1px 0px @{colors_background}, 1px -2px 0px @{colors_background}, -2px 1px 0px @{colors_background}';
+        }
+
+        &.axis-label span {
+            text-shadow: ~'-1px -1px 2px @{colors_background}, -1px 0px 2px @{colors_background}, -1px 1px 2px @{colors_background}, 0px -1px 2px @{colors_background}, 0px 1px 2px @{colors_background}, 1px -1px 2px @{colors_background}, 1px 0px 2px @{colors_background}, 1px 1px 2px @{colors_background}';
+        }
+
+        sup {
+            text-shadow: none;
+        }
+
+        &.highlighted {
+            font-weight: bold;
+        }
+
+        &.highlighted,
+        .label.axis {
+            font-size: @typography_chart_fontSize;
+            z-index: 100;
+        }
+
+        &.hover {
+            font-weight: bold;
+        }
+
+        &.smaller span {
+            font-size: 80%;
+        }
+
+        &.legend-text span,
+        &.legend-text {
+            & when (@style_chart_labels_legend_tabularNums = 1) {
+                font-feature-settings: 'tnum';
+                -webkit-font-feature-settings: 'tnum';
+                -moz-font-feature-settings: 'tnum';
+            }
+
+            font-weight: @style_chart_labels_legend_fontWeight;
+            font-size: @style_chart_labels_legend_fontSize;
+            color: @style_chart_labels_legend_color;
+            font-family: @style_chart_labels_legend_typeface;
+        }
+    }
+
+    .dw-above-footer {
+        font-family: @typography_aboveFooter_typeface;
+        font-weight: @typography_aboveFooter_fontWeight;
+        text-transform: @typography_aboveFooter_textTransform;
+        font-size: @typography_aboveFooter_fontSize;
+        & when not (@typography_aboveFooter_lineHeight = __UNDEFINED__) {
+            line-height: @typography_aboveFooter_lineHeight * 1px;
+        }
+        font-style: if(@typography_aboveFooter_cursive = 1, italic, normal);
+        text-decoration: if(@typography_aboveFooter_underlined = 1, underline, none);
+        color: @typography_aboveFooter_color;
+        text-align: @style_aboveFooter_textAlign;
+        padding: @style_aboveFooter_padding;
+
+        margin: 0px 0px 5px 0px;
+        margin: @style_aboveFooter_margin;
+
+        position: relative;
+    }
+
+    .notes-block {
+        font-family: @typography_notes_typeface;
+        font-weight: @typography_notes_fontWeight;
+        text-transform: @typography_notes_textTransform;
+        font-size: @typography_notes_fontSize;
+        & when not (@typography_notes_lineHeight = __UNDEFINED__) {
+            line-height: @typography_notes_lineHeight * 1px;
+        }
+        font-style: if(@typography_notes_cursive = 1, italic, normal);
+        text-decoration: if(@typography_notes_underlined = 1, underline, none);
+        color: @typography_notes_color;
+        text-align: @style_notes_textAlign;
+        padding: @style_notes_padding;
+        margin: @style_notes_margin;
+
+        position: relative;
+    }
+
+    .dw-below-footer {
+        font-family: @typography_belowFooter_typeface;
+        font-weight: @typography_belowFooter_fontWeight;
+        text-transform: @typography_belowFooter_textTransform;
+        font-size: @typography_belowFooter_fontSize;
+        & when not (@typography_belowFooter_lineHeight = __UNDEFINED__) {
+            line-height: @typography_belowFooter_lineHeight * 1px;
+        }
+        font-style: if(@typography_belowFooter_cursive = 1, italic, normal);
+        text-decoration: if(@typography_belowFooter_underlined = 1, underline, none);
+        color: @typography_belowFooter_color;
+        text-align: @style_belowFooter_textAlign;
+        padding: @style_belowFooter_padding;
+        margin: @style_belowFooter_margin;
+
+        position: relative;
+    }
+
+    #footer,
+    .dw-chart-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        padding: @style_footer_padding;
+        margin: @style_footer_margin;
+
+        & > div > .footer-block {
+            display: inline;
+
+            &.hidden {
+                display: none;
+            }
+
+            a[href=''] {
+                /* empty links should look like text */
+                color: @typography_footer_color;
+                pointer-events: none;
+                text-decoration: none;
+                padding: 0;
+                border-bottom: 0;
+            }
+        }
+
+        .footer-right {
+            text-align:right;
+        }
+
+        .separator {
+            display: inline-block;
+            font-style: initial;
+
+            &:before {
+                content: '•';
+                content: @options_footer_separator;
+                display: inline-block;
+            }
+        }
+
+        & > div > a:first-child::before,
+        & > div > .source-block:first-child::before,
+        & > div > .footer-block:first-child::before {
+            content: '';
+            display: none;
+        }
+
+        font-family: @typography_footer_typeface;
+        font-weight: @typography_footer_fontWeight;
+        font-size: @typography_footer_fontSize;
+        text-transform: @typography_footer_textTransform;
+        & when not (@typography_footer_lineHeight = __UNDEFINED__) {
+            line-height: @typography_footer_lineHeight * 1px;
+        }
+        font-style: if(@typography_footer_cursive = 1, italic, normal);
+        text-decoration: if(@typography_footer_underlined = 1, underline, none);
+        color: @typography_footer_color;
+        border-top: @style_footer_border_top;
+        border-bottom: @style_footer_border_bottom;
+        border-left: @style_footer_border_left;
+        border-right: @style_footer_border_right;
+    }
+
+    .notes-block a,
+    .dw-chart-footer a {
+        padding: @style_footer_links_padding;
+        border-bottom: @style_footer_links_border_bottom;
+        font-family: @typography_links_typeface;
+        font-weight: @typography_links_fontWeight;
+        & when not (@typography_links_lineHeight = __UNDEFINED__) {
+            line-height: @typography_links_lineHeight * 1px;
+        }
+        font-style: if(@typography_links_cursive = 1, italic, normal);
+        text-decoration: if(@typography_links_underlined = 1, underline, nonee);
+        color: @typography_links_color;
+    }
+
+    .notes-block a {
+        font-style: if(
+            @typography_notes_cursive = 1,
+            italic,
+            if(@typography_links_cursive = 1, italic, normal)
+        );
+    }
+    .dw-chart-footer a {
+        font-style: if(
+            @typography_footer_cursive = 1,
+            italic,
+            if(@typography_links_cursive = 1, italic, normal)
+        );
+    }
+
+    a img {
+        border: 0px;
+    }
+
+    .hide {
+        display: none;
+    }
+
+    .secondary.tick,
+    text.secondary.tick,
+    .secondary.tick text,
+    .secondary.tick span {
+        & when (@style_chart_labels_ticks_secondary_tabularNums = 1) {
+            font-feature-settings: 'tnum';
+            -webkit-font-feature-settings: 'tnum';
+            -moz-font-feature-settings: 'tnum';
+        }
+
+        font-family: @style_chart_labels_ticks_secondary_typeface;
+        font-size: @style_chart_labels_ticks_secondary_fontSize;
+
+        color: @style_chart_labels_ticks_color;
+        color: @style_chart_labels_ticks_secondary_color;
+
+        fill: @style_chart_labels_ticks_color;
+        fill: @style_chart_labels_ticks_secondary_color;
+
+        font-weight: @style_chart_labels_ticks_fontWeight;
+        font-weight: @style_chart_labels_ticks_secondary_fontWeight;
+    }
+
+    .primary.tick {
+        font-family: @style_chart_labels_ticks_primary_typeface;
+
+        font-size: @style_chart_labels_ticks_primary_fontSize;
+
+        & when (@style_chart_labels_ticks_primary_tabularNums = 1) {
+            font-feature-settings: 'tnum';
+            -webkit-font-feature-settings: 'tnum';
+            -moz-font-feature-settings: 'tnum';
+        }
+
+        span,
+        text,
+        tspan {
+            color: @style_chart_labels_ticks_color;
+            color: @style_chart_labels_ticks_primary_color;
+
+            fill: @style_chart_labels_ticks_color;
+            fill: @style_chart_labels_ticks_primary_color;
+
+            font-weight: @style_chart_labels_ticks_fontWeight;
+            font-weight: @style_chart_labels_ticks_primary_fontWeight;
+        }
+    }
+
+    .dw-tooltip {
+        color: #333333;
+        color: @style_chart_tooltip_text_color;
+    }
+
+    .tooltip {
+        z-index: 200;
+        padding-bottom: 0px;
+
+        .content {
+            background-color: #fff;
+            border: 1px solid #888;
+            box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+            padding: 5px 8px;
+        }
+
+        label {
+            font-weight: 700;
+        }
+
+        label:after {
+            content: ': ';
+        }
+    }
+
+    .logo {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        .big {
+            display: none;
+        }
+    }
+
+    svg .axis,
+    svg .tick,
+    svg .grid,
+    svg rect {
+        shape-rendering: crispEdges;
+    }
+
+    .filter-links {
+        height: 30px;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        border-bottom: 1px solid #ccc;
+        font-size: @typography_chart_fontSize;
+
+        a {
+            color: #666;
+            height: 28px;
+            line-height: 28px;
+            padding: 10px;
+            text-decoration: none;
+
+            &:hover {
+                color: #222;
+            }
+
+            &.active {
+                font-weight: bold;
+                color: #000;
+                box-shadow: none;
+                cursor: default;
+                text-decoration: none;
+
+                border-bottom: 3px solid #555;
+                padding: 10px 10px 6px 10px;
+            }
+        }
+    }
+
+    .filter-select {
+        background-color: #ffffff;
+        border: 1px solid #cccccc;
+        border-radius: 4px 4px 4px 4px;
+        padding: 4px 6px;
+        vertical-align: middle;
+        font-size: @typography_chart_fontSize;
+    }
+
+    &.plain #footer {
+        height: 10px;
+    }
+
+    &.js .noscript {
+        display: none;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .label.annotation span {
+        background: transparent;
+    }
+
+    .legend-item.hover .label {
+        font-weight: bold;
+    }
+}
+
+.clearfix:after {
+    content: '.';
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+
+.clearfix {
+    display: inline-block;
+}
+
+html[xmlns] .clearfix {
+    display: block;
+}
+
+* html .clearfix {
+    height: 1%;
+}
+
+.point {
+    border: 1px solid #ccc;
+    display: inline-block;
+    position: absolute;
+    background: #fff;
+    z-index: 100;
+    cursor: pointer;
+
+    height: 20px;
+    width: 20px;
+    border-radius: 20px;
+    top: 20px;
+
+    &:hover {
+        background: #ebebeb;
+    }
+
+    &.active {
+        background: #ccc;
+        height: 20px;
+        width: 20px;
+        border-radius: 20px;
+        top: 20px;
+        border-color: #888;
+    }
+}
+
+.point-label {
+    position: absolute;
+}
+
+.line {
+    height: 1px;
+    background: #ccc;
+    position: absolute;
+    left: 0px;
+    top: 30px;
+    z-index: 1;
+}
+
+.vis-pie-chart path,
+.vis-donut-chart path,
+.vis-election-donut-chart path {
+    stroke-width: 0.5;
+}
+
+// static style (make links look like normal text)
+.static {
+    .chart {
+        a {
+            color: @typography_chart_color;
+        }
+        .dw-chart-header {
+            h1 a {
+                color: @typography_headline_color;
+            }
+            p a {
+                color: @typography_description_color;
+            }
+        }
+        .dw-chart-footer a {
+            color: @typography_chart_color;
+            color: @typography_footer_color;
+        }
+        .notes-block a {
+            color: @typography_chart_color;
+            color: @typography_notes_color;
+        }
+    }
+}
+
+.dw-after-body {
+    position: absolute;
+}
