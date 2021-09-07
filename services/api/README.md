@@ -5,8 +5,6 @@ To learn more about, how to use it, go to https://developer.datawrapper.de/docs.
 
 ## Table of contents
 
-1. [Local Development](#local-development)
-1. [Configuration](#configuration)
 1. [Server Methods](#server-methods)
 1. [Server Application Data](#server-application-data)
 1. [Plugins](#plugins)

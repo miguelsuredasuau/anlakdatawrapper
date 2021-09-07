@@ -10,9 +10,10 @@ const { readFile } = require('fs/promises');
 
 const rootDir = path.join(__dirname, '..');
 
-require('dotenv').config({
-    path: path.resolve(rootDir, 'utils/docker/.datawrapper_env')
-});
+// uncomment for local testing
+// require('dotenv').config({
+//     path: path.resolve(rootDir, 'utils/docker/.datawrapper_env')
+// });
 
 const { requireConfig } = require('@datawrapper/service-utils/findConfig');
 const config = requireConfig();
