@@ -56,7 +56,7 @@ ORM.init(config).then(async () => {
                 console.log(
                     `migrating ${white(scope)} to schema version ${yellow(
                         migration.version
-                    )} (${white(migrations.key)})`
+                    )} (${white(migration.key)})`
                 );
                 for (const query of migration.up) {
                     // console.log({ query });
