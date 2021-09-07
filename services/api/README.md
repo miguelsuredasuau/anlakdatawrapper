@@ -165,3 +165,4 @@ test-run:  ## Run command specified by the variable 'cmd' in the testing node co
         -v "$$(pwd)/../../libs/orm:/app/node_modules/@datawrapper/orm:ro" \
 		node $(cmd)
 ```
+
