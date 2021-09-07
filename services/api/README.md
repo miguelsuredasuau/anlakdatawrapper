@@ -5,7 +5,6 @@ To learn more about, how to use it, go to https://developer.datawrapper.de/docs.
 
 ## Table of contents
 
-1. [Installation](#installation)
 1. [Local Development](#local-development)
 1. [Configuration](#configuration)
 1. [Server Methods](#server-methods)
@@ -14,94 +13,7 @@ To learn more about, how to use it, go to https://developer.datawrapper.de/docs.
     1. [Plugin Development](#plugin-development)
     1. [Updating a Plugin](#updating-a-plugin)
 
-## Installation
 
-To run a production instance of this API, clone the repository from Github. In it's essence, the following 3 commands are the setup. To get a more in depth look, read the sections about [configuration](#configuration) and [plugins](#plugins). That is the real strength of the API.
-
-```sh
-# Clone repository
-> git clone git@github.com:datawrapper/api.git
-```
-
-You can start the server using:
-
-```sh
-npm run api
-```
-
-To check that the server won't crash on startup (faulty config or missing plugin) run:
-
-```sh
-npm run api -- --check
-// or
-node src/index.js --check
-```
-
-It is recommended to use the start script with a service manager like [PM2](https://pm2.io/runtime/) or `systemd` to guarantee best availability. They will also restart the API in case something crashes.
-
-To make sure the database is in sync after ORM updates, run:
-
-```sh
-npm run sync
-```
-
-## Local Development
-
-To develop new features or add some documentation, clone the repository and get going.
-
-```sh
-> git clone git@github.com:datawrapper/api.git dw-api
-
-> cd dw-api
-
-> npm install
-
-> cp config.tpl.js config.js
-
-# edit config.js and enter local database location and user credentials
-> npm run dev
-```
-
-After running these commands you will see something like this:
-
-```sh
-❯ npm run dev
-
-> @datawrapper/api@<version> dev /Users/fabian/code/api
-> NODE_ENV=development nodemon src/index.js
-
-[nodemon] 1.18.10
-[nodemon] to restart at any time, enter `rs`
-[nodemon] watching: *.*
-[nodemon] starting `node src/index.js`
-["2019-04-08T10:50:54.159Z"] INFO  (<version>): [Initialize] config.js
-    file: "/<path>/api/config.js"
-    config: {
-      "frontend": { ... },
-      "api": { ... },
-      "orm": {
-        "db": { ... }
-      }
-    }
-["2019-04-08T10:50:54.729Z"] INFO  (<version>): server started
-    created: 1554720654120
-    started: 1554720654724
-    host: "<host>"
-    port: 3000
-    protocol: "http"
-    id: "<id>"
-    uri: "<uri>"
-    address: "127.0.0.1"
-```
-
-## Configuration
-
-The API will not start without a valid `config.js`. The repository includes a template `config.tpl.js` that can be used to create the configuration file. `config.js` can either be located next to `config.tpl.js` or in `/etc/datawrapper/config.js`.
-
-`config.js` exports a javascript object with various configuration objects that are used by this project, as well as others, like the `render-client` or `render-server`.
-The following objects are used by the API.
-
-Documentation about schemas and available keys can be found in [`datawrapper/schemas`](https://github.com/datawrapper/schemas).
 
 ## Server Methods
 
