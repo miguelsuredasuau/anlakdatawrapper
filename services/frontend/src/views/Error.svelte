@@ -12,12 +12,14 @@
     const heds = {
         404: 'error / not-found / hed',
         403: 'error / forbidden / hed',
-        400: 'error / bad-request / hed'
+        400: 'error / bad-request / hed',
+        401: 'error / forbidden / hed'
     };
     const texts = {
         404: 'error / not-found / text',
         403: 'error / forbidden / text',
-        400: 'error / bad-request / text'
+        400: 'error / bad-request / text',
+        401: 'error / forbidden / text'
     };
 
     $: niceHed = __(heds[statusCode] || 'error / unexpected / hed');
@@ -29,14 +31,14 @@
 <MainLayout title="Error {statusCode} / {error}">
     <div class="container">
         <div class="columns">
-            <div class="column is-four-fifths">
-                <h3 class="is-size-4 mb-2 has-text-grey">
-                    Error {statusCode} ({error}{#if message !== error}&nbsp;/&nbsp;{message}{/if})
+            <div class="column is-three-fifths">
+                <h3 class="is-size-4 mb-4 has-text-grey">
+                    Error {statusCode} - {error}{#if message !== error}&nbsp;/&nbsp;{message}{/if}
                 </h3>
-                <h1 class="title is-1 has-text-danger mt-1">{niceHed}</h1>
-                <p class="subtitle is-4">{niceText}</p>
+                <h1 class="title is-2 mt-1 mb-6">{niceHed}</h1>
+                <p class="is-4 is-size-4 has-text-danger">{niceText}</p>
 
-                <div class="content">
+                <div class="content mt-5 mb-4">
                     {#if statusCode === 404}
                         <p>Here are some other places you may want to go to now</p>
                         <ul>
