@@ -12,7 +12,7 @@ const fs = require('fs');
  * **This is a Node module, that will probably not work in a browser environment.**
  *
  * @example
- * const { findConfigPath } = require('@datawrapper/shared/node/findConfig')
+ * const { findConfigPath } = require('@datawrapper/service-utils/findConfig')
  *
  * const path = findConfigPath()
  * // -> /etc/datawrapper/config.js
@@ -52,7 +52,7 @@ ${paths.join('\n')}
  * Tiny wrapper around `findConfigPath` that directly `require`s the found config.
  *
  * @example
- * const { requireConfig } = require('@datawrapper/shared/node/findConfig')
+ * const { requireConfig } = require('@datawrapper/service-utils/findConfig')
  *
  * const config = requireConfig()
  *

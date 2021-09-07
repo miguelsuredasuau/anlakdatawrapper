@@ -1,6 +1,5 @@
 const ORM = require('@datawrapper/orm');
-const { requireConfig } = require('@datawrapper/shared/node/findConfig');
-
+const { requireConfig } = require('@datawrapper/service-utils/findConfig');
 const config = requireConfig();
 
 module.exports.setup = async function () {

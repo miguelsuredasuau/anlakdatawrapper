@@ -11,7 +11,7 @@ require_once ROOT_PATH . 'vendor/autoload.php';
 define('CLI', php_sapi_name() == "cli");
 
 // load YAML parser and config
-$GLOBALS['dw_config'] = $dw_config = parse_config(Spyc::YAMLLoad(file_exists(ROOT_PATH . 'config.yaml') ? ROOT_PATH . 'config.yaml' : '/etc/datawrapper/config.yaml'));
+$GLOBALS['dw_config'] = $dw_config = parse_config(Spyc::YAMLLoad(file_exists('/etc/datawrapper/config.yaml') ? '/etc/datawrapper/config.yaml' : ROOT_PATH . 'config.yaml'));
 
 
 if (isset($dw_config['debug']) && $dw_config['debug'] == true) {
