@@ -25,7 +25,7 @@
         "test": "DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} ava --verbose",
         "test:coverage": "DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} nyc --reporter=html --reporter=text ava --verbose",
         "test:update-snapshots": "DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} ava --update-snapshots",
-        "update-translations": "node scripts/update-translations.js",
+        "update-translations": "echo \"\\e[1;33mupdate-translation script has been moved to the code root now\\e[0m\ntry cd ../.. && npm run update-translations\" && exit 1",
         "dev": "NODE_ENV=development nodemon src/index.js",
         "api": "node src/index.js",
         "start": "node src/index.js"
