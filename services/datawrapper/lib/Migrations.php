@@ -147,7 +147,7 @@ class Migrations {
      * returns a list of all db migrations for a given `scope`
      */
     protected static function getMigrations($scope) {
-        $path = $scope === 'core' ? ROOT_PATH  . 'migrations/*.sql' : get_plugin_path().$scope.'/migrations/*.sql';
+        $path = $scope === 'core' ? ROOT_PATH  . '../../migrations/*.sql' : get_plugin_path().$scope.'/migrations/*.sql';
         $result = [];
         foreach (glob($path) as $sql) {
             $file = basename($sql, '.sql');
