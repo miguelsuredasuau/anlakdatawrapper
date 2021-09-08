@@ -26,7 +26,7 @@ define(function (require) {
                 id = chart.data('id');
             if (window.confirm(twig.globals.strings.confirm_chart_delete)) {
                 $.ajax({
-                    url: '/api/2/charts/' + id,
+                    url: '/api/charts/' + id,
                     type: 'DELETE',
                     success: function () {
                         chart.remove();
@@ -102,7 +102,7 @@ define(function (require) {
                 if (title.html().trim() != title.data('old-content')) {
                     console.log('save changes');
                     $.ajax({
-                        url: '/api/2/charts/' + title.parents('.thumbnail').data('id'),
+                        url: '/api/charts/' + title.parents('.thumbnail').data('id'),
                         method: 'PUT',
                         dataType: 'json',
                         data: JSON.stringify({ title: title.html().trim() }),

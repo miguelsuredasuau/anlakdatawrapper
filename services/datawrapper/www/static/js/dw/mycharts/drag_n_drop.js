@@ -103,7 +103,7 @@ define(function (require) {
 
     function moveCharts(charts, target, id) {
         $.ajax({
-            url: '/api/2/folders/' + target,
+            url: '/api/folders/' + target,
             type: 'PUT',
             processData: false,
             contentType: 'application/json',
@@ -133,7 +133,7 @@ define(function (require) {
 
     function moveFolder(folder, target, id) {
         $.ajax({
-            url: '/api/2/folders/' + folder,
+            url: '/api/folders/' + folder,
             type: 'PUT',
             processData: false,
             contentType: 'application/json',

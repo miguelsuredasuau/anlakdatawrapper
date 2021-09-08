@@ -139,7 +139,7 @@ define(function (require) {
             $('.forked a', wrapper).click(function (e) {
                 // navigate to source chart
                 e.preventDefault();
-                $.getJSON('/api/2/charts/' + chart.forkedFrom, function (res) {
+                $.getJSON('/api/charts/' + chart.forkedFrom, function (res) {
                     showChartModal(res.data);
                 });
             });

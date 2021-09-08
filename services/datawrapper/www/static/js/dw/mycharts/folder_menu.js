@@ -26,7 +26,7 @@ define(function (require) {
             if (!nuname) return;
 
             $.ajax({
-                url: '/api/2/folders',
+                url: '/api/folders',
                 type: 'POST',
                 processData: false,
                 contentType: 'application/json',
@@ -96,7 +96,7 @@ define(function (require) {
                 if (new_name != folder_name && new_name) {
                     folder_name = new_name;
                     $.ajax({
-                        url: '/api/2/folders/' + id.folder,
+                        url: '/api/folders/' + id.folder,
                         type: 'PUT',
                         processData: false,
                         contentType: 'application/json',
@@ -129,7 +129,7 @@ define(function (require) {
 
             e.preventDefault();
             $.ajax({
-                url: '/api/2/folders/' + id.folder,
+                url: '/api/folders/' + id.folder,
                 type: 'DELETE',
                 contentType: 'application/json',
                 dataType: 'JSON'
