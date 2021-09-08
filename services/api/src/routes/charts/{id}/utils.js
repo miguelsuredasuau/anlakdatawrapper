@@ -68,7 +68,7 @@ module.exports = {
                 id: 'custom',
                 preferred: true,
                 title: customEmbed.title,
-                text: customEmbed.text || "",
+                text: customEmbed.text || '',
                 ...getTemplate(customEmbed.template)
             });
         }
