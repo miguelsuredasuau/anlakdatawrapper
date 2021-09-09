@@ -22,6 +22,6 @@
     }
 </style>
 
-<IconButton {icon} {title} {active}>
+<IconButton {icon} {title} {active} on:click>
     <input type="file" {accept} on:change={event => dispatch('upload', event)} />
 </IconButton>
