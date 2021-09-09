@@ -26,24 +26,32 @@
         height: 100%;
         min-height: 80px;
         margin: 0;
-        border: 0;
-        padding: 15px 20px;
+        position: relative;
+        padding: 15px 10px;
         box-sizing: border-box;
         overflow: hidden;
-        color: #1d81a2;
+        color: #297ea8;
         background: transparent;
+        border: 1px solid #f0f0f0;
+        border-radius: 4px;
         text-align: center;
         cursor: pointer;
     }
 
     button:hover,
     button.active {
-        background: #fff;
-        border-radius: 4px;
+        background: #f0f0f0;
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05), inset 0px 2px 5px rgba(0, 0, 0, 0.15), inset 0px 1px 0px rgba(255, 255, 255, 0.02),
+            inset 0px 1px 0px #cccccc, inset 1px 0px 0px #cccccc, inset -1px 0px 0px #cccccc, inset 0px -1px 0px #b3b3b3;
     }
 
-    button.active {
-        color: #222;
+    button.active i {
+        color: #000;
+        cursor: default;
+    }
+
+    button.active span {
+        color: #333;
         cursor: default;
     }
 
@@ -83,6 +91,7 @@
 </style>
 
 <button class:active class:icon-left={iconLeft} on:click>
+    <slot />
     <IconDisplay {assetURL} {icon} size="32px" color={renderedIconColor} />
     <span>{title}</span>
 </button>

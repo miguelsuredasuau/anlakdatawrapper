@@ -18,6 +18,7 @@ import MoreOptionsGroupDocs from '../MoreOptionsGroup.mdx';
 import MoreOptionsGroupView from './MoreOptionsGroupView.svelte';
 import NumberControlDocs from '../NumberControl.mdx';
 import NumberControlView from './NumberControlView.svelte';
+import IconButtonBarView from './IconButtonBarView.svelte';
 import NumberInputDocs from '../NumberInput.mdx';
 import NumberInputView from './NumberInputView.svelte';
 import RadioControlDocs from '../RadioControl.mdx';
@@ -55,6 +56,7 @@ export const IconDisplay = addStory('IconDisplay', IconDisplayView, IconDisplayD
 export const MoreOptionsGroup = addStory('MoreOptionsGroup', MoreOptionsGroupView, MoreOptionsGroupDocs, { items: moreOptions });
 export const NumberControl = addStory('NumberControl', NumberControlView, NumberControlDocs, { value: 42 });
 export const NumberInput = addStory('NumberInput', NumberInputView, NumberInputDocs, { value: 42 });
+export const IconButtonBar = addStory('IconButtonBar', IconButtonBarView, NumberInputDocs, { value: 42 });
 export const RadioControl = addStory('RadioControl', RadioControlView, RadioControlDocs, { options });
 export const SelectControl = addStory('SelectControl', SelectControlView, SelectControlDocs, { options });
 export const SnackbarDisplay = addStory('SnackbarDisplay', SnackbarDisplayView, SnackbarDisplayDocs, { lorem });
