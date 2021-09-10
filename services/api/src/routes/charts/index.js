@@ -167,7 +167,16 @@ async function getAllCharts(request, h) {
 
     const options = {
         order: [[decamelize(query.orderBy), query.order]],
-        attributes: ['id', 'title', 'type', 'createdAt', 'last_modified_at', 'public_version'],
+        attributes: [
+            'id',
+            'title',
+            'type',
+            'createdAt',
+            'last_modified_at',
+            'public_version',
+            'theme',
+            'language'
+        ],
         where: {
             deleted: {
                 [Op.not]: true
