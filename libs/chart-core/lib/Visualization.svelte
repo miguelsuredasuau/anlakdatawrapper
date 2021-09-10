@@ -405,16 +405,19 @@ Please make sure you called __(key) with a key of type "string".
             externalJSON &&
             get(chart, 'metadata.data.upload-method') === 'external-data'
         ) {
-            const res = await window.fetch(externalJSON);
-            const obj = await res.json();
+            try {
+                const res = await window.fetch(externalJSON);
+                const obj = await res.json();
+                if (obj.title) {
+                    chart.title = obj.title;
+                    delete obj.title;
+                }
 
-            if (obj.title) {
-                chart.title = obj.title;
-                delete obj.title;
+                Object.assign(chart.metadata, obj);
+                chart = chart;
+            } catch {
+                console.warn('Invalid external metadata JSON, falling back on chart metadata');
             }
-
-            Object.assign(chart.metadata, obj);
-            chart = chart;
         }
 
         // initialize dw.chart object
