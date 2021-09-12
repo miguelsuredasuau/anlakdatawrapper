@@ -235,13 +235,13 @@
   "publish / share-url": "通过URL共享",
   "publish / share-url / standalone": "普通尺寸",
   "publish / share-url / fullscreen": "全屏",
-  "publish / help / share-url": "<b>普通尺寸</b>的URL可以一比一显示您创建的图表大小，对于在社交媒体网站上共享非常有用。<b>全屏</b>URL将以填充整个浏览器窗口的方式显示您的图表。",
+  "publish / help / share-url / standalone": "",
   "publish / embed": "复制嵌入代码",
   "publish / embed / help": "将此HTML代码复制并粘贴到您的网站或CMS中，以嵌入图表。<b>响应式内嵌框架</b>会自动调整其高度，以适合不同设备上的标题和图表。",
   "publish / embed / responsive": "响应式内嵌框架",
   "publish / embed / iframe": "内嵌框架",
   "publish / copy": "复制",
-  "publish / copy-success": "嵌入代码已复制到剪贴板！",
+  "publish / copy-success": "",
   "publish / status / preparing": "准备可视化",
   "publish / status / rendering": "呈现可视化",
   "publish / status / uploading": "上传可视化",
@@ -934,5 +934,7 @@
   "navbar / create / chart": "图表",
   "navbar / create / map": "地图",
   "navbar / create / table": "表格",
-  "error / unexpected / text": ""
+  "error / unexpected / text": "",
+  "publish / help / share-url / fullscreen": "",
+  "publish / embed / explanation": ""
 }

@@ -235,13 +235,13 @@
   "publish / share-url": "Partager via URL",
   "publish / share-url / standalone": "taille normale",
   "publish / share-url / fullscreen": "plein écran",
-  "publish / help / share-url": "L’URL <b>taille normale</b> affiche le graphique exactement à la taille à laquelle vous l’avez créé. Elle est ’idéale pour le partage sur les réseaux sociaux. L’URL <b>plein écran</b> affiche votre graphique à la dimension de la fenêtre complète du navigateur.",
+  "publish / help / share-url / standalone": "",
   "publish / embed": "Copier code d’intégration",
   "publish / embed / help": "Copiez-collez ce code HTML dans votre site web ou votre SGC pour y intégrer votre graphique. L’<b>iFrame réactif</b> ajuste automatiquement sa hauteur pour adapter l’en-tête et le graphique sur différents appareils.",
   "publish / embed / responsive": "iFrame réactif",
   "publish / embed / iframe": "iFrame",
   "publish / copy": "copier",
-  "publish / copy-success": "Le code d’intégration a été copié dans le presse-papier !",
+  "publish / copy-success": "",
   "publish / status / preparing": "Préparation de votre visualisation",
   "publish / status / rendering": "Rendu de votre visualisation",
   "publish / status / uploading": "Téléchargement de la visualisation",
@@ -934,5 +934,7 @@
   "navbar / create / chart": "Diagramme",
   "navbar / create / map": "Carte",
   "navbar / create / table": "Tableau",
-  "error / unexpected / text": ""
+  "error / unexpected / text": "",
+  "publish / help / share-url / fullscreen": "",
+  "publish / embed / explanation": ""
 }

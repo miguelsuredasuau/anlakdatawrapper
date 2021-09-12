@@ -17,16 +17,18 @@
         on:unpublish="requestUnpublishConfirmation()"
     />
 
+    {#if published}
     <ShareEmbed
         {pluginShareurls}
         {embedTemplates}
-        {published}
+        pending="{publishing || unpublishing}"
         {shareurlType}
         {embedType}
         metadata="{$metadata}"
         id="{$id}"
         publicUrl="{$publicUrl}"
     />
+    {/if}
 
     <!-- BEFORE EXPORT -->
     <svelte:component this="{beforeExport}" />
@@ -72,23 +74,6 @@
 </div>
 
 <ConfirmationModal id="modalConfirmation" on:confirm="unpublish()" />
-
-<style>
-    .copy-success {
-        font-size: 11px;
-        color: #9c9;
-        font-style: italic;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 5s ease-in;
-        margin-top: -10px;
-        position: absolute;
-    }
-    .copy-success.show {
-        opacity: 1;
-        transition: none;
-    }
-</style>
 
 <script>
     /* globals $ */

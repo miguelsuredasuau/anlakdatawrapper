@@ -16,54 +16,20 @@
     on:unpublish="requestUnpublishConfirmation()"
 />
 
+{#if published}
 <ShareEmbed
     {pluginShareurls}
     {embedTemplates}
-    {published}
+    pending="{publishing || unpublishing}"
     {shareurlType}
     {embedType}
     metadata="{chart.metadata}"
     id="{chart.id}"
     publicUrl="{chart.publicUrl}"
 />
+{/if}
 
 <ConfirmationModal id="modalConfirmation" on:confirm="unpublish()" />
-
-<style>
-    input[type='radio'] {
-        vertical-align: baseline !important;
-    }
-    a.share-url {
-        font-size: 18px;
-    }
-    .btn-publish + .alert {
-        margin-top: 10px;
-    }
-    .btn-aside.alert {
-        margin-left: 0;
-        max-width: 100%;
-    }
-    .copy-success {
-        font-size: 11px;
-        color: #9c9;
-        font-style: italic;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 5s ease-in;
-        margin-top: -10px;
-        position: absolute;
-    }
-    .copy-success.show {
-        opacity: 1;
-        transition: none;
-    }
-    .embed-options {
-        display: inline-block;
-    }
-    .embed-code {
-        height: 20px;
-    }
-</style>
 
 <script>
     /* globals $ */
@@ -249,16 +215,16 @@
         },
         onstate({ changed, current }) {
             const userDataReady = window.dw && window.dw.backend && window.dw.backend.setUserData;
-            if (changed.embed_type && userDataReady) {
+            if (changed.embedType && userDataReady) {
                 const data = window.dw.backend.__userData;
-                if (!current.embed_type || !data) return;
-                data.embed_type = current.embed_type;
+                if (!current.embedType || !data) return;
+                data.embed_type = current.embedType;
                 window.dw.backend.setUserData(data);
             }
             if (changed.shareurl_type && userDataReady) {
                 const data = window.dw.backend.__userData;
-                if (!current.shareurl_type || !data) return;
-                data.shareurl_type = current.shareurl_type;
+                if (!current.shareurlType || !data) return;
+                data.shareurl_type = current.shareurlType;
                 window.dw.backend.setUserData(data);
             }
             if (changed.published) {

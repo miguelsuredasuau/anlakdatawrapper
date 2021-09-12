@@ -17,7 +17,7 @@ const data = {
     auto_publish: false,
     progress: [],
     shareurlType: 'default',
-    embed_type: 'responsive'
+    embedType: 'responsive'
 };
 
 export default { App, data, store };
