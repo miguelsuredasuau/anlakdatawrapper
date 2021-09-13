@@ -300,9 +300,8 @@ async function inviteTeamMember(request, h) {
         data: {
             team_admin: auth.artifacts.email,
             team_name: team.name,
-            activation_link:
-                hasSSO ?
-                `${appUrl}/signin/sso/${team.id}/${data.invite_token}`
+            activation_link: hasSSO
+                ? `${appUrl}/signin/sso/${team.id}/${data.invite_token}`
                 : inviteeWasCreated
                 ? `${appUrl}/datawrapper-invite/${data.invite_token}`
                 : `${appUrl}/team/${team.id}/invite/${data.invite_token}/accept`,
