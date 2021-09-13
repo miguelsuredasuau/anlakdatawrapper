@@ -24,6 +24,8 @@
         "/plugins/export-*/src/*",
         "/plugins/export-*/static/*",
         "/plugins/export-*/tests/*",
+        "/plugins/api-tokens/src/*",
+        "/plugins/api-tokens/static/*",
         "/plugins/external-data/src/*",
         "/plugins/external-data/static/*",
         "/plugins/simple-maps/src/*",

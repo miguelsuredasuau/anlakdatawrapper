@@ -51,6 +51,8 @@
             "export-*/src/*",
             "export-*/static/*",
             "export-*/tests/*",
+            "api-tokens/src/*",
+            "api-tokens/static/*",
             "external-data/src/*",
             "external-data/static/*",
             "simple-maps/src/*",
