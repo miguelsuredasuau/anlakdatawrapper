@@ -55,7 +55,8 @@
         "semi": true,
         "singleQuote": true,
         "tabWidth": 4,
-        "trailingComma": "none"
+        "trailingComma": "none",
+        "svelteSortOrder": "options-scripts-styles-markup"
     },
     "eslintConfig": {
         "parser": "babel-eslint",
