@@ -919,6 +919,7 @@
   "signup / create-account": "Create a new account",
   "signin / its-free": "It's free and done quickly.",
   "signin / enter-otp": "Please insert your OTP device and click its button, or enter a code from your configured OTP app.",
+  "upload / text / button": "Save pasted data to the table",
   "signin / already-have-account": "Already have an account?",
   "signin / signin-here": "Sign in here",
   "signin / terms": "By using Datawrapper you agree to our <a href=\"https://www.datawrapper.de/terms\">Terms of Use</a>.",
