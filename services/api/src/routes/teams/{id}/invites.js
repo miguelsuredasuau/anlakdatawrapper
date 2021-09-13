@@ -292,17 +292,7 @@ async function inviteTeamMember(request, h) {
 
     const { https, domain } = server.methods.config('frontend');
     const appUrl = `${https ? 'https' : 'http'}://${domain}`;
-    console.log({
-            team_admin: auth.artifacts.email,
-            team_name: team.name,
-            activation_link:
-                hasSSO ?
-                `${appUrl}/signin/sso/${team.id}/${data.invite_token}`
-                : inviteeWasCreated
-                ? `${appUrl}/datawrapper-invite/${data.invite_token}`
-                : `${appUrl}/team/${team.id}/invite/${data.invite_token}/accept`,
-            rejection_link: `${appUrl}/team/${team.id}/invite/${data.invite_token}/reject`
-        });
+
     await server.app.events.emit(server.app.event.SEND_EMAIL, {
         type: 'team-invite',
         to: invitee.email,
