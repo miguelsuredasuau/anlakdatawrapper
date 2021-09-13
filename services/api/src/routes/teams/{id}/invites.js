@@ -3,6 +3,7 @@ const Boom = require('@hapi/boom');
 const { Op } = require('@datawrapper/orm').db;
 const { User, Team, UserTeam } = require('@datawrapper/orm/models');
 const crypto = require('crypto');
+const get = require('lodash/get');
 
 const { createResponseConfig } = require('../../../schemas/response.js');
 const { logAction } = require('@datawrapper/orm/utils/action');
@@ -287,9 +288,21 @@ async function inviteTeamMember(request, h) {
 
     await UserTeam.create(data);
     const team = await Team.findByPk(data.organization_id);
+    const hasSSO = !!get(team.settings, 'sso.enabled');
 
     const { https, domain } = server.methods.config('frontend');
     const appUrl = `${https ? 'https' : 'http'}://${domain}`;
+    console.log({
+            team_admin: auth.artifacts.email,
+            team_name: team.name,
+            activation_link:
+                hasSSO ?
+                `${appUrl}/signin/sso/${team.id}/${data.invite_token}`
+                : inviteeWasCreated
+                ? `${appUrl}/datawrapper-invite/${data.invite_token}`
+                : `${appUrl}/team/${team.id}/invite/${data.invite_token}/accept`,
+            rejection_link: `${appUrl}/team/${team.id}/invite/${data.invite_token}/reject`
+        });
     await server.app.events.emit(server.app.event.SEND_EMAIL, {
         type: 'team-invite',
         to: invitee.email,
@@ -297,7 +310,10 @@ async function inviteTeamMember(request, h) {
         data: {
             team_admin: auth.artifacts.email,
             team_name: team.name,
-            activation_link: inviteeWasCreated
+            activation_link:
+                hasSSO ?
+                `${appUrl}/signin/sso/${team.id}/${data.invite_token}`
+                : inviteeWasCreated
                 ? `${appUrl}/datawrapper-invite/${data.invite_token}`
                 : `${appUrl}/team/${team.id}/invite/${data.invite_token}/accept`,
             rejection_link: `${appUrl}/team/${team.id}/invite/${data.invite_token}/reject`

@@ -121,6 +121,13 @@ class Organization extends BaseOrganization
                 ]
             ],
             'customFields' => [],
+            'sso' => [
+                'openId' => [
+                    'domain' => '',
+                    'clientId' => '',
+                    'clientSecret' => ''
+                ]
+            ],
             'disableVisualizations' => [
                 'enabled' => false,
                 'visualizations' => new stdClass(),
