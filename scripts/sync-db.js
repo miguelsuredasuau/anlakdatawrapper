@@ -18,7 +18,6 @@ const rootDir = path.join(__dirname, '..');
 const { requireConfig } = require('@datawrapper/service-utils/findConfig');
 const config = requireConfig();
 
-
 set(config, 'orm.skipTableTest', true);
 
 ORM.init(config).then(async () => {
@@ -102,8 +101,8 @@ ORM.init(config).then(async () => {
 
 async function readMigration(file) {
     const sql = await readFile(file, 'utf-8');
-    let up = [];
-    let down = [];
+    const up = [];
+    const down = [];
     let adds = [];
     let mode = '';
     for (const line of sql.split('\n')) {
