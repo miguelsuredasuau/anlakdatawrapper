@@ -126,8 +126,7 @@ module.exports = {
             path: `/sso/{teamId}`,
             options: {
                 auth: {
-                    mode: 'try',
-                    strategy: provider
+                    mode: 'try'
                 },
                 handler: async function (request, h) {
                     const client = await getOpenIdClient(request.params.teamId);
@@ -154,8 +153,7 @@ module.exports = {
             path: `/sso/{teamId}/{token}`,
             options: {
                 auth: {
-                    mode: 'try',
-                    strategy: provider
+                    mode: 'try'
                 },
                 handler: async function (request, h) {
                     const client = await getOpenIdClient(request.params.teamId);
