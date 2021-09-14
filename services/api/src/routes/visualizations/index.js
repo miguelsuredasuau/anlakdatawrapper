@@ -18,7 +18,7 @@ module.exports = {
             handler: getVisualizations
         });
 
-        function getVisualizations(request, h) {
+        function getVisualizations(request) {
             const { server, auth } = request;
 
             return Array.from(server.app.visualizations.keys())

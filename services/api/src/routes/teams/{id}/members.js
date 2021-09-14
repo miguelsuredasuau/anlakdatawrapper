@@ -21,7 +21,7 @@ const {
     listResponse
 } = require('../../../schemas/response.js');
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     // GET /v3/teams/{id}/members
     server.route({
         method: 'GET',
@@ -151,7 +151,7 @@ module.exports = async (server, options) => {
     });
 };
 
-async function getTeamMembers(request, h) {
+async function getTeamMembers(request) {
     const { query, params, auth, server } = request;
     const user = auth.artifacts;
 

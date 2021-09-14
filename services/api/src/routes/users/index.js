@@ -16,7 +16,7 @@ const { createUserPayload } = require('../../schemas/payload');
 module.exports = {
     name: 'routes/users',
     version: '1.0.0',
-    register: (server, options) => {
+    register: server => {
         server.app.scopes.add('user:read');
         server.app.scopes.add('user:write');
         // GET /v3/users
@@ -90,7 +90,7 @@ async function isDeleted(id) {
     }
 }
 
-async function getAllUsers(request, h) {
+async function getAllUsers(request) {
     const { query, auth, url, server } = request;
     const isAdmin = server.methods.isAdmin(request);
 
@@ -138,7 +138,7 @@ async function getAllUsers(request, h) {
     const keyedUsers = keyBy(users, 'id');
 
     userList.total = count;
-    userList.list = rows.map((row, i) => {
+    userList.list = rows.map(row => {
         const { role, dataValues } = keyedUsers[row.id];
 
         const { teams, ...data } = dataValues;

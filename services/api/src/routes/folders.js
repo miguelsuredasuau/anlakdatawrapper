@@ -12,7 +12,7 @@ const routes = [
         description: 'List folders',
         notes: `Get a list of folders and their associated charts. Requires scope \`ufolder:read\`.`,
         response: listResponse,
-        async handler(request, h) {
+        async handler(request) {
             const { auth } = request;
 
             const { teams } = await User.findByPk(auth.artifacts.id, {
@@ -163,7 +163,7 @@ const routes = [
 module.exports = {
     name: 'routes/folders',
     version: '1.0.0',
-    register: (server, options) => {
+    register: server => {
         server.app.scopes.add('folder:read');
         server.app.scopes.add('folder:write');
         routes.forEach(route => {

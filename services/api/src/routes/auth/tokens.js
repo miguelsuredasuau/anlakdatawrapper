@@ -9,7 +9,7 @@ const { camelizeKeys } = require('humps');
 const { AccessToken } = require('@datawrapper/orm/models');
 const set = require('lodash/set');
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     // GET /v3/auth/tokens
     server.route({
         method: 'GET',
@@ -197,7 +197,7 @@ module.exports = async (server, options) => {
                 access: { scope: ['auth:read'] }
             }
         },
-        async handler(request, h) {
+        async handler(request) {
             const scopes = Array.from(server.app.scopes);
             if (!request.server.methods.isAdmin(request)) return scopes;
             const adminScopes = Array.from(server.app.adminScopes);
@@ -236,7 +236,7 @@ module.exports = async (server, options) => {
     }
 };
 
-async function getAllTokens(request, h) {
+async function getAllTokens(request) {
     const { query, auth, url } = request;
 
     const options = {

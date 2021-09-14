@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const Boom = require('@hapi/boom');
 
-module.exports = (server, options) => {
+module.exports = server => {
     server.route({
         method: 'GET',
         path: '/script.js',

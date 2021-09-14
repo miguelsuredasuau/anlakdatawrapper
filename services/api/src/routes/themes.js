@@ -7,7 +7,7 @@ const { compileFontCSS } = require('../publish/compile-css.js');
 module.exports = {
     name: 'routes/themes',
     version: '1.0.0',
-    register: (server, options) => {
+    register: server => {
         server.app.scopes.add('theme:read');
         server.route({
             method: 'GET',
@@ -31,7 +31,7 @@ module.exports = {
     }
 };
 
-async function getTheme(request, h) {
+async function getTheme(request) {
     const { server, params, query, url } = request;
 
     let originalExtend;

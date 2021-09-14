@@ -158,7 +158,7 @@ module.exports = {
     }
 };
 
-async function getChart(request, h) {
+async function getChart(request) {
     const { url, query, params, auth, server } = request;
     const isAdmin = server.methods.isAdmin(request);
 
@@ -215,7 +215,7 @@ async function getChart(request, h) {
     };
 }
 
-async function editChart(request, h) {
+async function editChart(request) {
     const { params, payload, auth, url, server } = request;
     const user = auth.artifacts;
     const isAdmin = server.methods.isAdmin(request);

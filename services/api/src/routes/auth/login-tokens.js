@@ -6,7 +6,7 @@ const { Op } = db;
 const { camelizeKeys } = require('humps');
 const set = require('lodash/set');
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     server.route({
         method: 'POST',
         path: '/login-tokens',
@@ -117,7 +117,7 @@ module.exports = async (server, options) => {
                 })
             }
         },
-        async handler(request, h) {
+        async handler(request) {
             const { query, auth, url } = request;
 
             const options = {

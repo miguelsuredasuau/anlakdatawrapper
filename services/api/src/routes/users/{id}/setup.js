@@ -2,7 +2,7 @@ const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const { User } = require('@datawrapper/orm/models');
 
-module.exports = (server, options) => {
+module.exports = server => {
     // POST /v3/users/{id}/setup
     server.route({
         method: 'POST',
@@ -21,7 +21,7 @@ module.exports = (server, options) => {
     });
 };
 
-async function handleSetup(request, h) {
+async function handleSetup(request) {
     const { params, server } = request;
     const { generateToken, isAdmin, config } = server.methods;
 

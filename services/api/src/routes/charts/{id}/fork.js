@@ -7,7 +7,7 @@ const get = require('lodash/get');
 const set = require('lodash/set');
 const clone = require('lodash/clone');
 
-module.exports = (server, options) => {
+module.exports = server => {
     const { event, events } = server.app;
 
     // POST /v3/charts/{id}/fork
@@ -82,7 +82,12 @@ module.exports = (server, options) => {
                     auth,
                     headers
                 });
-            } catch (ex) {}
+            } catch (ex) {
+                server.logger.debug(
+                    `Error while injecting POST /v3/charts/${chart.id}/data/refresh request`,
+                    ex
+                );
+            }
 
             // log chart/fork
             await request.server.methods.logAction(user.id, `chart/fork`, chart.id);

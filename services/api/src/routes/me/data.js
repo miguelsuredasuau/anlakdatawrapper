@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const { createResponseConfig } = require('../../schemas/response');
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     // PATCH /v3/me/data
     server.route({
         method: 'PATCH',

@@ -120,7 +120,7 @@ module.exports = {
     }
 };
 
-async function getTeam(request, h) {
+async function getTeam(request) {
     const { url, server, auth, params } = request;
 
     const isAdmin = server.methods.isAdmin(request);
@@ -179,7 +179,7 @@ async function getTeam(request, h) {
     return res;
 }
 
-async function editTeam(request, h) {
+async function editTeam(request) {
     const { auth, payload, params, server, method } = request;
     const { event, events } = server.app;
     const isAdmin = server.methods.isAdmin(request);

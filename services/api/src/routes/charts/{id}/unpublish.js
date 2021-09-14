@@ -2,7 +2,7 @@ const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const { ChartPublic } = require('@datawrapper/orm/models');
 
-module.exports = (server, options) => {
+module.exports = server => {
     // POST /v3/charts/{id}/unpublish
     server.route({
         method: 'POST',

@@ -5,7 +5,7 @@ const chartCore = require('@datawrapper/chart-core');
 const { compileCSS } = require('../../../publish/compile-css.js');
 const set = require('lodash/set');
 
-module.exports = (server, options) => {
+module.exports = server => {
     const styleCache = server.cache({
         segment: 'vis-styles',
         expiresIn: 86400000 * 365 /* 1 year */,

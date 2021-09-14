@@ -88,7 +88,7 @@ function run(cmd) {
         command.stdout.on('data', data => {
             log(chalk.reset.grey(data.endsWith('\n') ? data.slice(0, -2) : data));
         });
-        command.on('close', code => {
+        command.on('close', () => {
             resolve();
         });
     });

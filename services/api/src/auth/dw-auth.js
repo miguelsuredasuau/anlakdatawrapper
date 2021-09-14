@@ -13,7 +13,7 @@ const cookieAuthScheme = createCookieAuthScheme(false);
 const DWAuth = {
     name: 'dw-auth',
     version: '1.0.0',
-    register: async (server, options) => {
+    register: async server => {
         function isAdmin(request, { throwError = false } = {}) {
             const check = get(request, ['auth', 'artifacts', 'role'], '') === 'admin';
 

@@ -2,7 +2,7 @@ const { createSession, getStateOpts } = require('@datawrapper/service-utils/auth
     require('@datawrapper/orm/models')
 );
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     // POST /v3/auth/session
     server.route({
         method: 'POST',

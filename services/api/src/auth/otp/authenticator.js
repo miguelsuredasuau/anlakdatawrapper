@@ -10,7 +10,7 @@ module.exports = {
     /*
      * Authenticator OTP doesn't need to be configured
      */
-    isEnabled({ config }) {
+    isEnabled() {
         return true;
     },
 
@@ -22,7 +22,7 @@ module.exports = {
      * Check if the authenticated user has enabled OTP
      * and if they do, require a valid OTP for login
      */
-    async verify({ user, otp, config }) {
+    async verify({ user, otp }) {
         // check if the user has configured an OTP
         const userOTP = await getUserData(user.id, USER_DATA_KEY);
         if (userOTP) {

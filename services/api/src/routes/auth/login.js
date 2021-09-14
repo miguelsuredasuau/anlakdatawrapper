@@ -8,7 +8,7 @@ const { login, createSession, getStateOpts } = require('@datawrapper/service-uti
 );
 const otpProviders = require('../../auth/otp');
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     // POST /v3/auth/login
     server.route({
         method: 'POST',

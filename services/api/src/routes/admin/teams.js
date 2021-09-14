@@ -10,7 +10,7 @@ module.exports = {
     register
 };
 
-function register(server, options) {
+function register(server) {
     // GET /v3/admin/teams
     server.route({
         method: 'GET',
@@ -49,7 +49,7 @@ function register(server, options) {
         handler: getAllTeams
     });
 
-    async function getAllTeamsByUser(request, h) {
+    async function getAllTeamsByUser(request) {
         const { query } = request;
         const isAdmin = server.methods.isAdmin(request);
         const user = await User.findOne({

@@ -24,7 +24,7 @@ const { compileFontCSS } = require('../../../publish/compile-css.js');
 const configPath = findConfigPath();
 const config = require(configPath);
 
-module.exports = (server, options) => {
+module.exports = server => {
     // POST /v3/charts/{id}/publish
     server.route({
         method: 'POST',
@@ -96,7 +96,7 @@ module.exports = (server, options) => {
     });
 };
 
-async function publishChart(request, h) {
+async function publishChart(request) {
     const { params, auth, headers, server } = request;
     const { events, event } = server.app;
     const { createChartWebsite } = server.methods;
@@ -243,7 +243,12 @@ async function publishChart(request, h) {
                 auth,
                 headers
             });
-        } catch (ex) {}
+        } catch (ex) {
+            server.logger.debug(
+                `Error while injecting POST /v3/charts/${chart.id}/data/refresh request`,
+                ex
+            );
+        }
     }
 
     // for image publishing and things that we want to (optionally)
@@ -269,7 +274,7 @@ async function publishChart(request, h) {
     };
 }
 
-async function publishChartStatus(request, h) {
+async function publishChartStatus(request) {
     const { params, auth, server } = request;
 
     const chart = await server.methods.loadChart(params.id);
@@ -291,7 +296,7 @@ async function publishChartStatus(request, h) {
     };
 }
 
-async function publishData(request, h) {
+async function publishData(request) {
     const { query, params, server, auth, headers } = request;
     const { events, event, visualizations } = server.app;
 

@@ -5,7 +5,7 @@ const Boom = require('@hapi/boom');
 const { noContentResponse } = require('../../../schemas/response');
 const { ChartAccessToken } = require('@datawrapper/orm/models');
 
-module.exports = (server, options) => {
+module.exports = server => {
     // GET /v3/charts/{id}/assets/{asset}
     server.route({
         method: 'GET',

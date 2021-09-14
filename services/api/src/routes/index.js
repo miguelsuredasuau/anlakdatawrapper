@@ -1,7 +1,7 @@
 module.exports = {
     name: 'routes',
     version: '1.0.0',
-    register: (server, options) => {
+    register: server => {
         server.register(require('./admin'), {
             routes: {
                 prefix: '/admin'

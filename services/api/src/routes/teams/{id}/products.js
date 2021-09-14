@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { Team, TeamProduct, Product } = require('@datawrapper/orm/models');
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     // GET /v3/teams/{id}/products
     server.route({
         method: 'GET',
@@ -17,7 +17,7 @@ module.exports = async (server, options) => {
                 }
             }
         },
-        async handler(request, h) {
+        async handler(request) {
             const { auth, params } = request;
             const user = auth.artifacts;
 

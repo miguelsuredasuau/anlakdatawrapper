@@ -10,7 +10,7 @@ const createChart = require('@datawrapper/service-utils/createChart');
 module.exports = {
     name: 'routes/charts',
     version: '1.0.0',
-    register(server, options) {
+    register(server) {
         server.app.scopes.add('chart:read');
         server.app.scopes.add('chart:write');
         server.route({
@@ -160,7 +160,7 @@ module.exports = {
     }
 };
 
-async function getAllCharts(request, h) {
+async function getAllCharts(request) {
     const { query, url, auth } = request;
     const isAdmin = request.server.methods.isAdmin(request);
     const general = request.server.methods.config('general');

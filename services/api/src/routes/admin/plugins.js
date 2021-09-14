@@ -19,7 +19,7 @@ module.exports = {
     register
 };
 
-function register(server, options) {
+function register(server) {
     server.app.adminScopes.add('plugin:read');
     server.app.adminScopes.add('plugin:write');
 
@@ -39,7 +39,7 @@ function register(server, options) {
         handler: getAllPlugins
     });
 
-    async function getAllPlugins(request, h) {
+    async function getAllPlugins(request) {
         const plugins = [];
         const config = request.server.methods.config();
 
@@ -74,7 +74,7 @@ function register(server, options) {
         handler: updatePlugin
     });
 
-    async function updatePlugin(request, h) {
+    async function updatePlugin(request) {
         const { server, payload } = request;
         const { general, plugins } = server.methods.config();
         const log = server.logger;

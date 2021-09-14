@@ -3,7 +3,7 @@ const { Product } = require('@datawrapper/orm/models');
 module.exports = {
     name: 'routes/products',
     version: '1.0.0',
-    register: (server, options) => {
+    register: server => {
         server.app.adminScopes.add('product:read');
         server.route({
             method: 'GET',
@@ -14,7 +14,7 @@ module.exports = {
                     access: { scope: ['product:read'] }
                 }
             },
-            handler: async function getAllProducts(request, h) {
+            handler: async function getAllProducts(request) {
                 request.server.methods.isAdmin(request, { throwError: true });
 
                 const { rows, count } = await Product.findAndCountAll({

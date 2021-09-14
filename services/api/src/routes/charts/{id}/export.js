@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 
-module.exports = (server, options) => {
+module.exports = server => {
     // POST /v3/charts/{id}/export/{format}
     server.route({
         method: 'POST',
@@ -116,7 +116,12 @@ async function exportChart(request, h) {
                 auth,
                 headers
             });
-        } catch (ex) {}
+        } catch (ex) {
+            server.logger.debug(
+                `Error while injecting POST /v3/charts/${chart.id}/data/refresh request`,
+                ex
+            );
+        }
     }
 
     try {

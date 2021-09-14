@@ -9,7 +9,7 @@ const { getUserData } = require('@datawrapper/orm/utils/userData');
 module.exports = {
     name: 'routes/teams',
     version: '1.0.0',
-    register: (server, options) => {
+    register: server => {
         server.app.scopes.add('team:read');
         server.app.scopes.add('team:write');
         // GET /v3/teams

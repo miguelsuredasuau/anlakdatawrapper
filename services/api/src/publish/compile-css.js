@@ -97,7 +97,7 @@ function createFontEntries(fonts, themeData) {
         });
     }
 
-    Object.entries(fonts).forEach(([font, attr], i) => {
+    Object.entries(fonts).forEach(([font, attr]) => {
         switch (attr.method) {
             case 'file':
             case 'url':

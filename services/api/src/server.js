@@ -164,7 +164,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     const { commit, version } = await getVersionInfo();
     await server.register([
         {
-            plugin: require('hapi-pino'),
+            plugin: require('hapi-pino'), // logger plugin
             options: {
                 prettyPrint: true,
                 timestamp: () => `,"time":"${new Date().toISOString()}"`,
@@ -229,7 +229,9 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
             }
         }
         addScope('core', locales);
-    } catch (e) {}
+    } catch (e) {
+        server.logger.debug('Error while loading translations', e);
+    }
 
     await ORM.init(config);
     await ORM.registerPlugins();

@@ -5,7 +5,7 @@ const { getEmbedCodes } = require('./utils');
 
 const { createResponseConfig } = require('../../../schemas/response');
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     // GET /v3/charts/{id}/embed-codes
     server.route({
         method: 'GET',
@@ -41,7 +41,7 @@ module.exports = async (server, options) => {
                 )
             })
         },
-        async handler(request, h) {
+        async handler(request) {
             const { params, auth, server } = request;
 
             const chart = await server.methods.loadChart(params.id);
@@ -94,7 +94,7 @@ module.exports = async (server, options) => {
                 )
             })
         },
-        async handler(request, h) {
+        async handler(request) {
             const { params, auth, server } = request;
             const chart = await server.methods.loadChart(params.id);
 

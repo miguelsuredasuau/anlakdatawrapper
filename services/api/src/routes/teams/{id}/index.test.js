@@ -64,7 +64,7 @@ test.before(async t => {
 
     // emulate team settings filter
     const { events, event } = t.context.server.app;
-    events.on(event.TEAM_SETTINGS_FILTER, async ({ team, payload, user }) => {
+    events.on(event.TEAM_SETTINGS_FILTER, async ({ team, payload }) => {
         // check if the team supports certain settings
         const prohibitedKeys = [
             'settings.flags',

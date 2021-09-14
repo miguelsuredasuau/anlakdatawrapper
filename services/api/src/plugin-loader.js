@@ -10,7 +10,7 @@ const readDir = promisify(fs.readdir);
 module.exports = {
     name: 'plugin-loader',
     version: '1.0.0',
-    register: async (server, options) => {
+    register: async server => {
         const config = server.methods.config();
         const root = config.general.localPluginRoot || path.join(process.cwd(), 'plugins');
 
@@ -88,7 +88,9 @@ module.exports = {
                             }
                         }
                         addScope(name, options.locales);
-                    } catch (e) {}
+                    } catch (error) {
+                        server.logger.debug(`Error whille loading translations for ${name}`, error);
+                    }
                     await server.register({ plugin, options }, pluginOptions);
                 }
             }

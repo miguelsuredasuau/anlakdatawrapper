@@ -19,7 +19,7 @@ const {
     getPendingTeamInvites
 } = require('../utils');
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     // POST /v3/teams/{id}/invites
     server.route({
         method: 'POST',

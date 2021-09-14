@@ -4,7 +4,7 @@ const { User, Action } = require('@datawrapper/orm/models');
 const get = require('lodash/get');
 const { Op } = require('@datawrapper/orm').db;
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     // POST /v3/auth/resend-activation
     server.route({
         method: 'POST',
@@ -27,7 +27,7 @@ module.exports = async (server, options) => {
     });
 };
 
-async function resendActivation(request, h) {
+async function resendActivation(request) {
     const isAdmin = request.server.methods.isAdmin(request);
     const { domain, https } = request.server.methods.config('frontend');
 

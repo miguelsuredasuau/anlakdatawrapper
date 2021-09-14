@@ -7,7 +7,7 @@ const { User } = require('@datawrapper/orm/models');
 const clone = require('lodash/clone');
 const createChart = require('@datawrapper/service-utils/createChart');
 
-module.exports = (server, options) => {
+module.exports = server => {
     const { event, events } = server.app;
 
     // POST /v3/charts/{id}/copy
@@ -79,7 +79,12 @@ module.exports = (server, options) => {
                     auth,
                     headers
                 });
-            } catch (ex) {}
+            } catch (ex) {
+                server.logger.debug(
+                    `Error while injecting POST /v3/charts/${chart.id}/data/refresh request`,
+                    ex
+                );
+            }
 
             // log chart/copy
             await request.server.methods.logAction(user.id, `chart/copy`, chart.id);

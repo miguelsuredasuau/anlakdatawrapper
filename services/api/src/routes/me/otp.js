@@ -4,7 +4,7 @@ const otpProviders = require('../../auth/otp');
 
 const { noContentResponse } = require('../../schemas/response');
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     server.route({
         method: 'GET',
         path: '/otp',
@@ -16,7 +16,7 @@ module.exports = async (server, options) => {
             },
             validate: {}
         },
-        async handler(request, h) {
+        async handler(request) {
             const { auth } = request;
             const { config } = request.server.methods;
 

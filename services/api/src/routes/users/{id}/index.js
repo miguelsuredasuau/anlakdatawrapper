@@ -119,7 +119,7 @@ module.exports = {
     }
 };
 
-async function getUser(request, h) {
+async function getUser(request) {
     const { params, url, auth } = request;
     const userId = params.id;
     const isAdmin = request.server.methods.isAdmin(request);

@@ -5,7 +5,7 @@ const checkUrl = require('@datawrapper/service-utils/checkUrl');
 const got = require('got');
 const get = require('lodash/get');
 
-module.exports = (server, options) => {
+module.exports = server => {
     const { events, event } = server.app;
 
     // GET /v3/charts/{id}/data
@@ -118,7 +118,9 @@ module.exports = (server, options) => {
 
                     chart.changed('last_modified_at', true);
                     await chart.save();
-                } catch (ex) {}
+                } catch (ex) {
+                    server.logger.debug(`Error during PUT_CHART_ASSET for ${chart.id}`, ex);
+                }
 
                 if (get(chart, 'metadata.data.external-metadata')) {
                     try {
@@ -136,9 +138,16 @@ module.exports = (server, options) => {
                                     data: metadata,
                                     filename: `${chart.id}.metadata.json`
                                 });
-                            } catch (ex) {}
+                            } catch (ex) {
+                                server.logger.debug(
+                                    `Error during PUT_CHART_ASSET for ${chart.id}`,
+                                    ex
+                                );
+                            }
                         }
-                    } catch (ex) {}
+                    } catch (ex) {
+                        server.logger.debug(`Error during PUT_CHART_ASSET for ${chart.id}`, ex);
+                    }
                 }
             }
 
@@ -172,6 +181,7 @@ async function getChartData(request, h) {
             contentType = 'application/json';
             filename = `${params.id}.json`;
         }
+        // eslint-disable-next-line
     } catch (error) {}
 
     return h

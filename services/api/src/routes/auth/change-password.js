@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { User } = require('@datawrapper/orm/models');
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     // POST /v3/auth/change-password
     server.route({
         method: 'POST',

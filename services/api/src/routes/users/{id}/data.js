@@ -4,7 +4,7 @@ const Joi = require('joi');
 
 const { createResponseConfig } = require('../../../schemas/response');
 
-module.exports = async (server, options) => {
+module.exports = async server => {
     // PATCH /v3/users/{id}/data
     server.route({
         method: 'PATCH',
@@ -27,7 +27,7 @@ module.exports = async (server, options) => {
                 }).unknown()
             })
         },
-        async handler(request, h) {
+        async handler(request) {
             const { auth, params } = request;
             const userId = params.id;
             await request.server.methods.userIsDeleted(userId);
