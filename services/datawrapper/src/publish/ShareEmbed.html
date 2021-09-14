@@ -271,7 +271,15 @@
         },
         methods: {
             copy(targetRef) {
-                this.refs[targetRef].select();
+                const { embedCode, shareUrl } = this.get();
+                const copyText = targetRef === 'embedcode' ? embedCode : shareUrl;
+
+                // create new element to preserve line breaks
+                const el = document.createElement('textarea');
+                el.value = copyText;
+                document.body.appendChild(el);
+                el.select();
+
                 try {
                     const successful = document.execCommand('copy');
                     if (successful) {
@@ -287,6 +295,13 @@
                 } catch (err) {
                     console.error('Could not copy to clipboard.');
                 }
+
+                document.body.removeChild(el);
+                /*
+                    make it look like the visible input
+                    is the one that's actually selected
+                */
+                this.refs[targetRef].select();
             }
         }
     };
