@@ -12,7 +12,7 @@ const generateToken = customAlphabet(
 );
 
 module.exports = function createAuth(
-    { AccessToken, User, UserData, Session, Chart, Team },
+    { AccessToken, User, Session, Chart, Team },
     { includeTeams } = {}
 ) {
     function adminValidation({ artifacts } = {}) {
@@ -255,7 +255,7 @@ module.exports = function createAuth(
         });
     }
 
-    async function bearerValidation(request, token, h) {
+    async function bearerValidation(request, token) {
         const row = await AccessToken.findOne({ where: { token, type: 'api-token' } });
 
         if (!row) {
@@ -281,7 +281,7 @@ module.exports = function createAuth(
         return auth;
     }
 
-    async function cookieValidation(request, session, h) {
+    async function cookieValidation(request, session) {
         let row = await Session.findByPk(session);
 
         if (!row) {
