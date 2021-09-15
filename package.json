@@ -47,7 +47,8 @@
         "rollup-plugin-json": "^4.0.0",
         "rollup-plugin-node-resolve": "^5.2.0",
         "rollup-plugin-svelte": "^5.1.0",
-        "rollup-plugin-uglify": "^6.0.4"
+        "rollup-plugin-uglify": "^6.0.4",
+        "svelte": "^3.42.5"
     },
     "prettier": {
         "arrowParens": "avoid",
