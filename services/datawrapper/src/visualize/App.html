@@ -9,9 +9,11 @@
             <div class="container">
                 <div class="vis-canvas">
                     <ChartPreview
+                        ref:preview
                         bind:loading
                         src="/preview/{ $id }{mode === 'print' ? '?fitchart=1' : ''}"
                         on:resize="makePreviewSticky()"
+                        on:iframeLoaded="onIframeLoaded()"
                     />
 
                     <div class="toolbar">
@@ -69,7 +71,7 @@
                 </div>
 
                 <ButtonNav bind:tab {showChartPicker} />
-                <div style="margin-top: 20px;">
+                <div style="margin-top: 20px">
                     <AlertDisplay visible="{showUpgradeKeyOn[tab]}" type="upgrade-info" />
                 </div>
             </div>
@@ -116,7 +118,7 @@
 </style>
 
 <script>
-    /* globals dw, ResizeObserver */
+    /* globals dw, ResizeObserver, chart */
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch';
     import { __ } from '@datawrapper/shared/l10n';
     import ChartPreview from '@datawrapper/controls/editor/ChartPreview.html';
@@ -289,6 +291,73 @@
                         this.updateNotifications(notifications);
                     });
                 });
+            },
+            onIframeLoaded() {
+                window.addEventListener('message', event => {
+                    if (event.data === 'datawrapper:vis:rendered') {
+                        this.refs.preview.getContext((iframeWindow, iframeDocument) => {
+                            const spans = iframeDocument.querySelectorAll(
+                                '.label[data-column][data-row] > span'
+                            );
+                            for (let i = 0; i < spans.length; i++) {
+                                const spanOld = spans[i];
+                                // remove all event listeniers by cloning the node
+                                const span = spanOld.cloneNode(true);
+                                spanOld.parentNode.replaceChild(span, spanOld);
+                                span.setAttribute('contenteditable', true);
+                                // on focus we store the prev html content
+                                span.addEventListener('focus', () => {
+                                    // store old value
+                                    span.__prevHTML = span.innerHTML;
+                                });
+                                // catch keycodes
+                                span.addEventListener('keydown', event => {
+                                    if (event.keyCode === 27) {
+                                        // Escape key
+                                        span.innerHTML = span.__prevHTML;
+                                        span.blur();
+                                        return;
+                                    }
+                                    if (event.keyCode === 13) {
+                                        // Enter key
+                                        span.blur();
+                                        event.preventDefault();
+                                    }
+                                });
+                                const label = span.parentElement;
+                                // store new value on blue
+                                span.addEventListener('blur', () => {
+                                    const val = span.innerHTML.trim();
+                                    const transpose = chart.getMetadata('data.transpose', false);
+                                    const dataset = chart.dataset();
+                                    const column = String(label.dataset.column);
+                                    const row = String(label.dataset.row).split(',');
+                                    const c = !transpose ? dataset.indexOf(column) : 0;
+                                    const r = row.map(row =>
+                                        !transpose ? +row + 1 : dataset.indexOf(column)
+                                    );
+
+                                    if (val !== '' && val !== span.__prevHTML) {
+                                        const changes = chart
+                                            .getMetadata('data.changes', [])
+                                            .slice(0);
+                                        r.forEach(function (r) {
+                                            const change = {
+                                                row: r,
+                                                column: c,
+                                                value: val,
+                                                time: new Date().getTime(),
+                                                previous: span.__prevHTML
+                                            };
+                                            changes.push(change);
+                                        });
+                                        chart.setMetadata('data.changes', [...changes]);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
             }
         },
         oncreate() {
@@ -310,6 +379,7 @@
             try {
                 resizeObserver = new ResizeObserver(makePreviewSticky);
                 resizeObserver.observe(document.body);
+                // eslint-disable-next-line
             } catch (ex) {}
 
             // remove event handler when this component is destroyed:
