@@ -100,7 +100,8 @@
                 ],
                 "processor": "svelte3/svelte3"
             }
-        ]
+        ],
+        "root": true
     },
     "lint-staged": {
         "*.{js,svelte}": [
