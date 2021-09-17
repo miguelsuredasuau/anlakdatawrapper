@@ -10,6 +10,8 @@ import DropdownControlDocs from '../DropdownControl.mdx';
 import DropdownControlView from './DropdownControlView.svelte';
 import DropdownInputDocs from '../DropdownInput.mdx';
 import DropdownInputView from './DropdownInputView.svelte';
+import IconDisplayDocs from '../IconDisplay.mdx';
+import IconDisplayView from './IconDisplayView.svelte';
 import MoreOptionsGroupDocs from '../MoreOptionsGroup.mdx';
 import MoreOptionsGroupView from './MoreOptionsGroupView.svelte';
 import NumberControlDocs from '../NumberControl.mdx';
@@ -46,6 +48,7 @@ const moreOptions = ['red', 'blue', 'orange', 'green', 'hotpink', 'cyan', 'magen
 export const AlertDisplay = addStory('AlertDisplay', AlertDisplayView, AlertDisplayDocs, {});
 export const DropdownControl = addStory('DropdownControl', DropdownControlView, DropdownControlDocs, { options });
 export const DropdownInput = addStory('DropdownInput', DropdownInputView, DropdownInputDocs, { lorem });
+export const IconDisplay = addStory('IconDisplay', IconDisplayView, IconDisplayDocs, {});
 export const MoreOptionsGroup = addStory('MoreOptionsGroup', MoreOptionsGroupView, MoreOptionsGroupDocs, { items: moreOptions });
 export const NumberControl = addStory('NumberControl', NumberControlView, NumberControlDocs, { value: 42 });
 export const NumberInput = addStory('NumberInput', NumberInputView, NumberInputDocs, { value: 42 });
