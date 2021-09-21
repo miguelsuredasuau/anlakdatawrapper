@@ -8,13 +8,11 @@
     export let iconColor;
     export let assetURL;
 
-    let renderedIconColor;
-
-    function getRenderedIconColor() {
+    $: getRenderedIconColor = () => {
         if (iconLeft && iconColor) return iconColor;
         else if (iconLeft) return active ? '#333' : '#858585';
         return active ? '#333' : '#1d81a2';
-    }
+    };
 
     $: renderedIconColor = getRenderedIconColor();
 </script>
