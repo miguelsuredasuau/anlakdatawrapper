@@ -11,7 +11,6 @@
     "moment": "^2.15.1",
     "mysql": "*",
     "normalize-url": "^1.9.1",
-    "slackbots": "^0.5.1",
     "underscore": "*"
   }
 }
