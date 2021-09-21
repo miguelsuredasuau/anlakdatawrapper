@@ -29,10 +29,10 @@
         "@hapi/catbox-memory": "^5.0.1",
         "@hapi/catbox-redis": "^6.0.2",
         "chalk": "^4.1.2",
-        "d3-array": "^3.0.4",
+        "d3-array": "^2.0.3",
         "lodash.shuffle": "^4.2.0",
         "mysql2": "^1.6.4",
-        "node-cron": "^2.0.3",
+        "node-cron": "^3.0.0",
         "underscore": "^1.9.1",
         "winston": "^3.2.0"
     },
