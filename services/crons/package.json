@@ -28,7 +28,7 @@
         "@hapi/catbox": "^11.1.1",
         "@hapi/catbox-memory": "^5.0.1",
         "@hapi/catbox-redis": "^6.0.2",
-        "chalk": "^2.4.2",
+        "chalk": "^4.1.2",
         "d3-array": "^3.0.4",
         "lodash.shuffle": "^4.2.0",
         "mysql2": "^1.6.4",
