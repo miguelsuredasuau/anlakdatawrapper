@@ -1,0 +1,19 @@
+# IconButton
+
+Render a button with an icon in it. Uses `IconDisplay` under the hood to render SVG icons provided by [@datawrapper/icons](https://github.com/datawrapper/code/tree/main/libs/icons).
+
+## Attributes
+
+-   `title`: text to show inside button.
+-   `active`: whether this button is currently active.
+-   `icon`: the icon name.
+-   `iconLeft`: sets button style to left-aligned icon.
+-   `iconColor`: overrides icon color when using left-aligned icon. This color will be applied regardless to current state of the button.
+
+```html
+<IconButton title="Click me" icon="link" />
+
+<script>
+    import IconButton from '@datawrapper/controls/IconButton.svelte';
+</script>
+```
