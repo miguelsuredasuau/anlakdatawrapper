@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "async": "*",
-    "express": "3.1.0",
+    "express": "3.11.0",
     "moment": "^2.15.1",
     "mysql": "*",
     "normalize-url": "^1.9.1",
