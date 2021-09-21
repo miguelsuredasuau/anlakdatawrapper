@@ -43,7 +43,7 @@
         "jsesc": "^3.0.1",
         "less": "^4.1.1",
         "lodash": "^4.17.20",
-        "openid-client": "^4.7.5",
+        "openid-client": "^4.9.0",
         "pug": "^3.0.1",
         "requirejs": "^2.3.6",
         "rollup": "^2.51.0",
