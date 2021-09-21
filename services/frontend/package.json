@@ -23,7 +23,7 @@
         "@hapi/catbox-redis": "^6.0.2",
         "@hapi/hapi": "^20.1.3",
         "@hapi/hoek": "^9.2.0",
-        "@hapi/inert": "^6.0.3",
+        "@hapi/inert": "^6.0.4",
         "@hapi/vision": "^6.1.0",
         "@rollup/plugin-alias": "^3.1.1",
         "@rollup/plugin-commonjs": "^19.0.0",
