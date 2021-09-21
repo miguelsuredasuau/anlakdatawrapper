@@ -10,7 +10,6 @@
     "express": "3.11.0",
     "moment": "^2.15.1",
     "mysql": "*",
-    "node-cron": "^3.0.0",
     "normalize-url": "^1.9.1",
     "underscore": "*"
   }
