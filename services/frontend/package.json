@@ -38,7 +38,7 @@
         "got": "^11.5.2",
         "hapi-dev-errors": "^4.0.0",
         "hapi-pino": "^8.3.0",
-        "hapi-plugin-websocket": "^2.3.2",
+        "hapi-plugin-websocket": "^2.3.5",
         "joi": "^17.4.2",
         "jsesc": "^3.0.1",
         "less": "^4.1.1",
