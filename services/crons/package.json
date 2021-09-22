@@ -34,7 +34,7 @@
         "mysql2": "^1.6.4",
         "node-cron": "^3.0.0",
         "underscore": "^1.9.1",
-        "winston": "^3.2.0"
+        "winston": "^3.3.3"
     },
     "bugs": {
         "url": "https://github.com/datawrapper/datawrapper-crons/issues"
