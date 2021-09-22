@@ -85,7 +85,7 @@
         "@hapi/vision": "^6.1.0",
         "arg": "^5.0.1",
         "assign-deep": "1.0.1",
-        "autoprefixer": "^10.3.4",
+        "autoprefixer": "^10.3.5",
         "bcryptjs": "2.4.3",
         "chalk": "^4.1.1",
         "cssnano": "^5.0.5",
