@@ -1,7 +1,7 @@
 const { db } = require('@datawrapper/orm');
 const { Op } = db;
 const { ExportJob, Stats } = require('@datawrapper/orm/models');
-const { groupBy } = require('underscore');
+const { groupBy } = require('lodash');
 const { quantile } = require('d3-array');
 
 const deleteAfter = {
