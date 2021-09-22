@@ -181,8 +181,7 @@ module.exports = {
             path: `/sso`,
             options: {
                 auth: {
-                    mode: 'try',
-                    strategy: provider
+                    mode: 'try'
                 },
                 payload: {
                      output: 'data',
