@@ -119,7 +119,7 @@
         "openapi-schema-validator": "^9.1.0"
     },
     "peerDependencies": {
-        "joi": "17.x"
+        "joi": "^17.4.0"
     },
     "ava": {
         "cache": false,
