@@ -87,7 +87,7 @@
         "assign-deep": "1.0.1",
         "autoprefixer": "^10.3.5",
         "bcryptjs": "2.4.3",
-        "chalk": "^4.1.1",
+        "chalk": "^4.1.2",
         "cssnano": "^5.0.5",
         "fs-extra": "^10.0.0",
         "got": "^11.8.2",
