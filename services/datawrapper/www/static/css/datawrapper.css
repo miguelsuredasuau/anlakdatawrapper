@@ -3939,6 +3939,9 @@ input[type='color'],
   font-size: 18px;
   vertical-align: middle;
 }
+.well .did-you-know {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
 button.btn > i.im {
   font-size: 0.8rem !important;
   vertical-align: middle;
