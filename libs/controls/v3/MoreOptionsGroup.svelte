@@ -26,8 +26,6 @@
         border: 0;
         padding: 1px 6px;
         background: transparent;
-        font-weight: 300;
-        color: #000;
     }
     .more-options-toggle button .icon {
         width: 0.7em;

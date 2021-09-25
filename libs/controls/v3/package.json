@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/controls",
-    "version": "3.11.1",
+    "version": "3.11.3",
     "type": "module",
     "scripts": {
         "format": "prettier --plugin-search-dir=. '**/*.{js,svelte}' --write",
