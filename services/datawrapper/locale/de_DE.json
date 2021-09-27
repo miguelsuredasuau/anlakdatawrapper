@@ -965,5 +965,6 @@
   "upload / remote / external-data": "externer Datensatz (CSV)",
   "upload / remote / google-spreadsheet": "Google-Sheet",
   "upload / remote / disconnect": "Verbindung trennen",
-  "upload / remote / reconnect": "Erneut verbinden"
+  "upload / remote / reconnect": "Erneut verbinden",
+  "upload / file / button": "Datei hochladen"
 }
