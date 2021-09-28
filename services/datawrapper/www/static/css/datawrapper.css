@@ -2201,7 +2201,6 @@ Each of these property-direction combinations needs to be appended with one of 6
 .chart-editor.dw-create-visualize .visconfig textarea {
   font-size: 14px;
   line-height: 16px;
-  font-weight: 300;
   font-family: 'Roboto', Helvetica, sans-serif;
 }
 @media only screen and (max-width: 1199px) {
@@ -2718,15 +2717,18 @@ input[type='color'],
 }
 .chart-editor {
   margin-top: 20px;
-  color: #000;
+  color: #333;
 }
 .chart-editor h2,
 .chart-editor h3,
 .chart-editor h4,
 .chart-editor p {
   font-family: 'Roboto', Helvetica, sans-serif;
-  font-weight: 300;
   line-height: 1.5;
+  color: #333;
+}
+.chart-editor h2 {
+  font-weight: 300;
 }
 .chart-editor p b {
   font-weight: bold;
@@ -2742,7 +2744,6 @@ input[type='color'],
 .chart-editor input,
 .chart-editor label {
   font-family: 'Roboto', Helvetica, sans-serif;
-  font-weight: 300;
 }
 .chart-editor .mini-help {
   font-size: 12px;
@@ -3356,7 +3357,7 @@ body.dw-mycharts.mycharts-search-results .mycharts-search-wrapper .im.im-x-mark-
 }
 body {
   background: #f9f9f9;
-  color: #444;
+  color: #333;
   position: relative;
   font-family: 'Roboto', Helvetica, sans-serif;
 }
@@ -3548,7 +3549,7 @@ h4,
 h5,
 h6 {
   font-weight: bold;
-  color: #000;
+  color: #333;
 }
 .input-xxlarge,
 .btn-xxlarge {
