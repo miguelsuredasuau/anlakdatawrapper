@@ -29,6 +29,7 @@
         "start": "node src/index.js"
     },
     "nodemonConfig": {
+        "ext": "js, mjs, cjs, json",
         "ignore": [
             "d3*/src/*",
             "d3*/static/*",
