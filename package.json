@@ -34,7 +34,6 @@
         "eslint-plugin-svelte3": "^3.2.0",
         "fast-glob": "^3.2.7",
         "got": "^11.8.2",
-        "healthier": "^4.0.0",
         "husky": "^6.0.0",
         "less": "^4.1.1",
         "lodash": "^4.17.21",
@@ -118,11 +117,11 @@
     "lint-staged": {
         "*.{html,svelte}": [
             "prettier --check",
-            "healthier"
+            "eslint"
         ],
         "*.{js,cjs,mjs}": [
             "prettier --write",
-            "healthier"
+            "eslint"
         ]
     },
     "dependencies": {
