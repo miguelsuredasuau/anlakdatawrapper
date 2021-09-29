@@ -1,0 +1,53 @@
+.nav-tabs {
+    margin-bottom: -4px;
+    z-index: 4;
+    position: relative;
+    background: @dw_background;
+
+    li {
+        max-width: 33%;
+        a {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: 1px solid #ddd;
+            background: #f4f3f3;
+
+            &:hover {
+                background-color: transparent;
+                border: 1px solid #ddd;
+            }
+            // border-bottom: 0;
+        }
+
+        &.active {
+            max-width: 47%;
+
+            a {
+                color: #000;
+                font-weight: bold;
+                background: @dw_background;
+                border-bottom-color: @dw_background;
+
+                &:hover,
+                &:focus {
+                    color: #000;
+                    background: @dw_background;
+                }
+            }
+        }
+    }
+}
+
+@media @viewport-medium {
+    .nav-tabs {
+        font-size: 13px;
+    }
+
+    .nav-tabs > li a,
+    .nav-tabs > li a:hover,
+    .nav-tabs > li.active a {
+        padding: 4px 8px;
+        line-height: 24px;
+    }
+}

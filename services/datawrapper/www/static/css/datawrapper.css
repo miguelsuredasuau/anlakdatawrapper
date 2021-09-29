@@ -1163,6 +1163,51 @@ Each of these property-direction combinations needs to be appended with one of 6
   padding-top: 3rem !important;
   padding-bottom: 3rem !important;
 }
+.nav-tabs {
+  margin-bottom: -4px;
+  z-index: 4;
+  position: relative;
+  background: #f9f9f9;
+}
+.nav-tabs li {
+  max-width: 33%;
+}
+.nav-tabs li a {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid #ddd;
+  background: #f4f3f3;
+}
+.nav-tabs li a:hover {
+  background-color: transparent;
+  border: 1px solid #ddd;
+}
+.nav-tabs li.active {
+  max-width: 47%;
+}
+.nav-tabs li.active a {
+  color: #000;
+  font-weight: bold;
+  background: #f9f9f9;
+  border-bottom-color: #f9f9f9;
+}
+.nav-tabs li.active a:hover,
+.nav-tabs li.active a:focus {
+  color: #000;
+  background: #f9f9f9;
+}
+@media only screen and (max-width: 1199px) {
+  .nav-tabs {
+    font-size: 13px;
+  }
+  .nav-tabs > li a,
+  .nav-tabs > li a:hover,
+  .nav-tabs > li.active a {
+    padding: 4px 8px;
+    line-height: 24px;
+  }
+}
 /** dw-create-upload **/
 .dw-create-upload textarea {
   width: 100%;
@@ -2089,15 +2134,6 @@ Each of these property-direction combinations needs to be appended with one of 6
     font-size: 13px;
     line-height: 14px;
   }
-  .chart-editor.dw-create-visualize .visualize-nav-tabs.nav-tabs {
-    font-size: 13px;
-  }
-  .chart-editor.dw-create-visualize .visualize-nav-tabs.nav-tabs > li a,
-  .chart-editor.dw-create-visualize .visualize-nav-tabs.nav-tabs > li a:hover,
-  .chart-editor.dw-create-visualize .visualize-nav-tabs.nav-tabs > li.active a {
-    padding: 4px 8px;
-    line-height: 24px;
-  }
   .chart-editor.dw-create-visualize .span4 {
     width: 350px;
   }
@@ -2147,30 +2183,11 @@ Each of these property-direction combinations needs to be appended with one of 6
   color: #a0711f;
   margin: 2px 0 5px;
 }
-.chart-editor.dw-create-visualize .visualize-nav-tabs {
-  margin-bottom: -4px;
-  z-index: 4;
-  position: relative;
-  background: #f9f9f9;
-}
 .chart-editor.dw-create-visualize .visualize-nav-tabs li {
   max-width: 33%;
 }
 .chart-editor.dw-create-visualize .visualize-nav-tabs li.active {
   max-width: 47%;
-}
-.chart-editor.dw-create-visualize .visualize-nav-tabs li a {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  border: 1px solid #ddd;
-  background: #f4f4f4;
-}
-.chart-editor.dw-create-visualize .visualize-nav-tabs .active a {
-  color: #000;
-  font-weight: bold;
-  background: #f9f9f9;
-  border-bottom-color: #f9f9f9;
 }
 .chart-editor.dw-create-visualize .control-group .pull-left {
   margin-right: 20px;
@@ -3710,23 +3727,6 @@ form.well form {
   margin-left: 5px;
   position: relative;
   top: 1px;
-}
-.well .nav-tabs > .active > a,
-.nav-tabs > .active > a:hover {
-  background: #f2f2f2;
-  border-left-color: #c0c0c0;
-  border-right-color: #c0c0c0;
-  border-top-color: #c0c0c0;
-}
-.well .nav-tabs,
-.well .nav-tabs > li > a:hover {
-  border-bottom-color: #c0c0c0;
-}
-.well .nav-tabs > li.active > a:hover {
-  border-bottom-color: transparent;
-}
-.well .nav-tabs > li > a:hover {
-  background: #e8e8e8;
 }
 .form-horizontal.compact {
   margin-bottom: 20px;
