@@ -25,7 +25,7 @@ const Folder = db.define(
 Folder.belongsTo(Folder, { as: 'parent' });
 Folder.hasMany(Folder, { as: 'children', foreignKey: 'parent_id' });
 
-Folder.prototype.isWritableBy = async function(user) {
+Folder.prototype.isWritableBy = async function (user) {
     if (this.user_id && this.user_id === user.id) return true;
     if (this.org_id) return user.hasActivatedTeam(this.org_id);
     return false;

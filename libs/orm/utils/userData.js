@@ -8,7 +8,7 @@ const UserData = require('../models/UserData');
  * @param {string} _default - fallback value to be used if key not set yet
  * @returns the stored value
  */
-module.exports.getUserData = async function(userId, key, _default = undefined) {
+module.exports.getUserData = async function (userId, key, _default = undefined) {
     const row = await UserData.findOne({
         where: { user_id: userId, key }
     });
@@ -21,7 +21,7 @@ module.exports.getUserData = async function(userId, key, _default = undefined) {
  * @param {string} key
  * @param {string} value
  */
-module.exports.setUserData = async function(userId, key, value) {
+module.exports.setUserData = async function (userId, key, value) {
     return ORM.db.query(
         'INSERT INTO user_data(user_id, `key`, value, stored_at) VALUES (:userId, :key, :value, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE value = :value, stored_at = CURRENT_TIMESTAMP',
         { replacements: { userId, key, value } }
@@ -33,7 +33,7 @@ module.exports.setUserData = async function(userId, key, value) {
  * @param {number} userId
  * @param {string} key
  */
-module.exports.unsetUserData = async function(userId, key) {
+module.exports.unsetUserData = async function (userId, key) {
     if (!key) return;
     return UserData.destroy({
         where: {

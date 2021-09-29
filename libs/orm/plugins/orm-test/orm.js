@@ -1,7 +1,7 @@
 const SQ = require('sequelize');
 
 module.exports = {
-    register: async (ORM, config) => {
+    register: async ORM => {
         const ORMTest = ORM.db.define('orm_test', {
             id: {
                 type: SQ.INTEGER,

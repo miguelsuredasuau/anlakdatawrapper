@@ -1,4 +1,3 @@
-const SQ = require('sequelize');
 const Team = require('./Team');
 const chartAttributes = require('./chartAttributes');
 const crypto = require('crypto');
@@ -14,7 +13,7 @@ Chart.belongsTo(Chart, {
     foreignKey: 'forked_from'
 });
 
-Chart.prototype.getPublicId = async function() {
+Chart.prototype.getPublicId = async function () {
     if (this.id && chartIdSalt && this.createdAt) {
         let hash = false;
 
@@ -37,7 +36,7 @@ Chart.prototype.getPublicId = async function() {
     return this.id;
 };
 
-Chart.prototype.isEditableBy = async function(user, session) {
+Chart.prototype.isEditableBy = async function (user, session) {
     if (this.deleted) return false;
 
     if (user && user.role !== 'guest') {
@@ -48,7 +47,7 @@ Chart.prototype.isEditableBy = async function(user, session) {
     return false;
 };
 
-Chart.prototype.isPublishableBy = async function(user) {
+Chart.prototype.isPublishableBy = async function (user) {
     if (user) {
         // guests and pending users are not allowed to publish
         if (!user.isActivated()) return false;
@@ -57,7 +56,7 @@ Chart.prototype.isPublishableBy = async function(user) {
     return false;
 };
 
-Chart.prototype.getThumbnailHash = function() {
+Chart.prototype.getThumbnailHash = function () {
     if (this.createdAt) {
         return crypto
             .createHash('md5')

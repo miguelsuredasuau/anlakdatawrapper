@@ -17,7 +17,7 @@ const Team = db.define(
     }
 );
 
-Team.prototype.invalidatePluginCache = async function() {
+Team.prototype.invalidatePluginCache = async function () {
     const UserTeam = require('./UserTeam');
     const UserPluginCache = require('./UserPluginCache');
 
@@ -43,7 +43,7 @@ Team.prototype.invalidatePluginCache = async function() {
 const Theme = require('./Theme');
 Team.belongsTo(Theme, { foreignKey: 'default_theme' });
 
-Team.prototype.serialize = function() {
+Team.prototype.serialize = function () {
     const d = this.toJSON();
     // delete non-safe properties
     delete d.settings;

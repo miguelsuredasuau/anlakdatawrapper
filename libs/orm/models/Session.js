@@ -76,11 +76,11 @@ function phpSerialize(mixedValue) {
     var vals = '';
     var count = 0;
 
-    var _utf8Size = function(str) {
+    var _utf8Size = function (str) {
         return ~-encodeURI(str).split(/%..|./).length;
     };
 
-    var _getType = function(inp) {
+    var _getType = function (inp) {
         var match;
         var key;
         var cons;
@@ -202,7 +202,7 @@ function phpUnserialize(data) {
 
     var $global = typeof window !== 'undefined' ? window : global;
 
-    var utf8Overhead = function(str) {
+    var utf8Overhead = function (str) {
         var s = str.length;
         for (var i = str.length - 1; i >= 0; i--) {
             var code = str.charCodeAt(i);
@@ -218,10 +218,10 @@ function phpUnserialize(data) {
         }
         return s - 1;
     };
-    var error = function(type, msg, filename, line) {
+    var error = function (type, msg, filename, line) {
         throw new $global[type](msg, filename, line);
     };
-    var readUntil = function(data, offset, stopchr) {
+    var readUntil = function (data, offset, stopchr) {
         var i = 2;
         var buf = [];
         var chr = data.slice(offset, offset + 1);
@@ -236,7 +236,7 @@ function phpUnserialize(data) {
         }
         return [buf.length, buf.join('')];
     };
-    var readChrs = function(data, offset, length) {
+    var readChrs = function (data, offset, length) {
         var i, chr, buf;
 
         buf = [];
@@ -267,7 +267,7 @@ function phpUnserialize(data) {
         var vchrs;
         var value;
         var chrs = 0;
-        var typeconvert = function(x) {
+        var typeconvert = function (x) {
             return x;
         };
 
@@ -280,7 +280,7 @@ function phpUnserialize(data) {
 
         switch (dtype) {
             case 'i':
-                typeconvert = function(x) {
+                typeconvert = function (x) {
                     return parseInt(x, 10);
                 };
                 readData = readUntil(data, dataoffset, ';');
@@ -289,7 +289,7 @@ function phpUnserialize(data) {
                 dataoffset += chrs + 1;
                 break;
             case 'b':
-                typeconvert = function(x) {
+                typeconvert = function (x) {
                     return parseInt(x, 10) !== 0;
                 };
                 readData = readUntil(data, dataoffset, ';');
@@ -298,7 +298,7 @@ function phpUnserialize(data) {
                 dataoffset += chrs + 1;
                 break;
             case 'd':
-                typeconvert = function(x) {
+                typeconvert = function (x) {
                     return parseFloat(x);
                 };
                 readData = readUntil(data, dataoffset, ';');
@@ -374,7 +374,7 @@ function phpUnserialize(data) {
 
 function unserializeSession(input) {
     if (!input) return {};
-    return input.split(/\|/).reduce(function(output, part, index, parts) {
+    return input.split(/\|/).reduce(function (output, part, index, parts) {
         // First part = $key
         if (index === 0) {
             output._currKey = part;

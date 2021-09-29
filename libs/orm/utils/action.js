@@ -7,7 +7,7 @@ const Action = require('../models/Action');
  * @param {string} key - the action key
  * @param {*} details - action details
  */
-module.exports.logAction = async function(userId, key, details) {
+module.exports.logAction = async function (userId, key, details) {
     return Action.create({
         key: key,
         user_id: userId,

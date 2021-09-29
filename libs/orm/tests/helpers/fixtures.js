@@ -18,7 +18,7 @@ function createPlugin(props = {}) {
     });
 }
 
-function createProduct({ team, user, ...props } = {}) {
+function createProduct({ ...props } = {}) {
     const { Product } = require('../../models');
     const id = randomInt(2 ** 16);
     const name = String(randomInt(99999));

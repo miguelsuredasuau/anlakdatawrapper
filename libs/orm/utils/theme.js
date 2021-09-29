@@ -11,7 +11,7 @@ const { indexBy } = require('underscore');
  * loading all themes first and then using them to resolve the
  * theme data dependencies.
  */
-module.exports.getAllMergedThemes = async function() {
+module.exports.getAllMergedThemes = async function () {
     const themes = await Theme.findAll();
     const themesById = indexBy(themes, 'id');
     const out = [];

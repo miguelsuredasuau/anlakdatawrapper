@@ -37,7 +37,7 @@ Theme.belongsTo(Theme, { foreignKey: 'extend' });
  * retreive "merged" theme data, which is the theme data
  * with all data of "extended" themes merged into it.
  */
-Theme.prototype.getMergedData = async function() {
+Theme.prototype.getMergedData = async function () {
     let theme = this;
     const data = [theme.data];
     for (let i = 0; i < MAX_EXTEND_DEPTH; i++) {
@@ -63,7 +63,7 @@ Theme.prototype.getMergedData = async function() {
  * retreive "merged" theme assets, which is the theme assets
  * with all assets of "extended" themes merged into it.
  */
-Theme.prototype.getMergedAssets = async function() {
+Theme.prototype.getMergedAssets = async function () {
     let theme = this;
     const assets = [theme.assets];
     while (theme.get('extend')) {
@@ -80,7 +80,7 @@ Theme.prototype.getMergedAssets = async function() {
 /*
  * retreive "merged" theme less
  */
-Theme.prototype.getMergedLess = async function() {
+Theme.prototype.getMergedLess = async function () {
     let theme = this;
     let less = theme.less || '';
     while (theme.get('extend')) {
@@ -90,18 +90,18 @@ Theme.prototype.getMergedLess = async function() {
     return less;
 };
 
-Theme.prototype.addAssetFile = function(name, url) {
+Theme.prototype.addAssetFile = function (name, url) {
     return this.addAsset('file', name, { url });
 };
 
-Theme.prototype.addAssetFont = function(name, method, urls) {
+Theme.prototype.addAssetFont = function (name, method, urls) {
     const data = { method };
     if (method === 'import') data.import = urls.import;
     else data.files = urls;
     return this.addAsset('font', name, data);
 };
 
-Theme.prototype.addAsset = function(type, name, data) {
+Theme.prototype.addAsset = function (type, name, data) {
     if (!this.assets) this.assets = {};
     const assets = { ...this.assets };
     assets[name] = {
@@ -112,26 +112,26 @@ Theme.prototype.addAsset = function(type, name, data) {
     return this.save({ fields: ['assets'] });
 };
 
-Theme.prototype.getAssetUrl = function(name) {
+Theme.prototype.getAssetUrl = function (name) {
     return this.assets && this.assets[name] ? this.assets[name].url : null;
 };
 
-Theme.prototype.getAssets = async function(type) {
+Theme.prototype.getAssets = async function (type) {
     const assets = await this.getMergedAssets();
     return Object.entries(assets)
         .map(([name, value]) => ({ ...value, name }))
         .filter(d => !type || d.type === type);
 };
 
-Theme.prototype.getAssetFiles = function() {
+Theme.prototype.getAssetFiles = function () {
     return this.getAssets('file');
 };
 
-Theme.prototype.getAssetFonts = function() {
+Theme.prototype.getAssetFonts = function () {
     return this.getAssets('font');
 };
 
-Theme.prototype.removeAsset = async function(name) {
+Theme.prototype.removeAsset = async function (name) {
     if (this.assets[name]) {
         const assets = { ...this.assets };
         delete assets[name];

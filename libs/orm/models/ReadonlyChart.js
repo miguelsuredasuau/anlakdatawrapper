@@ -1,7 +1,6 @@
 const Chart = require('./Chart');
 const Team = require('./Team');
 const User = require('./User');
-const SQ = require('sequelize');
 const chartAttributes = require('./chartAttributes');
 const pick = require('lodash/pick');
 const { db } = require('../index');

@@ -12,7 +12,9 @@ async function findPlugins(localPluginRoot, dwPlugins) {
             await stat(requirePath);
             plugins[plugin[0]] = plugin[1];
             plugins[plugin[0]].requirePath = requirePath;
-        } catch (error) {}
+        } catch (error) {
+            console.warn('could not find plugin');
+        }
     }
 
     return plugins;

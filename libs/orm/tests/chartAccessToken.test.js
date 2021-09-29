@@ -19,7 +19,7 @@ test.after.always(async t => {
 });
 
 test('create a new ChartAccessToken', async t => {
-    const { ChartAccessToken, chart, user } = t.context;
+    const { ChartAccessToken, chart } = t.context;
     let res;
     try {
         res = await ChartAccessToken.newToken({

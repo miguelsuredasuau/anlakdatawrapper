@@ -5,7 +5,6 @@ const { init } = require('./helpers/orm');
 test.before(async t => {
     t.context.orm = await init();
 
-    const { Chart } = require('../models');
     t.context.chart = await createChart({
         metadata: {
             data: {

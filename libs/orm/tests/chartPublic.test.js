@@ -142,7 +142,7 @@ test('ReadonlyChart.fromChart copies included model from passed chart', async t 
 test('ReadonlyChart.fromPublicChart copies included model from passed chart', async t => {
     const Chart = require('../models/Chart');
     const ReadonlyChart = require('../models/ReadonlyChart');
-    const { chart, chartUser, publicChart, publicChartUser } = t.context;
+    const { chart, chartUser, publicChart } = t.context;
 
     const readonlyChart = await ReadonlyChart.fromPublicChart(chart, publicChart);
     t.is(readonlyChart.user, undefined);

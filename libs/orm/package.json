@@ -2,7 +2,6 @@
     "name": "@datawrapper/orm",
     "version": "3.26.0",
     "description": "A database abstraction layer for Datawrapper",
-    "homepage": "https://github.com/datawrapper/orm#readme",
     "license": "MIT",
     "author": "Datawrapper GmbH",
     "files": [
@@ -13,8 +12,8 @@
     ],
     "main": "index.js",
     "scripts": {
-        "format": "prettier 'models/**/*.js' --write",
-        "lint": "prettier --check 'models/**/*.{js,html}' && healthier 'models/**/*.{js,html}'",
+        "lint": "cd ../.. && scripts/lint libs/orm",
+        "format": "cd ../.. && scripts/format libs/orm",
         "test": "DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} ava --verbose",
         "test:coverage": "DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} nyc --reporter=html --reporter=text ava --verbose"
     },
@@ -38,55 +37,7 @@
         "babel-eslint": "~10.0.3",
         "dotenv": "8.2.0",
         "healthier": "~3.2.0",
-        "husky": "~1.3.1",
-        "lint-staged": "~9.4.2",
-        "nyc": "^15.1.0",
-        "prettier": "~1.18.2"
-    },
-    "lint-staged": {
-        "*.js": [
-            "prettier --write",
-            "healthier",
-            "git add"
-        ]
-    },
-    "eslintConfig": {
-        "parser": "babel-eslint",
-        "rules": {
-            "no-console": [
-                "error",
-                {
-                    "allow": [
-                        "warn",
-                        "error"
-                    ]
-                }
-            ],
-            "camelcase": [
-                "warn",
-                {
-                    "ignoreDestructuring": true,
-                    "properties": "never"
-                }
-            ],
-            "no-unused-vars": [
-                "off"
-            ]
-        },
-        "root": true
-    },
-    "prettier": {
-        "arrowParens": "avoid",
-        "printWidth": 100,
-        "semi": true,
-        "singleQuote": true,
-        "tabWidth": 4,
-        "trailingComma": "none"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
+        "nyc": "^15.1.0"
     },
     "ava": {
         "cache": false,

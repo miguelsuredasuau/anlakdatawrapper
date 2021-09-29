@@ -5,7 +5,7 @@ const { init } = require('./helpers/orm');
 test.before(async t => {
     t.context.orm = await init();
 
-    const { PluginData, Plugin } = require('../models');
+    const { PluginData } = require('../models');
     t.context.PluginData = PluginData;
 
     t.context.plugin = await createPlugin();
@@ -32,7 +32,7 @@ test('create a new ChartAccessToken', async t => {
         t.true(res.stored_at instanceof Date);
 
         // store another one
-        const res2 = await PluginData.create({
+        await PluginData.create({
             plugin_id: plugin.id,
             stored_at: new Date(),
             key: 'orm-test',

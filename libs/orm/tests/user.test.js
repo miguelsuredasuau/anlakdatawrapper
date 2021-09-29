@@ -246,13 +246,11 @@ test('pending user has role pending', t => {
 
 test('pending user has activation token', t => {
     const { pendingUser } = t.context;
-    const obj = pendingUser.serialize();
     t.is(pendingUser.activate_token, '12345678');
 });
 
 test('pending user has is not activated', t => {
     const { pendingUser } = t.context;
-    const obj = pendingUser.serialize();
     t.is(pendingUser.isActivated(), false);
 });
 

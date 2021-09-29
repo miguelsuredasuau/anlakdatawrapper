@@ -54,7 +54,7 @@ const User = db.define(
  * use user.serialize() whenever user info is about
  * to get shared publicly, via API etc
  */
-User.prototype.serialize = function() {
+User.prototype.serialize = function () {
     const d = this.toJSON();
     // delete non-safe properties
     delete d.pwd;
@@ -69,21 +69,21 @@ User.prototype.serialize = function() {
 /*
  * check if the user is a Datawrapper admin
  */
-User.prototype.isAdmin = function() {
+User.prototype.isAdmin = function () {
     return this.role === 'admin' || this.role === 'sysadmin';
 };
 
 /*
  * check if the user has activated their account
  */
-User.prototype.isActivated = function() {
+User.prototype.isActivated = function () {
     return this.role !== 'pending' && this.role !== 'guest';
 };
 
 /*
  * check if the user is allowed to view and edit a chart
  */
-User.prototype.mayEditChart = async function(chart) {
+User.prototype.mayEditChart = async function (chart) {
     // the user is the author!
     if (this.id === chart.author_id) return true;
     // the user has admin privilegen
@@ -92,7 +92,7 @@ User.prototype.mayEditChart = async function(chart) {
     return this.hasActivatedTeam(chart.organization_id);
 };
 
-User.prototype.hasActivatedTeam = async function(teamId) {
+User.prototype.hasActivatedTeam = async function (teamId) {
     const UserTeam = require('./UserTeam');
 
     const team = await UserTeam.findOne({
@@ -111,7 +111,7 @@ User.prototype.hasActivatedTeam = async function(teamId) {
 /*
  * check if the user is allowed to administrate a team
  */
-User.prototype.mayAdministrateTeam = async function(teamId) {
+User.prototype.mayAdministrateTeam = async function (teamId) {
     const UserTeam = require('./UserTeam');
     if (this.role === 'admin' || this.role === 'sysadmin') return true;
 
@@ -132,7 +132,7 @@ User.prototype.mayAdministrateTeam = async function(teamId) {
  * get list of all products a user has access to
  * through UserProduct or TeamProducts
  */
-User.prototype.getAllProducts = async function() {
+User.prototype.getAllProducts = async function () {
     const products = await this.getProducts();
     const teams = await this.getTeams();
     if (teams.length) {
@@ -150,7 +150,7 @@ User.prototype.getAllProducts = async function() {
  *
  * @returns true|false
  */
-User.prototype.mayUsePlugin = async function(pluginId) {
+User.prototype.mayUsePlugin = async function (pluginId) {
     // check if the plugin is available for everyone
     const Plugin = require('./Plugin');
     const plugin = await Plugin.findOne({
@@ -183,7 +183,7 @@ User.prototype.mayUsePlugin = async function(pluginId) {
 /*
  * returns a list of all plugins a user has access to
  */
-User.prototype.getPlugins = async function() {
+User.prototype.getPlugins = async function () {
     const Plugin = require('./Plugin');
     const plugins = await Plugin.findAll();
     const hasAccess = [];
@@ -210,8 +210,7 @@ User.prototype.getPlugins = async function() {
 /*
  * returns the highest-priority product that is enabled for this user
  */
-User.prototype.getActiveProduct = async function() {
-    const UserProduct = require('./UserProduct');
+User.prototype.getActiveProduct = async function () {
     const Product = require('./Product');
     const user = this;
     // get user products, highest priority first
@@ -250,7 +249,7 @@ User.prototype.getActiveProduct = async function() {
 /*
  * returns the currently active team, or null if it doesn't exist
  */
-User.prototype.getActiveTeam = async function(session) {
+User.prototype.getActiveTeam = async function (session) {
     const { getUserData } = require('../utils/userData');
 
     const teams = this.teams || (await this.getTeams());
