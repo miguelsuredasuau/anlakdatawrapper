@@ -8,7 +8,7 @@ export default function (app, chart, dataset, Handsontable) {
     const colTypeIcons = {
         date: 'fa fa-clock-o'
     };
-    function HtmlCellRender(instance, TD, row, col, prop, value, cellProperties) {
+    function HtmlCellRender(instance, TD, row, col, prop, value) {
         var escaped = purifyHtml(Handsontable.helper.stringify(value));
         TD.innerHTML = escaped; // this is faster than innerHTML. See: https://github.com/warpech/jquery-handsontable/wiki/JavaScript-&-DOM-performance-tips
     }

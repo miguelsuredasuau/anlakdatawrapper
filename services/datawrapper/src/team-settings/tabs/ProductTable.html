@@ -1,6 +1,4 @@
-<p style="margin-bottom: 10px;">
-    {@html __('teams / products / p') }
-</p>
+<p style="margin-bottom: 10px">{@html __('teams / products / p') }</p>
 
 {#if isAdmin} {#if loadingTeamProducts || loadingAllProducts}
 <p><i class="fa fa-spin fa-circle-o-notch"></i> &nbsp; {@html __('teams / products / loading') }</p>
@@ -11,12 +9,8 @@
 <TableDisplay columnHeaders="{productHeaders}">
     {#each products as product, i}
     <tr>
-        <td>
-            { product.id }
-        </td>
-        <td>
-            { product.name }
-        </td>
+        <td>{ product.id }</td>
+        <td>{ product.name }</td>
         <td>
             {#if editId === product.id }
             <input type="text" bind:value="product.expires" />
@@ -48,8 +42,8 @@
 
 <!-- Add products: -->
 {#if addableProducts.length }
-<div style="display: flex;">
-    <div style="display: block;">
+<div style="display: flex">
+    <div style="display: block">
         <SelectControl
             label="{ __('teams / products / add-product') }"
             bind:value="addProduct"
@@ -58,8 +52,8 @@
     </div>
 
     {#if addProduct}
-    <div style="display: block;">
-        <button on:click="addProduct()" class="btn btn-primary" style="margin-left: 10px;">
+    <div style="display: block">
+        <button on:click="addProduct()" class="btn btn-primary" style="margin-left: 10px">
             <i class="fa { addingProduct ? 'fa fa-spin fa-circle-o-notch' : 'fa-plus' }"></i>
             {@html __('teams / products / add') }
         </button>

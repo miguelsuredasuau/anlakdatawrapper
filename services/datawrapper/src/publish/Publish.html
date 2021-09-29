@@ -45,7 +45,15 @@
         <ul class="chart-actions">
             {#each sortedChartActions as action} {#if action}
             <li
-                class="action action-{action.id} {action.class||''} {action.id == active_action ? 'active':''}"
+                class="
+                    action action-{action.id}
+                    {action.class||''}
+                    {action.id
+                    ==
+                    active_action
+                    ?
+                    'active':''}
+                "
             >
                 <a
                     on:click|preventDefault="select(action)"
@@ -173,7 +181,7 @@
                     // publish chart
                     httpReq
                         .post(`/v3/charts/${chartId}/publish`)
-                        .then(res => {
+                        .then(() => {
                             this.set({
                                 published: true,
                                 progress: ['done']
@@ -210,7 +218,7 @@
 
                 httpReq
                     .post(`/v3/charts/${chartId}/unpublish`)
-                    .then(res => {
+                    .then(() => {
                         httpReq.get(`/v3/charts/${chartId}`).then(chartInfo => {
                             this.store.set(chartInfo);
                             trackEvent('Chart Editor', 'unpublish-success');

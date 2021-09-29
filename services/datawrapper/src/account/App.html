@@ -114,16 +114,8 @@
 
             dw.backend.__svelteApps.account = this;
 
-            const {
-                email,
-                user,
-                userId,
-                groups,
-                teams,
-                adminTeams,
-                pages,
-                currentTeam
-            } = this.get();
+            const { email, user, userId, groups, teams, adminTeams, pages, currentTeam } =
+                this.get();
 
             if (pages.length) {
                 groups[0].tabs.push.apply(groups[0].tabs, pages);
@@ -164,7 +156,7 @@
                 this.setTab(state.id);
             });
         },
-        onstate({ changed, current, previous }) {
+        onstate({ changed, current }) {
             if (changed.activeTab && current.activeTab && !popstate) {
                 window.history.pushState(
                     { id: current.activeTab.id },

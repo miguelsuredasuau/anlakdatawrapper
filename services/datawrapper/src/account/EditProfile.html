@@ -1,7 +1,7 @@
 <h2>{ __("Edit profile") }</h2>
 
 {#if messages && messages.length }
-<div class="row" style="margin-top: 20px;">
+<div class="row" style="margin-top: 20px">
     <div class="span6">
         <div class="alert alert-success">
             {#each messages as message}
@@ -15,9 +15,7 @@
 <div class="row edit-account" style="margin-top: { messages && messages.length ? 0 : 20 }px;">
     <div class="span6">
         {#if changeEmail && errors.length}
-        <div class="alert alert-warning">
-            {@html errors.join('')}
-        </div>
+        <div class="alert alert-warning">{@html errors.join('')}</div>
         {/if}
         <FormBlock
             label="{ __('E-Mail') }"
@@ -86,7 +84,7 @@
                 class="input-xlarge"
             />
             {/if}
-            <div style="width: 287px;">
+            <div style="width: 287px">
                 <CheckPassword
                     bind:password="newPassword"
                     bind:passwordHelp
@@ -96,7 +94,7 @@
                 />
             </div>
         </FormBlock>
-        <div class="control-group" style="margin-top: -10px; margin-bottom: 20px;">
+        <div class="control-group" style="margin-top: -10px; margin-bottom: 20px">
             <label class="checkbox">
                 <input bind:checked="showPasswordAsClearText" type="checkbox" />
                 {@html __("account / invite / password-clear-text")}
@@ -113,26 +111,20 @@
         </button>
         <hr />
         {/if} {#if deleteAccount3}
-        <h2 style="margin-bottom: 20px;">{ __("account / delete / hed") }</h2>
-        <h3>
-            { __("Your account has been deleted.") }
-        </h3>
+        <h2 style="margin-bottom: 20px">{ __("account / delete / hed") }</h2>
+        <h3>{ __("Your account has been deleted.") }</h3>
         <a href="/" class="btn btn-primary btn-large">{ __("Goodbye!") }</a>
 
         {:elseif deleteAccount2}
-        <h2 style="margin-bottom: 20px;">{ __("account / delete / hed") }</h2>
+        <h2 style="margin-bottom: 20px">{ __("account / delete / hed") }</h2>
         <div class="delete-account">
-            <p>
-                { __("account / delete / really") }
-            </p>
+            <p>{ __("account / delete / really") }</p>
             <ul>
                 <li>{ __("account / confirm-account-deletion / free") }</li>
                 <li>{ __("You cannot login and logout anymore.") }</li>
                 <li>{ __("You cannot edit or remove your charts anymore.") }</li>
             </ul>
-            <p>
-                { __("account / delete / charts-stay-online") }
-            </p>
+            <p>{ __("account / delete / charts-stay-online") }</p>
 
             <FormBlock
                 label="{ __('Please enter your password to confirm the deletion request:') }"
@@ -145,9 +137,7 @@
                     placeholder="{ __('Password') }"
                 />
             </FormBlock>
-            <p class="lead">
-                {@html __("account / delete / really-really") }
-            </p>
+            <p class="lead">{@html __("account / delete / really-really") }</p>
             <div class="control-group">
                 <button on:click="set({deleteAccount2: false})" class="btn btn-info">
                     <i class="fa fa-chevron-left"></i>&nbsp; { __("No, I changed my mind..") }

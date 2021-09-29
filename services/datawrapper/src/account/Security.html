@@ -36,7 +36,7 @@
                         class="input-xxlarge span2 my-0"
                         autocomplete="off"
                         type="text"
-                        style="font-family: 'Roboto Mono';"
+                        style="font-family: 'Roboto Mono'"
                         bind:value="otp"
                         data-lpignore="true"
                         autofocus
@@ -58,9 +58,7 @@
                 {/if} {/if} {#if awaitEnable} {#await awaitEnable}
                 <i class="fa fa-spinner fa-spin"></i>
                 {:then}
-                <div class="text-success">
-                    Success!
-                </div>
+                <div class="text-success">Success!</div>
                 {:catch}
                 <div class="text-error">
                     Error: could not enable provider. Did you enter a valid OTP?
@@ -68,9 +66,7 @@
                 {/await} {/if} {#if awaitDisable} {#await awaitDisable}
                 <i class="fa fa-spinner fa-spin"></i>
                 {:catch}
-                <div class="text-error">
-                    Error: could not disable provider
-                </div>
+                <div class="text-error">Error: could not disable provider</div>
                 {/await} {/if}
             </td>
             <td>

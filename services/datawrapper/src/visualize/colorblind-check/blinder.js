@@ -292,17 +292,16 @@ const blinder = (function () {
                     'return this.rgb().' + sourceColorSpaceName.toLowerCase() + '();'
                 ); // Fallback
                 ONECOLOR[sourceColorSpaceName].propertyNames.forEach(function (propertyName, i) {
-                    obj[propertyName] = obj[
-                        propertyName === 'black' ? 'k' : propertyName[0]
-                    ] = new Function(
-                        'value',
-                        'isDelta',
-                        'return this.' +
-                            sourceColorSpaceName.toLowerCase() +
-                            '().' +
-                            propertyName +
-                            '(value, isDelta);'
-                    );
+                    obj[propertyName] = obj[propertyName === 'black' ? 'k' : propertyName[0]] =
+                        new Function(
+                            'value',
+                            'isDelta',
+                            'return this.' +
+                                sourceColorSpaceName.toLowerCase() +
+                                '().' +
+                                propertyName +
+                                '(value, isDelta);'
+                        );
                 });
                 for (var prop in obj) {
                     if (
@@ -957,25 +956,13 @@ const blinder = (function () {
     var colorProfile = 'sRGB';
     var gammaCorrection = 2.2;
     var matrixXyzRgb = [
-        3.240712470389558,
-        -0.969259258688888,
-        0.05563600315398933,
-        -1.5372626602963142,
-        1.875996969313966,
-        -0.2039948802843549,
-        -0.49857440415943116,
-        0.041556132211625726,
+        3.240712470389558, -0.969259258688888, 0.05563600315398933, -1.5372626602963142,
+        1.875996969313966, -0.2039948802843549, -0.49857440415943116, 0.041556132211625726,
         1.0570636917433989
     ];
     var matrixRgbXyz = [
-        0.41242371206635076,
-        0.21265606784927693,
-        0.019331987577444885,
-        0.3575793401363035,
-        0.715157818248362,
-        0.11919267420354762,
-        0.1804662232369621,
-        0.0721864539171564,
+        0.41242371206635076, 0.21265606784927693, 0.019331987577444885, 0.3575793401363035,
+        0.715157818248362, 0.11919267420354762, 0.1804662232369621, 0.0721864539171564,
         0.9504491124870351
     ];
     // xy: coordinates, m: slope, yi: y-intercept

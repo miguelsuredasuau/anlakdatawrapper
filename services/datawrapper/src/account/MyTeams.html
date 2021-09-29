@@ -65,9 +65,7 @@
         <h3>{@html __('account / my-teams / create')}</h3>
         {#if !createTeam}
         <div class="hed">
-            <p>
-                {@html __('account / my-teams / why-teams')}
-            </p>
+            <p>{@html __('account / my-teams / why-teams')}</p>
             <button
                 on:click="set({createTeam:true})"
                 class="btn btn-large"
@@ -77,9 +75,7 @@
             </button>
         </div>
         {:else}
-        <p>
-            { @html __('team-create / p') }
-        </p>
+        <p>{ @html __('team-create / p') }</p>
 
         <FormBlock label="{ __('team-create / name') }" help="{ __('team-create / help') }">
             <input
@@ -198,7 +194,7 @@
                     )
                 ) {
                     httpReq(`/v3/teams/${team.id}/members/${user.id}`, { method: 'delete' })
-                        .then(res => {
+                        .then(() => {
                             window.alert(__('account / my-teams / leave-team / done'));
                             teams.splice(
                                 teams.findIndex(t => t.id === team.id),

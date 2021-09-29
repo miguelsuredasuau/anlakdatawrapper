@@ -108,14 +108,14 @@
                 window.chart
                     .attributes(chart)
                     .save()
-                    .then(d => {
+                    .then(() => {
                         this.set({
                             statusUrl: `/v3/charts/${chart.id}/publish/status/${chart.publicVersion}`
                         });
                         // publish chart
                         httpReq
                             .post(`/v3/charts/${chart.id}/publish`)
-                            .then(res => {
+                            .then(() => {
                                 httpReq.get(`/v3/charts/${chart.id}`).then(res => {
                                     trackEvent('Chart Editor', 'publish-success');
                                     me.publishFinished(res);
@@ -147,7 +147,7 @@
 
                 httpReq
                     .post(`/v3/charts/${chart.id}/unpublish`)
-                    .then(res => {
+                    .then(() => {
                         httpReq.get(`/v3/charts/${chart.id}`).then(chartUpdates => {
                             this.set({ chart: chartUpdates });
                             trackEvent('Chart Editor', 'unpublish-success');

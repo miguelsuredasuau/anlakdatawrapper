@@ -6,6 +6,6 @@ const store = new Store({});
 
 const data = {};
 
-function init(app) {}
+function init() {}
 
 export default { App, data, store, init };

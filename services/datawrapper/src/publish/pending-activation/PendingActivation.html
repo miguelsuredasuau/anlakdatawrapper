@@ -5,15 +5,11 @@
 
     <p>{@html __("publish / pending-activation / p")}</p>
 
-    <div style="margin-top: 20px;">
+    <div style="margin-top: 20px">
         {#if status == 'success'}
-        <p>
-            {@html __("publish / pending-activation / resend-success")}
-        </p>
+        <p>{@html __("publish / pending-activation / resend-success")}</p>
         {:elseif status == 'error'}
-        <p>
-            {@html __("publish / pending-activation / resend-error")}
-        </p>
+        <p>{@html __("publish / pending-activation / resend-error")}</p>
         {:else}
         <button on:click="resendActivation()" class="btn btn-primary">
             <i class="fa { status == 'sending' ? 'fa-spin fa-circle-o-notch' : 'fa-envelope' }"></i>

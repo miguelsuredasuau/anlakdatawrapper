@@ -1,8 +1,6 @@
 <div class="row">
     <div class="span6">
-        <p style="margin-bottom: 10px;">
-            {@html __('teams / defaults / p') }
-        </p>
+        <p style="margin-bottom: 10px">{@html __('teams / defaults / p') }</p>
 
         <FormBlock label="{__('teams / name' )}" help="{__('teams / name / help' )}">
             <input type="text" bind:value="team.name" placeholder="" />
@@ -159,7 +157,7 @@
             set(settings, 'default.metadata.publish', publishMeta);
             this.set({ settings, initialized: true });
         },
-        onstate({ changed, current, previous }) {
+        onstate({ changed, current }) {
             if (current.settings && (changed.settings || changed.team || changed.defaultTheme)) {
                 this.fire('change', {
                     team: current.team,

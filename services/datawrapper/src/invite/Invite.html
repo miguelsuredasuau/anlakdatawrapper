@@ -1,6 +1,6 @@
 {#if customLogo}
 <div class="brand">
-    <img src="/static/custom/{{ customLogo }}}" style="height: 50px;" alt="logo" />
+    <img src="/static/custom/{{ customLogo }}}" style="height: 50px" alt="logo" />
 </div>
 {/if}
 
@@ -59,13 +59,9 @@
                 </label>
             </div>
             {#if activateError}
-            <div class="alert alert-warning">
-                {@html activateError}
-            </div>
+            <div class="alert alert-warning">{@html activateError}</div>
             {/if} {#if activateSuccess}
-            <div class="alert alert-success">
-                {@html activateSuccess}
-            </div>
+            <div class="alert alert-success">{@html activateSuccess}</div>
             {/if} {#if email}
             <div class="control-group login-help">
                 {@html __('account / invite / your-login-is').replace('%s', `<span class="email"

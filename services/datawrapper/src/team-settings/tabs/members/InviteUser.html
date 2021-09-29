@@ -78,7 +78,6 @@
             inviteOptions({
                 isAdmin,
                 isTeamOwner,
-                inviteeEmail,
                 isValidEmail,
                 inviteeExistsLoading,
                 inviteeExists
@@ -255,7 +254,7 @@
         oncreate() {
             window.teamSettingsInvite = this;
         },
-        onstate({ changed, current, previous }) {
+        onstate({ changed }) {
             if (changed.inviteeEmail) {
                 this.set({ inviteeExists: false });
                 this.debounceCheckUser();

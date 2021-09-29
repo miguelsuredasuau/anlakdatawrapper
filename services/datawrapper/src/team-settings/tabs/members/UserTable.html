@@ -8,17 +8,13 @@
 <TableDisplay columnHeaders="{userHeaders}">
     {#each sortedUsers as user, i}
     <tr>
-        <td>
-            { user.email }
-        </td>
+        <td>{ user.email }</td>
         {#if isAdmin}
         <td>
             <a href="/admin/users/{user.id}">{ user.id }</a>
         </td>
         {/if}
-        <td>
-            { user.charts }
-        </td>
+        <td>{ user.charts }</td>
         <td>
             {#if editId === user.id }
             <SelectInput bind:value="user.role" width="200px" options="{roles}" />

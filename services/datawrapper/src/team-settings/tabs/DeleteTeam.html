@@ -1,12 +1,8 @@
-<p>
-    { @html __('teams / delete / p') }
-</p>
+<p>{ @html __('teams / delete / p') }</p>
 
 <SwitchControl label="{ __('teams / delete / yes') }" bind:value="deleteTeam">
     {#if deleteTeam}
-    <p>
-        { @html __('teams / delete / really') }
-    </p>
+    <p>{ @html __('teams / delete / really') }</p>
 
     <CheckboxControl label="{ __('teams / delete / really-yes') }" bind:value="deleteTeam2" />
 

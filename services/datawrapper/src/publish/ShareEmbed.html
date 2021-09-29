@@ -259,7 +259,7 @@
                 return [defaultOption, ...pluginShareOptions];
             },
             embedOptions({ embedTemplates }) {
-                return embedTemplates.map(({ title, id, text }, index) => ({
+                return embedTemplates.map(({ title, id, text }) => ({
                     label: purifyHtml(title),
                     value: purifyHtml(id),
                     help: purifyHtml(text)

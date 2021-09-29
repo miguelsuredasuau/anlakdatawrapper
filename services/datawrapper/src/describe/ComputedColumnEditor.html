@@ -1,6 +1,6 @@
-<div style="margin-bottom: 15px;">
+<div style="margin-bottom: 15px">
     {#if didYouKnow}
-    <div class="did-you-know" style="margin-top: 10px; margin-bottom: 1em;">
+    <div class="did-you-know" style="margin-top: 10px; margin-bottom: 1em">
         <div on:click="closeDidYouKnow()" class="close">
             <i class="im im-check-mark-circle"></i>
         </div>
@@ -31,7 +31,7 @@
 
         <!-- Spinner: -->
         {#if checking && !error}
-        <i style="color: #ccc;" class="fa fa-cog fa-spin"></i>
+        <i style="color: #ccc" class="fa fa-cog fa-spin"></i>
         {/if}
 
         <HelpDisplay>
@@ -42,9 +42,7 @@
 
     <!-- Errors: -->
     {#if errDisplay}
-    <p class="mini-help errors">
-        {@html errNiceDisplay}
-    </p>
+    <p class="mini-help errors">{@html errNiceDisplay}</p>
     {/if}
 
     <!-- Formula hint: -->
@@ -60,7 +58,7 @@
         <i class="hat-icon im im-graduation-hat"></i>
         {__('cc / formula / hint / insert-data')}
         <a
-            style="color: white; font-weight: bold;"
+            style="color: white; font-weight: bold"
             on:click|preventDefault="copyFormulaToData()"
             href="/#apply"
         >
@@ -69,9 +67,7 @@
     </div>
     {/if}
 
-    <p style="margin-top: 1em;">
-        {__('computed columns / modal / available columns')}:
-    </p>
+    <p style="margin-top: 1em">{__('computed columns / modal / available columns')}:</p>
 
     <ul class="col-select">
         {#each metaColumns as col}
@@ -250,11 +246,11 @@
             };
         },
         computed: {
-            title({ column, name }) {
+            title({ name }) {
                 var s = __('describe / edit-column');
                 return s.replace('%s', `"${name}"`);
             },
-            metaColumns({ columns, column, computedColumns }) {
+            metaColumns({ columns, column }) {
                 const metaColumns = [];
                 if (!columns) return metaColumns;
                 const columnVarName = columnNameToVariable(column.origName());

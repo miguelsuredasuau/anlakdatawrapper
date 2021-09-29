@@ -8,13 +8,9 @@
             {#if !otpPrompt}
             <p>{@html __("login / login / intro")}</p>
             {/if} {#if loginSuccess}
-            <div class="alert alert-success">
-                {@html loginSuccess}
-            </div>
+            <div class="alert alert-success">{@html loginSuccess}</div>
             {/if} {#if loginError}
-            <div class="alert alert-error">
-                {@html loginError}
-            </div>
+            <div class="alert alert-error">{@html loginError}</div>
             {/if}
 
             <form class="login-form form-vertical">
@@ -57,7 +53,7 @@
                 </div>
                 {#if !forgotPassword}
                 <div>
-                    <label class="checkbox" for="keep-login" style="margin-top: 10px;">
+                    <label class="checkbox" for="keep-login" style="margin-top: 10px">
                         <input bind:checked="rememberLogin" class="keep-login" type="checkbox" />
                         {@html __("Remember login?")}
                     </label>
@@ -74,7 +70,7 @@
 
             <div>
                 {#if forgotPassword}
-                <div style="padding-bottom: 10px;">
+                <div style="padding-bottom: 10px">
                     <button
                         disabled="{invalidLoginEmail}"
                         class="btn btn-send-pw btn-primary"
@@ -103,22 +99,14 @@
             <h3>{@html __("login / signup / headline")}</h3>
 
             {#if signupWithoutPassword}
-            <p>
-                { __('signup / mobile / p1') }
-            </p>
-            <p>
-                { __('signup / mobile / p2') }
-            </p>
+            <p>{ __('signup / mobile / p1') }</p>
+            <p>{ __('signup / mobile / p2') }</p>
             {:else}
             <p>{@html __("login / signup / intro")}</p>
             {/if} {#if signupSuccess}
-            <div class="alert alert-success">
-                {@html signupSuccess}
-            </div>
+            <div class="alert alert-success">{@html signupSuccess}</div>
             {/if} {#if signupError}
-            <div class="alert alert-error">
-                {@html signupError}
-            </div>
+            <div class="alert alert-error">{@html signupError}</div>
             {/if} {#if !signupSuccess || !signupWithoutPassword}
             <div class="signup-form form-vertcal">
                 <form>
@@ -155,7 +143,7 @@
                             class="span3 input-xlarge register-pwd"
                         />
                         {/if}
-                        <div style="width: 270px;">
+                        <div style="width: 270px">
                             <CheckPassword
                                 bind:password="signupPassword"
                                 bind:passwordHelp
@@ -173,7 +161,7 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="checkbox" for="keep-login" style="margin-top: 10px;">
+                        <label class="checkbox" for="keep-login" style="margin-top: 10px">
                             <input bind:checked="showPasswordAsClearText" type="checkbox" />
                             {@html __("account / invite / password-clear-text")}
                         </label>
@@ -220,11 +208,9 @@
                 >{#if signin.icon}<i class="{ signin.icon }"></i>{/if} {@html signin.label}</a
             >{/each}.
         </div>
-        <div>
-            {@html __("login / agree-terms")}
-        </div>
+        <div>{@html __("login / agree-terms")}</div>
     </div>
-    {/if}
+    {/if}index
 
     <div class="signup-confirm hidden">
         <div class="jumbo-text">
@@ -243,8 +229,9 @@
     import { trackEvent } from '@datawrapper/shared/analytics';
     import CheckPassword from '../shared/CheckPassword.html';
 
-    // eslint-disable-next-line
-    const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const emailRegex =
+        // eslint-disable-next-line
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     function isValidEmail(s) {
         return emailRegex.test(s);
     }
@@ -287,18 +274,12 @@
                 if (loggingIn) return true;
                 return !isValidEmail(loginEmail) || loginPassword === '';
             },
-            invalidSignupForm({
-                signupWithoutPassword,
-                signingUp,
-                signupEmail,
-                signupPassword,
-                signupPasswordOk
-            }) {
+            invalidSignupForm({ signupWithoutPassword, signingUp, signupEmail, signupPasswordOk }) {
                 if (signingUp) return true;
                 if (!isValidEmail(signupEmail)) return true;
                 if (!signupWithoutPassword && !signupPasswordOk) return true;
             },
-            invalidSignupEmail({ signupEmail, forgotPassword }) {
+            invalidSignupEmail({ signupEmail }) {
                 return !isValidEmail(signupEmail) && signupEmail !== '';
             }
         },
@@ -346,12 +327,8 @@
                 this.set({ loggingIn: false });
             },
             async doSignUp() {
-                const {
-                    signupWithoutPassword,
-                    signupEmail,
-                    signupPassword,
-                    signingUp
-                } = this.get();
+                const { signupWithoutPassword, signupEmail, signupPassword, signingUp } =
+                    this.get();
                 if (signingUp) return;
                 this.set({
                     signingUp: true,

@@ -7,9 +7,7 @@
     on:dragleave="resetDrag()"
 >
     {#if dragover}
-    <div class="draginfo">
-        {@html __('upload / drag-csv-here')}
-    </div>
+    <div class="draginfo">{@html __('upload / drag-csv-here')}</div>
     {/if}
 
     <!-- prettier-ignore -->

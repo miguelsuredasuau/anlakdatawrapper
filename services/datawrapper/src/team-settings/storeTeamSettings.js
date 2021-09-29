@@ -8,7 +8,7 @@ export default debounce(function (team, settings, defaultTheme) {
     if (cache[team.id] === hash) {
         cache[team.id] = hash;
         // nothing has changed since last call
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             resolve();
         });
     }
