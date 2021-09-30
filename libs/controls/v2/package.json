@@ -75,6 +75,7 @@
         "singleQuote": true
     },
     "eslintConfig": {
+        "root": true,
         "parser": "babel-eslint",
         "rules": {
             "no-console": [
