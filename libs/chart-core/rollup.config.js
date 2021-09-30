@@ -144,8 +144,7 @@ module.exports = [
             alias({
                 entries: [
                     {
-                        find:
-                            '@emotion/css/create-instance/dist/emotion-css-create-instance.cjs.js',
+                        find: '@emotion/css/create-instance/dist/emotion-css-create-instance.cjs.js',
                         replacement: '@emotion/css/create-instance'
                     }
                 ]

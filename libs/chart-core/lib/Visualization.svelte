@@ -496,7 +496,7 @@ Please make sure you called __(key) with a key of type "string".
 
             function resize() {
                 clearTimeout(reloadTimer);
-                reloadTimer = setTimeout(function() {
+                reloadTimer = setTimeout(function () {
                     dwChart.vis().fire('resize');
                     dwChart.render(isIframe, outerContainer);
                 }, 200);
@@ -591,7 +591,8 @@ Please make sure you called __(key) with a key of type "string".
     bind:this={target}
     class:content-below-chart={contentBelowChart}
     aria-hidden={!!ariaDescription}
-    class="dw-chart-body" />
+    class="dw-chart-body"
+/>
 
 {#if get(theme, 'data.template.afterChart')}
     {@html theme.data.template.afterChart}

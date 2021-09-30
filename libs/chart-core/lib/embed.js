@@ -4,7 +4,7 @@
  * When you update this, make sure to upload new versions to http://datawrapper.dwcdn.net/lib/embed.js
  * and https://datawrapper.dwcdn.net/lib/embed.min.js
  */
-window.addEventListener('message', function(event) {
+window.addEventListener('message', function (event) {
     if (typeof event.data['datawrapper-height'] !== 'undefined') {
         var iframes = document.querySelectorAll('iframe');
         for (var chartId in event.data['datawrapper-height']) {

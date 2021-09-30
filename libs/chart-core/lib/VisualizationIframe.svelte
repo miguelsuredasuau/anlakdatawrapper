@@ -68,4 +68,5 @@
     {isStylePlain}
     {isStyleStatic}
     {forceLogo}
-    {outerContainer} />
+    {outerContainer}
+/>

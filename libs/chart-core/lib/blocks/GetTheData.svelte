@@ -55,7 +55,8 @@
         aria-label="{__(caption)}: {purifyHtml(chart.title, '')}"
         {download}
         target={externalData ? '_blank' : '_self'}
-        href={externalData || href}>
+        href={externalData || href}
+    >
         {__(caption)}
     </a>
 {/if}

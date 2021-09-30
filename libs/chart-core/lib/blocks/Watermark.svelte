@@ -51,7 +51,8 @@
 <div
     class="watermark noscript"
     style="transform:rotate({angle}rad); font-size: {fontSize}"
-    data-rotate={angleDeg}>
+    data-rotate={angleDeg}
+>
     <span>
         {@html purifyHtml(text)}
     </span>

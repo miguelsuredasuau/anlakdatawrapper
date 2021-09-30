@@ -20,7 +20,8 @@
             {:else}
                 <div
                     class="block {block.id}-block"
-                    style={block.id.includes('svg-rule') ? 'font-size:0px;' : ''}>
+                    style={block.id.includes('svg-rule') ? 'font-size:0px;' : ''}
+                >
                     <Block {block} />
                 </div>
             {/if}

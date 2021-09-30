@@ -42,5 +42,6 @@
         x1="0"
         y1={width / 2}
         x2={length}
-        y2={width / 2} />
+        y2={width / 2}
+    />
 </svg>

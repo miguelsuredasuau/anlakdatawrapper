@@ -17,4 +17,5 @@
 
 <div
     class="export-rect"
-    style="width: {px(width)}; height: {px(height)}; background: {background};" />
+    style="width: {px(width)}; height: {px(height)}; background: {background};"
+/>
