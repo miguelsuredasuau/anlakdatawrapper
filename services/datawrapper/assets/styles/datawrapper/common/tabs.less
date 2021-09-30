@@ -5,7 +5,6 @@
     background: @dw_background;
 
     li {
-        max-width: 33%;
         a {
             white-space: nowrap;
             overflow: hidden;
@@ -21,8 +20,6 @@
         }
 
         &.active {
-            max-width: 47%;
-
             a {
                 color: #000;
                 font-weight: bold;
@@ -34,6 +31,20 @@
                     color: #000;
                     background: @dw_background;
                 }
+            }
+        }
+    }
+
+    &.nav-stacked {
+        & + .group {
+            margin-top: 2em;
+        }
+
+        li a {
+            background: transparent;
+
+            &:hover {
+                background: #eeeeee;
             }
         }
     }

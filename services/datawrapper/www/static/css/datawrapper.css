@@ -1169,9 +1169,6 @@ Each of these property-direction combinations needs to be appended with one of 6
   position: relative;
   background: #f9f9f9;
 }
-.nav-tabs li {
-  max-width: 33%;
-}
 .nav-tabs li a {
   white-space: nowrap;
   overflow: hidden;
@@ -1183,9 +1180,6 @@ Each of these property-direction combinations needs to be appended with one of 6
   background-color: transparent;
   border: 1px solid #ddd;
 }
-.nav-tabs li.active {
-  max-width: 47%;
-}
 .nav-tabs li.active a {
   color: #000;
   font-weight: bold;
@@ -1196,6 +1190,15 @@ Each of these property-direction combinations needs to be appended with one of 6
 .nav-tabs li.active a:focus {
   color: #000;
   background: #f9f9f9;
+}
+.nav-tabs.nav-stacked + .group {
+  margin-top: 2em;
+}
+.nav-tabs.nav-stacked li a {
+  background: transparent;
+}
+.nav-tabs.nav-stacked li a:hover {
+  background: #eeeeee;
 }
 @media only screen and (max-width: 1199px) {
   .nav-tabs {
