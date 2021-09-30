@@ -952,7 +952,20 @@
   "upload / text / placeholder": "",
   "upload / text / help": "",
   "upload / file / read-failed": "",
-  "upload / text / random / before-button": "",
-  "upload / text / random / button": "",
-  "upload / text / button": ""
+  "upload / random / before-button": "",
+  "upload / random / button": "",
+  "upload / text / button": "",
+  "upload / file / drop-help": "",
+  "upload / file / label": "",
+  "or": "ou",
+  "upload / remote / connect": "",
+  "upload / remote / connect-help": "",
+  "upload / remote / connected": "",
+  "upload / remote / disconnected": "",
+  "upload / remote / external-data": "",
+  "upload / remote / google-spreadsheet": "",
+  "upload / remote / disconnect": "",
+  "upload / remote / reconnect": "",
+  "upload / file / button": "",
+  "publish / embed / explanation": ""
 }

@@ -966,5 +966,6 @@
   "upload / remote / google-spreadsheet": "",
   "upload / remote / disconnect": "",
   "upload / remote / reconnect": "",
-  "upload / file / button": ""
+  "upload / file / button": "",
+  "publish / embed / explanation": ""
 }

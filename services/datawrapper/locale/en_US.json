@@ -966,5 +966,6 @@
   "upload / remote / google-spreadsheet": "Google Sheet",
   "upload / remote / disconnect": "Disconnect",
   "upload / remote / reconnect": "Reconnect",
-  "upload / file / button": "Upload file"
+  "upload / file / button": "Upload file",
+  "publish / embed / explanation": "For the best way to embed your visualization on a specific platform (e.g., Wordpress, Powerpoint), <a href=\\\"https://academy.datawrapper.de/article/180-how-to-embed-charts\\\" target=\\\"_blank\\\" rel=\\\"noopener noreferrer\\\">check our documentation</a>."
 }
