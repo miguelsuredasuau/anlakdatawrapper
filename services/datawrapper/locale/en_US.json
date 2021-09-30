@@ -949,7 +949,7 @@
   "describe / table / delete-row": "Delete row",
   "upload / file / success": "Data uploaded successfully",
   "upload / text / label": "<strong>Copy & paste</strong> your data (including header row/column):",
-  "upload / text / placeholder": "Paste your data here or directly into the table ➝",
+  "upload / text / placeholder": "Paste your data here",
   "upload / text / help": "You can also paste it <strong>directly into the table</strong>.",
   "upload / file / read-failed": "Failed to read the file.",
   "upload / random / before-button": "Don’t have a dataset? Fill the table with",
