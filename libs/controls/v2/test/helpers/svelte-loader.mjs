@@ -1,3 +1,4 @@
+/* eslint-env node */
 // Custom loader for on-the-fly transpiling of Svelte files in unit tests
 // TODO: Add source maps support
 
@@ -14,7 +15,7 @@ const extensionsRegex = /\.html$/;
 // Add sourcemap support for svelte files:
 const sourcemaps = {};
 sourceMapSupport.install({
-    retrieveSourceMap: function(filename) {
+    retrieveSourceMap: function (filename) {
         const map = sourcemaps[filename];
         return map ? { url: filename, map } : null;
     }

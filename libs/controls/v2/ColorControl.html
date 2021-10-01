@@ -1,9 +1,18 @@
-<ControlGroup {help} {label} labelWidth="{labelWidth||'100px'}">
+<ControlGroup {help} {label} labelWidth="{labelWidth||'100px'}" {uid}>
     {#if hexColor}
-    <ColorPickerInput on:change="update(event)" color="{hexColor}" bind:visible="open" palette="{palette}" />
+    <ColorPickerInput
+        on:change="update(event)"
+        color="{hexColor}"
+        bind:visible="open"
+        palette="{palette}"
+    />
     {/if} {#if customizable}
     <span class="custom-color-selector-head">
-        <a href="#customize" on:click="toggle(event)" class="btn btn-small custom {expanded?'btn-primary':''}" role="button"
+        <a
+            href="#customize"
+            on:click="toggle(event)"
+            class="btn btn-small custom {expanded?'btn-primary':''}"
+            role="button"
             >{__('controls / color / customize-colors', 'core')}</a
         >
     </span>
@@ -18,7 +27,11 @@
         {/if}
         <ul class="dataseries unstyled">
             {#each colorKeys as k}
-            <li on:click="toggleSelect(k.key, event)" class="{selected.indexOf(k.key) > -1 ? 'selected':''}" data-series="{k.key}">
+            <li
+                on:click="toggleSelect(k.key, event)"
+                class="{selected.indexOf(k.key) > -1 ? 'selected':''}"
+                data-series="{k.key}"
+            >
                 <div class="color" style="background:{k.color}">{!k.defined ? '×' : ''}</div>
                 <label>{k.key}</label>
             </li>
@@ -47,12 +60,11 @@
             {#if !compact}<button class="btn btn-color-reset" on:click="reset()">Reset</button>{/if}
         </div>
         {:else}
-        <p class="mini-help">
-            {@html __('controls / color / customize-colors / info', 'core')}
-        </p>
+        <p class="mini-help">{@html __('controls / color / customize-colors / info', 'core')}</p>
         {/if}
         <button class="btn btn-color-reset" on:click="resetAll()">
-            {__(compact ? 'controls / color / reset-all' : 'controls / color / reset-all-colors', 'core')}
+            {__(compact ? 'controls / color / reset-all' : 'controls / color / reset-all-colors',
+            'core')}
         </button>
     </div>
 </div>
@@ -84,29 +96,34 @@
                 axis: false,
                 help: false,
                 selected: [],
-                custom: {}
+                custom: {},
+                uid: ''
             };
         },
         computed: {
             colorKeys({ $vis, keys, customizable, axis, custom, palette }) {
                 if (!$vis || !customizable) return [];
-                return (axis
-                    ? uniq(
-                          $vis.axes(true)[axis].type() === 'date'
-                              ? $vis.axes(true)[axis].raw() // raw values for date cols
-                              : $vis.axes(true)[axis].values() // fmt values else
-                      )
-                    : keys && keys.length
-                    ? keys
-                    : $vis.colorKeys
-                    ? $vis.colorKeys()
-                    : $vis.keys()
+                return (
+                    axis
+                        ? uniq(
+                              $vis.axes(true)[axis].type() === 'date'
+                                  ? $vis.axes(true)[axis].raw() // raw values for date cols
+                                  : $vis.axes(true)[axis].values() // fmt values else
+                          )
+                        : keys && keys.length
+                        ? keys
+                        : $vis.colorKeys
+                        ? $vis.colorKeys()
+                        : $vis.keys()
                 ).map(k => {
                     k = stripTags(k);
                     return {
                         key: k,
                         defined: custom[k] !== undefined && custom[k] !== false,
-                        color: custom[k] !== undefined && custom[k] !== false ? getColor(custom[k], palette) : '#cccccc'
+                        color:
+                            custom[k] !== undefined && custom[k] !== false
+                                ? getColor(custom[k], palette)
+                                : '#cccccc'
                     };
                 });
             },
@@ -118,7 +135,9 @@
             },
             customColor({ selected, palette, custom }) {
                 if (custom[selected[0]] === undefined) return false; // return false to reset the current color
-                const realColors = selected.filter(s => custom[s] !== undefined).map(s => getColor(custom[s], palette));
+                const realColors = selected
+                    .filter(s => custom[s] !== undefined)
+                    .map(s => getColor(custom[s], palette));
                 if (!realColors.length) return false; // return false to reset the current color
                 return chroma.average(realColors, 'lab'); // return a color value to set the current color
             }

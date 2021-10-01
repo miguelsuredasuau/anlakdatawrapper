@@ -10,6 +10,7 @@
     export let rows = 5;
     export let value = '';
     export let width = '100%';
+    export let uid;
 
     let scroll;
     let textarea;
@@ -66,7 +67,7 @@
     }
 </style>
 
-<div class="text-container" style="width: {width}">
+<div class="text-container" style="width: {width}" data-uid={uid}>
     {#if expandable}
         <textarea
             bind:this={textarea}

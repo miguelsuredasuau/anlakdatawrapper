@@ -3,16 +3,20 @@
     <div>{@html help}</div>
 </HelpDisplay>
 {/if}
-<div class="control-group vis-option-group vis-option-type-checkbox" class:is-compact="compact">
+<div
+    class="control-group vis-option-group vis-option-type-checkbox"
+    class:is-compact="compact"
+    data-uid="{uid}"
+>
     <label class="checkbox {disabled? 'disabled' :''} {faded? 'faded' :''}">
-        <input type="checkbox" disabled="{disabled}" bind:checked="value" bind:indeterminate /><span class="css-ui"></span>
+        <input type="checkbox" disabled="{disabled}" bind:checked="value" bind:indeterminate /><span
+            class="css-ui"
+        ></span>
         { label }
     </label>
     {#if disabled && disabledMessage}
     <div transition:slide>
-        <div class="disabled-msg">
-            {@html disabledMessage}
-        </div>
+        <div class="disabled-msg">{@html disabledMessage}</div>
     </div>
     {/if}
 </div>
@@ -140,7 +144,8 @@
                 compact: false,
                 indeterminate: false,
                 disabledMessage: '',
-                help: false
+                help: false,
+                uid: ''
             };
         },
         transitions: { slide }

@@ -1,7 +1,12 @@
-<SwitchControl label="{__('controls / annotations / connector-line')}" bind:value="enabled" {disabled}>
+<SwitchControl
+    label="{__('controls / annotations / connector-line')}"
+    bind:value="enabled"
+    {disabled}
+>
     {#if editorState.hideConnectorLine}
     <div class="warning">
-        {__(`controls / annotations / connector-line / too-close-warning-${circle ? 'circle' : 'anchor'}`)}
+        {__(`controls / annotations / connector-line / too-close-warning-${circle ? 'circle' :
+        'anchor'}`)}
     </div>
     {/if}
 
@@ -26,12 +31,24 @@
         />
         <div class="control-group vis-option-group">
             <label>{__('controls / annotations / connector-line / distance')}</label>
-            <NumberInput slider="{false}" min="0" max="15" unit="px" step="1" bind:value="targetPadding" />
+            <NumberInput
+                slider="{false}"
+                min="0"
+                max="15"
+                unit="px"
+                step="1"
+                bind:value="targetPadding"
+            />
         </div>
     </div>
-    <div style="margin-bottom: 20px;">
-        <HelpDisplay>{__('controls / annotations / connector-line / inherit-color / help')}</HelpDisplay>
-        <CheckboxControl label="{__('controls / annotations / connector-line / inherit-color')}" bind:value="inheritColor" />
+    <div style="margin-bottom: 20px">
+        <HelpDisplay
+            >{__('controls / annotations / connector-line / inherit-color / help')}</HelpDisplay
+        >
+        <CheckboxControl
+            label="{__('controls / annotations / connector-line / inherit-color')}"
+            bind:value="inheritColor"
+        />
     </div>
 </SwitchControl>
 
@@ -51,7 +68,14 @@
         />
         <div class="control-group">
             <label>{__('controls / annotations / connector-line / circle / size')}</label>
-            <NumberInput slider="{false}" min="0" max="100" unit="px" step="1" bind:value="circleRadius" />
+            <NumberInput
+                slider="{false}"
+                min="0"
+                max="100"
+                unit="px"
+                step="1"
+                bind:value="circleRadius"
+            />
         </div>
     </div>
 </SwitchControl>
@@ -191,7 +215,12 @@
 
                 this.set({ dx, dy });
             }
-            if (!current.enabled && previous.enabled && [-50, 0, 50].includes(current.dx) && [-50, 0, 50].includes(current.dy)) {
+            if (
+                !current.enabled &&
+                previous.enabled &&
+                [-50, 0, 50].includes(current.dx) &&
+                [-50, 0, 50].includes(current.dy)
+            ) {
                 this.set({ dx: 0, dy: 0 });
             }
         }

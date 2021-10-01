@@ -1,11 +1,32 @@
-<ControlGroup type="select" valign="middle" inline {disabled} {label} {labelWidth} {help} helpClass="mt-1">
+<ControlGroup
+    type="select"
+    valign="middle"
+    inline
+    {disabled}
+    {label}
+    {labelWidth}
+    {help}
+    {uid}
+    helpClass="mt-1"
+>
     <div class="btn-group mt-1">
         {#each options as option}
-        <ToggleButtonInput notoggle="1" disabled="{disabled}" on:select="select(option)" value="{value === option.value}">
+        <ToggleButtonInput
+            notoggle="1"
+            disabled="{disabled}"
+            on:select="select(option)"
+            value="{value === option.value}"
+        >
             {#if option.label}
             <span>{@html option.label}</span>
             {/if} {#if option.svg}
-            <svg height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
+            <svg
+                height="16"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+            >
                 <path
                     class:stroke="option.stroke"
                     style="stroke-width: {option.stroke || 0}"
@@ -34,7 +55,8 @@
                 value: 'red',
                 options: [],
                 optgroups: [],
-                help: false
+                help: false,
+                uid: ''
             };
         },
         methods: {

@@ -10,6 +10,8 @@
     export let allowUndefined = false;
     export let placeholder = null;
     export let slider = true;
+    export let uid;
+
     let className = '';
     export { className as class };
 
@@ -126,11 +128,18 @@
     }
 </style>
 
-<div class="number-control {className}">
+<div class="number-control {className}" data-uid={uid}>
     <div class="number-control-container">
         {#if slider}
             <div class="slider">
-                <input type="range" {disabled} min={min * multiply} max={max * multiply} step={step * multiply} bind:value={inputValue} />
+                <input
+                    type="range"
+                    {disabled}
+                    min={min * multiply}
+                    max={max * multiply}
+                    step={step * multiply}
+                    bind:value={inputValue}
+                />
             </div>
         {/if}
         <div class="value">

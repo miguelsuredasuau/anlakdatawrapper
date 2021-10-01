@@ -1,4 +1,4 @@
-<div class="vis-option-type-switch">
+<div class="vis-option-type-switch" data-uid="{uid}">
     {#if help}
     <HelpDisplay type="{helpType || 'help'}">
         <div>{@html help}</div>
@@ -8,7 +8,25 @@
     <label class="switch-outer" class:disabled>
         <button on:click="toggle()" class="switch">
             <input
-                class="{disabled && disabledState == 'on' ? 'disabled-force-checked' : disabled && disabledState == 'off' ? 'disabled-force-unchecked' : ''}"
+                class="
+                    {disabled
+                    &&
+                    disabledState
+                    ==
+                    'on'
+                    ?
+                    'disabled-force-checked'
+                    :
+                    disabled
+                    &&
+                    disabledState
+                    ==
+                    'off'
+                    ?
+                    'disabled-force-unchecked'
+                    :
+                    ''}
+                "
                 disabled="{disabled}"
                 checked="{effectiveValue}"
                 bind:indeterminate
@@ -21,9 +39,7 @@
 
     {#if disabled && disabledMessage}
     <div transition:slide>
-        <div class="disabled-msg">
-            {@html disabledMessage}
-        </div>
+        <div class="disabled-msg">{@html disabledMessage}</div>
     </div>
     {:else}
 
@@ -190,7 +206,8 @@
                 inverted: false,
                 highlight: false,
                 indeterminate: false,
-                hasSlotContent: false
+                hasSlotContent: false,
+                uid: ''
             };
         },
         computed: {
@@ -201,7 +218,10 @@
         methods: {
             toggle() {
                 const { disabled, indeterminate, inverted, value } = this.get();
-                const updatedState = { value: indeterminate ? !inverted : !value, indeterminate: false };
+                const updatedState = {
+                    value: indeterminate ? !inverted : !value,
+                    indeterminate: false
+                };
                 if (disabled) return;
                 this.set(updatedState);
                 this.fire('change', updatedState);

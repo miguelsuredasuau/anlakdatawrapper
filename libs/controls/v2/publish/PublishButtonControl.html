@@ -8,74 +8,94 @@
     <!-- Un-publish in progress -->
     {#if unpublishing}
     <IconDisplay {assetURL} icon="cloud-sync" color="#858585" size="30px" />
-    <div class="message">
-        {@html __("publish / progress / unpublishing") }
-    </div>
+    <div class="message">{@html __("publish / progress / unpublishing") }</div>
 
     <!-- Un-published successfully -->
     {:elseif unpublished}
     <IconDisplay {assetURL} icon="cloud-dotted" color="#858585" size="30px" />
-    <div class="message">
-        {@html __("publish / progress / unpublished") }
-    </div>
+    <div class="message">{@html __("publish / progress / unpublished") }</div>
 
     <!-- Un-published visualization -->
     {:elseif !published && !publishing}
     <IconDisplay {assetURL} icon="cloud-dotted" color="#858585" size="30px" class="pt-2" />
-    <div class="message pt-2">
-        {@html __('publish / publish-btn-intro') }
-    </div>
+    <div class="message pt-2">{@html __('publish / publish-btn-intro') }</div>
 
     <!-- Publish in progress -->
     {:elseif publishing}
     <IconDisplay {assetURL} icon="cloud-sync" color="#858585" size="30px" />
-    <div class="message">
-        {@html __("publish / progress / publishing") }
-    </div>
+    <div class="message">{@html __("publish / progress / publishing") }</div>
 
     <!-- Needs re-publish -->
     {:elseif needsRepublish && !publishing}
     <IconDisplay {assetURL} icon="cloud-sync" color="#FFB800" size="30px" />
-    <div class="message">
-        {@html __('publish / republish') }
-    </div>
+    <div class="message">{@html __('publish / republish') }</div>
 
     <!-- Published successfully -->
     {:elseif published && publishSuccess && !needsRepublish}
     <IconDisplay {assetURL} icon="cloud-check" color="#000000" size="30px" />
-    <div class="message">
-        {@html __('publish / publish-success') }
-    </div>
+    <div class="message">{@html __('publish / publish-success') }</div>
 
     <!-- Published visualization (after reload) -->
     {:elseif published && !needsRepublish}
     <IconDisplay {assetURL} icon="cloud-check" color="#000000" size="30px" />
-    <div class="message">
-        {@html __('publish / published') }
-    </div>
+    <div class="message">{@html __('publish / published') }</div>
     {/if}
 
     <div class="action">
-        <button disabled="{ publishing || unpublishing }" on:click="publish()" class="button-wrapper" class:is-unpublishing="unpublishing">
+        <button
+            disabled="{ publishing || unpublishing }"
+            on:click="publish()"
+            class="button-wrapper"
+            class:is-unpublishing="unpublishing"
+        >
             {#if unpublishing}
             <span class="title">{ __('publish / unpublishing-btn') }</span>
             {:elseif published}
             <span class="button-republish">
                 {#if publishing}
-                <IconDisplay {assetURL} icon="refresh" spin size="28px" color="#ffffff" valign="middle" class="mr-1" />
+                <IconDisplay
+                    {assetURL}
+                    icon="refresh"
+                    spin
+                    size="28px"
+                    color="#ffffff"
+                    valign="middle"
+                    class="mr-1"
+                />
                 <span>{ __('publish / publishing-btn') }</span>
                 {:else}
-                <IconDisplay {assetURL} icon="refresh" size="28px" color="#ffffff" valign="middle" class="mr-1" />
+                <IconDisplay
+                    {assetURL}
+                    icon="refresh"
+                    size="28px"
+                    color="#ffffff"
+                    valign="middle"
+                    class="mr-1"
+                />
                 <span>{ __('publish / republish-btn') }</span>
                 {/if}
             </span>
             {:else}
             <span class="button-publish" class:is-publishing="publishing">
                 {#if publishing}
-                <IconDisplay {assetURL} icon="refresh" spin size="28px" color="#ffffff" valign="middle" class="mr-1" />
+                <IconDisplay
+                    {assetURL}
+                    icon="refresh"
+                    spin
+                    size="28px"
+                    color="#ffffff"
+                    valign="middle"
+                    class="mr-1"
+                />
                 <span>{ __('publish / publishing-btn') }</span>
                 {:else}
-                <IconDisplay {assetURL} icon="cloud-upload" size="30px" color="#ffffff" class="cloud" />
+                <IconDisplay
+                    {assetURL}
+                    icon="cloud-upload"
+                    size="30px"
+                    color="#ffffff"
+                    class="cloud"
+                />
                 <span>{ __('publish / publish-btn') }</span>
                 {/if}
             </span>
@@ -89,9 +109,25 @@
         {#each progress as step,i}
         <li>
             {#if i < progress.length-1}
-            <IconDisplay {assetURL} icon="check-circle" size="18px" color="#468847" valign="middle" class="mr-2" />
+            <IconDisplay
+                {assetURL}
+                icon="check-circle"
+                size="18px"
+                color="#468847"
+                valign="middle"
+                class="mr-2"
+            />
             {:else}
-            <IconDisplay {assetURL} icon="loading-spinner" size="18px" valign="middle" class="mr-2" spin timing="steps(12)" duration="1.5s" />
+            <IconDisplay
+                {assetURL}
+                icon="loading-spinner"
+                size="18px"
+                valign="middle"
+                class="mr-2"
+                spin
+                timing="steps(12)"
+                duration="1.5s"
+            />
             {/if} {@html __('publish / status / '+step)}
         </li>
         {/each}
@@ -104,16 +140,16 @@
 <p class="unpublish mt-2 mb-2">
     {@html __('publish / unpublish-intro')}
     <button class="plain-link unpublish-button" on:click="unpublish()">
-        <IconDisplay {assetURL} icon="undo" size="1.2em" valign="-0.2em" />{@html __('publish / unpublish-btn')}
+        <!-- prettier-ignore -->
+        <IconDisplay {assetURL} icon="undo" size="1.2em" valign="-0.2em" />
+        {@html __('publish / unpublish-btn')}
     </button>
 </p>
 {/if}
 
 <!-- Publish error -->
 {#if publishError}
-<AlertDisplay type="error" visible="true" class="mt-4 mb-2">
-    {publishError}
-</AlertDisplay>
+<AlertDisplay type="error" visible="true" class="mt-4 mb-2"> {publishError} </AlertDisplay>
 {/if}
 
 <!-- Additional info, only shown intially -->
@@ -123,7 +159,11 @@
 {/if}
 
 <!-- Alert: Publish successful, redirects may need updating -->
-<AlertDisplay type="{redirectDisabled ? 'warning' : 'info'}" visible="{published && publishSuccess && publicVersion > 1}" class="mt-4 mb-2">
+<AlertDisplay
+    type="{redirectDisabled ? 'warning' : 'info'}"
+    visible="{published && publishSuccess && publicVersion > 1}"
+    class="mt-4 mb-2"
+>
     {#if published && publishSuccess && publicVersion > 1}
     <div class="embed-alert">
         {#if redirectDisabled}

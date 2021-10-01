@@ -9,7 +9,8 @@
                 icon: false,
                 split: false,
                 items: [],
-                btnClass: 'btn'
+                btnClass: 'btn',
+                uid: ''
             };
         },
         methods: {
@@ -58,17 +59,22 @@
     }
 </style>
 
-<DropdownInput disabled="{disabled}">
+<DropdownInput disabled="{disabled}" {uid}>
     <div slot="button" class="btn-group">
         {#if split}
-        <button on:click|stopPropagation|preventDefault="fireClick()" disabled="{disabled}" class="split-button-label {btnClass}">
+        <button
+            on:click|stopPropagation|preventDefault="fireClick()"
+            disabled="{disabled}"
+            class="split-button-label {btnClass}"
+        >
             {#if icon}<i class="{icon}"></i>{/if} {@html label}
         </button>
         {/if}
         <button disabled="{disabled}" class="{btnClass}">
             {#if split}
             <span class="caret"></span>
-            {:else} {#if icon}<i class="{icon}"></i>{/if} {#if label} {@html label} <span class="caret" />
+            {:else} {#if icon}<i class="{icon}"></i>{/if} {#if label} {@html label}
+            <span class="caret" />
             {:else}
             <i class="im im-menu-dot-h"></i>
             {/if} {/if}
@@ -78,7 +84,11 @@
     <ul slot="content">
         {#each items as item}
         <li>
-            <a on:click|preventDefault="action(item)" class:disabled="item.disabled" href="#/action">
+            <a
+                on:click|preventDefault="action(item)"
+                class:disabled="item.disabled"
+                href="#/action"
+            >
                 {@html item.label}
             </a>
         </li>

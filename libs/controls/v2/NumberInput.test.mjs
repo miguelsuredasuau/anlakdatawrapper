@@ -6,9 +6,7 @@ import $ from 'cash-dom';
 
 test.beforeEach(t => {
     t.context = $('<div />');
-    $(document.body)
-        .empty()
-        .append(t.context);
+    $(document.body).empty().append(t.context);
 });
 
 test('Render number input with slider by default', t => {
@@ -69,18 +67,12 @@ test('Updating the value via the input controls', t => {
     });
 
     // Set value via the number input and fire input event to trigger data binding
-    t.context
-        .find('input[type=number]')
-        .val(42)
-        .trigger('input');
+    t.context.find('input[type=number]').val(42).trigger('input');
 
     t.is(app.get().value, 42);
 
     // Set value via the range input and fire input event to trigger data binding
-    t.context
-        .find('input[type=range]')
-        .val(23)
-        .trigger('input');
+    t.context.find('input[type=range]').val(23).trigger('input');
 
     t.is(app.get().value, 23);
 });
@@ -91,18 +83,12 @@ test('Updating the value via the input controls to 0', t => {
     });
 
     // Set value via the number input and fire input event to trigger data binding
-    t.context
-        .find('input[type=number]')
-        .val(0)
-        .trigger('input');
+    t.context.find('input[type=number]').val(0).trigger('input');
 
     t.is(app.get().value, 0);
 
     // Set value via the range input and fire input event to trigger data binding
-    t.context
-        .find('input[type=range]')
-        .val(0)
-        .trigger('input');
+    t.context.find('input[type=range]').val(0).trigger('input');
 
     t.is(app.get().value, 0);
 });

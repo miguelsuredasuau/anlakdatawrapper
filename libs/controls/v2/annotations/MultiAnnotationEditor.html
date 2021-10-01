@@ -1,5 +1,7 @@
 <div class="well">
-    <p class="header">{__('controls / annotations / multi-select').replace('%s', selected.length)}</p>
+    <p class="header">
+        {__('controls / annotations / multi-select').replace('%s', selected.length)}
+    </p>
 
     <FontStyleControl
         colorReset="Reset"
@@ -19,11 +21,20 @@
 
     <ControlGroup {labelWidth} label="&nbsp;" valign="middle" inline="{true}">
         <div class="controls-inline">
-            <CheckboxControl label="{__('controls / annotations / text-outline')}" bind:value="bg" indeterminate="{indeterminate.bg}" />
+            <CheckboxControl
+                label="{__('controls / annotations / text-outline')}"
+                bind:value="bg"
+                indeterminate="{indeterminate.bg}"
+            />
         </div>
     </ControlGroup>
 
-    <ControlGroup {labelWidth} label="{__('controls / annotations / show-on')}" valign="middle" type="checkbox">
+    <ControlGroup
+        {labelWidth}
+        label="{__('controls / annotations / show-on')}"
+        valign="middle"
+        type="checkbox"
+    >
         <CheckboxControl
             label="{__('controls / annotations / show-on / mobile')}"
             bind:value="value.showMobile"

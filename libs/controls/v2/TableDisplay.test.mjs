@@ -16,9 +16,7 @@ const columnHeaders = [
 
 test.beforeEach(t => {
     t.context = $('<div />');
-    $(document.body)
-        .empty()
-        .append(t.context);
+    $(document.body).empty().append(t.context);
 });
 
 test('Render table rows passed as children', t => {

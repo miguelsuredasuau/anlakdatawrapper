@@ -1,6 +1,24 @@
-<ControlGroup disabled="{disabled}" type="textarea" {label} {labelWidth} {miniHelp} {help} helpClass="mt-1">
+<ControlGroup
+    disabled="{disabled}"
+    type="textarea"
+    {label}
+    {labelWidth}
+    {miniHelp}
+    {help}
+    {uid}
+    helpClass="mt-1"
+>
     <div class="textarea-container mt-1" style="width:{width}">
-        <TextAreaInput bind:value="value" {placeholder} {disabled} {id} {autocomplete} {width} {height} {resize} />
+        <TextAreaInput
+            bind:value="value"
+            {placeholder}
+            {disabled}
+            {id}
+            {autocomplete}
+            {width}
+            {height}
+            {resize}
+        />
     </div>
 </ControlGroup>
 
@@ -31,7 +49,8 @@
                 height: 'auto',
                 resize: 'both',
                 help: null,
-                miniHelp: null
+                miniHelp: null,
+                uid: ''
             };
         }
     };

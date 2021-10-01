@@ -1,5 +1,4 @@
 <script>
-    /* eslint-disable import/first */
     import { createEventDispatcher } from 'svelte';
 
     const dispatch = createEventDispatcher();
@@ -11,10 +10,19 @@
     export let options = [];
     export let value = null;
     export let width = 'auto';
+    export let uid;
 </script>
 
 <!-- svelte-ignore a11y-no-onchange -->
-<select bind:value class:select-css={true} class={className} style="width: {width}" on:change={evt => dispatch('change', evt)} {disabled}>
+<select
+    bind:value
+    class:select-css={true}
+    class={className}
+    style="width: {width}"
+    on:change={evt => dispatch('change', evt)}
+    {disabled}
+    data-uid={uid}
+>
     {#if options.length}
         {#each options as opt}
             <option value={opt.value} selected={opt.value === value}>{opt.label}</option>

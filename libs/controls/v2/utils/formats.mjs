@@ -1,4 +1,4 @@
-export default function(columnType) {
+export default function (columnType) {
     if (columnType === 'number') {
         // todo: translate labels
         return [

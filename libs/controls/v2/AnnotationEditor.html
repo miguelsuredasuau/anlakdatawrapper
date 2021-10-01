@@ -6,14 +6,22 @@
         <p class="mini-help">{@html editorState.messages.disableControls}</p>
         {:else} {#if editorState.createMode === 'text'}
         <div class="new-annotation">
-            <img src="/static/img/new-annotation-drag.gif" alt="Animation showing how to drag a new annotation" />
+            <img
+                src="/static/img/new-annotation-drag.gif"
+                alt="Animation showing how to drag a new annotation"
+            />
             <p class="text">
-                {@html __(`controls / annotations / text-annotations / drag-note-${isMap ? 'map' : 'chart'}`)}
+                {@html __(`controls / annotations / text-annotations / drag-note-${isMap ? 'map' :
+                'chart'}`)}
             </p>
             <button class="btn" on:click="exitCreateMode()">{__('ui / cancel')}</button>
         </div>
         {:else}
-        <button class="btn btn-primary btn-add block" class:disabled="editorState.createMode === 'range'" on:click="enterCreateTextMode()">
+        <button
+            class="btn btn-primary btn-add block"
+            class:disabled="editorState.createMode === 'range'"
+            on:click="enterCreateTextMode()"
+        >
             <i class="fa fa-plus"></i> {__('controls / annotations / text-annotations / add')}
         </button>
         {/if} {#if annotationList.length}
@@ -51,12 +59,19 @@
         <p class="mini-help">{@html editorState.messages.disableControls}</p>
         {:else} {#if editorState.createMode === 'range'}
         <div class="new-annotation">
-            <img src="/static/img/new-highlight-drag.gif" alt="Animation showing how to drag a new range highlight" />
+            <img
+                src="/static/img/new-highlight-drag.gif"
+                alt="Animation showing how to drag a new range highlight"
+            />
             <p class="text">{@html __('controls / annotations / range-annotations / drag-note')}</p>
             <button class="btn" on:click="exitCreateMode()">{__('ui / cancel')}</button>
         </div>
         {:else}
-        <button class="btn btn-add block" class:disabled="editorState.createMode === 'text'" on:click="enterCreateRangeMode()">
+        <button
+            class="btn btn-add block"
+            class:disabled="editorState.createMode === 'text'"
+            on:click="enterCreateRangeMode()"
+        >
             <i class="fa fa-plus"></i> {__('controls / annotations / range-annotations / add')}
         </button>
         {/if} {#if rangeAnnotationList.length}
@@ -184,7 +199,14 @@
     import { __ } from '@datawrapper/shared/l10n';
 
     export default {
-        components: { Group, ListInput, AnnotationEditor, MultiAnnotationEditor, RangeAnnotationEditor, MultiRangeAnnotationEditor },
+        components: {
+            Group,
+            ListInput,
+            AnnotationEditor,
+            MultiAnnotationEditor,
+            RangeAnnotationEditor,
+            MultiRangeAnnotationEditor
+        },
         data() {
             return {
                 defaultProps: clone(defaultProps),
@@ -259,17 +281,25 @@
                 const { editorState } = this.get();
 
                 Object.keys(propObj).forEach(key => {
-                    let value = propObj[key];
+                    const value = propObj[key];
                     editorState[key] = value;
                 });
 
                 this.set({ editorState });
             },
             enterCreateTextMode() {
-                this.setEditorState({ createMode: 'text', selectedTextAnnotations: [], selectedRangeAnnotations: [] });
+                this.setEditorState({
+                    createMode: 'text',
+                    selectedTextAnnotations: [],
+                    selectedRangeAnnotations: []
+                });
             },
             enterCreateRangeMode() {
-                this.setEditorState({ createMode: 'range', selectedTextAnnotations: [], selectedRangeAnnotations: [] });
+                this.setEditorState({
+                    createMode: 'range',
+                    selectedTextAnnotations: [],
+                    selectedRangeAnnotations: []
+                });
             },
             exitCreateMode() {
                 this.setEditorState({ createMode: false });
@@ -337,7 +367,10 @@
                     if (this.refs.wrap && !path.some(item => item.id === this.refs.wrap.id)) {
                         setTimeout(() => this.setEditorState({ selectedTextAnnotations: [] }));
                     }
-                    if (this.refs.rangeWrap && !path.some(item => item.id === this.refs.rangeWrap.id)) {
+                    if (
+                        this.refs.rangeWrap &&
+                        !path.some(item => item.id === this.refs.rangeWrap.id)
+                    ) {
                         setTimeout(() => this.setEditorState({ selectedRangeAnnotations: [] }));
                     }
                 }
@@ -392,7 +425,8 @@
                 document.querySelector('#iframe-vis').contentWindow &&
                 document.querySelector('#iframe-vis').contentWindow.__registerAnnotationControls;
 
-            if (typeof register === 'function') register(dw.backend.hooks.call('get-annotation-controls').results[0]);
+            if (typeof register === 'function')
+                register(dw.backend.hooks.call('get-annotation-controls').results[0]);
 
             this.refs.wrap.addEventListener('deleteInList', e => {
                 this.deleteTextAnnotations([e.detail]);
@@ -407,7 +441,7 @@
         ondestroy() {
             dw.backend.hooks.unregister('get-annotation-controls');
         },
-        onstate({ current, changed, previous }) {
+        onstate({ current, previous }) {
             // first load: we merge theme properties into defaults
             // and populate any missing properties with these defaults
             if (!previous) {
@@ -421,9 +455,15 @@
                     const { themeData } = this.store.get();
 
                     // set defaults for the render app to use when creating new annotations
-                    editorState.defaults.text = clone(mergeWithTheme(defaultProps.text, themeData, 'text'));
-                    editorState.defaults.range = clone(mergeWithTheme(defaultProps.range, themeData, 'range'));
-                    editorState.defaults.line = clone(mergeWithTheme(defaultProps.line, themeData, 'line'));
+                    editorState.defaults.text = clone(
+                        mergeWithTheme(defaultProps.text, themeData, 'text')
+                    );
+                    editorState.defaults.range = clone(
+                        mergeWithTheme(defaultProps.range, themeData, 'range')
+                    );
+                    editorState.defaults.line = clone(
+                        mergeWithTheme(defaultProps.line, themeData, 'line')
+                    );
 
                     this.set({ editorState });
 
@@ -444,7 +484,10 @@
             // push state updates from controls to render layer
             if (previous && current.annotationLayer) {
                 const textAnnotationData = this.store.getMetadata('visualize.text-annotations', []);
-                const rangeAnnotationData = this.store.getMetadata('visualize.range-annotations', []);
+                const rangeAnnotationData = this.store.getMetadata(
+                    'visualize.range-annotations',
+                    []
+                );
                 const { editorState } = this.get();
                 current.annotationLayer.$set({
                     textAnnotations: textAnnotationData,
@@ -454,12 +497,17 @@
             }
 
             // this should be replaced
-            if (current.editorState && current.editorState.selectedAnnotationProps && current.editorState.selectedAnnotationProps.mobileFallback) {
+            if (
+                current.editorState &&
+                current.editorState.selectedAnnotationProps &&
+                current.editorState.selectedAnnotationProps.mobileFallback
+            ) {
                 if (document.querySelector('#iframe-vis')) {
                     try {
                         const { lastKeysHeight } = this.get();
-                        const keysHeight = document.querySelector('#iframe-vis').contentWindow.document.querySelector('.annotation-keys')
-                            .offsetHeight;
+                        const keysHeight = document
+                            .querySelector('#iframe-vis')
+                            .contentWindow.document.querySelector('.annotation-keys').offsetHeight;
 
                         if (lastKeysHeight !== keysHeight) {
                             setTimeout(() => {
@@ -467,6 +515,7 @@
                                 this.set({ lastKeysHeight: keysHeight });
                             });
                         }
+                        // eslint-disable-next-line no-empty
                     } catch (ex) {}
                 }
             }

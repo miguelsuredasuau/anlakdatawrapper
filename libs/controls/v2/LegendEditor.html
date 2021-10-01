@@ -1,13 +1,28 @@
-<SwitchControl label="{__('controls / legend / switch')}" bind:value="value.enabled">
+<SwitchControl label="{__('controls / legend / switch')}" bind:value="value.enabled" {uid}>
     <div class="mt-1"></div>
-    <TextControl {labelWidth} placeholder="Your title here" bind:value="value.title" label="{__('controls / legend / caption')}" />
+    <TextControl
+        {labelWidth}
+        placeholder="Your title here"
+        bind:value="value.title"
+        label="{__('controls / legend / caption')}"
+    />
     <!-- label settings are different for number and text columns -->
     {#if valueAxisColumnType === 'number'}
     <!-- also different for discrete and continuous scales -->
     {#if mode === 'discrete'}
-    <RadioControl bind:value="labelsDiscrete" {labelWidth} label="{__('controls / legend / labels')}" options="{discreteLabelOptions}" />
+    <RadioControl
+        bind:value="labelsDiscrete"
+        {labelWidth}
+        label="{__('controls / legend / labels')}"
+        options="{discreteLabelOptions}"
+    />
     {:elseif mode === 'continuous'}
-    <RadioControl bind:value="labelsContinuous" {labelWidth} label="{__('controls / legend / labels')}" options="{continuousLabelOptions}" />
+    <RadioControl
+        bind:value="labelsContinuous"
+        {labelWidth}
+        label="{__('controls / legend / labels')}"
+        options="{continuousLabelOptions}"
+    />
     {/if}
     <!-- if the custom mode is selected -->
     {#if value.labels === 'custom'}
@@ -86,12 +101,20 @@
     <MoreOptionsGroup>
         <div class="mb-4">
             {#if allowInteractive}
-            <HelpDisplay><div>{@html __('controls / legend / interactive / help')}</div></HelpDisplay>
-            <CheckboxControl label="{__('controls / legend / interactive')}" bind:value="value.interactive" />
+            <HelpDisplay
+                ><div>{@html __('controls / legend / interactive / help')}</div></HelpDisplay
+            >
+            <CheckboxControl
+                label="{__('controls / legend / interactive')}"
+                bind:value="value.interactive"
+            />
             {/if}
             <!-- allow reversing of numeric legends  -->
             {#if valueAxisColumnType === 'number'}
-            <CheckboxControl label="{__('controls / legend / reverse')}" bind:value="value.reverse" />
+            <CheckboxControl
+                label="{__('controls / legend / reverse')}"
+                bind:value="value.reverse"
+            />
             {/if}
         </div>
         {#if allowPosition}
@@ -103,9 +126,7 @@
         />
 
         <HelpDisplay>
-            <div>
-                {@html __('controls / legend / offset / help')}
-            </div>
+            <div>{@html __('controls / legend / offset / help')}</div>
         </HelpDisplay>
 
         {#if allowOrientation}
@@ -133,14 +154,32 @@
         {/if}
         <!-- allow settting an offset for legends  -->
         {#if allowOffset}
-        <ControlGroup {labelWidth} disabled="{outsideLegend}" label="{__('controls / legend / offset')}">
+        <ControlGroup
+            {labelWidth}
+            disabled="{outsideLegend}"
+            label="{__('controls / legend / offset')}"
+        >
             <div class="flex">
                 <label>
-                    <NumberInput disabled="{outsideLegend}" bind:value="value.offsetLeft" slider="{false}" min="{0}" max="{50}" unit="%" />
+                    <NumberInput
+                        disabled="{outsideLegend}"
+                        bind:value="value.offsetLeft"
+                        slider="{false}"
+                        min="{0}"
+                        max="{50}"
+                        unit="%"
+                    />
                     <span>{__('controls / legend / offset / h')}</span>
                 </label>
                 <label>
-                    <NumberInput disabled="{outsideLegend}" bind:value="value.offsetTop" slider="{false}" min="{0}" max="{50}" unit="%" />
+                    <NumberInput
+                        disabled="{outsideLegend}"
+                        bind:value="value.offsetTop"
+                        slider="{false}"
+                        min="{0}"
+                        max="{50}"
+                        unit="%"
+                    />
                     <span>{__('controls / legend / offset / v')}</span>
                 </label>
             </div>
@@ -148,18 +187,14 @@
         {/if}
         <!-- show mobile positioning help  -->
         {#if allowPositionInside}
-        <p class="mini-help">
-            {@html __('controls / legend / mobile-note')}
-        </p>
+        <p class="mini-help">{@html __('controls / legend / mobile-note')}</p>
         {/if}
         <!-- end: if allowPosition -->
         {/if}
     </MoreOptionsGroup>
 </SwitchControl>
 {#if !value.enabled}
-<p class="mini-help">
-    {@html __('controls / legend / disabled-note')}
-</p>
+<p class="mini-help">{@html __('controls / legend / disabled-note')}</p>
 {/if}
 
 <script>
@@ -184,7 +219,10 @@
     import chroma from 'chroma-js';
 
     function numberToChar(i) {
-        return (i >= 26 ? numberToChar(((i / 26) >> 0) - 1) : '') + String.fromCharCode(65 + (i % 26 >> 0));
+        return (
+            (i >= 26 ? numberToChar(((i / 26) >> 0) - 1) : '') +
+            String.fromCharCode(65 + (i % 26 >> 0))
+        );
     }
 
     export default {
@@ -215,9 +253,12 @@
                 labelWidth: '100px',
                 value: {},
                 hideItems: [],
-                customLabels: range(100).map(i => `${__('controls / legend / def-group')} ${numberToChar(i)}`),
+                customLabels: range(100).map(
+                    i => `${__('controls / legend / def-group')} ${numberToChar(i)}`
+                ),
                 labelsDiscrete: 'ruler',
-                labelsContinuous: 'ranges'
+                labelsContinuous: 'ranges',
+                uid: ''
             };
         },
         oncreate() {
@@ -226,7 +267,11 @@
                 value.customLabels.forEach((val, i) => {
                     customLabels[i] = val;
                 });
-                this.set({ labelsDiscrete: value.labels, customLabels, hideItems: value.hideItems.slice(0) });
+                this.set({
+                    labelsDiscrete: value.labels,
+                    customLabels,
+                    hideItems: value.hideItems.slice(0)
+                });
             } else if (colorscale.mode === 'continuous') {
                 this.set({ labelsContinuous: value.labels });
             }
@@ -269,8 +314,10 @@
             labelsMode({ value }) {
                 return value ? value.labels : null;
             },
-            customLabels2({ mode, colorscale, value, customLabels }) {
-                return mode === 'discrete' ? range(colorscale.stopCount).map(i => customLabels[i] || '') : [];
+            customLabels2({ mode, colorscale, customLabels }) {
+                return mode === 'discrete'
+                    ? range(colorscale.stopCount).map(i => customLabels[i] || '')
+                    : [];
             },
             colors({ colorscale }) {
                 return colorscale.colors || [];
@@ -285,9 +332,12 @@
                     .domain(colors.map(c => c.position))
                     .colors(stopCount);
             },
-            customLabelsItems({ customLabels2, hideItems, classColors, colorScaleFunction, colorscale }) {
+            customLabelsItems({ customLabels2, hideItems, classColors, colorScaleFunction }) {
                 if (!colorScaleFunction) return [];
-                const stops = smartRound(colorScaleFunction._stops.map(d => +d).filter(d => d !== null), 3);
+                const stops = smartRound(
+                    colorScaleFunction._stops.map(d => +d).filter(d => d !== null),
+                    3
+                );
                 return customLabels2.map((s, i) => {
                     const note =
                         i === 0
@@ -313,7 +363,9 @@
                 return metadataAxes ? metadataAxes.values : null;
             },
             valueAxisColumn({ valueAxis, $dataset, column }) {
-                return valueAxis && $dataset.hasColumn(valueAxis) ? $dataset.column(valueAxis) : column;
+                return valueAxis && $dataset.hasColumn(valueAxis)
+                    ? $dataset.column(valueAxis)
+                    : column;
             },
             valueAxisColumnType({ valueAxisColumn }) {
                 return valueAxisColumn ? valueAxisColumn.type() : null;
@@ -325,7 +377,11 @@
                 const palette = themeCategories[(colorscale.palette || 0) % themeCategories.length];
                 const categoryOrder = colorscale.categoryOrder || [];
                 let pIndex = 0;
-                return (valueAxisColumn ? uniq(valueAxisColumn.values().filter(v => v !== null && v !== undefined)) : [])
+                return (
+                    valueAxisColumn
+                        ? uniq(valueAxisColumn.values().filter(v => v !== null && v !== undefined))
+                        : []
+                )
                     .sort((a, b) => {
                         return categoryOrder.indexOf(a) - categoryOrder.indexOf(b);
                     })
@@ -335,7 +391,12 @@
                         color: colorscale.map[id] ? colorscale.map[id] : palette[pIndex++]
                     }));
             },
-            sizeControlDisabled({ value, valueAxisColumnType, colorscale, labelsDiscrete, outsideLegend }) {
+            sizeControlDisabled({
+                valueAxisColumnType,
+                colorscale,
+                labelsDiscrete,
+                outsideLegend
+            }) {
                 // enable size if position is not above/below
                 if (!outsideLegend) return false;
                 // disable size if we're showing categories
@@ -378,14 +439,19 @@
                 if (item.hidden) {
                     !hideItems.includes(+item.id) && hideItems.push(+item.id);
                 } else {
-                    hideItems.includes(+item.id) && hideItems.splice(hideItems.indexOf(+item.id), 1);
+                    hideItems.includes(+item.id) &&
+                        hideItems.splice(hideItems.indexOf(+item.id), 1);
                 }
 
                 this.set({ customLabels, hideItems });
             }
         },
         onstate({ changed, current, previous }) {
-            if ((changed.labelsMode || changed.colorscale) && current.labelsMode === 'custom' && previous) {
+            if (
+                (changed.labelsMode || changed.colorscale) &&
+                current.labelsMode === 'custom' &&
+                previous
+            ) {
                 // make sure initial custom labels are stored
                 if (current.value.customLabels.length === 0) {
                     current.value.customLabels = current.customLabels2.slice(0);
@@ -393,15 +459,19 @@
                 }
 
                 // make sure new custom labels are added, when stops are added
-                if (current.colorscale && current.colorscale.stopCount > current.value.customLabels.length) {
+                if (
+                    current.colorscale &&
+                    current.colorscale.stopCount > current.value.customLabels.length
+                ) {
                     current.value.customLabels = current.customLabels2.slice(0);
                     this.set({ value: current.value });
                 }
             }
         },
-        onupdate({ changed, current, previous }) {
+        onupdate({ changed, current }) {
             if (changed.mode) {
-                current.value.labels = current.mode === 'discrete' ? current.labelsDiscrete : current.labelsContinuous;
+                current.value.labels =
+                    current.mode === 'discrete' ? current.labelsDiscrete : current.labelsContinuous;
                 this.set({ value: current.value });
             }
             if (changed.customLabels) {

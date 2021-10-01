@@ -4,7 +4,7 @@
 </HelpDisplay>
 {/if}
 
-<div class="control-group vis-option-group vis-option-group-{type} label-{valign}">
+<div class="control-group vis-option-group vis-option-group-{type} label-{valign}" data-uid="{uid}">
     {#if label}
     <label style="width:{labelWidth||def.labelWidth}" class:disabled class="control-label"
         >{@html label } {#if labelHelp}
@@ -12,11 +12,19 @@
         {/if}</label
     >
     {/if}
-    <div class="controls" class:form-inline="inline" style="width: calc(100% - {labelWidth||def.labelWidth} - 32px)">
+    <div
+        class="controls"
+        class:form-inline="inline"
+        style="width: calc(100% - {labelWidth||def.labelWidth} - 32px)"
+    >
         <slot />
     </div>
     {#if miniHelp}
-    <p style="padding-left: {inline ? 0 : labelWidth||def.labelWidth}" class:mini-help-block="!inline" class="mt-1 mini-help {type}">
+    <p
+        style="padding-left: {inline ? 0 : labelWidth||def.labelWidth}"
+        class:mini-help-block="!inline"
+        class="mt-1 mini-help {type}"
+    >
         {@html miniHelp}
     </p>
     {/if}
@@ -75,7 +83,8 @@
                 inline: false,
                 labelWidth: false,
                 type: 'default',
-                valign: 'baseline'
+                valign: 'baseline',
+                uid: ''
             };
         },
         helpers: {

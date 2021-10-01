@@ -1,3 +1,4 @@
+/* eslint-env node */
 // Custom loader for on-the-fly transpiling of Svelte files in unit tests
 
 import path from 'path';

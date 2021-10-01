@@ -1,3 +1,7 @@
+<script>
+    export let uid;
+</script>
+
 <style>
     ul {
         display: flex;
@@ -13,6 +17,6 @@
     }
 </style>
 
-<ul>
+<ul data-uid={uid}>
     <slot />
 </ul>

@@ -22,6 +22,7 @@
     export let rows = 5;
     export let valign = 'middle';
     export let width = '100%';
+    export let uid;
 </script>
 
 <style>
@@ -38,12 +39,34 @@
     }
 </style>
 
-<ControlGroup helpClass="mt-1" type="text" {block} {disabled} {error} {help} htmlFor={id} {labelWidth} {label} {miniHelp} {valign}>
+<ControlGroup
+    helpClass="mt-1"
+    type="text"
+    {block}
+    {disabled}
+    {error}
+    {help}
+    htmlFor={id}
+    {labelWidth}
+    {label}
+    {miniHelp}
+    {valign}
+    {uid}
+>
     <div class="d-flex mt-1">
         {#if prepend}
             <div class="prepend">{prepend}</div>
         {/if}
-        <TextInput {expandable} {rows} {id} {autocomplete} {disabled} {placeholder} {width} bind:value />
+        <TextInput
+            {expandable}
+            {rows}
+            {id}
+            {autocomplete}
+            {disabled}
+            {placeholder}
+            {width}
+            bind:value
+        />
         {#if append}
             <div class="append">{append}</div>
         {/if}

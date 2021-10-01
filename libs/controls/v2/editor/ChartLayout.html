@@ -28,14 +28,17 @@
     import ThemeSelectControl from './ThemeSelectControl.html';
     import LogoControl from './LogoControl.html';
 
-    function getBlocks(allBlocks, group, props) {
+    function getBlocks(allBlocks, group) {
         return allBlocks
             .filter(d => d.group === group)
             .filter(d => (d.visible !== undefined ? d.visible : true))
             .sort(byPriority);
     }
     function byPriority(a, b) {
-        return (a.priority !== undefined ? a.priority : 999) - (b.priority !== undefined ? b.priority : 999);
+        return (
+            (a.priority !== undefined ? a.priority : 999) -
+            (b.priority !== undefined ? b.priority : 999)
+        );
     }
 
     export default {
@@ -62,12 +65,14 @@
             requireUpgrade({ allBlocks }) {
                 return allBlocks.filter(d => d.requireUpgrade).length > 1;
             },
-            themeHasLogo({ $theme, $themeData }) {
+            themeHasLogo({ $themeData }) {
                 const logo = get($themeData, 'options.blocks.logo.data', {});
                 return logo.text || logo.imgSrc;
             },
             allBlocks({ coreBlocks, hooksBlocks, initialized, exclude }) {
-                return initialized ? coreBlocks.concat(hooksBlocks).filter(d => !exclude.includes(d.name)) : [];
+                return initialized
+                    ? coreBlocks.concat(hooksBlocks).filter(d => !exclude.includes(d.name))
+                    : [];
             },
             coreBlocks({ $flags, $customLayouts, themeHasLogo }) {
                 return [

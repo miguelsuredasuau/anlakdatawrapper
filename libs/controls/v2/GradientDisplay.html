@@ -1,4 +1,4 @@
-<svg width="{width}" height="{height}">
+<svg width="{width}" height="{height}" data-uid="{uid}">
     <defs>
         <linearGradient id="{id}" x2="1">
             {#each stops as stop}
@@ -6,7 +6,7 @@
             {/each}
         </linearGradient>
     </defs>
-    <rect style="fill:url(#{id})" width="{width}" height="{height}" />
+    <rect style="fill: url(#{id})" width="{width}" height="{height}" />
 </svg>
 {#if canDelete}
 <button class="btn btn-mini btn-delete">
@@ -22,7 +22,8 @@
                 width: 105,
                 height: 22,
                 canDelete: false,
-                stops: []
+                stops: [],
+                uid: ''
             };
         },
         oncreate() {

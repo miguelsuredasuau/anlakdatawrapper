@@ -3,6 +3,8 @@
     export let size = '1em';
     export let color = 'inherit';
     export let valign = 'baseline';
+    export let uid;
+
     let className = '';
     export { className as class };
     export let spin = false;
@@ -39,6 +41,7 @@
 </style>
 
 <span
+    data-uid={uid}
     class="svg-icon {className}"
     class:spin
     style="animation-timing-function: {timing}; animation-duration: {duration}; height: {size}; width: {size}; vertical-align: {valign}"

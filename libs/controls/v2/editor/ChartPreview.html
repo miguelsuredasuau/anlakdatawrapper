@@ -2,7 +2,7 @@
 TODO for later:
 * allow limiting resizing to x or y direction
 -->
-<div ref:cont style="position:relative;">
+<div ref:cont style="position: relative">
     <div
         id="iframe-wrapper"
         class:loading
@@ -10,7 +10,13 @@ TODO for later:
         class:resizing
         style="width: {width}px; height: {height}px; overflow: visible; padding: {border}px; transform: scale({scale || 1}); background:{themeBackground};"
     >
-        <iframe title="chart-preview" ref:iframe src="{url}" on:load="iframeLoaded(event)" id="iframe-vis"></iframe>
+        <iframe
+            title="chart-preview"
+            ref:iframe
+            src="{url}"
+            on:load="iframeLoaded(event)"
+            id="iframe-vis"
+        ></iframe>
         {#if resizable}
         <div ref="resizer" on:mousedown="startDrag(event)" class="resizer resizer-both">
             <i class="fa fa-arrows-h"></i>
@@ -29,7 +35,10 @@ TODO for later:
                 {#if notification.icon}
                 <span>{@html purifyHtml(notification.icon) }</span>
                 {/if}
-                <span>{@html purifyHtml(notification.translateKey ? __(notification.translateKey) : notification.message) }</span>
+                <span
+                    >{@html purifyHtml(notification.translateKey ? __(notification.translateKey) :
+                    notification.message) }</span
+                >
             </div>
         </AlertDisplay>
         {/each}
@@ -179,7 +188,7 @@ TODO for later:
                 });
             },
 
-            renderChart: throttle(function(attributes) {
+            renderChart: throttle(function (attributes) {
                 // Do not re-render in passive mode:
                 if (this.get().passiveMode) return;
 
@@ -214,7 +223,10 @@ TODO for later:
                 const doDrag = event => {
                     if (!this.get().resizing) return;
                     this.set({
-                        width: startWidth + (event.clientX - startX) * (this.store.get().type === 'locator-map' ? 2 : 1),
+                        width:
+                            startWidth +
+                            (event.clientX - startX) *
+                                (this.store.get().type === 'locator-map' ? 2 : 1),
                         height: startHeight + event.clientY - startY
                     });
                     event.preventDefault();
@@ -226,7 +238,9 @@ TODO for later:
                     window.document.removeEventListener('mouseup', stopDrag);
                     this.set({ resizing: false });
                     const { width, height } = this.get();
-                    const bbox = this.refs.iframe.contentDocument.querySelector('.dw-chart-body').getBoundingClientRect();
+                    const bbox = this.refs.iframe.contentDocument
+                        .querySelector('.dw-chart-body')
+                        .getBoundingClientRect();
                     const maxH = this.refs.iframe.contentWindow.dw.utils.getMaxChartHeight();
                     const [chartWidth, chartHeight] = [bbox.width, maxH];
                     this.fire('resize', { width, height, chartWidth, chartHeight });
@@ -263,7 +277,7 @@ TODO for later:
                 }
             });
 
-            this.store.on('update', ({ changed, current }) => {
+            this.store.on('update', () => {
                 const { previousAttributes } = this.get();
 
                 if (!previousAttributes) {
@@ -367,7 +381,7 @@ TODO for later:
         }
 
         function sync(key) {
-            return function(txt) {
+            return function (txt) {
                 chart.set({ passiveMode: true });
                 chart.setMetadata(key, txt);
                 chart.set({ passiveMode: false });

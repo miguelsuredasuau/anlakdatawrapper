@@ -1,3 +1,7 @@
+<script>
+    export let uid;
+</script>
+
 <style>
     span {
         padding-left: 15px;
@@ -21,4 +25,4 @@
     }
 </style>
 
-<span><slot /></span>
+<span data-uid={uid}><slot /></span>

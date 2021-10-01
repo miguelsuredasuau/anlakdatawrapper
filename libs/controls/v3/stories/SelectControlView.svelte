@@ -1,5 +1,4 @@
 <script>
-    /* eslint-disable import/first */
     import SelectControl from '../SelectControl.svelte';
     import SelectInput from '../SelectInput.svelte';
 
@@ -40,7 +39,13 @@
 
 <SelectControl {options} {optgroups} label="disabled" disabled={true} bind:value />
 
-<SelectControl {options} {optgroups} label="on:change events" bind:value on:change={evt => (changeValue = evt.detail.target.value)} />
+<SelectControl
+    {options}
+    {optgroups}
+    label="on:change events"
+    bind:value
+    on:change={evt => (changeValue = evt.detail.target.value)}
+/>
 
 {#if changeValue !== null}
     <code>
@@ -49,11 +54,31 @@
     </code>
 {/if}
 
-<SelectControl {options} {optgroups} label="inline select, help text" miniHelp="This is some help text on an inline control" bind:value />
+<SelectControl
+    {options}
+    {optgroups}
+    label="inline select, help text"
+    miniHelp="This is some help text on an inline control"
+    bind:value
+/>
 
-<SelectControl {options} {optgroups} label="inline select, custom label width for multi-line label text" valign="top" bind:value labelWidth="140px" />
+<SelectControl
+    {options}
+    {optgroups}
+    label="inline select, custom label width for multi-line label text"
+    valign="top"
+    bind:value
+    labelWidth="140px"
+/>
 
-<SelectControl {options} {optgroups} label="custom label width, custom control width" bind:value width="130px" labelWidth="140px" />
+<SelectControl
+    {options}
+    {optgroups}
+    label="custom label width, custom control width"
+    bind:value
+    width="130px"
+    labelWidth="140px"
+/>
 
 <SelectControl
     {options}
@@ -68,13 +93,31 @@
 
 <h3>Non-inline selects</h3>
 
-<p>Use default label and control width to be consistent with other select-style controls such as SelectAxisColumnControl</p>
+<p>
+    Use default label and control width to be consistent with other select-style controls such as
+    SelectAxisColumnControl
+</p>
 
 <SelectControl {options} {optgroups} inline={false} label="non-inline select" bind:value />
 
-<SelectControl {options} {optgroups} inline={false} label="non-inline select, custom control width" width="150px" valign="top" bind:value />
+<SelectControl
+    {options}
+    {optgroups}
+    inline={false}
+    label="non-inline select, custom control width"
+    width="150px"
+    valign="top"
+    bind:value
+/>
 
-<SelectControl {options} {optgroups} inline={false} label="non-inline select, custom label width" labelWidth="150px" bind:value />
+<SelectControl
+    {options}
+    {optgroups}
+    inline={false}
+    label="non-inline select, custom label width"
+    labelWidth="150px"
+    bind:value
+/>
 
 <SelectControl
     {options}

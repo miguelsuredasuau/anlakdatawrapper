@@ -1,5 +1,4 @@
 <script>
-    /* eslint-disable import/first */
     import { createEventDispatcher } from 'svelte';
     import { slide } from 'svelte/transition';
     import HelpDisplay from './HelpDisplay.svelte';
@@ -14,6 +13,7 @@
     export let disabled = false;
     export let inverted = false;
     export let indeterminate = false;
+    export let uid;
 
     $: effectiveValue = inverted ? !value : value;
 
@@ -155,7 +155,7 @@
     }
 </style>
 
-<div class="vis-option-type-switch">
+<div class="vis-option-type-switch" data-uid={uid}>
     {#if help}
         <HelpDisplay>
             <div>{@html help}</div>

@@ -15,8 +15,30 @@
     export let slider = true;
     export let step = 1;
     export let unit = '';
+    export let uid;
 </script>
 
-<ControlGroup {disabled} type="number" valign="middle" {label} {labelWidth} {help} helpClass="mt-1">
-    <NumberInput bind:value {allowUndefined} {disabled} {max} {min} {multiply} {placeholder} {slider} {step} {unit} class="mt-1" />
+<ControlGroup
+    {disabled}
+    type="number"
+    valign="middle"
+    {label}
+    {labelWidth}
+    {help}
+    {uid}
+    helpClass="mt-1"
+>
+    <NumberInput
+        bind:value
+        {allowUndefined}
+        {disabled}
+        {max}
+        {min}
+        {multiply}
+        {placeholder}
+        {slider}
+        {step}
+        {unit}
+        class="mt-1"
+    />
 </ControlGroup>

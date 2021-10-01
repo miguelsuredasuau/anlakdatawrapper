@@ -24,6 +24,7 @@
      * becomes available again
      */
     export let faded = false;
+    export let uid;
 </script>
 
 <style>
@@ -100,7 +101,7 @@
     }
 </style>
 
-<div class="control-group vis-option-group vis-option-type-checkbox">
+<div class="control-group vis-option-group vis-option-type-checkbox" data-uid={uid}>
     <label class="checkbox" class:disabled class:faded>
         <input type="checkbox" {disabled} bind:checked={value} />
         <span class="css-ui" />

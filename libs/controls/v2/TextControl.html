@@ -1,9 +1,28 @@
-<ControlGroup disabled="{disabled}" type="text" {labelWidth} {label} {valign} {miniHelp} {help} helpClass="mt-1">
+<ControlGroup
+    disabled="{disabled}"
+    type="text"
+    {labelWidth}
+    {label}
+    {valign}
+    {miniHelp}
+    {help}
+    {uid}
+    helpClass="mt-1"
+>
     <div class="flex mt-1">
         {#if prepend}
         <div class="prepend">{prepend}</div>
         {/if}
-        <TextInput {expandable} {rows} {id} {autocomplete} {disabled} {placeholder} {width} bind:value></TextInput>
+        <TextInput
+            {expandable}
+            {rows}
+            {id}
+            {autocomplete}
+            {disabled}
+            {placeholder}
+            {width}
+            bind:value
+        ></TextInput>
         {#if append}
         <div class="append">{append}</div>
         {/if}
@@ -12,9 +31,7 @@
 
 {#if disabled && disabledMessage}
 <div transition:slide>
-    <div class="disabled-msg">
-        {@html disabledMessage}
-    </div>
+    <div class="disabled-msg">{@html disabledMessage}</div>
 </div>
 {/if}
 
@@ -46,6 +63,7 @@
         data() {
             return {
                 id: '',
+                uid: '',
                 autocomplete: 'off',
                 disabled: false,
                 disabledMessage: '',

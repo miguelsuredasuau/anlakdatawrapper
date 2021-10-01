@@ -1,4 +1,4 @@
-<div class:hidden-item="item.hidden" style="display: flex">
+<div class:hidden-item="item.hidden" style="display: flex" data-uid="{uid}">
     <div class="swatch" style="background: {item.color}"></div>
     <div>
         <input
@@ -14,8 +14,13 @@
     </div>
     {#if allowHiding}
     <div class="pull-right">
-        <a href="#/hide" class="hide-item" on:click|preventDefault|stopPropagation="toggleItemVisibility(item)">
-            <i class="fa fa-fw {item.hidden ? 'fa-eye-slash' : 'fa-eye'}" style="color: {item.hidden ? '#9c9c9c' : '#797879'}"> </i>
+        <a
+            href="#/hide"
+            class="hide-item"
+            on:click|preventDefault|stopPropagation="toggleItemVisibility(item)"
+        >
+            <i class="fa fa-fw {item.hidden ? 'fa-eye-slash' : 'fa-eye'}" style="color:{itemColor}">
+            </i>
         </a>
     </div>
     {/if}
@@ -23,6 +28,11 @@
 
 <script>
     export default {
+        data() {
+            return {
+                uid: ''
+            };
+        },
         methods: {
             onChange() {
                 const { item } = this.get();
@@ -34,6 +44,9 @@
             }
         },
         computed: {
+            itemColor({ item }) {
+                return item.hidden ? '#9c9c9c' : '#797879';
+            },
             allowHiding({ data }) {
                 return data && data.allowHiding;
             }

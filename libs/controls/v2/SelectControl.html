@@ -1,5 +1,24 @@
-<ControlGroup type="select" {label} {labelWidth} {valign} {disabled} {inline} {miniHelp} {help} helpClass="mt-1">
-    <SelectInput width="{controlWidth}" class="mt-1" bind:value bind:disabled bind:options bind:optgroups on:change="fire('change', event)" />
+<ControlGroup
+    type="select"
+    {label}
+    {labelWidth}
+    {valign}
+    {disabled}
+    {inline}
+    {miniHelp}
+    {help}
+    {uid}
+    helpClass="mt-1"
+>
+    <SelectInput
+        width="{controlWidth}"
+        class="mt-1"
+        bind:value
+        bind:disabled
+        bind:options
+        bind:optgroups
+        on:change="fire('change', event)"
+    />
 </ControlGroup>
 
 <script>
@@ -21,7 +40,8 @@
                 valign: 'middle',
                 inline: false,
                 help: null,
-                miniHelp: null
+                miniHelp: null,
+                uid: ''
             };
         },
 

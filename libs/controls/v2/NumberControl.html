@@ -1,4 +1,13 @@
-<ControlGroup disabled="{disabled}" type="number" valign="middle" {label} {labelWidth} {help} helpClass="mt-1">
+<ControlGroup
+    disabled="{disabled}"
+    type="number"
+    valign="middle"
+    {label}
+    {labelWidth}
+    {help}
+    {uid}
+    helpClass="mt-1"
+>
     <NumberInput
         ref:baseNumber
         slider="{slider}"
@@ -36,7 +45,8 @@
                 step: 1,
                 allowUndefined: false,
                 placeholder: null,
-                help: null
+                help: null,
+                uid: ''
             };
         }
     };

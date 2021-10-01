@@ -1,6 +1,9 @@
 <div class="container">
     {@html item.icon}
-    <span class="text">{item.type === 'x' ? item.x0 : item.y0} {item.display !== 'line' ? `- ${item.type === 'x' ? item.x1 : item.y1}` : ''}</span>
+    <span class="text"
+        >{item.type === 'x' ? item.x0 : item.y0} {item.display !== 'line' ? `- ${item.type === 'x' ?
+        item.x1 : item.y1}` : ''}</span
+    >
     <span class="pull-right">
         <i on:click|stopPropagation="deleteAnnotation(item.id)" class="fa fa-fw fa-trash"></i>
     </span>
@@ -37,7 +40,6 @@
 </style>
 
 <script>
-    /* globals CustomEvent */
     export default {
         methods: {
             deleteAnnotation(id) {

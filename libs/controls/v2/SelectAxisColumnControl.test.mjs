@@ -53,7 +53,7 @@ test.beforeEach(t => {
             }
         },
         vis: {
-            axes(returnAsColumn = false) {
+            axes() {
                 return {
                     x: 'more values'
                 };

@@ -1,4 +1,4 @@
-<div class="pagination">
+<div class="pagination" data-uid="{uid}">
     <ul>
         {#each displayItems as item}{#if item.visible}
         <li class="{isActive(item.state) ? 'active' : ''}">
@@ -39,16 +39,23 @@
             return {
                 total: null,
                 limit: 10,
-                offset: 0
+                offset: 0,
+                uid: ''
             };
         },
 
         computed: {
             currentPage: ({ limit, offset }) => Math.ceil(+offset / +limit) || 0,
 
-            getUrl: ({ state, url }) => state => (url ? url(state) : '#'),
+            getUrl:
+                ({ url }) =>
+                state =>
+                    url ? url(state) : '#',
 
-            isActive: ({ currentPage }) => ({ offset, limit }) => offset / limit === currentPage,
+            isActive:
+                ({ currentPage }) =>
+                ({ offset, limit }) =>
+                    offset / limit === currentPage,
 
             displayItems: ({ total, limit, currentPage }) => {
                 // do not render pagination items if `total` isn't set:

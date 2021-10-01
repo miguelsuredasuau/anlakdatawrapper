@@ -7,6 +7,7 @@
     export let iconLeft = false;
     export let iconColor;
     export let assetURL;
+    export let uid;
 
     $: getRenderedIconColor = () => {
         if (iconLeft && iconColor) return iconColor;
@@ -36,8 +37,9 @@
         text-align: center;
         font-weight: 500;
         cursor: pointer;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.02), inset 0 1px 0 #cccccc, inset 1px 0 0 #cccccc,
-            inset -1px 0 0 #cccccc, inset 0 -1px 0 #b3b3b3;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.02),
+            inset 0 1px 0 #cccccc, inset 1px 0 0 #cccccc, inset -1px 0 0 #cccccc,
+            inset 0 -1px 0 #b3b3b3;
     }
 
     button:hover,
@@ -47,12 +49,15 @@
     }
 
     button.active {
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 2px 5px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.02), inset 0 1px 0 #cccccc,
-            inset 1px 0 0 #cccccc, inset -1px 0 0 #cccccc, inset 0 -1px 0 #b3b3b3;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 2px 5px rgba(0, 0, 0, 0.25),
+            inset 0 1px 0 rgba(255, 255, 255, 0.02), inset 0 1px 0 #cccccc, inset 1px 0 0 #cccccc,
+            inset -1px 0 0 #cccccc, inset 0 -1px 0 #b3b3b3;
     }
     button:active {
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 2px 5px rgba(0, 0, 0, 0.25), inset 0 2px 8px rgba(0, 0, 0, 0.15),
-            inset 0 1px 0 rgba(255, 255, 255, 0.02), inset 0 1px 0 #cccccc, inset 1px 0 0 #cccccc, inset -1px 0 0 #cccccc, inset 0 -1px 0 #b3b3b3;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 2px 5px rgba(0, 0, 0, 0.25),
+            inset 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.02),
+            inset 0 1px 0 #cccccc, inset 1px 0 0 #cccccc, inset -1px 0 0 #cccccc,
+            inset 0 -1px 0 #b3b3b3;
     }
     span {
         display: inline-block;
@@ -73,7 +78,7 @@
     }
 </style>
 
-<button class:active class:icon-left={iconLeft} on:click>
+<button class:active class:icon-left={iconLeft} on:click data-uid={uid}>
     <slot />
     <IconDisplay {assetURL} {icon} size="32px" color={renderedIconColor} />
     <span>{title}</span>

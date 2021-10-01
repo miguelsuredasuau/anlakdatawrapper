@@ -1,3 +1,4 @@
+/* eslint-env node */
 // import fs from 'fs';
 import { storiesOf } from '@storybook/svelte';
 import { withKnobs, select } from '@storybook/addon-knobs';

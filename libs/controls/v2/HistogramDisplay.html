@@ -1,4 +1,4 @@
-<svg height="{height}" bind:clientWidth="width">
+<svg height="{height}" bind:clientWidth="width" data-uid="{uid}">
     <g transform="translate({[padding.left,padding.top]})">
         <!-- x axis -->
         <g class="axis x-axis" transform="translate(0, {innerHeight})">
@@ -79,7 +79,8 @@
                 xScale_: scaleLinear(),
                 xScaleBand_: scaleBand(),
                 yScale_: scaleLinear(),
-                gradientId: ''
+                gradientId: '',
+                uid: ''
             };
         },
         computed: {
@@ -98,13 +99,11 @@
                     fill: typeof color === 'function' ? color((bin.x0 + bin.x1) * 0.5) : color
                 }));
             },
-            bins({ niceDomain, validValues, uniqueValues }) {
+            bins({ niceDomain, validValues }) {
                 const tickCnt = Math.max(10, Math.min(_uniq(validValues).length, 50));
                 const dom = niceDomain;
                 // const classw = (s[1]-s[0]);
-                const bins = histogram()
-                    .domain(dom)
-                    .thresholds(tickCnt)(validValues);
+                const bins = histogram().domain(dom).thresholds(tickCnt)(validValues);
                 const binWidths = _countBy(bins.map(b => b.x1 - b.x0));
                 if (bins.length > 2 && _keys(binWidths).length > 1) {
                     // check first and last bin
@@ -117,9 +116,7 @@
                 return bins;
             },
             niceDomain({ validValues }) {
-                return scaleLinear()
-                    .domain(extent(validValues))
-                    .domain();
+                return scaleLinear().domain(extent(validValues)).domain();
             },
             xScaleBand({ xScaleBand_, bins, innerWidth }) {
                 return xScaleBand_
@@ -135,7 +132,9 @@
                     .clamp(false);
             },
             yScale({ yScale_, innerHeight, bins, density, densityPlot }) {
-                return yScale_.domain([0, densityPlot ? max(density, d => d[1]) : max(bins, d => d.length)]).range([innerHeight, 0]);
+                return yScale_
+                    .domain([0, densityPlot ? max(density, d => d[1]) : max(bins, d => d.length)])
+                    .range([innerHeight, 0]);
             },
 
             barWidth({ bins, xScale }) {
@@ -168,11 +167,14 @@
                     .x(d => xScale(d[0]))
                     .y(d => yScale(d[1]))(density);
             },
-            gradientStops({ color, xScale, discrete, width, steps }) {
+            gradientStops({ color, xScale, discrete, steps }) {
                 const [fromX, toX] = xScale.range();
                 const [fromDomain, toDomain] = xScale.domain();
                 if (typeof color === 'string') {
-                    return [{ color, offset: 0 }, { color, offset: 1 }];
+                    return [
+                        { color, offset: 0 },
+                        { color, offset: 1 }
+                    ];
                 } else if (steps.length > 2) {
                     const stops = [];
                     let lastColor = null;

@@ -14,6 +14,7 @@
     export let miniHelp = false;
     export let type = 'default';
     export let valign = 'baseline';
+    export let uid;
 
     const finalLabelWidth = labelWidth || '100px';
     const labelStyle = block ? null : `width: ${finalLabelWidth}`;
@@ -97,7 +98,12 @@
     </HelpDisplay>
 {/if}
 
-<div class="control-group vis-option-group vis-option-group-{type} label-{valign}" class:control-group-block={block} class:error>
+<div
+    class="control-group vis-option-group vis-option-group-{type} label-{valign}"
+    class:control-group-block={block}
+    class:error
+    data-uid={uid}
+>
     {#if help && block}
         <HelpDisplay {helpClass}>
             <div>

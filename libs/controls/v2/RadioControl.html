@@ -1,15 +1,11 @@
-<ControlGroup type="radio" {labelWidth} {valign} {label} {disabled} {help} {miniHelp}>
+<ControlGroup type="radio" {labelWidth} {valign} {label} {disabled} {help} {miniHelp} {uid}>
     <div class:inline class:indeterminate>
         {#each options as opt}
         <label title="{opt.tooltip||''}" class:disabled class:has-help="opt.help">
             <input type="radio" value="{ opt.value }" bind:group="value" {disabled} />
-            <span class="css-ui"></span>&nbsp;<span class="inner-label">
-                {@html opt.label }
-            </span>
+            <span class="css-ui"></span>&nbsp;<span class="inner-label"> {@html opt.label } </span>
             {#if opt.help}
-            <div class="help">
-                {@html opt.help}
-            </div>
+            <div class="help">{@html opt.help}</div>
             {/if}
         </label>
         {/each}
@@ -18,9 +14,7 @@
 </ControlGroup>
 
 {#if disabled && disabledMessage}
-<div class="disabled-message">
-    {@html disabledMessage}
-</div>
+<div class="disabled-message">{@html disabledMessage}</div>
 {/if}
 
 <script>
@@ -39,7 +33,8 @@
                 help: null,
                 miniHelp: null,
                 valign: 'top',
-                inline: true
+                inline: true,
+                uid: ''
             };
         },
         onstate({ changed, previous }) {

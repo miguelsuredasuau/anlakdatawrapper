@@ -1,4 +1,4 @@
-<div class="column-container">
+<div class="column-container" data-uid="{uid}">
     <div class="column">
         <ListInput
             items="{swatches}"
@@ -11,23 +11,37 @@
             multiselectable="{true}"
             deselectable="{true}"
         />
-        <div style="font-size: 12px; text-align: left; margin-bottom: 10px;">
-            {__('Select:')} &nbsp; <a on:click|preventDefault="handleSelectAllClick()" href="#/select-all">{__('all')}</a> &nbsp;
-            <a on:click|preventDefault="handleSelectNoneClick()" href="#/select-none">{__('none')}</a> &nbsp;
-            <a on:click|preventDefault="handleSelectInvertClick()" href="#/select-invert">{__('invert')}</a>
+        <div style="font-size: 12px; text-align: left; margin-bottom: 10px">
+            {__('Select:')} &nbsp;
+            <a on:click|preventDefault="handleSelectAllClick()" href="#/select-all">{__('all')}</a>
+            &nbsp;
+            <a on:click|preventDefault="handleSelectNoneClick()" href="#/select-none"
+                >{__('none')}</a
+            >
+            &nbsp;
+            <a on:click|preventDefault="handleSelectInvertClick()" href="#/select-invert"
+                >{__('invert')}</a
+            >
         </div>
     </div>
     <div class="column">
         {#if selection.length}
-        <div class="well" style="margin-bottom:5px;padding: 9px">
-            <div style="margin-bottom:5px">
+        <div class="well" style="margin-bottom: 5px; padding: 9px">
+            <div style="margin-bottom: 5px">
                 <label>{__('controls / color-category / color')}</label>
-                <ColorPickerInput on:change="handleColorPickerChange(event)" bind:color="activeColor" />
+                <ColorPickerInput
+                    on:change="handleColorPickerChange(event)"
+                    bind:color="activeColor"
+                />
             </div>
             {#if allowLabeling}
             <label
                 >{__('controls / color-category / text')}
-                <input bind:value="selectionLabel" type="text" style="width:93%" placeholder="{selection[0]}"
+                <input
+                    bind:value="selectionLabel"
+                    type="text"
+                    style="width: 93%"
+                    placeholder="{selection[0]}"
             /></label>
             {/if}
             <button on:click="handleCloseClick()" class="btn btn-small">{__('Close')}</button>
@@ -38,7 +52,9 @@
             {__('controls / color-category / select-one-or-more'+(allowLabeling?'-w-label':''))}
         </p>
 
-        <button on:click="handleResetAllClick()" class="btn btn-small">{__('controls / color / reset-all')}</button>
+        <button on:click="handleResetAllClick()" class="btn btn-small">
+            {__('controls / color / reset-all')}
+        </button>
 
         {/if}
     </div>
@@ -67,7 +83,8 @@
                     map: {},
                     categoryOrder: [],
                     categoryLabels: {}
-                }
+                },
+                uid: ''
             };
         },
         computed: {
@@ -80,7 +97,15 @@
             uniqueValues({ values }) {
                 return values && values.length ? uniq(values) : [];
             },
-            swatches({ allowLabeling, uniqueValues, value, palette, categoryOrder, categoryLabels, baseColor }) {
+            swatches({
+                allowLabeling,
+                uniqueValues,
+                value,
+                palette,
+                categoryOrder,
+                categoryLabels,
+                baseColor
+            }) {
                 let paletteUsed = 0;
                 // sort by categoryOrder
                 return uniqueValues
@@ -92,11 +117,13 @@
                         if (ob < 0) return -1;
                         return oa - ob;
                     })
-                    .map((label, i) => ({
+                    .map(label => ({
                         label: allowLabeling ? categoryLabels[label] || label : label,
                         id: label,
                         manual: value.map[label],
-                        color: value.map[label] || (paletteUsed >= palette.length ? baseColor : palette[paletteUsed++])
+                        color:
+                            value.map[label] ||
+                            (paletteUsed >= palette.length ? baseColor : palette[paletteUsed++])
                     }));
             }
         },
@@ -111,7 +138,9 @@
             },
             handleSelectInvertClick() {
                 const { swatches, selection } = this.get();
-                this.set({ selection: swatches.map(d => d.id).filter(d => selection.indexOf(d) < 0) });
+                this.set({
+                    selection: swatches.map(d => d.id).filter(d => selection.indexOf(d) < 0)
+                });
             },
             handleCloseClick() {
                 this.set({ selection: [] });

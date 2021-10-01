@@ -1,6 +1,7 @@
 <span
     class="svg-icon {class}"
     class:spin
+    data-uid="{uid}"
     style="animation-timing-function: {timing}; animation-duration: {duration}; height:{size}; width:{size}; vertical-align: {valign};"
 >
     <svg style="height:{size}; width:{size}">
@@ -48,7 +49,8 @@
                 assetURL: null,
                 spin: false,
                 timing: 'linear',
-                duration: '2s'
+                duration: '2s',
+                uid: ''
             };
         },
         computed: {

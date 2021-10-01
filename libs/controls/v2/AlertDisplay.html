@@ -6,6 +6,7 @@
     class:alert-info="type==='info'"
     class:alert-upgrade-info="type==='upgrade-info'"
     class="alert {class}"
+    data-uid="{uid}"
 >
     {#if type ==='upgrade-info'}
     <div class="icon"><span class="upgrade-icon">{@html upgradeIcon}</span></div>
@@ -72,7 +73,8 @@
                 type: '',
                 closeable: true,
                 class: '',
-                closeFunc: false
+                closeFunc: false,
+                uid: ''
             };
         },
         methods: {

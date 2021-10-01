@@ -29,7 +29,10 @@ export function getRangeAnnotationIcon(el, editorState) {
             }
 
             offset = Math.round((x[0] / editorState.width) * 100);
-            size = el.display === 'line' ? '3px' : Math.max(3, Math.round(((x[1] - x[0]) / editorState.width) * 100)) + '%';
+            size =
+                el.display === 'line'
+                    ? '3px'
+                    : Math.max(3, Math.round(((x[1] - x[0]) / editorState.width) * 100)) + '%';
         } else {
             let y = [dataToPx(0, el.y0)[1], dataToPx(0, el.y1)[1]];
 
@@ -38,18 +41,24 @@ export function getRangeAnnotationIcon(el, editorState) {
             }
 
             offset = Math.round((y[0] / editorState.height) * 100);
-            size = el.display === 'line' ? '3px' : Math.max(3, Math.round(((y[1] - y[0]) / editorState.height) * 100)) + '%';
+            size =
+                el.display === 'line'
+                    ? '3px'
+                    : Math.max(3, Math.round(((y[1] - y[0]) / editorState.height) * 100)) + '%';
         }
 
         const color = d3.color(el.color);
         const opacity = el.opacity / 100;
         const rgba = `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.max(0.3, opacity)})`;
-        offset = el.display === 'line' && el.strokeWidth === 3 ? `calc(${offset}% - 1px)` : `${offset}%`;
+        offset =
+            el.display === 'line' && el.strokeWidth === 3 ? `calc(${offset}% - 1px)` : `${offset}%`;
 
         let style = `${el.type === 'x' ? 'left' : 'top'}: ${offset};`;
 
         if (el.display === 'line') {
-            style += `border-${el.type === 'x' ? 'left' : 'top'}: ${el.strokeWidth}px ${el.strokeType} ${rgba};`;
+            style += `border-${el.type === 'x' ? 'left' : 'top'}: ${el.strokeWidth}px ${
+                el.strokeType
+            } ${rgba};`;
         } else {
             style += `${el.type === 'x' ? 'width' : 'height'}: ${size};`;
             style += `background: ${rgba};`;

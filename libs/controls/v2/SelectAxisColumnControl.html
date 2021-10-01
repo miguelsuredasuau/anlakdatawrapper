@@ -1,5 +1,11 @@
-<ControlGroup type="select-axis-column" {label} {labelWidth} {valign} {help} helpClass="mt-1">
-    <SelectInput bind:value="selected" class="mt-1" {disabled} options="{columns}" width="100%"></SelectInput>
+<ControlGroup type="select-axis-column" {label} {labelWidth} {valign} {help} {uid} helpClass="mt-1">
+    <SelectInput
+        bind:value="selected"
+        class="mt-1"
+        {disabled}
+        options="{columns}"
+        width="100%"
+    ></SelectInput>
 </ControlGroup>
 
 <script>
@@ -24,7 +30,8 @@
                 filter: false,
                 isInitialized: false,
                 selected: false,
-                help: false
+                help: false,
+                uid: ''
             };
         },
         computed: {

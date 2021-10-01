@@ -66,71 +66,80 @@ test.serial('Switch with value false renders an unchecked input and no content',
     t.is(t.context.querySelector('.switch-content'), null);
 });
 
-test.serial("Disabled Switch renders a disabled input and no content and doesn't set any extra classes on the input", t => {
-    const content = document.createElement('span');
-    content.textContent = 'My content';
-    new SwitchControl({
-        target: t.context,
-        props: {
-            label: 'My label',
-            value: true,
-            disabled: true,
-            $$slots: createSlots({ default: content }),
-            $$scope: {}
-        }
-    });
+test.serial(
+    "Disabled Switch renders a disabled input and no content and doesn't set any extra classes on the input",
+    t => {
+        const content = document.createElement('span');
+        content.textContent = 'My content';
+        new SwitchControl({
+            target: t.context,
+            props: {
+                label: 'My label',
+                value: true,
+                disabled: true,
+                $$slots: createSlots({ default: content }),
+                $$scope: {}
+            }
+        });
 
-    const input = t.context.querySelector('input');
-    t.true(input.disabled);
-    t.is(t.context.querySelector('.disabled-msg'), null);
-    t.is(t.context.querySelector('.switch-content'), null);
-    t.false(input.classList.contains('disabled-force-checked'));
-    t.false(input.classList.contains('disabled-force-unchecked'));
-});
+        const input = t.context.querySelector('input');
+        t.true(input.disabled);
+        t.is(t.context.querySelector('.disabled-msg'), null);
+        t.is(t.context.querySelector('.switch-content'), null);
+        t.false(input.classList.contains('disabled-force-checked'));
+        t.false(input.classList.contains('disabled-force-unchecked'));
+    }
+);
 
-test.serial("Disabled Switch with disabledState 'on' renders content and sets class 'disabled-force-checked' on the input", t => {
-    const content = document.createElement('span');
-    content.textContent = 'My content';
-    new SwitchControl({
-        target: t.context,
-        props: {
-            label: 'My label',
-            value: true,
-            disabled: true,
-            disabledState: 'on',
-            $$slots: createSlots({ default: content }),
-            $$scope: {}
-        }
-    });
+test.serial(
+    "Disabled Switch with disabledState 'on' renders content and sets class 'disabled-force-checked' on the input",
+    t => {
+        const content = document.createElement('span');
+        content.textContent = 'My content';
+        new SwitchControl({
+            target: t.context,
+            props: {
+                label: 'My label',
+                value: true,
+                disabled: true,
+                disabledState: 'on',
+                $$slots: createSlots({ default: content }),
+                $$scope: {}
+            }
+        });
 
-    const input = t.context.querySelector('input');
-    t.true(input.disabled);
-    t.truthy(t.context.querySelector('.switch-content'));
-    t.true(input.classList.contains('disabled-force-checked'));
-    t.false(input.classList.contains('disabled-force-unchecked'));
-});
+        const input = t.context.querySelector('input');
+        t.true(input.disabled);
+        t.truthy(t.context.querySelector('.switch-content'));
+        t.true(input.classList.contains('disabled-force-checked'));
+        t.false(input.classList.contains('disabled-force-unchecked'));
+    }
+);
 
-test.serial("Disabled Switch with disabledState 'off' renders no content and sets class 'disabled-force-unchecked' on the input", t => {
-    const content = document.createElement('span');
-    content.textContent = 'My content';
-    new SwitchControl({
-        target: t.context,
-        props: {
-            label: 'My label',
-            value: true,
-            disabled: true,
-            disabledState: 'off',
-            $$slots: createSlots({ default: content }),
-            $$scope: {}
-        }
-    });
+test.serial(
+    "Disabled Switch with disabledState 'off' renders no content and sets class 'disabled-force-unchecked' on the input",
+    t => {
+        const content = document.createElement('span');
+        content.textContent = 'My content';
+        new SwitchControl({
+            target: t.context,
+            props: {
+                label: 'My label',
+                value: true,
+                disabled: true,
+                disabledState: 'off',
+                $$slots: createSlots({ default: content }),
+                $$scope: {}
+            }
+        });
 
-    const input = t.context.querySelector('input');
-    t.true(input.disabled);
-    t.is(t.context.querySelector('.switch-content'), null);
-    t.false(input.classList.contains('disabled-force-checked'));
-    t.true(input.classList.contains('disabled-force-unchecked'));
-});
+        const input = t.context.querySelector('input');
+        t.true(input.disabled);
+        t.is(t.context.querySelector('.switch-content'), null);
+        t.false(input.classList.contains('disabled-force-checked'));
+        t.true(input.classList.contains('disabled-force-unchecked'));
+    }
+);
 
 test.serial('Disabled Switch with message renders the message', t => {
     new SwitchControl({
@@ -145,21 +154,24 @@ test.serial('Disabled Switch with message renders the message', t => {
     t.true(t.context.querySelector('.disabled-msg').innerHTML.includes('My disabled message'));
 });
 
-test.serial('Switch with value true and indeterminate true renders an indeterminate input and no content', t => {
-    new SwitchControl({
-        target: t.context,
-        props: {
-            label: 'My label',
-            value: true,
-            indeterminate: true
-        }
-    });
+test.serial(
+    'Switch with value true and indeterminate true renders an indeterminate input and no content',
+    t => {
+        new SwitchControl({
+            target: t.context,
+            props: {
+                label: 'My label',
+                value: true,
+                indeterminate: true
+            }
+        });
 
-    const input = t.context.querySelector('input');
-    t.true(input.checked);
-    t.true(input.indeterminate);
-    t.is(t.context.querySelector('.switch-content'), null);
-});
+        const input = t.context.querySelector('input');
+        t.true(input.checked);
+        t.true(input.indeterminate);
+        t.is(t.context.querySelector('.switch-content'), null);
+    }
+);
 
 test.serial('Switch without slots renders no content', t => {
     new SwitchControl({
@@ -221,7 +233,7 @@ test.serial('Enabled checked Switch hides content when clicked and emits an even
     let toggleEvtValue = null;
     component.$on('toggle', evt => (toggleEvtValue = evt.detail));
     const waitForTransition = new Promise(resolve => {
-        component.$on('outroend', async evt => {
+        component.$on('outroend', async () => {
             await tick();
             resolve();
         });
@@ -236,48 +248,73 @@ test.serial('Enabled checked Switch hides content when clicked and emits an even
     t.is(t.context.querySelector('.switch-content'), null);
 });
 
-test.serial("Disabled Switch doesn't show content when clicked and doesn't emit an event", async t => {
-    const content = document.createElement('span');
-    content.textContent = 'My content';
-    const component = new SwitchControl({
-        target: t.context,
-        props: {
-            value: true,
-            disabled: true,
-            $$slots: createSlots({ default: content }),
-            $$scope: {}
-        }
-    });
-    let toggleEvtValue = null;
-    component.$on('toggle', evt => (toggleEvtValue = evt.detail));
+test.serial(
+    "Disabled Switch doesn't show content when clicked and doesn't emit an event",
+    async t => {
+        const content = document.createElement('span');
+        content.textContent = 'My content';
+        const component = new SwitchControl({
+            target: t.context,
+            props: {
+                value: true,
+                disabled: true,
+                $$slots: createSlots({ default: content }),
+                $$scope: {}
+            }
+        });
+        let toggleEvtValue = null;
+        component.$on('toggle', evt => (toggleEvtValue = evt.detail));
 
-    t.is(t.context.querySelector('.switch-content'), null);
-    t.context.querySelector('input').click();
-    await tick();
-    t.is(toggleEvtValue, null);
-    t.true(component.value);
-    t.is(t.context.querySelector('.switch-content'), null);
+        t.is(t.context.querySelector('.switch-content'), null);
+        t.context.querySelector('input').click();
+        await tick();
+        t.is(toggleEvtValue, null);
+        t.true(component.value);
+        t.is(t.context.querySelector('.switch-content'), null);
+    }
+);
+
+test.serial(
+    'Indeterminate checked Switch shows content when clicked and emits an event',
+    async t => {
+        const content = document.createElement('span');
+        content.textContent = 'My content';
+        const component = new SwitchControl({
+            target: t.context,
+            props: {
+                value: true,
+                indeterminate: true,
+                $$slots: createSlots({ default: content }),
+                $$scope: {}
+            }
+        });
+        let toggleEvtValue = null;
+        component.$on('toggle', evt => (toggleEvtValue = evt.detail));
+
+        t.is(t.context.querySelector('.switch-content'), null);
+        t.context.querySelector('input').click();
+        await tick();
+        t.is(toggleEvtValue, true);
+        t.true(component.value);
+        t.truthy(t.context.querySelector('.switch-content'));
+    }
+);
+
+test.serial('default SwitchControl has no uid', t => {
+    const target = document.createElement('div');
+    new SwitchControl({
+        target
+    });
+
+    t.is(target.querySelector('.vis-option-type-switch').getAttribute('data-uid'), null);
 });
 
-test.serial('Indeterminate checked Switch shows content when clicked and emits an event', async t => {
-    const content = document.createElement('span');
-    content.textContent = 'My content';
-    const component = new SwitchControl({
-        target: t.context,
-        props: {
-            value: true,
-            indeterminate: true,
-            $$slots: createSlots({ default: content }),
-            $$scope: {}
-        }
+test.serial('SwitchControl can have data-uid', t => {
+    const target = document.createElement('div');
+    new SwitchControl({
+        target,
+        props: { uid: 'foobar' }
     });
-    let toggleEvtValue = null;
-    component.$on('toggle', evt => (toggleEvtValue = evt.detail));
 
-    t.is(t.context.querySelector('.switch-content'), null);
-    t.context.querySelector('input').click();
-    await tick();
-    t.is(toggleEvtValue, true);
-    t.true(component.value);
-    t.truthy(t.context.querySelector('.switch-content'));
+    t.is(target.querySelector('.vis-option-type-switch').getAttribute('data-uid'), 'foobar');
 });

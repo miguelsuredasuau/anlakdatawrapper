@@ -1,7 +1,22 @@
-<ControlGroup type="custom-format" {valign} {labelWidth} {label} {disabled} {miniHelp} {help} helpClass="mt-1">
+<ControlGroup
+    type="custom-format"
+    {valign}
+    {labelWidth}
+    {label}
+    {disabled}
+    {miniHelp}
+    {help}
+    helpClass="mt-1"
+    {uid}
+>
     <div class="mt-1" class:split-container="selected==='custom'">
         <div class="select">
-            <SelectInput bind:value="selected" bind:disabled bind:options width="100%"></SelectInput>
+            <SelectInput
+                bind:value="selected"
+                bind:disabled
+                bind:options
+                width="100%"
+            ></SelectInput>
         </div>
         {#if selected === 'custom'}
         <input bind:value="custom" type="text" disabled="{disabled}" />
@@ -10,11 +25,13 @@
 </ControlGroup>
 
 {#if disabled && disabledMessage}
-<div class="message" style="margin-left: {labelWidth}">
-    {@html disabledMessage}
-</div>
+<div class="message" style="margin-left: {labelWidth}">{@html disabledMessage}</div>
 {:elseif selected === 'custom' && customFormatHelp}
-<div class="message" class:disabled="disabled && !disabledMessage" style="margin-left: {labelWidth}">
+<div
+    class="message"
+    class:disabled="disabled && !disabledMessage"
+    style="margin-left: {labelWidth}"
+>
     {@html customFormatHelp}
 </div>
 {/if}
@@ -80,7 +97,8 @@
                 valign: 'middle',
                 help: false,
                 miniHelp: false,
-                disabledMessage: ''
+                disabledMessage: '',
+                uid: ''
             };
         },
 
@@ -105,7 +123,11 @@
                 return $dataset.hasColumn(colname) ? $dataset.column(colname) : null;
             },
             options({ columnType, $teamSettings, auto }) {
-                const teamCustomFormats = get($teamSettings || {}, `controls.customFormats.${columnType}`, []);
+                const teamCustomFormats = get(
+                    $teamSettings || {},
+                    `controls.customFormats.${columnType}`,
+                    []
+                );
                 const formatOptions = teamCustomFormats.length
                     ? [...teamCustomFormats]
                     : formats(columnType).map(({ f, l }) => ({

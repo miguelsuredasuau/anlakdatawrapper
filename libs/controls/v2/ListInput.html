@@ -8,6 +8,7 @@
     on:drop|preventDefault="drop(event)"
     on:dragover|preventDefault="dragover(event)"
     style="max-height: {maxHeight ? maxHeight : compact ? '120px' : '220px'}"
+    data-uid="{uid}"
 >
     {#each items as item, index}
     <li
@@ -23,7 +24,14 @@
         on:dragstart="dragstart(event, index)"
         on:click|preventDefault="select(event, item, index)"
     >
-        <svelte:component bind:item {draggable} {index} on:change="onChange(event)" this="{itemRenderer}" {data} />
+        <svelte:component
+            bind:item
+            {draggable}
+            {index}
+            on:change="onChange(event)"
+            this="{itemRenderer}"
+            {data}
+        />
     </li>
     {/each}
 </ul>
@@ -49,12 +57,13 @@
                 dropafter: false,
                 disabled: false,
                 hover: null,
-                data: null
+                data: null,
+                uid: ''
             };
         },
         computed: {},
         methods: {
-            select(event, item, index) {
+            select(event, item) {
                 const { multiselectable, selectable, disabled } = this.get();
                 if (!selectable || disabled) return;
                 event.stopPropagation();
@@ -126,7 +135,13 @@
                         if (newIndex > -1) {
                             // now select everything between the two items
                             selected.length = 0;
-                            selected.push.apply(selected, itemIds.slice(Math.min(newIndex, activeIndex), Math.max(newIndex, activeIndex) + 1));
+                            selected.push.apply(
+                                selected,
+                                itemIds.slice(
+                                    Math.min(newIndex, activeIndex),
+                                    Math.max(newIndex, activeIndex) + 1
+                                )
+                            );
                         }
                     }
                 } else if (selected.length > 1) {
@@ -164,7 +179,8 @@
                 const { draggable, disabled } = this.get();
                 if (!draggable || disabled) return;
                 const li = ev.target;
-                const target = li.parentElement === this.refs.list ? +li.getAttribute('data-pos') : -1;
+                const target =
+                    li.parentElement === this.refs.list ? +li.getAttribute('data-pos') : -1;
                 const liBbox = li.getBoundingClientRect();
                 const y = (ev.clientY - liBbox.top) / liBbox.height;
 

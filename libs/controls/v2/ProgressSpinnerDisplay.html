@@ -1,4 +1,14 @@
-<IconDisplay icon="loading-spinner" spin duration="1.5s" timing="steps(12)" {color} {size} {valign} {assetURL} />
+<IconDisplay
+    icon="loading-spinner"
+    spin
+    duration="1.5s"
+    timing="steps(12)"
+    {color}
+    {size}
+    {valign}
+    {assetURL}
+    {uid}
+/>
 
 <script>
     import IconDisplay from './IconDisplay.html';
@@ -15,7 +25,8 @@
                 color: 'inherit',
                 valign: 'middle',
                 class: '',
-                assetURL: null
+                assetURL: null,
+                uid: ''
             };
         }
     };

@@ -16,11 +16,14 @@
     export let placeholder = '(select an item)';
     export let forcePlaceholder = false;
     export let forceLabel = false;
+    export let uid;
 
     let currentItem;
     $: {
         if (forcePlaceholder) {
-            currentItem = { label: `<span style="color: #999; font-size: 12px;">${placeholder}</span>` };
+            currentItem = {
+                label: `<span style="color: #999; font-size: 12px;">${placeholder}</span>`
+            };
         } else if (forceLabel) {
             currentItem = typeof forceLabel === 'string' ? { label: forceLabel } : forceLabel;
         } else {
@@ -94,11 +97,26 @@
     }
 </style>
 
-<ControlGroup inline={true} type="dropdown" {label} {labelWidth} {valign} {help} {disabled} helpClass="mt-1">
+<ControlGroup
+    inline={true}
+    type="dropdown"
+    {label}
+    {labelWidth}
+    {valign}
+    {help}
+    {disabled}
+    helpClass="mt-1"
+    {uid}
+>
     <DropdownInput {disabled} {width}>
         <span slot="button">
             <div class="btn-group mt-1">
-                <button class="btn dropdown-toggle" class:disabled style="width: {width}" on:keydown={handleButtonKeydown}>
+                <button
+                    class="btn dropdown-toggle"
+                    class:disabled
+                    style="width: {width}"
+                    on:keydown={handleButtonKeydown}
+                >
                     <span class="btn-label">
                         {#if forcePlaceholder}
                             {@html currentItem.label}
@@ -115,7 +133,10 @@
                 {#if options.length}
                     {#each options as option}
                         <li class:selected={value === option.value}>
-                            <a href="#/{option.value}" on:click|preventDefault={handleOptionClick(option)}>
+                            <a
+                                href="#/{option.value}"
+                                on:click|preventDefault={handleOptionClick(option)}
+                            >
                                 <svelte:component this={itemRenderer} {...option} />
                             </a>
                         </li>

@@ -35,3 +35,22 @@ test('Snackbar is hidden when created in closed state', t => {
     component.closed = false;
     t.false(el.classList.contains('hidden'));
 });
+
+test('default SnackbarDisplay has no uid', t => {
+    const target = document.createElement('div');
+    new SnackbarDisplay({
+        target
+    });
+
+    t.is(target.querySelector('.snackbar').getAttribute('data-uid'), null);
+});
+
+test('SnackbarDisplay can have data-uid', t => {
+    const target = document.createElement('div');
+    new SnackbarDisplay({
+        target,
+        props: { uid: 'foobar' }
+    });
+
+    t.is(target.querySelector('.snackbar').getAttribute('data-uid'), 'foobar');
+});

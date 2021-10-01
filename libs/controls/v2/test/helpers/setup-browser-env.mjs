@@ -1,3 +1,4 @@
+/* eslint-env node */
 // Setup browser-env for use with AVA
 // https://github.com/avajs/ava/blob/master/docs/recipes/browser-testing.md
 import browserEnv from 'browser-env';

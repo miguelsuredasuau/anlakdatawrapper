@@ -1,12 +1,21 @@
-<Group label="{__('annotate / highlight element') }">
+<Group label="{__('annotate / highlight element') }" {uid}>
     <div>
-        <SelectInput bind:value="selected" on:change="add(event.target.value)" options="{options}" width="100%" />
+        <SelectInput
+            bind:value="selected"
+            on:change="add(event.target.value)"
+            options="{options}"
+            width="100%"
+        />
     </div>
     <ul class="highlights">
         {#each highlights as item}
         <li class="highlights-item" class:valid="item.valid">
             <span class="highlights-text">{ item.value }</span>
-            <button aria-label="Remove" on:click="remove(item.value)" class="fa fa-remove remove-highlight" />
+            <button
+                aria-label="Remove"
+                on:click="remove(item.value)"
+                class="fa fa-remove remove-highlight"
+            />
         </li>
         {/each}
     </ul>
@@ -69,7 +78,8 @@
         data() {
             return {
                 selected: '---',
-                value: []
+                value: [],
+                uid: ''
             };
         },
         computed: {

@@ -2,6 +2,7 @@
     export let disabled = false;
     export let width = 'auto';
     export let visible = false;
+    export let uid;
 
     let dropdownButtonEl;
 
@@ -11,7 +12,12 @@
     }
 
     function handleWindowClick(event) {
-        if (!event.target || event.target === dropdownButtonEl || (dropdownButtonEl && dropdownButtonEl.contains(event.target))) return;
+        if (
+            !event.target ||
+            event.target === dropdownButtonEl ||
+            (dropdownButtonEl && dropdownButtonEl.contains(event.target))
+        )
+            return;
         visible = false;
     }
 </script>
@@ -52,10 +58,16 @@
 
 <svelte:window on:click={handleWindowClick} />
 
-<div class="dropdown-input-wrap">
-    <span class="dropdown-input-btn" bind:this={dropdownButtonEl} on:click|preventDefault={handleButtonClick}>
+<div class="dropdown-input-wrap" data-uid={uid}>
+    <span
+        class="dropdown-input-btn"
+        bind:this={dropdownButtonEl}
+        on:click|preventDefault={handleButtonClick}
+    >
         <slot name="button">
-            <button class="btn btn-small"><i class="fa fa-chevron-{visible ? 'up' : 'down'}" /></button>
+            <button class="btn btn-small"
+                ><i class="fa fa-chevron-{visible ? 'up' : 'down'}" /></button
+            >
         </slot>
     </span>
     {#if visible}

@@ -1,5 +1,5 @@
 {#if visible}
-<div class="progress" style="height: {height}px;">
+<div class="progress" style="height: {height}px;" data-uid="{uid}">
     <div class="bar" style="width: {status}%;"></div>
 </div>
 {/if}
@@ -23,7 +23,8 @@
             return {
                 visible: true,
                 status: 0,
-                height: 20
+                height: 20,
+                uid: ''
             };
         }
     };

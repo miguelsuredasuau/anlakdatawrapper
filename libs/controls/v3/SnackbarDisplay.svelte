@@ -4,6 +4,8 @@
 
     export let delay = 5000;
     export let closed = false;
+    export let uid;
+
     let className;
     export { className as class };
 
@@ -62,7 +64,16 @@
     }
 </style>
 
-<div class={className} class:snackbar={true} class:closed class:hidden on:click={close} on:mouseover={stopTimeout} on:mouseout={startTimeout}>
+<div
+    class={className}
+    class:snackbar={true}
+    class:closed
+    class:hidden
+    on:click={close}
+    on:mouseover={stopTimeout}
+    on:mouseout={startTimeout}
+    data-uid={uid}
+>
     <slot />
     <SnackbarButton>{__('Close')}</SnackbarButton>
 </div>

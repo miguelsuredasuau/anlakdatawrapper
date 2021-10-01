@@ -1,4 +1,5 @@
 <script>
+    /* eslint-env node */
     import IconDisplay from '../IconDisplay.svelte';
 
     const assetURL = process.env.STORYBOOK_ICONS_URL;
@@ -39,7 +40,14 @@
 
 <h4>IconDisplay: spinner (linear / steps / ease-in-out)</h4>
 <IconDisplay {assetURL} size="40px" icon="new" spin />
-<IconDisplay {assetURL} size="40px" icon="loading-spinner" spin timing="steps(12)" duration="1.5s" />
+<IconDisplay
+    {assetURL}
+    size="40px"
+    icon="loading-spinner"
+    spin
+    timing="steps(12)"
+    duration="1.5s"
+/>
 <IconDisplay {assetURL} size="40px" icon="refresh" spin timing="ease-in-out" duration="1s" />
 
 <h4>IconDisplay: vertical alignment</h4>

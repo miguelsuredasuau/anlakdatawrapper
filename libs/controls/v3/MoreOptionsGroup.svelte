@@ -11,6 +11,7 @@
     export { className as class };
     export let showLabel = __('controls / more-options');
     export let hideLabel = __('controls / fewer-options');
+    export let uid;
 
     function toggle() {
         if (disabled) return;
@@ -48,10 +49,24 @@
     }
 </style>
 
-<div class:disabled class="control-group vis-option-group vis-option-type-more-options {className || ''}">
-    <div class="more-options-toggle mb-2" class:more-options-visible={value} class:more-options-hidden={!value}>
+<div
+    data-uid={uid}
+    class:disabled
+    class="control-group vis-option-group vis-option-type-more-options {className || ''}"
+>
+    <div
+        class="more-options-toggle mb-2"
+        class:more-options-visible={value}
+        class:more-options-hidden={!value}
+    >
         <button on:click={toggle} on:mousedown|preventDefault>
-            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="icon">
+            <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon"
+            >
                 <path d="M5 22L22 12L5 2V22Z" />
             </svg>
             {value ? hideLabel : showLabel}

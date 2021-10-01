@@ -1,9 +1,9 @@
 {
     "name": "@datawrapper/controls",
-    "version": "2.39.4",
+    "version": "2.40.0",
     "scripts": {
-        "format": "prettier '**/*.{js,html}' --write",
-        "lint": "prettier --check '**/*.{js,html}' && healthier '**/*.{js,html}'",
+        "format": "cd ../../.. && scripts/format libs/controls/v2",
+        "lint": "cd ../../.. && scripts/lint libs/controls/v2",
         "test": "ava",
         "test:watch": "ava --watch --verbose",
         "storybook": "start-storybook --port 6009",
@@ -44,7 +44,6 @@
         "@storybook/addon-notes": "5.0.6",
         "@storybook/addons": "5.0.6",
         "@storybook/svelte": "5.0.6",
-        "@tivac/eslint-plugin-svelte": "^1.2.1",
         "ava": "^3.15.0",
         "babel-eslint": "^10.0.1",
         "babel-loader": "^8.0.5",
@@ -52,73 +51,11 @@
         "cash-dom": "^4.1.2",
         "copy-webpack-plugin": "^6.4.1",
         "d3-random": "^2.0.0",
-        "eslint-plugin-html": "^5.0.3",
-        "healthier": "^2.0.0",
-        "husky": "^1.3.1",
-        "lint-staged": "^8.1.5",
         "pirates": "^4.0.1",
-        "prettier": "^1.16.4",
         "sinon": "^11.1.1",
         "svelte": "^2.16.1",
         "svelte-loader": "^2.13.3",
         "svelte-transitions": "^1.2.0"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "prettier": {
-        "tabWidth": 4,
-        "semi": true,
-        "printWidth": 150,
-        "singleQuote": true
-    },
-    "eslintConfig": {
-        "root": true,
-        "parser": "babel-eslint",
-        "rules": {
-            "no-console": [
-                "error",
-                {
-                    "allow": [
-                        "warn",
-                        "error"
-                    ]
-                }
-            ],
-            "camelcase": [
-                "warn",
-                {
-                    "ignoreDestructuring": true,
-                    "properties": "never"
-                }
-            ],
-            "@tivac/svelte/property-ordering": "off",
-            "@tivac/svelte/onupdate": "off"
-        },
-        "extends": [
-            "plugin:@tivac/svelte/svelte"
-        ],
-        "plugins": [
-            "html",
-            "@tivac/svelte"
-        ]
-    },
-    "lint-staged": {
-        "linters": {
-            "*.{js,html}": [
-                "prettier --write",
-                "healthier",
-                "git add"
-            ]
-        },
-        "ignore": [
-            "*.min.js",
-            "**/dw-2.0.js",
-            "**/vendor/**/*.js",
-            "www/static/js/svelte/**/*.js"
-        ]
     },
     "ava": {
         "require": [

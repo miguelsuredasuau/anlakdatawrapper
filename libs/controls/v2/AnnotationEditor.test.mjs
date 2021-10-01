@@ -12,7 +12,19 @@ import metadata from './stories/lib/annotationMetadata.mjs';
 
 const themeData = {
     colors: {
-        palette: ['#18a1cd', '#1d81a2', '#15607a', '#00dca6', '#09bb9f', '#009076', '#c4c4c4', '#c71e1d', '#fa8c00', '#ffca76', '#ffe59c'],
+        palette: [
+            '#18a1cd',
+            '#1d81a2',
+            '#15607a',
+            '#00dca6',
+            '#09bb9f',
+            '#009076',
+            '#c4c4c4',
+            '#c71e1d',
+            '#fa8c00',
+            '#ffca76',
+            '#ffe59c'
+        ],
         picker: {
             rowCount: 6
         }
@@ -21,8 +33,8 @@ const themeData = {
 
 test.beforeEach(t => {
     dw.backend.hooks = {
-        register: function() {},
-        unregister: function() {}
+        register: function () {},
+        unregister: function () {}
     };
 
     t.context = document.createElement('div');
@@ -98,7 +110,9 @@ test('Update style in multiple annotations', t => {
 
     // click on first item, then on third item with `shift` to select 3 annotations
     clickEvent(t.context.querySelector('.option-group-content > ul li:first-child'));
-    clickEvent(t.context.querySelector('.option-group-content > ul li:nth-child(3)'), { shift: true });
+    clickEvent(t.context.querySelector('.option-group-content > ul li:nth-child(3)'), {
+        shift: true
+    });
 
     // check that 3 annotations are selected
     const selectedList = $('.option-group-content > ul li.selected', t.context);
@@ -129,12 +143,24 @@ test('Indeterminate state is set correctly', t => {
 
     // click on first item, then on second item with `shift` to select 2 annotations
     clickEvent(t.context.querySelector('.option-group-content > ul li:first-child'));
-    clickEvent(t.context.querySelector('.option-group-content > ul li:nth-child(2)'), { shift: true });
+    clickEvent(t.context.querySelector('.option-group-content > ul li:nth-child(2)'), {
+        shift: true
+    });
 
     // different values for `bold`: indeterminate
-    t.is($('.vis-option-group-toggle .btn-group button:first-child', t.context).hasClass('indeterminate'), true);
+    t.is(
+        $('.vis-option-group-toggle .btn-group button:first-child', t.context).hasClass(
+            'indeterminate'
+        ),
+        true
+    );
     // same values for `italic`: not indeterminate
-    t.is($('.vis-option-group-toggle .btn-group button:nth-child(2)', t.context).hasClass('indeterminate'), false);
+    t.is(
+        $('.vis-option-group-toggle .btn-group button:nth-child(2)', t.context).hasClass(
+            'indeterminate'
+        ),
+        false
+    );
 });
 
 test('Delete single annotation', t => {
@@ -179,7 +205,9 @@ test('Delete multiple annotations', t => {
 
     // click on first item, then on third item with `ctrl` to select 2 annotations
     clickEvent(t.context.querySelector('.option-group-content > ul li:first-child'));
-    clickEvent(t.context.querySelector('.option-group-content > ul li:nth-child(3)'), { ctrl: true });
+    clickEvent(t.context.querySelector('.option-group-content > ul li:nth-child(3)'), {
+        ctrl: true
+    });
     $('.btn-danger', t.context)[0].click();
 
     const { $metadata } = annotationControls.get();

@@ -10,9 +10,7 @@ const store = new Store({ vis: null, axis: null });
 
 test.beforeEach(t => {
     t.context = $('<form />');
-    $(document.body)
-        .empty()
-        .append(t.context);
+    $(document.body).empty().append(t.context);
 });
 
 test('Render a select element', t => {
@@ -54,10 +52,7 @@ test('Update value when option is selected', t => {
     });
 
     // Select option and trigger change event:
-    t.context
-        .find('select')
-        .val('0.00%')
-        .trigger('change');
+    t.context.find('select').val('0.00%').trigger('change');
 
     // Check if selected option is shown
     t.is(customFormat.get().selected, '0.00%');
@@ -70,10 +65,7 @@ test("Show text input when 'custom' is selected", t => {
     });
 
     // Select option and trigger change event:
-    t.context
-        .find('select')
-        .val('custom')
-        .trigger('change');
+    t.context.find('select').val('custom').trigger('change');
 
     // Check if text input element is present
     t.is(t.context.find('input[type=text]').length, 1);
@@ -126,7 +118,11 @@ test('When disabled, show the disabled message', t => {
 test('When disabled, disabled message takes precedence over custom format message', t => {
     new CustomFormatControl({
         target: t.context[0],
-        data: { disabled: true, value: 'some custom format XXX', disabledMessage: 'explain why this is disabled' },
+        data: {
+            disabled: true,
+            value: 'some custom format XXX',
+            disabledMessage: 'explain why this is disabled'
+        },
         store
     });
 
@@ -137,7 +133,11 @@ test('When disabled, disabled message takes precedence over custom format messag
 test('When enabled, show the custom format message (not disabled message)', t => {
     new CustomFormatControl({
         target: t.context[0],
-        data: { disabled: false, value: 'some custom format XXX', disabledMessage: 'explain why this is disabled' },
+        data: {
+            disabled: false,
+            value: 'some custom format XXX',
+            disabledMessage: 'explain why this is disabled'
+        },
         store
     });
 

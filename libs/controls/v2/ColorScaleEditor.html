@@ -20,17 +20,38 @@
 />
 
 <!-- stops -->
-<HelpDisplay><div>{@html __('controls / color-scale / '+(mode === 'discrete' ? 'breaks' : 'interpolation')+' / help')}</div></HelpDisplay>
-<ControlGroup labelWidth="100px" label="{__('controls / color-scale / '+(mode === 'discrete' ? 'breaks' : 'interpolation'))}">
+<HelpDisplay
+    ><div>
+        <!-- prettier-ignore -->
+        {@html __('controls / color-scale / '+(mode === 'discrete' ? 'breaks' : 'interpolation')+' / help')}
+    </div></HelpDisplay
+>
+<ControlGroup
+    labelWidth="100px"
+    label="{__('controls / color-scale / '+(mode === 'discrete' ? 'breaks' : 'interpolation'))}"
+>
     <div class="flex">
-        {#if mode === 'discrete'}<NumberInput min="2" max="20" slider="{false}" bind:value="value.stopCount" /> &nbsp;
-        <SelectInput bind:value="value.stops" width="140px" options="{stopsOptions.filter(d => mode === 'discrete' || !d.discreteOnly)}" />{:else}
+        {#if mode === 'discrete'}<NumberInput
+            min="2"
+            max="20"
+            slider="{false}"
+            bind:value="value.stopCount"
+        />
+        &nbsp;
+        <SelectInput
+            bind:value="value.stops"
+            width="140px"
+            options="{stopsOptions.filter(d => mode === 'discrete' || !d.discreteOnly)}"
+        />{:else}
         <SelectInput bind:value="value.interpolation" width="140px" options="{inerpolOptions}" />
         {/if}
     </div>
 </ControlGroup>
-{#if mode === 'discrete' && value.stops === 'pretty' && colorScaleFunction._stops.length-1 !== value.stopCount}
-<p class="mini-help" style="margin-left: 118px;margin-bottom: -10px">{__('controls / color-scale / pretty-note')}</p>
+{#if mode === 'discrete' && value.stops === 'pretty' && colorScaleFunction._stops.length-1 !==
+value.stopCount}
+<p class="mini-help" style="margin-left: 118px; margin-bottom: -10px">
+    {__('controls / color-scale / pretty-note')}
+</p>
 {/if}
 
 <!-- continuous or diverging -->
@@ -43,7 +64,12 @@
             {__('controls / color-scale / range / min')}
         </label>
         <label
-            ><input bind:value="value.rangeCenter" class="input" type="text" placeholder="{autoCenter}" />
+            ><input
+                bind:value="value.rangeCenter"
+                class="input"
+                type="text"
+                placeholder="{autoCenter}"
+            />
             {__('controls / color-scale / range / center')}
         </label>
         <label
@@ -69,7 +95,11 @@
 
 <!-- discrete -->
 {#if value.stops === 'custom' && mode === 'discrete'}
-<ControlGroup label="{__('controls / color-scale / custom-breaks')}" valign="top" labelWidth="100px">
+<ControlGroup
+    label="{__('controls / color-scale / custom-breaks')}"
+    valign="top"
+    labelWidth="100px"
+>
     <div class="custom-breaks">
         <ul class="unstyled">
             {#each range(stopCount) as i}
@@ -78,18 +108,30 @@
                     type="text"
                     disabled="{true}"
                     value="min"
-                />{:else}<input type="text" class:invalid="invalidStops[i]" bind:value="value.customStops[i]" />{/if} - {#if i===stopCount-1}<input
+                />{:else}<input
+                    type="text"
+                    class:invalid="invalidStops[i]"
+                    bind:value="value.customStops[i]"
+                />{/if} - {#if i===stopCount-1}<input
                     type="text"
                     disabled="{true}"
                     value="max"
-                />{:else}<input type="text" class:invalid="invalidStops[i+1]" bind:value="value.customStops[i+1]" />{/if}
+                />{:else}<input
+                    type="text"
+                    class:invalid="invalidStops[i+1]"
+                    bind:value="value.customStops[i+1]"
+                />{/if}
             </li>
             {/each}
         </ul>
     </div>
     {#if invalidStops.includes(true)}
     <p class="mini-help error">
-        <i class="fa fa-exclamation-triangle" style="color: rgb(199, 30, 29)" aria-hidden="true"></i>
+        <i
+            class="fa fa-exclamation-triangle"
+            style="color: rgb(199, 30, 29)"
+            aria-hidden="true"
+        ></i>
         <!-- please please please, jsprettier, don't add a linebreak -->
         {__('controls / color-scale / custom-breaks / warning')}
     </p>
@@ -97,7 +139,7 @@
 </ControlGroup>
 {/if}{/if}
 
-<div style="position: absolute;top:0;left:0">
+<div style="position: absolute; top: 0; left: 0">
     <GradientDisplay height="{0}" stops="{contGradientStops}" bind:id="contGradientId" />
 </div>
 
@@ -122,7 +164,15 @@
     import chroma from 'chroma-js';
 
     export default {
-        components: { ControlGroup, RadioControl, SelectInput, NumberInput, HistogramDisplay, GradientDisplay, HelpDisplay },
+        components: {
+            ControlGroup,
+            RadioControl,
+            SelectInput,
+            NumberInput,
+            HistogramDisplay,
+            GradientDisplay,
+            HelpDisplay
+        },
         data() {
             return {
                 value: {
@@ -181,7 +231,9 @@
             },
             autoCenter({ roundedValues }) {
                 const k = roundedValues.length; // 4 [0,1,2,3]
-                return k % 2 === 1 ? roundedValues[Math.floor(k / 2)] : 0.5 * (roundedValues[k / 2 - 1] + roundedValues[k / 2]);
+                return k % 2 === 1
+                    ? roundedValues[Math.floor(k / 2)]
+                    : 0.5 * (roundedValues[k / 2 - 1] + roundedValues[k / 2]);
             },
             colorScaleFunction({ sortedValues, value }) {
                 const opts = {
@@ -195,7 +247,11 @@
                 const opts2 = clone(opts);
 
                 if (opts.stops === 'custom' && value.mode === 'discrete') {
-                    const customStopsForScale = [-Infinity, ...opts.customStops.slice(1, opts.stopCount), Infinity];
+                    const customStopsForScale = [
+                        -Infinity,
+                        ...opts.customStops.slice(1, opts.stopCount),
+                        Infinity
+                    ];
                     opts2.customStops = customStopsForScale;
                 }
                 return createColorScale(opts2);
@@ -210,7 +266,10 @@
                 return value.categoryLabels;
             },
             labeledStops({ colorScaleFunction, previewValueDecimals }) {
-                return (colorScaleFunction._stops || []).map((x, i) => ({ x, label: round(x, previewValueDecimals + 1) }));
+                return (colorScaleFunction._stops || []).map(x => ({
+                    x,
+                    label: round(x, previewValueDecimals + 1)
+                }));
             },
             mode({ value }) {
                 return value.mode;
@@ -236,7 +295,10 @@
             classCenters({ stopCount, colorScaleFunction }) {
                 const min = colorScaleFunction._stops[0];
                 const max = colorScaleFunction._stops[colorScaleFunction._stops.length - 1];
-                return smartRound(range(stopCount + 1).map(i => min + ((max - min) / stopCount) * i), 2);
+                return smartRound(
+                    range(stopCount + 1).map(i => min + ((max - min) / stopCount) * i),
+                    2
+                );
             },
             colors({ value }) {
                 return value.colors || [];
@@ -259,30 +321,45 @@
                 const sw = Math.floor(fixedW / classColors.length);
                 const w = sw * classColors.length - 1;
                 const h = 9;
-                const binPreview = `<div style="display:inline-block;width:${fixedW +
-                    10}px;"><div class="colormode-preview" style="width:${w}px;height:${h}px;">${classColors
+                const binPreview = `<div style="display:inline-block;width:${
+                    fixedW + 10
+                }px;"><div class="colormode-preview" style="width:${w}px;height:${h}px;">${classColors
                     .map(
                         (c, i) =>
-                            `<div style="margin-left:${i ? 1 : 0}px;display:inline-block;background:${c};width:${sw - 1}px;height:${h}px"></div>`
+                            `<div style="margin-left:${
+                                i ? 1 : 0
+                            }px;display:inline-block;background:${c};width:${
+                                sw - 1
+                            }px;height:${h}px"></div>`
                     )
                     .join('')}</div></div>`;
-                const contPreview = `<div style="display:inline-block;width:${fixedW +
-                    10}px;"><div class="colormode-preview" style="width:${w}px;height:${h}px;"><svg width="${w}" height="${h}" ><rect style="fill:url(#${contGradientId});shape-rendering:crispEdges" width="${w}" height="${h}" /></svg></div></div>`;
+                const contPreview = `<div style="display:inline-block;width:${
+                    fixedW + 10
+                }px;"><div class="colormode-preview" style="width:${w}px;height:${h}px;"><svg width="${w}" height="${h}" ><rect style="fill:url(#${contGradientId});shape-rendering:crispEdges" width="${w}" height="${h}" /></svg></div></div>`;
                 return [
-                    { value: 'discrete', label: `${binPreview} ${__('controls / color-scale / interpolation / discrete')} ` },
-                    { value: 'continuous', label: `${contPreview} ${__('controls / color-scale / interpolation / linear')}` }
+                    {
+                        value: 'discrete',
+                        label: `${binPreview} ${__(
+                            'controls / color-scale / interpolation / discrete'
+                        )} `
+                    },
+                    {
+                        value: 'continuous',
+                        label: `${contPreview} ${__(
+                            'controls / color-scale / interpolation / linear'
+                        )}`
+                    }
                 ];
             },
             customStops({ value }) {
                 return value.customStops || [];
             },
-            invalidStops({ customStops, stopCount, autoMin, autoMax }) {
+            invalidStops({ customStops, stopCount }) {
                 if (!Array.isArray(customStops)) return [];
                 return customStops.map((val, i) => {
                     // first and last never invalid
                     if (i === 0 || i > stopCount - 1) return false;
                     return i && +val < +customStops[i - 1];
-                    // return val < autoMin || val > autoMax || (i && +val < +customStops[i - 1]);
                 });
             }
         },
@@ -290,12 +367,29 @@
             __,
             range,
             stopsOptions: [
-                { value: 'equidistant', label: __('controls / color-scale / breaks / linear', 'core') },
-                { value: 'quantiles', label: __('controls / color-scale / breaks / quantiles', 'core') },
-                { value: 'pretty', discreteOnly: true, label: __('controls / color-scale / breaks / nice', 'core') },
-                { value: 'natural', label: __('controls / color-scale / breaks / natural', 'core') },
+                {
+                    value: 'equidistant',
+                    label: __('controls / color-scale / breaks / linear', 'core')
+                },
+                {
+                    value: 'quantiles',
+                    label: __('controls / color-scale / breaks / quantiles', 'core')
+                },
+                {
+                    value: 'pretty',
+                    discreteOnly: true,
+                    label: __('controls / color-scale / breaks / nice', 'core')
+                },
+                {
+                    value: 'natural',
+                    label: __('controls / color-scale / breaks / natural', 'core')
+                },
                 // { value: 'log', label: __('controls / color-scale / breaks / log', 'core') },
-                { value: 'custom', label: __('controls / color-scale / breaks / custom', 'core'), discreteOnly: true }
+                {
+                    value: 'custom',
+                    label: __('controls / color-scale / breaks / custom', 'core'),
+                    discreteOnly: true
+                }
             ],
             inerpolOptions: [
                 { value: 'equidistant', label: 'linear' },
@@ -309,14 +403,16 @@
         methods: {},
         onstate({ changed, current, previous }) {
             if (
-                (changed.stops || changed.stopCount || (changed.mode && current.mode === 'discrete')) &&
+                (changed.stops ||
+                    changed.stopCount ||
+                    (changed.mode && current.mode === 'discrete')) &&
                 !current.useCustomStops &&
                 current.colorScaleFunction._stops &&
                 previous
             ) {
                 // copy stops from scale
                 const stops = current.colorScaleFunction._stops.slice(0);
-                const newCustomStops = current.customStops.slice().concat(range(10).map(d => ''));
+                const newCustomStops = current.customStops.slice().concat(range(10).map(() => ''));
                 smartRound(stops, 2).forEach((v, i) => {
                     newCustomStops[i] = i === 0 ? -Infinity : v;
                 });

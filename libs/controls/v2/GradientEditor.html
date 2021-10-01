@@ -36,7 +36,8 @@
                 mouseOverGradient: false,
                 mouseX: 0,
                 undoStack: [],
-                redoStack: []
+                redoStack: [],
+                uid: ''
             };
         },
         computed: {
@@ -107,14 +108,14 @@
             isMonotone({ colors, scale }) {
                 const numColors = colors.length;
                 if (numColors < 3) return true;
-                let sample = scale.colors(colors.length, null);
+                const sample = scale.colors(colors.length, null);
                 const sampleL = sample.map(s => s.get('lab.l'));
                 return sampleL.reduce(checkMonotone, true);
             },
             isDiverging({ colors, scale }) {
                 const numColors = colors.length;
                 if (numColors < 3) return false;
-                let sample = scale.colors(colors.length, null);
+                const sample = scale.colors(colors.length, null);
                 const sampleL = sample.map(s => s.get('lab.l'));
                 if (sampleL.reduce(checkMonotone, true)) return false;
                 return (
@@ -206,7 +207,9 @@
                         icon: '<i class="im im-sign-in"></i> ',
                         label: __('controls / gradient-editor / import', 'core'),
                         action() {
-                            const colors = window.prompt(__('controls / gradient-editor / import / text', 'core')).split(/[, ]+/);
+                            const colors = window
+                                .prompt(__('controls / gradient-editor / import / text', 'core'))
+                                .split(/[, ]+/);
                             app.select(colors);
                         }
                     },
@@ -215,7 +218,10 @@
                         label: __('controls / gradient-editor / export', 'core'),
                         action() {
                             const { colors } = app.get();
-                            window.prompt(__('controls / gradient-editor / export / text', 'core'), colors.map(c => c.color));
+                            window.prompt(
+                                __('controls / gradient-editor / export / text', 'core'),
+                                colors.map(c => c.color)
+                            );
                         }
                     }
                 ]
@@ -276,14 +282,15 @@
             },
             reverse() {
                 this.saveState();
-                let { colors } = this.get();
+                const { colors } = this.get();
                 colors.forEach(c => (c.position = 1 - c.position));
                 colors.reverse();
                 this.set({ colors });
             },
             contrastUp() {
                 this.saveState();
-                let { colors, scale, isMonotone } = this.get();
+                let { colors } = this.get();
+                const { scale, isMonotone } = this.get();
                 const numColors = colors.length;
                 colors = scale.padding(-0.05).colors(numColors + 2, null);
                 const centerL = colors[Math.floor(numColors * 0.5)].luminance();
@@ -296,7 +303,8 @@
             },
             contrastDown() {
                 this.saveState();
-                let { colors, scale, isDiverging } = this.get();
+                let { colors } = this.get();
+                const { scale, isDiverging } = this.get();
                 const numColors = colors.length;
 
                 colors = scale.padding(0.03).colors(numColors, 'hex');
@@ -320,10 +328,8 @@
                 if (isDiverging) {
                     // autoCorrect lightness left and right
                     for (let i = 0; i < numColors * 0.5; i++) {
-                        let avgL = 0.5 * (sampleL[i] + sampleL[numColors - 1 - i]);
-                        sample[i] = chroma(sample[i])
-                            .set('lab.l', avgL)
-                            .hex();
+                        const avgL = 0.5 * (sampleL[i] + sampleL[numColors - 1 - i]);
+                        sample[i] = chroma(sample[i]).set('lab.l', avgL).hex();
                         sample[numColors - 1 - i] = chroma(sample[numColors - 1 - i])
                             .set('lab.l', avgL)
                             .hex();
@@ -368,7 +374,7 @@
                     editPosition: 0
                 });
             },
-            dragStart(event, item, index) {
+            dragStart(event, item) {
                 this.saveState();
                 const bbox = this.refs.gradient.getBoundingClientRect();
                 this.set({
@@ -376,20 +382,30 @@
                     wouldDelete: false,
                     dragStartAt: new Date().getTime(),
                     dragStartPos: event.clientX,
-                    dragStartDelta: item.position - Math.max(0, Math.min(1, (event.clientX - bbox.left) / bbox.width))
+                    dragStartDelta:
+                        item.position -
+                        Math.max(0, Math.min(1, (event.clientX - bbox.left) / bbox.width))
                 });
             },
             handleMouseMove(event) {
-                const { dragging, colors, dragStartAt, dragStartPos, dragStartDelta, ticks } = this.get();
+                const { dragging, colors, dragStartAt, dragStartPos, dragStartDelta, ticks } =
+                    this.get();
                 const delay = new Date().getTime() - dragStartAt;
                 const distance = Math.abs(dragStartPos - event.clientX);
 
                 if (dragging && (delay > 300 || distance > 5)) {
                     const bbox = this.refs.gradient.getBoundingClientRect();
-                    dragging.position = +(dragStartDelta + Math.max(0, Math.min(1, (event.clientX - bbox.left) / bbox.width))).toFixed(4);
-                    const closest = ticks.sort((a, b) => Math.abs(a - dragging.position) - Math.abs(b - dragging.position))[0];
-                    if (!event.shiftKey && Math.abs(closest - dragging.position) < 0.015) dragging.position = closest;
-                    const wouldDelete = Math.abs(event.clientY - bbox.top) > 20 && colors.length > 2;
+                    dragging.position = +(
+                        dragStartDelta +
+                        Math.max(0, Math.min(1, (event.clientX - bbox.left) / bbox.width))
+                    ).toFixed(4);
+                    const closest = ticks.sort(
+                        (a, b) => Math.abs(a - dragging.position) - Math.abs(b - dragging.position)
+                    )[0];
+                    if (!event.shiftKey && Math.abs(closest - dragging.position) < 0.015)
+                        dragging.position = closest;
+                    const wouldDelete =
+                        Math.abs(event.clientY - bbox.top) > 20 && colors.length > 2;
                     this.set({ colors, wouldDelete });
                 }
             },
@@ -435,7 +451,10 @@
                 const { dragging, scale, colors } = this.get();
                 if (!dragging) {
                     const bbox = this.refs.gradient.getBoundingClientRect();
-                    const position = Math.max(0, Math.min(1, (event.clientX - bbox.left) / bbox.width));
+                    const position = Math.max(
+                        0,
+                        Math.min(1, (event.clientX - bbox.left) / bbox.width)
+                    );
                     const color = scale(position).hex();
                     colors.push({ color, position });
                     this.set({ colors });
@@ -455,7 +474,10 @@
             handleKeyDown(event) {
                 const { focus, colors, width } = this.get();
                 if (focus && (event.keyCode === 37 || event.keyCode === 39)) {
-                    focus.position = +(focus.position + (1 / width) * (event.shiftKey ? 10 : 1) * (event.keyCode === 37 ? -1 : 1)).toFixed(5);
+                    focus.position = +(
+                        focus.position +
+                        (1 / width) * (event.shiftKey ? 10 : 1) * (event.keyCode === 37 ? -1 : 1)
+                    ).toFixed(5);
                     this.set({ colors });
                 }
                 if (focus && event.keyCode === 46 && colors.length > 2) {
@@ -485,7 +507,9 @@
                 if (window.dw && window.dw.backend && window.dw.backend.__userData) {
                     this.set({
                         gotIt: window.dw.backend.__userData['gradienteditor-help'] || false,
-                        userPresets: JSON.parse(window.dw.backend.__userData['gradienteditor-presets'] || '[]')
+                        userPresets: JSON.parse(
+                            window.dw.backend.__userData['gradienteditor-presets'] || '[]'
+                        )
                     });
                 }
                 const { presets, colors } = this.get();
@@ -656,16 +680,20 @@
     }
 </style>
 
-<svelte:window on:keydown="handleKeyDown(event)" on:mousemove="handleMouseMove(event)" on:mouseup="handleMouseUp(event)" />
+<svelte:window
+    on:keydown="handleKeyDown(event)"
+    on:mousemove="handleMouseMove(event)"
+    on:mouseup="handleMouseUp(event)"
+/>
 
-<div>
+<div data-uid="{uid}">
     {#if gotIt}
     <HelpDisplay class="mt-1">
         <div>{@html __('controls / gradient-editor / help', 'core')}</div>
     </HelpDisplay>
     {/if}
-    <div style="white-space: nowrap;">
-        <div style="display: inline-block;" ref:gradientdropdown>
+    <div style="white-space: nowrap">
+        <div style="display: inline-block" ref:gradientdropdown>
             <DropdownControl
                 passEvent="{true}"
                 on:change="handleChange(event)"
@@ -678,7 +706,12 @@
             >
             </DropdownControl>
         </div>
-        <button class:active="customize" on:click="set({customize:!customize})" title="Customize" class="btn">
+        <button
+            class:active="customize"
+            on:click="set({customize:!customize})"
+            title="Customize"
+            class="btn"
+        >
             <i class="fa fa-wrench fa-fw"></i>
         </button>
     </div>
@@ -686,15 +719,17 @@
 {#if customize}
 <div transition:slide>
     {#if !gotIt}
-    <p style="min-height: 3em;margin-bottom: 20px" class="mini-help">
-        <b>{__('controls / gradient-editor / how-this-works', 'core')}</b> {@html __('controls / gradient-editor / help', 'core')}
+    <p style="min-height: 3em; margin-bottom: 20px" class="mini-help">
+        <b>{__('controls / gradient-editor / how-this-works', 'core')}</b>
+        <!-- prettier-ignore -->
+        {@html __('controls / gradient-editor / help', 'core')}
         <a href="#/closeHelp" on:click|preventDefault="closeHelp()"
             ><i class="fa fa-check"></i> {__('controls / gradient-editor / got-it', 'core')}</a
         >
     </p>
     {/if}
     <div class="preview">
-        <svg width="{width}" height="35" style="position:relative;top:2px">
+        <svg width="{width}" height="35" style="position: relative; top: 2px">
             <defs>
                 <linearGradient id="grad-main" x2="1">
                     {#each stops as stop}
@@ -708,7 +743,7 @@
                 on:mousemove="handleGradientMouseMove(event)"
                 on:mouseenter="set({mouseOverGradient:true})"
                 on:mouseleave="set({mouseOverGradient:false})"
-                style="fill:url(#grad-main)"
+                style="fill: url(#grad-main)"
                 width="{width}"
                 height="26"
             />
@@ -757,9 +792,13 @@
         </div>
     </div>
     {#each menuItems as group}
-    <div class="btn-group" style="margin-top: 5px;margin-bottom: 15px">
+    <div class="btn-group" style="margin-top: 5px; margin-bottom: 15px">
         {#each group as item}
-        <button disabled="{isDisabled(item, {undoStack, redoStack, lightnessFixable})}" on:click="action(item)" class="btn btn-small">
+        <button
+            disabled="{isDisabled(item, {undoStack, redoStack, lightnessFixable})}"
+            on:click="action(item)"
+            class="btn btn-small"
+        >
             {@html item.icon}
             <div class="btn-help">{@html item.label}</div>
         </button>

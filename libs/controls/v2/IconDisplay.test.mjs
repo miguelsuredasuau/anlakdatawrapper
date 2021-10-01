@@ -18,7 +18,10 @@ test('Render the specified SVG tile', t => {
         data: { icon: 'new' }
     });
 
-    t.is(t.context.find('svg use').attr('xlink:href'), '/lib/icons/symbol/svg/sprite.symbol.svg#new');
+    t.is(
+        t.context.find('svg use').attr('xlink:href'),
+        '/lib/icons/symbol/svg/sprite.symbol.svg#new'
+    );
 });
 
 test('Apply all styling options', t => {

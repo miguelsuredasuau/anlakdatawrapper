@@ -1,16 +1,23 @@
 <div class="well">
     <!-- orientation & type -->
     <div>
-        <ControlGroup label="{__('controls / annotations / range / orientation')}" labelWidth="70px">
+        <ControlGroup
+            label="{__('controls / annotations / range / orientation')}"
+            labelWidth="70px"
+        >
             {#each orientationOptions as opt}
-            <button class="btn-orientation" class:active="annotationData[selected].type === opt.value" on:click="setOrientation(opt.value)">
+            <button
+                class="btn-orientation"
+                class:active="annotationData[selected].type === opt.value"
+                on:click="setOrientation(opt.value)"
+            >
                 {@html opt.label}
             </button>
             {/each}
         </ControlGroup>
     </div>
 
-    <div style="margin-top: 10px;">
+    <div style="margin-top: 10px">
         <RadioControl
             {labelWidth}
             label="{__('controls / annotations / range / type')}"
@@ -23,7 +30,12 @@
 
     <!-- start & end -->
     <div class="range-position">
-        <ControlGroup {labelWidth} label="{__('controls / annotations / range / position')}" inline="{true}" type="text">
+        <ControlGroup
+            {labelWidth}
+            label="{__('controls / annotations / range / position')}"
+            inline="{true}"
+            type="text"
+        >
             <div class="controls-inline">
                 {#if annotationData[selected].display !== 'line' }
                 <label>{__('controls / annotations / range / position / start')}</label>
@@ -49,7 +61,12 @@
 
     <!-- color -->
     <div>
-        <ControlGroup {labelWidth} label="{__('controls / annotations / range / color')}" valign="middle" inline="{true}">
+        <ControlGroup
+            {labelWidth}
+            label="{__('controls / annotations / range / color')}"
+            valign="middle"
+            inline="{true}"
+        >
             <div class="controls-inline">
                 <ColorPickerInput bind:color="annotationData[selected].color" />
             </div>
@@ -228,11 +245,23 @@
                 return [
                     {
                         value: 'x',
-                        label: `${editorState && getRangeAnnotationIcon(Object.assign(clone(item), { type: 'x' }), editorState)}`
+                        label: `${
+                            editorState &&
+                            getRangeAnnotationIcon(
+                                Object.assign(clone(item), { type: 'x' }),
+                                editorState
+                            )
+                        }`
                     },
                     {
                         value: 'y',
-                        label: `${editorState && getRangeAnnotationIcon(Object.assign(clone(item), { type: 'y' }), editorState)}`
+                        label: `${
+                            editorState &&
+                            getRangeAnnotationIcon(
+                                Object.assign(clone(item), { type: 'y' }),
+                                editorState
+                            )
+                        }`
                     }
                 ];
             }

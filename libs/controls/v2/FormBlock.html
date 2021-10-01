@@ -1,4 +1,4 @@
-<div class="form-block" class:success class:error style="width:{width}">
+<div class="form-block" class:success class:error style="width:{width}" data-uid="{uid}">
     {#if label}
     <label class="control-label">{@html label}</label>
     {/if}
@@ -22,7 +22,8 @@
                 help: '',
                 error: false,
                 success: false,
-                width: 'auto'
+                width: 'auto',
+                uid: ''
             };
         }
     };

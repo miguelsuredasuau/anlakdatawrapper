@@ -8,6 +8,7 @@
     export let title;
     export let accept;
     export let active = false;
+    export let uid;
 </script>
 
 <style>
@@ -22,6 +23,6 @@
     }
 </style>
 
-<IconButton {icon} {title} {active} on:click>
+<IconButton {uid} {icon} {title} {active} on:click>
     <input type="file" {accept} on:change={event => dispatch('upload', event)} />
 </IconButton>

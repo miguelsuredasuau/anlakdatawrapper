@@ -23,7 +23,7 @@
 
 <h3>AlertDisplay: info</h3>
 
-<AlertDisplay type="info" visible={true}>
+<AlertDisplay type="info" visible={true} uid="alert-upload">
     You have uploaded <b>1</b> marker
     <br />
     <!-- svelte-ignore a11y-invalid-attribute -->
@@ -69,7 +69,15 @@
 
 <h3>Multiple alerts, with custom margin</h3>
 
-<AlertDisplay type="warning" visible={true} class="mb-1">You have uploaded <b>1</b> marker</AlertDisplay>
-<AlertDisplay type="warning" visible={true} class="mb-3 ml-4">You have uploaded <b>1</b> marker</AlertDisplay>
-<AlertDisplay type="warning" visible={true} class="mb-4 mx-4">You have uploaded <b>1</b> marker</AlertDisplay>
-<AlertDisplay type="warning" visible={true} class="mt-1 mr-4">Something went wrong with the request</AlertDisplay>
+<AlertDisplay type="warning" visible={true} class="mb-1"
+    >You have uploaded <b>1</b> marker</AlertDisplay
+>
+<AlertDisplay type="warning" visible={true} class="mb-3 ml-4"
+    >You have uploaded <b>1</b> marker</AlertDisplay
+>
+<AlertDisplay type="warning" visible={true} class="mb-4 mx-4"
+    >You have uploaded <b>1</b> marker</AlertDisplay
+>
+<AlertDisplay type="warning" visible={true} class="mt-1 mr-4"
+    >Something went wrong with the request</AlertDisplay
+>

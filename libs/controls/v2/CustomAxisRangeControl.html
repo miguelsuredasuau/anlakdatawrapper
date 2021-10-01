@@ -1,8 +1,28 @@
-<ControlGroup type="custom-axis-range" {valign} {labelWidth} {label} {disabled} {miniHelp} {help} helpClass="mt-1">
+<ControlGroup
+    type="custom-axis-range"
+    {valign}
+    {labelWidth}
+    {label}
+    {disabled}
+    {miniHelp}
+    {help}
+    helpClass="mt-1"
+    {uid}
+>
     <div class="range-container mt-1">
-        <input type="text" placeholder="{placeholder.min}" bind:value="value[0]" disabled="{disabled}" />
+        <input
+            type="text"
+            placeholder="{placeholder.min}"
+            bind:value="value[0]"
+            disabled="{disabled}"
+        />
         <span class="separator {disabled ? 'separator-disabled' : ''}">–</span>
-        <input type="text" placeholder="{placeholder.max}" bind:value="value[1]" disabled="{disabled}" />
+        <input
+            type="text"
+            placeholder="{placeholder.max}"
+            bind:value="value[1]"
+            disabled="{disabled}"
+        />
     </div>
 </ControlGroup>
 
@@ -54,11 +74,12 @@
                 placeholder: {
                     min: 'min',
                     max: 'max'
-                }
+                },
+                uid: ''
             };
         },
 
-        onstate({ changed, current, previous }) {
+        onstate({ changed, current }) {
             // Maintain compatibility with legacy charts:
             if (changed.value && !Array.isArray(current.value)) {
                 current.value = defaultValue;

@@ -1,3 +1,7 @@
+<script>
+    export let uid;
+</script>
+
 <style>
     button {
         display: block;
@@ -35,4 +39,4 @@
     }
 </style>
 
-<button on:click><slot /></button>
+<button data-uid={uid} on:click><slot /></button>

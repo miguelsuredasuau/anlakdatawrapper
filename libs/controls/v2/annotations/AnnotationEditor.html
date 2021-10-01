@@ -1,7 +1,8 @@
 <div class="well">
     {#if disable}
     <div transition:slide class="alert alert-info">
-        {@html __('controls / annotations / mobile-note').replace('%s', __(`controls / annotations / mobile-note / ${isMap ? 'map' : 'chart'}`))}
+        {@html __('controls / annotations / mobile-note').replace('%s', __(`controls / annotations /
+        mobile-note / ${isMap ? 'map' : 'chart'}`))}
     </div>
     {/if}
 
@@ -30,20 +31,34 @@
         />
         <ControlGroup {labelWidth} label="&nbsp;" valign="middle" inline="{true}">
             <div class="controls-inline">
-                <CheckboxControl label="{__('controls / annotations / text-outline')}" bind:value="annotationData[selected].bg" />
+                <CheckboxControl
+                    label="{__('controls / annotations / text-outline')}"
+                    bind:value="annotationData[selected].bg"
+                />
             </div>
         </ControlGroup>
     </div>
 
-    <ControlGroup {labelWidth} label="{__('controls / annotations / show-on')}" valign="middle" type="checkbox">
-        <CheckboxControl label="{__('controls / annotations / show-on / mobile')}" bind:value="annotationData[selected].showMobile" />
-        <CheckboxControl label="{__('controls / annotations / show-on / desktop')}" bind:value="annotationData[selected].showDesktop" />
+    <ControlGroup
+        {labelWidth}
+        label="{__('controls / annotations / show-on')}"
+        valign="middle"
+        type="checkbox"
+    >
+        <CheckboxControl
+            label="{__('controls / annotations / show-on / mobile')}"
+            bind:value="annotationData[selected].showMobile"
+        />
+        <CheckboxControl
+            label="{__('controls / annotations / show-on / desktop')}"
+            bind:value="annotationData[selected].showDesktop"
+        />
     </ControlGroup>
 
     <div class:disable>
         <HelpDisplay
-            >{__('controls / annotations / width / help').replace('%s', __(`controls / annotations / width / help-${isMap ? 'map' :
-            'chart'}`))}</HelpDisplay
+            >{__('controls / annotations / width / help').replace('%s', __(`controls / annotations /
+            width / help-${isMap ? 'map' : 'chart'}`))}</HelpDisplay
         >
         <NumberControl
             {labelWidth}
@@ -61,11 +76,19 @@
         <ControlGroup {labelWidth} label="Position" inline="{true}" type="text">
             <div class="controls-inline">
                 <label>{isMap ? 'Lon' : 'X'}</label>
-                <input type="text" bind:value="annotationData[selected].x" on:keydown="handlePositionKeydown(event, 'x')" />
+                <input
+                    type="text"
+                    bind:value="annotationData[selected].x"
+                    on:keydown="handlePositionKeydown(event, 'x')"
+                />
             </div>
             <div class="controls-inline">
                 <label>{isMap ? 'Lat' : 'Y'}</label>
-                <input type="text" bind:value="annotationData[selected].y" on:keydown="handlePositionKeydown(event, 'y')" />
+                <input
+                    type="text"
+                    bind:value="annotationData[selected].y"
+                    on:keydown="handlePositionKeydown(event, 'y')"
+                />
             </div>
         </ControlGroup>
 
@@ -86,7 +109,13 @@
                             d="M22.001 12.001l-4.596 4.596-1.273-1.273L18.457 13H5.547l2.323 2.323-1.273 1.273L2.001 12l4.596-4.596L7.87 8.676l-2.323 2.323h12.906l-2.321-2.321 1.273-1.273L22 12z"
                         />
                     </svg>
-                    <NumberInput bind:value="annotationData[selected].dx" unit="px" min="-9999" max="9999" slider="{false}" />
+                    <NumberInput
+                        bind:value="annotationData[selected].dx"
+                        unit="px"
+                        min="-9999"
+                        max="9999"
+                        slider="{false}"
+                    />
                 </div>
                 <div class="offset">
                     <svg width="24" height="24" viewBox="-8 -2 28 28">
@@ -94,7 +123,13 @@
                             d="M11.002 2l4.596 4.596-1.273 1.273L12 5.544v12.91l2.323-2.323 1.273 1.273L11 22l-4.596-4.596 1.273-1.273L10 18.454V5.548L7.679 7.869 6.406 6.596 11.002 2z"
                         />
                     </svg>
-                    <NumberInput bind:value="annotationData[selected].dy" unit="px" min="-9999" max="9999" slider="{false}" />
+                    <NumberInput
+                        bind:value="annotationData[selected].dy"
+                        unit="px"
+                        min="-9999"
+                        max="9999"
+                        slider="{false}"
+                    />
                 </div>
             </div>
         </div>

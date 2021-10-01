@@ -12,6 +12,7 @@
     export let miniHelp = null;
     export let valign = 'top';
     export let value = null;
+    export let uid;
 
     const prevState = {
         value
@@ -136,7 +137,7 @@
     }
 </style>
 
-<ControlGroup type="radio" {labelWidth} {valign} {label} {disabled} {help} {miniHelp}>
+<ControlGroup type="radio" {labelWidth} {valign} {label} {disabled} {help} {miniHelp} {uid}>
     <div class:inline class:indeterminate>
         {#each options as opt}
             <label title={opt.tooltip || ''} class:disabled class:has-help={opt.help}>

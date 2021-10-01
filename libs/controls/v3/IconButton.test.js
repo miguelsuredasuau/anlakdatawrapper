@@ -21,7 +21,10 @@ test('Render the specified SVG tile, text and some properties', t => {
         }
     });
 
-    t.is(t.context.querySelector('svg use').getAttribute('xlink:href'), '/lib/icons/symbol/svg/sprite.symbol.svg#cloud-check');
+    t.is(
+        t.context.querySelector('svg use').getAttribute('xlink:href'),
+        '/lib/icons/symbol/svg/sprite.symbol.svg#cloud-check'
+    );
     t.is(t.context.querySelector('button span:not(.svg-icon)').textContent, 'My button text');
     t.true(t.context.querySelector('button').classList.contains('active'));
     t.true(t.context.querySelector('button').classList.contains('icon-left'));
@@ -49,4 +52,21 @@ test('Icon color and active state are reactive', async t => {
     iconButton.$set({ iconColor: 'red' });
     await tick();
     t.is(t.context.querySelector('svg use').style.fill, 'red');
+});
+
+test('default IconButton has no uid', t => {
+    new IconButton({
+        target: t.context
+    });
+
+    t.is(t.context.querySelector('button').getAttribute('data-uid'), null);
+});
+
+test('IconButton can have data-uid', t => {
+    new IconButton({
+        target: t.context,
+        props: { uid: 'foobar' }
+    });
+
+    t.is(t.context.querySelector('button').getAttribute('data-uid'), 'foobar');
 });

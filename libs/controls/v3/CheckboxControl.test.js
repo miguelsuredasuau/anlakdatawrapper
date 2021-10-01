@@ -94,3 +94,24 @@ test('Can be toggled', t => {
     target.querySelector('input[type=checkbox]').click();
     t.true(checkbox.value);
 });
+
+test('default checkbox has no uid', t => {
+    const target = document.createElement('form');
+    document.body.appendChild(target);
+    new CheckboxControl({
+        target
+    });
+
+    t.is(target.querySelector('.control-group').getAttribute('data-uid'), null);
+});
+
+test('checkbox can have data-uid', t => {
+    const target = document.createElement('form');
+    document.body.appendChild(target);
+    new CheckboxControl({
+        target,
+        props: { uid: 'foobar' }
+    });
+
+    t.is(target.querySelector('.control-group').getAttribute('data-uid'), 'foobar');
+});

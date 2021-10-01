@@ -15,7 +15,10 @@ test('Render the specified SVG tile', t => {
         props: { icon: 'new' }
     });
 
-    t.is(t.context.querySelector('svg use').getAttribute('xlink:href'), '/lib/icons/symbol/svg/sprite.symbol.svg#new');
+    t.is(
+        t.context.querySelector('svg use').getAttribute('xlink:href'),
+        '/lib/icons/symbol/svg/sprite.symbol.svg#new'
+    );
 });
 
 test('Apply all styling options', t => {
@@ -36,5 +39,25 @@ test('Apply all styling options', t => {
     t.is(t.context.querySelector('span svg').style.width, '30px');
     t.is(t.context.querySelector('span svg').style.height, '30px');
     t.is(t.context.querySelector('span svg use').style.fill, 'red');
-    t.is(t.context.querySelector('span svg use').getAttribute('xlink:href'), '/some/other/path.svg#foo');
+    t.is(
+        t.context.querySelector('span svg use').getAttribute('xlink:href'),
+        '/some/other/path.svg#foo'
+    );
+});
+
+test('default IconDisplay has no uid', t => {
+    new IconDisplay({
+        target: t.context
+    });
+
+    t.is(t.context.querySelector('.svg-icon').getAttribute('data-uid'), null);
+});
+
+test('IconDisplay can have data-uid', t => {
+    new IconDisplay({
+        target: t.context,
+        props: { uid: 'foobar' }
+    });
+
+    t.is(t.context.querySelector('.svg-icon').getAttribute('data-uid'), 'foobar');
 });

@@ -8,6 +8,8 @@
     export let visible = false;
     export let type = '';
     export let closeable = true;
+    export let uid;
+
     let className = '';
     export { className as class };
     export let closeFunc = null;
@@ -74,13 +76,19 @@
         class:alert-info={type === 'info'}
         class:alert-upgrade-info={type === 'upgrade-info'}
         class="alert {className}"
+        data-uid={uid}
     >
         {#if type === 'upgrade-info'}
             <div class="icon"><span class="upgrade-icon">{@html upgradeIcon}</span></div>
-            <div><span class="title">{__('upgrade-available')}</span> {@html __('upgrade-info')}</div>
+            <div>
+                <span class="title">{__('upgrade-available')}</span>
+                {@html __('upgrade-info')}
+            </div>
         {:else}
             {#if closeable}
-                <button type="button" aria-label="close" class="close" on:click={close}>&times;</button>
+                <button type="button" aria-label="close" class="close" on:click={close}
+                    >&times;</button
+                >
             {/if}
             <slot>content</slot>
         {/if}

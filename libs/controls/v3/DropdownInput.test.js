@@ -72,3 +72,20 @@ test.serial('Dont reveal dropdown content on window click', t => {
     document.body.click();
     t.falsy(t.context.querySelector('.dropdown-input-inner'));
 });
+
+test.serial('default dropdown has no uid', t => {
+    new DropdownInput({
+        target: t.context
+    });
+
+    t.is(t.context.querySelector('.dropdown-input-wrap').getAttribute('data-uid'), null);
+});
+
+test.serial('dropdown can have data-uid', t => {
+    new DropdownInput({
+        target: t.context,
+        props: { uid: 'foobar' }
+    });
+
+    t.is(t.context.querySelector('.dropdown-input-wrap').getAttribute('data-uid'), 'foobar');
+});

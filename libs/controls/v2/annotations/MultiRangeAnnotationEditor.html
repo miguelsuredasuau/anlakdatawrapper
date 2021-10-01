@@ -1,9 +1,16 @@
 <div class="well">
-    <p class="header">{__('controls / annotations / range-multi-select').replace('%s', selected.length)}</p>
+    <p class="header">
+        {__('controls / annotations / range-multi-select').replace('%s', selected.length)}
+    </p>
 
     <!-- color -->
     <div>
-        <ControlGroup label="{__('controls / annotations / range / color')}" {labelWidth} valign="middle" inline="{true}">
+        <ControlGroup
+            label="{__('controls / annotations / range / color')}"
+            {labelWidth}
+            valign="middle"
+            inline="{true}"
+        >
             <div class="controls-inline">
                 <ColorPickerInput bind:color="color" />
             </div>
@@ -91,7 +98,9 @@
             function update(prop) {
                 const newAnnotationData = clone(current.annotationData);
                 current.selected.forEach(i => {
-                    newAnnotationData[i] = Object.assign(newAnnotationData[i], { [prop]: current[prop] });
+                    newAnnotationData[i] = Object.assign(newAnnotationData[i], {
+                        [prop]: current[prop]
+                    });
                 });
                 app.set({ annotationData: newAnnotationData });
             }

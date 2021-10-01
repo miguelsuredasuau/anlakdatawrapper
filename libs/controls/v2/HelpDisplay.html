@@ -1,7 +1,11 @@
-<div ref:helpDisplay on:mouseenter="show()" on:mouseleave="hide()" class="help {class} {type}">
-    <span class="help-icon {type}" class:visible="visible">
-        {@html helpIcon}
-    </span>
+<div
+    ref:helpDisplay
+    on:mouseenter="show()"
+    on:mouseleave="hide()"
+    class="help {class} {type}"
+    data-uid="{uid}"
+>
+    <span class="help-icon {type}" class:visible="visible"> {@html helpIcon} </span>
     {#if visible}
     <div class="content {type}">
         {#if type === 'help'}
@@ -111,7 +115,8 @@
             return {
                 visible: false,
                 class: '',
-                type: 'help'
+                type: 'help',
+                uid: ''
             };
         },
         computed: {

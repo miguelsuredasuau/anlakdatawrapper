@@ -1,4 +1,4 @@
-<div class="number-control {class}">
+<div class="number-control {class}" data-uid="{uid}">
     <div class="number-control-container">
         {#if slider_}
         <div class="slider">
@@ -116,7 +116,8 @@
                 step: 1,
                 allowUndefined: false,
                 placeholder: null,
-                class: ''
+                class: '',
+                uid: ''
             };
         },
         computed: {

@@ -1,11 +1,14 @@
 <svelte:window on:keydown="windowKeydown(event)" on:click="windowClick(event)" />
 
-<div class="color-picker-cont" ref:picker>
+<div class="color-picker-cont" ref:picker data-uid="{uid}">
     <DropdownInput bind:visible="open">
         <span slot="button">
             <slot>
                 <div class="base-color-picker color-picker">
-                    <div style="background: {validColor} none repeat scroll 0% 0%;" class="the-color">
+                    <div
+                        style="background: {validColor} none repeat scroll 0% 0%;"
+                        class="the-color"
+                    >
                         <div class="transparency" style="opacity: {1-alpha(validColor)}"></div>
                     </div>
                     <span class="caret"></span>
@@ -45,23 +48,40 @@
                 {#if colorAxesConfig.lightness }
                 <div class="color-axis lightness">
                     {#each gradient_l as c}
-                    <div class="color {c == nearest_l?'selected':''}" on:click="setColor(c)" data-color="{c}" style="background: {c}"></div>
+                    <div
+                        class="color {c == nearest_l?'selected':''}"
+                        on:click="setColor(c)"
+                        data-color="{c}"
+                        style="background: {c}"
+                    ></div>
                     {/each}
                 </div>
                 {/if} {#if colorAxesConfig.saturation }
                 <div class="color-axis saturation">
                     {#each gradient_c as c}
-                    <div class="color {c == nearest_c?'selected':''}" on:click="setColor(c)" data-color="{c}" style="background: {c}"></div>
+                    <div
+                        class="color {c == nearest_c?'selected':''}"
+                        on:click="setColor(c)"
+                        data-color="{c}"
+                        style="background: {c}"
+                    ></div>
                     {/each}
                 </div>
                 {/if} {#if colorAxesConfig.hue }
                 <div class="color-axis hue">
                     {#each gradient_h as c}
-                    <div class="color {c == nearest_h?'selected':''}" on:click="setColor(c)" data-color="{c}" style="background: {c}"></div>
+                    <div
+                        class="color {c == nearest_h?'selected':''}"
+                        on:click="setColor(c)"
+                        data-color="{c}"
+                        style="background: {c}"
+                    ></div>
                     {/each}
                 </div>
                 {/if} {#if reset}
-                <button on:click="resetColor()" class="btn btn-small reset"><i class="im im-drop"></i> {@html reset}</button>
+                <button on:click="resetColor()" class="btn btn-small reset">
+                    <i class="im im-drop"></i> {@html reset}
+                </button>
                 {/if}
                 <div class="footer">
                     <input
@@ -116,7 +136,8 @@
                 lastValidInputColor: noColor,
                 // the color when picker is opened
                 previousColor: false,
-                open: false
+                open: false,
+                uid: ''
             };
         },
         computed: {
@@ -135,13 +156,17 @@
                     }
                 } else {
                     const showDuplicates = get($themeData, 'colors.picker.showDuplicates', false);
-                    const paletteColors = showDuplicates ? $themeData.colors.palette.concat(append) : uniq($themeData.colors.palette.concat(append));
+                    const paletteColors = showDuplicates
+                        ? $themeData.colors.palette.concat(append)
+                        : uniq($themeData.colors.palette.concat(append));
 
-                    paletteGroups = prepend ? prepend.concat([{ colors: [paletteColors] }]) : [{ colors: [paletteColors] }];
+                    paletteGroups = prepend
+                        ? prepend.concat([{ colors: [paletteColors] }])
+                        : [{ colors: [paletteColors] }];
                 }
                 return paletteGroups;
             },
-            palette({ $themeData, prepend, append }) {
+            palette({ $themeData }) {
                 return get($themeData, 'colors.palette', []);
             },
             swatchDims({ $themeData }) {
@@ -180,23 +205,22 @@
                 if (!chroma.valid(color_)) return [];
                 let high = chroma(color_).set('lch.c', 120);
                 if (isNaN(high.get('lch.h'))) {
-                    high = chroma.lch(high.get('lch.l'), 50, chroma(palette[0] || '#d00').get('lch.h'));
+                    high = chroma.lch(
+                        high.get('lch.l'),
+                        50,
+                        chroma(palette[0] || '#d00').get('lch.h')
+                    );
                 }
                 const low = chroma(color_).set('lch.c', 3);
-                return chroma
-                    .scale([low, high])
-                    .mode('lch')
-                    .gamma(1.2)
-                    .colors(14);
+                return chroma.scale([low, high]).mode('lch').gamma(1.2).colors(14);
             },
             gradient_h({ color_ }) {
                 if (!chroma.valid(color_)) return [];
                 const lch = chroma(color_).lch();
-                const sample = spread(lch[2], 75, 7, 6).map(h => chroma.lch(lch[0], lch[1], h).hex());
-                return chroma
-                    .scale(sample)
-                    .mode('lch')
-                    .colors(14);
+                const sample = spread(lch[2], 75, 7, 6).map(h =>
+                    chroma.lch(lch[0], lch[1], h).hex()
+                );
+                return chroma.scale(sample).mode('lch').colors(14);
             },
             nearest_l({ color_, gradient_l }) {
                 return findNearest(gradient_l, color_);
@@ -220,18 +244,15 @@
                 const hexEditable = get($themeData, 'colors.picker.controls.hexEditable', true);
                 if (inputBgColor === noColor) return '#000';
                 const c = chroma(inputBgColor);
-                return c.luminance() > 0.6 || c.alpha() < 0.3 ? `rgba(0,0,0,${hexEditable ? 1 : 0.3})` : `rgba(255,255,255,${hexEditable ? 1 : 0.6})`;
+                return c.luminance() > 0.6 || c.alpha() < 0.3
+                    ? `rgba(0,0,0,${hexEditable ? 1 : 0.3})`
+                    : `rgba(255,255,255,${hexEditable ? 1 : 0.6})`;
             }
         },
         helpers: {
             borderColor(c) {
                 if (!chroma.valid(c)) return '#ccc';
-                return c === noColor
-                    ? '#ddd'
-                    : chroma(c)
-                          .darker()
-                          .alpha(1)
-                          .hex();
+                return c === noColor ? '#ddd' : chroma(c).darker().alpha(1).hex();
             },
             borderColor2(c) {
                 if (!chroma.valid(c)) return '#ccc';
@@ -290,7 +311,10 @@
         onstate({ changed, current, previous }) {
             // update internal color if external color changes
             if (changed.color && current.color !== noColor && !previous) {
-                const newColor = getColor(isDefined(current.color) ? current.color : noColor, current.palette);
+                const newColor = getColor(
+                    isDefined(current.color) ? current.color : noColor,
+                    current.palette
+                );
                 setTimeout(() => {
                     this.set({
                         color_: newColor,
@@ -314,6 +338,7 @@
                 const inputColor = convertInputToHex(current.inputColor, current.palette);
                 try {
                     this.set({ lastValidInputColor: chroma(inputColor).hex() });
+                    // eslint-disable-next-line no-empty
                 } catch (e) {}
             }
 
@@ -322,7 +347,7 @@
                 this.set({ previousColor: getColor(current.color, current.palette) });
             }
         },
-        onupdate({ changed, current, previous }) {
+        onupdate({ changed, current }) {
             // Set focus to text input when opening
             if (changed.open && current.open) {
                 defer(() => this.refs.input.focus());
@@ -344,12 +369,11 @@
         return colors[nearestIndex];
     }
 
-    function spread(center, width, num, num2, exp) {
+    function spread(center, width, num, num2) {
         const r = [center];
         const s = width / num;
         let a = 0;
         num2 = isUndefined(num2) ? num : num2;
-        exp = exp || 1;
         while (num-- > 0) {
             a += s;
             r.unshift(center - a);

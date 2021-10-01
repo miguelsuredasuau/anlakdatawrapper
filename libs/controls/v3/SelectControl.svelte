@@ -13,6 +13,7 @@
     export let valign = 'middle';
     export let value = null;
     export let width = null;
+    export let uid;
 </script>
 
 <ControlGroup
@@ -25,6 +26,15 @@
     {label}
     {miniHelp}
     {valign}
+    {uid}
 >
-    <SelectInput class="mt-1" bind:value {disabled} {options} {optgroups} width={inline && !width ? 'auto' : width} on:change />
+    <SelectInput
+        class="mt-1"
+        bind:value
+        {disabled}
+        {options}
+        {optgroups}
+        width={inline && !width ? 'auto' : width}
+        on:change
+    />
 </ControlGroup>

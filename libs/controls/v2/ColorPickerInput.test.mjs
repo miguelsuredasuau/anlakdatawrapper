@@ -9,7 +9,19 @@ import Chart from '@datawrapper/chart-core/lib/dw/svelteChart';
 
 const themeData = {
     colors: {
-        palette: ['#18a1cd', '#1d81a2', '#15607a', '#00dca6', '#09bb9f', '#009076', '#c4c4c4', '#c71e1d', '#fa8c00', '#ffca76', '#ffe59c'],
+        palette: [
+            '#18a1cd',
+            '#1d81a2',
+            '#15607a',
+            '#00dca6',
+            '#09bb9f',
+            '#009076',
+            '#c4c4c4',
+            '#c71e1d',
+            '#fa8c00',
+            '#ffca76',
+            '#ffe59c'
+        ],
         picker: {
             rowCount: 6
         }
@@ -119,10 +131,7 @@ test('Update color through text input field', t => {
 
     t.context.querySelector('.base-drop-btn').click();
 
-    $(t.context)
-        .find('.footer input')
-        .val('#ff0000')
-        .trigger('input');
+    $(t.context).find('.footer input').val('#ff0000').trigger('input');
 
     t.context.querySelector('button.ok').click();
 
@@ -139,10 +148,7 @@ test('Normalize to hex code through text input field', t => {
     // set input to `#f00`
     t.context.querySelector('.base-drop-btn').click();
 
-    $(t.context)
-        .find('.footer input')
-        .val('#f00')
-        .trigger('input');
+    $(t.context).find('.footer input').val('#f00').trigger('input');
 
     t.context.querySelector('button.ok').click();
 
@@ -153,10 +159,7 @@ test('Normalize to hex code through text input field', t => {
     // set input to `red`
     t.context.querySelector('.base-drop-btn').click();
 
-    $(t.context)
-        .find('.footer input')
-        .val('red')
-        .trigger('input');
+    $(t.context).find('.footer input').val('red').trigger('input');
 
     t.context.querySelector('button.ok').click();
 
@@ -174,20 +177,14 @@ test('Entering invalid value does not set color', t => {
     // first set color to something meaningful: `#ff0000`
     t.context.querySelector('.base-drop-btn').click();
 
-    $(t.context)
-        .find('.footer input')
-        .val('#ff0000')
-        .trigger('input');
+    $(t.context).find('.footer input').val('#ff0000').trigger('input');
 
     t.context.querySelector('button.ok').click();
 
     // then try to set it to an invalid value: `garbage`
     t.context.querySelector('.base-drop-btn').click();
 
-    $(t.context)
-        .find('.footer input')
-        .val('garbage')
-        .trigger('input');
+    $(t.context).find('.footer input').val('garbage').trigger('input');
 
     t.context.querySelector('button.ok').click();
 

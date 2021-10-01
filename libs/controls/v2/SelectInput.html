@@ -1,4 +1,11 @@
-<select class="select-css {class}" disabled="{disabled}" bind:value="value" style="width:{ width }" on:change="fire('change', event)">
+<select
+    class="select-css {class}"
+    disabled="{disabled}"
+    bind:value="value"
+    style="width:{ width }"
+    on:change="fire('change', event)"
+    data-uid="{uid}"
+>
     {#if options.length} {#each options as opt}
     <option value="{opt.value}" selected="{opt.value === value}">{opt.label}</option>
     {/each} {/if} {#if optgroups.length} {#each optgroups as optgroup}
@@ -27,7 +34,8 @@
                 options: [],
                 optgroups: [],
                 value: null,
-                class: ''
+                class: '',
+                uid: ''
             };
         }
     };

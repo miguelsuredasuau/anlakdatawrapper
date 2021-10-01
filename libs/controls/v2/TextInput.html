@@ -1,4 +1,4 @@
-<div class="text-container" style="width:{width}">
+<div class="text-container" style="width:{width}" data-uid="{uid}">
     {#if expandable}
     <textarea
         ref:textarea
@@ -60,6 +60,7 @@
             return {
                 value: '',
                 id: '',
+                uid: '',
                 autocomplete: 'off',
                 disabled: false,
                 expandable: false,

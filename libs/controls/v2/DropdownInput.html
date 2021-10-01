@@ -1,17 +1,17 @@
 <svelte:window on:click="windowClick(event)" />
 
-<div style="position: relative; display: inline-block;">
+<div style="position: relative; display: inline-block" data-uid="{uid}">
     <a href="#dropdown-btn" ref:button on:click="toggle(event)" class="base-drop-btn">
         <slot name="button">
-            <button class="btn btn-small"><i class="fa fa-chevron-{visible ? 'up' : 'down'}"></i></button>
+            <button class="btn btn-small">
+                <i class="fa fa-chevron-{visible ? 'up' : 'down'}"></i>
+            </button>
         </slot>
     </a>
     {#if visible}
     <div style="width:{width}" class="dropdown-menu base-dropdown-content">
         <slot name="content">
-            <div class="base-dropdown-inner">
-                DropdownControl content
-            </div>
+            <div class="base-dropdown-inner">DropdownControl content</div>
         </slot>
     </div>
     {/if}
@@ -64,7 +64,8 @@
             return {
                 visible: false,
                 disabled: false,
-                width: 'auto'
+                width: 'auto',
+                uid: ''
             };
         },
         methods: {
@@ -77,7 +78,10 @@
             windowClick(event) {
                 if (
                     !event.target ||
-                    (this.refs && this.refs.button && (event.target === this.refs.button || this.refs.button.contains(event.target)))
+                    (this.refs &&
+                        this.refs.button &&
+                        (event.target === this.refs.button ||
+                            this.refs.button.contains(event.target)))
                 )
                     return;
                 // this is a hack for the colorpicker, need to find out how to get rid of

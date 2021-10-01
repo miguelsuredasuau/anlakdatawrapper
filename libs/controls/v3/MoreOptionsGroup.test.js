@@ -81,3 +81,20 @@ test('Disabled MoreOptionsGroup', async t => {
     await tick();
     t.falsy(t.context.querySelector('.more-options-content'));
 });
+
+test('default MoreOptionsGroup has no uid', t => {
+    new MoreOptionsGroup({
+        target: t.context
+    });
+
+    t.is(t.context.querySelector('.control-group').getAttribute('data-uid'), null);
+});
+
+test('MoreOptionsGroup can have data-uid', t => {
+    new MoreOptionsGroup({
+        target: t.context,
+        props: { uid: 'foobar' }
+    });
+
+    t.is(t.context.querySelector('.control-group').getAttribute('data-uid'), 'foobar');
+});

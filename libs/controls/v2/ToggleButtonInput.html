@@ -1,4 +1,11 @@
-<button on:click="toggle()" class:indeterminate class:btn-toggled="value && !indeterminate" class="btn btn-s" disabled="{disabled}">
+<button
+    on:click="toggle()"
+    class:indeterminate
+    class:btn-toggled="value && !indeterminate"
+    class="btn btn-s"
+    disabled="{disabled}"
+    data-uid="{uid}"
+>
     <slot>x</slot>
 </button>
 
@@ -9,7 +16,8 @@
                 value: false,
                 indeterminate: false,
                 notoggle: false,
-                disabled: false
+                disabled: false,
+                uid: ''
             };
         },
         methods: {

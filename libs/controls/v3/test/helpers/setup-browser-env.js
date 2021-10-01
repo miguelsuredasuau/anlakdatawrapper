@@ -1,3 +1,4 @@
+/* eslint-env node */
 import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 const dom = new JSDOM('', {

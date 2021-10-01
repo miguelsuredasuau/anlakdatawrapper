@@ -1,4 +1,4 @@
-<div class="vis-option-type-group svelte-group group-open">
+<div class="vis-option-type-group svelte-group group-open" data-uid="{uid}">
     <label class="group-title"> {@html label}</label>
 
     <div class="option-group-content vis-option-type-chart-description">
@@ -30,7 +30,7 @@
     export default {
         data() {
             return {
-                id: false
+                uid: ''
             };
         },
         oncreate() {}

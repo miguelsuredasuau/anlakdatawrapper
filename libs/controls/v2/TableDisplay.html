@@ -1,4 +1,4 @@
-<div class="table-container">
+<div class="table-container" data-uid="{uid}">
     <table class="table">
         <colgroup>
             {#each columnHeaders as item}
@@ -12,7 +12,18 @@
                 <th class="{item.className ? item.className : ''}">
                     {#if item.orderBy}
                     <a
-                        class="sortable {isActive(item) ? isAscending ? 'sortable-asc' : 'sortable-desc' : ''}"
+                        class="
+                            sortable
+                            {isActive(item)
+                            ?
+                            isAscending
+                            ?
+                            'sortable-asc'
+                            :
+                            'sortable-desc'
+                            :
+                            ''}
+                        "
                         href="{`?orderBy=${item.orderBy}`}"
                         on:click="sort(event, item.orderBy)"
                     >
@@ -80,11 +91,15 @@
     export default {
         data: () => ({
             order: DEFAULT_ORDER,
-            orderBy: ''
+            orderBy: '',
+            uid: ''
         }),
 
         computed: {
-            isActive: ({ orderBy }) => item => orderBy === item.orderBy,
+            isActive:
+                ({ orderBy }) =>
+                item =>
+                    orderBy === item.orderBy,
             isAscending: ({ order }) => order === DEFAULT_ORDER
         },
 

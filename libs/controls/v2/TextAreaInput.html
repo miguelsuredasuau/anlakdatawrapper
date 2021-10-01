@@ -1,5 +1,12 @@
-<div class="textarea-container" style="width:{width}">
-    <textarea bind:value="value" {id} {placeholder} {disabled} {autocomplete} style="height:{height};resize:{resize}" />
+<div class="textarea-container" style="width:{width}" data-uid="{uid}">
+    <textarea
+        bind:value="value"
+        {id}
+        {placeholder}
+        {disabled}
+        {autocomplete}
+        style="height:{height};resize:{resize}"
+    />
 </div>
 
 <style>
@@ -23,7 +30,8 @@
                 placeholder: '',
                 width: '100%',
                 height: 'auto',
-                resize: 'both'
+                resize: 'both',
+                uid: ''
             };
         }
     };

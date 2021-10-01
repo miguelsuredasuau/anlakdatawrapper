@@ -1,4 +1,4 @@
-<ControlGroup inline {labelWidth} {valign} {label} {disabled} {help} helpClass="mt-1">
+<ControlGroup inline {labelWidth} {valign} {label} {disabled} {help} {uid} helpClass="mt-1">
     <DropdownInput disabled="{disabled}">
         <span slot="button">
             <div class="btn-group mt-1">
@@ -76,12 +76,14 @@
                 passEvent: false,
                 itemRenderer: DropdownListItem,
                 valign: 'middle',
-                help: false
+                help: false,
+                uid: ''
             };
         },
         computed: {
             currentItem({ value, options, placeholder, forcePlaceholder, forceLabel }) {
-                if (forceLabel) return typeof forceLabel === 'string' ? { label: forceLabel } : forceLabel;
+                if (forceLabel)
+                    return typeof forceLabel === 'string' ? { label: forceLabel } : forceLabel;
                 if (!forcePlaceholder) {
                     for (let i = 0; i < options.length; i++) {
                         if (options[i].value === value) {

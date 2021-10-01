@@ -2,9 +2,13 @@
     <span class="text" class:empty="isTextEmpty">{text}</span>
     <span class="pull-right">
         {#if !item.showMobile && item.showDesktop}
-        <span class="mini-help">{__('controls / annotations / show-on / desktop').toUpperCase()}</span>
+        <span class="mini-help"
+            >{__('controls / annotations / show-on / desktop').toUpperCase()}</span
+        >
         {/if} {#if item.showMobile && !item.showDesktop}
-        <span class="mini-help">{__('controls / annotations / show-on / mobile').toUpperCase()}</span>
+        <span class="mini-help"
+            >{__('controls / annotations / show-on / mobile').toUpperCase()}</span
+        >
         {/if} {#if !item.showMobile && !item.showDesktop}
         <i class="fa fa-fw fa-eye-slash"></i>
         {/if}
@@ -46,7 +50,6 @@
 </style>
 
 <script>
-    /* global CustomEvent */
     import { __ } from '@datawrapper/shared/l10n';
 
     export default {

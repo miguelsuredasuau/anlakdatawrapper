@@ -1,5 +1,7 @@
 <script>
     export let helpClass = '';
+    export let uid;
+
     let visible = false;
     let t = null;
 
@@ -71,7 +73,12 @@
     }
 </style>
 
-<div class="help {helpClass}" on:mouseenter={handleHelpMouseenter} on:mouseleave={handleHelpMouseleave}>
+<div
+    class="help {helpClass}"
+    on:mouseenter={handleHelpMouseenter}
+    on:mouseleave={handleHelpMouseleave}
+    data-uid={uid}
+>
     <span class="help-icon">?</span>
     {#if visible}
         <div class="content">

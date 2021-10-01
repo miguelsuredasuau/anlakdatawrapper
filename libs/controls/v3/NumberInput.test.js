@@ -101,3 +101,20 @@ test('Updating the value via the input controls to 0', async t => {
 
     t.is(app.value, 0);
 });
+
+test('default NumberInput has no uid', t => {
+    new NumberInput({
+        target: t.context
+    });
+
+    t.is(t.context.querySelector('.number-control').getAttribute('data-uid'), null);
+});
+
+test('NumberInput can have data-uid', t => {
+    new NumberInput({
+        target: t.context,
+        props: { uid: 'foobar' }
+    });
+
+    t.is(t.context.querySelector('.number-control').getAttribute('data-uid'), 'foobar');
+});

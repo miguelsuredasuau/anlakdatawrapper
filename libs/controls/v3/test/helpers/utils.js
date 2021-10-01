@@ -34,7 +34,11 @@ export function clickEvent(element, options = {}) {
  * @param type - the keyevent type, defaults to "keypress"
  */
 export function keyEvent(element, key, type) {
-    const event = new window.KeyboardEvent(type || 'keypress', { bubbles: true, cancelable: true, key });
+    const event = new window.KeyboardEvent(type || 'keypress', {
+        bubbles: true,
+        cancelable: true,
+        key
+    });
     element.dispatchEvent(event);
 }
 

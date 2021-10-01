@@ -1,9 +1,25 @@
-<SwitchControl bind:value="value.enabled" disabled="{disabled}" label="{label}" help="{ help }">
+<SwitchControl
+    bind:value="value.enabled"
+    disabled="{disabled}"
+    label="{label}"
+    help="{ help }"
+    data-uid="{uid}"
+>
     <button on:click="set({open:!open})" class="btn mt-1 mb-1" class:btn-active="open">
         {@html __('controls / tooltip-editor / customize', 'core')}
-        <i class="fa" class:fa-angle-double-down="!open" class:fa-angle-double-up="open" aria-hidden="true" style="margin-left: .5ex;"></i>
+        <i
+            class="fa"
+            class:fa-angle-double-down="!open"
+            class:fa-angle-double-up="open"
+            aria-hidden="true"
+            style="margin-left: 0.5ex"
+        ></i>
     </button>
-    {#if errors.length}<i class="fa fa-exclamation-triangle" style="color:#c71e1d; margin-left: 1ex;" aria-hidden="true"></i>
+    {#if errors.length}<i
+        class="fa fa-exclamation-triangle"
+        style="color: #c71e1d; margin-left: 1ex"
+        aria-hidden="true"
+    ></i>
     {/if} {#if open}
     <div style="margin-top: 10px" class:disable-highlighting-on-focus="noSyntaxHighlighting">
         <div class="title">
@@ -25,7 +41,9 @@
         </div>
         <div class="body">
             <div class="textarea">
-                <div ref:coloredBody style="right: {7+scrollbarSize}px" class="inner">{@html bodyColors.text}</div>
+                <div ref:coloredBody style="right: {7+scrollbarSize}px" class="inner">
+                    {@html bodyColors.text}
+                </div>
             </div>
             <textarea
                 ref:textAreaBody
@@ -41,7 +59,9 @@
             ></textarea>
         </div>
         {#if errors.length} {#each errors as err}
-        <p class="mini-help error"><b>{@html __('controls / tooltip-editor / err', 'core')}</b> {err}</p>
+        <p class="mini-help error">
+            <b>{@html __('controls / tooltip-editor / err', 'core')}</b> {err}
+        </p>
         {/each}{/if}
 
         <p class="mt-1">{@html __('controls / tooltip-editor / mini-help', 'core')}</p>
@@ -58,13 +78,20 @@
                 items="{formatItems(col)}"
             />
             {/each} {#if columns.length > maxColumns}
-            <a on:click|preventDefault="set({showAllColumns: !showAllColumns})" href="#/show-all">show {showAllColumns ? 'fewer' : 'more'} columns</a>
+            <a on:click|preventDefault="set({showAllColumns: !showAllColumns})" href="#/show-all"
+                >show {showAllColumns ? 'fewer' : 'more'} columns</a
+            >
             {/if}
         </div>
     </div>
     {/if} {#if value.migrated && errors.length}
     <div class="mt-1" style="margin-bottom: -1ex">
-        <AlertDisplay closeable="{true}" type="warning" visible="{value.migrated}" on:close="acceptMigrationWarning()">
+        <AlertDisplay
+            closeable="{true}"
+            type="warning"
+            visible="{value.migrated}"
+            on:close="acceptMigrationWarning()"
+        >
             <div>{@html __('controls / tooltip-editor / migrated', 'core')}</div>
         </AlertDisplay>
     </div>
@@ -112,12 +139,15 @@
                     f: `JOIN(MAP(TOOLTIP, %x), "<hr>")`
                 });
 
-                Object.keys(val).forEach((key, i) => {
+                Object.keys(val).forEach(key => {
                     more.push(
                         typeof val[key] === 'number'
                             ? { l: `SUM $.${key}`, f: `SUM(PLUCK(%x, "${key}"))` }
                             : isDate(val[key])
-                            ? { l: `JOIN $.${key}`, f: `JOIN(MAP(f(x) = FORMAT(x.${key}, "YYYY-MM"), %x), ", ")` }
+                            ? {
+                                  l: `JOIN $.${key}`,
+                                  f: `JOIN(MAP(f(x) = FORMAT(x.${key}, "YYYY-MM"), %x), ", ")`
+                              }
                             : { l: `JOIN $.${key}`, f: `JOIN(PLUCK(%x, "${key}"), ", ")` }
                     );
                 });
@@ -137,7 +167,10 @@
                       f: `%x__${k}`
                   }))
                 : [];
-        return [...formats(columnType).map(({ l, f }) => ({ l, f: `FORMAT(%x, "${f}")` })), ...addedFormat];
+        return [
+            ...formats(columnType).map(({ l, f }) => ({ l, f: `FORMAT(%x, "${f}")` })),
+            ...addedFormat
+        ];
     }
 
     export default {
@@ -167,7 +200,8 @@
                 placeholderBody: __('controls / tooltip-editor / body-placeholder', 'core'),
                 scrollbarSize: 0,
                 noSyntaxHighlighting: true,
-                help: __('controls / tooltip-editor / help', 'core')
+                help: __('controls / tooltip-editor / help', 'core'),
+                uid: ''
             };
         },
         computed: {
@@ -202,20 +236,52 @@
                 const errors = [...bodyColors.errors, ...titleColors.errors];
                 return errors.map(error =>
                     error
-                        .replace(/(\w+) is not defined/, (a, b) => `"${b}" ` + __('controls / tooltip-editor / err / not-defined', 'core'))
-                        .replace('unexpected token', __('controls / tooltip-editor / err / unexpected-token', 'core'))
+                        .replace(
+                            /(\w+) is not defined/,
+                            (a, b) =>
+                                `"${b}" ` +
+                                __('controls / tooltip-editor / err / not-defined', 'core')
+                        )
+                        .replace(
+                            'unexpected token',
+                            __('controls / tooltip-editor / err / unexpected-token', 'core')
+                        )
                         .replace('unexpected TOP', __('cc / formula / error / unexpected top'))
                         .replace(': Expected EOF', '')
-                        .replace('unexpected TPAREN', __('cc / formula / error / unexpected tparen'))
-                        .replace('unexpected TBRACKET', __('cc / formula / error / unexpected tparen'))
-                        .replace('unexpected TEOF: EOF', __('cc / formula / error / unexpected teof'))
-                        .replace('unexpected TCOMMA', __('cc / formula / error / unexpected tcomma'))
-                        .replace('unexpected TSEMICOLON', __('cc / formula / error / unexpected tsemicolon'))
-                        .replace('undefined variable', __('cc / formula / error / undefined variable'))
+                        .replace(
+                            'unexpected TPAREN',
+                            __('cc / formula / error / unexpected tparen')
+                        )
+                        .replace(
+                            'unexpected TBRACKET',
+                            __('cc / formula / error / unexpected tparen')
+                        )
+                        .replace(
+                            'unexpected TEOF: EOF',
+                            __('cc / formula / error / unexpected teof')
+                        )
+                        .replace(
+                            'unexpected TCOMMA',
+                            __('cc / formula / error / unexpected tcomma')
+                        )
+                        .replace(
+                            'unexpected TSEMICOLON',
+                            __('cc / formula / error / unexpected tsemicolon')
+                        )
+                        .replace(
+                            'undefined variable',
+                            __('cc / formula / error / undefined variable')
+                        )
                         .replace('parse error', __('cc / formula / error / parser error'))
-                        .replace('Unknown character', __('cc / formula / error / unknown-character'))
+                        .replace(
+                            'Unknown character',
+                            __('cc / formula / error / unknown-character')
+                        )
                         .replace('unexpected', __('cc / formula / error / unexpected'))
-                        .replace('member access is not permitted', __('cc / formula / error / member-access'))
+                        .replace(
+                            'member access is not permitted',
+                            __('cc / formula / error / member-access')
+                        )
                 );
             }
         },
@@ -223,7 +289,7 @@
             __,
             truncate,
             maxColumns: 8,
-            formatItems(col, addColumn) {
+            formatItems(col) {
                 return tooltipFormats(col).map(({ l, f }) => ({
                     label: l,
                     action(dropdown) {
@@ -239,8 +305,10 @@
                 this.set({ value });
             },
             handleScroll(event, syncWithBody) {
-                this.refs[syncWithBody ? 'coloredBody' : 'coloredTitle'].scrollTop = event.target.scrollTop;
-                this.refs[syncWithBody ? 'coloredBody' : 'coloredTitle'].scrollLeft = event.target.scrollLeft;
+                this.refs[syncWithBody ? 'coloredBody' : 'coloredTitle'].scrollTop =
+                    event.target.scrollTop;
+                this.refs[syncWithBody ? 'coloredBody' : 'coloredTitle'].scrollLeft =
+                    event.target.scrollLeft;
             },
             handleCursorChange(event) {
                 const input = event.target;
@@ -254,14 +322,18 @@
                 const { lastFocus, lastCursorPosition, value, variables } = this.get();
                 if (!selectedColumn) return;
                 const varName = variables.get(selectedColumn.name());
-                const insert = selectedFormat ? `{{ ${selectedFormat.replace('%x', varName)} }}` : `{{ ${varName} }}`;
-                const insertAt = lastCursorPosition[0] < 0 ? value[lastFocus].length : lastCursorPosition[0];
+                const insert = selectedFormat
+                    ? `{{ ${selectedFormat.replace('%x', varName)} }}`
+                    : `{{ ${varName} }}`;
+                const insertAt =
+                    lastCursorPosition[0] < 0 ? value[lastFocus].length : lastCursorPosition[0];
                 const removeChars = lastCursorPosition[1] - lastCursorPosition[0];
                 const before = value[lastFocus].substr(0, insertAt);
                 const after = value[lastFocus].substr(insertAt + removeChars);
                 value[lastFocus] = `${before}${insert}${after}`;
                 this.set({ value });
-                const focussedTextArea = this.refs[lastFocus === 'title' ? 'textAreaTitle' : 'textAreaBody'];
+                const focussedTextArea =
+                    this.refs[lastFocus === 'title' ? 'textAreaTitle' : 'textAreaBody'];
                 focussedTextArea.selectionEnd = before.length + insert.length;
                 focussedTextArea.focus();
             }
@@ -284,7 +356,11 @@
             // this.set({ noSyntaxHighlighting: isIE || isEdge });
         },
         onstate({ changed, current, previous }) {
-            if (current._updateValue && (changed.internalTitle || changed.internalBody) && previous) {
+            if (
+                current._updateValue &&
+                (changed.internalTitle || changed.internalBody) &&
+                previous
+            ) {
                 // update value (with some delay)
                 current._updateValue({
                     title: current.internalTitle,
@@ -305,7 +381,7 @@
 
     function toColors(str, columns, placeholder, isCluster, variables) {
         const context = {
-            FORMAT(val, fmt) {
+            FORMAT(val) {
                 return String(val);
             }
         };
@@ -328,7 +404,7 @@
             text = str
                 .replace(COL_REG, s => {
                     const expr = s.substr(2, s.length - 4).trim();
-                    let error = testExpression(context, expr);
+                    const error = testExpression(context, expr);
                     if (error) errors.push(error);
                     return `[[[span class="var ${!error ? '' : 'in'}valid"]]]${s}[[[/span]]]`;
                 })
