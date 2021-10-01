@@ -112,6 +112,7 @@ class Organization extends BaseOrganization
                 'folder' => null,
                 'locale' => null
             ],
+            'downloadImageFormat' => 'full',
             'embed' => [
                 'preferred_embed' => 'responsive',
                 'custom_embed' => [

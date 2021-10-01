@@ -1,5 +1,3 @@
-/* global Uint8Array, FileReader */
-
 // eslint-disable-next-line
 import jschardet from '/static/vendor/jschardet/jschardet.min.js';
 

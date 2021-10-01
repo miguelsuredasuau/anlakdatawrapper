@@ -1,4 +1,4 @@
-/* global XLSX , FileReader */
+/* global XLSX */
 // eslint-disable-next-line
 import '/static/vendor/xlsx/xlsx.full.min.js';
 

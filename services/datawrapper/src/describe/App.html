@@ -258,7 +258,8 @@
                     ? columnFormatter(activeColumn, $dw_chart.get().metadata, activeColumn.name())
                     : d => d;
             },
-            columns() {
+            // eslint-disable-next-line
+            columns({ activeColumn }) {
                 const ds = chart.dataset();
                 return ds ? ds.columns() : [];
             },
@@ -281,7 +282,8 @@
         helpers: { __ },
         methods: {
             nextResult(diff) {
-                let { searchIndex, searchResults } = this.get();
+                let { searchIndex } = this.get();
+                const { searchResults } = this.get();
                 searchIndex += diff;
                 if (searchIndex < 0) searchIndex += searchResults.length;
                 searchIndex = searchIndex % searchResults.length;

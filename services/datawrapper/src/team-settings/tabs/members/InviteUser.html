@@ -228,7 +228,8 @@
                 }, 200);
             },
             async checkUser() {
-                let { inviteeEmail, isValidEmail } = this.get();
+                let { inviteeEmail } = this.get();
+                const { isValidEmail } = this.get();
                 if (!isValidEmail) {
                     this.set({ inviteeExistsLoading: false });
                     return;
