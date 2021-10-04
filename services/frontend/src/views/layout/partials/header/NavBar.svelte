@@ -1,13 +1,3 @@
-<script>
-    import { getContext } from 'svelte';
-    const user = getContext('user');
-    const request = getContext('request');
-</script>
-
-<nav>
-    <ul />
-</nav>
-
 <style>
     nav ul {
         margin: 0;
@@ -17,3 +7,7 @@
         height: 100%;
     }
 </style>
+
+<nav>
+    <ul />
+</nav>

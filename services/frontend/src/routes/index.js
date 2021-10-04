@@ -1,7 +1,7 @@
 module.exports = {
     name: 'routes',
     version: '1.0.0',
-    register: async (server, options) => {
+    register: async server => {
         await server.register(require('./signin'), {
             routes: {
                 prefix: '/signin'

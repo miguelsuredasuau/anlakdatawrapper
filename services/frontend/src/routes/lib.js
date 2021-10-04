@@ -6,7 +6,7 @@ const { allScopes } = require('@datawrapper/service-utils/l10n');
 module.exports = {
     name: 'routes/lib',
     version: '1.0.0',
-    register: async (server, options) => {
+    register: async server => {
         server.route([
             {
                 path: '/chart-core/{file*}',
@@ -77,7 +77,7 @@ module.exports = {
             {
                 path: '/stores/messages.json',
                 method: 'GET',
-                async handler(request, h) {
+                async handler(request) {
                     const { auth } = request;
                     const lang = server.methods.getUserLanguage(auth);
                     return allScopes(lang || 'en-US');

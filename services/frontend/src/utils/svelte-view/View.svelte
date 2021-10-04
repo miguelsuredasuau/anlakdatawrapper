@@ -1,6 +1,6 @@
 <script>
     import { setContext, getContext } from 'svelte';
-    import { writable, get } from 'svelte/store';
+    import { writable } from 'svelte/store';
 
     import View from '__view__';
 

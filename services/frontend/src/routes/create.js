@@ -8,7 +8,7 @@ const { Chart } = require('@datawrapper/orm/models');
 module.exports = {
     name: 'routes/create',
     version: '1.0.0',
-    async register(server, options) {
+    async register(server) {
         server.route({
             path: '/',
             method: 'GET',

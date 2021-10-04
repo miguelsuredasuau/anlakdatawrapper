@@ -4,17 +4,6 @@
     export let title;
 </script>
 
-<svelte:head>
-    <title>Datawrapper{title ? ` - ${title}` : ''}</title>
-</svelte:head>
-
-<div class="container" style="max-width: 50rem">
-    <DatawrapperLogo color="#ffffff" height="40" />
-    <div class="box mt-6 p-6">
-        <slot />
-    </div>
-</div>
-
 <style>
     :global(html, body) {
         background: linear-gradient(90deg, #0f4656 0%, #085e55 100%);
@@ -40,3 +29,14 @@
         color: #15607a;
     }
 </style>
+
+<svelte:head>
+    <title>Datawrapper{title ? ` - ${title}` : ''}</title>
+</svelte:head>
+
+<div class="container" style="max-width: 50rem">
+    <DatawrapperLogo color="#ffffff" height="40" />
+    <div class="box mt-6 p-6">
+        <slot />
+    </div>
+</div>

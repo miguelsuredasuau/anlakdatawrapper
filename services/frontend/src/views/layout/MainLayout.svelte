@@ -5,6 +5,9 @@
     export let title;
 </script>
 
+<style type="text/css">
+</style>
+
 <svelte:head>
     <title>{title ? `${title} - ` : ''}Datawrapper</title>
 </svelte:head>
@@ -16,6 +19,3 @@
 <div class="container">
     <PageFooter />
 </div>
-
-<style type="text/css">
-</style>

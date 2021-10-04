@@ -1,6 +1,5 @@
 'use strict';
 
-const Hoek = require('@hapi/hoek');
 const babel = require('@babel/core');
 const EventEmmiter = require('events');
 const { join, relative } = require('path');
@@ -99,9 +98,7 @@ const SvelteView = {
         const baseViewDir = join(__dirname, '../../views');
         const page = relative(baseViewDir, compileOpts.filename);
 
-        return async function runtime(context, renderOpts) {
-            renderOpts = Hoek.applyToDefaults(compileOpts, renderOpts);
-
+        return async function runtime(context) {
             if (!template || process.env.DW_DEV_MODE) {
                 template = await readFile(join(__dirname, 'template.ejs'), 'utf8');
             }

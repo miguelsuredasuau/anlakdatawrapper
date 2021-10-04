@@ -3,11 +3,10 @@
     export let chartData = {};
     export let template = null;
 
-    import { onMount, getContext, setContext } from 'svelte';
+    import { onMount, getContext } from 'svelte';
 
     // dynamic language
     const msg = getContext('messages');
-    const config = getContext('config');
     export let __;
 
     import get from '@datawrapper/shared/get';
@@ -173,9 +172,77 @@
             label: __('External data')
         }
     ];
-
-    const noFormat = s => s;
 </script>
+
+<style>
+    th,
+    td {
+        padding: 5px 10px 5px 0;
+    }
+    .cols {
+        display: inline-block;
+        padding: 7px 10px;
+        margin: 0 6px 6px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        line-height: 15px;
+    }
+    .cols .name {
+        color: #222;
+        margin-bottom: 5px;
+    }
+    .cols .type {
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #777;
+    }
+    .cols .range {
+        color: #999;
+        font-size: 12px;
+        font-style: italic;
+    }
+
+    img {
+        max-width: 100%;
+    }
+    table {
+        width: 100%;
+    }
+    th {
+        text-align: left;
+        vertical-align: top;
+        font-weight: normal;
+        color: #777;
+        font-size: 14px;
+    }
+    table.data th {
+        color: #222;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    td.title {
+        font-weight: bold;
+        font-size: 22px;
+        color: #000;
+        line-height: 1.25;
+    }
+    td.intro {
+        font-size: 14px;
+        color: #222;
+        line-height: 17px;
+    }
+    td.notes {
+        font-style: italic;
+        color: #656565;
+        font-size: 12px;
+    }
+    td.byline,
+    td.source-name,
+    td.source-url {
+        color: #888;
+        font-size: 11px;
+    }
+</style>
 
 <SignInPageLayout title={__('template / hed')}>
     {#if template}
@@ -298,73 +365,3 @@
         <p class="has-text-grey">{@html __('create / footer')}</p>
     {/if}
 </SignInPageLayout>
-
-<style>
-    th,
-    td {
-        padding: 5px 10px 5px 0;
-    }
-    .cols {
-        display: inline-block;
-        padding: 7px 10px;
-        margin: 0 6px 6px 0;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        line-height: 15px;
-    }
-    .cols .name {
-        color: #222;
-        margin-bottom: 5px;
-    }
-    .cols .type {
-        font-size: 11px;
-        text-transform: uppercase;
-        color: #777;
-    }
-    .cols .range {
-        color: #999;
-        font-size: 12px;
-        font-style: italic;
-    }
-
-    img {
-        max-width: 100%;
-    }
-    table {
-        width: 100%;
-    }
-    th {
-        text-align: left;
-        vertical-align: top;
-        font-weight: normal;
-        color: #777;
-        font-size: 14px;
-    }
-    table.data th {
-        color: #222;
-        font-weight: bold;
-        font-size: 14px;
-    }
-    td.title {
-        font-weight: bold;
-        font-size: 22px;
-        color: #000;
-        line-height: 1.25;
-    }
-    td.intro {
-        font-size: 14px;
-        color: #222;
-        line-height: 17px;
-    }
-    td.notes {
-        font-style: italic;
-        color: #656565;
-        font-size: 12px;
-    }
-    td.byline,
-    td.source-name,
-    td.source-url {
-        color: #888;
-        font-size: 11px;
-    }
-</style>

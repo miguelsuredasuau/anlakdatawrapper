@@ -12,7 +12,7 @@ const readDir = promisify(fs.readdir);
 module.exports = {
     name: 'plugin-loader',
     version: '1.0.0',
-    register: async (server, options) => {
+    register: async server => {
         const config = server.methods.config();
         const pluginRoot = config.general.localPluginRoot || path.join(process.cwd(), 'plugins');
 
@@ -97,7 +97,9 @@ module.exports = {
                             }
                         }
                         addScope(name, options.locales);
-                    } catch (e) {}
+                    } catch (e) {
+                        // do nothing
+                    }
                     await server.register({ plugin, options }, pluginOptions);
                 }
             }

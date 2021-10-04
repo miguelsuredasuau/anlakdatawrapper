@@ -58,7 +58,7 @@ module.exports.watch = async function (page, callback) {
                 }
             }
         ]);
-        watcher.on('event', async ({ code, result, error }) => {
+        watcher.on('event', async ({ code, error }) => {
             if (code === 'ERROR') {
                 console.error(error);
                 callback(error);

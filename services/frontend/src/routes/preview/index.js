@@ -9,8 +9,8 @@ const get = require('lodash/get');
 module.exports = {
     name: 'routes/preview',
     version: '1.0.0',
-    register: async (server, options) => {
-        const { loadLocales, loadVendorLocale, createAPI, initCaches } = require('./utils');
+    register: async server => {
+        const { loadLocales, loadVendorLocale, createAPI } = require('./utils');
         const locales = await loadLocales();
         const config = server.methods.config();
         const apiBase = `${config.api.https ? 'https' : 'http'}://${config.api.subdomain}.${
@@ -54,8 +54,6 @@ module.exports = {
                     config.api.sessionID,
                     auth.credentials && auth.credentials.data ? auth.credentials.data.id : ''
                 );
-
-                let chart;
 
                 const queryString = Object.entries({
                     published: request.query.published,

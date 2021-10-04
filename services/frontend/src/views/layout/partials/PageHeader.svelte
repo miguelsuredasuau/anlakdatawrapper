@@ -6,6 +6,16 @@
     const request = getContext('request');
 </script>
 
+<style>
+    header {
+        /*background: white;
+        border-bottom: 1px solid #eee;*/
+    }
+    .container {
+        margin-bottom: 0;
+    }
+</style>
+
 <header class="py-5 mb-5" id="top">
     <div class="container">
         <div class="flex">
@@ -20,13 +30,3 @@
         </div>
     </div>
 </header>
-
-<style>
-    header {
-        /*background: white;
-        border-bottom: 1px solid #eee;*/
-    }
-    .container {
-        margin-bottom: 0;
-    }
-</style>

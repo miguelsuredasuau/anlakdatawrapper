@@ -8,7 +8,7 @@ const cookieAuthScheme = createCookieAuthScheme(true);
 const DWAuth = {
     name: 'dw-auth',
     version: '1.0.0',
-    register: async (server, options) => {
+    register: async server => {
         const oauth = server.methods.config('general').oauth;
 
         function isAdmin(request, { throwError = false } = {}) {

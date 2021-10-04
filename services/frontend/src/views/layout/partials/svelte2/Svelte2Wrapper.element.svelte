@@ -1,12 +1,12 @@
 <svelte:options tag="svelte2-wrapper" />
 
 <script>
-    import { onMount, onDestroy, beforeUpdate, createEventDispatcher } from 'svelte';
-    import { get_current_component } from 'svelte/internal';
+    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+    import { get_current_component as getCurrentComponent } from 'svelte/internal';
     import { loadScript } from '@datawrapper/shared/fetch';
 
     const svelteDispatch = createEventDispatcher();
-    const component = get_current_component();
+    const component = getCurrentComponent();
     const dispatch = (name, detail) => {
         svelteDispatch(name, detail);
         component.dispatchEvent && component.dispatchEvent(new CustomEvent(name, { detail }));
@@ -81,12 +81,6 @@
     });
 </script>
 
-<div class="visconfig" bind:this={parent}>
-    <div class="svelte-2" bind:this={container}>
-        {#if loading}<span class="loading">loading...</span>{/if}
-    </div>
-</div>
-
 <style lang="less">
     .svelte-2 {
         position: relative;
@@ -96,3 +90,9 @@
         }
     }
 </style>
+
+<div class="visconfig" bind:this={parent}>
+    <div class="svelte-2" bind:this={container}>
+        {#if loading}<span class="loading">loading...</span>{/if}
+    </div>
+</div>

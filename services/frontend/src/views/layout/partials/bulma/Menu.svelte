@@ -44,8 +44,14 @@
 
     let scrollY;
     let innerHeight;
-    let offsetHeight;
 </script>
+
+<style>
+    .menu.sticky {
+        position: sticky;
+        top: 20px;
+    }
+</style>
 
 <svelte:window bind:scrollY bind:innerHeight />
 
@@ -65,10 +71,3 @@
         </ul>
     {/each}
 </aside>
-
-<style>
-    .menu.sticky {
-        position: sticky;
-        top: 20px;
-    }
-</style>

@@ -91,7 +91,7 @@ const start = async () => {
                     }
                 }
             },
-            handler: (request, h) => {
+            handler: () => {
                 return {};
             }
         });
@@ -139,7 +139,9 @@ const start = async () => {
             }
         }
         addScope('core', locales);
-    } catch (e) {}
+    } catch (e) {
+        // do nothing
+    }
 
     server.method('config', key => (key ? config[key] : config));
     server.method('logAction', require('@datawrapper/orm/utils/action').logAction);

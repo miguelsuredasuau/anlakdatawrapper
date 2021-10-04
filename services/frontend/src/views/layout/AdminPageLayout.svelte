@@ -22,6 +22,9 @@
         .sort((a, b) => a.items[0].order - b.items[0].order);
 </script>
 
+<style type="text/css">
+</style>
+
 <MainLayout title={`Admin - ${title}`}>
     <div class="container">
         <div class="columns is-variable is-6">
@@ -36,6 +39,3 @@
         </div>
     </div>
 </MainLayout>
-
-<style type="text/css">
-</style>

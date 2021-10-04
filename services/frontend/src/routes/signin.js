@@ -12,11 +12,10 @@ const { login, getStateOpts } = require('@datawrapper/service-utils/auth')(
 module.exports = {
     name: 'routes/signin',
     version: '1.0.0',
-    register: async (server, options) => {
+    register: async server => {
         const oauth = server.methods.config('general').oauth;
         const frontend = server.methods.config('frontend');
         const api = server.methods.config('api');
-
 
         for (var provider in oauth) {
             if (!Object.keys(Bell.providers).includes(provider)) continue;
@@ -107,15 +106,19 @@ module.exports = {
             let issuer = null;
 
             try {
-                issuer = await Issuer.discover(domain.startsWith('https') ? domain : `https://${domain}`);
+                issuer = await Issuer.discover(
+                    domain.startsWith('https') ? domain : `https://${domain}`
+                );
             } catch (ex) {
                 server.logger.warn('Could not find OpenID configuration', ex.message);
-                throw Boom.badRequest('Could not find OpenID configuration for configured endpoint.');
+                throw Boom.badRequest(
+                    'Could not find OpenID configuration for configured endpoint.'
+                );
             }
 
             const client = new issuer.Client({
                 client_id: get(team.settings, 'sso.openId.clientId'),
-                client_secret: get(team.settings, 'sso.openId.clientSecret'),
+                client_secret: get(team.settings, 'sso.openId.clientSecret')
             });
 
             return client;
@@ -133,10 +136,12 @@ module.exports = {
                     const nonce = generators.nonce();
 
                     const redirectUrl = client.authorizationUrl({
-                        redirect_uri: `${frontend.https ? 'https' : 'http'}://${frontend.domain}/signin/sso`,
+                        redirect_uri: `${frontend.https ? 'https' : 'http'}://${
+                            frontend.domain
+                        }/signin/sso`,
                         scope: 'openid email profile',
                         response_mode: 'form_post',
-                        state: JSON.stringify({team: request.params.teamId}),
+                        state: JSON.stringify({ team: request.params.teamId }),
                         nonce
                     });
 
@@ -160,10 +165,15 @@ module.exports = {
                     const nonce = generators.nonce();
 
                     const redirectUrl = client.authorizationUrl({
-                        redirect_uri: `${frontend.https ? 'https' : 'http'}://${frontend.domain}/signin/sso`,
+                        redirect_uri: `${frontend.https ? 'https' : 'http'}://${
+                            frontend.domain
+                        }/signin/sso`,
                         scope: 'openid email profile',
                         response_mode: 'form_post',
-                        state: JSON.stringify({team: request.params.teamId, token: request.params.token}),
+                        state: JSON.stringify({
+                            team: request.params.teamId,
+                            token: request.params.token
+                        }),
                         nonce
                     });
 
@@ -175,7 +185,6 @@ module.exports = {
             }
         });
 
-
         server.route({
             method: ['POST'],
             path: `/sso`,
@@ -184,8 +193,8 @@ module.exports = {
                     mode: 'try'
                 },
                 payload: {
-                     output: 'data',
-                     parse: true,
+                    output: 'data',
+                    parse: true
                 },
                 handler: async function (request, h) {
                     let user = null;
@@ -198,7 +207,7 @@ module.exports = {
                     }
 
                     if (state.token) {
-                        user = await User.findOne({ where: { activate_token: state.token }});
+                        user = await User.findOne({ where: { activate_token: state.token } });
                         if (!user) throw Boom.badRequest('Could not find provided token');
                     }
 
@@ -274,6 +283,5 @@ module.exports = {
                 }
             }
         });
-
     }
 };

@@ -86,6 +86,12 @@
     }
 </script>
 
+<style>
+    :global(.vis-option-type-switch) {
+        position: relative;
+    }
+</style>
+
 {#if isIE}
     <div class="svelte-2" bind:this={container} />
 {:else if ready}
@@ -98,9 +104,3 @@
         data={JSON.stringify(data)}
     />
 {/if}
-
-<style>
-    :global(.vis-option-type-switch) {
-        position: relative;
-    }
-</style>

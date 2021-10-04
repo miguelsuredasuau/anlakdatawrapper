@@ -4,7 +4,7 @@ const { readdir } = require('fs').promises;
 module.exports = {
     name: 'routes/hello',
     version: '1.0.0',
-    register: async (server, options) => {
+    register: async server => {
         server.methods.prepareView('HelloWorld.svelte');
 
         server.route({

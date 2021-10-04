@@ -11,18 +11,6 @@
     export let duration = '2s';
 </script>
 
-<span
-    class="icon {className}"
-    class:spin
-    style="height:{size}; width:{size}; vertical-align: {valign}; {spin
-        ? `animation-duration:${duration};  animation-timing-function: ${timing};`
-        : ''}"
->
-    <svg style="height:{size}; width:{size}" class="svg-{icon}-dims">
-        <use style="fill: {color}" xlink:href="/lib/icons/symbol/svg/sprite.symbol.svg#{icon}" />
-    </svg>
-</span>
-
 <style>
     @keyframes spin {
         0% {
@@ -36,3 +24,15 @@
         animation: spin 2s infinite linear;
     }
 </style>
+
+<span
+    class="icon {className}"
+    class:spin
+    style="height:{size}; width:{size}; vertical-align: {valign}; {spin
+        ? `animation-duration:${duration};  animation-timing-function: ${timing};`
+        : ''}"
+>
+    <svg style="height:{size}; width:{size}" class="svg-{icon}-dims">
+        <use style="fill: {color}" xlink:href="/lib/icons/symbol/svg/sprite.symbol.svg#{icon}" />
+    </svg>
+</span>
