@@ -77,3 +77,7 @@ $app->get('/(chart|table)/:id/describe', function ($id) use ($app) {
         $app->render('chart/describe.twig', $page);
     });
 });
+
+$app->get('/map/:id/describe', function ($id) use ($app) {
+    $app->redirect(sprintf('/map/%s/data', $id));
+});

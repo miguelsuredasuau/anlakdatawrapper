@@ -70,7 +70,7 @@
                     <ChartLayout bind:requireUpgrade="showUpgradeKeyOn.design" />
                 </div>
 
-                <ButtonNav bind:tab {showChartPicker} />
+                <ButtonNav bind:tab chartType="{$type}" {showChartPicker} />
                 <div style="margin-top: 20px">
                     <AlertDisplay visible="{showUpgradeKeyOn[tab]}" type="upgrade-info" />
                 </div>
