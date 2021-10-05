@@ -112,6 +112,12 @@ class Organization extends BaseOrganization
                 'folder' => null,
                 'locale' => null
             ],
+            'slack_webhook_url' => '',
+            'slack_enabled' => false,
+            'msteams_webhook_url' => '',
+            'msteams_enabled' => false,
+            'ga_enabled' => false,
+            'ga_id' => '',
             'downloadImageFormat' => 'full',
             'embed' => [
                 'preferred_embed' => 'responsive',

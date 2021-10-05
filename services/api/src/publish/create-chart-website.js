@@ -203,6 +203,7 @@ module.exports = async function createChartWebsite(
         META_ROBOTS: 'noindex, nofollow',
         CHART_HTML: html,
         CHART_HEAD: head,
+        CHART_AFTER_HEAD_HTML: publishData.chartAfterHeadHTML,
         POLYFILL_SCRIPT: getAssetLink(`../../lib/${polyfillScript}`),
         CORE_SCRIPT: getAssetLink(`../../lib/${coreScript}`),
         CSS: getAssetLink(`../../lib/vis/${cssFile}`),

@@ -6,6 +6,7 @@ html(lang=CHART_LANGUAGE)
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     link(rel="stylesheet", href!=CSS)
     | !{CHART_HEAD}
+    | !{CHART_AFTER_HEAD_HTML}
 
   body
     div(class="dw-chart chart" class=CHART_CLASS id="__svelte-dw")

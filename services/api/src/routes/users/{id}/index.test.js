@@ -101,7 +101,8 @@ test("Users can't change protected fields using PATCH", async t => {
     let userObj;
     try {
         userObj = await createUser(t.context.server);
-        let { user, session } = userObj;
+        const { session } = userObj;
+        let { user } = userObj;
 
         const forbiddenFields = {
             customerId: 12345,
@@ -158,7 +159,8 @@ test('Users can change allowed fields', async t => {
     let userObj;
     try {
         userObj = await createUser(t.context.server);
-        let { user, session } = userObj;
+        const { session } = userObj;
+        let { user } = userObj;
 
         const oldEmail = user.email;
 

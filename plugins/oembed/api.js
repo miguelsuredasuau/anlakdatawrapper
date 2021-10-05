@@ -33,8 +33,7 @@ module.exports = {
                 tags: ['api'],
                 auth: false,
                 description: 'Get oEmbed information',
-                notes:
-                    'Retreive embedding information about a Datawrapper visualization. See our [oEmbed tutorial](https://developer.datawrapper.de/docs/embedding-charts-via-oembed) and the official [oEmbed specification](https://oembed.com/) for more information.',
+                notes: 'Retreive embedding information about a Datawrapper visualization. See our [oEmbed tutorial](https://developer.datawrapper.de/docs/embedding-charts-via-oembed) and the official [oEmbed specification](https://oembed.com/) for more information.',
                 validate: {
                     query: Joi.object({
                         format: Joi.string()
@@ -73,7 +72,7 @@ module.exports = {
                     }).unknown()
                 }
             },
-            handler: async (request, h) => {
+            handler: async request => {
                 // Get the parameters from the query-parameters
                 const { url, iframe } = request.query;
                 let { maxwidth, maxheight } = request.query;
@@ -181,19 +180,17 @@ module.exports = {
             }
         });
 
-        if (event.CHART_AFTER_HEAD_HTML) {
-            events.on(event.CHART_AFTER_HEAD_HTML, async ({ chart, publish }) => {
-                if (publish) {
-                    const publicUrl = await events.emit(
-                        event.GET_NEXT_PUBLIC_URL,
-                        { chart },
-                        { filter: 'first' }
-                    );
-                    return `<link rel="alternate" type="application/json+oembed"
-      href="https://${apiDomain}/v3/oembed?url=${publicUrl}&format=json"
-      title="oEmbed" />`;
-                }
-            });
-        }
+        events.on(event.CHART_AFTER_HEAD_HTML, async ({ chart, publish }) => {
+            if (publish) {
+                const publicUrl = await events.emit(
+                    event.GET_NEXT_PUBLIC_URL,
+                    { chart },
+                    { filter: 'first' }
+                );
+                return `<link rel="alternate" type="application/json+oembed"
+  href="https://${apiDomain}/v3/oembed?url=${publicUrl}&format=json"
+  title="oEmbed" />`;
+            }
+        });
     }
 };

@@ -26,7 +26,9 @@
         "update-translations": "echo \"\\e[1;33mupdate-translation script has been moved to the code root now\\e[0m\ntry cd ../.. && npm run update-translations\" && exit 1",
         "dev": "NODE_ENV=development nodemon src/index.js",
         "api": "node src/index.js",
-        "start": "node src/index.js"
+        "start": "node src/index.js",
+        "lint":"cd ../.. && scripts/lint services/api",
+        "format":"cd ../.. && scripts/format services/api"
     },
     "nodemonConfig": {
         "ext": "js, mjs, cjs, json",
@@ -72,7 +74,7 @@
         "url": "git+https://github.com/datawrapper/datawrapper-api.git"
     },
     "dependencies": {
-        "@datawrapper/chart-core": "^8.41.4",
+        "@datawrapper/chart-core": "^8.41.5",
         "@datawrapper/locales": "^1.2.8",
         "@datawrapper/orm": "^3.25.0",
         "@datawrapper/schemas": "^1.14.0",

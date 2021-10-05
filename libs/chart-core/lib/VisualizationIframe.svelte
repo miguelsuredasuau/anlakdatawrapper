@@ -10,7 +10,6 @@
     export let locales = {};
     export let translations;
     export let blocks = {};
-    export let chartAfterHeadHTML = '';
     export let chartAfterBodyHTML = '';
     export let isPreview;
     export let assets;
@@ -48,9 +47,6 @@
     <title>{purifyHtml(chart.title, '')}</title>
     <meta name="description" content={get(chart, 'metadata.describe.intro')} />
     {@html `<${'style'}>${customCSS}</style>`}
-    {#if chartAfterHeadHTML}
-        {@html chartAfterHeadHTML}
-    {/if}
 </svelte:head>
 
 <Visualization

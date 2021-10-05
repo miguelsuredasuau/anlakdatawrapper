@@ -7,8 +7,8 @@
     "author": "Datawrapper GmbH",
     "main": "api.js",
     "scripts": {
-        "format": "prettier 'api.js' --write",
-        "lint": "prettier --check 'api.js' && healthier 'api.js'",
+        "format": "cd ../.. && scripts/format plugins/oembed",
+        "lint": "cd ../.. && scripts/lint plugins/oembed",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
@@ -19,55 +19,7 @@
         "@hapi/boom": "^9.1.0",
         "lodash": "^4.17.21"
     },
-    "devDependencies": {
-        "babel-eslint": "^10.1.0",
-        "healthier": "^3.3.0",
-        "husky": "^4.2.5",
-        "lint-staged": "^10.2.2",
-        "prettier": "^2.0.5"
-    },
     "peerDependencies": {
         "joi": "17.x"
-    },
-    "lint-staged": {
-        "*.js": [
-            "prettier --write",
-            "healthier",
-            "git add"
-        ]
-    },
-    "eslintConfig": {
-        "parser": "babel-eslint",
-        "rules": {
-            "no-console": [
-                "error",
-                {
-                    "allow": [
-                        "warn",
-                        "error"
-                    ]
-                }
-            ],
-            "camelcase": [
-                "warn",
-                {
-                    "ignoreDestructuring": true,
-                    "properties": "never"
-                }
-            ]
-        }
-    },
-    "prettier": {
-        "arrowParens": "avoid",
-        "printWidth": 100,
-        "semi": true,
-        "singleQuote": true,
-        "tabWidth": 4,
-        "trailingComma": "none"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     }
 }
