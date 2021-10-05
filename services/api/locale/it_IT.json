@@ -987,5 +987,6 @@
   "controls / overlays / to": "",
   "controls / overlays / disabled / tick position / overlays": "",
   "publish / help / share-url / fullscreen": "",
-  "core / overlays / custom-area / zero": ""
+  "controls / overlays / custom-area / zero": "",
+  "teams / edit-role / alert": ""
 }

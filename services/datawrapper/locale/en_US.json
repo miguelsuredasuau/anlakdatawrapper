@@ -987,5 +987,6 @@
   "controls / overlays / to": "From",
   "controls / overlays / disabled / tick position / overlays": "When overlays are labeled directly, the grid cannot be placed above the chart.",
   "publish / help / share-url / fullscreen": "The <strong>visualization only</strong> URL will show your chart sized to fill the entire browser window.",
-  "core / overlays / custom-area / zero": "( zero baseline )"
+  "controls / overlays / custom-area / zero": "( zero baseline )",
+  "teams / edit-role / alert": "Are you sure you want to make this user the owner of the team? If you transfer ownership of the team, you will no longer have access to the team's subscription settings."
 }

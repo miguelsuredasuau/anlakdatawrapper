@@ -706,7 +706,7 @@
   "Try it now!": "Sofort ausprobieren",
   "Create a Chart": "Diagramm erstellen",
   "switch-team": "Team wechseln",
-  "teams / remove / alert": "Bist du sicher das du dem Nutzer den Zugriff auf dein Team entziehen willst? Wenn du ein Teammitglied einfernst werden dessen Diagramme weiterhin für das restliche Team verfügbar sein, der entfernte Nutzer hat jedoch keinen Zugriff mehr.",
+  "teams / remove / alert": "Bist du sicher, dass du dem Nutzer den Zugriff auf dein Team entziehen willst? Wenn du ein Teammitglied entfernst werden dessen Diagramme weiterhin für das restliche Team verfügbar sein, der entfernte Nutzer hat jedoch keinen Zugriff mehr.",
   "publish / pending-activation / h1": "Du hast Post!",
   "publish / pending-activation / p": "Wir haben dir ein Link zu deinem Diagramm per E-Mail zugesandt. Schau in deinem Postfach und klicke auf den Link um deine Visualisierung zu bekommen. Wenn du innerhalb von 15 Minuten keine E-Mail bekommen hast, melde dich bei uns via <a href=\"mailto:support@datawrapper.de\">support@datawrapper.de</a>.",
   "publish / pending-activation / resend": "E-mail neu versenden",
@@ -987,5 +987,6 @@
   "controls / overlays / to": "Bis",
   "controls / overlays / disabled / tick position / overlays": "Wenn Überlagerungen direkt beschriftet werden, können die Hilfslinien nicht über dem Diagramm platziert werden.",
   "publish / help / share-url / fullscreen": "Bei <strong>nur Visualisierung</strong> zeigt die URL das Diagramm so an, dass es das gesamte Browserfenster ausfüllt.",
-  "core / overlays / custom-area / zero": "( Nulllinie )"
+  "controls / overlays / custom-area / zero": "( Nulllinie )",
+  "teams / edit-role / alert": ""
 }
