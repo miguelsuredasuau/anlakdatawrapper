@@ -988,5 +988,6 @@
   "controls / overlays / disabled / tick position / overlays": "Wenn Überlagerungen direkt beschriftet werden, können die Hilfslinien nicht über dem Diagramm platziert werden.",
   "publish / help / share-url / fullscreen": "Bei <strong>nur Visualisierung</strong> zeigt die URL das Diagramm so an, dass es das gesamte Browserfenster ausfüllt.",
   "controls / overlays / custom-area / zero": "( Nulllinie )",
-  "teams / edit-role / alert": ""
+  "teams / edit-role / alert": "",
+  "teams / edit-role / owner / info": ""
 }
