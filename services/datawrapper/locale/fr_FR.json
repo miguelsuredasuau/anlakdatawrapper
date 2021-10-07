@@ -630,7 +630,7 @@
   "login / login / headline": "Connexion",
   "login / login / intro": "Content de vous revoir. Connectez-vous pour accéder à vos graphiques et en créer de nouveaux.",
   "email": "e-mail",
-  "password": "mot de passe",
+  "password": "Mot de passe",
   "Send new password": "Envoyer un nouveau mot de passe",
   "Remember login?": "Se souvenir des identifiants ?",
   "Can't recall your password?": "Vous avez oublié votre mot de passe ?",
@@ -988,6 +988,10 @@
   "controls / overlays / disabled / tick position / overlays": "",
   "publish / help / share-url / fullscreen": "",
   "controls / overlays / custom-area / zero": "",
-  "teams / edit-role / alert": "",
-  "teams / edit-role / owner / info": ""
+  "teams / change-owner-confirmation / message": "",
+  "teams / edit-role / owner / info": "",
+  "teams / change-owner-confirmation / title": "",
+  "teams / change-owner-confirmation / confirm": "",
+  "teams / change-owner-confirmation / back": "",
+  "teams / change-owner-confirmation / warning": ""
 }

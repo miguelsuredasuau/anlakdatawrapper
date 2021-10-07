@@ -630,7 +630,7 @@
   "login / login / headline": "Login",
   "login / login / intro": "È un piacere rivederti. Effettua il login per accedere ai tuoi grafici e per crearne di nuovi.",
   "email": "e-mail",
-  "password": "password",
+  "password": "Password",
   "Send new password": "Invia nuova password",
   "Remember login?": "Ricorda i dati di login?",
   "Can't recall your password?": "Password dimenticata?",
@@ -988,6 +988,10 @@
   "controls / overlays / disabled / tick position / overlays": "",
   "publish / help / share-url / fullscreen": "",
   "controls / overlays / custom-area / zero": "",
-  "teams / edit-role / alert": "",
-  "teams / edit-role / owner / info": ""
+  "teams / change-owner-confirmation / message": "",
+  "teams / edit-role / owner / info": "Come proprietario del team, non puoi rimuovere o degradare te stesso. Devi prima impostare qualcun altro come proprietario o eliminare il team.",
+  "teams / change-owner-confirmation / title": "Vuoi impostare %member% come nuovo proprietario del team?",
+  "teams / change-owner-confirmation / confirm": "Sì, imposta un nuovo proprietario",
+  "teams / change-owner-confirmation / back": "Indietro",
+  "teams / change-owner-confirmation / warning": ""
 }

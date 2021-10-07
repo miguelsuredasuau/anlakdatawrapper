@@ -630,7 +630,7 @@
   "login / login / headline": "Iniciar sesión",
   "login / login / intro": "Nos alegra verte de nuevo. Inicia sesión para acceder a tus gráficos y crear nuevos.",
   "email": "correo electrónico",
-  "password": "contraseña",
+  "password": "Contraseña",
   "Send new password": "Enviar nueva contraseña",
   "Remember login?": "¿No recuerdas tu correo electrónico para iniciar sesión?",
   "Can't recall your password?": "¿No recuerdas tu contraseña?",
@@ -988,6 +988,10 @@
   "controls / overlays / disabled / tick position / overlays": "",
   "publish / help / share-url / fullscreen": "",
   "controls / overlays / custom-area / zero": "",
-  "teams / edit-role / alert": "",
-  "teams / edit-role / owner / info": ""
+  "teams / change-owner-confirmation / message": "",
+  "teams / edit-role / owner / info": "",
+  "teams / change-owner-confirmation / title": "",
+  "teams / change-owner-confirmation / confirm": "",
+  "teams / change-owner-confirmation / back": "",
+  "teams / change-owner-confirmation / warning": ""
 }

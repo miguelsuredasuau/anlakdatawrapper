@@ -629,8 +629,8 @@
   "Welcome to Datawrapper": "Welcome to Datawrapper",
   "login / login / headline": "Login",
   "login / login / intro": "We're glad to see you again. Login to access your charts, and create new ones.",
-  "email": "email",
-  "password": "password",
+  "email": "Email",
+  "password": "Password",
   "Send new password": "Send new password",
   "Remember login?": "Remember login?",
   "Can't recall your password?": "Can't recall your password?",
@@ -988,6 +988,10 @@
   "controls / overlays / disabled / tick position / overlays": "When overlays are labeled directly, the grid cannot be placed above the chart.",
   "publish / help / share-url / fullscreen": "The <strong>visualization only</strong> URL will show your chart sized to fill the entire browser window.",
   "controls / overlays / custom-area / zero": "( zero baseline )",
-  "teams / edit-role / alert": "Are you sure you want to make this user the owner of the team? If you transfer ownership of the team, you will no longer have access to the team's subscription settings.",
-  "teams / edit-role / owner / info": "As owner, you can’t remove or demote yourself. You first have to set someone else as owner or delete the team."
+  "teams / change-owner-confirmation / message": "%member% will be the new team owner of the team %team%. As a result, you will lose your team owner status.",
+  "teams / edit-role / owner / info": "As owner, you can’t remove or demote yourself. You first have to set someone else as owner or delete the team.",
+  "teams / change-owner-confirmation / title": "Do you want to set %member% as new team owner?",
+  "teams / change-owner-confirmation / confirm": "Yes, set new owner",
+  "teams / change-owner-confirmation / back": "Back",
+  "teams / change-owner-confirmation / warning": "You are on a custom/enterprise plan and your team currently inherits the features provided by this plan. If you set someone else as owner, the team is going to lose access to custom/enterprise features.\n\nIn order to transfer your license to another user, please contact support."
 }

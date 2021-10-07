@@ -988,6 +988,10 @@
   "controls / overlays / disabled / tick position / overlays": "Wenn Überlagerungen direkt beschriftet werden, können die Hilfslinien nicht über dem Diagramm platziert werden.",
   "publish / help / share-url / fullscreen": "Bei <strong>nur Visualisierung</strong> zeigt die URL das Diagramm so an, dass es das gesamte Browserfenster ausfüllt.",
   "controls / overlays / custom-area / zero": "( Nulllinie )",
-  "teams / edit-role / alert": "",
-  "teams / edit-role / owner / info": ""
+  "teams / change-owner-confirmation / message": "%member% wird der neue Besitzer des Teams %team% sein. Infolgedessen verlierst du deinen Status als Teambesitzer.",
+  "teams / edit-role / owner / info": "Als Teambesitzer kannst du dich nicht selbst entfernen oder zurückstufen. Du musst erst jemand anderen als Besitzer festlegen oder das Team löschen.",
+  "teams / change-owner-confirmation / title": "Möchtest du %member% als neuen Teambesitzer festlegen?",
+  "teams / change-owner-confirmation / confirm": "Ja, neuen Teambesitzer festlegen",
+  "teams / change-owner-confirmation / back": "Zurück",
+  "teams / change-owner-confirmation / warning": "Du hast einen Custom/Enterprise-Plan und dein Team nutzt derzeit die Funktionen dieses Plans. Wenn du eine andere Person als Teambesitzer festlegst, verliert das Team den Zugang zu den Custom/Enterprise-Features.\n\nUm deine Lizenz auf einen anderen Benutzer zu übertragen, wende dich bitte an den Support."
 }
