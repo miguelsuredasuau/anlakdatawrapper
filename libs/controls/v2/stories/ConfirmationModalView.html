@@ -1,0 +1,37 @@
+<h3>
+    ConfirmationModal
+</h3>
+<p style="font-style: italic;">
+    The modal logic requires bootstrap. 
+    Adding bootstrap as dependency could potentially impact the whole storybook site.
+    Therefore we currently don't provide a demo of the component.
+</p>
+
+<ConfirmationModal
+    id="modalConfirmation"
+>
+    <h1>Header</h1>
+    <p>Paragraph</p>
+</ConfirmationModal>
+
+<script>
+    import ConfirmationModal from '../ConfirmationModal.html';
+
+    export default {
+        components: { ConfirmationModal },
+        data() {
+            return {
+                v1: true
+            };
+        },
+    };
+</script>
+
+<style>
+    h3 {
+        margin-top: 2em;
+    }
+    h3:first-child {
+        margin-top: 0;
+    }
+</style>

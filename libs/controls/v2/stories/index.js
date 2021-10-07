@@ -29,6 +29,8 @@ import ColorPickerInputPaletteGroupsView from './ColorPickerInputPaletteGroupsVi
 import ColorPickerInputDocs from '../ColorPickerInput.md';
 import ColorScaleEditorView from './ColorScaleEditorView.html';
 import ColorScaleEditorDocs from '../ColorScaleEditor.md';
+import ConfirmationModalView from './ConfirmationModalView.html';
+import ConfirmationModalDocs from '../ConfirmationModal.md';
 import CustomAxisRangeControlView from './CustomAxisRangeControlView.html';
 import CustomAxisRangeControlDocs from '../CustomAxisRangeControl.md';
 import CustomFormatControlView from './CustomFormatControlView.html';
@@ -156,6 +158,11 @@ addStory('ColorScaleEditor', ColorScaleEditorDocs, () => ({
 
 addStory('ColorCategoryInput', ColorCategoryInputDocs, () => ({
     Component: ColorCategoryInputView,
+    data: { options }
+}));
+
+addStory('ConfirmationModal', ConfirmationModalDocs, () => ({
+    Component: ConfirmationModalView,
     data: { options }
 }));
 

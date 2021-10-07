@@ -6,6 +6,7 @@ export { default as CheckboxControl } from './CheckboxControl.html';
 export { default as ColorControl } from './ColorControl.html';
 export { default as ColorCategoryInput } from './ColorCategoryInput.html';
 export { default as ColorPickerInput } from './ColorPickerInput.html';
+export { default as ConfirmationModal } from './ConfirmationModal.html';
 export { default as ControlGroup } from './ControlGroup.html';
 export { default as CustomAxisRangeControl } from './CustomAxisRangeControl.html';
 export { default as CustomFormatControl } from './CustomFormatControl.html';

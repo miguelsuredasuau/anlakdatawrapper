@@ -1,23 +1,22 @@
 <div class="modal hide" {id}>
     <div on:keyup|stopPropagation class="modal-body">
-        <button
-            type="button"
-            class="close"
-            data-dismiss="modal"
-            aria-label="{__('publish / unpublish-confirmation / close')}"
-        >
+        <button type="button" class="close" data-dismiss="modal" aria-label="{backButtonText}">
             <IconDisplay icon="close" size="20px" />
         </button>
         <div class="modal-content">
-            <h1 class="modal-title">{__('publish / unpublish-confirmation / title')}</h1>
-            <p>{@html __('publish / unpublish-confirmation / explanation')}</p>
+            <h1 class="modal-title">{@html title}</h1>
+            <slot />
             <div class="actions pt-4 mt-4">
-                <button class="btn back" data-dismiss="modal">
-                    {__('publish / unpublish-confirmation / back')}
-                </button>
+                <button class="btn back" data-dismiss="modal">{@html backButtonText}</button>
                 <button class="btn btn-danger" data-dismiss="modal" on:click="fire('confirm')">
-                    <IconDisplay icon="undo" class="mr-1" size="1.3em" valign="-0.3em" />
-                    {__('publish / unpublish-confirmation / unpublish')}
+                    {#if confirmButtonIcon}
+                    <IconDisplay
+                        icon="{confirmButtonIcon}"
+                        class="mr-1"
+                        size="1.3em"
+                        valign="-0.3em"
+                    />
+                    {/if} {@html confirmButtonText}
                 </button>
             </div>
         </div>
@@ -60,17 +59,32 @@
         font-weight: bold;
     }
 
-    .modal-content p {
+    :global(.modal-content p) {
         font-weight: normal;
     }
 </style>
 
 <script>
+    /* globals $ */
     import { __ } from '@datawrapper/shared/l10n';
-    import IconDisplay from '@datawrapper/controls/IconDisplay.html';
+    import IconDisplay from './IconDisplay.html';
 
     export default {
         components: { IconDisplay },
-        helpers: { __ }
+        helpers: { __ },
+        data() {
+            return {
+                id: '',
+                title: 'Title',
+                confirmButtonText: 'Confirm',
+                confirmButtonIcon: false,
+                backButtonText: 'Back'
+            };
+        },
+        methods: {
+            open() {
+                $('#' + this.get().id).modal();
+            }
+        }
     };
 </script>

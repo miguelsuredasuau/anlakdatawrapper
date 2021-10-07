@@ -81,10 +81,19 @@
     </div>
 </div>
 
-<ConfirmationModal id="modalConfirmation" on:confirm="unpublish()" />
+<ConfirmationModal
+    ref:confirmationModal
+    confirmButtonText="{__('publish / unpublish-confirmation / unpublish')}"
+    confirmButtonIcon="undo"
+    backButtonText="{__('publish / unpublish-confirmation / back')}"
+    id="modalConfirmation"
+    title="{__('publish / unpublish-confirmation / title')}"
+    on:confirm="unpublish()"
+>
+    <p>{@html __('publish / unpublish-confirmation / explanation')}</p>
+</ConfirmationModal>
 
 <script>
-    /* globals $ */
     /* eslint camelcase: "off" */
     import PublishButton from '@datawrapper/controls/publish/PublishButtonControl.html';
     import { __ } from '@datawrapper/shared/l10n';
@@ -92,7 +101,7 @@
     import httpReq from '@datawrapper/shared/httpReq';
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch';
 
-    import ConfirmationModal from './ConfirmationModal.html';
+    import ConfirmationModal from '@datawrapper/controls/ConfirmationModal.html';
     import ShareEmbed from './ShareEmbed.html';
     import Action from './Action.html';
 
@@ -241,7 +250,7 @@
 
             requestUnpublishConfirmation() {
                 this.set({ publish_error: null });
-                $('#modalConfirmation').modal();
+                this.refs.confirmationModal.open();
             },
 
             updateStatus() {
