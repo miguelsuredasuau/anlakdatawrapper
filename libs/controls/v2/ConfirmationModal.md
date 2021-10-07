@@ -15,6 +15,7 @@ ConfirmationModal uses the Bootstart Modal CSS.
     id="modalConfirmation"
     title="Are you sure?"
     on:confirm="confirm()"
+    on:dismiss="dismiss()"
 >
     <p>Are you sure you want to confirm this change?</p>
 </ConfirmationModal>
@@ -32,6 +33,9 @@ ConfirmationModal uses the Bootstart Modal CSS.
             },
             confirm() {
                 console.log('confirmed!');
+            },
+            dismiss() {
+                console.log('dismissed!');
             }
         }
     };

@@ -8,7 +8,11 @@
             <slot />
             <div class="actions pt-4 mt-4">
                 <button class="btn back" data-dismiss="modal">{@html backButtonText}</button>
-                <button class="btn btn-danger" data-dismiss="modal" on:click="fire('confirm')">
+                <button
+                    class="btn btn-danger"
+                    data-dismiss="modal"
+                    on:click="set({isConfirmed: true})"
+                >
                     {#if confirmButtonIcon}
                     <IconDisplay
                         icon="{confirmButtonIcon}"
@@ -78,13 +82,27 @@
                 title: 'Title',
                 confirmButtonText: 'Confirm',
                 confirmButtonIcon: false,
-                backButtonText: 'Back'
+                backButtonText: 'Back',
+                isConfirmed: false
             };
         },
         methods: {
             open() {
+                this.set({ isConfirmed: false });
                 $('#' + this.get().id).modal();
             }
+        },
+        oncreate() {
+            $('#' + this.get().id).on(
+                'hidden.bs.modal',
+                function () {
+                    if (this.get().isConfirmed) {
+                        this.fire('confirm');
+                    } else {
+                        this.fire('dismiss');
+                    }
+                }.bind(this)
+            );
         }
     };
 </script>
