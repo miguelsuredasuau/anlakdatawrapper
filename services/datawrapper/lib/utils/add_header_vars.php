@@ -376,15 +376,17 @@ function add_header_vars(&$page, $active = null, $page_css = null) {
         }
     }
 
-    if (file_exists(ROOT_PATH . 'sha')) {
-        $commit = file_get_contents(ROOT_PATH . 'sha');
+    $shaPath = ROOT_PATH . '/.githead';
+
+    if (file_exists($shaPath)) {
+        $commit = file_get_contents($shaPath);
         $page['COMMIT_SHA'] = substr($commit, 0, 8);
 
         if ($config['debug'] ?? false) {
             try {
-                if (file_exists('../.git/HEAD')) {
+                if (file_exists('../../../.git/HEAD')) {
                     // parse git branch
-                    $head = file_get_contents('../.git/HEAD');
+                    $head = file_get_contents('../../../.git/HEAD');
                     $parts = explode("/", $head);
                     $branch = trim($parts[count($parts)-1]);
                     $page['COMMIT_SHA'] = substr($commit, 0, 8);
