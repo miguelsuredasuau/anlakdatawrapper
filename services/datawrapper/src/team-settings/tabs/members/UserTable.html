@@ -151,10 +151,10 @@
                     .replace(
                         '%message%',
                         isTeamOwner
-                            ? __('teams / change-owner-confirmation / owner-messsage')
-                            : __('teams / change-owner-confirmation / non-owner-messsage').replace(
+                            ? __('teams / change-owner-confirmation / owner-message')
+                            : __('teams / change-owner-confirmation / non-owner-message').replace(
                                   '%member%',
-                                  ownerEmail
+                                  `<b>${ownerEmail}</b>`
                               )
                     )
                     .replace('%team%', `<b>${team.name}</b>`);
