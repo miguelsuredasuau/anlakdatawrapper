@@ -7,13 +7,35 @@
 
 <SelectControl options="{options}" label="disabled" disabled="{true}" bind:value />
 
-<SelectControl options="{options}" label="on:change events" bind:value on:change="handleChange(event)" />
+<SelectControl
+    options="{options}"
+    label="on:change events"
+    bind:value
+    on:change="handleChange(event)"
+/>
 
-<SelectControl options="{options}" label="inline select, help text" miniHelp="This is some help text on an inline control" bind:value />
+<SelectControl
+    options="{options}"
+    label="inline select, help text"
+    miniHelp="This is some help text on an inline control"
+    bind:value
+/>
 
-<SelectControl options="{options}" label="inline select, custom label width for multi-line label text" valign="top" bind:value labelWidth="140px" />
+<SelectControl
+    options="{options}"
+    label="inline select, custom label width for multi-line label text"
+    valign="top"
+    bind:value
+    labelWidth="140px"
+/>
 
-<SelectControl options="{options}" label="custom label width, custom control width" bind:value width="130px" labelWidth="140px" />
+<SelectControl
+    options="{options}"
+    label="custom label width, custom control width"
+    bind:value
+    width="130px"
+    labelWidth="140px"
+/>
 
 <SelectControl
     options="{options}"
@@ -27,13 +49,29 @@
 <hr />
 
 <h3>Non-inline selects</h3>
-<p>Use default label and control width to be consistent with other select-style controls such as SelectAxisColumnControl</p>
+<p>
+    Use default label and control width to be consistent with other select-style controls such as
+    SelectAxisColumnControl
+</p>
 
 <SelectControl options="{options}" inline="{false}" label="non-inline select" bind:value />
 
-<SelectControl options="{options}" inline="{false}" label="non-inline select, custom control width" width="150px" valign="top" bind:value />
+<SelectControl
+    options="{options}"
+    inline="{false}"
+    label="non-inline select, custom control width"
+    width="150px"
+    valign="top"
+    bind:value
+/>
 
-<SelectControl options="{options}" inline="{false}" label="non-inline select, custom label width" labelWidth="150px" bind:value />
+<SelectControl
+    options="{options}"
+    inline="{false}"
+    label="non-inline select, custom label width"
+    labelWidth="150px"
+    bind:value
+/>
 
 <SelectControl
     options="{options}"

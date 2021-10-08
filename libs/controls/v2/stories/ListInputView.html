@@ -1,7 +1,10 @@
 <p>Default ListInput: use shift/ctrl to multi-select, no dragging:</p>
 <ListInput items="{items}" />
 
-<p>You can use a custom <code>itemRenderer</code> if you need icons or other buttons for each list item</p>
+<p>
+    You can use a custom <code>itemRenderer</code> if you need icons or other buttons for each list
+    item
+</p>
 <ListInput items="{items}" itemRenderer="{CustomListItemRenderer}" maxHeight="150px" />
 
 <div class="row">
@@ -11,12 +14,19 @@
     </div>
 </div>
 
-<p>If <code>multiselectable</code> is false, only a single item can be selected. ctrl-clicking or shift-clicking will have no effect</p>
+<p>
+    If <code>multiselectable</code> is false, only a single item can be selected. ctrl-clicking or
+    shift-clicking will have no effect
+</p>
 <ListInput multiselectable="{false}" items="{items}" />
 
 <p>If <code>draggable</code> is true, items can be re-ordered:</p>
 <ListInput draggable="{true}" items="{items}" on:itemDrag="dragged(event)" />
-<p class="mini-help">{#if order}(the new item order is {@html order.map(d => `<code>${d.id}</code>`).join(', ')}){/if}</p>
+{#if order}
+<p class="mini-help">
+    (the new item order is{@html order.map(d => `<code>${d.id}</code>`).join(',')})
+</p>
+{/if}
 
 <p>Single items can be deselected if <code>deselectable</code> is true:</p>
 <ListInput deselectable="{true}" items="{items}" maxHeight="150px" />
@@ -25,12 +35,25 @@
 <ListInput disabled="{true}" items="{items}" maxHeight="150px" />
 
 <p>Here's a full example</p>
-<ListInput draggable="{true}" multiselectable="{true}" items="{items}" itemRenderer="{CustomListItemRenderer}" maxHeight="150px" />
+<ListInput
+    draggable="{true}"
+    multiselectable="{true}"
+    items="{items}"
+    itemRenderer="{CustomListItemRenderer}"
+    maxHeight="150px"
+/>
 
 <p>Here's how the list looks in a <code>ColorControl</code> control:</p>
 <div class="row">
     <div class="span2">
-        <ListInput draggable="{true}" compact="{true}" multiselectable="{true}" items="{colors}" itemRenderer="{ColorListItem}" maxHeight="150px" />
+        <ListInput
+            draggable="{true}"
+            compact="{true}"
+            multiselectable="{true}"
+            items="{colors}"
+            itemRenderer="{ColorListItem}"
+            maxHeight="150px"
+        />
     </div>
 </div>
 

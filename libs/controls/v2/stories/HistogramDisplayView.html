@@ -2,7 +2,8 @@
 <p>{col.name}</p>
 <HistogramDisplay values={col.values} color={col.color||'#444'} steps={col.steps||[]} />
 <p>{col.name} (density)</p>
-<HistogramDisplay densityPlot={true} values={col.values} color={col.color||'#444'} steps={col.steps||[]} /> {/each}
+<HistogramDisplay densityPlot={true} values={col.values} color={col.color||'#444'}
+steps={col.steps||[]} /> {/each}
 
 <script>
     import HistogramDisplay from '../HistogramDisplay.html';
@@ -11,11 +12,18 @@
 
     const columns = [
         { name: 'normal', color: 'green', values: range(400).map(randomNormal(50, 10)) },
-        { name: 'normal', color: d => (d < 40 ? 'cyan' : 'magenta'), values: range(400).map(randomNormal(50, 10)) },
+        {
+            name: 'normal',
+            color: d => (d < 40 ? 'cyan' : 'magenta'),
+            values: range(400).map(randomNormal(50, 10))
+        },
         {
             name: 'log normal',
             color: '#ccc',
-            steps: [{ x: 1, label: '1' }, { x: 2.2, label: '2,2' }],
+            steps: [
+                { x: 1, label: '1' },
+                { x: 2.2, label: '2,2' }
+            ],
             values: range(300).map(randomLogNormal(0.35, 0.53))
         },
         { name: 'few values', values: [1, 2, 2, 3, 3.2, 3, 3.4, 4.1, 4, 4, 4, 5, 5, 5] }

@@ -14,14 +14,26 @@
         components: { GradientDisplay },
         helpers: {
             gradients: [
-                [{ color: '#ffffff', offset: 0 }, { color: '#000000', offset: 1 }],
-                [{ color: '#ffff00', offset: 0 }, { color: '#cc0055', offset: 0.5 }, { color: '#440000', offset: 1 }]
+                [
+                    { color: '#ffffff', offset: 0 },
+                    { color: '#000000', offset: 1 }
+                ],
+                [
+                    { color: '#ffff00', offset: 0 },
+                    { color: '#cc0055', offset: 0.5 },
+                    { color: '#440000', offset: 1 }
+                ]
             ]
                 // add some more from chroma.js/colorbrewer for fun
                 .concat(
                     Object.keys(chroma.brewer)
                         .slice(0, 10)
-                        .map(id => chroma.brewer[id].map((color, index) => ({ offset: index / (chroma.brewer[id].length - 1), color })))
+                        .map(id =>
+                            chroma.brewer[id].map((color, index) => ({
+                                offset: index / (chroma.brewer[id].length - 1),
+                                color
+                            }))
+                        )
                 )
         }
     };

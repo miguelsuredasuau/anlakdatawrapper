@@ -1,15 +1,9 @@
-<h2>
-    ProgressBar (status {status} %)
-</h2>
-<h3>
-    default height
-</h3>
+<h2>ProgressBar (status {status} %)</h2>
+<h3>default height</h3>
 
 <ProgressBar status="{status}"> </ProgressBar>
 
-<h3>
-    10px height
-</h3>
+<h3>10px height</h3>
 
 <ProgressBar status="{status}" height="{height}"> </ProgressBar>
 
@@ -26,7 +20,7 @@
         },
         oncreate() {
             const me = this;
-            setInterval(function() {
+            setInterval(function () {
                 let { status } = me.get();
 
                 status = status + 10;

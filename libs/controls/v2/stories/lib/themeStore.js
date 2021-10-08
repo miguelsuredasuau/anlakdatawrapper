@@ -28,9 +28,41 @@ export const simpleTheme = new Store({
                 ['#b2182b', '#ef8a62', '#fddbc7', '#f8f6e9', '#d1e5f0', '#67a9cf', '#2166ac']
             ],
             categories: [
-                ['#7fc97f', '#beaed4', '#fdc086', '#ffff99', '#386cb0', '#f0027f', '#bf5b17', '#666666'], // Accent
-                ['#fbb4ae', '#b3cde3', '#ccebc5', '#decbe4', '#fed9a6', '#ffffcc', '#e5d8bd', '#fddaec', '#f2f2f2'], // Pastel1
-                ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#ffff99', '#b15928'] // Paired
+                [
+                    '#7fc97f',
+                    '#beaed4',
+                    '#fdc086',
+                    '#ffff99',
+                    '#386cb0',
+                    '#f0027f',
+                    '#bf5b17',
+                    '#666666'
+                ], // Accent
+                [
+                    '#fbb4ae',
+                    '#b3cde3',
+                    '#ccebc5',
+                    '#decbe4',
+                    '#fed9a6',
+                    '#ffffcc',
+                    '#e5d8bd',
+                    '#fddaec',
+                    '#f2f2f2'
+                ], // Pastel1
+                [
+                    '#a6cee3',
+                    '#1f78b4',
+                    '#b2df8a',
+                    '#33a02c',
+                    '#fb9a99',
+                    '#e31a1c',
+                    '#fdbf6f',
+                    '#ff7f00',
+                    '#cab2d6',
+                    '#6a3d9a',
+                    '#ffff99',
+                    '#b15928'
+                ] // Paired
             ]
         }
     },
@@ -92,7 +124,10 @@ export const groupedColorsTheme = new Store({
                 },
                 {
                     name: 'Election colors',
-                    colors: [['#5788b8', '#a6c8e1', '#d84e55', '#edabaf'], ['#eddb80', '#e2e3e4', '#d2c9a6']]
+                    colors: [
+                        ['#5788b8', '#a6c8e1', '#d84e55', '#edabaf'],
+                        ['#eddb80', '#e2e3e4', '#d2c9a6']
+                    ]
                 },
                 {
                     name: 'Categories',

@@ -17,10 +17,23 @@
     />
 
     <h3>Published successfully</h3>
-    <PublishButton {assetURL} published="{true}" publishing="{false}" needsRepublish="{false}" progress="{['done']}" />
+    <PublishButton
+        {assetURL}
+        published="{true}"
+        publishing="{false}"
+        needsRepublish="{false}"
+        progress="{['done']}"
+    />
 
     <h3>Published successfully (later versions)</h3>
-    <PublishButton {assetURL} published="{true}" publishing="{false}" needsRepublish="{false}" progress="{['done']}" publicVersion="2" />
+    <PublishButton
+        {assetURL}
+        published="{true}"
+        publishing="{false}"
+        needsRepublish="{false}"
+        progress="{['done']}"
+        publicVersion="2"
+    />
 
     <h3>Published successfully (later versions, no redirect)</h3>
     <PublishButton
@@ -60,7 +73,11 @@
     <PublishButton {assetURL} published="{false}" unpublished="{true}" />
 
     <h3>Publish error</h3>
-    <PublishButton {assetURL} published="{false}" publishError="Something went wrong (will contain specific error message provided by the server)" />
+    <PublishButton
+        {assetURL}
+        published="{false}"
+        publishError="Something went wrong (will contain specific error message provided by the server)"
+    />
 
     <h3>Re-publish error</h3>
     <PublishButton

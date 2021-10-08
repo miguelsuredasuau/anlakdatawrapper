@@ -60,7 +60,10 @@
 
 <hr />
 
-<HelpDisplay> Help texts can include <b>HTML</b> and should be defined right before the UI component they are related to.</HelpDisplay>
+<HelpDisplay>
+    Help texts can include <b>HTML</b> and should be defined right before the UI component they are
+    related to.</HelpDisplay
+>
 <label class="pt-1 pb-1">Individual help control with HTML content</label>
 
 <hr />
@@ -171,19 +174,41 @@
     help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
 />
 
-<SwitchControl label="Switch with help" help="Help texts can include <b>HTML</b> even when defined as attributes">
-    <p>[ this switch content spans over several lines to demonstrate the content width changes during the open/close transition ]</p>
+<SwitchControl
+    label="Switch with help"
+    help="Help texts can include <b>HTML</b> even when defined as attributes"
+>
+    <p>
+        [ this switch content spans over several lines to demonstrate the content width changes
+        during the open/close transition ]
+    </p>
 </SwitchControl>
 
-<SwitchControl label="Switch with help" help="Help texts can include <b>HTML</b> even when defined as attributes">
-    <p>[ this switch content spans over several lines to demonstrate the content width changes during the open/close transition ]</p>
+<SwitchControl
+    label="Switch with help"
+    help="Help texts can include <b>HTML</b> even when defined as attributes"
+>
+    <p>
+        [ this switch content spans over several lines to demonstrate the content width changes
+        during the open/close transition ]
+    </p>
 </SwitchControl>
 
-<SwitchControl label="Switch with help" help="Help texts can include <b>HTML</b> even when defined as attributes">
-    <p>[ this switch content spans over several lines to demonstrate the content width changes during the open/close transition ]</p>
+<SwitchControl
+    label="Switch with help"
+    help="Help texts can include <b>HTML</b> even when defined as attributes"
+>
+    <p>
+        [ this switch content spans over several lines to demonstrate the content width changes
+        during the open/close transition ]
+    </p>
 </SwitchControl>
 
-<SwitchControl label="Switch with help" help="Help texts can include <b>HTML</b> even when defined as attributes" value="{true}">
+<SwitchControl
+    label="Switch with help"
+    help="Help texts can include <b>HTML</b> even when defined as attributes"
+    value="{true}"
+>
     <CustomFormatControl
         help="Help texts can include <b>HTML</b> and can be added to most controls via the <code>help</code> attribute."
         type="number"
@@ -204,17 +229,57 @@
 <h3>Two columns</h3>
 
 <div style="display: flex">
-    <div style="width:50%; padding-right: 2em;">
-        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
-        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
-        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
-        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
-        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
+    <div style="width: 50%; padding-right: 2em">
+        <CheckboxControl
+            compact
+            value="foo"
+            help="Help texts can include <b>HTML</b> even when defined as attributes"
+            label="Checkbox with help"
+        />
+        <CheckboxControl
+            compact
+            value="foo"
+            help="Help texts can include <b>HTML</b> even when defined as attributes"
+            label="Checkbox with help"
+        />
+        <CheckboxControl
+            compact
+            value="foo"
+            help="Help texts can include <b>HTML</b> even when defined as attributes"
+            label="Checkbox with help"
+        />
+        <CheckboxControl
+            compact
+            value="foo"
+            help="Help texts can include <b>HTML</b> even when defined as attributes"
+            label="Checkbox with help"
+        />
+        <CheckboxControl
+            compact
+            value="foo"
+            help="Help texts can include <b>HTML</b> even when defined as attributes"
+            label="Checkbox with help"
+        />
     </div>
-    <div style="width:50%">
-        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
-        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
-        <CheckboxControl compact value="foo" help="Help texts can include <b>HTML</b> even when defined as attributes" label="Checkbox with help" />
+    <div style="width: 50%">
+        <CheckboxControl
+            compact
+            value="foo"
+            help="Help texts can include <b>HTML</b> even when defined as attributes"
+            label="Checkbox with help"
+        />
+        <CheckboxControl
+            compact
+            value="foo"
+            help="Help texts can include <b>HTML</b> even when defined as attributes"
+            label="Checkbox with help"
+        />
+        <CheckboxControl
+            compact
+            value="foo"
+            help="Help texts can include <b>HTML</b> even when defined as attributes"
+            label="Checkbox with help"
+        />
         <CheckboxControl
             value="foo"
             help="Help texts can include <b>HTML</b> even when defined as attributes"
@@ -226,7 +291,7 @@
 <hr />
 
 <h3>Upsell Help</h3>
-<div style="margin-bottom:100px;">
+<div style="margin-bottom: 100px">
     <SwitchControl
         disabled="true"
         label="Switch with upsell help"

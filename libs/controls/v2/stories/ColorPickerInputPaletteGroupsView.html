@@ -1,4 +1,6 @@
-<div style="margin-bottom:1em">This story demonstrates the display of a color palette with <b>groups</b> defined</div>
+<div style="margin-bottom: 1em">
+    This story demonstrates the display of a color palette with <b>groups</b> defined
+</div>
 <div style="margin-bottom: 1em; padding:1em;background: {value}">You selected <b>{value}</b></div>
 
 Normal: <ColorPickerInput bind:color="value" /> <br />
@@ -7,15 +9,25 @@ Normal: <ColorPickerInput bind:color="value" /> <br />
 <div style="margin-bottom: 1em; padding:1em;background: {value2}">You selected <b>{value2}</b></div>
 
 With prepended & appended:
-<ColorPickerInput bind:color="value2" prepend="{['#f2f3f0', '#c4d8dd','#e6e9e5','#eaeae5','#ffffff']}" append="{['#000000', '#ffffff']}" />
+<ColorPickerInput
+    bind:color="value2"
+    prepend="{['#f2f3f0', '#c4d8dd','#e6e9e5','#eaeae5','#ffffff']}"
+    append="{['#000000', '#ffffff']}"
+/>
 
 <hr />
-<div style="margin-bottom: 1em; padding:1em;background: {palette[value3] || value3 || 'transparent'}">
+<div
+    style="margin-bottom: 1em; padding:1em;background: {palette[value3] || value3 || 'transparent'}"
+>
     You selected <b>{palette[value3] ? `palette color ${value3}` : value3}</b>
 </div>
 
 With returnPaletteIndex
-<ColorPickerInput bind:color="value3" prepend="{['#f2f3f0', '#c4d8dd','#e6e9e5','#eaeae5','#ffffff']}" returnPaletteIndex="{true}" />
+<ColorPickerInput
+    bind:color="value3"
+    prepend="{['#f2f3f0', '#c4d8dd','#e6e9e5','#eaeae5','#ffffff']}"
+    returnPaletteIndex="{true}"
+/>
 
 <script>
     import ColorPickerInput from '../ColorPickerInput.html';

@@ -44,25 +44,64 @@ const options = ['red', 'blue', 'orange'].map(value => {
     return { value, label: value, id: value };
 });
 
-const moreOptions = ['red', 'blue', 'orange', 'green', 'hotpink', 'cyan', 'magenta', 'goldenrod', 'seashell4'].map(value => {
+const moreOptions = [
+    'red',
+    'blue',
+    'orange',
+    'green',
+    'hotpink',
+    'cyan',
+    'magenta',
+    'goldenrod',
+    'seashell4'
+].map(value => {
     return { value, label: value, id: value };
 });
 
 export const AlertDisplay = addStory('AlertDisplay', AlertDisplayView, AlertDisplayDocs, {});
-export const DropdownControl = addStory('DropdownControl', DropdownControlView, DropdownControlDocs, { options });
-export const DropdownInput = addStory('DropdownInput', DropdownInputView, DropdownInputDocs, { lorem });
+export const DropdownControl = addStory(
+    'DropdownControl',
+    DropdownControlView,
+    DropdownControlDocs,
+    { options }
+);
+export const DropdownInput = addStory('DropdownInput', DropdownInputView, DropdownInputDocs, {
+    lorem
+});
 export const IconButton = addStory('IconButton', IconButtonView, IconButtonDocs, {});
 export const IconDisplay = addStory('IconDisplay', IconDisplayView, IconDisplayDocs, {});
-export const MoreOptionsGroup = addStory('MoreOptionsGroup', MoreOptionsGroupView, MoreOptionsGroupDocs, { items: moreOptions });
-export const NumberControl = addStory('NumberControl', NumberControlView, NumberControlDocs, { value: 42 });
+export const MoreOptionsGroup = addStory(
+    'MoreOptionsGroup',
+    MoreOptionsGroupView,
+    MoreOptionsGroupDocs,
+    { items: moreOptions }
+);
+export const NumberControl = addStory('NumberControl', NumberControlView, NumberControlDocs, {
+    value: 42
+});
 export const NumberInput = addStory('NumberInput', NumberInputView, NumberInputDocs, { value: 42 });
-export const IconButtonBar = addStory('IconButtonBar', IconButtonBarView, NumberInputDocs, { value: 42 });
-export const RadioControl = addStory('RadioControl', RadioControlView, RadioControlDocs, { options });
-export const SelectControl = addStory('SelectControl', SelectControlView, SelectControlDocs, { options });
-export const SnackbarDisplay = addStory('SnackbarDisplay', SnackbarDisplayView, SnackbarDisplayDocs, { lorem });
+export const IconButtonBar = addStory('IconButtonBar', IconButtonBarView, NumberInputDocs, {
+    value: 42
+});
+export const RadioControl = addStory('RadioControl', RadioControlView, RadioControlDocs, {
+    options
+});
+export const SelectControl = addStory('SelectControl', SelectControlView, SelectControlDocs, {
+    options
+});
+export const SnackbarDisplay = addStory(
+    'SnackbarDisplay',
+    SnackbarDisplayView,
+    SnackbarDisplayDocs,
+    { lorem }
+);
 export const SwitchControl = addStory('SwitchControl', SwitchControlView, SwitchControlDocs);
-export const TextControl = addStory('TextControl', TextControlView, TextControlDocs, { value: 'Lorem Ipsum' });
-export const TextInput = addStory('TextInput', TextInputView, TextInputDocs, { value: 'Hello world' });
+export const TextControl = addStory('TextControl', TextControlView, TextControlDocs, {
+    value: 'Lorem Ipsum'
+});
+export const TextInput = addStory('TextInput', TextInputView, TextInputDocs, {
+    value: 'Hello world'
+});
 
 function addStory(name, view, docs, args) {
     const Template = ({ ...args }) => ({

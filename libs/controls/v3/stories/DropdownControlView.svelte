@@ -50,10 +50,28 @@
 <DropdownControl bind:value {options} label="fixed label width" labelWidth="120px" />
 <DropdownControl bind:value {options} label="fixed label width, long text" labelWidth="120px" />
 <DropdownControl bind:value {options} label="fixed input width" width="150px" />
-<DropdownControl bind:value {options} label="fixed label width and fixed input width" labelWidth="120px" width="150px" />
-<DropdownControl bind:value options={manyOptions} label="many options" labelWidth="120px" width="150px" />
+<DropdownControl
+    bind:value
+    {options}
+    label="fixed label width and fixed input width"
+    labelWidth="120px"
+    width="150px"
+/>
+<DropdownControl
+    bind:value
+    options={manyOptions}
+    label="many options"
+    labelWidth="120px"
+    width="150px"
+/>
 <DropdownControl bind:value options={htmlOptions} label="html options" labelWidth="120px" />
-<DropdownControl bind:value {options} label="force placeholder" labelWidth="120px" forcePlaceholder />
+<DropdownControl
+    bind:value
+    {options}
+    label="force placeholder"
+    labelWidth="120px"
+    forcePlaceholder
+/>
 <DropdownControl
     bind:value
     {options}
@@ -62,7 +80,13 @@
     forcePlaceholder
     placeholder="my custom text"
 />
-<DropdownControl bind:value {options} label="force label" labelWidth="120px" forceLabel="whatever" />
+<DropdownControl
+    bind:value
+    {options}
+    label="force label"
+    labelWidth="120px"
+    forceLabel="whatever"
+/>
 <DropdownControl
     bind:value
     {options}
@@ -73,4 +97,10 @@
 />
 <DropdownControl bind:value {options} label="disabled" labelWidth="120px" disabled />
 <DropdownControl bind:value {options} label="help" labelWidth="120px" help="Some help text" />
-<DropdownControl bind:value {options} label="custom item renderer" labelWidth="120px" itemRenderer={CheckboxControl} />
+<DropdownControl
+    bind:value
+    {options}
+    label="custom item renderer"
+    labelWidth="120px"
+    itemRenderer={CheckboxControl}
+/>

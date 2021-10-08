@@ -1,8 +1,16 @@
 <CustomAxisRangeControl label="Simple control" bind:value></CustomAxisRangeControl>
 <CustomAxisRangeControl label="Control with very long label" bind:value></CustomAxisRangeControl>
-<CustomAxisRangeControl label="Controll with help text" bind:value miniHelp="This some help text."></CustomAxisRangeControl>
+<CustomAxisRangeControl
+    label="Controll with help text"
+    bind:value
+    miniHelp="This some help text."
+></CustomAxisRangeControl>
 <CustomAxisRangeControl label="Disabled control" bind:value disabled></CustomAxisRangeControl>
-<CustomAxisRangeControl label="Custom default" bind:value placeholder="{{ min: 'Foo', max: 'Bar' }}"></CustomAxisRangeControl>
+<CustomAxisRangeControl
+    label="Custom default"
+    bind:value
+    placeholder="{{ min: 'Foo', max: 'Bar' }}"
+></CustomAxisRangeControl>
 
 <pre><code>
 { output }

@@ -1,6 +1,12 @@
-<GradientEditor themePresets="{themePresets}" bind:customize bind:colors label="{customize ? 'Edit gradient' : 'Select gradient'}"> </GradientEditor>
+<GradientEditor
+    themePresets="{themePresets}"
+    bind:customize
+    bind:colors
+    label="{customize ? 'Edit gradient' : 'Select gradient'}"
+>
+</GradientEditor>
 <hr />
-<p style="margin-top:7em;color:#888">this is how the colors are stored:</p>
+<p style="margin-top: 7em; color: #888">this is how the colors are stored:</p>
 <pre>{JSON.stringify(colors, null, 2)}</pre>
 
 <script>

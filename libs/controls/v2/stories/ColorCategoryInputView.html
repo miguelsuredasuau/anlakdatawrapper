@@ -31,7 +31,11 @@
 
 <hr style="margin-top: 5em" />
 <div class="helper">
-    <SelectControl bind:value="column" label="column" options="{columns.map(c => ({value:c, label:c.name()}))}" />
+    <SelectControl
+        bind:value="column"
+        label="column"
+        options="{columns.map(c => ({value:c, label:c.name()}))}"
+    />
     <CheckboxControl label="use palette" bind:value="usePalette" />
     <p class="mini-help">stored value</p>
     <pre>
@@ -50,7 +54,14 @@
     import { randomInt } from 'd3-random';
 
     import { simpleTheme } from './lib/themeStore';
-    const parties = ['CDU', 'SPD', 'GRÜNE', 'LINKE', 'FDP', 'AFD (sogenannte "Alternative für Deutschland")'];
+    const parties = [
+        'CDU',
+        'SPD',
+        'GRÜNE',
+        'LINKE',
+        'FDP',
+        'AFD (sogenannte "Alternative für Deutschland")'
+    ];
 
     const columns = [
         Column(

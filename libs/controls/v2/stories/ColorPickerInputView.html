@@ -7,7 +7,11 @@ normal: <ColorPickerInput bind:color="value0" /><br />
 
 With prepended & appended colors:
 
-<ColorPickerInput bind:color="value4" prepend="{['#f2f3f0', '#c4d8dd','#e6e9e5','#eaeae5','#ffffff']}" append="{['#000000', '#ffffff']}" />
+<ColorPickerInput
+    bind:color="value4"
+    prepend="{['#f2f3f0', '#c4d8dd','#e6e9e5','#eaeae5','#ffffff']}"
+    append="{['#000000', '#ffffff']}"
+/>
 <br />
 
 <hr />
@@ -16,19 +20,26 @@ With prepended & appended colors:
     You selected <b>{palette[value1] ? `palette color ${value1}` : value1}</b>
 </div>
 
-with <tt>returnPaletteIndex="true"</tt>: <ColorPickerInput bind:color="value1" returnPaletteIndex="{true}" /><br />
+with <tt>returnPaletteIndex="true"</tt>:
+<ColorPickerInput bind:color="value1" returnPaletteIndex="{true}" /><br />
 
-<div style="margin: 2em 0 1em; border: 1px solid #ddd; padding:1em;background: {palette[value2] || value2 || 'transparent'}">
+<div
+    style="margin: 2em 0 1em; border: 1px solid #ddd; padding:1em;background: {palette[value2] || value2 || 'transparent'}"
+>
     You selected <b>{palette[value2] ? `palette color ${value2}` : value2}</b>
 </div>
 
-ColorControl reset with default color: <ColorPickerInput reset="Reset color" initial="hotpink" bind:color="value2" />
+ColorControl reset with default color:
+<ColorPickerInput reset="Reset color" initial="hotpink" bind:color="value2" />
 
-<div style="margin: 2em 0 1em; border: 1px solid #ddd; padding:1em;background: {palette[value3] || value3 || 'transparent'}">
+<div
+    style="margin: 2em 0 1em; border: 1px solid #ddd; padding:1em;background: {palette[value3] || value3 || 'transparent'}"
+>
     You selected <b>{palette[value3] ? `palette color ${value3}` : value3}</b>
 </div>
 
-ColorControl reset without default color: <ColorPickerInput reset="Reset color" initial="{false}" bind:color="value3" />
+ColorControl reset without default color:
+<ColorPickerInput reset="Reset color" initial="{false}" bind:color="value3" />
 
 <hr />
 
@@ -37,8 +48,10 @@ ColorControl reset without default color: <ColorPickerInput reset="Reset color" 
 <RadioControl bind:value="active" label="select item" options="{options}" />
 <ColorPickerInput reset="Reset color" initial="{false}" bind:color="colors[active]" />
 <hr />
-ColorControl initialized with first theme color: <ColorPickerInput reset="Reset color" bind:color="value4" /><br />
-ColorControl initialized with second theme color: <ColorPickerInput reset="Reset color" bind:color="value5" />
+ColorControl initialized with first theme color:
+<ColorPickerInput reset="Reset color" bind:color="value4" /><br />
+ColorControl initialized with second theme color:
+<ColorPickerInput reset="Reset color" bind:color="value5" />
 
 <script>
     import ColorPickerInput from '../ColorPickerInput.html';

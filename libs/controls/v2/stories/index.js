@@ -110,7 +110,17 @@ const options = ['red', 'blue', 'orange'].map(value => {
     return { value, label: value, id: value };
 });
 
-const moreOptions = ['red', 'blue', 'orange', 'green', 'hotpink', 'cyan', 'magenta', 'goldenrod', 'seashell4'].map(value => {
+const moreOptions = [
+    'red',
+    'blue',
+    'orange',
+    'green',
+    'hotpink',
+    'cyan',
+    'magenta',
+    'goldenrod',
+    'seashell4'
+].map(value => {
     return { value, label: value, id: value };
 });
 
@@ -348,11 +358,14 @@ function addStory(panelId, docs, render) {
         docs = 'Create a `' + panelId + '.md` file to add a readme.';
     }
 
-    docs = docs.replace(/\[([A-Z][^\]]+)\]/g, (m, g) => `[${g}](?path=/info/controls-v2--${g.toLowerCase()})`);
+    docs = docs.replace(
+        /\[([A-Z][^\]]+)\]/g,
+        (m, g) => `[${g}](?path=/info/controls-v2--${g.toLowerCase()})`
+    );
 
     book.add(
         panelId,
-        function() {
+        function () {
             const language = select('Language', { German: 'de', English: 'en' }, 'en');
             global.setLanguage(language);
             return render(language);

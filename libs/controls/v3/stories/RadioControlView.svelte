@@ -14,9 +14,25 @@
 <RadioControl {options} indeterminate="1" label="indeterminate" value="" />
 <RadioControl {options} label="short label" bind:value labelWidth="70px" />
 <RadioControl {options} label="very, very long label" bind:value labelWidth="120px" />
-<RadioControl {options} label="even longer label, breaks across lines" bind:value labelWidth="90px" />
-<RadioControl options={[...options, ...options.reverse()]} label="many items" bind:value labelWidth="90px" />
-<RadioControl {options} label="general help" help="Here you can get some help" bind:value labelWidth="90px" />
+<RadioControl
+    {options}
+    label="even longer label, breaks across lines"
+    bind:value
+    labelWidth="90px"
+/>
+<RadioControl
+    options={[...options, ...options.reverse()]}
+    label="many items"
+    bind:value
+    labelWidth="90px"
+/>
+<RadioControl
+    {options}
+    label="general help"
+    help="Here you can get some help"
+    bind:value
+    labelWidth="90px"
+/>
 <RadioControl options={tooltipOptions} label="help tooltips" bind:value labelWidth="90px" />
 <RadioControl options={helpOptions} label="help balloons" bind:value labelWidth="90px" />
 <RadioControl {options} label="disabled" bind:value labelWidth="90px" disabled="1" />

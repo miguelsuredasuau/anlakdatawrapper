@@ -10,7 +10,7 @@
 
 <hr />
 
-<div style="display: none;">
+<div style="display: none">
     <div ref:iframeWindow>
         <div>
             <div id="chart"></div>
@@ -45,7 +45,19 @@
 
     const themeData = {
         colors: {
-            palette: ['#18a1cd', '#1d81a2', '#15607a', '#00dca6', '#09bb9f', '#009076', '#c4c4c4', '#c71e1d', '#fa8c00', '#ffca76', '#ffe59c'],
+            palette: [
+                '#18a1cd',
+                '#1d81a2',
+                '#15607a',
+                '#00dca6',
+                '#09bb9f',
+                '#009076',
+                '#c4c4c4',
+                '#c71e1d',
+                '#fa8c00',
+                '#ffca76',
+                '#ffe59c'
+            ],
             picker: {
                 rowCount: 6
             }
@@ -53,8 +65,8 @@
     };
 
     dw.backend.hooks = {
-        register: function() {},
-        unregister: function() {}
+        register: function () {},
+        unregister: function () {}
     };
 
     const chart = new Chart({ metadata, themeData });

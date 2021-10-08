@@ -39,7 +39,9 @@
 <label>Custom button and content</label>
 <DropdownInput width="50ex" bind:visible={open}>
     <div slot="button">
-        <button class="btn" class:btn-primary={!open}><i class="fa fa-info-circle" /> Click to read {open ? 'less' : 'more'}</button>
+        <button class="btn" class:btn-primary={!open}
+            ><i class="fa fa-info-circle" /> Click to read {open ? 'less' : 'more'}</button
+        >
     </div>
     <div slot="content">
         <p>{@html lorem}</p>
