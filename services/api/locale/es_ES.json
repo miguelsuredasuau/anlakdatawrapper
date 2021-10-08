@@ -993,5 +993,7 @@
   "teams / change-owner-confirmation / title": "",
   "teams / change-owner-confirmation / confirm": "",
   "teams / change-owner-confirmation / back": "",
-  "teams / change-owner-confirmation / warning": ""
+  "teams / change-owner-confirmation / warning": "",
+  "teams / change-owner-confirmation / owner-message": "",
+  "teams / change-owner-confirmation / non-owner-message": ""
 }

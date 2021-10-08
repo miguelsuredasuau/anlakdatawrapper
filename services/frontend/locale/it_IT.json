@@ -988,10 +988,12 @@
   "controls / overlays / disabled / tick position / overlays": "",
   "publish / help / share-url / fullscreen": "",
   "controls / overlays / custom-area / zero": "",
-  "teams / change-owner-confirmation / message": "",
+  "teams / change-owner-confirmation / message": "%member% sarà il nuovo proprietario del team %team%. %message%",
   "teams / edit-role / owner / info": "Come proprietario del team, non puoi rimuovere o degradare te stesso. Devi prima impostare qualcun altro come proprietario o eliminare il team.",
   "teams / change-owner-confirmation / title": "Vuoi impostare %member% come nuovo proprietario del team?",
   "teams / change-owner-confirmation / confirm": "Sì, imposta un nuovo proprietario",
   "teams / change-owner-confirmation / back": "Indietro",
-  "teams / change-owner-confirmation / warning": ""
+  "teams / change-owner-confirmation / warning": "",
+  "teams / change-owner-confirmation / owner-message": "Come risultato, perderai il tuo status di proprietario del team.",
+  "teams / change-owner-confirmation / non-owner-message": "Di conseguenza, %member% perderà lo stato di proprietario del team."
 }
