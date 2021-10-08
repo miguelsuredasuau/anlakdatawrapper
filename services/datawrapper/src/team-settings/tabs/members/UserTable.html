@@ -24,8 +24,8 @@
             {/if} {/if}
         </td>
         <td>
-            {#if isAdmin || isTeamOwner || (!isTeamOwner && user.role != 'owner')} {#if editId ===
-            user.id }
+            {#if (isAdmin && !isTeamOwner) || (isTeamOwner && user.id !== userId) || (isTeamAdmin &&
+            user.role !== 'owner') } {#if editId === user.id }
             <button on:click="toggleEdit(user.id)" class="btn btn-primary">
                 <i class="fa fa-check"></i>&nbsp; { __('teams / save' ) }
             </button>
@@ -41,7 +41,9 @@
             <button on:click="removeUser(user)" class="btn">
                 <i class="fa fa-times"></i>&nbsp; { __('teams / remove' ) }
             </button>
-            {/if} {/if}
+            {/if} {:elseif isTeamOwner && (user.role === 'owner')}
+            <p class="mini-help">{ __('teams / edit-role / owner / info') }</p>
+            {/if}
         </td>
     </tr>
     {/each}
@@ -49,9 +51,21 @@
 
 {/if}
 
+<ConfirmationModal
+    ref:confirmationModal
+    confirmButtonText="{__('teams / change-owner-confirmation / confirm')}"
+    backButtonText="{__('teams / change-owner-confirmation / back')}"
+    id="modalConfirmation"
+    title="{ownerChangeTitle}"
+    on:confirm="updateRole(editId)"
+>
+    <p>{@html ownerChangeMessage}</p>
+</ConfirmationModal>
+
 <script>
     import TableDisplay from '@datawrapper/controls/TableDisplay.html';
     import SelectInput from '@datawrapper/controls/SelectInput.html';
+    import ConfirmationModal from '@datawrapper/controls/ConfirmationModal.html';
     import { __ } from '@datawrapper/shared/l10n';
     import httpReq from '@datawrapper/shared/httpReq';
 
@@ -62,7 +76,7 @@
     ];
 
     export default {
-        components: { TableDisplay, SelectInput },
+        components: { TableDisplay, SelectInput, ConfirmationModal },
         data() {
             return {
                 editId: false,
@@ -126,6 +140,32 @@
                 } else {
                     return '';
                 }
+            },
+            ownerChangeMessage({ users, editId, team, isTeamOwner }) {
+                const user = users.find(u => u.id === editId);
+                const owner = users.find(u => u.id !== editId && u.role === 'owner');
+                const userEmail = user ? user.name || user.email || user.id : 'non-existent';
+                const ownerEmail = owner ? owner.name || owner.email || owner.id : 'non-existent';
+                return __('teams / change-owner-confirmation / message')
+                    .replace('%member%', `<b>${userEmail}</b>`)
+                    .replace(
+                        '%message%',
+                        isTeamOwner
+                            ? __('teams / change-owner-confirmation / owner-messsage')
+                            : __('teams / change-owner-confirmation / non-owner-messsage').replace(
+                                  '%member%',
+                                  ownerEmail
+                              )
+                    )
+                    .replace('%team%', `<b>${team.name}</b>`);
+            },
+            ownerChangeTitle({ users, editId }) {
+                const user = users.find(u => u.id === editId);
+                const userEmail = user ? user.name || user.email || user.id : 'non-existent';
+                return __('teams / change-owner-confirmation / title').replace(
+                    '%member%',
+                    userEmail
+                );
             }
         },
         helpers: {
@@ -141,8 +181,7 @@
         methods: {
             toggleEdit(userId) {
                 if (this.get().editId === userId) {
-                    this.set({ editId: false });
-                    this.updateRole(userId);
+                    this.requestUpdateRole(userId);
                 } else {
                     this.set({
                         editId: userId
@@ -158,6 +197,17 @@
                 users = users.filter(el => el.id !== user.id);
                 this.set({ users });
             },
+            async requestUpdateRole(userId) {
+                var { users } = this.get();
+                const user = users.filter(u => u.id === userId)[0];
+
+                if (user.role === 'owner') {
+                    // ownership transfer --> ask for confirmation first
+                    this.refs.confirmationModal.open();
+                    return;
+                }
+                await this.updateRole(userId);
+            },
             async updateRole(userId) {
                 var { updating, users } = this.get();
                 const user = users.filter(u => u.id === userId)[0];
@@ -172,7 +222,8 @@
 
                 updating = this.get().updating;
                 updating[user.id] = false;
-                this.set({ updating });
+                this.set({ updating, editId: false });
+                this.fire('updateUsers');
             }
         }
     };

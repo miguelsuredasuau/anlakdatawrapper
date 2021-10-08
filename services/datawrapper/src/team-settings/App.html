@@ -136,7 +136,6 @@
             groups({
                 tabs,
                 isAdmin,
-                role,
                 team,
                 users,
                 userId,
@@ -166,7 +165,6 @@
                 tabs.forEach(tab => {
                     tab.data = {
                         isAdmin,
-                        isTeamOwner: role === 'owner',
                         team,
                         users,
                         userId,
