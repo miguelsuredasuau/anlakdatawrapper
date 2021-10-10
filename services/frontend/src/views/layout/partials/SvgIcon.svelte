@@ -1,8 +1,9 @@
 <script>
     export let icon = 'api';
-    export let size = '1em';
+    export let size;
     export let color = 'currentColor';
     export let valign = 'sub';
+    export let crisp = false;
 
     export let className = '';
 
@@ -23,16 +24,29 @@
     .spin {
         animation: spin 2s infinite linear;
     }
+    .crisp {
+        shape-rendering: crispEdges;
+    }
+
+    .icon {
+        font-size: 1em;
+        width: auto;
+        height: auto;
+    }
+    .icon svg {
+        width: 1em;
+        height: 1em;
+    }
 </style>
 
 <span
     class="icon {className}"
     class:spin
-    style="height:{size}; width:{size}; vertical-align: {valign}; {spin
+    style="vertical-align: {valign}; {size ? `font-size:${size};` : ''} {spin
         ? `animation-duration:${duration};  animation-timing-function: ${timing};`
         : ''}"
 >
-    <svg style="height:{size}; width:{size}" class="svg-{icon}-dims">
+    <svg class="svg-{icon}-dims" class:crisp>
         <use style="fill: {color}" xlink:href="/lib/icons/symbol/svg/sprite.symbol.svg#{icon}" />
     </svg>
 </span>

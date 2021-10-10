@@ -16,6 +16,8 @@ const registerVisualizations = require('@datawrapper/service-utils/registerVisua
 const config = requireConfig();
 const path = require('path');
 const { getUserLanguage } = require('./utils');
+const headerLinks = require('./utils/header-links');
+const adminPages = require('./utils/admin-pages');
 const {
     SvelteView,
     getView,
@@ -148,6 +150,9 @@ const start = async () => {
     server.method('isDevMode', () => process.env.DW_DEV_MODE);
     server.method('registerVisualization', registerVisualizations(server));
 
+    await server.register(headerLinks);
+    await server.register(adminPages);
+
     // hooks
     server.app.event = eventList;
     server.app.events = new FrontendEventEmitter({ logger: server.logger, eventList });
@@ -171,6 +176,10 @@ const start = async () => {
     server.method('transpileView', transpileView);
     server.method('getUserLanguage', getUserLanguage);
     server.method('translate', translate);
+    server.method('getTranslate', request => {
+        const language = getUserLanguage(request.auth);
+        return (key, scope = 'core') => server.methods.translate(key, { scope, language });
+    });
     server.method('getModel', name => ORM.db.models[name]);
 
     await server.register(require('./auth/dw-auth'));
@@ -182,8 +191,12 @@ const start = async () => {
     server.ext('onPreResponse', (request, h) => {
         if (request.response.isBoom) {
             const err = request.response;
+            if (err.output.statusCode === 401) {
+                return h.redirect(`/signin?ref=${request.path}`).temporary();
+            }
             return h
                 .view('Error.svelte', {
+                    htmlClass: 'has-background-white-bis',
                     props: err.output.payload
                 })
                 .code(err.output.payload.statusCode);

@@ -1,0 +1,253 @@
+const { getUserLanguage } = require('./index');
+
+module.exports = {
+    name: 'header-links',
+    version: '1.0.0',
+    async register(server) {
+        server.app.headerLinks = new Set();
+
+        server.method('registerHeaderLinks', headerLinkFunc => {
+            server.app.headerLinks.add(headerLinkFunc);
+        });
+
+        server.method('getHeaderLinks', request => {
+            const linksById = new Map();
+            const links = [];
+            const subLinks = [];
+            // evaluate links for each request, please use cache!
+            server.app.headerLinks.forEach(func => {
+                const items = func(request);
+                links.push.apply(
+                    links,
+                    items.filter(i => !i.parent)
+                );
+                subLinks.push.apply(
+                    subLinks,
+                    items.filter(i => i.parent)
+                );
+            });
+
+            // register top-level links by id
+            links.forEach(link => {
+                if (link.id) {
+                    linksById.set(link.id, link);
+                }
+            });
+
+            subLinks.forEach(link => {
+                if (linksById.has(link.parent)) {
+                    const parent = linksById.get(link.parent);
+                    if (!parent.submenuItems) parent.submenuItems = [];
+                    parent.submenuItems.push(link);
+                }
+            });
+
+            // sort links by order
+            return links.sort(byOrder).map(link => {
+                // also sort submenu items
+                if (Array.isArray(link.submenuItems)) {
+                    link.submenuItems = link.submenuItems.sort(byOrder);
+                }
+                return link;
+            });
+        });
+
+        function byOrder(a, b) {
+            return a.order !== undefined && b.order !== undefined ? a.order - b.order : 0;
+        }
+
+        const frontendConfig = server.methods.config('frontend');
+
+        // add some core header links
+        server.methods.registerHeaderLinks(request => {
+            const user = request.auth.artifacts;
+            const isGuest = !user || user.role === 'guest';
+            const isAdmin = user && user.role === 'admin';
+
+            const adminPageLinks = [];
+            if (isAdmin) {
+                let order = 0;
+                server.methods.getAdminPages(request).forEach(({ title, pages }) => {
+                    order++;
+                    adminPageLinks.push({
+                        type: 'html',
+                        class: 'has-text-grey has-text-weight-medium is-size-7 is-uppercase',
+                        content: title,
+                        order
+                    });
+                    pages.sort(byOrder).forEach(page => {
+                        order++;
+                        adminPageLinks.push({
+                            ...page,
+                            url: `/admin${page.url}`,
+                            order
+                        });
+                    });
+                });
+            }
+
+            const language = getUserLanguage(request.auth);
+            const __ = key => server.methods.translate(key, { scope: 'core', language });
+            return [
+                ...(!isGuest
+                    ? [
+                          {
+                              id: 'dashboard',
+                              class: 'nav-item-dashboard',
+                              svgIcon: 'launch',
+                              // fontIcon: 'fa fa-fw fa-bar-chart-o',
+                              title: __('navbar / dashboard'),
+                              url: '/',
+                              order: 5
+                          }
+                      ]
+                    : []),
+                {
+                    id: 'create-new',
+                    class: 'nav-item-create-new',
+                    svgIcon: 'add',
+                    title: `${__('navbar / create-new')} <span class="has-text-grey">…</span>`,
+                    order: 10,
+                    submenuItems: [
+                        {
+                            id: 'create-chart',
+                            svgIcon: 'dw-chart',
+                            title: __('navbar / create / chart'),
+                            url: '/create/chart',
+                            order: 10
+                        },
+                        {
+                            id: 'create-map',
+                            svgIcon: 'dw-map',
+                            title: __('navbar / create / map'),
+                            url: '/select/map',
+                            order: 20
+                        },
+                        {
+                            id: 'create-table',
+                            svgIcon: 'dw-table',
+                            title: __('navbar / create / table'),
+                            url: '/create/table',
+                            order: 30
+                        },
+                        ...(!isGuest
+                            ? [
+                                  {
+                                      type: 'activeTeam',
+                                      order: 999
+                                  }
+                              ]
+                            : [])
+                    ]
+                },
+
+                ...(isGuest
+                    ? [
+                          {
+                              class: 'nav-item-sign-in',
+                              svgIcon: 'sign-in',
+                              title: 'Sign in',
+                              type: 'login',
+                              url: `/signin?ref=${request.path}`
+                          },
+                          {
+                              type: 'separator',
+                              order: 69
+                          }
+                      ]
+                    : [
+                          {
+                              id: 'my-charts',
+                              class: 'nav-item-archive',
+                              type: 'visArchive',
+                              submenuItems: true,
+                              order: 61
+                          },
+                          {
+                              type: 'separator',
+                              order: 69
+                          }
+                      ]),
+                ...(isAdmin
+                    ? [
+                          {
+                              id: 'admin',
+                              class: 'nav-item-admin',
+                              fontIcon: 'fa fa-magic',
+                              submenuItems: adminPageLinks,
+                              order: 90
+                          }
+                      ]
+                    : []),
+                {
+                    id: 'settings',
+                    class: 'nav-item-more',
+                    svgIcon: 'menu',
+                    title: 'More',
+                    order: 95,
+                    submenuItems: [
+                        ...(!isGuest
+                            ? [
+                                  {
+                                      url: '/account',
+                                      title: __('account / settings'),
+                                      svgIcon: 'user-menu',
+                                      order: 10
+                                  },
+                                  {
+                                      url: '/account/teams',
+                                      title: __('account / my-teams'),
+                                      svgIcon: 'team',
+                                      order: 20
+                                  }
+                              ]
+                            : []),
+                        {
+                            url: '/account/teams',
+                            title: __('Language'),
+                            svgIcon: 'globe',
+                            order: 30,
+                            submenuItems: (frontendConfig.languages || []).map(({ id, title }) => ({
+                                id,
+                                type: 'language',
+                                svgIcon: id === language ? 'check-circle' : 'circle',
+                                svgIconClass: id === language ? '' : 'has-text-grey-light',
+                                title: `${title}`
+                            }))
+                        },
+                        ...(!isGuest
+                            ? [
+                                  {
+                                      type: 'separator',
+                                      order: 50
+                                  },
+                                  {
+                                      type: 'html',
+                                      order: 51,
+                                      content: `<span class="has-text-grey is-size-7" style="margin-bottom:-.25rem">${__(
+                                          'account / my-teams / select-active'
+                                      )}</span>`
+                                  },
+                                  {
+                                      type: 'teamSelector',
+                                      order: 52
+                                  },
+                                  {
+                                      type: 'separator',
+                                      order: 53
+                                  },
+                                  {
+                                      url: '#/logout',
+                                      svgIcon: 'sign-out',
+                                      type: 'logout',
+                                      title: 'Logout',
+                                      order: 100
+                                  }
+                              ]
+                            : [])
+                    ]
+                }
+            ];
+        });
+    }
+};

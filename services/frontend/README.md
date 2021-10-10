@@ -45,6 +45,24 @@ The views are simple Svelte3 components that live inside `src/views`
 <h1 on:click="{knock}">Hello {name}</h1>
 ```
 
+You can use the following authentication strategies to specify who can access the route:
+
+-   `'user'` - require signed in user, otherwise redirect to signin
+-   `'admin'` - admin only route, throw error if accessed by non-admins
+-   `'session'` - a valid session is needed (including guest sessions)
+-   `false` - no restrictions
+
+```jsx
+server.route({
+    path: '/users-only',
+    method: 'GET',
+    options: {
+        auth: 'user',
+        async handler(request, h) {}
+    }
+});
+```
+
 ### Server-side rendering + client-side hydration + IE transpiling
 
 Each view is compiled twice, so we can render it server-side and then „hydrate“ it client-side.
@@ -256,4 +274,67 @@ To avoid having to rewrite all our Svelte2 code at once the new frontend include
         css="/static/plugins/team-integrations/team-integrations.css"
         bind:data />
 </MainLayout>
+```
+
+## Plugin Development
+
+Server methods are a way for plugins to hook new functionality into existing `frontend` components.
+
+### `registerHeaderLinks`
+
+Useful for adding links to our new navbar. Registered functions get called during request initialization, get the request object as parameter and should return an array of link objects, with the following attributes:
+
+-   `id` - a unique id to reference this navbar item
+-   `url` - the url to link to
+-   `title` - the translated link text
+-   `svgIcon` - the icon to use from `@datawrapper/icons`
+-   `fontIcon` - alternatively links can also use a font icon (e.g. `"fa fa-user"`)
+-   `order` - number to sort menu items by, useful for controlling the exact position of the navbar link
+-   `parent` - if the navbar link should be located in a submenu you need to provide the id of the parent navbar item
+
+Example:
+
+```js
+// river link
+const { name, version } = require('./package.json');
+
+module.exports = {
+    name,
+    version,
+    register: (server, options) => {
+        const { config } = options;
+        // register river navbar link
+        server.methods.registerHeaderLinks(request => {
+            const __ = server.methods.getTranslate(request);
+            return [
+                {
+                    id: 'river',
+                    url: `//${config.domain}`,
+                    parent: 'settings',
+                    title: __('River', 'river'),
+                    svgIcon: 'dw-river',
+                    order: 22
+                }
+            ];
+        });
+    }
+};
+```
+
+### `registerAdminPage`
+
+To register admin pages, which as of now only adds a link to the admin submenu, but in the future will also power the admin settings sidebar.
+
+```js
+server.methods.registerAdminPage(request => {
+    const __ = server.methods.getTranslate(request);
+    return {
+        url: '/users',
+        route: '/users(/|/:user_id)?',
+        title: __('Users', 'admin-users'),
+        group: __('Users'),
+        svgIcon: 'user',
+        order: 2
+    };
+});
 ```

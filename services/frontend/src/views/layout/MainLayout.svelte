@@ -16,6 +16,4 @@
 
 <slot />
 
-<div class="container">
-    <PageFooter />
-</div>
+<PageFooter />

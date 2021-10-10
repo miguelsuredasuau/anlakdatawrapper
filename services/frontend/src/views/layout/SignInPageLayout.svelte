@@ -1,32 +1,29 @@
 <script>
-    import DatawrapperLogo from './partials/header/DatawrapperLogo.svelte';
-
+    import DatawrapperLogo from 'layout/partials/header/DatawrapperLogo.svelte';
     export let title;
+
+    import { getContext } from 'svelte';
+    const msg = getContext('messages');
+
+    let __;
+    $: {
+        __ = (key, scope = 'core') => msg.translate(key, scope, $msg);
+    }
 </script>
 
-<style>
-    :global(html, body) {
-        background: linear-gradient(90deg, #0f4656 0%, #085e55 100%);
-        height: 100%;
-        color: white;
-        font-family: 'Roboto', Helvetica, sans-serif;
-        padding-top: 15px;
+<style lang="scss">
+    @import 'bulma/sass/utilities/_all.sass';
+    :global(html) {
+        background-color: var(--color-dw-scooter);
+        background-image: url(/lib/static/img/dw-hero-16-9-bg.jpg);
     }
 
-    :global(button.plain-link) {
-        background: transparent;
-        border: 0;
-        padding: 0;
-        line-height: inherit;
-        font-size: inherit;
-        vertical-align: inherit;
-        color: #1d81a2;
-        vertical-align: baseline;
+    @include desktop {
     }
-
-    :global(button.plain-link:hover) {
-        text-decoration: underline;
-        color: #15607a;
+    @media screen and (min-height: 600px) and (min-width: 600px) {
+        :global(html) {
+            overflow-y: hidden;
+        }
     }
 </style>
 
@@ -34,9 +31,32 @@
     <title>Datawrapper{title ? ` - ${title}` : ''}</title>
 </svelte:head>
 
-<div class="container" style="max-width: 50rem">
-    <DatawrapperLogo color="#ffffff" height="40" />
-    <div class="box mt-6 p-6">
-        <slot />
+<section class="hero is-fullheight">
+    <div class="hero-body">
+        <div class="container is-max-desktop box p-0 is-radiusless">
+            <div class="columns is-gapless">
+                <div class="column is-one-third is-flex is-flex-direction-column">
+                    <div
+                        class="p-6 is-flex is-flex-direction-column is-justify-content-space-between is-flex-grow-1"
+                    >
+                        <DatawrapperLogo width="170px" />
+
+                        <div class="terms is-size-7 is-hidden-mobile">
+                            {@html __('signin / terms')}
+                        </div>
+                    </div>
+                </div>
+                <div class="column has-background-light is-flex is-flex-direction-column">
+                    <div
+                        class="p-6 is-flex is-flex-direction-column is-justify-content-space-between is-flex-grow-1"
+                    >
+                        <slot />
+                        <div class="terms is-size-7 is-hidden-tablet mt-3">
+                            {@html __('signin / terms')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+</section>

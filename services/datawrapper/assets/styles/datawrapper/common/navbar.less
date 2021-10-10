@@ -8,70 +8,86 @@ html .navbar.navbar-transparent .navbar-inner {
 
 html .navbar .navbar-inner {
     font-weight: 400;
-    background: @dw_background;
-    min-height: 55px;
-    padding-top: 10px;
-    border-bottom: 1px solid @dw_background;
-    box-shadow: none;
-    height: 55px;
+    background: white;
 
-    li {
-        line-height: 26px;
-    }
+    border-top: 5px solid @dw_blue_medium;
+    border-bottom: 1px solid #eee;
+    box-shadow: none;
+
+    padding-top: 15px;
+    padding-bottom:15px; 
+
 
     .nav {
-        & > li {
-            &.icon > a {
-                padding: 10px 9px 10px;
-                line-height: 26px;
-            }
 
-            .fa, .im {
-                color: #222;
-                font-size: 15px;
-                margin-right: 2px;
+        & > li {
+            
+            .fa, .im, .no-icon {
+                color: @dw_blue_medium;
+                font-size: 1.2em;
+                margin-right: .25em;
+                vertical-align: middle;
+                display: inline-block;
+                min-width: 1em;
             }
 
             .im {
                 position: relative;
-                top: 2px;
                 font-size: 14px;
                 line-height: 18px;
             }
-            .no-icon {
-                display: inline;
-                margin-right: 19px;
-            }
+                
 
             & > a {
-                padding-top: 11px;
-                padding-bottom: 10px;
-                font-size: 15px;
+                padding: 1em;
+                font-size: 16px;
+                font-weight: 500;
+                color: #4a4a4a;
+                border-radius: 4px;
+                &#dw-header-link-mycharts {
+                    padding-right: 0.5em;
+                }
+
+                .fa { color: @dw_blue_medium; }
+
+                .fa.fa-river {
+                    top: -1px;
+                }
 
                 &:hover {
-                    color: #000;
-                    .fa { color: @dw_blue_medium; }
+                    color: @dw_blue_medium;
+                    background-color: #f9f9f9;
+
                 }
                 b { font-weight: 500; }
             }
 
             &.divider-vertical {
-                height: 45px;
-                margin: 0 0px;
-                border-left-color: #dedcdb;
+                height: 3em;
+                border-left-color: #E5E5E5;
+                margin: .25em 5px;
             }
-        }
 
-        .active > a,
-        .active > a:hover,
-        li.dropdown.active > .dropdown-toggle:hover {
+            
+        }
+        
+        &> .active > a,
+        &> .active > a:hover,
+        &> .active > a:focus {
             box-shadow: none;
-            -webkit-box-shadow: none;
-            background: transparent;
-            font-weight: 500;
-            color: #222!important;
+            background-color: #f9f9f9;
         }
-
+        &> .active > a,
+        li.dropdown.active > .dropdown-toggle {
+            background-color: transparent;
+        }
+        
+        li.dropdown.open > .dropdown-toggle,
+        li.dropdown.open.active > .dropdown-toggle,
+        li.dropdown.active:hover > .dropdown-toggle {
+            background-color: #f9f9f9;
+        }
+        
         .dropdown a.group {
             color: #999;
             font-size: 11px;
@@ -81,12 +97,28 @@ html .navbar .navbar-inner {
             margin-left: -2px;
         }
 
+        .dropdown-menu > li > a:hover,
+        .dropdown-menu > li > a:focus {
+            background: #f9f9f9;
+            color: @dw_blue_medium;
+            &::after {
+                border-left-color: #C9C9C9;
+            }
+
+        }
+
+        .admin>a .fa,
+        .mycharts_dd>a .fa,
+        .account>a .fa {
+            margin-right: 0;
+            min-width: auto;
+        }
+
     } // end .nav
 
     img.logo {
-        width: 118px;
+        width: 134px;
         float: left;
-        margin-top: 11px;
     }
 
     .brand {
@@ -109,7 +141,10 @@ html .navbar .navbar-inner {
     }
 
     .mycharts_dd.dropdown {
-        margin-left: -20px;
+        
+        &>a {
+            padding: 1em .5em;
+        }
 
         ul {
             z-index: 1001;
@@ -145,18 +180,14 @@ html .navbar .navbar-inner {
                 min-height: 0;
             }
         }
-
-        &.open {
-            #dw-header-link-mycharts_dd {
-                background: none;
-            }
-        }
     }
 
 
-    .nav li.dropdown .dropdown-toggle .caret, .nav li.dropdown.open .caret,
-    li a .tt { display: none; }
-
+    .nav li.dropdown .dropdown-toggle .caret,
+    .nav li.dropdown.open .caret,
+    li a .tt { 
+        display: none;
+    }
 }
 
 html .navbar.navbar-transparent .navbar-inner {
@@ -216,4 +247,22 @@ html .navbar.navbar-inverse {
         }
     }
 
+}
+
+
+@media screen and (min-width: 980px) {
+
+    html .navbar .navbar-inner {
+        padding-top: 20px;
+        padding-bottom: 25px;
+
+        img.logo {
+            margin: 10px 10px 10px 0;
+        }
+
+        .nav {
+            margin: 5px 0 0;
+        }
+    }
+    
 }
