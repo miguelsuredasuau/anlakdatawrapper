@@ -67,6 +67,8 @@ import NumberControlView from './NumberControlView.html';
 import NumberControlDocs from '../NumberControl.md';
 import NumberInputView from './NumberInputView.html';
 import NumberInputDocs from '../NumberInput.md';
+import OverlaysEditorView from './OverlaysEditorView.html';
+import OverlaysEditorDocs from '../OverlaysEditor.md';
 import PaginationView from './PaginationView.html';
 import PaginationDocs from '../Pagination.md';
 import PublishButtonControlView from './PublishButtonControlView.html';
@@ -263,6 +265,11 @@ addStory('NumberControl', NumberControlDocs, () => ({
 addStory('NumberInput', NumberInputDocs, () => ({
     Component: NumberInputView,
     data: { value: 42 }
+}));
+
+addStory('OverlaysEditorView', OverlaysEditorDocs, () => ({
+    Component: OverlaysEditorView,
+    data: {}
 }));
 
 addStory('RadioControl', RadioControlDocs, () => ({

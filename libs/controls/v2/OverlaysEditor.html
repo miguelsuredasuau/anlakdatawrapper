@@ -1,0 +1,379 @@
+<Group notoggle="{true}" label="{ t('overlays / h1') }">
+    <button
+        on:click="add()"
+        class="btn"
+        style="margin-bottom: 10px"
+        id="add-overlay"
+        ref:addOverlayButton
+    >
+        <i class="fa fa-plus"></i> { t('overlays / add') }
+    </button>
+
+    {#if overlays.length}
+    <ListInput
+        items="{overlayList}"
+        draggable="{true}"
+        deselectable="{true}"
+        on:itemDrag="onDrag(event)"
+        itemRenderer="{OverlayListItem}"
+        bind:selected="selectedOverlays"
+    />
+    {/if} {#if selectedOverlay}
+    <div class="well vis-option-group">
+        <RadioControl
+            bind:value="$metadata.visualize.overlays[selectedOverlays[0]].type"
+            label="{ t('overlays / type') }"
+            options="{ rangeOptions }"
+            labelWidth="90px"
+        />
+
+        {#if selectedOverlay.type === 'value' }
+        <ControlGroup labelWidth="90px" label="{ t('overlays / column') }">
+            <SelectInput
+                bind:value="$metadata.visualize.overlays[selectedOverlays[0]].from"
+                options="{columnSelectOptions}"
+                width="100%"
+            />
+        </ControlGroup>
+        {:else}
+        <ControlGroup labelWidth="90px" label="{ t('overlays / column') }">
+            <div style="display: flex; justify-content: space-between">
+                <div class="select-col">
+                    <label class="mini-label">{t('overlays / from')}</label>
+                    <SelectInput
+                        bind:value="$metadata.visualize.overlays[selectedOverlays[0]].from"
+                        options="{rangeColumnSelectOptions}"
+                        width="100%"
+                    />
+                </div>
+
+                <div class="select-col">
+                    <label class="mini-label">{t('overlays / to')}</label>
+                    <SelectInput
+                        bind:value="$metadata.visualize.overlays[selectedOverlays[0]].to"
+                        options="{rangeColumnSelectOptions}"
+                        width="100%"
+                    />
+                </div>
+            </div>
+        </ControlGroup>
+        {/if}
+
+        <TextControl
+            label="{ t('overlays / title') }"
+            labelWidth="90px"
+            bind:value="$metadata.visualize.overlays[selectedOverlays[0]].title"
+            disabled="{overlayTitleDisabled}"
+            disabledMessage="{overlayTitleDisabledMessage}"
+            help="{ t('overlays / title / help') }"
+            placeholder="{overlayPlaceholder}"
+        />
+
+        <ColorControl
+            label="{ t('overlays / color') }"
+            labelWidth="90px"
+            bind:value="$metadata.visualize.overlays[selectedOverlays[0]].color"
+        />
+
+        <NumberControl
+            label="{ t('overlays / opacity') }"
+            labelWidth="90px"
+            bind:value="$metadata.visualize.overlays[selectedOverlays[0]].opacity"
+            min="0.1"
+            max="1"
+            step="0.05"
+        />
+
+        {#if selectedOverlay.type === 'value'}
+        <SwitchControl
+            label="{ t('overlays / label-directly') }"
+            labelWidth="100%"
+            bind:value="$metadata.visualize.overlays[selectedOverlays[0]].labelDirectly"
+        />
+        {:elseif selectedOverlay.type === 'range'}
+        <ControlGroup label="{ t('overlays / pattern') }" labelWidth="90px" valign="middle">
+            <div class="controls form-inline pattern-select mt-1">
+                {#each patterns as opt}
+                <button
+                    on:click="setPattern(event,opt.value)"
+                    class="pattern {opt.value === selectedOverlay.pattern ? 'active' : ''}"
+                >
+                    {@html patternPreview(opt, getOverlayColor(selectedOverlay,
+                    $metadata.visualize['base-color'], $vis.theme()))}
+                </button>
+                {/each}
+            </div>
+        </ControlGroup>
+        {/if}
+    </div>
+    {/if}
+</Group>
+
+<script>
+    import get from 'lodash/get';
+    import { __ } from '@datawrapper/shared/l10n.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
+    import overlayColumnTitle from '@datawrapper/shared/getOverlayColumnTitle.js';
+    import getOverlayColor from '@datawrapper/shared/getOverlayColor.js';
+    import Group from './Group.html';
+    import SwitchControl from './SwitchControl.html';
+    import ColorControl from './ColorControl.html';
+    import RadioControl from './RadioControl.html';
+    import TextControl from './TextControl.html';
+    import NumberControl from './NumberControl.html';
+    import ControlGroup from './ControlGroup.html';
+    import SelectInput from './SelectInput.html';
+    import ListInput from './ListInput.html';
+    import OverlayListItem from './overlays/OverlayListItem.html';
+    import patternPreview from './overlays/patternPreview.mjs';
+
+    export default {
+        components: {
+            Group,
+            SwitchControl,
+            RadioControl,
+            TextControl,
+            ColorControl,
+            NumberControl,
+            ControlGroup,
+            SelectInput,
+            ListInput
+        },
+
+        data() {
+            return {
+                selectedOverlays: [],
+                ZERO_BASELINE: '',
+                mainAxis: ''
+            };
+        },
+
+        computed: {
+            numberColumns({ $vis }) {
+                return $vis.dataset.columns().filter(c => c.type() === 'number');
+            },
+            columnSelectOptions({ numberColumns }) {
+                const columnSelectOptions = numberColumns.map(col => {
+                    return {
+                        value: col.name(),
+                        label: purifyHtml(col.title(), '')
+                    };
+                });
+                return columnSelectOptions;
+            },
+            rangeColumnSelectOptions({ columnSelectOptions, ZERO_BASELINE }) {
+                const opts = [...columnSelectOptions];
+                opts.push({
+                    value: ZERO_BASELINE,
+                    label: __('controls / overlays / custom-area / zero')
+                });
+                return opts;
+            },
+            overlays({ $metadata }) {
+                return get($metadata, 'visualize.overlays', []);
+            },
+            overlayList({ $vis, overlays, ZERO_BASELINE }) {
+                return overlays.map((el, i) => {
+                    const fallback =
+                        el.type === 'value'
+                            ? overlayColumnTitle($vis, el.from, ZERO_BASELINE)
+                            : `${overlayColumnTitle($vis, el.from)} - ${overlayColumnTitle(
+                                  $vis,
+                                  el.to,
+                                  ZERO_BASELINE
+                              )}`;
+
+                    return {
+                        id: i,
+                        ...el,
+                        title: el.title || fallback
+                    };
+                });
+            },
+            selectedOverlay({ overlays, selectedOverlays }) {
+                if (selectedOverlays.length !== 1) return null;
+                return overlays[selectedOverlays[0]];
+            },
+            overlayPlaceholder({ selectedOverlay, $vis, ZERO_BASELINE }) {
+                if (selectedOverlay) {
+                    if (selectedOverlay.type === 'value') {
+                        return overlayColumnTitle($vis, selectedOverlay.from, ZERO_BASELINE);
+                    } else if (selectedOverlay.type === 'range') {
+                        return `${overlayColumnTitle(
+                            $vis,
+                            selectedOverlay.from,
+                            ZERO_BASELINE
+                        )} - ${overlayColumnTitle($vis, selectedOverlay.to, ZERO_BASELINE)}`;
+                    }
+                }
+            },
+            overlayTitleDisabled({ selectedOverlay, $metadata }) {
+                if (!selectedOverlay) return false;
+                return !selectedOverlay.labelDirectly && !$metadata.visualize['show-color-key'];
+            },
+            overlayTitleDisabledMessage({ overlayTitleDisabled }) {
+                if (!overlayTitleDisabled) return '';
+                return __('controls / overlays / title / disabled');
+            }
+        },
+
+        helpers: {
+            OverlayListItem,
+            getOverlayColor,
+            rangeOptions: [
+                {
+                    value: 'value',
+                    label: __('controls / overlays / type / value')
+                },
+                {
+                    value: 'range',
+                    label: __('controls / overlays / type / range')
+                }
+            ],
+            patterns: [
+                {
+                    value: 'solid',
+                    label: 'solid',
+                    rotation: 90
+                },
+                {
+                    value: 'diagonal-up',
+                    label: 'diagonal-up',
+                    rotation: 45
+                },
+                {
+                    value: 'diagonal-down',
+                    label: 'diagonal-down',
+                    rotation: 135
+                }
+            ],
+            t: id => __(`controls / ${id}`),
+            patternPreview
+        },
+
+        methods: {
+            setPattern(event, pattern) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                const { selectedOverlays } = this.get();
+                const { metadata } = this.store.get();
+                metadata.visualize.overlays[selectedOverlays[0]].pattern = pattern;
+                this.store.set({ metadata });
+            },
+            add() {
+                const { vis, metadata } = this.store.get();
+                const { ZERO_BASELINE, axisColumn, numberColumns } = this.get();
+                const mainAxis = vis.axes(true)[axisColumn];
+                let columnOptions = numberColumns;
+
+                // move column used for bars/columns to the end (so that it isn't used by default)
+                if (mainAxis) {
+                    columnOptions = numberColumns.filter(col => col.name() !== mainAxis.name());
+                    columnOptions.push(mainAxis);
+                }
+
+                const length = metadata.visualize.overlays.push({
+                    from: columnOptions[0].name(),
+                    to: columnOptions.length > 1 ? columnOptions[1].name() : ZERO_BASELINE,
+                    type: 'value',
+                    title: '',
+                    color: 0,
+                    opacity: 0.6,
+                    pattern: 'solid',
+                    labelDirectly: true
+                });
+
+                this.set({
+                    selectedOverlays: [length - 1]
+                });
+
+                metadata.visualize['show-color-key'] = true;
+
+                this.store.set({ metadata });
+            },
+            onDrag(event) {
+                const { items } = event;
+
+                // don't do anything if order of items has stayed the same
+                if (items.every((item, index) => item.id === index)) return;
+
+                // save dragged overlay and deselect
+                const { selectedOverlays } = this.get();
+                this.set({ selectedOverlays: [] });
+
+                let { overlays } = this.get();
+                // re-sort overlays using the new order of items in list
+                const updated = items.map(item => overlays[item.id]);
+                const selectedNew = items.findIndex(item => item.id === selectedOverlays[0]);
+                overlays = updated;
+
+                this.set({ selectedOverlays: [selectedNew] });
+                this.store.setMetadata('visualize.overlays', overlays);
+            }
+        },
+
+        oncreate() {
+            this.refs.addOverlayButton.addEventListener('deleteOverlay', e => {
+                const { metadata } = this.store.get();
+                metadata.visualize.overlays.splice(e.detail, 1);
+                this.store.set({ metadata });
+            });
+
+            this.refs.addOverlayButton.addEventListener('toggleOverlayVisibility', e => {
+                const { metadata } = this.store.get();
+                metadata.visualize.overlays[e.detail].invisible =
+                    !metadata.visualize.overlays[e.detail].invisible;
+                this.store.set({ metadata });
+            });
+        }
+    };
+</script>
+
+<style>
+    .pattern-select {
+        display: grid !important;
+        grid-gap: 10px 8px;
+        grid-template-columns: repeat(5, 1fr);
+        width: 100%;
+    }
+
+    .pattern {
+        background: white;
+        cursor: pointer;
+        width: 25px;
+        box-sizing: border-box;
+        border: 2px solid #fff;
+        height: 25px;
+        overflow: hidden;
+        padding: 0px;
+    }
+
+    :global(.pattern svg) {
+        width: calc(100% - 0px);
+        height: 30px;
+    }
+
+    .pattern.active {
+        border: 2px solid #18a1cd;
+    }
+
+    .pattern:focus {
+        outline: none;
+    }
+
+    .pattern:hover {
+        opacity: 0.8;
+    }
+
+    .mini-label {
+        text-transform: uppercase;
+        font-size: 11px !important;
+        font-weight: 400;
+        padding-bottom: 3px;
+    }
+
+    .select-col {
+        width: calc(50% - 5px);
+    }
+</style>

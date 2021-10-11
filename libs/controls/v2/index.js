@@ -28,6 +28,7 @@ export { default as LocaleSelectControl } from './editor/LocaleSelectControl.htm
 export { default as MoreOptionsGroup } from './MoreOptionsGroup.html';
 export { default as NumberControl } from './NumberControl.html';
 export { default as NumberInput } from './NumberInput.html';
+export { default as OverlaysEditor } from './OverlaysEditor.html';
 export { default as Pagination } from './Pagination.html';
 export { default as ProceedButtonNav } from './editor/ProceedButtonNav.html';
 export { default as ProgressBar } from './ProgressBar.html';

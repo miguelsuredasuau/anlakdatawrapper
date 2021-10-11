@@ -1,0 +1,116 @@
+<div class="container overlay-list" class:fade-out="item.invisible">
+    {@html icon}
+
+    <span class="text"> {title} </span>
+    <span class="pull-right">
+        <i
+            on:click|stopPropagation="toggleVisibility(item.id)"
+            class="fa fa-fw { item.invisible ? 'fa-eye-slash' : 'fa-eye' }"
+        ></i>
+        <i on:click|stopPropagation="deleteOverlay(item.id)" class="fa fa-fw fa-trash"></i>
+    </span>
+</div>
+
+<style>
+    .container {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .text {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .pull-right {
+        flex: 1 0 0;
+        text-align: right;
+        margin-left: 10px;
+    }
+    .pull-right .fa {
+        color: #999;
+    }
+    .pull-right .fa.fa-trash {
+        color: #c71e1d;
+        opacity: 0.2;
+        transition: opacity 0.1s;
+    }
+    .container:hover .pull-right .fa.fa-trash {
+        opacity: 1;
+    }
+
+    .fade-out {
+        opacity: 0.4;
+    }
+
+    .fa-eye {
+        opacity: 0.6;
+    }
+
+    :global(.overlay-list .value-marker) {
+        height: 14px;
+        width: 3px;
+        margin: 0px 13px 0px 8px;
+    }
+
+    :global(.overlay-list .pattern) {
+        width: 20px;
+        height: 20px;
+
+        box-sizing: border-box;
+        border: 2px solid transparent;
+
+        overflow: hidden;
+        padding: 0px;
+        margin-right: 4px;
+    }
+</style>
+
+<script>
+    import escapeHtml from '@datawrapper/shared/escapeHtml.js';
+    import getOverlayColor from '@datawrapper/shared/getOverlayColor.js';
+    import patternPreview from './patternPreview.mjs';
+
+    export default {
+        computed: {
+            title({ item }) {
+                return escapeHtml(item.title);
+            },
+            icon({ item, $metadata, $vis }) {
+                const color = getOverlayColor(
+                    item,
+                    $metadata.visualize['base-color'],
+                    $vis.theme()
+                );
+                if (item.type === 'value') {
+                    return `<div class="value-marker" style="background:${color};"></div>`;
+                } else if (item.type === 'range') {
+                    const previewMarkup = patternPreview(
+                        {
+                            value: item.pattern,
+                            rotation: {
+                                solid: 90,
+                                vertical: 0,
+                                'diagonal-up': 45,
+                                'diagonal-down': 135
+                            }[item.pattern]
+                        },
+                        color
+                    );
+                    return `<div class="pattern">${previewMarkup}</div>`;
+                }
+            }
+        },
+        methods: {
+            toggleVisibility(id) {
+                const customEvent = new CustomEvent('toggleOverlayVisibility', { detail: id });
+                document.getElementById('add-overlay').dispatchEvent(customEvent);
+            },
+            deleteOverlay(id) {
+                const customEvent = new CustomEvent('deleteOverlay', { detail: id });
+                document.getElementById('add-overlay').dispatchEvent(customEvent);
+            }
+        }
+    };
+</script>
