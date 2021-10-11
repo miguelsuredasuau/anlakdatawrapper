@@ -122,13 +122,13 @@
             title({ team }) {
                 return `${truncate(team.name, 17, 8)} » ${__('nav / team / settings')}`;
             },
-            tabs({ allTabs, team, pluginTabs, isAdmin, role }) {
+            tabs({ allTabs, team, pluginTabs, isAdmin, $role }) {
                 const tabs = [].concat(allTabs, pluginTabs);
 
                 return tabs
                     .filter(tab => {
                         if (tab.adminOnly && !isAdmin) return false;
-                        if (tab.ownerOnly && !(isAdmin || role === 'owner')) return false;
+                        if (tab.ownerOnly && !(isAdmin || $role === 'owner')) return false;
                         return true;
                     })
                     .map(tab => ({ ...tab, h1: tab.h1.replace('%team%', team.name) }));

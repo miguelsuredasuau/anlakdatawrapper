@@ -9,7 +9,7 @@ module.exports = async server => {
         path: '/products',
         options: {
             auth: {
-                access: { scope: ['+team:read', '+product:read'] }
+                access: { scope: ['+team:read'] }
             },
             validate: {
                 params: {

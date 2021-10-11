@@ -60,12 +60,20 @@
     on:confirm="updateRole(editId)"
 >
     <p>{@html ownerChangeMessage}</p>
+    {#if products.length}
+    <AlertDisplay type="'warning'" closeable="{false}" visible="{true}" class="spacing-helper">
+        <div class="confirmation-warning">
+            {@html __('teams / change-owner-confirmation / warning')}
+        </div>
+    </AlertDisplay>
+    {/if}
 </ConfirmationModal>
 
 <script>
     import TableDisplay from '@datawrapper/controls/TableDisplay.html';
     import SelectInput from '@datawrapper/controls/SelectInput.html';
     import ConfirmationModal from '@datawrapper/controls/ConfirmationModal.html';
+    import AlertDisplay from '@datawrapper/controls/AlertDisplay.html';
     import { __ } from '@datawrapper/shared/l10n';
     import httpReq from '@datawrapper/shared/httpReq';
 
@@ -76,12 +84,13 @@
     ];
 
     export default {
-        components: { TableDisplay, SelectInput, ConfirmationModal },
+        components: { TableDisplay, SelectInput, ConfirmationModal, AlertDisplay },
         data() {
             return {
                 editId: false,
                 updating: {},
-                users: []
+                users: [],
+                products: []
             };
         },
         computed: {
@@ -228,3 +237,8 @@
         }
     };
 </script>
+<style>
+    .confirmation-warning {
+        white-space: pre-line;
+    }
+</style>

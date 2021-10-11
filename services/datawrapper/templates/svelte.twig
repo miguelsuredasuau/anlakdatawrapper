@@ -25,6 +25,10 @@ require(['svelte/{{ app_id }}'], function(mod) {
             mod.store.set({ dw_chart: dw.backend.currentChart });
         }
         mod.store.set({ language: '{{language}}' });
+        if (data.store) {
+            mod.store.set(data.store);
+            delete data.store;
+        }
         app = mod.app = new App({
             store: mod.store,
             target: document.querySelector('#svelte-{{ app_id | replace({'/':'-'}) }}'),

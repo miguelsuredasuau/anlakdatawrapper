@@ -77,6 +77,7 @@
     team="{team}"
     bind:userId
     bind:users
+    bind:products
     bind:editIndex
     bind:updating
     on:updateUsers="updateUsers()"
@@ -99,21 +100,22 @@
                 editIndex: 0,
                 updating: {},
                 updatingUsers: false,
-                awaitLoadingUsers: false
+                awaitLoadingUsers: false,
+                products: []
             };
         },
         computed: {
-            role({ users, userId }) {
+            newRole({ users, userId }) {
                 if (!users || !users.length || !userId) return false;
                 const user = users.find(el => el.id === userId);
                 if (user) return user.role;
                 else return 'admin';
             },
-            isTeamOwner({ role }) {
-                return role === 'owner';
+            isTeamOwner({ $role }) {
+                return $role === 'owner';
             },
-            isTeamAdmin({ role }) {
-                return role === 'admin';
+            isTeamAdmin({ $role }) {
+                return $role === 'admin';
             }
         },
         helpers: { __ },
@@ -125,12 +127,22 @@
                         .get(`/v3/teams/${team.id}/members?limit=1000`)
                         .then(res => {
                             this.set({ users: res.list });
-                        })
+                        }),
+                    awaitLoadingProducts: httpReq.get(`/v3/teams/${team.id}/products`).then(res => {
+                        this.set({ products: res.list });
+                    })
                 });
             }
         },
         oncreate() {
             this.updateUsers();
+        },
+        onstate({ changed, current }) {
+            if (changed.newRole && current.newRole) {
+                this.store.set({
+                    role: current.newRole
+                });
+            }
         }
     };
 </script>
