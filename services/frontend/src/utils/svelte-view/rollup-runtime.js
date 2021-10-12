@@ -1,17 +1,18 @@
 'use strict';
 
+const alias = require('@rollup/plugin-alias');
+const commonjs = require('@rollup/plugin-commonjs');
+const replace = require('@rollup/plugin-replace');
 const rollup = require('rollup');
 const svelte = require('rollup-plugin-svelte');
-const { default: resolve } = require('@rollup/plugin-node-resolve');
-const commonjs = require('@rollup/plugin-commonjs');
-const alias = require('@rollup/plugin-alias');
-const replace = require('@rollup/plugin-replace');
-const { terser } = require('rollup-plugin-terser');
-const { readFile, unlink } = require('fs-extra');
-const { join } = require('path');
+const sveltePreprocess = require('svelte-preprocess');
 const tempfile = require('tempfile');
+const { default: resolve } = require('@rollup/plugin-node-resolve');
+const { join } = require('path');
+const { readFile, unlink } = require('fs-extra');
+const { terser } = require('rollup-plugin-terser');
+
 const production = process.env.NODE_ENV === 'production';
-const preprocess = require('svelte-preprocess');
 
 module.exports.build = async function (page, ssr) {
     const bundle = await rollup.rollup(buildOptions(page, ssr));
@@ -102,9 +103,7 @@ function buildOptions(page, ssr) {
                     accessors: !production,
                     customElement: page.endsWith('.element.svelte')
                 },
-                preprocess: preprocess({
-                    //
-                }),
+                preprocess: sveltePreprocess(),
                 emitCss: false
             }),
             resolve({

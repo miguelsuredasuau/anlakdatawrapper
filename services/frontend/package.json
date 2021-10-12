@@ -3,7 +3,7 @@
     "version": "2.0.0",
     "description": "The new Datawrapper frontend service using hapi",
     "scripts": {
-        "build:css": "node-sass --omit-source-map-url src/styles/index.scss static/datawrapper.css",
+        "build:css": "sass --no-source-map src/styles/index.scss static/datawrapper.css",
         "watch:css": "npm run build:css -- --watch",
         "lint": "cd ../.. && scripts/lint services/frontend",
         "format": "cd ../.. && scripts/format services/frontend"
@@ -34,12 +34,13 @@
         "dayjs": "^1.10.7",
         "ejs": "^3.1.6",
         "fs-extra": "^10.0.0",
+        "glob-parent": "^6.0.2",
         "got": "^11.5.2",
         "hapi-dev-errors": "^4.0.0",
         "hapi-pino": "^8.3.0",
         "hapi-plugin-websocket": "^2.3.5",
         "jsesc": "^3.0.1",
-        "less": "^4.1.1",
+        "less": "^3.13.1",
         "lodash": "^4.17.20",
         "openid-client": "^4.9.0",
         "pug": "^3.0.1",
@@ -47,16 +48,14 @@
         "rollup": "^2.51.0",
         "rollup-plugin-svelte": "^7.0.0",
         "rollup-plugin-terser": "^7.0.2",
-        "sass": "^1.39.0",
+        "sass": "^1.42.1",
         "svelte": "^3.31.2",
-        "svelte-preprocess": "^4.9.1",
-        "svelte-preprocess-less": "^0.4.0",
+        "svelte-preprocess": "^4.9.8",
         "tempfile": "^3.0.0",
         "underscore": "^1.12.0"
     },
     "devDependencies": {
-        "bulma": "^0.9.3",
-        "node-sass": "^6.0.0"
+        "bulma": "^0.9.3"
     },
     "peerDependencies": {
         "joi": "17.x"
