@@ -80,7 +80,7 @@
                 <label for="su-email" class="label">{__('email')}</label>
                 <input
                     id="su-email"
-                    placeholder="name@domain.tld"
+                    placeholder="name@example.com"
                     class="input"
                     class:is-danger={email && !isValidEmail(email)}
                     bind:value={email}

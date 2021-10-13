@@ -105,7 +105,7 @@
                     <label for="si-email" class="label">{__('email')}</label>
                     <input
                         id="si-email"
-                        placeholder="name@domain.tld"
+                        placeholder="name@example.com"
                         class="input"
                         class:is-danger={email && !isValidEmail(email)}
                         bind:value={email}
