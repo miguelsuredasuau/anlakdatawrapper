@@ -1,4 +1,5 @@
 <script>
+    import IconDisplay from './IconDisplay.svelte';
     import SnackbarButton from './SnackbarButton.svelte';
     import { __ } from '@datawrapper/shared/l10n.js';
 
@@ -40,15 +41,20 @@
 <style>
     .snackbar {
         position: absolute;
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 10px;
         left: 50%;
         transform: translate(-50%, 0);
         bottom: 60px;
-        margin: 0 auto;
-        display: flex;
+        justify-content: center;
         color: #fff;
+    }
+    .snackbar-row {
+        display: flex;
         box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.15);
         border-radius: 17.5px;
-        white-space: nowrap;
     }
     .closed {
         animation: 0.5s forwards fadeout;
@@ -74,6 +80,10 @@
     on:mouseout={startTimeout}
     data-uid={uid}
 >
-    <slot />
-    <SnackbarButton>{__('Close')}</SnackbarButton>
+    <div class="snackbar-row">
+        <slot />
+        <SnackbarButton title={__('Close')}
+            ><IconDisplay icon="close" color="#fff" /></SnackbarButton
+        >
+    </div>
 </div>

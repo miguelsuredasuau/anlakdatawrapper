@@ -16,6 +16,7 @@
     let closed7 = false;
     let closed8 = true;
     let closed9 = false;
+    let closed10 = false;
 
     function handleClick() {
         clicked = true;
@@ -25,6 +26,7 @@
 <style>
     .container {
         position: relative;
+        width: 660px;
         height: 120px;
         background: #eee;
     }
@@ -125,6 +127,19 @@
     <SnackbarDisplay bind:closed={closed9}>
         <SnackbarText>Successfully pasted your data into the table.</SnackbarText>
         <SnackbarButton on:click={handleClick}><i class="fa fa-undo" /> Revert</SnackbarButton>
+    </SnackbarDisplay>
+</div>
+
+<h3>with long text</h3>
+
+<div class="container">
+    <button on:click={() => (closed10 = !closed10)}>toggle</button>
+    <SnackbarDisplay bind:closed={closed10} delay="0">
+        <SnackbarText
+            >Wir haben deine Daten ersetzt. Möchtest du die eingefügten Zellen stattdessen mit
+            deinen alten Daten zusammenführen?</SnackbarText
+        >
+        <SnackbarButton on:click={handleClick}>Zusammenführen</SnackbarButton>
     </SnackbarDisplay>
 </div>
 

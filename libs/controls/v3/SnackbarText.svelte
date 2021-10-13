@@ -4,6 +4,7 @@
 
 <style>
     span {
+        display: block;
         padding-left: 15px;
         padding-right: 15px;
         padding-top: 7px;

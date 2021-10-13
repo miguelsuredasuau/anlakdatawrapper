@@ -1,5 +1,6 @@
 <script>
     export let uid;
+    export let title = null;
 </script>
 
 <style>
@@ -37,6 +38,9 @@
     button :global(i) {
         padding-right: 0.3em;
     }
+    button :global(svg) {
+        vertical-align: -0.15em;
+    }
 </style>
 
-<button data-uid={uid} on:click><slot /></button>
+<button data-uid={uid} {title} on:click><slot /></button>
