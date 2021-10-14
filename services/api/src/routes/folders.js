@@ -26,7 +26,11 @@ const routes = [
                     charts: (
                         await Chart.findAll({
                             attributes: ['id', 'title', 'type', 'theme', 'createdAt'],
-                            where: { author_id: auth.artifacts.id, in_folder: null }
+                            where: {
+                                author_id: auth.artifacts.id,
+                                in_folder: null,
+                                deleted: false
+                            }
                         })
                     ).map(cleanChart),
                     folders: await getFolders('user_id', auth.artifacts.id)
