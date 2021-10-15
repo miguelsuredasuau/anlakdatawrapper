@@ -1,113 +1,111 @@
-<Group notoggle="{true}" label="{ t('overlays / h1') }">
-    <button
-        on:click="add()"
-        class="btn"
-        style="margin-bottom: 10px"
-        id="add-overlay"
-        ref:addOverlayButton
-    >
-        <i class="fa fa-plus"></i> { t('overlays / add') }
-    </button>
+<button
+    on:click="add()"
+    class="btn"
+    style="margin-bottom: 10px"
+    id="add-overlay"
+    ref:addOverlayButton
+>
+    <i class="fa fa-plus"></i> { t('overlays / add') }
+</button>
 
-    {#if overlays.length}
-    <ListInput
-        items="{overlayList}"
-        draggable="{true}"
-        deselectable="{true}"
-        on:itemDrag="onDrag(event)"
-        itemRenderer="{OverlayListItem}"
-        bind:selected="selectedOverlays"
+{#if overlays.length}
+<ListInput
+    items="{overlayList}"
+    draggable="{true}"
+    deselectable="{true}"
+    on:itemDrag="onDrag(event)"
+    itemRenderer="{OverlayListItem}"
+    bind:selected="selectedOverlays"
+/>
+{/if} {#if selectedOverlay}
+<div class="well vis-option-group">
+    <RadioControl
+        bind:value="$metadata.visualize.overlays[selectedOverlays[0]].type"
+        label="{ t('overlays / type') }"
+        options="{ rangeOptions }"
+        labelWidth="90px"
     />
-    {/if} {#if selectedOverlay}
-    <div class="well vis-option-group">
-        <RadioControl
-            bind:value="$metadata.visualize.overlays[selectedOverlays[0]].type"
-            label="{ t('overlays / type') }"
-            options="{ rangeOptions }"
-            labelWidth="90px"
+
+    {#if selectedOverlay.type === 'value' }
+    <ControlGroup labelWidth="90px" label="{ t('overlays / column') }">
+        <SelectInput
+            bind:value="$metadata.visualize.overlays[selectedOverlays[0]].from"
+            options="{columnSelectOptions}"
+            width="100%"
         />
-
-        {#if selectedOverlay.type === 'value' }
-        <ControlGroup labelWidth="90px" label="{ t('overlays / column') }">
-            <SelectInput
-                bind:value="$metadata.visualize.overlays[selectedOverlays[0]].from"
-                options="{columnSelectOptions}"
-                width="100%"
-            />
-        </ControlGroup>
-        {:else}
-        <ControlGroup labelWidth="90px" label="{ t('overlays / column') }">
-            <div style="display: flex; justify-content: space-between">
-                <div class="select-col">
-                    <label class="mini-label">{t('overlays / from')}</label>
-                    <SelectInput
-                        bind:value="$metadata.visualize.overlays[selectedOverlays[0]].from"
-                        options="{rangeColumnSelectOptions}"
-                        width="100%"
-                    />
-                </div>
-
-                <div class="select-col">
-                    <label class="mini-label">{t('overlays / to')}</label>
-                    <SelectInput
-                        bind:value="$metadata.visualize.overlays[selectedOverlays[0]].to"
-                        options="{rangeColumnSelectOptions}"
-                        width="100%"
-                    />
-                </div>
+    </ControlGroup>
+    {:else}
+    <ControlGroup labelWidth="90px" label="{ t('overlays / column') }">
+        <div style="display: flex; justify-content: space-between">
+            <div class="select-col">
+                <label class="mini-label">{t('overlays / from')}</label>
+                <SelectInput
+                    bind:value="$metadata.visualize.overlays[selectedOverlays[0]].from"
+                    options="{rangeColumnSelectOptions}"
+                    width="100%"
+                />
             </div>
-        </ControlGroup>
-        {/if}
 
-        <TextControl
-            label="{ t('overlays / title') }"
-            labelWidth="90px"
-            bind:value="$metadata.visualize.overlays[selectedOverlays[0]].title"
-            disabled="{overlayTitleDisabled}"
-            disabledMessage="{overlayTitleDisabledMessage}"
-            help="{ t('overlays / title / help') }"
-            placeholder="{overlayPlaceholder}"
-        />
-
-        <ColorControl
-            label="{ t('overlays / color') }"
-            labelWidth="90px"
-            bind:value="$metadata.visualize.overlays[selectedOverlays[0]].color"
-        />
-
-        <NumberControl
-            label="{ t('overlays / opacity') }"
-            labelWidth="90px"
-            bind:value="$metadata.visualize.overlays[selectedOverlays[0]].opacity"
-            min="0.1"
-            max="1"
-            step="0.05"
-        />
-
-        {#if selectedOverlay.type === 'value'}
-        <SwitchControl
-            label="{ t('overlays / label-directly') }"
-            labelWidth="100%"
-            bind:value="$metadata.visualize.overlays[selectedOverlays[0]].labelDirectly"
-        />
-        {:elseif selectedOverlay.type === 'range'}
-        <ControlGroup label="{ t('overlays / pattern') }" labelWidth="90px" valign="middle">
-            <div class="controls form-inline pattern-select mt-1">
-                {#each patterns as opt}
-                <button
-                    on:click="setPattern(event,opt.value)"
-                    class="pattern {opt.value === selectedOverlay.pattern ? 'active' : ''}"
-                >
-                    {@html patternPreview(opt, getOverlayColor(selectedOverlay,
-                    $metadata.visualize['base-color'], $vis.theme()))}
-                </button>
-                {/each}
+            <div class="select-col">
+                <label class="mini-label">{t('overlays / to')}</label>
+                <SelectInput
+                    bind:value="$metadata.visualize.overlays[selectedOverlays[0]].to"
+                    options="{rangeColumnSelectOptions}"
+                    width="100%"
+                />
             </div>
-        </ControlGroup>
-        {/if}
-    </div>
+        </div>
+    </ControlGroup>
     {/if}
-</Group>
+
+    <TextControl
+        label="{ t('overlays / title') }"
+        labelWidth="90px"
+        bind:value="$metadata.visualize.overlays[selectedOverlays[0]].title"
+        disabled="{overlayTitleDisabled}"
+        disabledMessage="{overlayTitleDisabledMessage}"
+        help="{ t('overlays / title / help') }"
+        placeholder="{overlayPlaceholder}"
+    />
+
+    <ColorControl
+        label="{ t('overlays / color') }"
+        labelWidth="90px"
+        bind:value="$metadata.visualize.overlays[selectedOverlays[0]].color"
+    />
+
+    <NumberControl
+        label="{ t('overlays / opacity') }"
+        labelWidth="90px"
+        bind:value="$metadata.visualize.overlays[selectedOverlays[0]].opacity"
+        min="0.1"
+        max="1"
+        step="0.05"
+    />
+
+    {#if selectedOverlay.type === 'value'}
+    <SwitchControl
+        label="{ t('overlays / label-directly') }"
+        labelWidth="100%"
+        bind:value="$metadata.visualize.overlays[selectedOverlays[0]].labelDirectly"
+    />
+    {:elseif selectedOverlay.type === 'range'}
+    <ControlGroup label="{ t('overlays / pattern') }" labelWidth="90px" valign="middle">
+        <div class="controls form-inline pattern-select mt-1">
+            {#each patterns as opt}
+            <button
+                on:click="setPattern(event,opt.value)"
+                class="pattern {opt.value === selectedOverlay.pattern ? 'active' : ''}"
+            >
+                {@html patternPreview(opt, getOverlayColor(selectedOverlay,
+                $metadata.visualize['base-color'], $vis.theme()))}
+            </button>
+            {/each}
+        </div>
+    </ControlGroup>
+    {/if}
+</div>
+{/if}
 
 <script>
     import get from 'lodash/get';
@@ -263,14 +261,16 @@
             },
             add() {
                 const { vis, metadata } = this.store.get();
-                const { ZERO_BASELINE, axisColumn, numberColumns } = this.get();
-                const mainAxis = vis.axes(true)[axisColumn];
+                const { ZERO_BASELINE, mainAxis, numberColumns } = this.get();
                 let columnOptions = numberColumns;
 
-                // move column used for bars/columns to the end (so that it isn't used by default)
-                if (mainAxis) {
-                    columnOptions = numberColumns.filter(col => col.name() !== mainAxis.name());
-                    columnOptions.push(mainAxis);
+                if (mainAxis && vis.axes(true)[mainAxis]) {
+                    // move column used for bars/columns to the end (so that it isn't used by default)
+                    const mainAxisColumn = vis.axes(true)[mainAxis];
+                    columnOptions = numberColumns.filter(
+                        col => col.name() !== mainAxisColumn.name()
+                    );
+                    columnOptions.push(mainAxisColumn);
                 }
 
                 const length = metadata.visualize.overlays.push({
