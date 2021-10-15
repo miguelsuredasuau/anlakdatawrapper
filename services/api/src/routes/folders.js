@@ -107,7 +107,7 @@ const routes = [
                     'Organization that the folder belongs to. If organizationId is empty, the folder will belong to the user directly.'
                 ),
             parentId: Joi.number().optional(),
-            name: Joi.string()
+            name: Joi.string().required()
         }),
         async handler(request, h) {
             const { auth, server, payload } = request;
