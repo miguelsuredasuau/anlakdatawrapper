@@ -1,4 +1,5 @@
 <button
+    disabled="{disabled}"
     on:click="add()"
     class="btn"
     style="margin-bottom: 10px"
@@ -8,7 +9,9 @@
     <i class="fa fa-plus"></i> { t('overlays / add') }
 </button>
 
-{#if overlays.length}
+{#if disabled && disabledMessage}
+<p class="mini-help">{disabledMessage}</p>
+{/if} {#if overlays.length && !disabled}
 <ListInput
     items="{overlayList}"
     draggable="{true}"
@@ -17,7 +20,7 @@
     itemRenderer="{OverlayListItem}"
     bind:selected="selectedOverlays"
 />
-{/if} {#if selectedOverlay}
+{/if} {#if selectedOverlay && !disabled}
 <div class="well vis-option-group">
     <RadioControl
         bind:value="$metadata.visualize.overlays[selectedOverlays[0]].type"
@@ -83,7 +86,7 @@
         step="0.05"
     />
 
-    {#if selectedOverlay.type === 'value'}
+    {#if selectedOverlay.type === 'value' && enableDirectLabeling}
     <SwitchControl
         label="{ t('overlays / label-directly') }"
         labelWidth="100%"
@@ -113,7 +116,6 @@
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import overlayColumnTitle from '@datawrapper/shared/getOverlayColumnTitle.js';
     import getOverlayColor from '@datawrapper/shared/getOverlayColor.js';
-    import Group from './Group.html';
     import SwitchControl from './SwitchControl.html';
     import ColorControl from './ColorControl.html';
     import RadioControl from './RadioControl.html';
@@ -127,7 +129,6 @@
 
     export default {
         components: {
-            Group,
             SwitchControl,
             RadioControl,
             TextControl,
@@ -142,7 +143,9 @@
             return {
                 selectedOverlays: [],
                 ZERO_BASELINE: '',
-                mainAxis: ''
+                mainAxis: '',
+                enableDirectLabeling: false,
+                disabled: false
             };
         },
 
