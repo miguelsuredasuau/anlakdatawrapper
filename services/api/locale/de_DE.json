@@ -967,7 +967,7 @@
   "upload / remote / disconnect": "Verbindung trennen",
   "upload / remote / reconnect": "Erneut verbinden",
   "upload / file / button": "Datei hochladen",
-  "publish / embed / explanation": "Wie du deine Visualisierung auf einer bestimmten Plattform einbetten kannst (z. B. Wordpress, Powerpoint), <a href=\\\"https://academy.datawrapper.de/article/180-how-to-embed-charts\\\" target=\\\"_blank\\\" rel=\\\"noopener noreferrer\\\">erfährst du in unserer Dokumentation</a>.",
+  "publish / embed / explanation": "Wie du deine Visualisierung auf einer bestimmten Plattform einbetten kannst (z. B. Wordpress, Powerpoint), <a href=\"https://academy.datawrapper.de/article/180-how-to-embed-charts\" target=\"_blank\" rel=\"noopener noreferrer\">erfährst du in unserer Dokumentation</a>.",
   "describe / revert / paste / button": "Zusammenführen",
   "describe / revert / paste / message": "Wir haben deine Daten ersetzt. Möchtest du die eingefügten Zellen stattdessen mit deinen alten Daten zusammenführen?",
   "controls / overlays / h1": "Überlagerungen",
