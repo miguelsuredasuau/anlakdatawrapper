@@ -4,6 +4,7 @@ const Crumb = require('@hapi/crumb');
 const Joi = require('joi');
 const HapiSwagger = require('hapi-swagger');
 const get = require('lodash/get');
+const set = require('lodash/set');
 const ORM = require('@datawrapper/orm');
 const fs = require('fs-extra');
 const path = require('path');
@@ -19,6 +20,9 @@ const registerVisualizations = require('@datawrapper/service-utils/registerVisua
 const { generateToken, loadChart, copyChartAssets } = require('./utils');
 const { addScope, translate } = require('@datawrapper/service-utils/l10n');
 const { ApiEventEmitter, eventList } = require('./utils/events');
+const { createHash } = require('crypto');
+const { promisify } = require('util');
+const readFile = promisify(require('fs').readFile);
 
 const pkg = require('../package.json');
 const configPath = findConfigPath();
@@ -142,18 +146,11 @@ async function getVersionInfo() {
     const { version } = pkg;
     const { COMMIT } = process.env;
     if (COMMIT) {
-        return { commit: COMMIT, version: `${version} (${COMMIT})` };
+        return { commit: COMMIT, version: `${version} (${COMMIT.substr(0, 8)})` };
     }
 
-    try {
-        const { promisify } = require('util');
-        const exec = promisify(require('child_process').exec);
-        const { stdout } = await exec('git rev-parse --short HEAD');
-        const commit = stdout.trim();
-        return { commit, version: `${version} (${commit})` };
-    } catch (error) {
-        return { version };
-    }
+    const commit = (await readFile(path.join(__dirname, '..', '.githead'), 'utf-8')).trim();
+    return { commit, version: `${version} (${commit.substr(0, 8)})` };
 }
 
 function usesCookieAuth(request) {
@@ -170,7 +167,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
                 timestamp: () => `,"time":"${new Date().toISOString()}"`,
                 logEvents: ['request', 'log', 'onPostStart', 'onPostStop', 'request-error'],
                 level: getLogLevel(),
-                base: { name: commit || version },
+                base: { name: commit ? commit.substr(0, 8) : version },
                 redact: [
                     'req.headers.authorization',
                     'req.headers.cookie',
@@ -193,6 +190,35 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
             }
         }
     ]);
+
+    if (config.api.sentry) {
+        await server.register({
+            plugin: require('hapi-sentry'),
+            options: {
+                client: {
+                    release: commit,
+                    serverName: 'api',
+                    ...config.api.sentry.client,
+                    beforeSend(event) {
+                        // make sure to scrub sensitive information before
+                        // sending it to Sentry
+                        [
+                            'request.cookies.DW-SESSION',
+                            'request.headers.cookie',
+                            'user.session'
+                        ].forEach(field => {
+                            const value = get(event, field);
+                            if (value) {
+                                set(event, field, createHash('sha256').update(value).digest('hex'));
+                            }
+                        });
+                        return event;
+                    }
+                },
+                scope: config.api.sentry.scope
+            }
+        });
+    }
 
     server.ext('onPostAuth', (request, h) => {
         if (request.auth.credentials?.data?.get && request._states[CSRF_COOKIE_NAME]) {
