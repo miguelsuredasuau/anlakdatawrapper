@@ -100,7 +100,9 @@ async function exportChart(request, h) {
     const chart = await server.methods.loadChart(params.id);
 
     const mayEdit = await user.mayEditChart(chart);
+    const mayPublish = await chart.isPublishableBy(user);
     if (!mayEdit) return Boom.notFound();
+    if (!mayPublish) return Boom.unauthorized();
 
     // user is authorized to access chart
     // further authoritzation is handled by plugins

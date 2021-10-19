@@ -45,3 +45,42 @@ test('Invalid export format returns 400', async t => {
     // this should be a Bad Request
     t.is(res.statusCode, 400);
 });
+
+test('Guests not allowed to export PNG', async t => {
+    // create guest session
+    let res = await t.context.server.inject({
+        method: 'POST',
+        url: '/v3/auth/session'
+    });
+    const sessionToken = res.result['DW-SESSION'];
+
+    // create a new guest chart
+    const chart = await t.context.server.inject({
+        method: 'POST',
+        url: '/v3/charts',
+        headers: {
+            cookie: `DW-SESSION=${sessionToken}; crumb=abc`,
+            'X-CSRF-Token': 'abc',
+            referer: 'http://localhost'
+        },
+        payload: {
+            metadata: {
+                annotate: {
+                    notes: 'note-1'
+                }
+            }
+        }
+    });
+    // export should fail
+    res = await t.context.server.inject({
+        method: 'GET',
+        url: `/v3/charts/${chart.result.id}/export/png`,
+        headers: {
+            cookie: `DW-SESSION=${sessionToken}; crumb=abc`,
+            'X-CSRF-Token': 'abc',
+            referer: 'http://localhost'
+        },
+        payload: {}
+    });
+    t.is(res.statusCode, 401);
+});
