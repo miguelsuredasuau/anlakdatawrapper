@@ -564,12 +564,13 @@ Please make sure you called __(key) with a key of type "string".
 
     let contentBelowChart;
     $: contentBelowChart =
-        regions.aboveFooter.length ||
-        regions.footerLeft.length ||
-        regions.footerCenter.length ||
-        regions.footerRight.length ||
-        regions.belowFooter.length ||
-        regions.afterBody.length;
+        !isStylePlain &&
+        (regions.aboveFooter.length ||
+            regions.footerLeft.length ||
+            regions.footerCenter.length ||
+            regions.footerRight.length ||
+            regions.belowFooter.length ||
+            regions.afterBody.length);
 </script>
 
 {#if !isStylePlain}
