@@ -984,7 +984,7 @@
   "controls / overlays / title / disabled": "Enable show color key to set a title to display in the color key.",
   "controls / overlays / pattern": "Pattern",
   "controls / overlays / from": "From",
-  "controls / overlays / to": "From",
+  "controls / overlays / to": "To",
   "controls / overlays / disabled / tick position / overlays": "When overlays are labeled directly, the grid cannot be placed above the chart.",
   "publish / help / share-url / fullscreen": "The <strong>visualization only</strong> URL will show your chart sized to fill the entire browser window.",
   "controls / overlays / custom-area / zero": "( zero baseline )",
