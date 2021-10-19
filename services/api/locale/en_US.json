@@ -995,5 +995,6 @@
   "teams / change-owner-confirmation / back": "Back",
   "teams / change-owner-confirmation / warning": "Your account is currently associated with a paid subscription. The paid plan is also activated for any teams owned by you. By transferring ownership to another user, the team will lose access to the paid plan's features.\n\nIf you wish to transfer both your subscription and your team to another user, please contact support.",
   "teams / change-owner-confirmation / owner-message": "As a result, you will lose your team owner status.",
-  "teams / change-owner-confirmation / non-owner-message": "As a result, %member% will lose their team owner status."
+  "teams / change-owner-confirmation / non-owner-message": "As a result, %member% will lose their team owner status.",
+  "signup / or-try-free": "or <a href=\"/chart/create\">try out Datawrapper</a> without signing up"
 }

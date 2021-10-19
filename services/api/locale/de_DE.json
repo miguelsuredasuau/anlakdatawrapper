@@ -995,5 +995,6 @@
   "teams / change-owner-confirmation / back": "Zurück",
   "teams / change-owner-confirmation / warning": "Dein Konto ist derzeit mit einem kostenpflichtigen Abonnement verknüpft. Das Abonnement wird auch für alle Teams aktiviert, die dir gehören. Durch die Übertragung des Teams an einen anderen Benutzer verliert das Team den Zugriff auf die Funktionen des Abonnement. \n\nWenn du sowohl dein Abonnement als auch dein Team auf einen anderen Benutzer übertragen möchten, wende dich bitte an den Support.",
   "teams / change-owner-confirmation / owner-message": "Infolgedessen verlierst du deinen Teambesitzer-Status.",
-  "teams / change-owner-confirmation / non-owner-message": "Infolgedessen verliert %member% den Status als Teambesitzer."
+  "teams / change-owner-confirmation / non-owner-message": "Infolgedessen verliert %member% den Status als Teambesitzer.",
+  "signup / or-try-free": "oder <a href=\"/chart/create\">probiere Datawrapper</a>, ohne dich anzumelden"
 }

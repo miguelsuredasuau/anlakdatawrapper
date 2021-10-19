@@ -967,7 +967,7 @@
   "upload / remote / disconnect": "Verbindung trennen",
   "upload / remote / reconnect": "Erneut verbinden",
   "upload / file / button": "Datei hochladen",
-  "publish / embed / explanation": "Wie du deine Visualisierung auf einer bestimmten Plattform einbetten kannst (z. B. Wordpress, Powerpoint), <a href=\\\"https://academy.datawrapper.de/article/180-how-to-embed-charts\\\" target=\\\"_blank\\\" rel=\\\"noopener noreferrer\\\">erfährst du in unserer Dokumentation</a>.",
+  "publish / embed / explanation": "Wie du deine Visualisierung auf einer bestimmten Plattform einbetten kannst (z. B. Wordpress, Powerpoint), <a href=\"https://academy.datawrapper.de/article/180-how-to-embed-charts\" target=\"_blank\" rel=\"noopener noreferrer\">erfährst du in unserer Dokumentation</a>.",
   "describe / revert / paste / button": "Zusammenführen",
   "describe / revert / paste / message": "Wir haben deine Daten ersetzt. Möchtest du die eingefügten Zellen stattdessen mit deinen alten Daten zusammenführen?",
   "controls / overlays / h1": "Überlagerungen",
@@ -995,5 +995,6 @@
   "teams / change-owner-confirmation / back": "Zurück",
   "teams / change-owner-confirmation / warning": "Dein Konto ist derzeit mit einem kostenpflichtigen Abonnement verknüpft. Das Abonnement wird auch für alle Teams aktiviert, die dir gehören. Durch die Übertragung des Teams an einen anderen Benutzer verliert das Team den Zugriff auf die Funktionen des Abonnement. \n\nWenn du sowohl dein Abonnement als auch dein Team auf einen anderen Benutzer übertragen möchten, wende dich bitte an den Support.",
   "teams / change-owner-confirmation / owner-message": "Infolgedessen verlierst du deinen Teambesitzer-Status.",
-  "teams / change-owner-confirmation / non-owner-message": "Infolgedessen verliert %member% den Status als Teambesitzer."
+  "teams / change-owner-confirmation / non-owner-message": "Infolgedessen verliert %member% den Status als Teambesitzer.",
+  "signup / or-try-free": "oder <a href=\"/chart/create\">probiere Datawrapper</a>, ohne dich anzumelden"
 }
