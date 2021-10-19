@@ -189,7 +189,8 @@
                 on:click|preventDefault={() => {
                     step = 'signup';
                 }}>{__('signup / create-account')}</a
-            >.
+            >
+            {@html __('signup / or-try-free')}.
         </p>
     {/if}
 </div>
