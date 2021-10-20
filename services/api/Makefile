@@ -1,20 +1,20 @@
-export DW_CONFIG_PATH ?= test/config.docker.js
+export DW_CONFIG_PATH ?= /app/services/api/test/config.docker.js
 m ?= *
 
 docker_compose := docker-compose -f docker-compose-test.yml
 
 .PHONY: test
 test: | test-setup  ## Run unit tests
-	$(MAKE) test-run cmd="sh -c 'cd /app && npm test -- -m \"$(m)\"'"
+	$(MAKE) test-run cmd="sh -c 'cd /app/services/api && npm test -- -m \"$(m)\"'"
 
 .PHONY: test-coverage
 test-coverage: | test-setup  ## Run unit tests with coverage report
-	$(MAKE) test-run cmd="sh -c 'cd /app && npm run test:coverage -- -m \"$(m)\"'"
+	$(MAKE) test-run cmd="sh -c 'cd /app/services/api && npm run test:coverage -- -m \"$(m)\"'"
 
 .PHONY: test-setup
 test-setup:  ## Create the testing database if it isn't running
 	[[ -n $$($(docker_compose) ps --services --filter status=running mysql) ]] || \
-		$(MAKE) test-run cmd="sh -c 'cd /app && scripts/wait-for-db.sh && node scripts/sync-db.js'"
+		$(MAKE) test-run cmd="sh -c '/app/services/api/scripts/wait-for-db.sh && /app/scripts/sync-db.js'"
 
 .PHONY: test-teardown
 test-teardown:  ## Stop and remove the testing database
