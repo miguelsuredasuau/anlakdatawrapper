@@ -996,5 +996,8 @@
   "teams / change-owner-confirmation / warning": "",
   "teams / change-owner-confirmation / owner-message": "",
   "teams / change-owner-confirmation / non-owner-message": "",
-  "signup / or-try-free": ""
+  "signup / or-try-free": "",
+  "describe / revert / delete-row / message": "",
+  "describe / revert / delete-row / button": "",
+  "describe / revert / delete-rows / message": ""
 }
