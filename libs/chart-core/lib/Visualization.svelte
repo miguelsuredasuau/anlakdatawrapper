@@ -394,9 +394,10 @@ Please make sure you called __(key) with a key of type "string".
             }
         });
 
+        const useDwCdn = get(chart, 'metadata.data.use-datawrapper-cdn', true);
+
         const externalJSON =
-            get(chart, 'metadata.data.use-datawrapper-cdn') &&
-            get(chart, 'metadata.data.external-metadata', '').length
+            useDwCdn && get(chart, 'metadata.data.external-metadata', '').length
                 ? `//${externalDataUrl}/${chart.id}.metadata.json`
                 : get(chart, 'metadata.data.external-metadata');
 
@@ -406,7 +407,10 @@ Please make sure you called __(key) with a key of type "string".
             get(chart, 'metadata.data.upload-method') === 'external-data'
         ) {
             try {
-                const res = await window.fetch(externalJSON);
+                const now = new Date().getTime();
+                const ts = useDwCdn ? now - (now % 60000) : now;
+                const url = `${externalJSON}${externalJSON.includes('?') ? '&' : '?'}v=${ts}`;
+                const res = await window.fetch(url);
                 const obj = await res.json();
                 if (obj.title) {
                     chart.title = obj.title;
