@@ -11,20 +11,23 @@ module.exports = {
         });
         server.ext('onPostResponse', async request => {
             setTimeout(() => {
-                matomo.post({
-                    searchParams: new URLSearchParams([
-                        ['idsite', config.matomo.idsite],
-                        ['rec', '1'],
-                        ['url', request.url.href.replace(request.url.origin, apiDomain)],
-                        ['uid', request.auth?.artifacts?.id],
-                        ['rand', Math.random()],
-                        ['apiv', 1]
-                    ]),
-                    headers: {
-                        // pass on IP to matomo
-                        HTTP_X_FORWARDED_FOR: request.headers.HTTP_X_FORWARDED_FOR
-                    }
-                });
+                try {
+                    matomo.post({
+                        searchParams: new URLSearchParams([
+                            ['idsite', config.matomo.idsite],
+                            ['rec', '1'],
+                            ['url', request.url.href.replace(request.url.origin, apiDomain)],
+                            ['uid', request.auth?.artifacts?.id],
+                            ['rand', Math.random()],
+                            ['apiv', 1]
+                        ]),
+                        headers: {
+                            // pass on IP to matomo
+                            HTTP_X_FORWARDED_FOR: request.headers.HTTP_X_FORWARDED_FOR
+                        }
+                    });
+                    // eslint-disable-next-line
+                } catch (err) {}
             });
             return;
         });
