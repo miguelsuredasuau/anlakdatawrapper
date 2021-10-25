@@ -4,7 +4,6 @@ const Crumb = require('@hapi/crumb');
 const Joi = require('joi');
 const HapiSwagger = require('hapi-swagger');
 const get = require('lodash/get');
-const set = require('lodash/set');
 const ORM = require('@datawrapper/orm');
 const fs = require('fs-extra');
 const path = require('path');
@@ -20,7 +19,6 @@ const registerVisualizations = require('@datawrapper/service-utils/registerVisua
 const { generateToken, loadChart, copyChartAssets } = require('./utils');
 const { addScope, translate } = require('@datawrapper/service-utils/l10n');
 const { ApiEventEmitter, eventList } = require('./utils/events');
-const { createHash } = require('crypto');
 const { promisify } = require('util');
 const readFile = promisify(require('fs').readFile);
 
@@ -191,33 +189,17 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
         }
     ]);
 
+    server.method('config', key => (key ? get(config, key) : config));
+
     if (config.api.sentry) {
         await server.register({
-            plugin: require('hapi-sentry'),
-            options: {
-                client: {
-                    release: commit,
-                    serverName: 'api',
-                    ...config.api.sentry.client,
-                    beforeSend(event) {
-                        // make sure to scrub sensitive information before
-                        // sending it to Sentry
-                        [
-                            'request.cookies.DW-SESSION',
-                            'request.headers.cookie',
-                            'user.session'
-                        ].forEach(field => {
-                            const value = get(event, field);
-                            if (value) {
-                                set(event, field, createHash('sha256').update(value).digest('hex'));
-                            }
-                        });
-                        return event;
-                    }
-                },
-                scope: config.api.sentry.scope
-            }
+            plugin: require('./utils/sentry'),
+            options: { commit }
         });
+    }
+
+    if (config.api.matomo) {
+        await server.register(require('./utils/matomo'));
     }
 
     server.ext('onPostAuth', (request, h) => {
@@ -277,7 +259,6 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     server.app.adminScopes = new Set();
 
     server.method('getModel', name => ORM.db.models[name]);
-    server.method('config', key => (key ? get(config, key) : config));
     server.method('generateToken', generateToken);
     server.method('logAction', require('@datawrapper/orm/utils/action').logAction);
     server.method('createChartWebsite', require('./publish/create-chart-website.js'));
