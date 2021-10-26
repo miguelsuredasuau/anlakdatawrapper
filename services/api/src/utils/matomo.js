@@ -10,11 +10,15 @@ module.exports = {
             url: config.matomo.endpoint
         });
         server.ext('onPostResponse', async request => {
-            setTimeout(() => {
+            setTimeout(async () => {
                 try {
-                    matomo.post({
+                    const title = request.route
+                        ? `${request.route.method.toUpperCase()} ${request.route.path}`
+                        : '';
+                    await matomo.post({
                         searchParams: new URLSearchParams([
                             ['idsite', config.matomo.idsite],
+                            ['action_name', title],
                             ['rec', '1'],
                             ['url', request.url.href.replace(request.url.origin, apiDomain)],
                             ['uid', request.auth?.artifacts?.id],
