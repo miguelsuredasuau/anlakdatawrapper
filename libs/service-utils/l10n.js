@@ -19,7 +19,7 @@ function getScope(scope, locale = defaultLanguage) {
     if (scopes[scope][locale]) {
         return scopes[scope][locale];
     }
-    console.error(`l10n: Unknown locale "${locale}" for scope "${scope}"`);
+    // console.error(`l10n: Unknown locale "${locale}" for scope "${scope}"`);
     return {};
 }
 
