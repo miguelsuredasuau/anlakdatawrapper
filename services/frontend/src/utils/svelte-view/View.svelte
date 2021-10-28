@@ -1,10 +1,41 @@
 <script>
     import { setContext, getContext } from 'svelte';
     import { writable } from 'svelte/store';
-
     import View from '__view__';
 
+    import dayjs from 'dayjs';
+    import relativeTime from 'dayjs/plugin/relativeTime';
+
+    import de from 'dayjs/locale/de';
+    import es from 'dayjs/locale/es';
+    import fr from 'dayjs/locale/fr';
+    import it from 'dayjs/locale/it';
+    import zh from 'dayjs/locale/zh';
+
     export let stores = {};
+
+    // prepare dayjs library
+    const dayjsLocales = {
+        de,
+        es,
+        fr,
+        it,
+        zh
+    };
+    const userLang = stores.user.language;
+    dayjs.extend(relativeTime);
+    if (dayjsLocales[userLang.substr(0, 2)]) {
+        dayjs.locale(dayjsLocales[userLang.substr(0, 2)]);
+    }
+    // export libraries as context
+    setContext('libraries', { dayjs });
+
+    // register view components, which are injected via rollup at SSR runtime
+    // by replacing the IMPORT_VIEW_COMP... line below
+    const viewComponents = new Map();
+    // eslint-disable-next-line no-undef
+    IMPORT_VIEW_COMPONENTS;
+    setContext('viewComponents', viewComponents);
 
     export function getValue(key) {
         return view[key];

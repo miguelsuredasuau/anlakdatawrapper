@@ -13,6 +13,11 @@ const { readFile, unlink } = require('fs-extra');
 const { terser } = require('rollup-plugin-terser');
 
 const production = process.env.NODE_ENV === 'production';
+let server;
+
+module.exports.init = function (_server) {
+    server = _server;
+};
 
 module.exports.build = async function (page, ssr) {
     const bundle = await rollup.rollup(buildOptions(page, ssr));
@@ -81,12 +86,24 @@ module.exports.watch = async function (page, callback) {
 };
 
 function buildOptions(page, ssr) {
+    if (!server) throw new Error('need to initialize first');
+    const viewComponents = server.methods.getViewComponents(page);
     return {
         input: join('src/utils/svelte-view/View.svelte'), // join('src/views', page),
         plugins: [
             replace({
                 values: {
-                    __view__: join('../../views', page)
+                    __view__: join('../../views', page),
+                    IMPORT_VIEW_COMPONENTS: viewComponents
+                        .map(({ id, view }, i) => {
+                            const viewVar = `view_component_${i}`;
+                            const viewPath = join('../../views', view);
+                            return [
+                                `import ${viewVar} from '${viewPath}';`,
+                                `viewComponents.set('${id}', ${viewVar});`
+                            ].join('\n');
+                        })
+                        .join('\n')
                 },
                 preventAssignment: true
             }),
@@ -112,6 +129,17 @@ function buildOptions(page, ssr) {
             }),
             commonjs(),
             production && terser()
-        ]
+        ],
+        onwarn
     };
+}
+
+function onwarn(warning, handler) {
+    if (
+        warning.code === 'CIRCULAR_DEPENDENCY' &&
+        warning.importer.includes('node_modules/xmlbuilder')
+    ) {
+        return;
+    }
+    handler(warning);
 }

@@ -6,11 +6,12 @@ const { join, relative } = require('path');
 const { readFile } = require('fs').promises;
 const parallelLimit = require('async/parallelLimit');
 const { setCache, withCache } = require('./cache');
-const { build, watch } = require('./rollup-runtime');
+const { build, watch, init } = require('./rollup-runtime');
 const ejs = require('ejs');
 const jsesc = require('jsesc');
 
 let template;
+let server;
 
 const templateQueue = [];
 const watchers = new Set();
@@ -103,6 +104,8 @@ const SvelteView = {
                 template = await readFile(join(__dirname, 'template.ejs'), 'utf8');
             }
 
+            const config = server.methods.config();
+
             if (process.env.DW_DEV_MODE) {
                 watchPage(page).on('change', result => setCache(page, result));
             }
@@ -149,7 +152,9 @@ const SvelteView = {
                         isScriptContext: true,
                         json: true,
                         wrap: true
-                    })
+                    }),
+                    DW_DOMAIN: config.api.domain,
+                    MATOMO: config.frontend.matomo || null
                 });
                 return output;
             } catch (err) {
@@ -166,7 +171,12 @@ const SvelteView = {
             }
         };
     },
-    context: require('./context')
+    context: require('./context'),
+    init(_server) {
+        server = _server;
+        // also initialize rollup-runtime
+        init(_server);
+    }
 };
 
 module.exports = {
@@ -175,5 +185,10 @@ module.exports = {
     prepareAllViews,
     transpileView,
     SvelteView,
-    wsClients
+    wsClients,
+    watchPage(page) {
+        if (process.env.DW_DEV_MODE) {
+            watchPage(page).on('change', result => setCache(page, result));
+        }
+    }
 };

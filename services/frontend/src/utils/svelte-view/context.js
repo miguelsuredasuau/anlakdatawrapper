@@ -38,12 +38,14 @@ module.exports = function (request) {
                 auth.isAuthenticated && auth.artifacts && auth.artifacts.id
                     ? {
                           id: auth.artifacts.id,
-                          name: auth.artifacts.email,
+                          name: auth.artifacts.name || auth.artifacts.email,
+                          email: auth.artifacts.email,
                           language: userLang,
                           isAdmin: auth.artifacts.isAdmin(),
                           isGuest: false,
                           teams: auth.artifacts.teams,
-                          activeTeam: auth.artifacts.activeTeam
+                          activeTeam: auth.artifacts.activeTeam,
+                          isActivated: auth.artifacts.role !== 'pending'
                       }
                     : {
                           id: -1,

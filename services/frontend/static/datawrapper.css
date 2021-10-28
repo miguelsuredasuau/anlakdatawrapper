@@ -10155,6 +10155,10 @@ html {
   box-shadow: none;
 }
 
+.box {
+  border-radius: 4px;
+}
+
 .help {
   line-height: 1.3;
 }

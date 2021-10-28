@@ -1,4 +1,4 @@
-const { getUserLanguage } = require('./index');
+const { getUserLanguage, byOrder } = require('./index');
 
 module.exports = {
     name: 'header-links',
@@ -51,10 +51,6 @@ module.exports = {
                 return link;
             });
         });
-
-        function byOrder(a, b) {
-            return a.order !== undefined && b.order !== undefined ? a.order - b.order : 0;
-        }
 
         const frontendConfig = server.methods.config('frontend');
 

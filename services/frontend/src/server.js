@@ -18,6 +18,7 @@ const path = require('path');
 const { getUserLanguage } = require('./utils');
 const headerLinks = require('./utils/header-links');
 const adminPages = require('./utils/admin-pages');
+const viewComponents = require('./utils/view-components');
 const {
     SvelteView,
     getView,
@@ -150,12 +151,15 @@ const start = async () => {
     server.method('isDevMode', () => process.env.DW_DEV_MODE);
     server.method('registerVisualization', registerVisualizations(server));
 
+    await server.register(viewComponents);
     await server.register(headerLinks);
     await server.register(adminPages);
 
     // hooks
     server.app.event = eventList;
     server.app.events = new FrontendEventEmitter({ logger: server.logger, eventList });
+
+    SvelteView.init(server);
 
     server.views({
         engines: {
@@ -180,6 +184,7 @@ const start = async () => {
         const language = getUserLanguage(request.auth);
         return (key, scope = 'core') => server.methods.translate(key, { scope, language });
     });
+    server.method('getDB', () => ORM.db);
     server.method('getModel', name => ORM.db.models[name]);
 
     await server.register(require('./auth/dw-auth'));

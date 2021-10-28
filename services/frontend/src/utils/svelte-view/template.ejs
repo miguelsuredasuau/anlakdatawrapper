@@ -7,16 +7,19 @@
 
         <link rel="stylesheet" href="/lib/static/datawrapper.css" />
         <link rel="stylesheet" href="/static/vendor/font-awesome/css/font-awesome.min.css" />
-        <link rel="stylesheet" href="/static/vendor/iconicfont/css/iconmonstr-iconic-font.min.css" />
         <link
-            rel="manifest"
-            href="manifest.json"
-            crossorigin="use-credentials"
+            rel="stylesheet"
+            href="/static/vendor/iconicfont/css/iconmonstr-iconic-font.min.css"
         />
-        <link rel="icon" type="image/png" href="/static/img/icon/favicon<%= NODE_ENV !== 'production' ? '-dev' : '' %>.png" />
+        <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
+        <link
+            rel="icon"
+            type="image/png"
+            href="/static/img/icon/favicon<%= NODE_ENV !== 'production' ? '-dev' : '' %>.png"
+        />
 
         <style type="text/css">
-        <%- SSR_CSS %>
+            <%- SSR_CSS %>
         </style>
 
         <script type="text/javascript">
@@ -24,7 +27,7 @@
                 backend: {
                     __api_domain: location.host.replace('app.', 'api.')
                 }
-            }
+            };
         </script>
 
         <style type="text/css">
@@ -32,21 +35,36 @@
                 font-family: 'Roboto';
                 font-style: normal;
                 font-weight: 500;
-                src: local('Roboto Medium'), local('Roboto-Medium'), url('https://static.dwcdn.net/css/fonts/roboto/roboto_500.woff2') format('woff2'), url('https://static.dwcdn.net/css/fonts/roboto/roboto_500.woff') format('woff'), url('https://static.dwcdn.net/css/fonts/roboto/roboto_500.eot?#iefix') format('embedded-opentype'), url('https://static.dwcdn.net/css/fonts/roboto/roboto_500.svg#Roboto') format('svg'), url('https://static.dwcdn.net/css/fonts/roboto/roboto_500.ttf') format('truetype');
+                src: local('Roboto Medium'), local('Roboto-Medium'),
+                    url('https://static.dwcdn.net/css/fonts/roboto/roboto_500.woff2')
+                        format('woff2'),
+                    url('https://static.dwcdn.net/css/fonts/roboto/roboto_500.woff') format('woff'),
+                    url('https://static.dwcdn.net/css/fonts/roboto/roboto_500.eot?#iefix')
+                        format('embedded-opentype'),
+                    url('https://static.dwcdn.net/css/fonts/roboto/roboto_500.svg#Roboto')
+                        format('svg'),
+                    url('https://static.dwcdn.net/css/fonts/roboto/roboto_500.ttf')
+                        format('truetype');
             }
         </style>
 
-        <script>window.__DW_SVELTE_PROPS__ = { data: { polyfillUri: '/lib/polyfills' }}</script>
+        <script>
+            window.__DW_SVELTE_PROPS__ = { data: { polyfillUri: '/lib/polyfills' } };
+        </script>
         <script src="/lib/chart-core/load-polyfills.js"></script>
         <script src="/lib/static/js/svg4everybody.js"></script>
-        <script>if (window.document.documentMode) { svg4everybody(); }</script>
+        <script>
+            if (window.document.documentMode) {
+                svg4everybody();
+            }
+        </script>
 
         <script type="text/javascript" src="/lib/requirejs/require.js"></script>
         <script type="text/javascript">
             requirejs.config({
                 paths: {
                     lib: '/lib/csr',
-                    dayjs: '/static/vendor/dayjs/dayjs.min',
+                    dayjs: '/static/vendor/dayjs/dayjs.min'
                 }
             });
         </script>
@@ -60,11 +78,15 @@
          because `src/client.js` references it -->
         <%- SSR_HTML %>
 
-
-         <script>
-             document.write('<script type="text/javascript" src="/lib/csr/<%= PAGE %>.'+(window.document.documentMode ? 'ie.' : '')+'js"></s'+'cript>');
-         </script>
-         <script async defer>
+        <script>
+            document.write(
+                '<script type="text/javascript" src="/lib/csr/<%= PAGE %>.' +
+                    (window.document.documentMode ? 'ie.' : '') +
+                    'js"></s' +
+                    'cript>'
+            );
+        </script>
+        <script async defer>
             require(['App'], function(App) {
                 var props = JSON.parse(<%- PAGE_PROPS %>);
 
@@ -126,6 +148,32 @@
                 }
                 <% } %>
             });
-         </script>
+        </script>
+        <% if (MATOMO) { %>
+        <!-- Matomo -->
+        <script>
+            var _paq = (window._paq = window._paq || []);
+            /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+            _paq.push([
+                'setDomains',
+                [
+                    '*.<%= DW_DOMAIN %>',
+                    '*.app.<%= DW_DOMAIN %>',
+                    '*.river.<%= DW_DOMAIN %>',
+                    '*.www.<%= DW_DOMAIN %>'
+                ]
+            ]);
+            _paq.push(['setDoNotTrack', true]);
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function () {
+                var u = '<%= MATOMO.endpoint %>';
+                _paq.push(['setTrackerUrl', u + 'matomo.php']);
+                _paq.push(['setSiteId', '<%= MATOMO.idsite %>']);
+            })();
+        </script>
+        <script src="<%= MATOMO.endpoint %>/matomo.js"></script>
+        <!-- End Matomo Code -->
+        <% } %>
     </body>
 </html>

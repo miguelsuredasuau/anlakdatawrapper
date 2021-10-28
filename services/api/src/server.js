@@ -258,6 +258,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     server.app.scopes = new Set();
     server.app.adminScopes = new Set();
 
+    server.method('getDB', () => ORM.db);
     server.method('getModel', name => ORM.db.models[name]);
     server.method('generateToken', generateToken);
     server.method('logAction', require('@datawrapper/orm/utils/action').logAction);

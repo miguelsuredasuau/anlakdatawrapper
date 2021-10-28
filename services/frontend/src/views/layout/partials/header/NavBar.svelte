@@ -83,18 +83,18 @@
             }
         }
     }
-    :global(.navbar-compact) {
-        .navbar-menu .navbar-separator {
+
+    // Special styles for compact navbar, only applied to first level of navigation
+    :global(.navbar-compact) .navbar-menu {
+        .navbar-separator {
             transition: height 0.2s ease-in-out;
             height: 1.5em;
         }
-        .navbar-menu .navbar-item,
-        .navbar-menu .navbar-link {
-            padding: 0.15rem 1rem;
+        :not(.navbar-dropdown) > .navbar-item,
+        :not(.navbar-dropdown) > .navbar-link {
+            padding-top: 0.15rem;
+            padding-bottom: 0.15rem;
             transition: padding 0.2s ease-in-out;
-        }
-        .navbar-menu .navbar-item.has-dropdown {
-            padding: 0;
         }
     }
 

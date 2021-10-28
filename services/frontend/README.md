@@ -128,7 +128,7 @@ Svelte views can now use these stores like regular Svelte stores:
 <p>{__('team / invite / intro')}</p>
 ```
 
-###Plugins!
+### Plugins!
 
 Plugins can now hook into the frontend service and add their own views. To do so a plugin needs to do two things: provide a `frontend.cjs` that acts as hapi plugin interface (similar to our api plugins), and store Svelte views into `src/frontend/views/`.
 
@@ -280,6 +280,15 @@ To avoid having to rewrite all our Svelte2 code at once the new frontend include
 
 Server methods are a way for plugins to hook new functionality into existing `frontend` components.
 
+### getDB
+
+Useful for getting the server database instance
+
+```js
+const db = server.methods.getDB();
+await db.query('SELECT ...');
+```
+
 ### `registerHeaderLinks`
 
 Useful for adding links to our new navbar. Registered functions get called during request initialization, get the request object as parameter and should return an array of link objects, with the following attributes:
@@ -336,5 +345,63 @@ server.methods.registerAdminPage(request => {
         svgIcon: 'user',
         order: 2
     };
+});
+```
+
+### `registerViewComponent`
+
+View components can be used to dynamically load plugin-provided Svelte components into core routes. Imagine a situation where a core route (e.g. the publish step) wants to allow plugin to add new functionality (e.g. the PDF export). Since the Publish steps Svelte source "doesn't know" about the PDF export, we can't just import its Svelte source files.
+
+```js
+server.methods.registerViewComponent({
+    // the id we want to idenntiy the component by
+    id: 'publish/export-pdf',
+    // the page in which the component should be imported
+    page: 'edit/Index.svelte',
+    // the components Svelte source
+    view: 'plugins/export-pdf/ExportPDFUI.svelte'
+});
+```
+
+The core route can then dynamically import the view component during runtime using the `ViewComponent` element:
+
+```svelte
+<ViewComponent component="publish/export-pdf" {props} {__} />
+```
+
+Internally, the view component import statements are [injected](src/utils/svelte-view/rollup-runtime.js#L97-L102) into the core `View.svelte` before it's being compiled, and then stored in the `viewComponents` context from which it's being [loaded by `ViewComponent.svelte`](src/views/layout/partials/ViewComponent.svelte#L13).
+
+See [our dashboard](src/views/dashboard/Index.svelte) for a live example.
+
+### `registerDashboardSidebarBoxes`
+
+Register one or many boxes to be shown in our dashboard sidebar
+
+```js
+// first you need to register the view component
+server.methods.registerViewComponent({
+    id: 'helloworld/name',
+    page: 'dashboard/Index.svelte',
+    view: 'plugins/helloworld/PrintName.svelte'
+});
+
+// then register the box controller
+server.methods.registerDashboardSidebarBoxes(async request => {
+    return [
+        {
+            order: 10,
+            component: 'helloworld/name',
+            props: {
+                name: 'Alice'
+            }
+        },
+        {
+            order: 13,
+            component: 'helloworld/name',
+            props: {
+                name: 'Bob'
+            }
+        }
+    ];
 });
 ```

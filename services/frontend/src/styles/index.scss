@@ -1,8 +1,8 @@
 @charset "utf-8";
 
-@import "./fonts";
-@import "./colors";
-@import "./spaces";
+@import './fonts';
+@import './colors';
+@import './spaces';
 
 // COLORS
 
@@ -29,7 +29,6 @@ $white-ter: $dw-white-ter;
 $white-bis: $dw-white-bis;
 $white: $dw-white;
 
-
 $background: $dw-white-bis;
 $body-background-color: white;
 $footer-background-color: transparent;
@@ -45,7 +44,6 @@ $text-strong: $dw-black;
 
 $code: darken($dw-red, 15%);
 
-
 $link: $dw-scooter;
 // $link-visited
 $link-hover: $dw-scooter-dark;
@@ -53,9 +51,10 @@ $link-hover: $dw-scooter-dark;
 
 // FONTS
 
-$family-sans-serif:  "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-$family-serif: "Bitter", serif;
-$family-monospace: "Roboto Mono", Menlo, Consolas, Monaco, "Liberation Mono", monospace;
+$family-sans-serif: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans,
+    Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+$family-serif: 'Bitter', serif;
+$family-monospace: 'Roboto Mono', Menlo, Consolas, Monaco, 'Liberation Mono', monospace;
 
 // SIZES
 
@@ -75,14 +74,14 @@ $size-7: 0.75rem; // = 12px @ 16px base
 // $size-medium: $size-5
 // $size-large: $size-4
 
-
 // ELEMENTS
 
 $hr-height: 1px;
 $hr-background-color: $dw-shade;
 
-$button-color:$black-bis;
+$button-color: $black-bis;
 $button-hover-color: $black;
+
 
 // COMPONENTS
 // Navbar
@@ -101,72 +100,72 @@ $section-padding: 1.5rem;
  * BULMA
  */
 
-@import "../../node_modules/bulma/sass/utilities/_all.sass";
-@import "../../node_modules/bulma/sass/base/_all.sass";
+@import '../../node_modules/bulma/sass/utilities/_all.sass';
+@import '../../node_modules/bulma/sass/base/_all.sass';
 
 /*
  * BULMA ELEMENTS
  * https://bulma.io/documentation/elements/
  */
 // @import "../../node_modules/bulma/sass/elements/_all.sass";
-@import "../../node_modules/bulma/sass/elements/box.sass";
-@import "../../node_modules/bulma/sass/elements/button.sass";
-@import "../../node_modules/bulma/sass/elements/container.sass";
-@import "../../node_modules/bulma/sass/elements/content.sass";
-@import "../../node_modules/bulma/sass/elements/icon.sass";
+@import '../../node_modules/bulma/sass/elements/box.sass';
+@import '../../node_modules/bulma/sass/elements/button.sass';
+@import '../../node_modules/bulma/sass/elements/container.sass';
+@import '../../node_modules/bulma/sass/elements/content.sass';
+@import '../../node_modules/bulma/sass/elements/icon.sass';
 // @import "../../node_modules/bulma/sass/elements/image.sass";
-@import "../../node_modules/bulma/sass/elements/notification.sass";
-@import "../../node_modules/bulma/sass/elements/other.sass";
-@import "../../node_modules/bulma/sass/elements/progress.sass";
-@import "../../node_modules/bulma/sass/elements/table.sass";
-@import "../../node_modules/bulma/sass/elements/tag.sass";
-@import "../../node_modules/bulma/sass/elements/title.sass";
+@import '../../node_modules/bulma/sass/elements/notification.sass';
+@import '../../node_modules/bulma/sass/elements/other.sass';
+@import '../../node_modules/bulma/sass/elements/progress.sass';
+@import '../../node_modules/bulma/sass/elements/table.sass';
+@import '../../node_modules/bulma/sass/elements/tag.sass';
+@import '../../node_modules/bulma/sass/elements/title.sass';
 
 /*
  * BULMA FORM
  * https://bulma.io/documentation/form/
  */
-@import "../../node_modules/bulma/sass/form/_all.sass";
+@import '../../node_modules/bulma/sass/form/_all.sass';
 
 /*
  * BULMA COMPONENTS
  * https://bulma.io/documentation/components/
  */
 // @import "../../node_modules/bulma/sass/components/_all.sass";
-@import "../../node_modules/bulma/sass/components/breadcrumb.sass";
+@import '../../node_modules/bulma/sass/components/breadcrumb.sass';
 // @import "../../node_modules/bulma/sass/components/card.sass";
-@import "../../node_modules/bulma/sass/components/dropdown.sass";
-@import "../../node_modules/bulma/sass/components/level.sass";
+@import '../../node_modules/bulma/sass/components/dropdown.sass';
+@import '../../node_modules/bulma/sass/components/level.sass';
 // @import "../../node_modules/bulma/sass/components/media.sass";
-@import "../../node_modules/bulma/sass/components/menu.sass";
-@import "../../node_modules/bulma/sass/components/message.sass";
+@import '../../node_modules/bulma/sass/components/menu.sass';
+@import '../../node_modules/bulma/sass/components/message.sass';
 // @import "../../node_modules/bulma/sass/components/modal.sass";
-@import "../../node_modules/bulma/sass/components/navbar.sass";
-@import "../../node_modules/bulma/sass/components/pagination.sass";
+@import '../../node_modules/bulma/sass/components/navbar.sass';
+@import '../../node_modules/bulma/sass/components/pagination.sass';
 // @import "../../node_modules/bulma/sass/components/panel.sass";
-@import "../../node_modules/bulma/sass/components/tabs.sass";
+@import '../../node_modules/bulma/sass/components/tabs.sass';
 
 /*
  * BULMA GRID
  * https://bulma.io/documentation/columns/
  */
-@import "../../node_modules/bulma/sass/grid/_all.sass";
+@import '../../node_modules/bulma/sass/grid/_all.sass';
 
 /*
  * BULMA HELPERS
  * https://bulma.io/documentation/helpers/
  */
-@import "../../node_modules/bulma/sass/helpers/_all.sass";
+@import '../../node_modules/bulma/sass/helpers/_all.sass';
 
 /*
  * BULMA LAYOUT
  * https://bulma.io/documentation/layout/
  */
-@import "../../node_modules/bulma/sass/layout/_all.sass";
+@import '../../node_modules/bulma/sass/layout/_all.sass';
 // @import "../../node_modules/bulma/sass/layout/footer.sass";
 // @import "../../node_modules/bulma/sass/layout/hero.sass";
 // @import "../../node_modules/bulma/sass/layout/section.sass";
 
 // set bulma variables as css vars. needs to be done after import of bulma
-@import "./vars";
-@import "./customize";
+@import './vars';
+@import './customize';

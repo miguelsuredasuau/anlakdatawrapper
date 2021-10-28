@@ -6,6 +6,11 @@ function getUserLanguage(auth) {
         : get(auth.credentials, 'data.data.dw-lang') || 'en-US';
 }
 
+function byOrder(a, b) {
+    return a.order !== undefined && b.order !== undefined ? a.order - b.order : 0;
+}
+
 module.exports = {
-    getUserLanguage
+    getUserLanguage,
+    byOrder
 };

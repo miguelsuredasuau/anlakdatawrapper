@@ -1,4 +1,5 @@
 const groupBy = require('lodash/groupBy');
+const { byOrder } = require('.');
 
 module.exports = {
     name: 'admin-pages',
@@ -27,9 +28,5 @@ module.exports = {
                     return byOrder(a.pages[0] || {}, b.pages[0] || {});
                 });
         });
-
-        function byOrder(a, b) {
-            return a.order !== undefined && b.order !== undefined ? a.order - b.order : 0;
-        }
     }
 };
