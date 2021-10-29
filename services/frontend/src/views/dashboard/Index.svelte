@@ -1,4 +1,5 @@
 <script type="text/javascript">
+    import Notification from 'layout/partials/bulma/Notification.svelte';
     import MainLayout from 'layout/MainLayout.svelte';
 
     import ViewComponent from 'layout/partials/ViewComponent.svelte';
@@ -7,6 +8,7 @@
     import Welcome from './Welcome.svelte';
 
     export let __;
+    export let notification;
     export let recentlyEdited;
     export let recentlyPublished;
 
@@ -28,6 +30,11 @@
                     {/if}
                 </div>
                 <div class="column">
+                    {#if notification}
+                        <Notification type={notification.type === 's' ? 'success' : 'warning'}
+                            >{notification.message}</Notification
+                        >
+                    {/if}
                     {#each sidebarBoxes as box}
                         <ViewComponent {__} id={box.component} props={box.props} />
                     {/each}

@@ -109,7 +109,9 @@ module.exports = {
                 auth: 'user',
                 validate: {
                     query: Joi.object().keys({
-                        c: Joi.string().optional()
+                        c: Joi.string().optional(),
+                        t: Joi.string().optional(),
+                        m: Joi.string().optional()
                     })
                 },
                 async handler(request, h) {
@@ -167,6 +169,13 @@ module.exports = {
                         htmlClass: 'has-background-white-bis',
                         props: {
                             sidebarBoxes,
+                            notification:
+                                request.query.m && request.query.t
+                                    ? {
+                                          message: request.query.m,
+                                          type: request.query.t
+                                      }
+                                    : undefined,
                             recentlyEdited: await getCharts(
                                 uniq(recentlyEditedIds).slice(0, numCharts * 2),
                                 'last_modified_at'
