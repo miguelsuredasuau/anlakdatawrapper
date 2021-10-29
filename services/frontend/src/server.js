@@ -187,6 +187,15 @@ const start = async () => {
     server.method('getDB', () => ORM.db);
     server.method('getModel', name => ORM.db.models[name]);
 
+    const commit = (await fs.readFile(path.join(__dirname, '..', '.githead'), 'utf-8')).trim();
+
+    if (config.frontend.sentry) {
+        await server.register({
+            plugin: require('./utils/sentry'),
+            options: { commit }
+        });
+    }
+
     await server.register(require('./auth/dw-auth'));
     await server.register([require('./routes')]);
     server.logger.info('loading plugins...');
