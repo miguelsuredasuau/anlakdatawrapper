@@ -60,7 +60,7 @@
 
 <a
     class:is-active={url === '/' ? $request.path === '/' : $request.path.startsWith(url)}
-    class="navbar-item is-size-5 has-text-weight-medium ml-1 pr-1"
+    class="navbar-item is-size-5 has-text-weight-medium ml-1 pr-2"
     href={url}><NavBarIcon item={{ svgIcon: 'cabinet', title: true }} /> <span>{title}</span></a
 >
 <div

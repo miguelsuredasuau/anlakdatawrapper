@@ -9,3 +9,8 @@ html {
   --widescreen: #{$widescreen};
   --fullhd: #{$fullhd};
 }
+
+// @function darker($color) {
+//   $result: darken($color,15%);
+//   @return $result;
+// }

@@ -31,6 +31,7 @@
 </script>
 
 <style lang="scss">
+    @import '../../../../styles/colors.scss';
     @import 'bulma/sass/utilities/_all.sass';
 
     // Navbar Items
@@ -40,6 +41,9 @@
         }
         :global(a.navbar-item:hover) {
             color: var(--color-dw-scooter);
+        }
+        :global(.navbar-item.is-active:hover) {
+            background-color: darken($dw-scooter-lightest, 02%);
         }
         :global(.navbar-item .icon) {
             margin-right: 1ex;
@@ -125,7 +129,8 @@
                 top: -6px;
                 display: none;
             }
-            :global(.navbar-item.has-dropdown .navbar-item.has-dropdown:hover .navbar-dropdown) {
+            :global(.navbar-item.has-dropdown .navbar-item.has-dropdown:hover .navbar-dropdown),
+            :global(.navbar-item.has-dropdown .navbar-item.has-dropdown:focus .navbar-dropdown) {
                 display: block;
             }
             // Adjustments to specific nav items
@@ -175,7 +180,7 @@
                 >
                     <a
                         href={link.url || '#/dropdown'}
-                        on:click={event => onNavItemClick(event, link)}
+                        on:click|preventDefault={event => onNavItemClick(event, link)}
                         class="navbar-link"
                         style={link.style || ''}
                         class:is-arrowless={link.type !== 'visArchive'}
@@ -211,6 +216,7 @@
                                 <a
                                     class="navbar-item has-dropdown is-hoverable has-text-weight-normal "
                                     href="#/dropdown"
+                                    on:click|preventDefault
                                 >
                                     <NavBarIcon item={subItem} />
                                     <span>{@html subItem.title || ''}</span>

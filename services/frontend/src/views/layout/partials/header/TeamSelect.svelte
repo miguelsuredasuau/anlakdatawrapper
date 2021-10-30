@@ -41,7 +41,7 @@
     {#each $user.teams as team}
         <a
             href="#/select-team/{team.id}"
-            class="navbar-item team-select"
+            class="navbar-item team-select has-text-weight-normal"
             class:is-active-team={team.active}
             on:click|preventDefault={() => select(team)}
         >

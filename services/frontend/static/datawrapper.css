@@ -372,6 +372,10 @@ html {
   --color-dw-white: #FFFFFF;
 }
 
+:focus-visible {
+  outline-color: #ffb800;
+}
+
 /*
  * BULMA
  */
@@ -799,7 +803,7 @@ table th {
  */
 .box {
   background-color: #FFFFFF;
-  border-radius: 6px;
+  border-radius: 4px;
   box-shadow: 0 0.5em 1em -0.125em rgba(17, 17, 17, 0.1), 0 0px 0 1px rgba(17, 17, 17, 0.02);
   color: #333333;
   display: block;
@@ -10153,10 +10157,6 @@ html {
 }
 .button.is-white, .button.is-light, .button.is-ghost, .button.is-text {
   box-shadow: none;
-}
-
-.box {
-  border-radius: 4px;
 }
 
 .help {
