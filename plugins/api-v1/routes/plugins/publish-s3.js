@@ -3,7 +3,7 @@ const get = require('lodash/get');
 
 module.exports = {
     name: 'api-v1/plugins/publish-s3',
-    register: async (server, options) => {
+    register: async server => {
         const Chart = server.methods.getModel('chart');
 
         function getRoute(plugin) {
@@ -15,13 +15,13 @@ module.exports = {
                     validate: {
                         params: Joi.object({
                             chartId: Joi.string()
-                            .length(5)
-                            .required()
-                            .description('5 character long chart ID.')
+                                .length(5)
+                                .required()
+                                .description('5 character long chart ID.')
                         })
                     }
                 },
-                handler: async (request, h) => {
+                handler: async request => {
                     const { chartId } = request.params;
                     const chart = await Chart.findByPk(chartId);
 
@@ -32,7 +32,7 @@ module.exports = {
                     return get(chart.metadata, 'publish.embed-codes', []);
                 }
             };
-        };
+        }
 
         server.route(getRoute('publish-s3'));
         server.route(getRoute('publish-cloud'));

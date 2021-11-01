@@ -2,7 +2,7 @@ const Joi = require('joi');
 
 module.exports = {
     name: 'api-v1/plugins/login-tokens',
-    register: async (server, options) => {
+    register: async server => {
         // GET /plugin/login-tokens/{token}
         server.route({
             method: 'GET',
@@ -11,9 +11,7 @@ module.exports = {
                 auth: false,
                 validate: {
                     params: Joi.object({
-                        token: Joi.string()
-                            .required()
-                            .description('A valid login token.')
+                        token: Joi.string().required().description('A valid login token.')
                     })
                 }
             },
@@ -33,7 +31,7 @@ module.exports = {
         server.route({
             method: 'POST',
             path: '/',
-            handler: async (request, h) => {
+            handler: async request => {
                 const res = await request.server.inject({
                     method: 'POST',
                     url: `/v3/auth/login-tokens`,
@@ -64,10 +62,7 @@ module.exports = {
             options: {
                 validate: {
                     params: Joi.object({
-                        chartId: Joi.string()
-                            .length(5)
-                            .required()
-                            .description('A chart ID.'),
+                        chartId: Joi.string().length(5).required().description('A chart ID.'),
                         step: Joi.string()
                             .required()
                             .allow(
@@ -83,7 +78,7 @@ module.exports = {
                     })
                 }
             },
-            handler: async (request, h) => {
+            handler: async request => {
                 const { params } = request;
 
                 const payload = {

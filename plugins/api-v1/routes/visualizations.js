@@ -2,7 +2,7 @@ const Boom = require('@hapi/boom');
 
 module.exports = {
     name: 'api-v1/visualizations',
-    register: async (server, options) => {
+    register: async server => {
         server.route({
             method: 'GET',
             path: '/',
@@ -13,7 +13,7 @@ module.exports = {
                 return {
                     status: 'ok',
                     data: Array.from(server.app.visualizations.values())
-                }
+                };
             }
         });
 

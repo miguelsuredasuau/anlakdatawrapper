@@ -2,17 +2,17 @@ const Joi = require('joi');
 
 module.exports = {
     name: 'api-v1/account',
-    register: async (server, options) => {
+    register: async server => {
         server.route({
             method: 'GET',
             path: '/',
             options: {
                 auth: { mode: 'try' }
             },
-            handler: async (request, h) => {
+            handler: async request => {
                 const guest = {
                     id: null,
-                    email: "guest@datawrapper.de",
+                    email: 'guest@datawrapper.de',
                     name: null,
                     website: null,
                     socialmedia: null,
@@ -47,11 +47,11 @@ module.exports = {
                                 socialmedia: user.sm_profile || null,
                                 isLoggedIn: true,
                                 isGuest: false,
-                                isActivated: user.role !== "pending",
-                                isAdmin: user.role === "admin"
+                                isActivated: user.role !== 'pending',
+                                isAdmin: user.role === 'admin'
                             }
                         }
-                    }
+                    };
                 } catch (ex) {
                     return { status: 'ok', data: { user: guest } };
                 }
@@ -64,7 +64,7 @@ module.exports = {
             options: {
                 auth: { mode: 'try' }
             },
-            handler: async (request, h) => {
+            handler: async request => {
                 try {
                     const res = await request.server.inject({
                         method: 'GET',
@@ -82,13 +82,13 @@ module.exports = {
                         return {
                             status: 'ok',
                             data: 'en_US'
-                        }
+                        };
                     }
                 } catch (ex) {
                     return {
                         status: 'ok',
                         data: 'en_US'
-                    }
+                    };
                 }
             }
         });
@@ -110,7 +110,7 @@ module.exports = {
                     })
                 }
             },
-            handler: async (request, h) => {
+            handler: async request => {
                 const { payload } = request;
 
                 await request.server.inject({
