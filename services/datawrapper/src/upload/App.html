@@ -159,7 +159,7 @@
             },
             btnAction(btn) {
                 this.set({ active: btn });
-                if (btn.id === 'copy') {
+                if (btn.id !== 'external-data') {
                     // turn off externalData, if still set
                     const { dw_chart } = this.store.get();
                     if (dw_chart.get('externalData')) {
