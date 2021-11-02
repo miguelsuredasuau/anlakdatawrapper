@@ -2,6 +2,7 @@ import App from './App.html';
 import Chart from '@datawrapper/chart-core/lib/dw/svelteChart';
 import { getJSON } from '@datawrapper/shared/fetch';
 import get from 'lodash/get';
+import isObject from 'lodash/isObject';
 import assign from 'assign-deep';
 
 export default { init };
@@ -105,7 +106,10 @@ function init({
         initializeDataset(ds);
 
         target.innerHTML = '';
-
+        const logoSetting = chart.getMetadata('publish.blocks.logo', false);
+        if (!isObject(logoSetting)) {
+            chart.setMetadata('publish.blocks.logo', { enabled: logoSetting });
+        }
         app = new App({
             store: chart,
             target,
