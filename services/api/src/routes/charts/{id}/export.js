@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
+const { id: logoId } = require('@datawrapper/schemas/themeData/shared');
 
 module.exports = server => {
     // POST /v3/charts/{id}/export/{format}
@@ -35,7 +36,8 @@ module.exports = server => {
                     fullVector: Joi.boolean().default(false),
                     ligatures: Joi.boolean().default(true),
                     transparent: Joi.boolean().default(false),
-                    logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto')
+                    logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto'),
+                    logoId: logoId().optional().allow(null)
                 })
             }
         },
@@ -83,7 +85,8 @@ module.exports = server => {
                     fullVector: Joi.boolean().default(false),
                     ligatures: Joi.boolean().default(true),
                     transparent: Joi.boolean().default(false),
-                    logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto')
+                    logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto'),
+                    logoId: logoId().optional().allow(null)
                 })
             }
         },

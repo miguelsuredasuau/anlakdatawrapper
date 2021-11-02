@@ -1,6 +1,6 @@
 <script>
-    export let purifyHtml;
     export let logo;
+    export let purifyHtml;
     export let theme;
 </script>
 

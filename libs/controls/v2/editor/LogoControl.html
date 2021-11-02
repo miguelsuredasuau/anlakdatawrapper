@@ -1,25 +1,55 @@
+{#if logos.length > 1}
+<SelectControl
+    bind:value="$metadata.publish.blocks.logo.id"
+    label="{__('layout / logo')}"
+    options="{logoOptions}"
+    labelWidth="100px"
+    width="200px"
+/>
+{/if}
 <SwitchControl
-    bind:value="$metadata.publish.blocks.logo"
+    bind:value="$metadata.publish.blocks.logo.enabled"
     disabled="{!$customLayouts}"
     disabledMessage="{__('layout / logo / disabled')}"
-    label="{__('layout / logo')}"
+    label="{__('layout / logo / show')}"
     help="{help}"
     helpType="upgrade-info"
 />
 
 <script>
     import SwitchControl from '../SwitchControl.html';
+    import SelectControl from '../SelectControl.html';
     import { __ } from '@datawrapper/shared/l10n';
+    import get from '@datawrapper/shared/get';
 
     export default {
         components: {
-            SwitchControl
+            SwitchControl,
+            SelectControl
         },
         computed: {
             help({ $customLayouts }) {
                 return $customLayouts ? false : __('layout / logo / upgrade-info');
+            },
+            logos({ $themeData }) {
+                return get($themeData, 'options.blocks.logo.data.options', []);
+            },
+            logoOptions({ logos }) {
+                return logos.map(logo => ({ value: logo.id, label: logo.title }));
             }
         },
-        helpers: { __ }
+        helpers: { __ },
+        onstate({ changed }) {
+            if (!changed.$themeData) return;
+            const currentLogoId = this.store.getMetadata('publish.blocks.logo.id');
+            const { logos } = this.get();
+            const noValidLogoId = !currentLogoId || !logos.find(logo => logo.id === currentLogoId);
+            if (noValidLogoId) {
+                const firstThemeLogoId = logos.length > 0 ? logos[0].id : undefined;
+                if (firstThemeLogoId) {
+                    this.store.setMetadata('publish.blocks.logo.id', firstThemeLogoId);
+                }
+            }
+        }
     };
 </script>

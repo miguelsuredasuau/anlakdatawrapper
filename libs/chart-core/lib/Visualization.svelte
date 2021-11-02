@@ -27,6 +27,7 @@
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch.js';
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import { clean } from './shared.mjs';
+    import { isObject } from 'underscore';
 
     export let chart;
     export let visualization = {};
@@ -47,9 +48,9 @@
     export let isStylePlain = false;
     // static style means user can't interact (e.g. in a png version)
     export let isStyleStatic = false;
-
     // can be on|off|auto (on/off will overwrite chart setting)
     export let forceLogo = 'auto';
+    export let logoId = null;
 
     export let frontendDomain = 'app.datawrapper.de';
 
@@ -143,12 +144,18 @@
             id: 'logo',
             region: 'footerRight',
             test: ({ chart, theme }) => {
-                const logoData = get(theme, 'data.options.blocks.logo.data', {});
-                // theme has no logo
-                if (!logoData.imgSrc && !logoData.text) return false;
+                const metadataLogo = get(chart, 'metadata.publish.blocks.logo');
+                if (!isObject(metadataLogo)) return false;
+                const themeLogoOptions = get(theme, 'data.options.blocks.logo.data.options', []);
+                const thisLogoId = logoId || metadataLogo.id;
+                let logo = themeLogoOptions.find(logo => logo.id === thisLogoId);
+                // fallback to first logo in theme options
+                if (!thisLogoId || !logo) logo = themeLogoOptions[0] || {};
+                // selected logo has no image or text
+                if (!logo.imgSrc && !logo.text) return false;
                 if (forceLogo === 'on') return true;
                 if (forceLogo === 'off') return false;
-                return get(chart, 'metadata.publish.blocks.logo');
+                return metadataLogo.enabled;
             },
             priority: 10,
             component: Logo
@@ -205,7 +212,8 @@
         chart,
         dwChart,
         vis,
-        caption
+        caption,
+        logoId
     };
 
     function byPriority(a, b) {

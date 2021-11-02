@@ -66,8 +66,8 @@
                 return allBlocks.filter(d => d.requireUpgrade).length > 1;
             },
             themeHasLogo({ $themeData }) {
-                const logo = get($themeData, 'options.blocks.logo.data', {});
-                return logo.text || logo.imgSrc;
+                const logos = get($themeData, 'options.blocks.logo.data.options', []);
+                return !!logos.find(logo => logo.text || logo.imgSrc);
             },
             allBlocks({ coreBlocks, hooksBlocks, initialized, exclude }) {
                 return initialized

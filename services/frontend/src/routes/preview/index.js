@@ -1,4 +1,4 @@
-const { fakeBoolean } = require('@datawrapper/schemas/themeData/shared');
+const { fakeBoolean, id: logoId } = require('@datawrapper/schemas/themeData/shared');
 const { Team } = require('@datawrapper/orm/models');
 const chartCore = require('@datawrapper/chart-core');
 const Joi = require('joi');
@@ -41,7 +41,8 @@ module.exports = {
                         svgonly: fakeBoolean,
                         map2svg: fakeBoolean,
                         transparent: fakeBoolean,
-                        logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto')
+                        logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto'),
+                        logoId: logoId().optional()
                     })
                 }
             },

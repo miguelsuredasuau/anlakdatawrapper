@@ -18,6 +18,7 @@ html(lang=CHART_LOCALE)
       if (/[?&]logo=(auto|on|off)/.test(window.location.search)) {
         window.__DW_SVELTE_PROPS__.forceLogo = (window.location.search).match(/[?&]logo=(auto|on|off)/)[1];
       }
+      window.__DW_SVELTE_PROPS__.logoId = new URLSearchParams(window.location.search).get('logoId');
     each src in DEPS
       script(src=src)
 

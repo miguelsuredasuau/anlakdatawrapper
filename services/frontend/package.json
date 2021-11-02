@@ -11,11 +11,11 @@
     "dependencies": {
         "@babel/core": "^7.12.10",
         "@babel/preset-env": "^7.12.11",
-        "@datawrapper/chart-core": "^8.44.1",
+        "@datawrapper/chart-core": "^8.45.0",
         "@datawrapper/icons": "^1.8.0",
         "@datawrapper/locales": "^1.2.8",
         "@datawrapper/orm": "^3.25.0",
-        "@datawrapper/schemas": "^1.15.4",
+        "@datawrapper/schemas": "^1.15.5",
         "@datawrapper/service-utils": "^1.3.3",
         "@datawrapper/shared": "^0.35.3",
         "@hapi/bell": "^12.2.0",

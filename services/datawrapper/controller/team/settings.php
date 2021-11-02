@@ -38,9 +38,13 @@
 	        ];
 
 	        if (!$hasThemeWithLogo) {
-	        	$logoData = $t->getTheme()->getThemeData('options.blocks.logo.data');
-	        	$hasThemeWithLogo = $logoData &&
-	        	(array_key_exists('text', $logoData) || array_key_exists('imgSrc', $logoData));
+	        	$logoOptions = $t->getTheme()->getThemeData('options.blocks.logo.data.options') ?? [];
+	        	foreach ($logoOptions as $logo) {
+	        		if (array_key_exists('text', $logo) || array_key_exists('imgSrc', $logo)) {
+	        			$hasThemeWithLogo = true;
+	        			break;
+	        		}
+	        	}
 	        }
 	    }
 
