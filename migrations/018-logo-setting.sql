@@ -5,7 +5,7 @@ SET data = JSON_SET(
         data,
         "$.metadata.publish.blocks.logo",
         JSON_SET("{}", "$.enabled", JSON_EXTRACT(data,'$.metadata.publish.blocks.logo'))
-    );
+    )
 WHERE JSON_EXTRACT(`data`, '$.metadata.publish.blocks.logo') IS NOT NULL;
 
 UPDATE chart
