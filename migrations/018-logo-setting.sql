@@ -23,7 +23,7 @@ SET metadata = JSON_SET(
     );
 
 UPDATE chart
-SET metadata = JSON_MERGE_PATCH(metadata, '{ "publish": { "blocks": { "logo": { "id": "main" } } } }')
+SET metadata = JSON_SET(metadata,'$.publish.blocks.logo.id', 'main')
 WHERE JSON_EXTRACT(metadata,'$.publish.blocks.logo.enabled') = true;
 
 -- Down
