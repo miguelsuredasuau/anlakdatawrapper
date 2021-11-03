@@ -75,6 +75,7 @@ async function createUser(server, role = 'editor', pwd = PASSWORD_HASH) {
 
     const session = await Session.create({
         id: server.methods.generateToken(),
+        user_id: user.id,
         data: {
             'dw-user-id': user.id,
             persistent: true,
@@ -159,11 +160,12 @@ async function destroyChart(chart) {
 }
 
 async function destroyTeam(team) {
-    const { Chart, TeamProduct, UserTeam } = require('@datawrapper/orm/models');
+    const { Chart, TeamProduct, UserTeam, Folder } = require('@datawrapper/orm/models');
     const charts = await Chart.findAll({ where: { organization_id: team.id } });
     for (const chart of charts) {
         await destroyChart(chart);
     }
+    await Folder.destroy({ where: { org_id: team.id } });
     await TeamProduct.destroy({ where: { organization_id: team.id }, force: true });
     await UserTeam.destroy({ where: { organization_id: team.id }, force: true });
     await team.destroy({ force: true });
@@ -174,6 +176,7 @@ async function destroyUser(user) {
         AccessToken,
         Action,
         Chart,
+        Folder,
         Session,
         UserData,
         UserProduct,
@@ -186,6 +189,7 @@ async function destroyUser(user) {
     for (const chart of charts) {
         await destroyChart(chart);
     }
+    await Folder.destroy({ where: { user_id: user.id } });
     await UserData.destroy({ where: { user_id: user.id }, force: true });
     await UserProduct.destroy({ where: { user_id: user.id }, force: true });
     await UserTeam.destroy({ where: { user_id: user.id }, force: true });

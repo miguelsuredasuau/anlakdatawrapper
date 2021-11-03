@@ -2,6 +2,7 @@ const Joi = require('joi');
 const { Op, literal } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');
 const set = require('lodash/set');
+const Boom = require('@hapi/boom');
 const { Chart, User } = require('@datawrapper/orm/models');
 const { prepareChart } = require('../../utils/index.js');
 const { listResponse, chartResponse } = require('../../schemas/response');
@@ -34,13 +35,22 @@ module.exports = {
                         search: Joi.string().description(
                             'Search for charts with a specific title.'
                         ),
+                        folderId: Joi.alternatives(
+                            Joi.number()
+                                .integer()
+                                .description('List visualizations inside a specific folder'),
+                            Joi.string().allow('null')
+                        ),
+                        teamId: Joi.string().description(
+                            'List visualizations belonging to a specific team'
+                        ),
                         order: Joi.string()
                             .uppercase()
                             .valid('ASC', 'DESC')
                             .default('DESC')
                             .description('Result order (ascending or descending)'),
                         orderBy: Joi.string()
-                            .valid('id', 'email', 'name', 'createdAt', 'lastModifiedAt')
+                            .valid('createdAt', 'lastModifiedAt', 'publishedAt', 'title')
                             .default('createdAt')
                             .description('Attribute to order by'),
                         limit: Joi.number()
@@ -172,8 +182,10 @@ async function getAllCharts(request) {
             'title',
             'type',
             'createdAt',
+            'in_folder',
             'last_modified_at',
             'public_version',
+            'published_at',
             'theme',
             'language'
         ],
@@ -203,6 +215,14 @@ async function getAllCharts(request) {
         set(options, ['where', Op.or], search);
     }
 
+    if (query.folderId) {
+        if (query.folderId === 'null') {
+            set(options, ['where', 'in_folder', Op.is], null);
+        } else {
+            set(options, ['where', 'in_folder'], query.folderId);
+        }
+    }
+
     const model = Chart;
 
     if (auth.artifacts.role === 'guest') {
@@ -221,6 +241,14 @@ async function getAllCharts(request) {
         }
 
         set(options, ['include'], [{ model: User, attributes: ['name', 'email'] }]);
+    }
+
+    if (query.teamId) {
+        // check that authenticated user is part of that team
+        if (!(await auth.artifacts.hasActivatedTeam(query.teamId))) return Boom.notAcceptable();
+        set(options, ['where', 'organization_id'], query.teamId);
+        // remove author_id query
+        delete options.where.author_id;
     }
 
     const { count, rows } = await model.findAndCountAll(options);
