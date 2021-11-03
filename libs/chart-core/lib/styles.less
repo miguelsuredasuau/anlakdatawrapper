@@ -23,6 +23,11 @@ body {
 
     height: 100%;
 
+    border-top: @style_header_border_top;
+    border-bottom: @style_header_border_bottom;
+    border-left: @style_header_border_left;
+    border-right: @style_header_border_right;
+
     &.vis-height-fit {
         overflow: hidden;
     }
@@ -30,6 +35,17 @@ body {
     a {
         color: @typography_links_color;
         text-decoration: if(@typography_links_underlined = 1, underline, none);
+        font-family: @typography_links_typeface;
+        font-weight: @typography_links_fontWeight;
+        & when not (@typography_links_lineHeight = __UNDEFINED__) {
+            line-height: @typography_links_lineHeight * 1px;
+        }
+        font-style: if(@typography_links_cursive = 1, italic, normal);
+        text-decoration: if(@typography_links_underlined = 1, underline, nonee);
+        color: @typography_links_color;
+
+        padding: @style_body_links_padding;
+        border-bottom: @style_body_links_border_bottom;
     }
 
     & when not (@typography_links_hoverColor = __UNDEFINED__) {
@@ -105,14 +121,30 @@ body {
             margin: @style_header_description_margin;
             padding: @style_header_description_padding;
             text-align: @style_header_description_textAlign;
-            border-bottom: @style_header_description_border_top;
-            border-left: @style_header_description_border_top;
-            border-right: @style_header_description_border_top;
+            border-top: @style_header_description_border_top;
+            border-left: @style_header_description_border_left;
+            border-right: @style_header_description_border_right;
+            border-bottom: @style_header_description_border_bottom;
         }
     }
 
     .dw-chart-body {
         font-weight: @typography_chart_fontWeight;
+
+        border-top: @style_chart_border_top;
+        border-bottom: @style_chart_border_bottom;
+        border-left: @style_chart_border_left;
+        border-right: @style_chart_border_right;
+
+        padding: @style_chart_padding;
+        margin: @style_chart_margin;
+        background: @style_chart_background;
+
+        & when (@style_chart_margin = __UNDEFINED__) {
+            &.content-below-chart {
+                margin: 0px 0px 20px 0px;
+            }
+        }
 
         &.dark-bg .label span {
             color: #f1f1f1;
@@ -181,20 +213,6 @@ body {
         line.axis.y-axis {
             stroke-width: @style_chart_axes_gridlines_baselineWidth;
         }
-
-        padding: @style_chart_padding;
-        margin: @style_chart_margin;
-
-        & when (@style_chart_margin = __UNDEFINED__) {
-            &.content-below-chart {
-                margin: 0px 0px 20px 0px;
-            }
-        }
-
-        border-top: @style_chart_border_top;
-        border-bottom: @style_chart_border_bottom;
-        border-left: @style_chart_border_left;
-        border-right: @style_chart_border_right;
     }
 
     .sr-only {
@@ -297,6 +315,18 @@ body {
     }
 
     .dw-above-footer {
+        position: relative;
+
+        margin: 0px 0px 5px 0px;
+        margin: @style_aboveFooter_margin;
+        padding: @style_aboveFooter_padding;
+        background: @style_aboveFooter_background;
+
+        border-top: @style_aboveFooter_border_top;
+        border-bottom: @style_aboveFooter_border_bottom;
+        border-left: @style_aboveFooter_border_left;
+        border-right: @style_aboveFooter_border_right;
+
         font-family: @typography_aboveFooter_typeface;
         font-weight: @typography_aboveFooter_fontWeight;
         text-transform: @typography_aboveFooter_textTransform;
@@ -308,15 +338,11 @@ body {
         text-decoration: if(@typography_aboveFooter_underlined = 1, underline, none);
         color: @typography_aboveFooter_color;
         text-align: @style_aboveFooter_textAlign;
-        padding: @style_aboveFooter_padding;
-
-        margin: 0px 0px 5px 0px;
-        margin: @style_aboveFooter_margin;
-
-        position: relative;
     }
 
     .notes-block {
+        position: relative;
+
         font-family: @typography_notes_typeface;
         font-weight: @typography_notes_fontWeight;
         text-transform: @typography_notes_textTransform;
@@ -330,11 +356,20 @@ body {
         text-align: @style_notes_textAlign;
         padding: @style_notes_padding;
         margin: @style_notes_margin;
-
-        position: relative;
     }
 
     .dw-below-footer {
+        position: relative;
+
+        padding: @style_belowFooter_padding;
+        margin: @style_belowFooter_margin;
+        background: @style_belowFooter_background;
+
+        border-top: @style_belowFooter_border_top;
+        border-bottom: @style_belowFooter_border_bottom;
+        border-left: @style_belowFooter_border_left;
+        border-right: @style_belowFooter_border_right;
+
         font-family: @typography_belowFooter_typeface;
         font-weight: @typography_belowFooter_fontWeight;
         text-transform: @typography_belowFooter_textTransform;
@@ -346,10 +381,6 @@ body {
         text-decoration: if(@typography_belowFooter_underlined = 1, underline, none);
         color: @typography_belowFooter_color;
         text-align: @style_belowFooter_textAlign;
-        padding: @style_belowFooter_padding;
-        margin: @style_belowFooter_margin;
-
-        position: relative;
     }
 
     #footer,
@@ -360,6 +391,23 @@ body {
 
         padding: @style_footer_padding;
         margin: @style_footer_margin;
+        background: @style_footer_background;
+
+        border-top: @style_footer_border_top;
+        border-bottom: @style_footer_border_bottom;
+        border-left: @style_footer_border_left;
+        border-right: @style_footer_border_right;
+
+        font-family: @typography_footer_typeface;
+        font-weight: @typography_footer_fontWeight;
+        font-size: @typography_footer_fontSize;
+        text-transform: @typography_footer_textTransform;
+        & when not (@typography_footer_lineHeight = __UNDEFINED__) {
+            line-height: @typography_footer_lineHeight * 1px;
+        }
+        font-style: if(@typography_footer_cursive = 1, italic, normal);
+        text-decoration: if(@typography_footer_underlined = 1, underline, none);
+        color: @typography_footer_color;
 
         & > div > .footer-block {
             display: inline;
@@ -399,35 +447,12 @@ body {
             content: '';
             display: none;
         }
-
-        font-family: @typography_footer_typeface;
-        font-weight: @typography_footer_fontWeight;
-        font-size: @typography_footer_fontSize;
-        text-transform: @typography_footer_textTransform;
-        & when not (@typography_footer_lineHeight = __UNDEFINED__) {
-            line-height: @typography_footer_lineHeight * 1px;
-        }
-        font-style: if(@typography_footer_cursive = 1, italic, normal);
-        text-decoration: if(@typography_footer_underlined = 1, underline, none);
-        color: @typography_footer_color;
-        border-top: @style_footer_border_top;
-        border-bottom: @style_footer_border_bottom;
-        border-left: @style_footer_border_left;
-        border-right: @style_footer_border_right;
     }
 
     .notes-block a,
     .dw-chart-footer a {
         padding: @style_footer_links_padding;
         border-bottom: @style_footer_links_border_bottom;
-        font-family: @typography_links_typeface;
-        font-weight: @typography_links_fontWeight;
-        & when not (@typography_links_lineHeight = __UNDEFINED__) {
-            line-height: @typography_links_lineHeight * 1px;
-        }
-        font-style: if(@typography_links_cursive = 1, italic, normal);
-        text-decoration: if(@typography_links_underlined = 1, underline, nonee);
-        color: @typography_links_color;
     }
 
     .notes-block a {
@@ -671,28 +696,12 @@ html[xmlns] .clearfix {
 }
 
 // static style (make links look like normal text)
-.static {
-    .chart {
-        a {
-            color: @typography_chart_color;
-        }
-        .dw-chart-header {
-            h1 a {
-                color: @typography_headline_color;
-            }
-            p a {
-                color: @typography_description_color;
-            }
-        }
-        .dw-chart-footer a {
-            color: @typography_chart_color;
-            color: @typography_footer_color;
-        }
-        .notes-block a {
-            color: @typography_chart_color;
-            color: @typography_notes_color;
-        }
-    }
+.static .chart a {
+    color: currentColor;
+    text-decoration: none;
+    border-bottom: none;
+    font-weight: unset;
+    font-style: unset;
 }
 
 .dw-after-body {
