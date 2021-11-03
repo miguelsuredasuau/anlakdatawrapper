@@ -1032,5 +1032,6 @@
   "dashboard / changelog / loading": "wird geladen...",
   "dashboard / chart-views-month / views-30d": "Diagrammansichten der letzten 30 Tage",
   "dashboard / visualiztion / last-edited": "Bearbeitet",
-  "dashboard / visualiztion / published": "Veröffentlicht"
+  "dashboard / visualiztion / published": "Veröffentlicht",
+  "account / password-reset / success": "Dein Passwort wurde zurückgesetzt!"
 }

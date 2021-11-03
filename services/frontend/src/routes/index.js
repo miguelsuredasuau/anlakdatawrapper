@@ -36,6 +36,12 @@ module.exports = {
             }
         });
 
+        await server.register(require('./account/reset-password.js'), {
+            routes: {
+                prefix: '/account/reset-password'
+            }
+        });
+
         server.methods.prepareView('Error.svelte');
     }
 };

@@ -1032,5 +1032,6 @@
   "dashboard / changelog / loading": "",
   "dashboard / chart-views-month / views-30d": "Vues de graphiques ces 30 derniers jours",
   "dashboard / visualiztion / last-edited": "",
-  "dashboard / visualiztion / published": ""
+  "dashboard / visualiztion / published": "",
+  "account / password-reset / success": ""
 }

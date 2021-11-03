@@ -1032,5 +1032,6 @@
   "dashboard / changelog / loading": "",
   "dashboard / chart-views-month / views-30d": "过去30天的图表浏览量",
   "dashboard / visualiztion / last-edited": "",
-  "dashboard / visualiztion / published": ""
+  "dashboard / visualiztion / published": "",
+  "account / password-reset / success": ""
 }

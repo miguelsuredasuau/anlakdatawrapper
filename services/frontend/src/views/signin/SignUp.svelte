@@ -3,7 +3,7 @@
     import Notification from 'layout/partials/bulma/Notification.svelte';
     import LoadingSpinner from 'layout/partials/LoadingSpinner.svelte';
     import ProviderButtons from './ProviderButtons.svelte';
-    import CheckPassword from './CheckPassword.svelte';
+    import CheckPassword from '../shared/CheckPassword.svelte';
     import { trackEvent } from '@datawrapper/shared/analytics';
     import { isValidEmail } from './utils';
 
