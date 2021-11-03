@@ -17,6 +17,7 @@
 />
 
 <script>
+    import _isObject from 'underscore/modules/isObject.js';
     import SwitchControl from '../SwitchControl.html';
     import SelectControl from '../SelectControl.html';
     import { __ } from '@datawrapper/shared/l10n';
@@ -39,7 +40,13 @@
             }
         },
         helpers: { __ },
-        onstate({ changed }) {
+        onstate({ changed, previous }) {
+            if (!previous) {
+                const logoSetting = this.store.getMetadata('publish.blocks.logo', false);
+                if (!_isObject(logoSetting)) {
+                    this.store.setMetadata('publish.blocks.logo', { enabled: logoSetting });
+                }
+            }
             if (!changed.$themeData) return;
             const currentLogoId = this.store.getMetadata('publish.blocks.logo.id');
             const { logos } = this.get();
