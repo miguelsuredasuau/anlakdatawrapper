@@ -44,10 +44,10 @@ function getHelpers(t, userObj) {
           }
         : t.context.auth;
     return {
-        async createFolder(folder) {
+        async createFolder(folder, expectedCode = 201) {
             return checkStatusCode(
                 t,
-                201,
+                expectedCode,
                 await t.context.server.inject({
                     method: 'POST',
                     url: '/v3/folders',
@@ -59,10 +59,10 @@ function getHelpers(t, userObj) {
             );
         },
 
-        async createChart(chart) {
+        async createChart(chart, expectedCode = 201) {
             return checkStatusCode(
                 t,
-                201,
+                expectedCode,
                 await t.context.server.inject({
                     method: 'POST',
                     url: '/v3/charts',
@@ -84,10 +84,10 @@ function getHelpers(t, userObj) {
             );
         },
 
-        async getCharts(query = '') {
+        async getCharts(query = '', expectedCode = 200) {
             return checkStatusCode(
                 t,
-                200,
+                expectedCode,
                 await t.context.server.inject({
                     method: 'GET',
                     url: `/v3/charts${query}`,
@@ -98,10 +98,10 @@ function getHelpers(t, userObj) {
             );
         },
 
-        async publishChart(chartId) {
+        async publishChart(chartId, expectedCode = 200) {
             return checkStatusCode(
                 t,
-                200,
+                expectedCode,
                 await t.context.server.inject({
                     method: 'POST',
                     url: `/v3/charts/${chartId}/publish`,
@@ -216,6 +216,50 @@ test('Should be possible to filter by folder id null', async t => {
 
     const { total: chartsNotInFolderAfter } = (await getCharts(`?folderId=null`)).result;
     t.is(chartsNotInFolder, chartsNotInFolderAfter);
+});
+
+test('Cannot filter by folder a user does not have access to', async t => {
+    const admin = getHelpers(t);
+    const teamObj = await createTeamWithUser(t.context.server, 'member');
+    const teamUser = getHelpers(t, teamObj);
+    // admin creates a folder
+    const folder = (await admin.createFolder({ name: 'Admins only' })).result;
+    // admin creates a chart
+    await admin.createChart({ folderId: folder.id });
+    // normal team user tries to filter charts
+    await teamUser.getCharts(`?folderId=${folder.id}`, 406);
+});
+
+test('Cannot filter by team a user does not have access to', async t => {
+    const teamObj1 = await createTeamWithUser(t.context.server, 'member');
+    const teamUser1 = getHelpers(t, teamObj1);
+    const teamObj2 = await createTeamWithUser(t.context.server, 'member');
+    const teamUser2 = getHelpers(t, teamObj2);
+
+    // team user can query their own team
+    await teamUser1.getCharts(`?teamId=${teamObj1.team.id}`, 200);
+    await teamUser2.getCharts(`?teamId=${teamObj2.team.id}`, 200);
+    // but not the other ones
+    await teamUser1.getCharts(`?teamId=${teamObj2.team.id}`, 406);
+    await teamUser2.getCharts(`?teamId=${teamObj1.team.id}`, 406);
+});
+
+test('Cannot combine by folderId with different teamId', async t => {
+    const admin = getHelpers(t);
+    const teamObj1 = await createTeamWithUser(t.context.server, 'member');
+    const teamUser1 = getHelpers(t, teamObj1);
+    const folder1 = (
+        await teamUser1.createFolder({ name: 'team1', organizationId: teamObj1.team.id })
+    ).result;
+
+    const teamObj2 = await createTeamWithUser(t.context.server, 'member');
+
+    // can query folder
+    await admin.getCharts(`?folderId=${folder1.id}`, 200);
+    // can query folder combined with correct team
+    await admin.getCharts(`?folderId=${folder1.id}&teamId=${teamObj1.team.id}`, 200);
+    // cannot query folder combined with different team
+    await admin.getCharts(`?folderId=${folder1.id}&teamId=${teamObj2.team.id}`, 406);
 });
 
 test('Users can create charts in a team they have access to', async t => {

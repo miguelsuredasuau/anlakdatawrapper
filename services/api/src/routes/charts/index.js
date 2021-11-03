@@ -3,7 +3,7 @@ const { Op, literal } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');
 const set = require('lodash/set');
 const Boom = require('@hapi/boom');
-const { Chart, User } = require('@datawrapper/orm/models');
+const { Chart, User, Folder } = require('@datawrapper/orm/models');
 const { prepareChart } = require('../../utils/index.js');
 const { listResponse, chartResponse } = require('../../schemas/response');
 const createChart = require('@datawrapper/service-utils/createChart');
@@ -226,6 +226,16 @@ async function getAllCharts(request) {
         if (query.folderId === 'null') {
             set(options, ['where', 'in_folder', Op.is], null);
         } else {
+            // check folder permission
+            const folder = await Folder.findByPk(query.folderId);
+            if (!folder) return Boom.notAcceptable();
+            if (!(await folder.isWritableBy(auth.artifacts)) && !isAdmin) {
+                return Boom.notAcceptable();
+            }
+            if (query.teamId && folder.org_id && folder.org_id !== query.teamId) {
+                // tried to combine a folder with a different team
+                return Boom.notAcceptable();
+            }
             set(options, ['where', 'in_folder'], query.folderId);
         }
     }
@@ -255,8 +265,10 @@ async function getAllCharts(request) {
     }
 
     if (query.teamId) {
-        // check that authenticated user is part of that team
-        if (!(await auth.artifacts.hasActivatedTeam(query.teamId))) return Boom.notAcceptable();
+        // check that authenticated user is part of that team (or admin)
+        if (!(await auth.artifacts.hasActivatedTeam(query.teamId)) && !isAdmin) {
+            return Boom.notAcceptable();
+        }
         set(options, ['where', 'organization_id'], query.teamId);
         // remove author_id query
         delete options.where.author_id;
