@@ -2,13 +2,13 @@
   "version": 3,
   "file": "publish.css",
   "sources": [
-    "../../../../../../libs/controls/v2/AlertDisplay.html",
-    "../../../../../../libs/controls/v2/ConfirmationModal.html",
-    "../../../../../../libs/controls/v2/ControlGroup.html",
-    "../../../../../../libs/controls/v2/HelpDisplay.html",
-    "../../../../../../libs/controls/v2/IconDisplay.html",
-    "../../../../../../libs/controls/v2/RadioControl.html",
-    "../../../../../../libs/controls/v2/publish/PublishButtonControl.html",
+    "../../../../src/node_modules/@datawrapper/controls/AlertDisplay.html",
+    "../../../../src/node_modules/@datawrapper/controls/ConfirmationModal.html",
+    "../../../../src/node_modules/@datawrapper/controls/ControlGroup.html",
+    "../../../../src/node_modules/@datawrapper/controls/HelpDisplay.html",
+    "../../../../src/node_modules/@datawrapper/controls/IconDisplay.html",
+    "../../../../src/node_modules/@datawrapper/controls/RadioControl.html",
+    "../../../../src/node_modules/@datawrapper/controls/publish/PublishButtonControl.html",
     "../../../../src/publish/ShareEmbed.html"
   ],
   "sourcesContent": [
