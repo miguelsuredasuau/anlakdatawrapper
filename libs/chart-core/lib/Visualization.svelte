@@ -144,8 +144,9 @@
             id: 'logo',
             region: 'footerRight',
             test: ({ chart, theme }) => {
-                const metadataLogo = get(chart, 'metadata.publish.blocks.logo');
-                if (!isObject(metadataLogo)) return false;
+                const metadataLogo = get(chart, 'metadata.publish.blocks.logo', {
+                    enabled: false
+                });
                 const themeLogoOptions = get(theme, 'data.options.blocks.logo.data.options', []);
                 const thisLogoId = logoId || metadataLogo.id;
                 let logo = themeLogoOptions.find(logo => logo.id === thisLogoId);
@@ -155,7 +156,8 @@
                 if (!logo.imgSrc && !logo.text) return false;
                 if (forceLogo === 'on') return true;
                 if (forceLogo === 'off') return false;
-                return metadataLogo.enabled;
+                // support both old & new metadata
+                return isObject(metadataLogo) ? metadataLogo.enabled : metadataLogo;
             },
             priority: 10,
             component: Logo
