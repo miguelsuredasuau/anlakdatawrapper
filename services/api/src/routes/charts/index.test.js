@@ -436,7 +436,7 @@ test('Charts can be sorted by createdAt', async t => {
 });
 
 test('Charts can be sorted by publishedAt', async t => {
-    // create a new team for an empty slare
+    // create a new team for an empty slate
     const teamObj = await createTeamWithUser(t.context.server, 'member');
     const { team } = teamObj;
 
@@ -458,6 +458,34 @@ test('Charts can be sorted by publishedAt', async t => {
     t.is(charts[0].id, c1.result.id);
     t.is(charts[1].id, c2.result.id);
     t.is(charts[2].id, c0.result.id);
+});
+
+test('Charts can be filtered by lastEditStep', async t => {
+    // create a new team for an empty slate
+    const teamObj = await createTeamWithUser(t.context.server, 'member');
+    const { team } = teamObj;
+
+    const { createChart, getCharts } = getHelpers(t, teamObj);
+
+    await createChart({ organizationId: team.id });
+    await createChart({ organizationId: team.id, lastEditStep: 1 });
+    await createChart({ organizationId: team.id, lastEditStep: 2 });
+    await createChart({ organizationId: team.id, lastEditStep: 3 });
+    await createChart({ organizationId: team.id, lastEditStep: 4 });
+
+    const { total: noFilter } = (await getCharts(`?teamId=${team.id}`)).result;
+    const { total: filter1 } = (await getCharts(`?teamId=${team.id}&minLastEditStep=1`)).result;
+    const { total: filter2 } = (await getCharts(`?teamId=${team.id}&minLastEditStep=2`)).result;
+    const { total: filter3 } = (await getCharts(`?teamId=${team.id}&minLastEditStep=3`)).result;
+    const { total: filter4 } = (await getCharts(`?teamId=${team.id}&minLastEditStep=4`)).result;
+    const { total: filter5 } = (await getCharts(`?teamId=${team.id}&minLastEditStep=5`)).result;
+
+    t.is(noFilter, 5);
+    t.is(filter1, 4);
+    t.is(filter2, 3);
+    t.is(filter3, 2);
+    t.is(filter4, 1);
+    t.is(filter5, 0);
 });
 
 function sleep(seconds) {

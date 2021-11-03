@@ -60,7 +60,14 @@ module.exports = {
                         offset: Joi.number()
                             .integer()
                             .default(0)
-                            .description('Number of items to skip. Useful for pagination.')
+                            .description('Number of items to skip. Useful for pagination.'),
+                        minLastEditStep: Joi.number()
+                            .integer()
+                            .min(0)
+                            .max(5)
+                            .description(
+                                "Filter visualizations by the last editor step they've been opened in (1=upload, 2=describe, 3=visualize, etc)"
+                            )
                     })
                 },
                 response: listResponse
@@ -221,6 +228,10 @@ async function getAllCharts(request) {
         } else {
             set(options, ['where', 'in_folder'], query.folderId);
         }
+    }
+
+    if (query.minLastEditStep) {
+        set(options, ['where', 'last_edit_step', Op.gte], query.minLastEditStep);
     }
 
     const model = Chart;
