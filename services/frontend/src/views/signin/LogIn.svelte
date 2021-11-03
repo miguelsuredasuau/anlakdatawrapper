@@ -88,6 +88,14 @@
         }
         requestingPassword = false;
     }
+
+    function handleSubmit() {
+        if (resetPassword) {
+            doResetPassword();
+        } else {
+            doLogIn();
+        }
+    }
 </script>
 
 <div>
@@ -99,7 +107,7 @@
                 {@html loginError || loginSuccess}
             </Notification>
         {/if}
-        <form class="signup-form" on:submit|preventDefault={doLogIn}>
+        <form class="signup-form" on:submit|preventDefault={handleSubmit}>
             {#if !needOTP}
                 <div class="field">
                     <label for="si-email" class="label">{__('email')}</label>
@@ -160,11 +168,7 @@
                     </div>
                 {/if}
             {:else}
-                <button
-                    disabled={requestingPassword}
-                    class="button is-primary mb-2"
-                    on:click={doResetPassword}
-                >
+                <button type="submit" disabled={requestingPassword} class="button is-primary mb-2">
                     {@html __('Send new password')}
                     {#if requestingPassword}<LoadingSpinner className="ml-1" />{/if}
                 </button>
