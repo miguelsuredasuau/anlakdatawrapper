@@ -3,10 +3,18 @@ const { Op, literal } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');
 const set = require('lodash/set');
 const Boom = require('@hapi/boom');
-const { Chart, User, Folder } = require('@datawrapper/orm/models');
+const { Chart, User, Folder, Team, UserTeam } = require('@datawrapper/orm/models');
 const { prepareChart } = require('../../utils/index.js');
 const { listResponse, chartResponse } = require('../../schemas/response');
 const createChart = require('@datawrapper/service-utils/createChart');
+
+const authorIdFormats = [
+    Joi.number().integer().description('User id of visualization author'),
+    Joi.string().valid('all').description('Search through all visualizations (admins only)'),
+    Joi.string()
+        .valid('me')
+        .description('Search through visualziations created by the authenticated user')
+];
 
 module.exports = {
     name: 'routes/charts',
@@ -28,7 +36,12 @@ module.exports = {
                         To get the full metadata use [/v3/charts/{id}](ref:getchartsid).  Requires scope \`chart:read\`.`,
                 validate: {
                     query: Joi.object({
-                        userId: Joi.any().description('ID of the user to fetch charts for.'),
+                        userId: Joi.alternatives(...authorIdFormats).description(
+                            'DEPRECATED: use authorId instead.'
+                        ),
+                        authorId: Joi.alternatives(...authorIdFormats).description(
+                            'ID of the user to fetch charts for.'
+                        ),
                         published: Joi.boolean().description(
                             'Flag to filter results by publish status'
                         ),
@@ -39,7 +52,7 @@ module.exports = {
                             Joi.number()
                                 .integer()
                                 .description('List visualizations inside a specific folder'),
-                            Joi.string().allow('null')
+                            Joi.string().valid('null')
                         ),
                         teamId: Joi.string().description(
                             'List visualizations belonging to a specific team'
@@ -182,6 +195,11 @@ async function getAllCharts(request) {
     const isAdmin = request.server.methods.isAdmin(request);
     const general = request.server.methods.config('general');
 
+    if (!query.authorId && query.userId) {
+        // we renamed userId to authorId but want to be downwards compatible
+        query.authorId = query.userId;
+    }
+
     const options = {
         order: [[decamelize(query.orderBy), query.order]],
         attributes: [
@@ -190,24 +208,110 @@ async function getAllCharts(request) {
             'type',
             'createdAt',
             'in_folder',
+            'author_id',
+            'organization_id',
             'last_modified_at',
             'public_version',
             'published_at',
             'theme',
             'language'
         ],
-        where: {
-            deleted: {
-                [Op.not]: true
-            }
-        },
+        where: {},
         limit: query.limit,
         offset: query.offset
     };
 
-    // A chart is published when it's public_version is > 0.
+    const filters = [
+        {
+            deleted: false
+        }
+    ];
+
+    if (query.teamId) {
+        if (isAdmin) {
+            // check that team exists
+            const c = await Team.count({ where: { id: query.teamId } });
+            if (c !== 1) return Boom.notFound();
+        } else {
+            // check that authenticated user is part of that team (or admin)
+            if (!(await auth.artifacts.hasActivatedTeam(query.teamId))) return Boom.notAcceptable();
+        }
+    }
+
+    if (!isAdmin && query.authorId === 'all') {
+        // only admins may user authorId=all
+        return Boom.unauthorized();
+    }
+
+    if (query.authorId === 'me') {
+        query.authorId = auth.artifacts.id;
+    }
+
+    if (!isAdmin && query.authorId && query.authorId !== auth.artifacts.id) {
+        // non-admins may only pass their own user id
+        return Boom.notAcceptable();
+    }
+
+    if (isAdmin && query.authorId && query.authorId !== 'all' && query.authorId !== 'me') {
+        // check that user exists
+        const c = await User.count({ where: { id: query.authorId, deleted: false } });
+        if (c !== 1) return Boom.notFound();
+    }
+
+    // Limit scope to accessible charts
+    if (auth.artifacts.role === 'guest') {
+        // guest users can only see their guest session charts
+        filters.push({
+            guest_session: auth.credentials.session
+        });
+    } else if (isAdmin && query.authorId === 'all') {
+        if (query.teamId) {
+            // search only by team
+            filters.push({
+                organization_id: query.teamId
+            });
+        }
+    } else if (query.teamId && query.authorId) {
+        // special case, filter user charts in a team
+        // e.g. ?teamId=foo&authorId=me
+        filters.push({ organization_id: query.teamId });
+        filters.push({ author_id: query.authorId });
+    } else if (query.teamId) {
+        // filter all charts in specific team, regardless of authorship
+        // ?teamId=foo
+        filters.push({ organization_id: query.teamId });
+    } else if (query.authorId) {
+        // filter all private charts for specific user, excluding team
+        // ?teamId=foo
+        filters.push({ author_id: query.authorId });
+    } else {
+        // default, search through all my charts and team charts
+        // no author or team filter, include all
+        const activeUserTeams = await UserTeam.findAll({
+            where: {
+                user_id: auth.artifacts.id,
+                invite_token: ''
+            }
+        });
+        filters.push({
+            [Op.or]: [
+                { author_id: auth.artifacts.id },
+                { organization_id: activeUserTeams.map(t => t.organization_id) }
+            ]
+        });
+    }
+
+    if (isAdmin) {
+        set(options, ['include'], [{ model: User, attributes: ['name', 'email'] }]);
+    }
+
+    // Additional filters
+
     if (query.published) {
-        set(options, ['where', 'public_version', Op.gt], 0);
+        // A chart is published when it's public_version is > 0.
+        filters.push({
+            public_version: { [Op.gt]: 0 }
+        });
     }
 
     if (query.search) {
@@ -219,12 +323,16 @@ async function getAllCharts(request) {
                 )}' IN BOOLEAN MODE)`
             )
         ];
-        set(options, ['where', Op.or], search);
+        filters.push({
+            [Op.or]: search
+        });
     }
 
     if (query.folderId) {
         if (query.folderId === 'null') {
-            set(options, ['where', 'in_folder', Op.is], null);
+            filters.push({
+                in_folder: { [Op.is]: null }
+            });
         } else {
             // check folder permission
             const folder = await Folder.findByPk(query.folderId);
@@ -236,45 +344,39 @@ async function getAllCharts(request) {
                 // tried to combine a folder with a different team
                 return Boom.notAcceptable();
             }
-            set(options, ['where', 'in_folder'], query.folderId);
+            filters.push({
+                in_folder: query.folderId
+            });
         }
     }
 
     if (query.minLastEditStep) {
-        set(options, ['where', 'last_edit_step', Op.gte], query.minLastEditStep);
+        filters.push({
+            last_edit_step: {
+                [Op.gte]: query.minLastEditStep
+            }
+        });
     }
 
-    const model = Chart;
+    options.where = { [Op.and]: filters };
 
-    if (auth.artifacts.role === 'guest') {
-        set(options, ['where', 'guest_session'], auth.credentials.session);
-    } else {
-        set(options, ['where', 'author_id'], auth.artifacts.id);
-    }
-
-    if (isAdmin) {
-        if (query.userId) {
-            set(options, ['where', 'author_id'], query.userId);
+    // extra pre-caution for essentially unlimited "all" queries
+    // sorting the response would put a lot of load on our DB
+    if (isAdmin && query.authorId === 'all' && !query.folderId && !query.teamId) {
+        if (!query.search) {
+            return Boom.notImplemented('Please filter the query by folderId, teamId or search');
         }
-
-        if (query.userId === 'all') {
-            delete options.where.author_id;
+        // count search results
+        const resultCount = await Chart.count({ where: options.where });
+        if (resultCount > 10000) {
+            return Boom.notAcceptable('Please provide a more specific search query');
+        } else if (resultCount > 1000) {
+            // disable sorting for too large result sets
+            delete options.order;
         }
-
-        set(options, ['include'], [{ model: User, attributes: ['name', 'email'] }]);
     }
 
-    if (query.teamId) {
-        // check that authenticated user is part of that team (or admin)
-        if (!(await auth.artifacts.hasActivatedTeam(query.teamId)) && !isAdmin) {
-            return Boom.notAcceptable();
-        }
-        set(options, ['where', 'organization_id'], query.teamId);
-        // remove author_id query
-        delete options.where.author_id;
-    }
-
-    const { count, rows } = await model.findAndCountAll(options);
+    const { count, rows } = await Chart.findAndCountAll(options);
 
     const charts = [];
 

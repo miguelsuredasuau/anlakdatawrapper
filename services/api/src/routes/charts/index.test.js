@@ -27,6 +27,9 @@ test.after.always(async t => {
 
 function checkStatusCode(t, code, res, msg) {
     t.is(res.statusCode, code, msg);
+    if (res.statusCode !== code) {
+        console.error(res.result);
+    }
     return res;
 }
 
@@ -44,6 +47,8 @@ function getHelpers(t, userObj) {
           }
         : t.context.auth;
     return {
+        user: userObj.user,
+
         async createFolder(folder, expectedCode = 201) {
             return checkStatusCode(
                 t,
@@ -109,6 +114,23 @@ function getHelpers(t, userObj) {
                     headers: t.context.headers
                 }),
                 'publishChart'
+            );
+        },
+
+        async setActiveTeam(teamId, expectedCode = 200) {
+            return checkStatusCode(
+                t,
+                expectedCode,
+                await t.context.server.inject({
+                    method: 'PATCH',
+                    url: '/v3/me/settings',
+                    auth: auth,
+                    headers: t.context.headers,
+                    payload: {
+                        activeTeam: teamId
+                    }
+                }),
+                'setActiveTeam'
             );
         }
     };
@@ -188,12 +210,13 @@ test('Should be possible to filter by team and folder id', async t => {
 
     const { createChart, getCharts, createFolder } = getHelpers(t, teamObj);
 
-    await createChart({ organizationId: team.id });
-    await createChart({ organizationId: team.id });
+    // create two charts in team root
+    await createChart();
+    await createChart();
 
     const folder = await createFolder({ name: 'A team folder', organizationId: team.id });
-
-    await createChart({ organizationId: team.id, folderId: folder.result.id });
+    // create one chart in team folder
+    await createChart({ folderId: folder.result.id });
 
     const inTeamFolder = await getCharts(`?teamId=${team.id}&folderId=${folder.result.id}`);
     t.is(inTeamFolder.result.total, 1);
@@ -530,6 +553,84 @@ test('Charts can be filtered by lastEditStep', async t => {
     t.is(filter3, 2);
     t.is(filter4, 1);
     t.is(filter5, 0);
+});
+
+test('Charts list goes through all user and team charts', async t => {
+    // create a new team for an empty slare
+    const teamObj = await createTeamWithUser(t.context.server, 'member');
+    const { team } = teamObj;
+
+    const admin = getHelpers(t);
+    const user1 = getHelpers(t, teamObj);
+
+    // user 1 creates 2 team charts
+    await user1.createChart();
+    await user1.createChart();
+    // user 1 creates 3 private charts
+    await user1.setActiveTeam(null);
+    await user1.createChart();
+    await user1.createChart();
+    await user1.createChart();
+
+    // another team user also creates some charts
+    const teamObj2 = await teamObj.addUser('member');
+    const user2 = getHelpers(t, teamObj2);
+    // user 2 created 3 team charts
+    await user2.createChart();
+    await user2.createChart();
+    await user2.createChart();
+    // and one private chart
+    await user2.setActiveTeam(null);
+    await user2.createChart();
+
+    // user 1 sees 8 charts (3 private + 5 team)
+    const u1 = (await user1.getCharts()).result;
+    t.is(u1.total, 8);
+
+    // user 2 sees 6 charts (1 private + 5 team)
+    const u2 = (await user2.getCharts()).result;
+    t.is(u2.total, 6);
+
+    // user 1 sees 5 self-created charts (3 private + 2 team)
+    const m1 = (await user1.getCharts('?authorId=me')).result;
+    t.is(m1.total, 5);
+
+    // user 2 sees 4 self-created charts (1 private + 3 team)
+    const m2 = (await user2.getCharts('?authorId=me')).result;
+    t.is(m2.total, 4);
+
+    // an admin can see all 5 team charts without being in the team
+    const a = (await admin.getCharts(`?teamId=${team.id}`)).result;
+    t.is(a.total, 5);
+});
+
+test('User cannot query charts by different user', async t => {
+    // create two users
+    const admin = getHelpers(t);
+    const user1 = getHelpers(t, await createUser(t.context.server));
+    const user2 = getHelpers(t, await createUser(t.context.server));
+    // user 1 creates a chart
+    await user1.createChart();
+    // user 1 may query it
+    const u1 = (await user1.getCharts(`?authorId=${user1.user.id}`)).result;
+    t.is(u1.total, 1);
+    // admins may query it
+    const a = (await admin.getCharts(`?authorId=${user1.user.id}`)).result;
+    t.is(a.total, 1);
+    // but user 2 may not
+    await user2.getCharts(`?authorId=${user1.user.id}`, 406);
+});
+
+test('Admins can not query charts from non-existing users', async t => {
+    // create two users
+    const admin = getHelpers(t);
+    await admin.getCharts(`?authorId=12345678`, 404);
+});
+
+test('Admins can not query charts from non-existing teams', async t => {
+    // create two users
+    const admin = getHelpers(t);
+    await admin.getCharts(`?teamId=xxxxxxx`, 404);
 });
 
 function sleep(seconds) {
