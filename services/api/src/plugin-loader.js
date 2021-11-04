@@ -89,7 +89,7 @@ module.exports = {
                         }
                         addScope(name, options.locales);
                     } catch (error) {
-                        server.logger.debug(`Error whille loading translations for ${name}`, error);
+                        server.logger.debug(`Error while loading translations for ${name}`, error);
                     }
                     await server.register({ plugin, options }, pluginOptions);
                 }
