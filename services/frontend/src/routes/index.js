@@ -36,6 +36,12 @@ module.exports = {
             }
         });
 
+        await server.register(require('./account/invite.js'), {
+            routes: {
+                prefix: '/account/invite'
+            }
+        });
+
         await server.register(require('./account/activate.js'), {
             routes: {
                 prefix: '/account/activate'
