@@ -1,33 +1,4 @@
 <?php
-
-//GET route
-$app->get('/account/activate/:token', function ($token) use ($app) {
-    disable_cache($app);
-
-    $page = array();
-    add_header_vars($page, 'about');
-    $params = '';
-    if (!empty($token)) {
-        $users = UserQuery::create()
-          ->filterByActivateToken($token)
-          ->find();
-
-        if (count($users) != 1) {
-            $params = '?t=e&m='.urlencode(__('This activation token is invalid. Your email address is probably already activated.'));
-        } else {
-            $user = $users[0];
-            $user->setRole('editor');
-            $user->setActivateToken('');
-            $user->save();
-            // notify plugins about the newly activated user
-            DatawrapperHooks::execute(DatawrapperHooks::USER_ACTIVATED, $user);
-            $params = '?t=s&m='.urlencode(sprintf(__('Your email address %s has been successfully activated!'), $user->getEmail()));
-        }
-    }
-    $app->redirect('/'.$params);
-});
-
-
 /*
  * check invitation token and show invited page
  */

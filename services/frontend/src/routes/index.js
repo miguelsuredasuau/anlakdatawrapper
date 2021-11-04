@@ -36,6 +36,12 @@ module.exports = {
             }
         });
 
+        await server.register(require('./account/activate.js'), {
+            routes: {
+                prefix: '/account/activate'
+            }
+        });
+
         await server.register(require('./account/reset-password.js'), {
             routes: {
                 prefix: '/account/reset-password'
