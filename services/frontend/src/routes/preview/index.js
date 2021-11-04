@@ -21,6 +21,7 @@ module.exports = {
             method: 'GET',
             path: '/{chartId}',
             options: {
+                auth: 'guest',
                 validate: {
                     params: Joi.object({
                         chartId: Joi.string()

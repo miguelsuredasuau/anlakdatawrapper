@@ -12,6 +12,9 @@ module.exports = {
         server.route({
             path: '/',
             method: 'GET',
+            options: {
+                auth: 'guest'
+            },
             async handler(request, h) {
                 return h.redirect('/create/chart');
             }
@@ -21,6 +24,7 @@ module.exports = {
             path: '/{workflow}',
             method: 'GET',
             options: {
+                auth: 'guest',
                 validate: {
                     params: Joi.object({
                         workflow: Joi.string().valid('chart', 'map', 'table', 'locator-map')

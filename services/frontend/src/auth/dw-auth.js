@@ -32,9 +32,10 @@ const DWAuth = {
         server.auth.strategy('session', 'cookie-auth', { validate: cookieValidation });
         server.auth.strategy('admin', 'dw-auth', { validate: adminValidation });
         server.auth.strategy('user', 'dw-auth', { validate: userValidation });
-        server.auth.strategy('simple', 'dw-auth');
+        server.auth.strategy('simple', 'dw-auth'); // deprecated
+        server.auth.strategy('guest', 'dw-auth');
 
-        server.auth.default('simple');
+        server.auth.default('user');
 
         for (var provider in oauth) {
             if (!Object.keys(Bell.providers).includes(provider)) {
