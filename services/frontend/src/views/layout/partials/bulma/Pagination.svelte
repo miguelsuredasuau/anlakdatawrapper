@@ -1,0 +1,59 @@
+<script>
+    import range from 'lodash/range';
+    export let total;
+    export let limit;
+    export let offset;
+
+    $: curPage = Math.ceil(+offset / +limit) || 0;
+    $: numPages = Math.ceil(total / limit) || 1;
+    $: lastPage = numPages - 1;
+
+    function gotoPage(page) {
+        offset = page * limit;
+    }
+
+    $: allPages = range(0, numPages);
+
+    $: centerPages = allPages.slice(
+        Math.max(curPage - 2, 0),
+        Math.min(lastPage, Math.max(5, curPage + 3))
+    );
+</script>
+
+{#if numPages > 1}
+    <nav class="pagination" role="navigation" aria-label="pagination">
+        <ul class="pagination-list">
+            {#if curPage > 1}
+                <li>
+                    <a
+                        on:click|preventDefault={() => gotoPage(0)}
+                        class="pagination-link"
+                        href="#/page/1"
+                        aria-label="Goto page 1">«</a
+                    >
+                </li>
+            {/if}
+            {#each centerPages as page}
+                <li>
+                    <a
+                        class:is-current={page === curPage}
+                        aria-label="Page {page + 1}"
+                        href="#/page/{page + 1}"
+                        on:click|preventDefault={() => gotoPage(page)}
+                        class="pagination-link">{page + 1}</a
+                    >
+                </li>
+            {/each}
+            {#if curPage < lastPage - 1 && lastPage > 5}
+                <li>
+                    <a
+                        on:click|preventDefault={() => gotoPage(lastPage)}
+                        class="pagination-link"
+                        href="#/page/{lastPage + 1}"
+                        aria-label="Goto page {lastPage + 1}">»</a
+                    >
+                </li>
+            {/if}
+        </ul>
+    </nav>
+{/if}

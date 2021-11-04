@@ -6,6 +6,7 @@
     import SvgIcon from 'layout/partials/SvgIcon.svelte';
     import Tabs from 'layout/partials/bulma/Tabs.svelte';
     import Menu from 'layout/partials/bulma/Menu.svelte';
+    import Pagination from 'layout/partials/bulma/Pagination.svelte';
     import { onMount, onDestroy, getContext } from 'svelte';
     import SignUp from './signin/SignUpForm.svelte';
 
@@ -43,6 +44,7 @@
 
     let data = {
         settings: {
+            ga_id: '123',
             webhook_url: 'test',
             webhook_enabled: true
         }
@@ -61,6 +63,7 @@
             title: 'Navigation',
             items: [
                 { url: '#breadcrumbs', title: 'Breadcrumbs' },
+                { url: '#pagination', title: 'Pagination' },
                 { url: '#tabs', title: 'Tabs' },
                 { url: '#menu', title: 'Menu' }
             ]
@@ -267,6 +270,14 @@
                                     </ul>
                                 </nav>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="section pl-0 pt-0">
+                        <h3 id="pagination" class="title is-3">Pagination</h3>
+
+                        <div class="columns is-2 is-variable">
+                            <Pagination total={140} offset={0} limit={50} />
                         </div>
                     </div>
 
