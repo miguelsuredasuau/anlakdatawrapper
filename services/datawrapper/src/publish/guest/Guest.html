@@ -72,11 +72,19 @@
                 this.set({ signedUp: true });
                 trackEvent('Chart Editor', 'send-embed-code');
                 try {
+                    let chartId = null;
+
+                    if (typeof window.chart !== 'undefined') {
+                        chartId = window.chart.get().id;
+                    } else {
+                        chartId = this.store.get().id;
+                    }
+
                     const res = await post('/v3/auth/signup', {
                         payload: {
                             email,
                             invitation: true,
-                            chartId: window.chart.get().id
+                            chartId
                         }
                     });
 
