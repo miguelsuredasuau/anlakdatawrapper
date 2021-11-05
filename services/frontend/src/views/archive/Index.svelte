@@ -2,6 +2,7 @@
     import MainLayout from 'layout/MainLayout.svelte';
     import Folder from './Folder.svelte';
     import CollapseGroup from './CollapseGroup.svelte';
+    import FolderBreadcrumbNav from './FolderBreadcrumbNav.svelte';
     import { beforeUpdate, onMount, getContext } from 'svelte';
     import { currentFolder } from './stores';
     import { parseFolderTree } from './shared';
@@ -79,9 +80,12 @@
 <MainLayout title="{$currentFolder.name || ''} - Archive">
     <section class="section header">
         <div class="container">
-            <h1 class="title">Visualization Archive</h1>
+            <FolderBreadcrumbNav />
         </div>
     </section>
+    <div class="container">
+        <hr class="my-0" />
+    </div>
     <section class="section body">
         <div class="container">
             <div class="columns">
