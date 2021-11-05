@@ -6,6 +6,7 @@
     import { currentFolder } from './stores';
     import { parseFolderTree } from './shared';
     import VisualizationGrid from './VisualizationGrid.svelte';
+    import SubFolderGrid from './SubFolderGrid.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
 
     const user = getContext('user');
@@ -97,7 +98,31 @@
                     </CollapseGroup>
                 </div>
                 <div class="column">
-                    <VisualizationGrid {__} bind:offset {limit} {total} charts={charts.list} />
+                    <div class="subfolders block">
+                        <SubFolderGrid {__} />
+                    </div>
+                    <div class="block">
+                        {#if total > 0}
+                            <VisualizationGrid
+                                {__}
+                                bind:offset
+                                {limit}
+                                {total}
+                                charts={charts.list}
+                            />
+                        {:else}
+                            <p class="subtitle is-size-4 has-text-grey">
+                                {@html __('mycharts / empty-folder').replace(
+                                    /%location%/g,
+                                    folderId
+                                        ? `?folder=${folderId}`
+                                        : teamId
+                                        ? `?team=${teamId}`
+                                        : ''
+                                )}
+                            </p>
+                        {/if}
+                    </div>
                 </div>
             </div>
         </div>

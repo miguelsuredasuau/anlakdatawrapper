@@ -10,6 +10,13 @@
         if (val !== undefined) {
             open = _open = val === 'expanded';
         }
+        currentFolder.subscribe(newFolder => {
+            // check if the user navigates into a sub-folder of the
+            // current one, and if so, let's expand this folder
+            if (!open && folder.children && folder.children.find(f => f.id === newFolder.id)) {
+                open = true;
+            }
+        });
     });
 
     beforeUpdate(() => {
