@@ -46,13 +46,14 @@
             ? `chart-folder-org-root-${folder.teamId}`
             : 'chart-folder-user-root';
     }
+
+    const indentation = 20; // @todo: find best value
 </script>
 
 <style lang="scss">
     @import '../../styles/colors.scss';
 
     .folder {
-        margin-left: 20px;
         position: relative;
         color: $dw-black-bis;
         > .self > a > :global(.icon) {
@@ -64,11 +65,14 @@
         }
 
         .self {
+            position: relative;
             a {
                 color: $dw-black-bis;
-                &.active {
-                    font-weight: bold;
-                }
+            }
+
+            &.active {
+                font-weight: bold;
+                background: $dw-scooter-lightest;
             }
         }
     }
@@ -94,13 +98,20 @@
 </style>
 
 <div class="folder my-2" class:open>
-    <div class="self">
+    <div
+        class="self"
+        class:active={isCurrent}
+        style="padding-left: {20 + folder.level * indentation}px"
+    >
         {#if hasChildren}
-            <div class="collapse-toggle" on:click={() => (open = !open)} />
+            <div
+                style="left: {folder.level * indentation}px"
+                class="collapse-toggle"
+                on:click={() => (open = !open)}
+            />
         {/if}
         <a
             href={folder.path}
-            class:active={isCurrent}
             on:click|preventDefault={() => {
                 $currentFolder = folder;
             }}
@@ -119,7 +130,7 @@
         </a>
     </div>
     {#if open && hasChildren}
-        <div class="children pl-2">
+        <div class="children">
             {#each folder.children.sort(byName) as child (child.id)}
                 <svelte:self folder={child} />
             {/each}
