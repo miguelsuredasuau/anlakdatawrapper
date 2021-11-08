@@ -1033,5 +1033,7 @@
   "dashboard / chart-views-month / views-30d": "Visualizzazioni grafici negli ultimi 30 giorni",
   "dashboard / visualiztion / last-edited": "",
   "dashboard / visualiztion / published": "",
-  "account / password-reset / success": ""
+  "account / password-reset / success": "Your password was reset successfully!",
+  "account / activate / success": "Il tuo indirizzo e-mail %s è stato attivato con successo!",
+  "account / activate / invalid": "Il token di attivazione fornito non è valido. Il tuo indirizzo e-mail potrebbe già essere stato attivato."
 }

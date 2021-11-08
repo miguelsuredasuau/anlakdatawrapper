@@ -1032,5 +1032,8 @@
   "dashboard / changelog / loading": "loading...",
   "dashboard / chart-views-month / views-30d": "Chart views in past 30 days",
   "dashboard / visualiztion / last-edited": "Edited",
-  "dashboard / visualiztion / published": "Published"
+  "dashboard / visualiztion / published": "Published",
+  "account / password-reset / success": "Your password was reset successfully!",
+  "account / activate / success": "Your email address %s has been successfully activated!",
+  "account / activate / invalid": "This activation token is invalid. Your email address is probably already activated."
 }

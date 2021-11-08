@@ -1032,5 +1032,8 @@
   "dashboard / changelog / loading": "",
   "dashboard / chart-views-month / views-30d": "过去30天的图表浏览量",
   "dashboard / visualiztion / last-edited": "",
-  "dashboard / visualiztion / published": ""
+  "dashboard / visualiztion / published": "",
+  "account / password-reset / success": "",
+  "account / activate / success": "您的电子邮件地址％s已成功激活！",
+  "account / activate / invalid": "此激活令牌无效。您的电子邮件地址可能已被激活。"
 }

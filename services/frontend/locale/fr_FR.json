@@ -1033,5 +1033,7 @@
   "dashboard / chart-views-month / views-30d": "Vues de graphiques ces 30 derniers jours",
   "dashboard / visualiztion / last-edited": "",
   "dashboard / visualiztion / published": "",
-  "account / password-reset / success": ""
+  "account / password-reset / success": "Your password was reset successfully!",
+  "account / activate / success": "Votre adresse e-mail %s a été activée avec succès !",
+  "account / activate / invalid": "Ce jeton d’activation n’est pas valide. Votre adresse e-mail est probablement déjà activée."
 }

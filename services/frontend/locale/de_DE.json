@@ -1033,5 +1033,7 @@
   "dashboard / chart-views-month / views-30d": "Diagrammansichten der letzten 30 Tage",
   "dashboard / visualiztion / last-edited": "Bearbeitet",
   "dashboard / visualiztion / published": "Veröffentlicht",
-  "account / password-reset / success": "Dein Passwort wurde zurückgesetzt!"
+  "account / password-reset / success": "Dein Passwort wurde zurückgesetzt!",
+  "account / activate / success": "Deine E-Mail Adresse %s wurde erfolgreich aktiviert!",
+  "account / activate / invalid": "Dieser Aktivierungs-Token ist ungültig. Deine E-Mail-Adresse ist wahrscheinlich bereits aktiviert."
 }
