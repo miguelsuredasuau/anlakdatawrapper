@@ -1,5 +1,5 @@
 <script>
-    import DatawrapperLogo from 'layout/partials/header/DatawrapperLogo.svelte';
+    import DatawrapperLogo from '_partials/DatawrapperLogo.svelte';
     export let title;
 
     import { getContext } from 'svelte';

@@ -109,7 +109,8 @@ function buildOptions(page, ssr) {
             }),
             alias({
                 entries: {
-                    layout: join(__dirname, '../../views/layout')
+                    layout: join(__dirname, '../../views/layout'),
+                    _partials: join(__dirname, '../../views/_partials')
                 }
             }),
             svelte({

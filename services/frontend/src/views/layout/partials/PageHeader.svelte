@@ -1,6 +1,6 @@
 <script>
     import { getContext } from 'svelte';
-    import DatawrapperLogo from './header/DatawrapperLogo.svelte';
+    import DatawrapperLogo from '_partials/DatawrapperLogo.svelte';
     import NavBar from './header/NavBar.svelte';
 
     const config = getContext('config');
