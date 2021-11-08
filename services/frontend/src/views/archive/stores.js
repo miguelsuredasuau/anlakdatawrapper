@@ -2,4 +2,6 @@ import { writable } from 'svelte/store';
 
 const currentFolder = new writable({});
 
-export { currentFolder };
+const searchQuery = new writable('');
+
+export { currentFolder, searchQuery };

@@ -16,6 +16,11 @@ module.exports = {
 
         const minLastEditStep = 2;
 
+        const validQueryParams = Joi.object({
+            search: Joi.string().optional(),
+            offset: Joi.number().optional()
+        });
+
         server.route({
             method: 'GET',
             path: '/{folderId?}',
@@ -24,7 +29,8 @@ module.exports = {
                 validate: {
                     params: Joi.object({
                         folderId: Joi.number().integer().optional()
-                    })
+                    }),
+                    query: validQueryParams
                 },
                 handler: visArchiveHandler
             }
@@ -39,15 +45,17 @@ module.exports = {
                     params: Joi.object({
                         teamId: Joi.string().required(),
                         folderId: Joi.number().integer().optional()
-                    })
+                    }),
+                    query: validQueryParams
                 },
                 handler: visArchiveHandler
             }
         });
 
         async function visArchiveHandler(request, h) {
-            const { auth, params } = request;
+            const { auth, params, query } = request;
             const { teamId, folderId } = params;
+            const { search } = query;
             const user = auth.artifacts;
 
             const api = createAPI(
@@ -59,17 +67,19 @@ module.exports = {
             const offset = 0;
             const limit = 15;
 
-            const charts = await api(
-                `/charts?minLastEditStep=${minLastEditStep}&offset=${offset}&limit=${limit}&folderId=${
-                    folderId ? folderId : 'null'
-                }${teamId ? `&teamId=${teamId}` : ''}`
-            );
+            const apiQuery = `/charts?minLastEditStep=${minLastEditStep}&offset=${offset}&limit=${limit}&${
+                search
+                    ? `search=${search}`
+                    : `folderId=${folderId ? folderId : 'null'}${teamId ? `&teamId=${teamId}` : ''}`
+            }`;
+            const charts = await api(apiQuery);
 
             const folderGroups = await getFolders(user);
 
             return h.view('archive/Index.svelte', {
                 htmlClass: 'has-background-white-bis',
                 props: {
+                    apiQuery,
                     charts,
                     limit,
                     offset,
