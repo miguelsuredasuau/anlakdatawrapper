@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    import Notification from 'layout/partials/bulma/Notification.svelte';
+    import Notification from '_partials/components/Notification.svelte';
     import MainLayout from 'layout/MainLayout.svelte';
 
     import ViewComponent from 'layout/partials/ViewComponent.svelte';

@@ -1,12 +1,12 @@
 <script type="text/javascript">
     import MainLayout from 'layout/MainLayout.svelte';
     import Svelte2Wrapper from 'layout/partials/svelte2/Svelte2Wrapper.svelte';
-    import Message from 'layout/partials/bulma/Message.svelte';
-    import Notification from 'layout/partials/bulma/Notification.svelte';
+    import Message from '_partials/components/Message.svelte';
+    import Notification from '_partials/components/Notification.svelte';
     import SvgIcon from 'layout/partials/SvgIcon.svelte';
-    import Tabs from 'layout/partials/bulma/Tabs.svelte';
-    import Menu from 'layout/partials/bulma/Menu.svelte';
-    import Pagination from 'layout/partials/bulma/Pagination.svelte';
+    import Tabs from '_partials/components/Tabs.svelte';
+    import Menu from '_partials/components/Menu.svelte';
+    import Pagination from '_partials/components/Pagination.svelte';
     import { onMount, onDestroy, getContext } from 'svelte';
     import SignUp from './signin/SignUpForm.svelte';
 

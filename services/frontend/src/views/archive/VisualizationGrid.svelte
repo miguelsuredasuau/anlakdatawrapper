@@ -1,6 +1,6 @@
 <script>
     import VisualizationBox from './VisualizationBox.svelte';
-    import Pagination from 'layout/partials/bulma/Pagination.svelte';
+    import Pagination from '_partials/componentsnents/Pagination.svelte';
     export let charts;
     export let limit;
     export let offset;

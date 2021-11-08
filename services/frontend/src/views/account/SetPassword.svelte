@@ -1,7 +1,7 @@
 <script>
     import httpReq from '@datawrapper/shared/httpReq';
     import SignInPageLayout from 'layout/SignInPageLayout.svelte';
-    import Notification from 'layout/partials/bulma/Notification.svelte';
+    import Notification from '_partials/componentsnents/Notification.svelte';
     import CheckPassword from '../shared/CheckPassword.svelte';
 
     export let token;

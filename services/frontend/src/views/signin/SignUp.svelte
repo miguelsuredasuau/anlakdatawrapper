@@ -1,6 +1,6 @@
 <script>
     import httpReq from '@datawrapper/shared/httpReq';
-    import Notification from 'layout/partials/bulma/Notification.svelte';
+    import Notification from '_partials/bulma/Notification.svelte';
     import LoadingSpinner from 'layout/partials/LoadingSpinner.svelte';
     import SetPasswordField from 'layout/partials/SetPasswordField.svelte';
     import ProviderButtons from './ProviderButtons.svelte';
