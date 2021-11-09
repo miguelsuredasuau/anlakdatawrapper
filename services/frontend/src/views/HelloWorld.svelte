@@ -6,6 +6,7 @@
     import SvgIcon from 'layout/partials/SvgIcon.svelte';
     import Tabs from '_partials/components/Tabs.svelte';
     import Menu from '_partials/components/Menu.svelte';
+    import Dropdown from '_partials/components/Dropdown.svelte';
     import Pagination from '_partials/components/Pagination.svelte';
     import { onMount, onDestroy, getContext } from 'svelte';
     import SignUp from './signin/SignUpForm.svelte';
@@ -89,6 +90,7 @@
         {
             title: 'Misc.',
             items: [
+                { url: '#dropdown', title: 'Dropdown' },
                 { url: '#svelte2', title: 'Svelte2' },
                 { url: '#errors', title: 'Errors' }
             ]
@@ -829,6 +831,49 @@
                                 />
                             </div>
                         </div>
+                    </div>
+
+                    <div class="section pl-0 pt-0">
+                        <h3 id="dropdown" class="title is-3">Dropdown</h3>
+
+                        <Dropdown>
+                            <button
+                                aria-haspopup="true"
+                                aria-controls="dropdown-menu"
+                                class="button"
+                                slot="trigger">Click me</button
+                            >
+                            <div class="dropdown-content" slot="content">
+                                <div class="dropdown-item">
+                                    <p>
+                                        You can insert <strong>any type of content</strong> within the
+                                        dropdown menu.
+                                    </p>
+                                </div>
+                                <hr class="dropdown-divider" />
+                                <div class="dropdown-item">
+                                    <p>
+                                        You simply need to use a <code>&lt;div&gt;</code> instead.
+                                    </p>
+                                </div>
+                                <hr class="dropdown-divider" />
+                                <a href="#/link" class="dropdown-item"> This is a link </a>
+                            </div>
+                        </Dropdown>
+
+                        <Dropdown>
+                            <div slot="trigger">
+                                <SvgIcon size="1.5em" className="ml-2" icon="menu-vertical" />
+                            </div>
+                            <div class="dropdown-content" slot="content">
+                                <div class="dropdown-item">
+                                    <p>
+                                        You can insert <strong>any type of content</strong> within the
+                                        dropdown menu.
+                                    </p>
+                                </div>
+                            </div>
+                        </Dropdown>
                     </div>
 
                     <div class="section pl-0 pt-0" id="svelte2-embed">
