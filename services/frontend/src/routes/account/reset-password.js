@@ -1,4 +1,5 @@
 const Boom = require('@hapi/boom');
+const Joi = require('joi');
 const { User } = require('@datawrapper/orm/models');
 
 User;
@@ -11,6 +12,15 @@ module.exports = {
             path: '/{token}',
             options: {
                 auth: 'session',
+                validate: {
+                    params: Joi.object({
+                        token: Joi.string()
+                            .alphanum()
+                            .length(25)
+                            .required()
+                            .description('25 character long password reset token.')
+                    })
+                },
                 async handler({ params }, h) {
                     const userCount = await User.count({
                         where: {

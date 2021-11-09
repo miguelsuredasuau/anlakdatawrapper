@@ -2,8 +2,8 @@
     import httpReq from '@datawrapper/shared/httpReq';
     import Notification from 'layout/partials/bulma/Notification.svelte';
     import LoadingSpinner from 'layout/partials/LoadingSpinner.svelte';
+    import SetPasswordField from 'layout/partials/SetPasswordField.svelte';
     import ProviderButtons from './ProviderButtons.svelte';
-    import CheckPassword from '../shared/CheckPassword.svelte';
     import { trackEvent } from '@datawrapper/shared/analytics';
     import { isValidEmail } from './utils';
 
@@ -17,16 +17,11 @@
     export let password = '';
     export let noSignIn;
 
-    let passwordClear = false;
-
     let signingUp;
     let signupSuccess;
     let signupError;
 
     let passwordOk;
-    let passwordHelp;
-    let passwordSuccess;
-    let passwordError;
 
     async function doSignUp() {
         if (signingUp) return;
@@ -87,50 +82,8 @@
                     type="email"
                 />
             </div>
-            <div class="field">
-                <label for="su-pwd" class="label">{__('password')}</label>
-                {#if passwordClear}
-                    <!-- input types can't be dynamic when using two-way value binding -->
-                    <input
-                        id="su-pwd"
-                        class="input"
-                        bind:value={password}
-                        type="text"
-                        class:is-danger={passwordError}
-                        class:is-success={!passwordError && passwordSuccess}
-                    />
-                {:else}
-                    <input
-                        class:is-danger={passwordError}
-                        class:is-success={!passwordError && passwordSuccess}
-                        id="su-pwd"
-                        class="input"
-                        bind:value={password}
-                        type="password"
-                    />
-                {/if}
-                {#if passwordError}
-                    <p class="help is-danger">{@html passwordError}</p>
-                {:else if passwordSuccess}
-                    <p class="help is-success is-dark">{@html passwordSuccess}</p>
-                {:else if passwordHelp}
-                    <p class="help has-text-grey-dark">{@html passwordHelp}</p>
-                {/if}
-            </div>
-            <CheckPassword
-                {__}
-                bind:password
-                bind:passwordHelp
-                bind:passwordSuccess
-                bind:passwordError
-                bind:passwordOk
-            />
-            <div class="field">
-                <label class="checkbox"
-                    ><input bind:checked={passwordClear} type="checkbox" />
-                    {@html __('account / invite / password-clear-text')}</label
-                >
-            </div>
+
+            <SetPasswordField bind:value={password} bind:ok={passwordOk} {__} />
 
             <button disabled={signingUp} class="button is-primary mb-2" on:click={() => doSignUp()}>
                 {@html __('Sign Up')}
