@@ -112,7 +112,7 @@ test('User can delete their account and are logged out', async t => {
 test('User cannot delete their account while owning team', async t => {
     let teamObj;
     try {
-        teamObj = await createTeamWithUser(t.context.server, 'owner');
+        teamObj = await createTeamWithUser(t.context.server, { role: 'owner' });
         const { user, team, session } = teamObj;
 
         const res1 = await t.context.server.inject({
@@ -168,7 +168,7 @@ test('User cannot delete their account while owning team', async t => {
 test('User can delete their account if only admin of a team', async t => {
     let teamObj;
     try {
-        teamObj = await createTeamWithUser(t.context.server, 'admin');
+        teamObj = await createTeamWithUser(t.context.server, { role: 'admin' });
         const { user, session } = teamObj;
 
         const res = await t.context.server.inject({

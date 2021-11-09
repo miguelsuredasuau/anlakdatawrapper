@@ -5,7 +5,7 @@ const { createUser, destroy, getCredentials, setup } = require('../../../test/he
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
     t.context.userObj = await createUser(t.context.server);
-    t.context.adminObj = await createUser(t.context.server, 'admin');
+    t.context.adminObj = await createUser(t.context.server, { role: 'admin' });
     t.context.headers = {
         cookie: 'crumb=abc',
         'X-CSRF-Token': 'abc',
@@ -219,7 +219,7 @@ test('Admin can sort users by chart count - Ascending', async t => {
 test('Admin can sort users by chart count - Descending', async t => {
     let userObj;
     try {
-        userObj = await createUser(t.context.server, 'admin');
+        userObj = await createUser(t.context.server, { role: 'admin' });
         const { session } = userObj;
 
         const res = await t.context.server.inject({

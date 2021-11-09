@@ -4,7 +4,7 @@ const { createTeamWithUser, createUser, destroy, setup } = require('../../../tes
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
     t.context.teamObj = await createTeamWithUser(t.context.server);
-    t.context.adminObj = await createUser(t.context.server, 'admin');
+    t.context.adminObj = await createUser(t.context.server, { role: 'admin' });
     t.context.sessionAdmin = t.context.adminObj.session.id;
     t.context.sessionUser = t.context.teamObj.session.id;
 });

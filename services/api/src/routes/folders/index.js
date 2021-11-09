@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
 
-const { listResponse } = require('../schemas/response');
+const { listResponse } = require('../../schemas/response');
 
 const routes = [
     {
@@ -10,9 +10,15 @@ const routes = [
         path: '/',
         scope: 'folder:read',
         description: 'List folders',
-        notes: `Get a list of folders and their associated charts. Requires scope \`ufolder:read\`.`,
+        notes: `Get a list of folders and their associated charts. Requires scope \`folder:read\`.`,
+        query: Joi.object({
+            compact: Joi.optional().description(
+                'If present, the response will only include the number of charts in each folder. Otherwise the response includes the full chart information.'
+            )
+        }),
         response: listResponse,
         async handler(request) {
+            const compact = request.query.compact !== undefined;
             const { auth } = request;
 
             const { teams } = await User.findByPk(auth.artifacts.id, {
@@ -23,16 +29,17 @@ const routes = [
                 {
                     type: 'user',
                     id: auth.artifacts.id,
-                    charts: (
-                        await Chart.findAll({
-                            attributes: ['id', 'title', 'type', 'theme', 'createdAt'],
-                            where: {
-                                author_id: auth.artifacts.id,
-                                in_folder: null,
-                                deleted: false
-                            }
-                        })
-                    ).map(cleanChart),
+                    charts: compact
+                        ? await countAllCharts({
+                              author_id: auth.artifacts.id,
+                              in_folder: null,
+                              deleted: false
+                          })
+                        : await findAllCharts({
+                              author_id: auth.artifacts.id,
+                              in_folder: null,
+                              deleted: false
+                          }),
                     folders: await getFolders('user_id', auth.artifacts.id)
                 }
             ];
@@ -42,28 +49,32 @@ const routes = [
                     type: 'team',
                     id: team.id,
                     name: team.name,
-                    charts: (
-                        await Chart.findAll({
-                            attributes: ['id', 'title', 'type', 'theme', 'createdAt'],
-                            where: {
-                                organization_id: team.id,
-                                in_folder: null,
-                                deleted: false
-                            }
-                        })
-                    ).map(cleanChart),
+                    charts: compact
+                        ? await countAllCharts({
+                              organization_id: team.id,
+                              in_folder: null,
+                              deleted: false
+                          })
+                        : await findAllCharts({
+                              organization_id: team.id,
+                              in_folder: null,
+                              deleted: false
+                          }),
                     folders: await getFolders('org_id', team.id)
                 });
             }
 
-            function cleanChart(chart) {
-                return {
-                    id: chart.id,
-                    title: chart.title,
-                    type: chart.type,
-                    theme: chart.theme,
-                    createdAt: chart.createdAt
-                };
+            async function findAllCharts(where) {
+                return await Chart.findAll({
+                    attributes: ['id', 'title', 'type', 'theme', 'createdAt'],
+                    where
+                });
+            }
+
+            async function countAllCharts(where) {
+                return await Chart.count({
+                    where
+                });
             }
 
             async function getFolders(by, owner, parent) {
@@ -76,11 +87,9 @@ const routes = [
                     arr.push({
                         id: folder.id,
                         name: folder.name,
-                        charts: (
-                            await Chart.findAll({
-                                where: { in_folder: folder.id, deleted: false }
-                            })
-                        ).map(cleanChart),
+                        charts: compact
+                            ? await countAllCharts({ in_folder: folder.id, deleted: false })
+                            : await findAllCharts({ in_folder: folder.id, deleted: false }),
                         folders: await getFolders(by, owner, folder.id)
                     });
                 }
@@ -103,11 +112,16 @@ const routes = [
         payload: Joi.object({
             organizationId: Joi.string()
                 .optional()
+                .description(`DEPRECATED: use \`teamId\` instead.`),
+            teamId: Joi.string()
+                .optional()
                 .description(
-                    'Organization that the folder belongs to. If organizationId is empty, the folder will belong to the user directly.'
+                    `The team that the folder belongs to. If \`teamId\` is empty, the folder will belong to the user directly.`
                 ),
-            parentId: Joi.number().optional(),
-            name: Joi.string().required()
+            parentId: Joi.number()
+                .optional()
+                .description('The parent folder that the folder belongs to.'),
+            name: Joi.string().required().description('The name of the folder.')
         }),
         async handler(request, h) {
             const { auth, server, payload } = request;
@@ -119,12 +133,13 @@ const routes = [
                 name: payload.name
             };
 
-            if (payload.organizationId) {
-                if (!isAdmin && !(await user.hasActivatedTeam(payload.organizationId))) {
+            const teamId = payload.teamId || payload.organizationId;
+            if (teamId) {
+                if (!isAdmin && !(await user.hasActivatedTeam(teamId))) {
                     return Boom.unauthorized('User does not have access to the specified team.');
                 }
 
-                folderParams.org_id = payload.organizationId;
+                folderParams.org_id = teamId;
             } else {
                 folderParams.user_id = auth.artifacts.id;
             }
@@ -148,7 +163,14 @@ const routes = [
                 folderParams.user_id = folder.org_id ? null : folderParams.user_id;
                 folderParams.parent_id = folder.id;
             }
-
+            const duplicate = await Folder.findOne({
+                where: {
+                    ...folderParams
+                }
+            });
+            if (duplicate) {
+                return Boom.conflict('A folder with that name already exists.');
+            }
             const newFolder = await Folder.create(folderParams);
 
             return h
@@ -156,6 +178,7 @@ const routes = [
                     id: newFolder.id,
                     name: newFolder.name,
                     organizationId: newFolder.org_id,
+                    teamId: newFolder.org_id,
                     userId: newFolder.user_id,
                     parentId: newFolder.parent_id
                 })
@@ -189,6 +212,12 @@ module.exports = {
                 },
                 handler: route.handler
             });
+        });
+
+        server.register(require('./{id}'), {
+            routes: {
+                prefix: '/{id}'
+            }
         });
     }
 };

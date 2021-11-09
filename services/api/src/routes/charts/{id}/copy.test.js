@@ -232,7 +232,7 @@ test('Copies made by admins are stored in their personal root folder ', async t 
     try {
         teamObj = await createTeamWithUser(t.context.server);
         const { team, user, session: ownerSession } = teamObj;
-        adminObj = await createUser(t.context.server, 'admin');
+        adminObj = await createUser(t.context.server, { role: 'admin' });
         const { user: adminUser, session: adminSession } = adminObj;
         const userHeaders = {
             cookie: `DW-SESSION=${ownerSession.id}; crumb=abc`,

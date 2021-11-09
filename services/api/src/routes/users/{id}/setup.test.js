@@ -4,7 +4,7 @@ const { createUser, destroy, setup } = require('../../../../test/helpers/setup')
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
     t.context.userObj = await createUser(t.context.server);
-    t.context.adminObj = await createUser(t.context.server, 'admin');
+    t.context.adminObj = await createUser(t.context.server, { role: 'admin' });
 });
 
 test.after.always(async t => {

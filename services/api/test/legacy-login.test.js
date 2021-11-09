@@ -19,7 +19,7 @@ test.before(async t => {
 });
 
 test.beforeEach(async t => {
-    t.context.userObj = await createUser(t.context.server, 'editor', LEGACY_HASH);
+    t.context.userObj = await createUser(t.context.server, { pwd: LEGACY_HASH });
     t.context.userEmail = t.context.userObj.user.email;
 });
 

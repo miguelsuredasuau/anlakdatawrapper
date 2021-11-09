@@ -202,7 +202,7 @@ test('admins can create teams', async t => {
     const teamId = `team-admin-${nanoid(5)}`;
     let userObj;
     try {
-        userObj = await createUser(t.context.server, 'admin');
+        userObj = await createUser(t.context.server, { role: 'admin' });
         const { user: admin } = userObj;
         const auth = {
             strategy: 'simple',

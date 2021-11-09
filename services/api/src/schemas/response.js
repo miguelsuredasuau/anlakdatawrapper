@@ -43,4 +43,11 @@ schemas.userResponse = createResponseConfig({
     }).unknown()
 });
 
+schemas.folderResponse = createResponseConfig({
+    schema: Joi.object({
+        id: Joi.number().integer(),
+        name: Joi.string()
+    })
+});
+
 module.exports = schemas;

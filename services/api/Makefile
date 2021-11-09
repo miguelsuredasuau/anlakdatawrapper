@@ -1,5 +1,5 @@
 export DW_CONFIG_PATH ?= /app/services/api/test/config.docker.js
-m ?= *
+m ?= '!PHP*'
 
 docker_compose := docker-compose -f docker-compose-test.yml
 

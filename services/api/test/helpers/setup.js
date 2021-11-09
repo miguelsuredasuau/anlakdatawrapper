@@ -3,6 +3,7 @@ const { ForeignKeyConstraintError } = require('sequelize');
 const { addScope } = require('@datawrapper/service-utils/l10n');
 const { init } = require('../../src/server');
 const { nanoid } = require('nanoid');
+const { randomInt } = require('crypto');
 
 /* bcrypt hash for string "test-password" */
 const PASSWORD_HASH = '$2a$05$6B584QgS5SOXi1m.jM/H9eV.2tCaqNc5atHnWfYlFe5riXVW9z7ja';
@@ -63,7 +64,10 @@ async function setup(options) {
     return server;
 }
 
-async function createUser(server, role = 'editor', pwd = PASSWORD_HASH) {
+async function createUser(
+    server,
+    { role = 'editor', pwd = PASSWORD_HASH, scopes = ALL_SCOPES } = {}
+) {
     const { AccessToken, Session, User } = require('@datawrapper/orm/models');
     const credentials = getCredentials();
     const user = await User.create({
@@ -88,11 +92,11 @@ async function createUser(server, role = 'editor', pwd = PASSWORD_HASH) {
         type: 'api-token',
         data: {
             comment: 'API TEST',
-            scopes: ALL_SCOPES
+            scopes
         }
     });
 
-    session.scope = ALL_SCOPES;
+    session.scope = scopes;
 
     return {
         user,
@@ -101,9 +105,10 @@ async function createUser(server, role = 'editor', pwd = PASSWORD_HASH) {
     };
 }
 
-async function createTeamWithUser(server, role = 'owner') {
-    const { Team, UserTeam } = require('@datawrapper/orm/models');
-    const teamPromise = Team.create({
+async function createTeam(props = {}) {
+    const { Team } = require('@datawrapper/orm/models');
+
+    return await Team.create({
         id: `test-${nanoid(5)}`,
         name: 'Test Team',
         settings: {
@@ -124,8 +129,14 @@ async function createTeamWithUser(server, role = 'owner') {
                 },
                 preferred_embed: 'responsive'
             }
-        }
+        },
+        ...props
     });
+}
+
+async function createTeamWithUser(server, { role = 'owner' } = {}) {
+    const { UserTeam } = require('@datawrapper/orm/models');
+    const teamPromise = createTeam();
 
     const [team, userObj] = await Promise.all([teamPromise, createUser(server)]);
     const { user, session, token } = userObj;
@@ -150,6 +161,52 @@ async function createTeamWithUser(server, role = 'owner') {
     session.scope = ALL_SCOPES;
 
     return { team, user, session, token, addUser };
+}
+
+function genRandomChartId() {
+    return nanoid(5); // Must be exactly 5 characters long.
+}
+
+const MAX_FOLDER_ID = 99999;
+
+function genRandomFolderId() {
+    return String(randomInt(MAX_FOLDER_ID));
+}
+
+function genNonExistentFolderId() {
+    return String(MAX_FOLDER_ID + 1);
+}
+
+function createFolder(props = {}) {
+    const { Folder } = require('@datawrapper/orm/models');
+    return Folder.create({
+        ...props,
+        name: props.name || genRandomFolderId()
+    });
+}
+
+function createFolders(propsArray) {
+    return Promise.all(propsArray.map(createFolder));
+}
+
+function createFoldersWithParent(propsArray, parent) {
+    return createFolders(propsArray.map(props => ({ ...props, parent_id: parent.id })));
+}
+
+function createChart(props = {}) {
+    const { Chart } = require('@datawrapper/orm/models');
+    return Chart.create({
+        metadata: {},
+        title: 'Default',
+        theme: 'default',
+        type: 'd3-bars',
+        ...props,
+        id: props.id || genRandomChartId()
+    });
+}
+
+function createCharts(propsArray) {
+    return Promise.all(propsArray.map(createChart));
 }
 
 async function destroyChart(chart) {
@@ -179,6 +236,7 @@ async function destroyUser(user) {
         Folder,
         Session,
         UserData,
+        UserPluginCache,
         UserProduct,
         UserTeam
     } = require('@datawrapper/orm/models');
@@ -191,6 +249,7 @@ async function destroyUser(user) {
     }
     await Folder.destroy({ where: { user_id: user.id } });
     await UserData.destroy({ where: { user_id: user.id }, force: true });
+    await UserPluginCache.destroy({ where: { user_id: user.id }, force: true });
     await UserProduct.destroy({ where: { user_id: user.id }, force: true });
     await UserTeam.destroy({ where: { user_id: user.id }, force: true });
     try {
@@ -223,9 +282,18 @@ async function destroy(...instances) {
 }
 
 module.exports = {
+    createChart,
+    createCharts,
+    createFolder,
+    createFolders,
+    createFoldersWithParent,
+    createTeam,
     createTeamWithUser,
     createUser,
     destroy,
+    genNonExistentFolderId,
+    genRandomChartId,
+    genRandomFolderId,
     getCredentials,
     setup
 };

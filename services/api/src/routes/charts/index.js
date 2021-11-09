@@ -1,19 +1,19 @@
 const Joi = require('joi');
+const createChart = require('@datawrapper/service-utils/createChart');
+const set = require('lodash/set');
 const { Op, literal } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');
-const set = require('lodash/set');
-const Boom = require('@hapi/boom');
 const { Chart, User, Folder, Team, UserTeam } = require('@datawrapper/orm/models');
-const { prepareChart } = require('../../utils/index.js');
 const { listResponse, chartResponse } = require('../../schemas/response');
-const createChart = require('@datawrapper/service-utils/createChart');
+const { prepareChart } = require('../../utils/index.js');
+const Boom = require('@hapi/boom');
 
 const authorIdFormats = [
     Joi.number().integer().description('User id of visualization author'),
     Joi.string().valid('all').description('Search through all visualizations (admins only)'),
     Joi.string()
         .valid('me')
-        .description('Search through visualziations created by the authenticated user')
+        .description('Search through visualizations created by the authenticated user')
 ];
 
 module.exports = {
@@ -180,6 +180,53 @@ module.exports = {
                 response: chartResponse
             },
             handler: createChartHandler
+        });
+
+        server.route({
+            method: 'PATCH',
+            path: '/',
+            options: {
+                tags: ['api'],
+                description: 'Moves charts into a folder',
+                notes: 'Requires scopes `chart:write`.',
+                auth: {
+                    access: { scope: ['chart:write'] }
+                },
+                validate: {
+                    payload: Joi.object({
+                        ids: Joi.array()
+                            .items(
+                                Joi.string()
+                                    .length(5)
+                                    .example('abcDE')
+                                    .description('ID of the chart.')
+                            )
+                            .required()
+                            .description('The IDs of the charts that should be updated.'),
+                        patch: Joi.object({
+                            folderId: Joi.number()
+                                .allow(null)
+                                .required()
+                                .description(
+                                    'ID of the folder that the visualization should be moved into. The authenticated user must have access to this folder.'
+                                ),
+                            teamId: Joi.string()
+                                .not('')
+                                .optional()
+                                .example('ABCdEFgh')
+                                .description(
+                                    'ID of the team that should own the visualization. The authenticated user must have access to this team.'
+                                )
+                        })
+                            .required()
+                            .description(
+                                'An object containing the chart attributes that should be updated.'
+                            )
+                    })
+                },
+                response: chartResponse
+            },
+            handler: patchChartsHandler
         });
 
         server.register(require('./{id}'), {
@@ -436,4 +483,70 @@ async function createChartHandler(request, h) {
     return h
         .response({ ...(await prepareChart(chart)), url: `${url.pathname}/${chart.id}` })
         .code(201);
+}
+
+async function patchChartsHandler(request) {
+    const { auth, payload } = request;
+    const user = auth.artifacts;
+    const { ids, patch } = payload;
+
+    const activatedTeams = (await user.getTeams())
+        .filter(t => t.user_team.getDataValue('invite_token') === '')
+        .map(t => t.id);
+    const charts = await Chart.findAll({
+        where: {
+            id: payload.ids,
+            deleted: { [Op.not]: true },
+            [Op.or]: [
+                { organization_id: null, author_id: user.id },
+                ...(activatedTeams.length ? [{ organization_id: activatedTeams }] : [])
+            ]
+        }
+    });
+    if (charts.length !== payload.ids.length) {
+        throw Boom.notFound();
+    }
+    let folder;
+    const chartUpdate = {
+        in_folder: patch.folderId,
+        organization_id: null,
+        author_id: user.id
+    };
+    if (patch.folderId) {
+        folder = await Folder.findByPk(patch.folderId);
+        if (!folder) {
+            return Boom.notFound('Folder does not exist.');
+        }
+        if (!(await folder.isWritableBy(user))) {
+            return Boom.forbidden('You cannot access this folder.');
+        }
+        if (patch.teamId && folder.org_id !== patch.teamId) {
+            return Boom.forbidden('The specified folder does not belong to the specified team.');
+        }
+        chartUpdate.organization_id = folder.org_id;
+    }
+    if (patch.teamId) {
+        if (!activatedTeams.find(teamId => teamId === patch.teamId)) {
+            return Boom.forbidden("You don't have access to this team.");
+        }
+        chartUpdate.organization_id = patch.teamId;
+        delete chartUpdate.author_id;
+    }
+
+    await Chart.update(chartUpdate, {
+        where: {
+            id: ids
+        }
+    });
+    const updated = await Chart.findAll({
+        where: {
+            id: payload.ids,
+            deleted: { [Op.not]: true }
+        }
+    });
+    const res = [];
+    for (const chart of updated) {
+        res.push(await prepareChart(chart));
+    }
+    return res;
 }

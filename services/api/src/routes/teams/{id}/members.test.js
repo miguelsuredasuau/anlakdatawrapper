@@ -200,7 +200,7 @@ test('admins can add new members to a team', async t => {
     try {
         userObj = await createUser(t.context.server);
         const { user } = userObj;
-        adminObj = await createUser(t.context.server, 'admin');
+        adminObj = await createUser(t.context.server, { role: 'admin' });
         const { user: admin, session } = adminObj;
 
         const team = await t.context.server.inject({
@@ -377,9 +377,9 @@ test('Datawrapper admins can not change their own role if they are the team owne
     let adminObj;
     let teamObj;
     try {
-        adminObj = await createUser(t.context.server, 'admin');
+        adminObj = await createUser(t.context.server, { role: 'admin' });
         const { user: admin, session } = adminObj;
-        teamObj = await createTeamWithUser(t.context.server, 'member');
+        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
         const { team } = teamObj;
 
         let userTeamRow = await UserTeam.create({
@@ -431,7 +431,7 @@ test('users not part of a team can not change a team members role', async t => {
     try {
         userObj = await createUser(t.context.server);
         const { session } = userObj;
-        teamObj = await createTeamWithUser(t.context.server, 'member');
+        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
         const { team, user: teamMember } = teamObj;
 
         const res = await t.context.server.inject({
@@ -463,7 +463,7 @@ test('Datawrapper admins can change member roles', async t => {
     let userObj;
     let teamObj;
     try {
-        userObj = await createUser(t.context.server, 'admin');
+        userObj = await createUser(t.context.server, { role: 'admin' });
         const { session } = userObj;
         teamObj = await createTeamWithUser(t.context.server);
         const { team, addUser } = teamObj;

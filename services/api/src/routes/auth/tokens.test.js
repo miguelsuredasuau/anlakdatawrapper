@@ -137,7 +137,7 @@ test('The scope of newly created tokens cannot exceed the session scopes', async
 test('Tokens cannot be created when the user is not activated', async t => {
     let userObj;
     try {
-        userObj = await createUser(t.context.server, 'pending');
+        userObj = await createUser(t.context.server, { role: 'pending' });
         const { user, session } = userObj;
 
         const auth = {

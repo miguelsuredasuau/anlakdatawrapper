@@ -1,18 +1,58 @@
 const test = require('ava');
 const assign = require('assign-deep');
-const { createTeamWithUser, createUser, destroy, setup } = require('../../../test/helpers/setup');
+const {
+    createTeamWithUser,
+    createUser,
+    destroy,
+    setup,
+    createTeam,
+    createCharts,
+    createFolders,
+    genRandomChartId,
+    genNonExistentFolderId
+} = require('../../../test/helpers/setup');
+const { randomInt } = require('crypto');
+
+function createFolder(props) {
+    const { Folder } = require('@datawrapper/orm/models');
+    return Folder.create({
+        ...props,
+        name: String(randomInt(99999))
+    });
+}
+
+function findChartById(id) {
+    const { Chart } = require('@datawrapper/orm/models');
+    return Chart.findByPk(id);
+}
+
+async function addUserToTeam(user, team, role = 'member') {
+    const { UserTeam } = require('@datawrapper/orm/models');
+
+    await UserTeam.create({
+        user_id: user.id,
+        organization_id: team.id,
+        team_role: role
+    });
+}
+
+function sleep(seconds) {
+    return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+}
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
-    t.context.userObj = await createUser(t.context.server, 'admin');
+    t.context.userObj = await createUser(t.context.server);
+    t.context.adminObj = await createUser(t.context.server, { role: 'admin' });
+    t.context.teamObj = await createTeamWithUser(t.context.server);
     t.context.auth = {
         strategy: 'session',
         credentials: {
-            session: t.context.userObj.session.id,
-            data: t.context.userObj.session,
-            scope: t.context.userObj.session.scope
+            session: t.context.adminObj.session.id,
+            data: t.context.adminObj.session,
+            scope: t.context.adminObj.session.scope
         },
-        artifacts: t.context.userObj.user
+        artifacts: t.context.adminObj.user
     };
     t.context.headers = {
         cookie: 'crumb=abc',
@@ -22,7 +62,11 @@ test.before(async t => {
 });
 
 test.after.always(async t => {
-    await destroy(...Object.values(t.context.userObj));
+    await destroy(
+        Object.values(t.context.userObj),
+        Object.values(t.context.teamObj),
+        Object.values(t.context.adminObj)
+    );
 });
 
 function checkStatusCode(t, code, res, msg) {
@@ -34,7 +78,7 @@ function checkStatusCode(t, code, res, msg) {
 }
 
 function getHelpers(t, userObj) {
-    if (!userObj) userObj = t.context.userObj;
+    if (!userObj) userObj = t.context.adminObj;
     const auth = userObj
         ? {
               strategy: 'session',
@@ -48,7 +92,7 @@ function getHelpers(t, userObj) {
         : t.context.auth;
     return {
         user: userObj.user,
-
+        auth,
         async createFolder(folder, expectedCode = 201) {
             return checkStatusCode(
                 t,
@@ -137,7 +181,8 @@ function getHelpers(t, userObj) {
 }
 
 test('Should be possible to search in multiple fields', async t => {
-    const { createChart } = getHelpers(t);
+    const userObj = await createUser(t.context.server);
+    const { createChart, auth } = getHelpers(t, userObj);
     let chart = await createChart({
         title: 'apple',
         metadata: {
@@ -161,7 +206,7 @@ test('Should be possible to search in multiple fields', async t => {
         chart = await t.context.server.inject({
             method: 'GET',
             url: `/v3/charts?search=${query}`,
-            auth: t.context.auth
+            auth
         });
 
         t.is(chart.result.list.length, 1, query);
@@ -190,7 +235,7 @@ test('Should be possible to filter by folder id', async t => {
 });
 
 test('Should be possible to filter by team id', async t => {
-    const teamObj = await createTeamWithUser(t.context.server, 'member');
+    const teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
     const { team } = teamObj;
 
     const { createChart, getCharts } = getHelpers(t, teamObj);
@@ -205,7 +250,7 @@ test('Should be possible to filter by team id', async t => {
 });
 
 test('Should be possible to filter by team and folder id', async t => {
-    const teamObj = await createTeamWithUser(t.context.server, 'member');
+    const teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
     const { team } = teamObj;
 
     const { createChart, getCharts, createFolder } = getHelpers(t, teamObj);
@@ -243,7 +288,7 @@ test('Should be possible to filter by folder id null', async t => {
 
 test('Cannot filter by folder a user does not have access to', async t => {
     const admin = getHelpers(t);
-    const teamObj = await createTeamWithUser(t.context.server, 'member');
+    const teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
     const teamUser = getHelpers(t, teamObj);
     // admin creates a folder
     const folder = (await admin.createFolder({ name: 'Admins only' })).result;
@@ -254,9 +299,9 @@ test('Cannot filter by folder a user does not have access to', async t => {
 });
 
 test('Cannot filter by team a user does not have access to', async t => {
-    const teamObj1 = await createTeamWithUser(t.context.server, 'member');
+    const teamObj1 = await createTeamWithUser(t.context.server, { role: 'member' });
     const teamUser1 = getHelpers(t, teamObj1);
-    const teamObj2 = await createTeamWithUser(t.context.server, 'member');
+    const teamObj2 = await createTeamWithUser(t.context.server, { role: 'member' });
     const teamUser2 = getHelpers(t, teamObj2);
 
     // team user can query their own team
@@ -269,13 +314,13 @@ test('Cannot filter by team a user does not have access to', async t => {
 
 test('Cannot combine by folderId with different teamId', async t => {
     const admin = getHelpers(t);
-    const teamObj1 = await createTeamWithUser(t.context.server, 'member');
+    const teamObj1 = await createTeamWithUser(t.context.server, { role: 'member' });
     const teamUser1 = getHelpers(t, teamObj1);
     const folder1 = (
         await teamUser1.createFolder({ name: 'team1', organizationId: teamObj1.team.id })
     ).result;
 
-    const teamObj2 = await createTeamWithUser(t.context.server, 'member');
+    const teamObj2 = await createTeamWithUser(t.context.server, { role: 'member' });
 
     // can query folder
     await admin.getCharts(`?folderId=${folder1.id}`, 200);
@@ -286,9 +331,9 @@ test('Cannot combine by folderId with different teamId', async t => {
 });
 
 test('Users can create charts in a team they have access to', async t => {
-    let teamObj;
+    let teamObj = {};
     try {
-        teamObj = await createTeamWithUser(t.context.server, 'member');
+        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
         const { team } = teamObj;
         const { createChart } = getHelpers(t, teamObj);
 
@@ -298,16 +343,14 @@ test('Users can create charts in a team they have access to', async t => {
 
         t.is(chart.statusCode, 201);
     } finally {
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
+        await destroy(...Object.values(teamObj));
     }
 });
 
 test('Users can create charts with settings set', async t => {
-    let teamObj;
+    let teamObj = {};
     try {
-        teamObj = await createTeamWithUser(t.context.server, 'member');
+        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
         const { team, session } = teamObj;
 
         const chart = await t.context.server.inject({
@@ -338,16 +381,14 @@ test('Users can create charts with settings set', async t => {
         t.is(chart.result.metadata.describe.intro, 'A description');
         t.is(chart.result.metadata.describe.byline, '');
     } finally {
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
+        await destroy(...Object.values(teamObj));
     }
 });
 
 test('Users can create a chart in a team when authenticating with a token', async t => {
-    let teamObj;
+    let teamObj = {};
     try {
-        teamObj = await createTeamWithUser(t.context.server, 'member');
+        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
         const { team, token } = teamObj;
 
         const chart = await t.context.server.inject({
@@ -367,16 +408,14 @@ test('Users can create a chart in a team when authenticating with a token', asyn
         t.is(chart.result.title, 'My new visualization');
         t.is(chart.result.organizationId, team.id);
     } finally {
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
+        await destroy(...Object.values(teamObj));
     }
 });
 
 test('Users cannot create a chart with an invalid token', async t => {
-    let teamObj;
+    let teamObj = {};
     try {
-        teamObj = await createTeamWithUser(t.context.server, 'member');
+        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
         const { team } = teamObj;
 
         const chart = await t.context.server.inject({
@@ -393,19 +432,17 @@ test('Users cannot create a chart with an invalid token', async t => {
         });
         t.is(chart.statusCode, 401);
     } finally {
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
+        await destroy(...Object.values(teamObj));
     }
 });
 
 test('Users cannot create chart in a team they dont have access to (token auth)', async t => {
-    let userObj;
-    let teamObj;
+    let userObj = {};
+    let teamObj = {};
     try {
         userObj = await createUser(t.context.server);
         const { token } = userObj;
-        teamObj = await createTeamWithUser(t.context.server, 'member');
+        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
         const { team } = teamObj;
 
         const chart = await t.context.server.inject({
@@ -421,22 +458,17 @@ test('Users cannot create chart in a team they dont have access to (token auth)'
 
         t.is(chart.statusCode, 403);
     } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
+        await destroy(...Object.values(userObj), ...Object.values(teamObj));
     }
 });
 
 test('Users cannot create chart in a team they dont have access to (session auth)', async t => {
-    let userObj;
-    let teamObj;
+    let userObj = {};
+    let teamObj = {};
     try {
         userObj = await createUser(t.context.server);
         const { session } = userObj;
-        teamObj = await createTeamWithUser(t.context.server, 'member');
+        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
         const { team } = teamObj;
 
         const chart = await t.context.server.inject({
@@ -465,7 +497,7 @@ test('Users cannot create chart in a team they dont have access to (session auth
 
 test('Charts can be sorted by title', async t => {
     // create a new team for an empty slare
-    const teamObj = await createTeamWithUser(t.context.server, 'member');
+    const teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
     const { team } = teamObj;
 
     const { createChart, getCharts } = getHelpers(t, teamObj);
@@ -483,7 +515,7 @@ test('Charts can be sorted by title', async t => {
 
 test('Charts can be sorted by createdAt', async t => {
     // create a new team for an empty slare
-    const teamObj = await createTeamWithUser(t.context.server, 'member');
+    const teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
     const { team } = teamObj;
 
     const { createChart, getCharts } = getHelpers(t, teamObj);
@@ -504,7 +536,7 @@ test('Charts can be sorted by createdAt', async t => {
 
 test('Charts can be sorted by publishedAt', async t => {
     // create a new team for an empty slate
-    const teamObj = await createTeamWithUser(t.context.server, 'member');
+    const teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
     const { team } = teamObj;
 
     const { createChart, getCharts, publishChart } = getHelpers(t, teamObj);
@@ -529,7 +561,7 @@ test('Charts can be sorted by publishedAt', async t => {
 
 test('Charts can be filtered by lastEditStep', async t => {
     // create a new team for an empty slate
-    const teamObj = await createTeamWithUser(t.context.server, 'member');
+    const teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
     const { team } = teamObj;
 
     const { createChart, getCharts } = getHelpers(t, teamObj);
@@ -557,7 +589,7 @@ test('Charts can be filtered by lastEditStep', async t => {
 
 test('Charts list goes through all user and team charts', async t => {
     // create a new team for an empty slare
-    const teamObj = await createTeamWithUser(t.context.server, 'member');
+    const teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
     const { team } = teamObj;
 
     const admin = getHelpers(t);
@@ -633,6 +665,880 @@ test('Admins can not query charts from non-existing teams', async t => {
     await admin.getCharts(`?teamId=xxxxxxx`, 404);
 });
 
-function sleep(seconds) {
-    return new Promise(resolve => setTimeout(resolve, seconds * 1000));
-}
+test('PATCH /charts moves multiple charts into a folder of a user', async t => {
+    let charts;
+    let folder;
+    try {
+        const { user, token } = t.context.teamObj;
+        folder = await createFolder({
+            user_id: user.id
+        });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: {
+                    folderId: folder.id
+                }
+            }
+        });
+        t.is(res.statusCode, 200);
+        const result = await res.result;
+        t.is(result.length, 2);
+        const result0 = result.find(el => el.id === charts[0].id);
+        const result1 = result.find(el => el.id === charts[1].id);
+        t.truthy(result0);
+        t.truthy(result1);
+        t.is(result0.folderId, folder.id);
+        t.is(result0.organizationId, null);
+        t.is(result1.folderId, folder.id);
+        t.is(result1.organizationId, null);
+        const chart1 = await findChartById(charts[0].id);
+        t.is(chart1.in_folder, folder.id);
+        t.is(chart1.organization_id, null);
+        const chart2 = await findChartById(charts[1].id);
+        t.is(chart2.in_folder, folder.id);
+        t.is(chart2.organization_id, null);
+    } finally {
+        await destroy(charts, folder);
+    }
+});
+
+test('PATCH /charts moves multiple charts into root folder of a team', async t => {
+    let charts;
+    let userFolders;
+    let userObj = {};
+    let team;
+    try {
+        userObj = await createUser(t.context.server);
+        const { user, token } = userObj;
+        userFolders = await createFolders([
+            {
+                user_id: user.id
+            },
+            {
+                user_id: user.id
+            }
+        ]);
+        team = await createTeam();
+        await addUserToTeam(user, team);
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id,
+                in_folder: userFolders[0].id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id,
+                in_folder: userFolders[1].id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: {
+                    teamId: team.id,
+                    folderId: null
+                }
+            }
+        });
+        t.is(res.statusCode, 200);
+        const result = await res.result;
+        t.is(result.length, 2);
+        const result0 = result.find(el => el.id === charts[0].id);
+        const result1 = result.find(el => el.id === charts[1].id);
+        t.truthy(result0);
+        t.truthy(result1);
+        t.is(result0.folderId, null);
+        t.is(result0.organizationId, team.id);
+        t.is(result1.folderId, null);
+        t.is(result1.organizationId, team.id);
+        const chart1 = await findChartById(charts[0].id);
+        t.is(chart1.in_folder, null);
+        t.is(chart1.organization_id, team.id);
+        const chart2 = await findChartById(charts[1].id);
+        t.is(chart2.in_folder, null);
+        t.is(chart2.organization_id, team.id);
+    } finally {
+        await destroy(charts, userFolders, ...Object.values(userObj), team);
+    }
+});
+
+test('PATCH /charts moves multiple charts into folder of a team', async t => {
+    let charts;
+    let teamFolder;
+    let team;
+    let userFolders;
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server);
+        const { user, token } = userObj;
+        userFolders = await createFolders([
+            {
+                user_id: user.id
+            },
+            {
+                user_id: user.id
+            }
+        ]);
+        team = await createTeam();
+        await addUserToTeam(user, team);
+        teamFolder = await createFolder({ org_id: team.id });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id,
+                in_folder: userFolders[0].id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id,
+                in_folder: userFolders[1].id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: {
+                    folderId: teamFolder.id,
+                    teamId: team.id
+                }
+            }
+        });
+        t.is(res.statusCode, 200);
+        const result = await res.result;
+        t.is(result.length, 2);
+        const result0 = result.find(el => el.id === charts[0].id);
+        const result1 = result.find(el => el.id === charts[1].id);
+        t.truthy(result0);
+        t.truthy(result1);
+        t.is(result0.folderId, teamFolder.id);
+        t.is(result0.organizationId, team.id);
+        t.is(result0.authorId, user.id);
+        t.is(result1.folderId, teamFolder.id);
+        t.is(result1.organizationId, team.id);
+        t.is(result1.authorId, user.id);
+        const chart1 = await findChartById(charts[0].id);
+        t.is(chart1.in_folder, teamFolder.id);
+        t.is(chart1.organization_id, team.id);
+        t.is(chart1.author_id, user.id);
+        const chart2 = await findChartById(charts[1].id);
+        t.is(chart2.in_folder, teamFolder.id);
+        t.is(chart2.organization_id, team.id);
+        t.is(chart2.author_id, user.id);
+    } finally {
+        await destroy(charts, teamFolder, team, userFolders, ...Object.values(userObj));
+    }
+});
+
+test('PATCH /charts moves multiple charts from a team into the root folder of a user', async t => {
+    let charts;
+    let team;
+    let otherUserObj;
+    let teamFolders;
+    try {
+        otherUserObj = await createUser(t.context.server, { role: 'editor' });
+        const { user: otherUser } = otherUserObj;
+        const { token, user } = t.context.userObj;
+        team = await createTeam();
+        await addUserToTeam(user, team);
+        await addUserToTeam(otherUser, team);
+        teamFolders = await createFolders([
+            {
+                org_id: team.id
+            },
+            {
+                org_id: team.id
+            }
+        ]);
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: otherUser.id,
+                in_folder: teamFolders[0].id,
+                organization_id: team.id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id,
+                in_folder: teamFolders[1].id,
+                organization_id: team.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: { folderId: null }
+            }
+        });
+        t.is(res.statusCode, 200);
+        const result = await res.result;
+        t.is(result.length, 2);
+        const result0 = result.find(el => el.id === charts[0].id);
+        const result1 = result.find(el => el.id === charts[1].id);
+        t.truthy(result0);
+        t.truthy(result1);
+        t.is(result0.folderId, null);
+        t.is(result0.authorId, user.id);
+        t.is(result0.organizationId, null);
+        t.is(result1.folderId, null);
+        t.is(result1.authorId, user.id);
+        t.is(result1.organizationId, null);
+        const chart1 = await findChartById(charts[0].id);
+        t.is(chart1.in_folder, null);
+        t.is(chart1.organization_id, null);
+        t.is(chart1.author_id, user.id);
+        const chart2 = await findChartById(charts[1].id);
+        t.is(chart2.in_folder, null);
+        t.is(chart2.organization_id, null);
+        t.is(chart2.author_id, user.id);
+    } finally {
+        await destroy(charts, teamFolders, Object.values(otherUserObj));
+    }
+});
+
+test('PATCH /charts overwrites chart team with folder team', async t => {
+    let charts;
+    let folderTeam;
+    let teamFolder;
+    let otherUserObj;
+
+    try {
+        otherUserObj = await createUser(t.context.server, { role: 'editor' });
+        const { user: otherUser } = otherUserObj;
+        const { token, team, user } = t.context.teamObj;
+        folderTeam = await createTeam();
+        await addUserToTeam(user, folderTeam);
+        teamFolder = await createFolder({ org_id: folderTeam.id });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: otherUser.id,
+                organization_id: team.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: { folderId: teamFolder.id }
+            }
+        });
+        t.is(res.statusCode, 200);
+        const result = await res.result;
+        t.is(result.length, 1);
+        t.is(result[0].id, charts[0].id);
+        t.is(result[0].folderId, teamFolder.id);
+        t.is(result[0].organizationId, folderTeam.id);
+        t.is(result[0].authorId, user.id);
+        const chart1 = await findChartById(charts[0].id);
+        t.is(chart1.in_folder, teamFolder.id);
+        t.is(chart1.organization_id, folderTeam.id);
+        t.is(chart1.author_id, user.id);
+    } finally {
+        await destroy(charts, teamFolder, folderTeam, Object.values(otherUserObj));
+    }
+});
+
+test('PATCH /charts returns an error if the specified folder does not belong to the specified team', async t => {
+    let charts;
+    let teamFolders;
+    let teams;
+    try {
+        const { token, user } = t.context.userObj;
+        teams = [await createTeam(), await createTeam()];
+        await addUserToTeam(user, teams[0]);
+        await addUserToTeam(user, teams[1]);
+        teamFolders = [
+            await createFolder({ org_id: teams[0].id }),
+            await createFolder({ org_id: teams[1].id })
+        ];
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: {
+                    folderId: teamFolders[0].id,
+                    teamId: teams[1].id
+                }
+            }
+        });
+        t.is(res.statusCode, 403);
+    } finally {
+        await destroy(charts, teamFolders, teams);
+    }
+});
+
+test('PATCH /charts returns an error if a user does not have scope chart:write', async t => {
+    let charts;
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, { scopes: ['spam'] });
+        const { token, user } = userObj;
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: { folderId: null }
+            }
+        });
+        t.is(res.statusCode, 403);
+    } finally {
+        await destroy(charts, ...Object.values(userObj));
+    }
+});
+
+test('PATCH /charts returns an error if one of the charts does not exist', async t => {
+    let charts;
+    let userFolder;
+    try {
+        const { token, user } = t.context.userObj;
+        userFolder = await createFolder({ user_id: user.id });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: [charts[0].id, genRandomChartId()],
+                patch: { folderId: userFolder.id }
+            }
+        });
+        t.is(res.statusCode, 404);
+    } finally {
+        await destroy(charts, userFolder);
+    }
+});
+
+test('PATCH /charts returns an error if the specified folder does not exist', async t => {
+    let charts;
+    try {
+        const { token, user } = t.context.userObj;
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: { folderId: genNonExistentFolderId() }
+            }
+        });
+        t.is(res.statusCode, 404);
+    } finally {
+        await destroy(charts);
+    }
+});
+
+test('PATCH /charts returns an error if the user does not have access to a chart', async t => {
+    let anotherUserObj = {};
+    let charts;
+    try {
+        const { token, user } = t.context.userObj;
+        anotherUserObj = await createUser(t.context.server);
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: anotherUserObj.user.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: { folderId: null }
+            }
+        });
+        t.is(res.statusCode, 404);
+    } finally {
+        await destroy(...Object.values(anotherUserObj), charts);
+    }
+});
+
+test('PATCH /charts returns an error if the user does not have access to a folder', async t => {
+    let anotherFolder;
+    let anotherUserObj = {};
+    let charts;
+    let userFolder;
+    try {
+        const { token, user } = t.context.userObj;
+        userFolder = await createFolder({ user_id: user.id });
+        anotherUserObj = await createUser(t.context.server);
+        anotherFolder = await createFolder({ user_id: anotherUserObj.user.id });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: { folderId: anotherFolder.id }
+            }
+        });
+        t.is(res.statusCode, 403);
+    } finally {
+        await destroy(anotherFolder, Object.values(anotherUserObj), charts, userFolder);
+    }
+});
+
+test('PATCH /charts returns an error if the user does not have access to a team', async t => {
+    let anotherTeam;
+    let charts = [];
+    try {
+        const { token, user } = t.context.teamObj;
+        anotherTeam = await createTeam();
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: { folderId: null, teamId: anotherTeam.id }
+            }
+        });
+        t.is(res.statusCode, 403);
+    } finally {
+        await destroy(anotherTeam, charts);
+    }
+});
+
+test('PATCH /charts returns an error if the specified team does not exist', async t => {
+    let charts = [];
+    try {
+        const { token, user } = t.context.teamObj;
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: { folderId: null, teamId: 'non-existent' }
+            }
+        });
+        t.is(res.statusCode, 403);
+    } finally {
+        await destroy(charts);
+    }
+});
+
+test('PATCH /charts returns an error if trying to update any other chart property', async t => {
+    let charts;
+    try {
+        const { token, user } = t.context.userObj;
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: {
+                    folderId: null,
+                    title: 'New Chart 2'
+                }
+            }
+        });
+        t.is(res.statusCode, 400);
+    } finally {
+        await destroy(charts);
+    }
+});
+
+test('PATCH /charts moves charts correctly between teams', async t => {
+    let charts;
+    let userObjA;
+    let userObjB;
+    let otherTeam;
+
+    try {
+        userObjA = await createUser(t.context.server, { role: 'editor' });
+        const { user: userA } = userObjA;
+        userObjB = await createUser(t.context.server, { role: 'editor' });
+        const { user: userB } = userObjB;
+        const { token, user, team } = t.context.teamObj;
+        otherTeam = await createTeam();
+        await addUserToTeam(user, otherTeam);
+        await addUserToTeam(userA, otherTeam);
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: userA.id,
+                organization_id: team.id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: userB.id,
+                organization_id: team.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: {
+                    folderId: null,
+                    teamId: otherTeam.id
+                }
+            }
+        });
+        t.is(res.statusCode, 200);
+        const result = await res.result;
+        t.is(result.length, 2);
+        const result0 = result.find(el => el.id === charts[0].id);
+        const result1 = result.find(el => el.id === charts[1].id);
+        t.truthy(result0);
+        t.truthy(result1);
+        t.is(result0.folderId, null);
+        t.is(result0.authorId, userA.id); // authorship remains unchanged
+        t.is(result0.organizationId, otherTeam.id);
+        t.is(result1.folderId, null);
+        t.is(result1.authorId, userB.id); // authorship remains unchanged
+        t.is(result1.organizationId, otherTeam.id);
+        const chart1 = await findChartById(charts[0].id);
+        t.is(chart1.in_folder, null);
+        t.is(chart1.organization_id, otherTeam.id);
+        t.is(chart1.author_id, userA.id);
+        const chart2 = await findChartById(charts[1].id);
+        t.is(chart2.in_folder, null);
+        t.is(chart2.organization_id, otherTeam.id);
+        t.is(chart2.author_id, userB.id);
+    } finally {
+        await destroy(charts, otherTeam, Object.values(userObjA), Object.values(userObjB));
+    }
+});
+
+test('PATCH /charts moves multiple charts into a different folder of the same team', async t => {
+    let charts;
+    let team;
+    let teamFolders;
+    let userObj = {};
+    let otherUserObj = {};
+    try {
+        userObj = await createUser(t.context.server);
+        otherUserObj = await createUser(t.context.server);
+        const { user, token } = userObj;
+        const { user: otherUser } = otherUserObj;
+        team = await createTeam();
+        await addUserToTeam(user, team);
+        teamFolders = await createFolders([
+            {
+                user_id: null,
+                org_id: team.id
+            },
+            {
+                user_id: null,
+                org_id: team.id
+            }
+        ]);
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: otherUser.id,
+                in_folder: teamFolders[0].id,
+                organization_id: team.id
+            },
+            {
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: user.id,
+                in_folder: teamFolders[0].id,
+                organization_id: team.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: {
+                    folderId: teamFolders[1].id,
+                    teamId: team.id
+                }
+            }
+        });
+        t.is(res.statusCode, 200);
+        const result = await res.result;
+        t.is(result.length, 2);
+        const result0 = result.find(el => el.id === charts[0].id);
+        const result1 = result.find(el => el.id === charts[1].id);
+        t.truthy(result0);
+        t.truthy(result1);
+        t.is(result0.folderId, teamFolders[1].id);
+        t.is(result0.organizationId, team.id);
+        t.is(result0.authorId, otherUser.id);
+        t.is(result1.folderId, teamFolders[1].id);
+        t.is(result1.organizationId, team.id);
+        t.is(result1.authorId, user.id);
+        const chart1 = await findChartById(charts[0].id);
+        t.is(chart1.in_folder, teamFolders[1].id);
+        t.is(chart1.organization_id, team.id);
+        t.is(chart1.author_id, otherUser.id);
+        const chart2 = await findChartById(charts[1].id);
+        t.is(chart2.in_folder, teamFolders[1].id);
+        t.is(chart2.organization_id, team.id);
+        t.is(chart2.author_id, user.id);
+    } finally {
+        await destroy(
+            charts,
+            teamFolders,
+            team,
+            Object.values(userObj),
+            Object.values(otherUserObj)
+        );
+    }
+});

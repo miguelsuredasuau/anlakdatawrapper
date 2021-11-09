@@ -1,5 +1,3 @@
-/* globals process */
-
 const Sequelize = require('sequelize');
 const { findPlugins, createRegisterPlugins } = require('./utils/plugins');
 
