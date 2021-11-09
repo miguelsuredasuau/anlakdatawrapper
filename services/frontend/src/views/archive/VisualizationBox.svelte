@@ -3,6 +3,7 @@
     import { getContext } from 'svelte';
     const config = getContext('config');
     const { dayjs } = getContext('libraries');
+    const { openVisualization } = getContext('page/archive');
 
     export let chart;
     export let __;
@@ -41,7 +42,7 @@
 </style>
 
 <div class="box has-border">
-    <a href="/chart/{chart.id}/edit">
+    <a on:click|preventDefault={() => openVisualization(chart)} href="/chart/{chart.id}/edit">
         <figure class="image is-4by3">
             <figcaption title={purifyHTML(chart.title, '')} class="title is-6 mb-2">
                 {purifyHTML(chart.title, '')}

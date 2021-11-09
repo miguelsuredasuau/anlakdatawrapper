@@ -5,6 +5,8 @@
 
     import dayjs from 'dayjs';
     import relativeTime from 'dayjs/plugin/relativeTime';
+    import advancedFormat from 'dayjs/plugin/advancedFormat';
+    import localizedFormat from 'dayjs/plugin/localizedFormat';
 
     import de from 'dayjs/locale/de';
     import es from 'dayjs/locale/es';
@@ -24,6 +26,8 @@
     };
     const userLang = stores.user.language;
     dayjs.extend(relativeTime);
+    dayjs.extend(advancedFormat);
+    dayjs.extend(localizedFormat);
     if (dayjsLocales[userLang.substr(0, 2)]) {
         dayjs.locale(dayjsLocales[userLang.substr(0, 2)]);
     }

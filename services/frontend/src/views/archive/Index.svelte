@@ -9,20 +9,25 @@
     import VisualizationGrid from './VisualizationGrid.svelte';
     import SubFolderGrid from './SubFolderGrid.svelte';
     import SearchInput from './SearchInput.svelte';
+    import VisualizationModal from './VisualizationModal.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
 
     const user = getContext('user');
     const request = getContext('request');
-
-    setContext('page/archive', {
-        findFolderByPath
-    });
 
     export let __;
 
     export let apiQuery;
     export let charts;
     export let folderGroups;
+    export let themeBgColors;
+
+    setContext('page/archive', {
+        findFolderByPath,
+        openVisualization,
+        loadCharts,
+        themeBgColors
+    });
 
     $: userFolder = parseFolderTree(folderGroups[0]);
     $: teamFolders = folderGroups.slice(1).map(parseFolderTree);
@@ -30,14 +35,23 @@
     export let offset = 0;
     export let limit;
 
+    let currentChart;
+    let currentChartOpen = false;
+
     $: total = charts.total;
     $: folderId = $currentFolder ? $currentFolder.id : null;
     $: teamId = $currentFolder ? $currentFolder.teamId : null;
     $: curPath = $currentFolder ? $currentFolder.path : null;
     $: curSearch = $currentFolder ? $currentFolder.search || '' : '';
 
+    const modalHashRegex = /^#\/([a-z0-9]{5})$/i;
+
     let _mounted = false;
     onMount(() => {
+        if (modalHashRegex.test(window.location.hash)) {
+            const m = window.location.hash.match(modalHashRegex);
+            openVisualization(m[1]);
+        }
         findFolderByPath($request.path, $request.query);
         _mounted = true;
     });
@@ -51,6 +65,25 @@
                     return;
                 }
             }
+        }
+    }
+
+    async function openVisualization(chart) {
+        currentChart = await httpReq.get(
+            `/v3/charts/${typeof chart === 'string' ? chart : chart.id}`
+        );
+        currentChartOpen = true;
+    }
+
+    async function loadCharts(force = false) {
+        const query = `/charts?minLastEditStep=2&offset=${offset}&limit=${limit}&${
+            curSearch
+                ? `search=${encodeURIComponent(curSearch)}`
+                : `folderId=${folderId ? folderId : 'null'}${teamId ? `&teamId=${teamId}` : ''}`
+        }`;
+        if (query !== apiQuery || force) {
+            apiQuery = query;
+            charts = await httpReq.get(`/v3${query}`);
         }
     }
 
@@ -74,15 +107,7 @@
             _prevFolder = $currentFolder;
 
             window.history.replaceState({ folderId, teamId }, '', curPath);
-            const query = `/charts?minLastEditStep=2&offset=${offset}&limit=${limit}&${
-                curSearch
-                    ? `search=${encodeURIComponent(curSearch)}`
-                    : `folderId=${folderId ? folderId : 'null'}${teamId ? `&teamId=${teamId}` : ''}`
-            }`;
-            if (query !== apiQuery) {
-                apiQuery = query;
-                charts = await httpReq.get(`/v3${query}`);
-            }
+            loadCharts();
         }
     });
 </script>
@@ -94,6 +119,7 @@
 </style>
 
 <MainLayout title="{$currentFolder.name || ''} - Archive">
+    <VisualizationModal {__} bind:open={currentChartOpen} bind:chart={currentChart} />
     <section class="section header">
         <div class="container">
             <div class="columns is-vcentered">

@@ -1,5 +1,7 @@
 const Joi = require('joi');
 const { db } = require('@datawrapper/orm');
+const keyBy = require('lodash/keyBy');
+const mapValues = require('lodash/mapValues');
 
 module.exports = {
     name: 'routes/archive',
@@ -13,6 +15,7 @@ module.exports = {
         server.methods.prepareView('archive/Index.svelte');
         const Folder = server.methods.getModel('folder');
         const Chart = server.methods.getModel('chart');
+        const Theme = server.methods.getModel('theme');
 
         const minLastEditStep = 2;
 
@@ -67,6 +70,12 @@ module.exports = {
             const offset = 0;
             const limit = 15;
 
+            const teams = (await user.getTeams())
+                .filter(d => !d.user_team.getDataValue('invite_token'))
+                .map(t => t.toJSON());
+
+            const themeBgColors = await getThemeBgColors(user, teams);
+
             const apiQuery = `/charts?minLastEditStep=${minLastEditStep}&offset=${offset}&limit=${limit}&${
                 search
                     ? `search=${search}`
@@ -74,7 +83,7 @@ module.exports = {
             }`;
             const charts = await api(apiQuery);
 
-            const folderGroups = await getFolders(user);
+            const folderGroups = await getFolders(user, teams);
 
             return h.view('archive/Index.svelte', {
                 htmlClass: 'has-background-white-bis',
@@ -85,15 +94,67 @@ module.exports = {
                     offset,
                     teamId,
                     folderId,
-                    folderGroups
+                    folderGroups,
+                    themeBgColors
                 }
             });
+        }
+
+        async function getThemeBgColors(user, teams) {
+            // query list of themes used by the user+team
+            const themeIds = (
+                await Chart.findAll({
+                    attributes: ['theme'],
+                    where: {
+                        deleted: 0,
+                        [db.Op.or]: [
+                            {
+                                author_id: user.id,
+                                organization_id: null
+                            },
+                            {
+                                organization_id: teams.map(t => t.id)
+                            }
+                        ]
+                    },
+                    group: ['chart.theme']
+                })
+            ).map(d => d.theme);
+
+            // query background colors for each theme
+            const bgColQuery = db.fn(
+                'json_extract',
+                db.col('data'),
+                db.literal('"$.style.body.background"')
+            );
+            const bgColors = (
+                await Theme.findAll({
+                    attributes: ['id', [bgColQuery, 'bg']],
+                    where: {
+                        [db.Op.and]: [
+                            {
+                                id: themeIds
+                            },
+                            db.where(bgColQuery, {
+                                [db.Op.not]: null
+                            }),
+                            db.where(bgColQuery, {
+                                [db.Op.ne]: 'transparent'
+                            })
+                        ]
+                    }
+                })
+            ).map(d => d.toJSON());
+            return mapValues(
+                keyBy(bgColors, d => d.id),
+                d => d.bg
+            );
         }
 
         /*
          * queries user and team folders
          */
-        async function getFolders(user) {
+        async function getFolders(user, teams) {
             const folders = [
                 {
                     teamId: null,
@@ -103,10 +164,6 @@ module.exports = {
                     ]
                 }
             ];
-
-            const teams = (await user.getTeams())
-                .filter(d => !d.user_team.getDataValue('invite_token'))
-                .map(t => t.toJSON());
 
             await Promise.all(
                 teams.map(team => {

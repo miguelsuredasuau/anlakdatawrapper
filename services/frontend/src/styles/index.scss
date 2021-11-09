@@ -104,6 +104,11 @@ $navbar-divider-height: 1px;
 $navbar-divider-background-color: $dw-grey-lighter;
 $navbar-dropdown-arrow: $dw-grey-darker;
 
+// Modal
+$modal-content-width: 1100px;
+$modal-z: 1100;
+$modal-background-background-color: rgba($dw-black-bis, 0.5);
+
 // LAYOUT
 $section-padding: 1.5rem;
 
@@ -153,7 +158,7 @@ $input-border-color: $dw-grey-light;
 // @import "../../node_modules/bulma/sass/components/media.sass";
 @import '../../node_modules/bulma/sass/components/menu.sass';
 @import '../../node_modules/bulma/sass/components/message.sass';
-// @import "../../node_modules/bulma/sass/components/modal.sass";
+@import '../../node_modules/bulma/sass/components/modal.sass';
 @import '../../node_modules/bulma/sass/components/navbar.sass';
 @import '../../node_modules/bulma/sass/components/pagination.sass';
 // @import "../../node_modules/bulma/sass/components/panel.sass";

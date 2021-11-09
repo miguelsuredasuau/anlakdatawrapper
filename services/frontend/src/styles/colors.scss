@@ -1,37 +1,36 @@
 /*
  * CUSTOM COLORS
  */
- 
-$dw-scooter-dark: #15607A;
-$dw-scooter: #1D81A2;
-$dw-scooter-light: #18A1CD;
+
+$dw-scooter-dark: #15607a;
+$dw-scooter: #1d81a2;
+$dw-scooter-light: #18a1cd;
 $dw-scooter-lightest: #e9f3f6;
 
 $dw-turquoise-dark: #09bb9f;
 $dw-turquoise: #39f3bb;
 
-$dw-firebrick: #C71E1D;
+$dw-firebrick: #c71e1d;
 
-$dw-blue: #588CDB;
-$dw-green: #6ED778;
-$dw-yellow: #FFDC27;
-$dw-red: #CF4870;
-
+$dw-blue: #588cdb;
+$dw-green: #6ed778;
+$dw-yellow: #ffdc27;
+$dw-red: #cf4870;
 
 $dw-black: #111111;
-$dw-black-bis: #333333;     // Gray 20 (aka Gray 1)
+$dw-black-bis: #333333; // Gray 20 (aka Gray 1)
 // $dw-black-ter
-$dw-grey-darker: #4F4F4F;   // Gray 30 (aka Gray 2)
-$dw-grey-dark: #858585;     // Gray 50
-$dw-grey: #A7A7A7;          // Gray 60
-$dw-grey-light: #C9C9C9;    // Gray 70
-$dw-grey-lighter: #E5E5E5;  // Gray 80
-$dw-grey-lightest: #F0F0F0; // Gray 85
-$dw-white-ter: #F5F5F5;     // Gray 90
-$dw-white-bis: #F9F9F9;     // Gray 95
-$dw-white: #FFFFFF;
+$dw-grey-darker: #4f4f4f; // Gray 30 (aka Gray 2)
+$dw-grey-dark: #858585; // Gray 50
+$dw-grey: #a7a7a7; // Gray 60
+$dw-grey-light: #c9c9c9; // Gray 70
+$dw-grey-lighter: #e5e5e5; // Gray 80
+$dw-grey-lightest: #f0f0f0; // Gray 85
+$dw-white-ter: #f5f5f5; // Gray 90
+$dw-white-bis: #f9f9f9; // Gray 95
+$dw-white: #ffffff;
 
-$dw-shade: rgba(0,0,0,.1);
+$dw-shade: rgba(0, 0, 0, 0.1);
 
 html {
     --color-dw-scooter-dark: #{$dw-scooter-dark};
