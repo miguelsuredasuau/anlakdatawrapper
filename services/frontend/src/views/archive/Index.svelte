@@ -165,7 +165,7 @@
         currentChartOpen = true;
     }
 
-    let _offset = offset;
+    let _prevOffset = offset;
     let _prevFolder;
 
     $: sortedTeamFolders = teamFolders.sort((a, b) => {
@@ -180,8 +180,14 @@
         // prevent this from running before the page has mounted
         // to avoid loading charts for the 'default' folder
         if (!_mounted) return;
-        if (_offset !== offset || _prevFolder !== $currentFolder) {
-            _offset = offset;
+
+        if (_prevOffset !== offset || _prevFolder !== $currentFolder) {
+            // if folder has changed, reset pagination to first step:
+            if (_prevFolder !== $currentFolder) {
+                offset = 0;
+            }
+
+            _prevOffset = offset;
             _prevFolder = $currentFolder;
 
             window.history.replaceState({ folderId, teamId }, '', curPath);
