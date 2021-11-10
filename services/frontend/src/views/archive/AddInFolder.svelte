@@ -46,17 +46,21 @@
 <style lang="scss">
     @import '../../styles/colors.scss';
 
-    .type-icon {
-        margin-right: 0.5ex;
-        color: $dw-scooter;
-        font-size: 20px;
-        width: 1em;
-        height: 1em;
-        vertical-align: middle;
-    }
-
-    .rotated-icon {
-        transform: rotate(180deg);
+    .add-folder {
+        :global(.icon) {
+            margin-right: 0.5ex;
+            color: $dw-scooter;
+            font-size: 20px;
+            width: 1em;
+            height: 1em;
+            vertical-align: middle;
+        }
+        .rotated-icon {
+            transform: rotate(180deg);
+        }
+        .button :global(.icon) {
+            color: white;
+        }
     }
 </style>
 
@@ -68,21 +72,20 @@
             aria-controls="dropdown-menu"
             slot="trigger"
         >
-            <span class="icon" aria-hidden="true">
-                <SvgIcon icon="add" />
-            </span>
+            <SvgIcon icon="add" size="20px" className="mr-2 ml-0" />
             <span>
                 {__('archive / add-in-folder / new')}
             </span>
-            <span class="icon ml-2" class:rotated-icon={isActive} aria-hidden="true">
-                <SvgIcon icon="expand-down-bold" size="0.8em" />
-            </span>
+            <SvgIcon
+                icon="expand-down-bold"
+                size="0.8em"
+                className:rotated-icon={isActive}
+                className="ml-2 mr-0"
+            />
         </button>
         <div class="dropdown-content" slot="content">
             <a class="dropdown-item" href="#/" on:click|preventDefault={addSubfolder}>
-                <span class="icon type-icon" aria-hidden="true">
-                    <SvgIcon icon="folder" />
-                </span>
+                <SvgIcon icon="folder" />
                 <span>{__('archive / add-in-folder / folder')}</span>
             </a>
 
@@ -90,9 +93,7 @@
 
             {#each ['chart', 'map', 'table'] as type}
                 <a class="dropdown-item" href="/{type}/create{createQuery}">
-                    <span class="icon type-icon" aria-hidden="true">
-                        <SvgIcon icon="dw-{type}" />
-                    </span>
+                    <SvgIcon icon="dw-{type}" />
                     <span>{__(`archive / add-in-folder / ${type}`)}</span>
                 </a>
             {/each}

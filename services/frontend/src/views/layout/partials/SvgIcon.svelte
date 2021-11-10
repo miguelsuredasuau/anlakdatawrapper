@@ -29,7 +29,7 @@
     }
 
     .icon {
-        font-size: 1em;
+        font-size: inherit;
         width: auto;
         height: auto;
     }

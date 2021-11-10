@@ -23,7 +23,7 @@
             <AddInFolder {__} {folderId} {teamId} />
         </div>
         {#if $selectedCharts.size}
-            <div class="level-item mr-0">
+            <div class="level-item ml-1 mr-0">
                 <strong class="has-text-grey mr-1">{$selectedCharts.size}</strong>
                 {__('archive / action-bar / selected')}
             </div>
@@ -34,7 +34,7 @@
                     title={__('archive / action-bar / deselect-all')}
                     aria-label={__('archive / action-bar / deselect-all')}
                 >
-                    <SvgIcon icon="close" className="is-small has-text-grey" />
+                    <SvgIcon icon="close" className="has-text-grey" size="18px" />
                 </button>
             </div>
         {:else}
@@ -44,7 +44,7 @@
                     style="text-decoration:none"
                     on:click={selectAll}
                 >
-                    <SvgIcon icon="check-all" className="is-small has-text-grey" />
+                    <SvgIcon icon="check-all" className="has-text-grey" size="18px" />
                     <span>{__('archive / action-bar / select-all')}</span>
                 </button>
             </div>

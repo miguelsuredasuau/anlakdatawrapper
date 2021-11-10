@@ -13,6 +13,19 @@
     }
 </script>
 
+<style lang="scss">
+    .dropdown {
+        @import '../../../styles/colors.scss';
+        :global(.dropdown-divider) {
+            margin: 0.25rem 0;
+        }
+        :global(.dropdown-item) {
+            margin: 0 0.25rem;
+            width: auto;
+        }
+    }
+</style>
+
 <svelte:window on:click={windowClick} />
 <div
     class="dropdown"

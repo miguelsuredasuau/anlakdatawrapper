@@ -196,6 +196,11 @@
                 color: $dw-grey;
             }
         }
+        &.is-search {
+            .self {
+                opacity: 0.75;
+            }
+        }
     }
     .collapse-toggle {
         display: block;
@@ -260,7 +265,7 @@
             draggable="false"
             ><SvgIcon
                 icon="folder{folder.search
-                    ? '-search'
+                    ? '-search-outline'
                     : folder.id
                     ? ''
                     : isSharedFolder
@@ -281,7 +286,7 @@
                     {folder.name}
                 {/if}
                 {#if folder.chartCount}<span class="has-text-grey">({folder.chartCount})</span>{/if}
-                {#if !folder.id && (folder.teamId && $user.activeTeam ? $user.activeTeam.id === folder.teamId : !$user.activeTeam)}
+                {#if !folder.id && !folder.search && (!$user.activeTeam ? !folder.teamId : $user.activeTeam.id === folder.teamId)}
                     <SvgIcon icon="check-circle" className="ml-1" valign="sub" />
                 {/if}
             </span>

@@ -2,6 +2,7 @@
     import { beforeUpdate, getContext } from 'svelte';
     import { searchQuery, currentFolder } from './stores';
     import debounce from 'lodash/debounce';
+    import SvgIcon from '../layout/partials/SvgIcon.svelte';
 
     const request = getContext('request');
     const { findFolderByPath } = getContext('page/archive');
@@ -54,17 +55,14 @@
     });
 </script>
 
-<style>
-    .icon i {
-        font-size: 1.3em;
-        position: relative;
-        top: 2px;
+<style lang="scss">
+    @import '../../styles/colors.scss';
+    :global(.icon) {
+        color: $dw-grey-dark;
     }
 </style>
 
 <div class="control has-icons-left">
-    <span class="icon has-text-grey-dark is-small is-left">
-        <i class="im im-magnifier" />
-    </span>
+    <SvgIcon icon="search" size="1.5em" />
     <input class="input" type="text" bind:value on:input={onInput} placeholder={__('Search')} />
 </div>

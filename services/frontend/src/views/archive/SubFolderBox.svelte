@@ -22,7 +22,7 @@
 </style>
 
 <a href={folder.path} on:click|preventDefault={() => ($currentFolder = folder)}>
-    <div class="box has-border is-size-5 m-3">
+    <div class="box has-border is-size-5">
         <SvgIcon icon="folder" className="mr-1" valign="middle" />
         <span class="has-text-weight-medium">{folder.name}</span>
         {#if folder.chartCount}<span class="has-text-grey">({folder.chartCount})</span>{/if}

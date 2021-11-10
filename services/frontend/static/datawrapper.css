@@ -4051,8 +4051,8 @@ a.tag:hover {
   background-color: #ffffff;
   border-radius: 4px;
   box-shadow: 0 0.5em 1em -0.125em rgba(17, 17, 17, 0.1), 0 0px 0 1px rgba(17, 17, 17, 0.02);
-  padding-bottom: 0.5rem;
-  padding-top: 0.5rem;
+  padding-bottom: 0.25rem;
+  padding-top: 0.25rem;
 }
 
 .dropdown-item {
@@ -4078,7 +4078,7 @@ button.dropdown-item:hover {
 }
 a.dropdown-item.is-active,
 button.dropdown-item.is-active {
-  background-color: #1d81a2;
+  background-color: #e9f3f6;
   color: #fff;
 }
 
