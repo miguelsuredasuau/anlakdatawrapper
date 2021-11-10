@@ -56,6 +56,7 @@
     @import '../../styles/colors.scss';
     .box {
         position: relative;
+        height: 100%;
         border: 1px solid $dw-grey-lighter;
         padding: 10px;
         box-shadow: none;
@@ -68,7 +69,10 @@
             background-color: $dw-scooter-lightest;
         }
         a {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
             padding: 15px;
             padding-bottom: 5px;
             background: $dw-white;
@@ -77,6 +81,19 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+        }
+        img {
+            position: relative;
+        }
+        // hide broken thumbnail if image doesn't load
+        img::after {
+            content: '';
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #ffffff;
         }
         .box-checkbox {
             display: none;
