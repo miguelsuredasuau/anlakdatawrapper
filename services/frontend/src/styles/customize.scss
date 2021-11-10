@@ -15,12 +15,12 @@
 
 .button {
     font-weight: 500;
-    box-shadow: 0 1px 5px rgba(black,0.05);
+    box-shadow: 0 1px 5px rgba(black, 0.05);
     &.is-white,
     &.is-light,
     &.is-ghost,
     &.is-text {
-       box-shadow: none;
+        box-shadow: none;
     }
 }
 
@@ -30,3 +30,4 @@
 .help {
     line-height: 1.3;
 }
+

@@ -1043,10 +1043,10 @@
   "archive / modal / pubished-at": "Published",
   "archive / modal / na": "n/a",
   "archive / modal / last-edit": "Last edit",
-  "archive / modal / edit": "Edit",
-  "archive / modal / dupllicate": "Duplicate",
+  "archive / edit": "Edit",
+  "archive / duplicate": "Duplicate",
   "archive / modal / re-publish": "Publish or export",
-  "archive / modal / delete": "Delete",
+  "archive / delete": "Delete",
   "archive / action-bar / deselect-all": "Deselect all",
   "dashboard / visualization / select": "Select",
   "archive / action-bar / select-all": "Select all",
@@ -1062,5 +1062,6 @@
   "archive / folder / delete / confirm": "Do you really want to delete this folder? All visualizations and folders inside the folder will be moved to its parent folder.",
   "archive": "Archive",
   "archive / add-in-folder / name": "Enter new folder name:",
-  "archive / folder / duplicate-name": "This folder name already exists. Please pick a different name."
+  "archive / folder / duplicate-name": "This folder name already exists. Please pick a different name.",
+  "archive / chart / delete / confirm": "Do you really want to delete the chart? Note that after deleting this chart won't be embeddable any more."
 }

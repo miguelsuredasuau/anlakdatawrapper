@@ -4,8 +4,9 @@
     import CollapseGroup from './CollapseGroup.svelte';
     import FolderBreadcrumbNav from './FolderBreadcrumbNav.svelte';
     import { beforeUpdate, onMount, getContext, setContext } from 'svelte';
-    import { currentFolder } from './stores';
+    import { currentFolder, selectedCharts } from './stores';
     import { parseFolderTree } from './shared';
+    import ActionBar from './ActionBar.svelte';
     import VisualizationGrid from './VisualizationGrid.svelte';
     import SubFolderGrid from './SubFolderGrid.svelte';
     import SearchInput from './SearchInput.svelte';
@@ -116,6 +117,7 @@
         if (query !== apiQuery || force) {
             apiQuery = query;
             charts = await httpReq.get(`/v3${query}`);
+            $selectedCharts = new Set();
         }
     }
 
@@ -193,6 +195,7 @@
                     </CollapseGroup>
                 </div>
                 <div class="column">
+                    <ActionBar {__} charts={charts.list} />
                     {#if !$currentFolder.search}
                         <AddInFolder {__} {folderId} {teamId} />
                         <div class="subfolders block">

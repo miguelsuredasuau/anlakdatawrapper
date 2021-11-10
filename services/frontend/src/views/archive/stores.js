@@ -4,4 +4,6 @@ const currentFolder = new writable({});
 
 const searchQuery = new writable('');
 
-export { currentFolder, searchQuery };
+const selectedCharts = new writable(new Set());
+
+export { currentFolder, searchQuery, selectedCharts };

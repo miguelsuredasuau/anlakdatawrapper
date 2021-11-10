@@ -11,11 +11,13 @@
 
     $: dateLine =
         sortField === 'last_modified_at'
-            ? `${__('dashboard / visualiztion / last-edited')} ${dayjs(
+            ? `${__('dashboard / visualization / last-edited')} ${dayjs(
                   chart.last_modified_at
               ).fromNow()}`
             : sortField === 'published_at'
-            ? `${__('dashboard / visualiztion / published')} ${dayjs(chart.published_at).fromNow()}`
+            ? `${__('dashboard / visualization / published')} ${dayjs(
+                  chart.published_at
+              ).fromNow()}`
             : '';
 
     $: thumbnail =

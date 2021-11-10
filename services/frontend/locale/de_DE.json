@@ -1043,10 +1043,10 @@
   "archive / modal / pubished-at": "Veröffentlicht",
   "archive / modal / na": "n.v.",
   "archive / modal / last-edit": "Letzte Änderung",
-  "archive / modal / edit": "Bearbeiten",
-  "archive / modal / dupllicate": "Duplizieren",
+  "archive / edit": "Bearbeiten",
+  "archive / duplicate": "Duplizieren",
   "archive / modal / re-publish": "Veröffentlichen oder exportieren",
-  "archive / modal / delete": "Löschen",
+  "archive / delete": "Löschen",
   "archive / action-bar / deselect-all": "",
   "dashboard / visualization / select": "",
   "archive / action-bar / select-all": "",
@@ -1062,5 +1062,6 @@
   "archive / folder / delete / confirm": "Möchtest du diesen Ordner wirklich löschen? Alle Visualisierungen und Ordner innerhalb des Ordners werden in den übergeordneten Ordner verschoben.",
   "archive": "Archiv",
   "archive / add-in-folder / name": "Gib einen neuen Namen ein:",
-  "archive / folder / duplicate-name": "Dieser Ordnername existiert bereits. Bitte wähle einen anderen Namen."
+  "archive / folder / duplicate-name": "Dieser Ordnername existiert bereits. Bitte wähle einen anderen Namen.",
+  "archive / chart / delete / confirm": "Willst du das Diagramm wirklich löschen? Nach der Löschung kann es nicht mehr in andere Webseiten eingebettet werden."
 }

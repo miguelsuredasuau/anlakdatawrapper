@@ -1043,10 +1043,10 @@
   "archive / modal / pubished-at": "",
   "archive / modal / na": "",
   "archive / modal / last-edit": "",
-  "archive / modal / edit": "Éditer",
-  "archive / modal / dupllicate": "Dupliquer",
+  "archive / edit": "Éditer",
+  "archive / duplicate": "Dupliquer",
   "archive / modal / re-publish": "",
-  "archive / modal / delete": "Supprimer",
+  "archive / delete": "Supprimer",
   "archive / action-bar / deselect-all": "",
   "dashboard / visualization / select": "",
   "archive / action-bar / select-all": "",
@@ -1062,5 +1062,6 @@
   "archive / folder / delete / confirm": "",
   "archive": "Archiver",
   "archive / add-in-folder / name": "Entrer un nouveau nom de dossier :",
-  "archive / folder / duplicate-name": ""
+  "archive / folder / duplicate-name": "",
+  "archive / chart / delete / confirm": "Voulez-vous vraiment effacer le graphique ? Notez que si vous l’effacez, vous ne pourrez plus intégrer ce graphique."
 }
