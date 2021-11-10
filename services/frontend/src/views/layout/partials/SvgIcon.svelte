@@ -1,6 +1,6 @@
 <script>
     export let icon = 'api';
-    export let size;
+    export let size = false;
     export let color = 'currentColor';
     export let valign = 'sub';
     export let crisp = false;

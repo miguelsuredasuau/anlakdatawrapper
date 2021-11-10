@@ -1051,5 +1051,16 @@
   "dashboard / visualization / select": "",
   "archive / action-bar / select-all": "",
   "archive / action-bar / selected": "",
-  "archive / modal / share-url": ""
+  "archive / modal / share-url": "",
+  "archive / add-in-folder / chart": "",
+  "archive / add-in-folder / map": "",
+  "archive / add-in-folder / table": "",
+  "archive / add-in-folder / folder": "",
+  "archive / add-in-folder / new": "",
+  "archive / folder / delete": "Supprimer",
+  "archive / folder / rename": "Renommer",
+  "archive / folder / delete / confirm": "",
+  "archive": "Archiver",
+  "archive / add-in-folder / name": "Entrer un nouveau nom de dossier :",
+  "archive / folder / duplicate-name": ""
 }

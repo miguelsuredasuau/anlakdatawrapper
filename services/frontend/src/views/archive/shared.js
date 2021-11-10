@@ -40,3 +40,7 @@ function assignDepth(folder, depth = 0) {
         folder.children.forEach(child => assignDepth(child, depth + 1));
     }
 }
+
+export function byName(a, b) {
+    return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+}

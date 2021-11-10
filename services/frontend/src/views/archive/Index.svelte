@@ -9,6 +9,7 @@
     import VisualizationGrid from './VisualizationGrid.svelte';
     import SubFolderGrid from './SubFolderGrid.svelte';
     import SearchInput from './SearchInput.svelte';
+    import AddInFolder from './AddInFolder.svelte';
     import VisualizationModal from './VisualizationModal.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
 
@@ -24,6 +25,7 @@
 
     setContext('page/archive', {
         findFolderByPath,
+        addFolder,
         openVisualization,
         loadCharts,
         themeBgColors
@@ -65,6 +67,17 @@
                     return;
                 }
             }
+        }
+    }
+
+    function addFolder(folder) {
+        const folderGroup = folder.teamId
+            ? folderGroups.find(d => d.teamId === folder.teamId)
+            : folderGroups[0];
+        if (folderGroup) {
+            folderGroup.folders.push(folder);
+            folderGroups = folderGroups;
+            findFolderByPath($request.path, {});
         }
     }
 
@@ -157,6 +170,7 @@
                 </div>
                 <div class="column">
                     {#if !$currentFolder.search}
+                        <AddInFolder {__} {folderId} {teamId} />
                         <div class="subfolders block">
                             <SubFolderGrid {__} />
                         </div>

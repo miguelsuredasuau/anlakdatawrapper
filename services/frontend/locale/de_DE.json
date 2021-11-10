@@ -1051,5 +1051,16 @@
   "dashboard / visualization / select": "",
   "archive / action-bar / select-all": "",
   "archive / action-bar / selected": "",
-  "archive / modal / share-url": ""
+  "archive / modal / share-url": "",
+  "archive / add-in-folder / chart": "",
+  "archive / add-in-folder / map": "",
+  "archive / add-in-folder / table": "",
+  "archive / add-in-folder / folder": "",
+  "archive / add-in-folder / new": "",
+  "archive / folder / delete": "Löschen",
+  "archive / folder / rename": "Umbenennen",
+  "archive / folder / delete / confirm": "Möchtest du diesen Ordner wirklich löschen? Alle Visualisierungen und Ordner innerhalb des Ordners werden in den übergeordneten Ordner verschoben.",
+  "archive": "Archiv",
+  "archive / add-in-folder / name": "Gib einen neuen Namen ein:",
+  "archive / folder / duplicate-name": "Dieser Ordnername existiert bereits. Bitte wähle einen anderen Namen."
 }

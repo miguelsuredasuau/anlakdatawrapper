@@ -1051,5 +1051,16 @@
   "dashboard / visualization / select": "Select",
   "archive / action-bar / select-all": "Select all",
   "archive / action-bar / selected": "selected",
-  "archive / modal / share-url": "Sharing-URL"
+  "archive / modal / share-url": "Sharing-URL",
+  "archive / add-in-folder / chart": "Chart",
+  "archive / add-in-folder / map": "Map",
+  "archive / add-in-folder / table": "Table",
+  "archive / add-in-folder / folder": "Folder",
+  "archive / add-in-folder / new": "New",
+  "archive / folder / delete": "Delete",
+  "archive / folder / rename": "Rename",
+  "archive / folder / delete / confirm": "Do you really want to delete this folder? All visualizations and folders inside the folder will be moved to its parent folder.",
+  "archive": "Archive",
+  "archive / add-in-folder / name": "Enter new folder name:",
+  "archive / folder / duplicate-name": "This folder name already exists. Please pick a different name."
 }

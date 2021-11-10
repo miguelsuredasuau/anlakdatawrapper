@@ -2,6 +2,7 @@
     import SvgIcon from 'layout/partials/SvgIcon.svelte';
     import { onMount, getContext, beforeUpdate } from 'svelte';
     import { currentFolder } from './stores';
+    import { byName } from './shared';
 
     const user = getContext('user');
 
@@ -34,10 +35,6 @@
     $: isCurrent = $currentFolder.path === folder.path;
     $: hasChildren = folder.children && folder.children.length;
     $: isSharedFolder = !!folder.teamId;
-
-    function byName(a, b) {
-        return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
-    }
 
     function storageKey(folder) {
         return folder.id
