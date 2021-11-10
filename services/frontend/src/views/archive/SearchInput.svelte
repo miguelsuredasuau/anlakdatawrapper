@@ -9,9 +9,10 @@
     $: searchFolder = $searchQuery
         ? {
               id: null,
+              level: 0,
               teamId: null,
               search: $searchQuery,
-              name: `Search results for "${$searchQuery}"`,
+              name: __('archive / search-results'.replace('%s', $searchQuery)),
               path: `/archive?search=${encodeURIComponent($searchQuery)}`
           }
         : null;

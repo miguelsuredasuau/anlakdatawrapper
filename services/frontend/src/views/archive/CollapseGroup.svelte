@@ -1,42 +1,51 @@
 <script>
+    import SvgIcon from 'layout/partials/SvgIcon.svelte';
     export let open = true;
     export let title;
+    export let className;
 </script>
 
 <style lang="scss">
-    .toggle {
+    @import '../../styles/colors.scss';
+    .collapse-toggle {
         display: inline-block;
         border: 0;
-        padding: 0;
         background: transparent;
         font-weight: 500;
-        margin-left: 20px;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.05em;
         font-size: 11px;
-        line-height: 13px;
+        line-height: 1.2;
         position: relative;
+        color: $dw-grey-dark;
+        cursor: pointer;
 
-        &:before {
-            position: absolute;
-            left: -20px;
-            top: 3px;
-            transition: transform 0.3s ease-in-out;
-            display: block;
-            content: '\e03d';
-            font: normal normal normal 10px/1 'iconmonstr-iconic-font';
+        &:focus:not(:focus-visible) {
+            box-shadow: none;
         }
-        &.open:before {
+        &:hover {
+            color: $dw-black-bis;
+        }
+        :global(.icon) {
+            transform-origin: center;
+            font-size: 12px;
+            transition: transform 0.2s;
+            transition-timing-function: ease-out;
+            position: relative;
+            top: 2px;
+        }
+        &.open :global(.icon) {
             transform: rotate(90deg);
         }
     }
 </style>
 
-<div class="block">
+<div class="block {className || ''}">
     <button
         on:click={() => (open = !open)}
         class:open
-        class="toggle has-text-grey-dark is-uppercase"
+        class="collapse-toggle is-uppercase px-1 py-2"
     >
+        <SvgIcon icon="disclosure" valign="baseline" className="m-0" />
         {title}
     </button>
     {#if open}

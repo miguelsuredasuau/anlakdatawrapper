@@ -10,7 +10,6 @@
     import VisualizationGrid from './VisualizationGrid.svelte';
     import SubFolderGrid from './SubFolderGrid.svelte';
     import SearchInput from './SearchInput.svelte';
-    import AddInFolder from './AddInFolder.svelte';
     import VisualizationModal from './VisualizationModal.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
 
@@ -179,25 +178,24 @@
             <div class="columns">
                 <div class="column is-one-quarter" style="position: relative;">
                     {#if $currentFolder.search}
-                        <CollapseGroup title="search">
+                        <CollapseGroup className="search" title={__('archive / section / search')}>
                             <Folder {__} folder={$currentFolder} />
                         </CollapseGroup>
                     {/if}
-                    <CollapseGroup title="shared">
+                    <CollapseGroup className="shared" title={__('archive / section / shared')}>
                         {#each sortedTeamFolders as teamFolder, i}
                             {#if i}<hr class="my-3" />{/if}
                             <Folder {__} folder={teamFolder} />
                         {/each}
                     </CollapseGroup>
 
-                    <CollapseGroup title="private">
+                    <CollapseGroup className="private" title={__('archive / section / private')}>
                         <Folder {__} folder={userFolder} />
                     </CollapseGroup>
                 </div>
                 <div class="column">
-                    <ActionBar {__} charts={charts.list} />
+                    <ActionBar {__} charts={charts.list} {folderId} {teamId} />
                     {#if !$currentFolder.search}
-                        <AddInFolder {__} {folderId} {teamId} />
                         <div class="subfolders block">
                             <SubFolderGrid {__} />
                         </div>

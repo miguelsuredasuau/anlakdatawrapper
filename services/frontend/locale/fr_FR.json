@@ -1063,5 +1063,9 @@
   "archive": "Archiver",
   "archive / add-in-folder / name": "Entrer un nouveau nom de dossier :",
   "archive / folder / duplicate-name": "",
-  "archive / chart / delete / confirm": "Voulez-vous vraiment effacer le graphique ? Notez que si vous l’effacez, vous ne pourrez plus intégrer ce graphique."
+  "archive / chart / delete / confirm": "Voulez-vous vraiment effacer le graphique ? Notez que si vous l’effacez, vous ne pourrez plus intégrer ce graphique.",
+  "archive / section / private": "privé",
+  "archive / section / shared": "",
+  "archive / section / search": "",
+  "archive / search-results": ""
 }

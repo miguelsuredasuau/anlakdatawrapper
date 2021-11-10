@@ -118,7 +118,7 @@
         }
     }
 
-    const indentation = 20; // @todo: find best value
+    const indentation = 16;
 </script>
 
 <style lang="scss">
@@ -126,24 +126,35 @@
 
     .folder {
         position: relative;
-        color: $dw-black-bis;
         > .self > a > :global(.icon) {
             font-size: 20px;
             color: $dw-scooter;
         }
         > .self > a > span :global(.icon) {
             font-size: 17px;
+            color: $dw-grey;
         }
 
         .self {
             position: relative;
+            border-radius: var(--radius-small);
             a {
                 color: $dw-black-bis;
             }
 
+            &:hover {
+                background: $dw-white-ter;
+                a {
+                    color: $dw-black;
+                }
+            }
             &.active {
                 font-weight: bold;
                 background: $dw-scooter-lightest;
+
+                &:hover {
+                    background: darken($dw-scooter-lightest, 02%);
+                }
             }
 
             .folder-menu {
@@ -170,36 +181,48 @@
     .collapse-toggle {
         display: block;
         position: absolute;
-        padding: 5px;
-        left: -25px;
-        top: 0px;
+        top: 0;
+        bottom: 0;
         cursor: pointer;
+        height: auto;
+        line-height: 1;
+        color: $dw-grey-dark;
 
-        &:before {
-            transition: transform 0.3s ease-in-out;
-            display: block;
-            content: '\e03d';
-            color: $dw-grey-darker;
-            font: normal normal normal 10px/1 'iconmonstr-iconic-font';
+        &:focus:not(:focus-visible) {
+            box-shadow: none;
         }
-        .open > .self &:before {
-            transform: rotate(90deg);
+
+        &:hover {
+            color: $dw-black-bis;
         }
+        :global(.icon) {
+            transform-origin: center;
+            font-size: 12px;
+            transition: transform 0.2s;
+            transition-timing-function: ease-out;
+            position: relative;
+            top: 1px;
+        }
+    }
+    .open > .self .collapse-toggle :global(.icon) {
+        transform: rotate(90deg);
     }
 </style>
 
-<div class="folder my-2" class:open>
+<div class="folder" class:open class:is-search={!!folder.search} class:is-shared={!!folder.teamId}>
     <div
-        class="self"
+        class="self py-1"
         class:active={isCurrent}
-        style="padding-left: {20 + folder.level * indentation}px"
+        style="padding-left: {22 + folder.level * indentation}px"
     >
         {#if hasChildren}
-            <div
+            <button
                 style="left: {folder.level * indentation}px"
-                class="collapse-toggle"
+                class="button is-ghost p-1 collapse-toggle"
                 on:click={() => (open = !open)}
-            />
+            >
+                <SvgIcon icon="disclosure" valign="baseline" className="m-0" />
+            </button>
         {/if}
         <a
             href={folder.path}
@@ -207,7 +230,13 @@
                 $currentFolder = folder;
             }}
             ><SvgIcon
-                icon="folder{folder.id ? '' : isSharedFolder ? '-shared' : '-user'}"
+                icon="folder{folder.search
+                    ? '-search'
+                    : folder.id
+                    ? ''
+                    : isSharedFolder
+                    ? '-shared'
+                    : '-user'}"
                 className="mr-1"
                 valign="middle"
             />
@@ -232,7 +261,7 @@
             <div class="folder-menu">
                 <Dropdown bind:active={folderMenuActive}>
                     <div slot="trigger">
-                        <SvgIcon icon="menu-vertical" valign="text-top" />
+                        <SvgIcon icon="menu-vertical" valign="middle" />
                     </div>
                     <div slot="content" class="dropdown-content">
                         <a

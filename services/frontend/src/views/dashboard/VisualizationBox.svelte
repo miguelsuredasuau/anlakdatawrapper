@@ -38,7 +38,7 @@
         box-shadow: none;
     }
     .box:hover {
-        border: 1px solid $dw-scooter-light;
+        border: 1px solid $dw-grey;
     }
 </style>
 

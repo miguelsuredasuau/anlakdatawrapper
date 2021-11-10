@@ -1,9 +1,12 @@
 <script>
+    import AddInFolder from './AddInFolder.svelte';
     import SvgIcon from '../layout/partials/SvgIcon.svelte';
     import { selectedCharts } from './stores';
 
     export let __;
     export let charts;
+    export let folderId;
+    export let teamId;
 
     function selectAll() {
         $selectedCharts = new Set(charts);
@@ -16,6 +19,9 @@
 
 <div class="level block has-text-grey">
     <div class="level-left">
+        <div class="level-item">
+            <AddInFolder {__} {folderId} {teamId} />
+        </div>
         {#if $selectedCharts.size}
             <div class="level-item mr-0">
                 <strong class="has-text-grey mr-1">{$selectedCharts.size}</strong>

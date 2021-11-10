@@ -1063,5 +1063,9 @@
   "archive": "Archivo",
   "archive / add-in-folder / name": "",
   "archive / folder / duplicate-name": "",
-  "archive / chart / delete / confirm": "¿Estás seguro de que quieres eliminar el gráfico? Ten en cuenta que, si lo eliminas, este gráfico ya no podrá integrarse."
+  "archive / chart / delete / confirm": "¿Estás seguro de que quieres eliminar el gráfico? Ten en cuenta que, si lo eliminas, este gráfico ya no podrá integrarse.",
+  "archive / section / private": "privado",
+  "archive / section / shared": "",
+  "archive / section / search": "",
+  "archive / search-results": ""
 }

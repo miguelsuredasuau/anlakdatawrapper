@@ -1063,5 +1063,9 @@
   "archive": "Archiv",
   "archive / add-in-folder / name": "Gib einen neuen Namen ein:",
   "archive / folder / duplicate-name": "Dieser Ordnername existiert bereits. Bitte wähle einen anderen Namen.",
-  "archive / chart / delete / confirm": "Willst du das Diagramm wirklich löschen? Nach der Löschung kann es nicht mehr in andere Webseiten eingebettet werden."
+  "archive / chart / delete / confirm": "Willst du das Diagramm wirklich löschen? Nach der Löschung kann es nicht mehr in andere Webseiten eingebettet werden.",
+  "archive / section / private": "privat",
+  "archive / section / shared": "geteilt",
+  "archive / section / search": "Suche",
+  "archive / search-results": "Suchergebnisse für \"%s\""
 }
