@@ -1,13 +1,12 @@
 <script>
     import Dropdown from '_partials/components/Dropdown.svelte';
     import SvgIcon from 'layout/partials/SvgIcon.svelte';
-    import httpReq from '@datawrapper/shared/httpReq';
     import { onMount, getContext, beforeUpdate, tick } from 'svelte';
     import { currentFolder } from './stores';
     import { byName } from './shared';
 
     const user = getContext('user');
-    const { updateFolders, deleteFolder } = getContext('page/archive');
+    const { deleteFolder, patchFolder } = getContext('page/archive');
 
     onMount(() => {
         const val = window.localStorage.getItem(storageKey(folder));
@@ -84,15 +83,9 @@
         editMode = false;
         if (newName !== folder.name) {
             try {
-                await httpReq.patch(`/v3/folders/${folder.id}`, {
-                    payload: {
-                        name: newName
-                    }
+                await patchFolder(folder, {
+                    name: newName
                 });
-                // folderNameSpan.innerText = '';
-                folder.name = newName;
-                updateFolders();
-                $currentFolder = $currentFolder;
             } catch (err) {
                 if (err.status === 409) {
                     window.alert(__('archive / folder / duplicate-name'));
@@ -115,6 +108,32 @@
             // Esc pressed, reset old folder name
             folderNameSpan.innerText = folder.name;
             folderNameSpan.blur();
+        }
+    }
+
+    function handleDragStart(event) {
+        event.dataTransfer.setData('folder', JSON.stringify(folder));
+    }
+
+    async function handleDrop(event) {
+        const folderData = event.dataTransfer.getData('folder');
+        if (folderData) {
+            return await handleFolderDrop(JSON.parse(folderData));
+        }
+    }
+
+    async function handleFolderDrop(droppedFolder) {
+        if (!droppedFolder) {
+            return;
+        }
+        try {
+            await patchFolder(droppedFolder, {
+                parentId: folder.id,
+                teamId: folder.teamId || null
+            });
+        } catch (err) {
+            window.alert(err.message);
+            // window.alert(__('archive / folder / duplicate-name'));
         }
     }
 
@@ -209,7 +228,16 @@
     }
 </style>
 
-<div class="folder" class:open class:is-search={!!folder.search} class:is-shared={!!folder.teamId}>
+<div
+    class="folder"
+    class:open
+    class:is-search={!!folder.search}
+    class:is-shared={!!folder.teamId}
+    draggable="true"
+    on:dragstart|stopPropagation={handleDragStart}
+    on:dragover|preventDefault
+    on:drop|stopPropagation={handleDrop}
+>
     <div
         class="self py-1"
         class:active={isCurrent}
@@ -229,6 +257,7 @@
             on:click|preventDefault={() => {
                 $currentFolder = folder;
             }}
+            draggable="false"
             ><SvgIcon
                 icon="folder{folder.search
                     ? '-search'

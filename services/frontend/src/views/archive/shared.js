@@ -7,17 +7,21 @@ export function getFolderUri(folder) {
     if (folder.id) parts.push(folder.id);
     return `/${parts.join('/')}`;
 }
+
 /*
  * builds a tree structure from a flat list of folders
  */
-export function parseFolderTree(folderGroup) {
+export function parseFolderTree(foldersMap, teamId = null) {
+    const folders = Object.values(foldersMap).filter(f =>
+        teamId ? f.teamId === teamId : !f.teamId
+    );
     const folderMap = new Map();
-    folderGroup.folders.forEach(folder => {
+    folders.forEach(folder => {
         folder.path = getFolderUri(folder);
         delete folder.children;
         folderMap.set(folder.id, folder);
     });
-    folderGroup.folders.forEach(folder => {
+    folders.forEach(folder => {
         if (folder.id) {
             // not root folder
             const parent = folderMap.get(folder.parentId || null);

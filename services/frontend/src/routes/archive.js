@@ -95,7 +95,7 @@ module.exports = {
             }`;
             const charts = await api(apiQuery);
 
-            const folderGroups = await getFolders(user, teams);
+            const folders = await getFolders(user, teams);
 
             return h.view('archive/Index.svelte', {
                 htmlClass: 'has-background-white-bis',
@@ -106,7 +106,8 @@ module.exports = {
                     offset,
                     teamId,
                     folderId,
-                    folderGroups,
+                    folders,
+                    teams,
                     themeBgColors
                 }
             });
@@ -168,50 +169,40 @@ module.exports = {
          */
         async function getFolders(user, teams) {
             const folders = [
-                {
-                    teamId: null,
-                    folders: [
-                        { id: null, teamId: null, name: 'My archive' }, // user root
-                        ...(await Folder.findAll({ where: { user_id: user.id } })).map(clean)
-                    ]
-                }
+                clean({ id: null, teamId: null, name: 'My archive' }), // user root
+                ...(
+                    await Folder.findAll({
+                        where: {
+                            [db.Op.or]: [
+                                { user_id: user.id },
+                                {
+                                    org_id: teams.map(t => t.id)
+                                }
+                            ]
+                        }
+                    })
+                ).map(clean),
+                ...teams.map(team => clean({ id: null, teamId: team.id, name: team.name }))
             ];
 
-            await Promise.all(
-                teams.map(team => {
-                    return new Promise(resolve => {
-                        Folder.findAll({
-                            where: { org_id: team.id }
-                        }).then(teamFolders => {
-                            folders.push({
-                                teamId: team.id,
-                                folders: [
-                                    { id: null, teamId: team.id, name: team.name }, // team root
-                                    ...teamFolders.map(clean)
-                                ]
-                            });
-                            resolve();
-                        });
-                    });
-                })
-            );
             function clean(folder) {
-                folder = folder.toJSON();
-                return {
+                folder = {
                     id: folder.id,
+                    key: folder.id || folder.teamId || folder.org_id || '$user',
                     teamId: folder.teamId || folder.org_id,
                     parentId: folder.parentId,
                     name: folder.name
                 };
+                return { ...folder };
             }
             await addChartCounts(user, teams, folders);
-            return folders;
+            return keyBy(folders, d => d.key);
         }
 
         /*
          * queries chart counts and adds them to our folders
          */
-        async function addChartCounts(user, teams, folderGroups) {
+        async function addChartCounts(user, teams, folders) {
             const chartCounts = await Chart.findAll({
                 attributes: [
                     'in_folder',
@@ -230,6 +221,7 @@ module.exports = {
                 },
                 group: ['chart.in_folder', 'chart.organization_id']
             });
+
             const byTeam = new Map();
             chartCounts.forEach(({ organization_id, in_folder, ...o }) => {
                 const tid = organization_id || '--user--';
@@ -237,13 +229,10 @@ module.exports = {
                 if (!byTeam.has(tid)) byTeam.set(tid, new Map());
                 byTeam.get(tid).set(fid, o.dataValues.cnt);
             });
-
-            for (const group of folderGroups) {
-                const tid = group.teamId || '--user--';
-                for (const folder of group.folders) {
-                    const fid = folder.id || 'root';
-                    folder.chartCount = byTeam.has(tid) ? byTeam.get(tid).get(fid) || 0 : 0;
-                }
+            for (const folder of folders) {
+                const tid = folder.teamId || '--user--';
+                const fid = folder.id || 'root';
+                folder.chartCount = byTeam.has(tid) ? byTeam.get(tid).get(fid) || 0 : 0;
             }
         }
     }

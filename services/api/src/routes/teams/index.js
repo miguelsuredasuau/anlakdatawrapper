@@ -127,6 +127,10 @@ async function createTeam(request, h) {
         return `${normalized}-${i}`;
     }
 
+    if (payload.id === 'null') {
+        return Boom.forbidden('null is not available as team id');
+    }
+
     try {
         const teamParams = {
             id: payload.id && isAdmin ? payload.id : await unusedId(payload.name),

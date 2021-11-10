@@ -627,6 +627,10 @@ test('Charts list goes through all user and team charts', async t => {
     const m1 = (await user1.getCharts('?authorId=me')).result;
     t.is(m1.total, 5);
 
+    // user 1 sees 5 self-created charts (3 private + 2 team)
+    const m1a = (await user1.getCharts('?authorId=me&teamId=null')).result;
+    t.is(m1a.total, 3);
+
     // user 2 sees 4 self-created charts (1 private + 3 team)
     const m2 = (await user2.getCharts('?authorId=me')).result;
     t.is(m2.total, 4);

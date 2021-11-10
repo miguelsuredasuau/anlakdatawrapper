@@ -4,8 +4,8 @@
     import CollapseGroup from './CollapseGroup.svelte';
     import FolderBreadcrumbNav from './FolderBreadcrumbNav.svelte';
     import { beforeUpdate, onMount, getContext, setContext } from 'svelte';
+    import { parseFolderTree, getFolderUri } from './shared';
     import { currentFolder, selectedCharts } from './stores';
-    import { parseFolderTree } from './shared';
     import ActionBar from './ActionBar.svelte';
     import VisualizationGrid from './VisualizationGrid.svelte';
     import SubFolderGrid from './SubFolderGrid.svelte';
@@ -21,39 +21,34 @@
 
     export let apiQuery;
     export let charts;
-    export let folderGroups;
+    export let teams;
+    export let folders;
     export let themeBgColors;
 
     setContext('page/archive', {
         findFolderByPath,
         addFolder,
-        updateFolders,
+        updateFolders: refreshFolders,
         async deleteFolder(folder) {
             if (window.confirm(__('archive / folder / delete / confirm'))) {
                 await httpReq.delete(`/v3/folders/${folder.id}`);
-                const folderGroup = folder.teamId
-                    ? folderGroups.find(d => d.teamId === folder.team.Id)
-                    : folderGroups[0];
-                if (folderGroup) {
-                    // update chart count of parent folder
-                    folder.getParent().chartCount += folder.chartCount;
-                    folderGroup.folders = folderGroup.folders.filter(f => f.id !== folder.id);
-                    updateFolders();
-                    if ($currentFolder.id === folder.id) {
-                        // select parent folder
-                        $currentFolder = folder.getParent();
-                    }
+                delete folders[folder.key];
+                refreshFolders();
+                if ($currentFolder.id === folder.id) {
+                    // select parent folder
+                    $currentFolder = folder.getParent();
                 }
             }
         },
+        patchFolder,
         deleteChart,
         duplicateChart,
         openChart,
         themeBgColors
     });
 
-    $: userFolder = parseFolderTree(folderGroups[0]);
-    $: teamFolders = folderGroups.slice(1).map(parseFolderTree);
+    $: userFolder = parseFolderTree(folders);
+    $: teamFolders = teams.map(t => parseFolderTree(folders, t.id));
 
     export let offset = 0;
     export let limit;
@@ -82,32 +77,55 @@
 
     function findFolderByPath(path, query) {
         if (query.search) return;
-        for (const g of folderGroups) {
-            for (const f of g.folders) {
-                if (f.path === path) {
-                    $currentFolder = f;
-                    return;
-                }
+
+        for (const f of Object.values(folders)) {
+            if (f.path === path) {
+                $currentFolder = f;
+                return;
             }
         }
     }
 
     function addFolder(folder) {
-        const folderGroup = folder.teamId
-            ? folderGroups.find(d => d.teamId === folder.teamId)
-            : folderGroups[0];
-        if (folderGroup) {
-            folderGroup.folders.push(folder);
-            folderGroups = folderGroups;
-            findFolderByPath($request.path, {});
+        folders[folder.key] = folder;
+        refreshFolders();
+    }
+
+    async function patchFolder(folder, patchObject) {
+        const updated = await httpReq.patch(`/v3/folders/${folder.id}`, { payload: patchObject });
+        updateFolder(folder, updated);
+    }
+
+    function updateFolder(folder, update) {
+        folders[folder.key] = {
+            ...folders[folder.key],
+            ...update,
+            path: getFolderUri(update)
+        };
+        const queue = folders[folder.key].children || [];
+        while (queue.length) {
+            const child = queue.shift();
+            const childUpdate = {
+                ...child,
+                teamId: update.teamId,
+                userId: update.userId
+            };
+            folders[child.key] = {
+                ...childUpdate,
+                path: getFolderUri(childUpdate)
+            };
+            queue.push.apply(queue, childUpdate.children || []);
         }
+        refreshFolders();
     }
 
     async function loadCharts(force = false) {
         const query = `/charts?minLastEditStep=2&offset=${offset}&limit=${limit}&${
             curSearch
                 ? `search=${encodeURIComponent(curSearch)}`
-                : `folderId=${folderId ? folderId : 'null'}${teamId ? `&teamId=${teamId}` : ''}`
+                : `folderId=${folderId ? folderId : 'null'}${
+                      teamId ? `&teamId=${teamId}` : '&authorId=me'
+                  }`
         }`;
         if (query !== apiQuery || force) {
             apiQuery = query;
@@ -116,9 +134,9 @@
         }
     }
 
-    function updateFolders() {
-        userFolder = userFolder;
-        teamFolders = teamFolders;
+    function refreshFolders() {
+        folders = folders;
+        $currentFolder = folders[$currentFolder.key];
     }
 
     async function duplicateChart(chart, openInNewTab = false) {
@@ -127,16 +145,16 @@
             window.open(`/chart/${res.id}/visualize`, '_blank');
         }
         $currentFolder.chartCount++;
-        folderGroups = folderGroups;
         loadCharts(true);
+        refreshFolders();
     }
 
     async function deleteChart(chart) {
         if (window.confirm(__('archive / chart / delete / confirm'))) {
             await httpReq.delete(`/v3/charts/${chart.id}`);
             $currentFolder.chartCount--;
-            folderGroups = folderGroups;
             loadCharts(true);
+            refreshFolders();
         }
     }
 

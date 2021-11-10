@@ -235,6 +235,40 @@ test('admins can create teams', async t => {
     }
 });
 
+test('admins cant create teams with id "null"', async t => {
+    const teamId = 'null';
+    let userObj;
+    try {
+        userObj = await createUser(t.context.server, { role: 'admin' });
+        const { user: admin } = userObj;
+        const auth = {
+            strategy: 'simple',
+            credentials: { session: '', scope: ['team:write'] },
+            artifacts: admin
+        };
+
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/teams`,
+            auth,
+            headers: t.context.headers,
+            payload: {
+                id: teamId,
+                name: 'Test'
+            }
+        });
+
+        t.is(res.statusCode, 403);
+    } finally {
+        if (userObj) {
+            await destroy(...Object.values(userObj));
+        }
+        const { Team } = require('@datawrapper/orm/models');
+        const team = await Team.findByPk(teamId);
+        await destroy(team);
+    }
+});
+
 test('users can create teams', async t => {
     const teamId = 'test-user';
     try {

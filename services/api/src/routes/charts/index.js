@@ -55,7 +55,7 @@ module.exports = {
                             Joi.string().valid('null')
                         ),
                         teamId: Joi.string().description(
-                            'List visualizations belonging to a specific team'
+                            'List visualizations belonging to a specific team. Use teamId=null to search for user visualizations not part of a team'
                         ),
                         order: Joi.string()
                             .uppercase()
@@ -274,7 +274,7 @@ async function getAllCharts(request) {
         }
     ];
 
-    if (query.teamId) {
+    if (query.teamId && query.teamId !== 'null') {
         if (isAdmin) {
             // check that team exists
             const c = await Team.count({ where: { id: query.teamId } });
@@ -315,22 +315,20 @@ async function getAllCharts(request) {
         if (query.teamId) {
             // search only by team
             filters.push({
-                organization_id: query.teamId
+                organization_id: query.teamId === 'null' ? { [Op.is]: null } : query.teamId
             });
         }
-    } else if (query.teamId && query.authorId) {
+    } else if (query.teamId || query.authorId) {
         // special case, filter user charts in a team
         // e.g. ?teamId=foo&authorId=me
-        filters.push({ organization_id: query.teamId });
-        filters.push({ author_id: query.authorId });
-    } else if (query.teamId) {
-        // filter all charts in specific team, regardless of authorship
-        // ?teamId=foo
-        filters.push({ organization_id: query.teamId });
-    } else if (query.authorId) {
-        // filter all private charts for specific user, excluding team
-        // ?teamId=foo
-        filters.push({ author_id: query.authorId });
+        if (query.teamId) {
+            filters.push({
+                organization_id: query.teamId === 'null' ? { [Op.is]: null } : query.teamId
+            });
+        }
+        if (query.authorId) {
+            filters.push({ author_id: query.authorId });
+        }
     } else {
         // default, search through all my charts and team charts
         // no author or team filter, include all

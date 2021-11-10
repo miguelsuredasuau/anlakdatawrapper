@@ -29,7 +29,8 @@
             const res = await httpReq.post('/v3/folders', { payload });
             addFolder({
                 teamId,
-                ...res
+                ...res,
+                key: res.id
             });
         } catch (error) {
             if (error.status === 409) {
