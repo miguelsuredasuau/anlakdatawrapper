@@ -6,4 +6,6 @@ const searchQuery = new writable('');
 
 const selectedCharts = new writable(new Set());
 
-export { currentFolder, searchQuery, selectedCharts };
+const dragNotification = new writable('');
+
+export { currentFolder, searchQuery, selectedCharts, dragNotification };

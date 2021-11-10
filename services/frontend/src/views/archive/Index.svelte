@@ -11,6 +11,7 @@
     import SubFolderGrid from './SubFolderGrid.svelte';
     import SearchInput from './SearchInput.svelte';
     import VisualizationModal from './VisualizationModal.svelte';
+    import DragNotification from './DragNotification.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
 
     const user = getContext('user');
@@ -59,6 +60,7 @@
 
     let currentChart;
     let currentChartOpen = false;
+    let dragNotification;
 
     $: total = charts.total;
     $: folderId = $currentFolder ? $currentFolder.id : null;
@@ -178,6 +180,9 @@
 
 <MainLayout title="{$currentFolder.name || ''} - Archive">
     <VisualizationModal {__} bind:open={currentChartOpen} bind:chart={currentChart} />
+    {#if dragNotification}
+        <DragNotification {__} message={dragNotification} />
+    {/if}
     <section class="section header">
         <div class="container">
             <div class="columns is-vcentered">
