@@ -70,6 +70,18 @@ module.exports = {
             const offset = 0;
             const limit = 15;
 
+            if (folderId) {
+                // check if folder exists
+                const cnt = await Folder.count({
+                    where: {
+                        id: folderId,
+                        ...(teamId ? { org_id: teamId } : {})
+                    }
+                });
+                // redirect to root folder
+                if (!cnt) return h.redirect(`/archive${teamId ? `/${teamId}` : ''}`);
+            }
+
             const teams = (await user.getTeams())
                 .filter(d => !d.user_team.getDataValue('invite_token'))
                 .map(t => t.toJSON());
@@ -169,7 +181,6 @@ module.exports = {
                 teams.map(team => {
                     return new Promise(resolve => {
                         Folder.findAll({
-                            attributes: ['id', 'name'],
                             where: { org_id: team.id }
                         }).then(teamFolders => {
                             folders.push({

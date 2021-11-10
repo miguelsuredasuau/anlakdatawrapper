@@ -202,9 +202,9 @@ async function updateFolder(request) {
                 [Op.not]: folder.id
             },
             name: update.name,
-            org_id: update.teamId,
-            parent_id: update.parentId,
-            user_id: update.userId
+            ...(update.userId ? { user_id: update.userId } : { user_id: { [Op.is]: null } }),
+            ...(update.teamId ? { org_id: update.teamId } : { org_id: { [Op.is]: null } }),
+            ...(update.parentId ? { parent_id: update.parentId } : { parent_id: { [Op.is]: null } })
         }
     });
     if (possibleDuplicate) {

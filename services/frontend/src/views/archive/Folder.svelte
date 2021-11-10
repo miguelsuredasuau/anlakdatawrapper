@@ -1,10 +1,13 @@
 <script>
+    import Dropdown from '_partials/components/Dropdown.svelte';
     import SvgIcon from 'layout/partials/SvgIcon.svelte';
-    import { onMount, getContext, beforeUpdate } from 'svelte';
+    import httpReq from '@datawrapper/shared/httpReq';
+    import { onMount, getContext, beforeUpdate, tick } from 'svelte';
     import { currentFolder } from './stores';
     import { byName } from './shared';
 
     const user = getContext('user');
+    const { updateFolders, deleteFolder } = getContext('page/archive');
 
     onMount(() => {
         const val = window.localStorage.getItem(storageKey(folder));
@@ -28,6 +31,7 @@
     });
 
     export let folder;
+    export let __;
 
     let open = folder.level < 3;
     let _open = open;
@@ -42,6 +46,76 @@
             : folder.teamId
             ? `chart-folder-org-root-${folder.teamId}`
             : 'chart-folder-user-root';
+    }
+
+    let editMode = false;
+    let folderNameSpan;
+    let folderMenuActive;
+
+    /*
+     * turns on the folder name edit mode
+     * selects folder name and focusses input
+     */
+    async function renameFolder() {
+        editMode = true;
+        await tick();
+        folderMenuActive = false;
+        if (window.getSelection && document.createRange) {
+            const range = document.createRange();
+            range.selectNodeContents(folderNameSpan);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } else if (document.body.createTextRange) {
+            const range = document.body.createTextRange();
+            range.moveToElementText(folderNameSpan);
+            range.select();
+        }
+        await tick();
+        folderNameSpan.focus();
+    }
+
+    /*
+     * runs when user is done editing the folder name
+     * updates folder name via API
+     */
+    async function folderNameBlur() {
+        const newName = folderNameSpan.innerText.trim();
+        editMode = false;
+        if (newName !== folder.name) {
+            try {
+                await httpReq.patch(`/v3/folders/${folder.id}`, {
+                    payload: {
+                        name: newName
+                    }
+                });
+                // folderNameSpan.innerText = '';
+                folder.name = newName;
+                updateFolders();
+                $currentFolder = $currentFolder;
+            } catch (err) {
+                if (err.status === 409) {
+                    window.alert(__('archive / folder / duplicate-name'));
+                }
+            }
+        }
+    }
+
+    /*
+     * monitor key strokes while user edits a folder name
+     * Return = save, Esc = reset
+     */
+    function folderNameKeyUp(event) {
+        if (event.key === 'Enter') {
+            // enter pressed
+            event.preventDefault();
+            event.stopPropagation();
+            folderNameSpan.blur();
+        } else if (event.key === 'Esc' || event.key === 'Escape') {
+            // Esc pressed, reset old folder name
+            folderNameSpan.innerText = folder.name;
+            folderNameSpan.blur();
+        }
     }
 
     const indentation = 20; // @todo: find best value
@@ -70,6 +144,26 @@
             &.active {
                 font-weight: bold;
                 background: $dw-scooter-lightest;
+            }
+
+            .folder-menu {
+                position: absolute;
+                right: 0;
+                top: 0;
+                font-weight: normal;
+
+                color: transparent;
+                cursor: pointer;
+                font-size: 16px;
+
+                .dropdown-item :global(.icon) {
+                    color: $dw-scooter;
+                    font-size: 20px;
+                }
+            }
+
+            &:hover .folder-menu {
+                color: $dw-grey;
             }
         }
     }
@@ -113,23 +207,57 @@
                 $currentFolder = folder;
             }}
             ><SvgIcon
-                icon="folder{isSharedFolder ? '-shared' : ''}"
+                icon="folder{folder.id ? '' : isSharedFolder ? '-shared' : '-user'}"
                 className="mr-1"
                 valign="middle"
             />
             <span>
-                {folder.name}
+                {#if editMode}
+                    <span
+                        bind:this={folderNameSpan}
+                        contenteditable={editMode}
+                        on:blur={folderNameBlur}
+                        on:keyup|stopPropagation={folderNameKeyUp}>{folder.name}</span
+                    >
+                {:else}
+                    {folder.name}
+                {/if}
                 {#if folder.chartCount}<span class="has-text-grey">({folder.chartCount})</span>{/if}
                 {#if !folder.id && (folder.teamId && $user.activeTeam ? $user.activeTeam.id === folder.teamId : !$user.activeTeam)}
                     <SvgIcon icon="check-circle" className="ml-1" valign="sub" />
                 {/if}
             </span>
         </a>
+        {#if folder.id}
+            <div class="folder-menu">
+                <Dropdown bind:active={folderMenuActive}>
+                    <div slot="trigger">
+                        <SvgIcon icon="menu-vertical" valign="text-top" />
+                    </div>
+                    <div slot="content" class="dropdown-content">
+                        <a
+                            href="#/rename"
+                            on:click|preventDefault={renameFolder}
+                            class="dropdown-item"
+                            ><SvgIcon valign="text-bottom" icon="rename" />
+                            <span>{__('archive / folder / rename')}</span></a
+                        >
+                        <a
+                            href="#/delete"
+                            on:click|preventDefault={() => deleteFolder(folder)}
+                            class="dropdown-item"
+                            ><SvgIcon valign="text-bottom" icon="trash" />
+                            <span>{__('archive / folder / delete')}</span></a
+                        >
+                    </div>
+                </Dropdown>
+            </div>
+        {/if}
     </div>
     {#if open && hasChildren}
         <div class="children">
             {#each folder.children.sort(byName) as child (child.id)}
-                <svelte:self folder={child} />
+                <svelte:self {__} folder={child} />
             {/each}
         </div>
     {/if}

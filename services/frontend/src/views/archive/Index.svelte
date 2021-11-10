@@ -28,7 +28,26 @@
         addFolder,
         openVisualization,
         loadCharts,
-        themeBgColors
+        themeBgColors,
+        updateFolders,
+        async deleteFolder(folder) {
+            if (window.confirm(__('archive / folder / delete / confirm'))) {
+                await httpReq.delete(`/v3/folders/${folder.id}`);
+                const folderGroup = folder.teamId
+                    ? folderGroups.find(d => d.teamId === folder.team.Id)
+                    : folderGroups[0];
+                if (folderGroup) {
+                    // update chart count of parent folder
+                    folder.getParent().chartCount += folder.chartCount;
+                    folderGroup.folders = folderGroup.folders.filter(f => f.id !== folder.id);
+                    updateFolders();
+                    if ($currentFolder.id === folder.id) {
+                        // select parent folder
+                        $currentFolder = folder.getParent();
+                    }
+                }
+            }
+        }
     });
 
     $: userFolder = parseFolderTree(folderGroups[0]);
@@ -100,6 +119,11 @@
         }
     }
 
+    function updateFolders() {
+        userFolder = userFolder;
+        teamFolders = teamFolders;
+    }
+
     let _offset = offset;
     let _prevFolder;
 
@@ -154,18 +178,18 @@
                 <div class="column is-one-quarter" style="position: relative;">
                     {#if $currentFolder.search}
                         <CollapseGroup title="search">
-                            <Folder folder={$currentFolder} />
+                            <Folder {__} folder={$currentFolder} />
                         </CollapseGroup>
                     {/if}
                     <CollapseGroup title="shared">
                         {#each sortedTeamFolders as teamFolder, i}
                             {#if i}<hr class="my-3" />{/if}
-                            <Folder folder={teamFolder} />
+                            <Folder {__} folder={teamFolder} />
                         {/each}
                     </CollapseGroup>
 
                     <CollapseGroup title="private">
-                        <Folder folder={userFolder} />
+                        <Folder {__} folder={userFolder} />
                     </CollapseGroup>
                 </div>
                 <div class="column">
