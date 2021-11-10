@@ -1043,10 +1043,10 @@
   "archive / modal / pubished-at": "",
   "archive / modal / na": "",
   "archive / modal / last-edit": "Data ultima modifica",
-  "archive / modal / edit": "Modifica",
-  "archive / modal / dupllicate": "Duplica",
+  "archive / edit": "Modifica",
+  "archive / duplicate": "Duplica",
   "archive / modal / re-publish": "",
-  "archive / modal / delete": "Elimina",
+  "archive / delete": "Elimina",
   "archive / action-bar / deselect-all": "",
   "dashboard / visualization / select": "",
   "archive / action-bar / select-all": "",
@@ -1062,5 +1062,6 @@
   "archive / folder / delete / confirm": "",
   "archive": "Archivio",
   "archive / add-in-folder / name": "Inserisci nuovo nome cartella:",
-  "archive / folder / duplicate-name": ""
+  "archive / folder / duplicate-name": "",
+  "archive / chart / delete / confirm": "Sei davvero sicuro di voler eliminare il grafico? Ricorda che una volta eliminato, il grafico non potrà più essere incorporato."
 }

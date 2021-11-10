@@ -26,9 +26,6 @@
     setContext('page/archive', {
         findFolderByPath,
         addFolder,
-        openVisualization,
-        loadCharts,
-        themeBgColors,
         updateFolders,
         async deleteFolder(folder) {
             if (window.confirm(__('archive / folder / delete / confirm'))) {
@@ -47,7 +44,11 @@
                     }
                 }
             }
-        }
+        },
+        deleteChart,
+        duplicateChart,
+        openChart,
+        themeBgColors
     });
 
     $: userFolder = parseFolderTree(folderGroups[0]);
@@ -71,7 +72,7 @@
     onMount(() => {
         if (modalHashRegex.test(window.location.hash)) {
             const m = window.location.hash.match(modalHashRegex);
-            openVisualization(m[1]);
+            openChart(m[1]);
         }
         findFolderByPath($request.path, $request.query);
         _mounted = true;
@@ -100,13 +101,6 @@
         }
     }
 
-    async function openVisualization(chart) {
-        currentChart = await httpReq.get(
-            `/v3/charts/${typeof chart === 'string' ? chart : chart.id}`
-        );
-        currentChartOpen = true;
-    }
-
     async function loadCharts(force = false) {
         const query = `/charts?minLastEditStep=2&offset=${offset}&limit=${limit}&${
             curSearch
@@ -123,6 +117,32 @@
     function updateFolders() {
         userFolder = userFolder;
         teamFolders = teamFolders;
+    }
+
+    async function duplicateChart(chart, openInNewTab = false) {
+        const res = await httpReq.post(`/v3/charts/${chart.id}/copy`);
+        if (openInNewTab) {
+            window.open(`/chart/${res.id}/visualize`, '_blank');
+        }
+        $currentFolder.chartCount++;
+        folderGroups = folderGroups;
+        loadCharts(true);
+    }
+
+    async function deleteChart(chart) {
+        if (window.confirm(__('archive / chart / delete / confirm'))) {
+            await httpReq.delete(`/v3/charts/${chart.id}`);
+            $currentFolder.chartCount--;
+            folderGroups = folderGroups;
+            loadCharts(true);
+        }
+    }
+
+    async function openChart(chart) {
+        currentChart = await httpReq.get(
+            `/v3/charts/${typeof chart === 'string' ? chart : chart.id}`
+        );
+        currentChartOpen = true;
     }
 
     let _offset = offset;

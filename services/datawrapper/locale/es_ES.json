@@ -1043,10 +1043,10 @@
   "archive / modal / pubished-at": "",
   "archive / modal / na": "",
   "archive / modal / last-edit": "",
-  "archive / modal / edit": "Editar",
-  "archive / modal / dupllicate": "Duplicar",
+  "archive / edit": "Editar",
+  "archive / duplicate": "Duplicar",
   "archive / modal / re-publish": "",
-  "archive / modal / delete": "Borrar",
+  "archive / delete": "Borrar",
   "archive / action-bar / deselect-all": "",
   "dashboard / visualization / select": "",
   "archive / action-bar / select-all": "",
@@ -1062,5 +1062,6 @@
   "archive / folder / delete / confirm": "",
   "archive": "Archivo",
   "archive / add-in-folder / name": "",
-  "archive / folder / duplicate-name": ""
+  "archive / folder / duplicate-name": "",
+  "archive / chart / delete / confirm": "¿Estás seguro de que quieres eliminar el gráfico? Ten en cuenta que, si lo eliminas, este gráfico ya no podrá integrarse."
 }

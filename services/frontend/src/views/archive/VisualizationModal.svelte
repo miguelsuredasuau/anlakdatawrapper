@@ -2,9 +2,8 @@
     import Modal from '_partials/components/Modal.svelte';
     import SvgIcon from 'layout/partials/SvgIcon.svelte';
     import { beforeUpdate, getContext } from 'svelte';
-    import httpReq from '@datawrapper/shared/httpReq';
 
-    const { openVisualization, loadCharts } = getContext('page/archive');
+    const { deleteChart, duplicateChart, openChart } = getContext('page/archive');
     const { dayjs } = getContext('libraries');
     const { themeBgColors } = getContext('page/archive');
 
@@ -30,18 +29,9 @@
         );
     }
 
-    async function duplicate() {
-        const res = await httpReq.post(`/v3/charts/${chart.id}/copy`);
-        window.open('/chart/' + res.id + '/visualize', '_blank');
-        loadCharts(true);
-    }
-
-    async function deleteVis() {
-        if (window.confirm('Do you really want to delete this visualization?')) {
-            await httpReq.delete(`/v3/charts/${chart.id}`);
-            close();
-            loadCharts(true);
-        }
+    async function handleDeleteButtonClick() {
+        await deleteChart(chart);
+        close();
     }
 </script>
 
@@ -118,7 +108,7 @@
                             <div class="column">
                                 <div class="kicker">{__('archive / modal / copied-from')}</div>
                                 <a
-                                    on:click|preventDefault={openVisualization(chart.forkedFrom)}
+                                    on:click|preventDefault={openChart(chart.forkedFrom)}
                                     href="#/{chart.forkedFrom}">{chart.forkedFrom}</a
                                 >
                             </div>
@@ -147,16 +137,18 @@
                             href="/chart/{chart.id}/edit"
                             class="edit-chart button is-primary is-large"
                             ><SvgIcon icon="edit" />
-                            <span>{__('archive / modal / edit')}</span></a
+                            <span>{__('archive / edit')}</span></a
                         >
                     </div>
                     <hr class="my-2" />
                     <div class="chart-actions">
                         <ul>
                             <li>
-                                <button on:click={duplicate} class="button is-ghost is-medium"
+                                <button
+                                    on:click={() => duplicateChart(chart, true)}
+                                    class="button is-ghost is-medium"
                                     ><SvgIcon icon="duplicate" />
-                                    <span>{__('archive / modal / dupllicate')}</span></button
+                                    <span>{__('archive / duplicate')}</span></button
                                 >
                             </li>
                             <li>
@@ -171,10 +163,10 @@
 
                         <hr class="my-2" />
                         <button
-                            on:click={deleteVis}
+                            on:click={handleDeleteButtonClick}
                             class="button is-ghost is-medium has-text-danger"
                             ><SvgIcon icon="trash" />
-                            <span>{__('archive / modal / delete')}</span></button
+                            <span>{__('archive / delete')}</span></button
                         >
                     </div>
                 </div>
