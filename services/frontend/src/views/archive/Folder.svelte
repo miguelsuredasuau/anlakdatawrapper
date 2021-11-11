@@ -136,13 +136,13 @@
             border: 1px solid transparent;
             position: relative;
             border-radius: var(--radius-small);
-            a {
+            & > a {
                 color: $dw-black-bis;
             }
 
             &:hover {
                 background: $dw-white-ter;
-                a {
+                & > a {
                     color: $dw-black;
                 }
             }
@@ -159,16 +159,12 @@
                 position: absolute;
                 right: 0;
                 top: 0;
+                bottom: 0;
                 font-weight: normal;
 
                 color: transparent;
                 cursor: pointer;
                 font-size: 16px;
-
-                .dropdown-item :global(.icon) {
-                    color: $dw-scooter;
-                    font-size: 20px;
-                }
             }
 
             &:hover .folder-menu {

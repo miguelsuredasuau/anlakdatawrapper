@@ -47,14 +47,6 @@
     @import '../../styles/colors.scss';
 
     .add-folder {
-        :global(.icon) {
-            margin-right: 0.5ex;
-            color: $dw-scooter;
-            font-size: 20px;
-            width: 1em;
-            height: 1em;
-            vertical-align: middle;
-        }
         .rotated-icon {
             transform: rotate(180deg);
         }

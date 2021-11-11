@@ -70,7 +70,7 @@
             border-color: $dw-scooter-light;
             background-color: $dw-scooter-lightest;
         }
-        a {
+        .viz {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -104,7 +104,12 @@
             top: 3px;
             padding: 5px;
             border-radius: 4px;
-            line-height: 14px;
+            line-height: 1;
+            box-sizing: content-box;
+
+            :global(.css-ui) {
+                background: white;
+            }
         }
         &:hover .box-checkbox {
             display: block;
@@ -114,7 +119,7 @@
             display: block;
         }
         &.selected:hover .box-checkbox {
-            background-color: transparent;
+            background-color: $dw-scooter-lightest;
         }
         :global(.dropdown) {
             position: absolute;
@@ -122,7 +127,8 @@
             right: 0;
         }
         .context-menu-button {
-            display: none;
+            display: block;
+            opacity: 0;
             width: 28px;
             height: 26px;
             background-color: $dw-grey-lightest;
@@ -131,7 +137,7 @@
             color: $dw-grey-dark;
         }
         &:hover .context-menu-button {
-            display: block;
+            opacity: 1;
         }
         &.selected .context-menu-button {
             background-color: $dw-scooter-lightest;
@@ -142,35 +148,11 @@
             bottom: 2px;
             left: 2px;
         }
-        :global(.dropdown-menu) {
-            left: auto;
-            top: -4px;
-            right: -4px;
-            padding-top: 0;
-            filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.15));
-        }
-        .dropdown-item {
-            padding: 0;
-        }
-        :global(.dropdown-item a),
-        :global(.dropdown-item .link) {
-            display: block;
-            color: $dw-black-bis;
-            cursor: pointer;
-            padding: 0.375rem 1rem;
-        }
-        :global(.dropdown-item a:hover),
-        :global(.dropdown-item .link:hover) {
-            background-color: $dw-scooter-lightest;
-        }
-        :global(.dropdown-item .icon) {
-            margin-right: 4px;
-        }
     }
 </style>
 
 <div class="box has-border" class:selected>
-    <a on:click|preventDefault={() => openChart(chart)} href="/chart/{chart.id}/edit">
+    <a on:click|preventDefault={() => openChart(chart)} href="/chart/{chart.id}/edit" class="viz">
         <figure class="image is-4by3">
             <figcaption title={purifyHTML(chart.title, '')} class="title is-6 mb-2">
                 {purifyHTML(chart.title, '')}
@@ -194,24 +176,26 @@
             <SvgIcon icon="menu-vertical" size="18px" />
         </div>
         <div slot="content" class="dropdown-content">
-            <div class="dropdown-item">
-                <a href="/chart/{chart.id}/edit">
-                    <SvgIcon icon="edit" color="var(--color-dw-scooter)" size="16px" />
-                    <span>{__('archive / edit')}</span>
-                </a>
-            </div>
-            <div class="dropdown-item">
-                <span on:click={handleDuplicateButtonClick} class="link">
-                    <SvgIcon icon="duplicate" color="var(--color-dw-scooter)" size="16px" />
-                    <span>{__('archive / duplicate')}</span>
-                </span>
-            </div>
-            <div class="dropdown-item">
-                <span on:click={handleDeleteButtonClick} class="link">
-                    <SvgIcon icon="trash" color="var(--color-dw-scooter)" size="16px" />
-                    <span>{__('archive / delete')}</span>
-                </span>
-            </div>
+            <a class="dropdown-item" href="/chart/{chart.id}/edit">
+                <SvgIcon icon="edit" />
+                <span>{__('archive / edit')}</span>
+            </a>
+            <a
+                class="dropdown-item"
+                on:click|preventDefault={handleDuplicateButtonClick}
+                href="#/duplicate"
+            >
+                <SvgIcon icon="duplicate" />
+                <span>{__('archive / duplicate')}</span>
+            </a>
+            <a
+                class="dropdown-item"
+                on:click|preventDefault={handleDeleteButtonClick}
+                href="#/delete"
+            >
+                <SvgIcon icon="trash" />
+                <span>{__('archive / delete')}</span>
+            </a>
         </div>
     </Dropdown>
 </div>

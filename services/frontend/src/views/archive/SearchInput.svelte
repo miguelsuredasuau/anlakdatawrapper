@@ -54,12 +54,15 @@
 
 <style lang="scss">
     @import '../../styles/colors.scss';
-    :global(.icon) {
-        color: $dw-grey-dark;
+    .control {
+        :global(.icon) {
+            bottom: 0;
+            color: $dw-grey;
+        }
     }
 </style>
 
 <div class="control has-icons-left">
-    <SvgIcon icon="search" size="1.5em" />
     <input class="input" type="text" bind:value on:input={onInput} placeholder={__('Search')} />
+    <SvgIcon icon="search" size="1.5em" className="is-left mx-2" />
 </div>

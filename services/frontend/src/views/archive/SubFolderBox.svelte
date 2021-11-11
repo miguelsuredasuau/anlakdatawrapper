@@ -17,7 +17,7 @@
         padding: 20px 25px;
         box-shadow: none;
         &:hover {
-            border: 1px solid $dw-scooter-light;
+            border-color: $dw-grey;
         }
         :global(.icon) {
             color: $dw-scooter;

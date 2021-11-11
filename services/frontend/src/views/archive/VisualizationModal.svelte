@@ -42,6 +42,7 @@
         text-transform: uppercase;
         font-weight: bold;
         margin-bottom: 0;
+        letter-spacing: 0.05em;
         color: $dw-grey-dark;
     }
     .kicker + h2 {
@@ -77,19 +78,19 @@
 
 {#if chart}
     <Modal bind:open on:close={close}>
-        <div class="box">
-            <div class="columns">
-                <div class="column has-background-white">
-                    <div
-                        class="preview p-5"
-                        style={themeBgColors[chart.theme]
-                            ? `background:${themeBgColors[chart.theme]}`
-                            : ''}
-                    >
-                        <iframe title={chart.title} src="/preview/{chart.id}" />
-                    </div>
+        <div class="columns is-gapless has-background-white">
+            <div class="column">
+                <div
+                    class="preview p-5"
+                    style={themeBgColors[chart.theme]
+                        ? `background:${themeBgColors[chart.theme]}`
+                        : ''}
+                >
+                    <iframe title={chart.title} src="/preview/{chart.id}" />
                 </div>
-                <div class="column is-one-third has-background-white-bis py-6 pl-6">
+            </div>
+            <div class="column is-one-third has-background-white-bis">
+                <div class="block p-6">
                     <button on:click={close} class="button is-text close">
                         <SvgIcon icon="close" />
                     </button>
