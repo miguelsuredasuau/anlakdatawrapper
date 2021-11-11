@@ -3,20 +3,21 @@
     export let total;
     export let limit;
     export let offset;
+    export let changeOffset;
 
     $: curPage = Math.ceil(+offset / +limit) || 0;
     $: numPages = Math.ceil(total / limit) || 1;
     $: lastPage = numPages - 1;
 
     function gotoPage(page) {
-        offset = page * limit;
+        changeOffset(page * limit);
     }
 
     $: allPages = range(0, numPages);
 
     $: centerPages = allPages.slice(
         Math.max(curPage - 2, 0),
-        Math.min(lastPage, Math.max(5, curPage + 3))
+        Math.min(lastPage + 1, Math.max(5, curPage + 3))
     );
 </script>
 

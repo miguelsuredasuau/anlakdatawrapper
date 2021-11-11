@@ -1,10 +1,6 @@
 <script>
     import VisualizationBox from './VisualizationBox.svelte';
-    import Pagination from '_partials/components/Pagination.svelte';
     export let charts;
-    export let limit;
-    export let offset;
-    export let total;
     export let __;
 </script>
 
@@ -15,4 +11,3 @@
         </div>
     {/each}
 </div>
-<Pagination {limit} bind:offset {total} />

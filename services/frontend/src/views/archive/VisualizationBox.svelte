@@ -4,7 +4,7 @@
     import SvgIcon from '../layout/partials/SvgIcon.svelte';
     import purifyHTML from '@datawrapper/shared/purifyHtml';
     import { getContext } from 'svelte';
-    import { selectedCharts } from './stores';
+    import { selectedCharts, query } from './stores';
 
     const config = getContext('config');
     const { dayjs } = getContext('libraries');
@@ -12,21 +12,23 @@
 
     export let chart;
     export let __;
-    export let sortField = 'last_modified_at';
+    $: sortField = $query.orderBy;
 
     let isDropdownActive = false;
 
     $: selected = $selectedCharts.has(chart);
     $: dateLine =
-        sortField === 'last_modified_at'
-            ? `${__('dashboard / visualization / last-edited')} ${dayjs(
-                  chart.last_modified_at
-              ).fromNow()}`
-            : sortField === 'published_at'
-            ? `${__('dashboard / visualization / published')} ${dayjs(
-                  chart.published_at
-              ).fromNow()}`
-            : '';
+        sortField === 'publishedAt'
+            ? chart.publishedAt
+                ? `${__('dashboard / visualization / published')} ${dayjs(
+                      chart.publishedAt
+                  ).fromNow()}`
+                : __('dashboard / visualization / not-published')
+            : sortField === 'createdAt'
+            ? `${__('dashboard / visualization / created')} ${dayjs(chart.createdAt).fromNow()}`
+            : `${__('dashboard / visualization / last-edited')} ${dayjs(
+                  chart.lastModifiedAt
+              ).fromNow()}`;
     $: thumbnail =
         (chart.thumbnails && chart.thumbnails.plain) ||
         `//${$config.imageDomain}/${chart.id}/${chart.thumbnailHash}/plain.png`;

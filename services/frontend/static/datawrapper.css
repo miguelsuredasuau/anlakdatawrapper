@@ -4079,7 +4079,7 @@ button.dropdown-item:hover {
 a.dropdown-item.is-active,
 button.dropdown-item.is-active {
   background-color: #e9f3f6;
-  color: #fff;
+  color: #111111;
 }
 
 .dropdown-divider {

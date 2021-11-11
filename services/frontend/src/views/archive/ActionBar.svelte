@@ -1,12 +1,14 @@
 <script>
     import AddInFolder from './AddInFolder.svelte';
-    import SvgIcon from '../layout/partials/SvgIcon.svelte';
+    import ArrangeDropdown from './ArrangeDropdown.svelte';
+    import SvgIcon from 'layout/partials/SvgIcon.svelte';
     import { selectedCharts } from './stores';
 
     export let __;
     export let charts;
     export let folderId;
     export let teamId;
+    export let apiQuery;
 
     function selectAll() {
         $selectedCharts = new Set(charts);
@@ -49,5 +51,8 @@
                 </button>
             </div>
         {/if}
+    </div>
+    <div class="level-right">
+        <ArrangeDropdown {__} {apiQuery} />
     </div>
 </div>

@@ -1,23 +1,28 @@
 <script type="text/javascript">
-    import MainLayout from 'layout/MainLayout.svelte';
-    import Folder from './Folder.svelte';
-    import CollapseGroup from './CollapseGroup.svelte';
-    import FolderBreadcrumbNav from './FolderBreadcrumbNav.svelte';
-    import { beforeUpdate, onMount, getContext, setContext } from 'svelte';
-    import { parseFolderTree, getFolderUri } from './shared';
-    import { currentFolder, selectedCharts, folderTreeDropZone } from './stores';
     import ActionBar from './ActionBar.svelte';
-    import VisualizationGrid from './VisualizationGrid.svelte';
-    import SubFolderGrid from './SubFolderGrid.svelte';
-    import SearchInput from './SearchInput.svelte';
-    import VisualizationModal from './VisualizationModal.svelte';
+    import CollapseGroup from './CollapseGroup.svelte';
     import DragNotification from './DragNotification.svelte';
+    import Folder from './Folder.svelte';
+    import FolderBreadcrumbNav from './FolderBreadcrumbNav.svelte';
+    import MainLayout from 'layout/MainLayout.svelte';
+    import Pagination from '../_partials/components/Pagination.svelte';
+    import SearchInput from './SearchInput.svelte';
+    import SubFolderGrid from './SubFolderGrid.svelte';
+    import VisualizationGrid from './VisualizationGrid.svelte';
+    import VisualizationModal from './VisualizationModal.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
+    import isEqual from 'underscore/modules/isEqual.js';
+    import { currentFolder, folderTreeDropZone, query, selectedCharts } from './stores';
+    import { formatQueryString } from '../../utils/url.cjs';
+    import { groupCharts } from '../../utils/charts.cjs';
+    import { onMount, getContext, setContext } from 'svelte';
+    import { parseFolderTree, getFolderUri } from './shared';
 
     const user = getContext('user');
     const request = getContext('request');
 
     export let __;
+    export let visualizations;
 
     export let apiQuery;
     export let charts;
@@ -26,7 +31,6 @@
     export let themeBgColors;
 
     setContext('page/archive', {
-        findFolderByPath,
         addFolder,
         updateFolders: refreshFolders,
         async deleteFolder(folder) {
@@ -51,9 +55,15 @@
     $: userFolder = parseFolderTree(folders);
     $: teamFolders = teams.map(t => parseFolderTree(folders, t.id));
 
-    export let offset = 0;
-    export let limit;
+    // Initialize stores with backend data.
+    $currentFolder = findFolderByPath(folders, $request.path);
+    $query = apiQuery;
 
+    // Current folder
+    $: folderId = $currentFolder.id;
+    $: teamId = $currentFolder.teamId;
+
+    // Current chart
     let currentChart;
     let currentChartOpen = false;
     let dragNotification;
@@ -68,33 +78,54 @@
         handleDragLeave
     });
 
+    // Load charts when current folder or query changes.
+    let _prevPath = $currentFolder.path;
+    $: if ($currentFolder.path !== _prevPath || !isEqual($query, apiQuery)) {
+        if ($currentFolder.path !== _prevPath) {
+            // if folder has changed, reset pagination to first step:
+            $query = { ...$query, offset: 0 };
+        }
+        _prevPath = $currentFolder.path;
+        apiQuery = $query;
+        const qs = formatQueryString({
+            ...(limit && limit !== 15 && { limit }),
+            ...($query.offset && { offset: $query.offset }),
+            ...($query.groupBy && { groupBy: $query.groupBy }),
+            ...($query.order && $query.order !== 'ASC' && { order: $query.order }),
+            ...($query.orderBy && $query.orderBy !== 'createdAt' && { orderBy: $query.orderBy }),
+            ...($query.search && { search: $query.search }),
+            ...($currentFolder.search && { search: $currentFolder.search }) // override $query.search
+        });
+        const currentURL = $currentFolder.path + (qs && '?') + qs;
+        window.history.pushState({}, '', currentURL);
+        loadCharts();
+    }
+
+    // Pagination
     $: total = charts.total;
-    $: folderId = $currentFolder ? $currentFolder.id : null;
-    $: teamId = $currentFolder ? $currentFolder.teamId : null;
-    $: curPath = $currentFolder ? $currentFolder.path : null;
-    $: curSearch = $currentFolder ? $currentFolder.search || '' : '';
+    const limit = $query.limit;
+    $: offset = $query.offset;
+
+    function changeOffset(offset) {
+        $query = { ...$query, offset };
+    }
 
     const modalHashRegex = /^#\/([a-z0-9]{5})$/i;
 
-    let _mounted = false;
     onMount(() => {
         if (modalHashRegex.test(window.location.hash)) {
             const m = window.location.hash.match(modalHashRegex);
             openChart(m[1]);
         }
-        findFolderByPath($request.path, $request.query);
-        _mounted = true;
     });
 
-    function findFolderByPath(path, query) {
-        if (query.search) return;
-
+    function findFolderByPath(folder, path) {
         for (const f of Object.values(folders)) {
             if (f.path === path) {
-                $currentFolder = f;
-                return;
+                return f;
             }
         }
+        return {};
     }
 
     function addFolder(folder) {
@@ -130,19 +161,24 @@
         refreshFolders();
     }
 
-    async function loadCharts(force = false) {
-        const query = `/charts?minLastEditStep=2&offset=${offset}&limit=${limit}&${
-            curSearch
-                ? `search=${encodeURIComponent(curSearch)}`
-                : `folderId=${folderId ? folderId : 'null'}${
-                      teamId ? `&teamId=${teamId}` : '&authorId=me'
-                  }`
-        }`;
-        if (query !== apiQuery || force) {
-            apiQuery = query;
-            charts = await httpReq.get(`/v3${query}`);
-            $selectedCharts = new Set();
+    async function loadCharts() {
+        const { groupBy, limit, offset, order, orderBy, search } = $query;
+        const qs = formatQueryString({
+            minLastEditStep: 2,
+            offset,
+            order,
+            orderBy,
+            limit,
+            ...(search && { search }),
+            ...(!search && { folderId: folderId || 'null' }),
+            ...(!search && teamId && { teamId, authorId: 'me' })
+        });
+        const newCharts = await httpReq.get(`/v3/charts?${qs}`);
+        if (groupBy) {
+            newCharts.list = groupCharts({ charts: newCharts.list, groupBy, __, visualizations });
         }
+        charts = newCharts;
+        $selectedCharts = new Set();
     }
 
     function refreshFolders() {
@@ -156,7 +192,7 @@
             window.open(`/chart/${res.id}/visualize`, '_blank');
         }
         $currentFolder.chartCount++;
-        loadCharts(true);
+        loadCharts();
         refreshFolders();
     }
 
@@ -164,7 +200,7 @@
         if (window.confirm(__('archive / chart / delete / confirm'))) {
             await httpReq.delete(`/v3/charts/${chart.id}`);
             $currentFolder.chartCount--;
-            loadCharts(true);
+            loadCharts();
             refreshFolders();
         }
     }
@@ -235,34 +271,12 @@
         dragTarget = undefined;
     }
 
-    let _prevOffset = offset;
-    let _prevFolder;
-
     $: sortedTeamFolders = teamFolders.sort((a, b) => {
         if ($user.activeTeam) {
             if (a.teamId === $user.activeTeam.id) return -1;
             if (b.teamId === $user.activeTeam.id) return 1;
         }
         return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
-    });
-
-    beforeUpdate(async () => {
-        // prevent this from running before the page has mounted
-        // to avoid loading charts for the 'default' folder
-        if (!_mounted) return;
-
-        if (_prevOffset !== offset || _prevFolder !== $currentFolder) {
-            // if folder has changed, reset pagination to first step:
-            if (_prevFolder !== $currentFolder) {
-                offset = 0;
-            }
-
-            _prevOffset = offset;
-            _prevFolder = $currentFolder;
-
-            window.history.replaceState({ folderId, teamId }, '', curPath);
-            loadCharts();
-        }
     });
 </script>
 
@@ -313,7 +327,7 @@
                     </CollapseGroup>
                 </div>
                 <div class="column">
-                    <ActionBar {__} charts={charts.list} {folderId} {teamId} />
+                    <ActionBar {__} charts={charts.list} {folderId} {teamId} {apiQuery} />
                     {#if !$currentFolder.search}
                         <div class="subfolders block">
                             <SubFolderGrid {__} />
@@ -321,13 +335,15 @@
                     {/if}
                     <div class="block">
                         {#if total > 0}
-                            <VisualizationGrid
-                                {__}
-                                bind:offset
-                                {limit}
-                                {total}
-                                charts={charts.list}
-                            />
+                            {#if Array.isArray(charts.list)}
+                                <VisualizationGrid {__} charts={charts.list} />
+                            {:else}
+                                {#each Object.keys(charts.list) as groupTitle (groupTitle)}
+                                    <h3 class="is-size-4 has-text-grey mb-3">{groupTitle}</h3>
+                                    <VisualizationGrid {__} charts={charts.list[groupTitle]} />
+                                {/each}
+                            {/if}
+                            <Pagination {changeOffset} {limit} {offset} {total} />
                         {:else}
                             <p class="subtitle is-size-4 has-text-grey">
                                 {@html __('mycharts / empty-folder').replace(

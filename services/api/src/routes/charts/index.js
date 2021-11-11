@@ -63,7 +63,15 @@ module.exports = {
                             .default('DESC')
                             .description('Result order (ascending or descending)'),
                         orderBy: Joi.string()
-                            .valid('createdAt', 'lastModifiedAt', 'publishedAt', 'title')
+                            .valid(
+                                'authorId',
+                                'createdAt',
+                                'lastEditStep',
+                                'lastModifiedAt',
+                                'publishedAt',
+                                'title',
+                                'type'
+                            )
                             .default('createdAt')
                             .description('Attribute to order by'),
                         limit: Joi.number()
@@ -257,6 +265,7 @@ async function getAllCharts(request) {
             'in_folder',
             'author_id',
             'organization_id',
+            'last_edit_step',
             'last_modified_at',
             'public_version',
             'published_at',
@@ -267,6 +276,10 @@ async function getAllCharts(request) {
         limit: query.limit,
         offset: query.offset
     };
+
+    if (['authorId', 'title', 'type'].includes(query.orderBy)) {
+        options.order.push(['createdAt', 'DESC']);
+    }
 
     const filters = [
         {

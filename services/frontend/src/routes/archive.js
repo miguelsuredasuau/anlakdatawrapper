@@ -1,5 +1,8 @@
 const Joi = require('joi');
 const { db } = require('@datawrapper/orm');
+const { formatQueryString } = require('../utils/url.cjs');
+const { getUserLanguage } = require('../utils/index');
+const { groupCharts } = require('../utils/charts.cjs');
 const keyBy = require('lodash/keyBy');
 const mapValues = require('lodash/mapValues');
 
@@ -20,8 +23,22 @@ module.exports = {
         const minLastEditStep = 2;
 
         const validQueryParams = Joi.object({
-            search: Joi.string().optional(),
-            offset: Joi.number().optional()
+            groupBy: Joi.string().valid('author', 'status', 'type').default(null),
+            limit: Joi.number().min(1).max(15).default(15),
+            offset: Joi.number().default(0),
+            search: Joi.string().allow('').default(''),
+            order: Joi.string().valid('ASC', 'DESC').default('ASC'),
+            orderBy: Joi.string()
+                .valid(
+                    'authorId',
+                    'createdAt',
+                    'lastEditStep',
+                    'lastModifiedAt',
+                    'publishedAt',
+                    'title',
+                    'type'
+                )
+                .default('createdAt')
         });
 
         server.route({
@@ -58,17 +75,23 @@ module.exports = {
         async function visArchiveHandler(request, h) {
             const { auth, params, query } = request;
             const { teamId, folderId } = params;
-            const { search } = query;
+            const { groupBy, limit, offset, order, orderBy, search } = query;
             const user = auth.artifacts;
+
+            const language = getUserLanguage(auth);
+            const __ = key => server.methods.translate(key, { scope: 'core', language });
+            const visualizations = Object.fromEntries(
+                Array.from(server.app.visualizations.keys()).map(key => [
+                    key,
+                    server.app.visualizations.get(key)
+                ])
+            );
 
             const api = createAPI(
                 apiBase,
                 config.api.sessionID,
                 auth.credentials && auth.credentials.data ? auth.credentials.data.id : ''
             );
-
-            const offset = 0;
-            const limit = 15;
 
             if (folderId) {
                 // check if folder exists
@@ -88,27 +111,34 @@ module.exports = {
 
             const themeBgColors = await getThemeBgColors(user, teams);
 
-            const apiQuery = `/charts?minLastEditStep=${minLastEditStep}&offset=${offset}&limit=${limit}&${
-                search
-                    ? `search=${search}`
-                    : `folderId=${folderId ? folderId : 'null'}${teamId ? `&teamId=${teamId}` : ''}`
-            }`;
-            const charts = await api(apiQuery);
+            const qs = formatQueryString({
+                minLastEditStep,
+                offset,
+                order,
+                orderBy,
+                limit,
+                ...(search && { search }),
+                ...(!search && { folderId: folderId || 'null' }),
+                ...(!search && teamId && { teamId })
+            });
+            const charts = await api(`/charts?${qs}`);
+            if (groupBy) {
+                charts.list = groupCharts({ charts: charts.list, groupBy, __, visualizations });
+            }
 
             const folders = await getFolders(user, teams);
 
             return h.view('archive/Index.svelte', {
                 htmlClass: 'has-background-white-bis',
                 props: {
-                    apiQuery,
+                    apiQuery: query,
                     charts,
-                    limit,
-                    offset,
                     teamId,
                     folderId,
                     folders,
                     teams,
-                    themeBgColors
+                    themeBgColors,
+                    visualizations
                 }
             });
         }
