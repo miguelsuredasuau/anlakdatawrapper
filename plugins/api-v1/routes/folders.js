@@ -1,5 +1,4 @@
 const Boom = require('@hapi/boom');
-const { Chart } = require('@datawrapper/orm/models');
 
 function convertResult(result) {
     return {
@@ -14,6 +13,8 @@ function convertResult(result) {
 module.exports = {
     name: 'api-v1/folders',
     register: async server => {
+        const Chart = server.methods.getModel('chart');
+
         server.route({
             method: 'GET',
             path: '/',
