@@ -3,7 +3,7 @@
     import SvgIcon from 'layout/partials/SvgIcon.svelte';
     import { onMount, getContext, beforeUpdate, tick } from 'svelte';
     import { currentFolder, folderTreeDropZone } from './stores';
-    import { byName } from './shared';
+    import { byName, selectAll } from './shared';
 
     const user = getContext('user');
     const { deleteFolder, patchFolder } = getContext('page/archive');
@@ -63,17 +63,7 @@
         editMode = true;
         await tick();
         folderMenuActive = false;
-        if (window.getSelection && document.createRange) {
-            const range = document.createRange();
-            range.selectNodeContents(folderNameSpan);
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-        } else if (document.body.createTextRange) {
-            const range = document.body.createTextRange();
-            range.moveToElementText(folderNameSpan);
-            range.select();
-        }
+        selectAll(folderNameSpan);
         await tick();
         folderNameSpan.focus();
     }

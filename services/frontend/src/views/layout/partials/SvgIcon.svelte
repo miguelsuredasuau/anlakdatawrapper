@@ -10,6 +10,8 @@
     export let spin = false;
     export let timing = 'linear';
     export let duration = '2s';
+
+    const iconsVersion = '1.12.0'; // @todo: read from package.json
 </script>
 
 <style>
@@ -47,6 +49,9 @@
         : ''}"
 >
     <svg class="svg-{icon}-dims" class:crisp>
-        <use style="fill: {color}" xlink:href="/lib/icons/symbol/svg/sprite.symbol.svg#{icon}" />
+        <use
+            style="fill: {color}"
+            xlink:href="/lib/icons/symbol/svg/sprite.symbol.svg?v={iconsVersion}#{icon}"
+        />
     </svg>
 </span>

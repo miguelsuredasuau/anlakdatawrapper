@@ -2,11 +2,13 @@
     import CheckboxInput from '../_partials/controls/CheckboxInput.svelte';
     import Dropdown from '../_partials/components/Dropdown.svelte';
     import SvgIcon from '../layout/partials/SvgIcon.svelte';
+    import httpReq from '@datawrapper/shared/httpReq';
     import purifyHTML from '@datawrapper/shared/purifyHtml';
     import truncate from '@datawrapper/shared/truncate';
     import range from 'lodash/range';
-    import { getContext } from 'svelte';
+    import { getContext, tick } from 'svelte';
     import { selectedCharts, query } from './stores';
+    import { selectAll } from './shared';
 
     const config = getContext('config');
     const { dayjs } = getContext('libraries');
@@ -18,6 +20,8 @@
     $: sortField = $query.orderBy;
 
     let isDropdownActive = false;
+    let isTitleEditable = false;
+    let chartTitle;
 
     $: selected = $selectedCharts.has(chart);
     $: dateLine =
@@ -54,6 +58,63 @@
     function handleDeleteButtonClick() {
         deleteChart(chart);
         isDropdownActive = false;
+    }
+
+    function handleRenameButtonClick() {
+        toggleTitleEdit();
+        isDropdownActive = false;
+    }
+
+    async function toggleTitleEdit() {
+        await tick();
+        isTitleEditable = !isTitleEditable;
+        if (!isTitleEditable) {
+            return;
+        }
+        selectAll(chartTitle);
+        await tick();
+        chartTitle.focus();
+    }
+
+    /*
+     * runs when user is done editing the chart title
+     * updates chart title via API
+     */
+    async function chartTitleBlur() {
+        const newTitle = chartTitle.innerText.trim();
+        isTitleEditable = false;
+        if (newTitle !== chart.title) {
+            try {
+                await httpReq.patch(`/v3/charts/${chart.id}`, {
+                    payload: {
+                        title: newTitle
+                    }
+                });
+                chart.title = newTitle;
+                chart = chart;
+            } catch (err) {
+                window.alert(err);
+            }
+        }
+    }
+
+    /*
+     * monitor key strokes while user edits a chart title
+     * Return = save, Esc = reset
+     */
+    function chartTitleKeyUp(event) {
+        if (event.key === 'Enter') {
+            // enter pressed
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
+            chartTitle.blur();
+        } else if (event.key === 'Esc' || event.key === 'Escape') {
+            // Esc pressed, reset old folder name
+            chartTitle.innerText = chart.title;
+            chartTitle.blur();
+        }
     }
 
     let dragPreview;
@@ -97,6 +158,10 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            &.title-editable {
+                overflow: visible;
+                white-space: normal;
+            }
         }
         img {
             position: relative;
@@ -186,6 +251,10 @@
         img {
             margin-bottom: -5px;
         }
+        b {
+            text-overflow: clip;
+            outline: none;
+        }
     }
 </style>
 
@@ -198,7 +267,15 @@
 >
     <a on:click|preventDefault={() => openChart(chart)} href="/chart/{chart.id}/edit" class="viz">
         <figure class="image is-4by3">
-            <figcaption title={purifyHTML(chart.title, '')} class="title is-6 mb-2">
+            <figcaption
+                title={purifyHTML(chart.title, '')}
+                class="title is-6 mb-2"
+                bind:this={chartTitle}
+                contentEditable={isTitleEditable}
+                class:title-editable={isTitleEditable}
+                on:keypress={chartTitleKeyUp}
+                on:blur={chartTitleBlur}
+            >
                 {purifyHTML(chart.title, '')}
             </figcaption>
             <img alt="preview" src={thumbnail} />
@@ -220,6 +297,14 @@
             <SvgIcon icon="menu-vertical" size="18px" />
         </div>
         <div slot="content" class="dropdown-content">
+            <a
+                class="dropdown-item"
+                on:click|preventDefault={handleRenameButtonClick}
+                href="#/rename"
+            >
+                <SvgIcon icon="rename" />
+                <span>{__('archive / folder / rename')}</span>
+            </a>
             <a class="dropdown-item" href="/chart/{chart.id}/edit">
                 <SvgIcon icon="edit" />
                 <span>{__('archive / edit')}</span>

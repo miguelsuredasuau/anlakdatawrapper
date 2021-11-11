@@ -48,3 +48,17 @@ function assignDepth(folder, depth = 0) {
 export function byName(a, b) {
     return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
 }
+
+export function selectAll(node) {
+    if (window.getSelection && document.createRange) {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else if (document.body.createTextRange) {
+        const range = document.body.createTextRange();
+        range.moveToElementText(node);
+        range.select();
+    }
+}
