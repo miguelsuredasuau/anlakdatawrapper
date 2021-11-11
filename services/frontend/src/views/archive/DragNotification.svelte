@@ -8,6 +8,7 @@
     @import '../../styles/colors.scss';
 
     .drag-notification {
+        pointer-events: none;
         position: fixed;
         top: 30px;
         z-index: 1001;

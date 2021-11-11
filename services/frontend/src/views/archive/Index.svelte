@@ -49,6 +49,7 @@
         deleteChart,
         duplicateChart,
         openChart,
+        moveCharts,
         moveFolder,
         themeBgColors
     });
@@ -209,6 +210,31 @@
         }
     }
 
+    async function moveCharts(chartsToMove, folder) {
+        const payload = {
+            ids: chartsToMove.map(({ id }) => id),
+            patch: { folderId: folder.id, ...(folder.teamId ? { teamId: folder.teamId } : {}) }
+        };
+
+        try {
+            await httpReq.patch('/v3/charts', { payload });
+            // "remove" charts from source folders counts
+            chartsToMove.map(({ id }) => {
+                const chart = charts.list.find(c => c.id === id);
+                const srcFolder = folders[chart.folderId || chart.organizationId || '$user'];
+                srcFolder.chartCount--;
+            });
+            loadCharts(true);
+            // add charts to target folder
+            folder.chartCount += chartsToMove.length;
+
+            refreshFolders();
+        } catch (err) {
+            window.alert(err);
+            console.error(err);
+        }
+    }
+
     async function openChart(chart) {
         currentChart = await httpReq.get(
             `/v3/charts/${typeof chart === 'string' ? chart : chart.id}`
@@ -233,19 +259,22 @@
         }
     }
 
-    async function handleDragStart(event, type, object) {
-        event.dataTransfer.setData(type, JSON.stringify(object));
+    async function handleDragStart(type, object) {
         draggedObject = {
             type,
             object
         };
     }
 
-    async function handleDrop(event, destinationFolder) {
-        const folderData = event.dataTransfer.getData('folder');
-        if (folderData) {
-            await moveFolder(JSON.parse(folderData), destinationFolder);
+    async function handleDrop(destinationFolder) {
+        if (draggedObject.type === 'folder') {
+            await moveFolder(draggedObject.object, destinationFolder);
         }
+
+        if (draggedObject.type === 'charts') {
+            await moveCharts(draggedObject.object, destinationFolder);
+        }
+
         draggedObject = undefined;
         dragNotification = undefined;
         $folderTreeDropZone = undefined;
@@ -257,13 +286,23 @@
         }
         dragDestination = destinationFolder;
         dragTarget = event.target;
-        if (draggedObject.object.teamId !== destinationFolder.teamId) {
-            dragNotification = destinationFolder.teamId
-                ? __('mycharts / confirm-move-folder-to-org').replace(
-                      '%s',
-                      teams.find(t => t.id === destinationFolder.teamId).name
-                  )
-                : __('mycharts / confirm-move-folder-to-user');
+        const teamName = () => teams.find(t => t.id === destinationFolder.teamId).name;
+
+        if (draggedObject.type === 'folder') {
+            if (draggedObject.object.teamId !== destinationFolder.teamId) {
+                dragNotification = destinationFolder.teamId
+                    ? __('mycharts / confirm-move-folder-to-org').replace('%s', teamName())
+                    : __('mycharts / confirm-move-folder-to-user');
+            }
+        }
+
+        if (draggedObject.type === 'charts') {
+            const [chart] = draggedObject.object;
+            if (chart.organizationId !== destinationFolder.teamId) {
+                dragNotification = destinationFolder.teamId
+                    ? __('mycharts / confirm-move-chart-to-org').replace('%s', teamName())
+                    : __('mycharts / confirm-move-chart-to-user');
+            }
         }
     }
 

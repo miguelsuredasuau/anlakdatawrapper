@@ -225,9 +225,9 @@
         class:active={isCurrent}
         style="padding-left: {22 + folder.level * indentation}px"
         draggable={!folder.search}
-        on:dragstart|stopPropagation={ev => {
+        on:dragstart|stopPropagation={() => {
             if (folder.search) return;
-            handleDragStart(ev, 'folder', folder);
+            handleDragStart('folder', folder);
         }}
         on:dragenter|stopPropagation={ev => {
             if (folder.search) return;
@@ -244,9 +244,9 @@
             if (folder.search) return;
             $folderTreeDropZone = folder.key;
         }}
-        on:drop|stopPropagation={ev => {
+        on:drop|preventDefault|stopPropagation={() => {
             if (folder.search) return;
-            handleDrop(ev, folder);
+            handleDrop(folder);
         }}
     >
         {#if hasChildren}

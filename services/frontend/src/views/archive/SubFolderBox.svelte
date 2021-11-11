@@ -51,7 +51,7 @@
     <div
         class="box has-border is-size-5"
         draggable="true"
-        on:dragstart|stopPropagation={ev => handleDragStart(ev, 'folder', folder)}
+        on:dragstart|stopPropagation={() => handleDragStart('folder', folder)}
         on:dragenter|stopPropagation={ev => {
             $subfolderGridDropZone = folder.key;
             handleDragEnter(ev, folder);
@@ -65,7 +65,7 @@
         on:dragover|preventDefault={() => {
             $subfolderGridDropZone = folder.key;
         }}
-        on:drop|stopPropagation={ev => handleDrop(ev, folder)}
+        on:drop|preventDefault|stopPropagation={() => handleDrop(folder)}
     >
         <SvgIcon icon="folder" className="mr-1" valign="middle" />
         <span class="has-text-weight-medium">{folder.name}</span>

@@ -3,12 +3,15 @@
     import Dropdown from '../_partials/components/Dropdown.svelte';
     import SvgIcon from '../layout/partials/SvgIcon.svelte';
     import purifyHTML from '@datawrapper/shared/purifyHtml';
+    import truncate from '@datawrapper/shared/truncate';
+    import range from 'lodash/range';
     import { getContext } from 'svelte';
     import { selectedCharts, query } from './stores';
 
     const config = getContext('config');
     const { dayjs } = getContext('libraries');
     const { deleteChart, duplicateChart, openChart } = getContext('page/archive');
+    const { handleDragStart } = getContext('page/archive/drag-and-drop');
 
     export let chart;
     export let __;
@@ -51,6 +54,17 @@
     function handleDeleteButtonClick() {
         deleteChart(chart);
         isDropdownActive = false;
+    }
+
+    let dragPreview;
+    let dragPreviewVisible = false;
+
+    function handleVisualizationDragStart(event) {
+        dragPreviewVisible = true;
+        event.dataTransfer.setDragImage(dragPreview, 0, 0);
+        event.dataTransfer.dropEffect = 'move';
+        const selection = $selectedCharts && $selectedCharts.size ? [...$selectedCharts] : [chart];
+        handleDragStart('charts', selection);
     }
 </script>
 
@@ -149,9 +163,39 @@
             left: 2px;
         }
     }
+
+    .drag-preview-outer {
+        opacity: 0;
+        position: absolute;
+        left: -1000px;
+        top: -1000px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+        &.visible {
+            opacity: 1;
+        }
+    }
+    .drag-preview {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 290px;
+        border: 2px solid $dw-scooter-light;
+        height: 78px;
+        overflow: hidden;
+
+        img {
+            margin-bottom: -5px;
+        }
+    }
 </style>
 
-<div class="box has-border" class:selected>
+<div
+    class="box has-border"
+    class:selected
+    draggable="true"
+    on:dragstart|stopPropagation={handleVisualizationDragStart}
+    on:dragend={() => (dragPreviewVisible = false)}
+>
     <a on:click|preventDefault={() => openChart(chart)} href="/chart/{chart.id}/edit" class="viz">
         <figure class="image is-4by3">
             <figcaption title={purifyHTML(chart.title, '')} class="title is-6 mb-2">
@@ -198,4 +242,21 @@
             </a>
         </div>
     </Dropdown>
+</div>
+
+<div class="drag-preview-outer" class:visible={dragPreviewVisible} bind:this={dragPreview}>
+    <div class="drag-preview box">
+        <div class="columns">
+            <div class="column is-one-third"><img alt="preview" src={thumbnail} /></div>
+            <div class="column"><b>{truncate(purifyHTML(chart.title, ''), 40, 5)}</b></div>
+        </div>
+    </div>
+    {#if $selectedCharts && $selectedCharts.size > 1}
+        {#each range(1, Math.min(5, $selectedCharts.size)) as i}
+            <div
+                class="drag-preview box"
+                style="left:{i * 4}px;top:{i * 4}px;z-index:{-i};opacity:{Math.pow(1 / i, 0.5)}"
+            />
+        {/each}
+    {/if}
 </div>
