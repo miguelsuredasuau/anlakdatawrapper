@@ -185,7 +185,7 @@
             limit,
             ...(search && { search }),
             ...(!search && { folderId: folderId || 'null' }),
-            ...(!search && { teamId: teamId || 'null' })
+            ...(!search && (teamId ? { teamId } : { authorId: 'me', teamId: 'null' }))
         });
         const newCharts = await httpReq.get(`/v3/charts?${qs}`);
         if (groupBy) {

@@ -119,7 +119,7 @@ module.exports = {
                 limit,
                 ...(search && { search }),
                 ...(!search && { folderId: folderId || 'null' }),
-                ...(!search && teamId && { teamId })
+                ...(!search && (teamId ? { teamId } : { authorId: 'me', teamId: 'null' }))
             });
             const charts = await api(`/charts?${qs}`);
             if (groupBy) {
