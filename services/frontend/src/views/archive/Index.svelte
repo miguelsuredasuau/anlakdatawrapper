@@ -107,9 +107,12 @@
             ...($query.search && { search: $query.search }),
             ...($currentFolder.search && { search: $currentFolder.search }) // override $query.search
         });
-        const currentURL = $currentFolder.path + (qs && '?') + qs;
-        window.history.pushState({}, '', currentURL);
-        loadCharts();
+
+        if ($currentFolder.path) {
+            const currentURL = $currentFolder.path + (qs && '?') + qs;
+            window.history.pushState({}, '', currentURL);
+            loadCharts();
+        }
     }
 
     // Pagination
@@ -130,7 +133,7 @@
         }
     });
 
-    function findFolderByPath(folder, path) {
+    function findFolderByPath(folders, path) {
         for (const f of Object.values(folders)) {
             if (f.path === path) {
                 return f;
@@ -194,7 +197,11 @@
 
     function refreshFolders() {
         folders = folders;
-        $currentFolder = folders[$currentFolder.key];
+
+        const _currentFolder = folders[$currentFolder.key];
+        if (_currentFolder) {
+            $currentFolder = _currentFolder;
+        }
     }
 
     async function duplicateChart(chart, openInNewTab = false) {
