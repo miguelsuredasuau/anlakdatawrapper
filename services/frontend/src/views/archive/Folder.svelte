@@ -2,11 +2,14 @@
     import Dropdown from '_partials/components/Dropdown.svelte';
     import SvgIcon from 'layout/partials/SvgIcon.svelte';
     import { onMount, getContext, beforeUpdate, tick } from 'svelte';
-    import { currentFolder } from './stores';
+    import { currentFolder, folderTreeDropZone } from './stores';
     import { byName } from './shared';
 
     const user = getContext('user');
     const { deleteFolder, patchFolder } = getContext('page/archive');
+    const { handleDragStart, handleDrop, handleDragEnter, handleDragLeave } = getContext(
+        'page/archive/drag-and-drop'
+    );
 
     onMount(() => {
         const val = window.localStorage.getItem(storageKey(folder));
@@ -50,6 +53,7 @@
     let editMode = false;
     let folderNameSpan;
     let folderMenuActive;
+    $: isDropZone = $folderTreeDropZone === folder.key;
 
     /*
      * turns on the folder name edit mode
@@ -111,32 +115,6 @@
         }
     }
 
-    function handleDragStart(event) {
-        event.dataTransfer.setData('folder', JSON.stringify(folder));
-    }
-
-    async function handleDrop(event) {
-        const folderData = event.dataTransfer.getData('folder');
-        if (folderData) {
-            return await handleFolderDrop(JSON.parse(folderData));
-        }
-    }
-
-    async function handleFolderDrop(droppedFolder) {
-        if (!droppedFolder) {
-            return;
-        }
-        try {
-            await patchFolder(droppedFolder, {
-                parentId: folder.id,
-                teamId: folder.teamId || null
-            });
-        } catch (err) {
-            window.alert(err.message);
-            // window.alert(__('archive / folder / duplicate-name'));
-        }
-    }
-
     const indentation = 16;
 </script>
 
@@ -155,6 +133,7 @@
         }
 
         .self {
+            border: 1px solid transparent;
             position: relative;
             border-radius: var(--radius-small);
             a {
@@ -231,6 +210,11 @@
     .open > .self .collapse-toggle :global(.icon) {
         transform: rotate(90deg);
     }
+
+    .is-drop-zone > .self {
+        border: 1px dashed $dw-grey-dark;
+        background: $dw-scooter-lightest;
+    }
 </style>
 
 <div
@@ -238,15 +222,36 @@
     class:open
     class:is-search={!!folder.search}
     class:is-shared={!!folder.teamId}
-    draggable="true"
-    on:dragstart|stopPropagation={handleDragStart}
-    on:dragover|preventDefault
-    on:drop|stopPropagation={handleDrop}
+    class:is-drop-zone={isDropZone}
 >
     <div
         class="self py-1"
         class:active={isCurrent}
         style="padding-left: {22 + folder.level * indentation}px"
+        draggable={!folder.search}
+        on:dragstart|stopPropagation={ev => {
+            if (folder.search) return;
+            handleDragStart(ev, 'folder', folder);
+        }}
+        on:dragenter|stopPropagation={ev => {
+            if (folder.search) return;
+            $folderTreeDropZone = folder.key;
+            handleDragEnter(ev, folder);
+        }}
+        on:dragleave|stopPropagation={ev => {
+            if ($folderTreeDropZone === folder.key) {
+                $folderTreeDropZone = undefined;
+            }
+            handleDragLeave(ev);
+        }}
+        on:dragover|preventDefault={() => {
+            if (folder.search) return;
+            $folderTreeDropZone = folder.key;
+        }}
+        on:drop|stopPropagation={ev => {
+            if (folder.search) return;
+            handleDrop(ev, folder);
+        }}
     >
         {#if hasChildren}
             <button

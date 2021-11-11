@@ -8,4 +8,14 @@ const selectedCharts = new writable(new Set());
 
 const dragNotification = new writable('');
 
-export { currentFolder, searchQuery, selectedCharts, dragNotification };
+const folderTreeDropZone = new writable();
+const subfolderGridDropZone = new writable();
+
+export {
+    currentFolder,
+    searchQuery,
+    selectedCharts,
+    dragNotification,
+    folderTreeDropZone,
+    subfolderGridDropZone
+};

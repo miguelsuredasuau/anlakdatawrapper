@@ -186,14 +186,13 @@ module.exports = {
             ];
 
             function clean(folder) {
-                folder = {
+                return {
                     id: folder.id,
                     key: folder.id || folder.teamId || folder.org_id || '$user',
-                    teamId: folder.teamId || folder.org_id,
-                    parentId: folder.parentId,
+                    teamId: folder.teamId || folder.org_id || null,
+                    parentId: folder.parentId || null,
                     name: folder.name
                 };
-                return { ...folder };
             }
             await addChartCounts(user, teams, folders);
             return keyBy(folders, d => d.key);

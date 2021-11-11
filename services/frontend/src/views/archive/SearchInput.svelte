@@ -10,6 +10,7 @@
     $: searchFolder = $searchQuery
         ? {
               id: null,
+              key: '%%search%%',
               level: 0,
               teamId: null,
               search: $searchQuery,
