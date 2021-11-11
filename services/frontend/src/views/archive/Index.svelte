@@ -12,7 +12,13 @@
     import VisualizationModal from './VisualizationModal.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
     import isEqual from 'underscore/modules/isEqual.js';
-    import { currentFolder, folderTreeDropZone, query, selectedCharts } from './stores';
+    import {
+        currentFolder,
+        folderTreeDropZone,
+        subfolderGridDropZone,
+        query,
+        selectedCharts
+    } from './stores';
     import { formatQueryString } from '../../utils/url.cjs';
     import { groupCharts } from '../../utils/charts.cjs';
     import { onMount, getContext, setContext } from 'svelte';
@@ -278,6 +284,7 @@
         draggedObject = undefined;
         dragNotification = undefined;
         $folderTreeDropZone = undefined;
+        $subfolderGridDropZone = undefined;
     }
 
     async function handleDragEnter(event, destinationFolder) {

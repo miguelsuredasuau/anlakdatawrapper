@@ -7,6 +7,8 @@
         'page/archive/drag-and-drop'
     );
 
+    $: isDropZone = $subfolderGridDropZone === folder.key;
+
     export let folder;
 </script>
 
@@ -45,28 +47,26 @@
 
 <a
     href={folder.path}
+    class:is-drop-zone={isDropZone}
+    draggable="true"
     on:click|preventDefault={() => ($currentFolder = folder)}
-    class:is-drop-zone={$subfolderGridDropZone === folder.key}
+    on:dragstart|stopPropagation={() => handleDragStart('folder', folder)}
+    on:dragenter|stopPropagation={ev => {
+        $subfolderGridDropZone = folder.key;
+        handleDragEnter(ev, folder);
+    }}
+    on:dragleave|stopPropagation={ev => {
+        if ($subfolderGridDropZone === folder.key) {
+            $subfolderGridDropZone = undefined;
+        }
+        handleDragLeave(ev);
+    }}
+    on:dragover|preventDefault={() => {
+        $subfolderGridDropZone = folder.key;
+    }}
+    on:drop|preventDefault|stopPropagation={() => handleDrop(folder)}
 >
-    <div
-        class="box has-border is-size-5"
-        draggable="true"
-        on:dragstart|stopPropagation={() => handleDragStart('folder', folder)}
-        on:dragenter|stopPropagation={ev => {
-            $subfolderGridDropZone = folder.key;
-            handleDragEnter(ev, folder);
-        }}
-        on:dragleave|stopPropagation={ev => {
-            if ($subfolderGridDropZone === folder.key) {
-                $subfolderGridDropZone = undefined;
-            }
-            handleDragLeave(ev);
-        }}
-        on:dragover|preventDefault={() => {
-            $subfolderGridDropZone = folder.key;
-        }}
-        on:drop|preventDefault|stopPropagation={() => handleDrop(folder)}
-    >
+    <div class="box has-border is-size-5">
         <SvgIcon icon="folder" className="mr-1" valign="middle" />
         <span class="has-text-weight-medium">{folder.name}</span>
         {#if folder.chartCount}<span class="has-text-grey">({folder.chartCount})</span>{/if}
