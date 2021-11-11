@@ -13,7 +13,8 @@ async function findPlugins(localPluginRoot, dwPlugins) {
             plugins[plugin[0]] = plugin[1];
             plugins[plugin[0]].requirePath = requirePath;
         } catch (error) {
-            console.warn('could not find plugin');
+            // intentionally left empty, this is not an error
+            // the plugin just does not have a orm.js file
         }
     }
 
