@@ -1070,5 +1070,7 @@
   "archive / search-results": "",
   "archive / sorted-by": "",
   "dashboard / visualization / created": "",
-  "dashboard / visualization / not-published": ""
+  "dashboard / visualization / not-published": "",
+  "archive / modal / copy-embed-code": "Copier code d’intégration",
+  "archive / modal / copy-success": ""
 }

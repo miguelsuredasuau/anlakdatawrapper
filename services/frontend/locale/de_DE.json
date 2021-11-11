@@ -1070,5 +1070,7 @@
   "archive / search-results": "Suchergebnisse für \"%s\"",
   "archive / sorted-by": "Sortiert nach",
   "dashboard / visualization / created": "Erstellt",
-  "dashboard / visualization / not-published": "Nicht veröffentlicht"
+  "dashboard / visualization / not-published": "Nicht veröffentlicht",
+  "archive / modal / copy-embed-code": "Einbett-Code kopieren",
+  "archive / modal / copy-success": "Erfolgreich kopiert"
 }

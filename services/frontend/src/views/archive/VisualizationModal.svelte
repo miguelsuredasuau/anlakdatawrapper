@@ -1,7 +1,9 @@
 <script>
     import Modal from '_partials/components/Modal.svelte';
+    import Dropdown from '_partials/components/Dropdown.svelte';
     import SvgIcon from 'layout/partials/SvgIcon.svelte';
-    import { beforeUpdate, getContext } from 'svelte';
+    import httpReq from '@datawrapper/shared/httpReq';
+    import { beforeUpdate, getContext, tick } from 'svelte';
 
     const { deleteChart, duplicateChart, openChart } = getContext('page/archive');
     const { dayjs } = getContext('libraries');
@@ -29,9 +31,30 @@
         );
     }
 
+    let embedCodes;
+    let selectedEmbedCode;
+    let copyTextInput;
+
+    async function loadEmbedCodes() {
+        embedCodes = await httpReq.get(`/v3/charts/${chart.id}/embed-codes`);
+    }
+
     async function handleDeleteButtonClick() {
         await deleteChart(chart);
         close();
+    }
+
+    async function copyEmbedCode(code) {
+        selectedEmbedCode = code.code;
+        await tick();
+        copyTextInput.select();
+        const copied = document.execCommand('copy');
+        code.copied = copied;
+        embedCodes = embedCodes;
+        setTimeout(() => {
+            code.copied = false;
+            embedCodes = embedCodes;
+        }, 5000);
     }
 </script>
 
@@ -160,6 +183,48 @@
                                     <span>{__('archive / modal / re-publish')}</span></a
                                 >
                             </li>
+                            {#if chart.publishedAt}
+                                <li>
+                                    <Dropdown>
+                                        <button
+                                            slot="trigger"
+                                            href="/chart/{chart.id}/publish"
+                                            class="button is-ghost is-medium"
+                                            ><SvgIcon icon="source-code" />
+                                            <span>{__('archive / modal / copy-embed-code')}</span
+                                            ><SvgIcon size="12px" icon="expand-down-bold" /></button
+                                        >
+                                        <div class="dropdown-content" slot="content">
+                                            {#await loadEmbedCodes()}
+                                                ...
+                                            {:then}
+                                                {#each embedCodes as code, i}
+                                                    <a
+                                                        on:click|preventDefault={() => {
+                                                            copyEmbedCode(code, i);
+                                                        }}
+                                                        href="#/{code.id}"
+                                                        class="dropdown-item"
+                                                        >{code.title}{#if code.copied}<div
+                                                                class="has-text-success is-size-7 mt-1 has-text-weight-bold"
+                                                            >
+                                                                {__(
+                                                                    'archive / modal / copy-success'
+                                                                )}
+                                                            </div>{/if}</a
+                                                    >
+                                                {/each}
+                                            {/await}
+                                            <input
+                                                style="position:absolute;top:-10000px"
+                                                bind:this={copyTextInput}
+                                                type="text"
+                                                bind:value={selectedEmbedCode}
+                                            />
+                                        </div>
+                                    </Dropdown>
+                                </li>
+                            {/if}
                         </ul>
 
                         <hr class="my-2" />

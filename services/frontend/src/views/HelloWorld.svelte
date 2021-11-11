@@ -22,7 +22,7 @@
     export let icons;
     let contentRef;
 
-    const colors = ['#222222', '#18a1cd', '#c71e1d', '#1d81a2', '#15607a', '#39f3bb', '#09bb9f'];
+    const colors = ['#222222', '#18a1cd', '#c71e1d', '#1d81a2', '#15607a', '#3ed081', '#09bb9f'];
 
     function knock() {
         knocked = true;
