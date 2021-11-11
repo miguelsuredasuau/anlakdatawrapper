@@ -27,7 +27,7 @@ module.exports = {
             limit: Joi.number().min(1).max(15).default(15),
             offset: Joi.number().default(0),
             search: Joi.string().allow('').default(''),
-            order: Joi.string().valid('ASC', 'DESC').default('ASC'),
+            order: Joi.string().valid('ASC', 'DESC').default('DESC'),
             orderBy: Joi.string()
                 .valid(
                     'authorId',
@@ -38,7 +38,7 @@ module.exports = {
                     'title',
                     'type'
                 )
-                .default('createdAt')
+                .default('lastModifiedAt')
         });
 
         server.route({

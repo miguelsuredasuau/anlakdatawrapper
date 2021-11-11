@@ -3,6 +3,7 @@
     import SvgIcon from 'layout/partials/SvgIcon.svelte';
     import { formatQueryString } from '../../utils/url.cjs';
     import { query } from './stores';
+    import { DEFAULT_SORT_ORDER } from './constants';
 
     export let __;
     export let apiQuery;
@@ -10,38 +11,46 @@
     const arrangeOptions = [
         {
             id: 'lastModifiedAt',
-            query: { groupBy: null, order: 'DESC', orderBy: 'lastModifiedAt' },
+            query: {
+                groupBy: null,
+                order: DEFAULT_SORT_ORDER.lastModifiedAt,
+                orderBy: 'lastModifiedAt'
+            },
             title: __('mycharts / Last edit time')
         },
         {
             id: 'createdAt',
-            query: { groupBy: null, order: 'DESC', orderBy: 'createdAt' },
+            query: { groupBy: null, order: DEFAULT_SORT_ORDER.createdAt, orderBy: 'createdAt' },
             title: __('mycharts / Creation time')
         },
         {
             id: 'publishedAt',
-            query: { groupBy: null, order: 'DESC', orderBy: 'publishedAt' },
+            query: { groupBy: null, order: DEFAULT_SORT_ORDER.publishedAt, orderBy: 'publishedAt' },
             title: __('mycharts / Publish time')
         },
         { id: 'divider', divider: true },
         {
             id: 'title',
-            query: { groupBy: null, order: 'ASC', orderBy: 'title' },
+            query: { groupBy: null, order: DEFAULT_SORT_ORDER.title, orderBy: 'title' },
             title: __('mycharts / Title')
         },
         {
             id: 'status',
-            query: { groupBy: 'status', order: 'DESC', orderBy: 'lastEditStep' },
+            query: {
+                groupBy: 'status',
+                order: DEFAULT_SORT_ORDER.lastEditStep,
+                orderBy: 'lastEditStep'
+            },
             title: __('mycharts / Status')
         },
         {
             id: 'author',
-            query: { groupBy: 'author', order: 'ASC', orderBy: 'authorId' },
+            query: { groupBy: 'author', order: DEFAULT_SORT_ORDER.authorId, orderBy: 'authorId' },
             title: __('mycharts / Author')
         },
         {
             id: 'type',
-            query: { groupBy: 'type', order: 'ASC', orderBy: 'type' },
+            query: { groupBy: 'type', order: DEFAULT_SORT_ORDER.type, orderBy: 'type' },
             title: __('mycharts / Type')
         }
     ];

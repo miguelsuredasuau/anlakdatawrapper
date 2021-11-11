@@ -17,6 +17,7 @@
     import { groupCharts } from '../../utils/charts.cjs';
     import { onMount, getContext, setContext } from 'svelte';
     import { parseFolderTree, getFolderUri } from './shared';
+    import { DEFAULT_SORT_ORDER } from './constants';
 
     const user = getContext('user');
     const request = getContext('request');
@@ -87,12 +88,15 @@
         }
         _prevPath = $currentFolder.path;
         apiQuery = $query;
+
         const qs = formatQueryString({
             ...(limit && limit !== 15 && { limit }),
             ...($query.offset && { offset: $query.offset }),
             ...($query.groupBy && { groupBy: $query.groupBy }),
-            ...($query.order && $query.order !== 'ASC' && { order: $query.order }),
-            ...($query.orderBy && $query.orderBy !== 'createdAt' && { orderBy: $query.orderBy }),
+            ...($query.order &&
+                $query.order !== DEFAULT_SORT_ORDER[$query.orderBy] && { order: $query.order }),
+            ...($query.orderBy &&
+                $query.orderBy !== 'lastModifiedAt' && { orderBy: $query.orderBy }),
             ...($query.search && { search: $query.search }),
             ...($currentFolder.search && { search: $currentFolder.search }) // override $query.search
         });
