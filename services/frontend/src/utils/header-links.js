@@ -153,7 +153,7 @@ module.exports = {
                       ]
                     : [
                           {
-                              id: 'my-charts',
+                              id: 'archive',
                               class: 'nav-item-archive',
                               type: 'visArchive',
                               submenuItems: true,

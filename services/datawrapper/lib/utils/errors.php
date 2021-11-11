@@ -74,21 +74,6 @@ function error_chart_not_writable() {
     );
 }
 
-function error_mycharts_need_login() {
-    error_page('mycharts',
-        __('Whoops! You need to be logged in.'),
-        __('Good news is, sign up is free and takes less than 20 seconds.')
-    );
-}
-
-function error_mycharts_not_a_member() {
-    error_page('mycharts',
-        __('You are not a member of the requested organization.'),
-        __('If you think you should have access, ask for an invitation.'),
-        false,
-        403
-    );
-}
 
 function error_access_denied() {
     error_page('chart',
@@ -115,9 +100,3 @@ function error_invalid_password_reset_token() {
     );
 }
 
-function error_mycharts_user_not_found() {
-    error_page('mycharts',
-        __('User not found!'),
-        __('There is no user with the given user id.')
-    );
-}

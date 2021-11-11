@@ -107,9 +107,9 @@ function add_header_vars(&$page, $active = null, $page_css = null) {
         $org = $user->getCurrentOrganization();
         // mycharts
         $mycharts_link = array(
-            'url' => empty($org) ? '/mycharts/' : '/team/'.$org->getId().'/',
+            'url' => empty($org) ? '/archive/' : '/archive/team/'.$org->getId().'/',
             'id' => 'mycharts',
-            'title' => empty($org) ? __('My Charts') : __('Team Charts'),
+            'title' => __('archive'),
             //'justicon' => true,
             'icon' => 'fa fa-bar-chart-o',
         );
@@ -130,7 +130,7 @@ function add_header_vars(&$page, $active = null, $page_css = null) {
             );
         }
         $mycharts['dropdown'][] = 'divider';
-        $mycharts['dropdown'][] = array('url' => '/mycharts/', 'title' => __('All charts'));
+        $mycharts['dropdown'][] = array('url' => '/archive/', 'title' => __('All charts'));
         $headlinks[] = $mycharts_link;
         $headlinks[] = $mycharts;
 

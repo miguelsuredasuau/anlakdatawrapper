@@ -175,22 +175,6 @@ createChart = (i=0, el='rect', num=7) ->
             @test.assertExists '.dw-create-publish h3', "entered publish step"
 
 
-checkMyCharts = (expected, filterBy, filterVal) ->
-    url = '/mycharts'
-    if filterBy and filterVal
-        url += '/by/' + filterBy + '/' + filterVal
-    casper.thenOpen domain + url, () ->
-        num = @evaluate () ->
-            $('.thumbnail').length
-        @test.assertEquals num, expected, "found "+expected+" chart on mycharts page "+filterVal
-
-
-deleteChart = () ->
-    casper.thenOpen domain + '/mycharts', () ->
-        @test.assertExists 'li.chart a.delete', "found chart deletion link"
-        @evaluate () ->
-            __utils__.mouseEvent 'click', 'li.chart:first-child a.delete'
-
 
 deleteAccount = (pass) ->
     casper.thenOpen domain + '/account/settings', () ->
@@ -234,14 +218,9 @@ login testuser, '123456'
 setProfile 'Testuser', 'http://testuser.org', 'http://twitter.com/testuser'
 changePassword '123456', '1234'
 resendActivation()
-checkMyCharts 0
 createChart 0, 'rect', 7
-checkMyCharts 1
 createChart 1, 'path', 10
-checkMyCharts 2
-checkMyCharts 1, 'vis', 'line-chart'
 deleteChart()
-checkMyCharts 1
 deleteAccount '1234'
 
 casper.run()

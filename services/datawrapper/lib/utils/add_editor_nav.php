@@ -22,7 +22,7 @@ function add_editor_nav(&$page, $step, $chart) {
 
     $folder = $chart->getInFolder();
     $chartOrg = $chart->getOrganization();
-    $baseUrl = empty($chartOrg) ? '/mycharts' : '/team/'.$chartOrg->getId();
+    $baseUrl = empty($chartOrg) ? '/archive' : '/archive/team/'.$chartOrg->getId();
     if (isset($folder)) {
 
         $folder = FolderQuery::create()->findPk($folder);

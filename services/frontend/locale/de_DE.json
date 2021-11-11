@@ -1067,5 +1067,8 @@
   "archive / section / private": "privat",
   "archive / section / shared": "geteilt",
   "archive / section / search": "Suche",
-  "archive / search-results": "Suchergebnisse für \"%s\""
+  "archive / search-results": "Suchergebnisse für \"%s\"",
+  "archive / sorted-by": "Sortiert nach",
+  "dashboard / visualization / created": "Erstellt",
+  "dashboard / visualization / not-published": "Nicht veröffentlicht"
 }

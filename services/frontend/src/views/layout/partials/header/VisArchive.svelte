@@ -19,8 +19,8 @@
         items = charts;
     });
 
-    $: title = $user.activeTeam ? __('Team Charts') : __('My Charts');
-    $: url = $user.activeTeam ? `/team/${$user.activeTeam.id}` : '/mycharts';
+    $: title = __('archive');
+    $: url = $user.activeTeam ? `/archive/team/${$user.activeTeam.id}` : '/archive';
 </script>
 
 <style lang="scss">
