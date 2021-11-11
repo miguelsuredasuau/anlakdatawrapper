@@ -19,6 +19,10 @@
     }
 </script>
 
+<style lang="scss">
+    @import '../../styles/colors.scss';
+</style>
+
 <div class="level block has-text-grey">
     <div class="level-left">
         <div class="level-item">
@@ -56,3 +60,4 @@
         <ArrangeDropdown {__} {apiQuery} />
     </div>
 </div>
+<hr class="mb-5" />

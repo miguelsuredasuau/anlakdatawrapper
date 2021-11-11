@@ -14,8 +14,5 @@
             </div>
         {/each}
     </div>
-{:else}
-    <p class="subtitle is-size-4 has-text-grey">This folder doesn't have any sub folders.</p>
+    <hr class="my-3" />
 {/if}
-
-<hr class="my-3" />

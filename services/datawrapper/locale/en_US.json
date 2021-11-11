@@ -1063,5 +1063,12 @@
   "archive": "Archive",
   "archive / add-in-folder / name": "Enter new folder name:",
   "archive / folder / duplicate-name": "This folder name already exists. Please pick a different name.",
-  "archive / chart / delete / confirm": "Do you really want to delete the chart? Note that after deleting this chart won't be embeddable any more."
+  "archive / chart / delete / confirm": "Do you really want to delete the chart? Note that after deleting this chart won't be embeddable any more.",
+  "archive / section / private": "private",
+  "archive / section / shared": "shared",
+  "archive / section / search": "search",
+  "archive / search-results": "Search results for \"%s\"",
+  "archive / sorted-by": "Sorted by",
+  "dashboard / visualization / created": "Created at",
+  "dashboard / visualization / not-published": "Not published"
 }

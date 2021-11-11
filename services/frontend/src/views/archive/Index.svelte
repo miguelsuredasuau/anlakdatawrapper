@@ -334,7 +334,7 @@
     {#if dragNotification}
         <DragNotification {__} message={dragNotification} />
     {/if}
-    <section class="section header">
+    <section class="section header py-5">
         <div class="container">
             <div class="columns is-vcentered">
                 <div class="column">
@@ -349,7 +349,7 @@
     <div class="container">
         <hr class="my-0" />
     </div>
-    <section class="section body">
+    <section class="section body pt-5">
         <div class="container">
             <div class="columns">
                 <div class="column is-one-quarter" style="position: relative;">
@@ -388,7 +388,9 @@
                             {/if}
                             <Pagination {changeOffset} {limit} {offset} {total} />
                         {:else}
-                            <p class="subtitle is-size-4 has-text-grey">
+                            <p
+                                class="subtitle is-size-4 has-text-grey pt-6 has-text-centered-tablet"
+                            >
                                 {@html __('mycharts / empty-folder').replace(
                                     /%location%/g,
                                     folderId
