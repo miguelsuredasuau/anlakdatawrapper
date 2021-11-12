@@ -84,6 +84,19 @@ module.exports = {
                 }
             },
             {
+                path: '/api-status',
+                method: 'GET',
+                async handler(request) {
+                    const api = server.methods.createAPI(request);
+                    try {
+                        await api('');
+                        return { status: 'ok' };
+                    } catch (err) {
+                        return Boom.serverUnavailable('api responding with ' + err);
+                    }
+                }
+            },
+            {
                 path: '/csr/{file*}',
                 method: 'GET',
                 config: {
