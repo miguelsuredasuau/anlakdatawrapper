@@ -126,7 +126,9 @@
                     <div class="block columns">
                         <div class="column">
                             <div class="kicker">{__('archive / modal / author')}</div>
-                            {chart.author.email}
+                            {chart.author
+                                ? chart.author.name || chart.author.email
+                                : __('archive / modal / na')}
                         </div>
                         {#if chart.forkedFrom}
                             <div class="column">
