@@ -96,7 +96,7 @@ module.exports = {
                 .map(t => ({
                     ...t.toJSON(),
                     settings: {
-                        displayLocale: t.settings.displayLocale
+                        displayLocale: t.settings?.displayLocale || false
                     }
                 }));
 
