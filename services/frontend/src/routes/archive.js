@@ -107,7 +107,12 @@ module.exports = {
 
             const teams = (await user.getTeams())
                 .filter(d => !d.user_team.getDataValue('invite_token'))
-                .map(t => t.toJSON());
+                .map(t => ({
+                    ...t.toJSON(),
+                    settings: {
+                        displayLocale: t.settings.displayLocale
+                    }
+                }));
 
             const themeBgColors = await getThemeBgColors(user, teams);
 
