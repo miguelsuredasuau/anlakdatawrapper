@@ -134,6 +134,7 @@ module.exports = {
                     folderId,
                     folders,
                     teams,
+                    minLastEditStep,
                     themeBgColors
                 }
             });

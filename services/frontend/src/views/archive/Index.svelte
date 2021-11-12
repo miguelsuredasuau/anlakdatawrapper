@@ -35,7 +35,7 @@
     export let teams;
     export let folders;
     export let themeBgColors;
-    export let minLastEditStep;
+    export let minLastEditStep = 2;
 
     setContext('page/archive', {
         addFolder,
