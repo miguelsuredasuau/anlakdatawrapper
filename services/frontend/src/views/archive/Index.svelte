@@ -35,6 +35,7 @@
     export let teams;
     export let folders;
     export let themeBgColors;
+    export let minLastEditStep;
 
     setContext('page/archive', {
         addFolder,
@@ -177,7 +178,7 @@
     async function loadCharts() {
         const { groupBy, limit, offset, order, orderBy, search } = $query;
         const qs = formatQueryString({
-            minLastEditStep: 2,
+            minLastEditStep,
             offset,
             order,
             orderBy,

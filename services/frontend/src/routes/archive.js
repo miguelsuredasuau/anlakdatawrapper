@@ -20,14 +20,13 @@ module.exports = {
         const Chart = server.methods.getModel('chart');
         const Theme = server.methods.getModel('theme');
 
-        const minLastEditStep = 2;
-
         const validQueryParams = Joi.object({
             groupBy: Joi.string().valid('author', 'status').default(null),
             limit: Joi.number().min(1).max(200).default(96),
             offset: Joi.number().default(0),
             search: Joi.string().allow('').default(''),
             order: Joi.string().valid('ASC', 'DESC').default('DESC'),
+            minLastEditStep: Joi.number().integer().min(0).max(5).default(2),
             orderBy: Joi.string()
                 .valid(
                     'authorId',
@@ -74,7 +73,7 @@ module.exports = {
         async function visArchiveHandler(request, h) {
             const { auth, params, query } = request;
             const { teamId, folderId } = params;
-            const { groupBy, limit, offset, order, orderBy, search } = query;
+            const { groupBy, limit, offset, order, orderBy, search, minLastEditStep } = query;
             const user = auth.artifacts;
 
             const language = getUserLanguage(auth);
@@ -124,7 +123,7 @@ module.exports = {
                 charts.list = groupCharts({ charts: charts.list, groupBy, __ });
             }
 
-            const folders = await getFolders(user, teams);
+            const folders = await getFolders(user, teams, minLastEditStep);
 
             return h.view('archive/Index.svelte', {
                 htmlClass: 'has-background-white-bis',
@@ -194,7 +193,7 @@ module.exports = {
         /*
          * queries user and team folders
          */
-        async function getFolders(user, teams) {
+        async function getFolders(user, teams, minLastEditStep) {
             const folders = [
                 clean({ id: null, teamId: null, name: 'My archive' }), // user root
                 ...(
@@ -221,14 +220,14 @@ module.exports = {
                     name: folder.name
                 };
             }
-            await addChartCounts(user, teams, folders);
+            await addChartCounts(user, teams, folders, minLastEditStep);
             return keyBy(folders, d => d.key);
         }
 
         /*
          * queries chart counts and adds them to our folders
          */
-        async function addChartCounts(user, teams, folders) {
+        async function addChartCounts(user, teams, folders, minLastEditStep) {
             const chartCounts = await Chart.findAll({
                 attributes: [
                     'in_folder',
