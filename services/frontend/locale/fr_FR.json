@@ -1074,5 +1074,8 @@
   "archive / modal / copy-embed-code": "Copier code d’intégration",
   "archive / modal / copy-success": "",
   "navbar / vis-archive / no-visualizations": "",
-  "navbar / vis-archive / loading": ""
+  "navbar / vis-archive / loading": "",
+  "archive / status / just-data": "",
+  "archive / status / draft": "Ébauche",
+  "archive / status / published": "Publié"
 }

@@ -20,10 +20,10 @@ function guessUserName(user, __) {
 function getChartStatus(lastEditStep) {
     switch (lastEditStep) {
         case 5:
-            return 'archve / status / published';
+            return 'archive / status / published';
         case 4:
         case 3:
-            return 'archve / status / draft';
+            return 'archive / status / draft';
     }
     return 'archive / status / just-data';
 }

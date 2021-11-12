@@ -1074,5 +1074,8 @@
   "archive / modal / copy-embed-code": "复制嵌入代码",
   "archive / modal / copy-success": "",
   "navbar / vis-archive / no-visualizations": "",
-  "navbar / vis-archive / loading": ""
+  "navbar / vis-archive / loading": "",
+  "archive / status / just-data": "",
+  "archive / status / draft": "草图",
+  "archive / status / published": "已发布"
 }

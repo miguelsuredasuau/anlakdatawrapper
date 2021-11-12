@@ -1074,5 +1074,8 @@
   "archive / modal / copy-embed-code": "Copy embed code",
   "archive / modal / copy-success": "Successfully copied",
   "navbar / vis-archive / no-visualizations": "You don't have any visualizations yet.",
-  "navbar / vis-archive / loading": "loading..."
+  "navbar / vis-archive / loading": "loading...",
+  "archive / status / just-data": "Just data",
+  "archive / status / draft": "Draft",
+  "archive / status / published": "Published"
 }
