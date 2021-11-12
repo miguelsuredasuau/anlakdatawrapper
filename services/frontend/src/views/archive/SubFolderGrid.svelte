@@ -2,8 +2,6 @@
     import { byName } from './shared';
     import { currentFolder } from './stores';
     import SubFolderBox from './SubFolderBox.svelte';
-
-    export let __;
 </script>
 
 {#if $currentFolder.children && $currentFolder.children.length}

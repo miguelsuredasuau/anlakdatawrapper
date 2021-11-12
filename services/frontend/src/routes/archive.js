@@ -23,7 +23,7 @@ module.exports = {
         const minLastEditStep = 2;
 
         const validQueryParams = Joi.object({
-            groupBy: Joi.string().valid('author', 'status', 'type').default(null),
+            groupBy: Joi.string().valid('author', 'status').default(null),
             limit: Joi.number().min(1).max(200).default(96),
             offset: Joi.number().default(0),
             search: Joi.string().allow('').default(''),
@@ -35,8 +35,7 @@ module.exports = {
                     'lastEditStep',
                     'lastModifiedAt',
                     'publishedAt',
-                    'title',
-                    'type'
+                    'title'
                 )
                 .default('lastModifiedAt')
         });
@@ -80,12 +79,6 @@ module.exports = {
 
             const language = getUserLanguage(auth);
             const __ = key => server.methods.translate(key, { scope: 'core', language });
-            const visualizations = Object.fromEntries(
-                Array.from(server.app.visualizations.keys()).map(key => [
-                    key,
-                    server.app.visualizations.get(key)
-                ])
-            );
 
             const api = createAPI(
                 apiBase,
@@ -128,7 +121,7 @@ module.exports = {
             });
             const charts = await api(`/charts?${qs}`);
             if (groupBy) {
-                charts.list = groupCharts({ charts: charts.list, groupBy, __, visualizations });
+                charts.list = groupCharts({ charts: charts.list, groupBy, __ });
             }
 
             const folders = await getFolders(user, teams);
@@ -142,8 +135,7 @@ module.exports = {
                     folderId,
                     folders,
                     teams,
-                    themeBgColors,
-                    visualizations
+                    themeBgColors
                 }
             });
         }

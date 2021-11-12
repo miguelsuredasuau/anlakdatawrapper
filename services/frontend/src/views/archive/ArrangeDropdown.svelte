@@ -47,11 +47,6 @@
             id: 'author',
             query: { groupBy: 'author', order: DEFAULT_SORT_ORDER.authorId, orderBy: 'authorId' },
             title: __('mycharts / Author')
-        },
-        {
-            id: 'type',
-            query: { groupBy: 'type', order: DEFAULT_SORT_ORDER.type, orderBy: 'type' },
-            title: __('mycharts / Type')
         }
     ];
     let arrangeDropdownActive = false;

@@ -27,16 +27,6 @@ function getChartStatus(lastEditStep) {
     return 'just data';
 }
 
-function normalizeChartType(type) {
-    if (type === 'line-chart') {
-        return 'd3-lines';
-    }
-    if (type === 'bar-chart') {
-        return 'd3-bars';
-    }
-    return type;
-}
-
 function groupItems({ items, getProperty, translateGroupName = k => k }) {
     const groups = groupBy(items, item => getProperty(item));
     const entries = Object.entries(groups).map(([k, v]) => [translateGroupName(k), v]);
@@ -58,23 +48,12 @@ function groupChartsByStatus(charts, __) {
     });
 }
 
-function groupChartsByType(charts, visualizations) {
-    return groupItems({
-        items: charts,
-        getProperty: chart => normalizeChartType(chart.type),
-        translateGroupName: type => (visualizations[type] ? visualizations[type].title : type)
-    });
-}
-
-function groupCharts({ charts, groupBy, __, visualizations }) {
+function groupCharts({ charts, groupBy, __ }) {
     if (groupBy === 'author') {
         return groupChartsByAuthor(charts, __);
     }
     if (groupBy === 'status') {
         return groupChartsByStatus(charts, __);
-    }
-    if (groupBy === 'type') {
-        return groupChartsByType(charts, visualizations);
     }
     throw new Error('Unknown groupBy value');
 }

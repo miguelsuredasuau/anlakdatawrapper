@@ -29,7 +29,6 @@
     const request = getContext('request');
 
     export let __;
-    export let visualizations;
 
     export let apiQuery;
     export let charts;
@@ -189,7 +188,7 @@
         });
         const newCharts = await httpReq.get(`/v3/charts?${qs}`);
         if (groupBy) {
-            newCharts.list = groupCharts({ charts: newCharts.list, groupBy, __, visualizations });
+            newCharts.list = groupCharts({ charts: newCharts.list, groupBy, __ });
         }
         charts = newCharts;
         $selectedCharts = new Set();
