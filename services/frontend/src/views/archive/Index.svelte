@@ -365,7 +365,7 @@
     <section class="section body pt-5">
         <div class="container">
             <div class="columns">
-                <div class="column is-one-quarter" style="position: relative;">
+                <div class="column" style="position: relative;">
                     {#if $currentFolder.search}
                         <CollapseGroup className="search" title={__('archive / section / search')}>
                             <Folder {__} folder={$currentFolder} />
@@ -382,7 +382,7 @@
                         <Folder {__} folder={userFolder} />
                     </CollapseGroup>
                 </div>
-                <div class="column">
+                <div class="column is-three-quarters">
                     <ActionBar {__} charts={charts.list} {folderId} {teamId} {apiQuery} />
                     {#if !$currentFolder.search}
                         <div class="subfolders block">
