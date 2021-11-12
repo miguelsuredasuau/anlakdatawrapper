@@ -135,6 +135,7 @@
 
 <style lang="scss">
     @import '../../styles/colors.scss';
+    @import 'bulma/sass/utilities/_all.sass';
     .box {
         position: relative;
         height: 100%;
@@ -232,6 +233,9 @@
             bottom: 2px;
             left: 2px;
         }
+        .subline {
+            line-height: 1.2;
+        }
     }
 
     .drag-preview-outer {
@@ -261,6 +265,16 @@
             outline: none;
         }
     }
+    @include tablet {
+        .box .viz {
+            padding: 5px;
+        }
+    }
+    @include fullhd {
+        .box .viz {
+            padding: 15px 15px 5px;
+        }
+    }
 </style>
 
 <div
@@ -274,7 +288,7 @@
         <figure class="image is-4by3">
             <figcaption
                 title={purifyHTML(chart.title, '')}
-                class="title is-size-5 mb-3"
+                class="title is-size-6 is-size-5-fullhd mb-3"
                 bind:this={chartTitle}
                 contentEditable={isTitleEditable}
                 class:title-editable={isTitleEditable}
@@ -285,12 +299,12 @@
             </figcaption>
             <img alt="preview" src={thumbnail} />
         </figure>
-        <div class="level mt-2 has-text-grey-dark is-size-7">
+        <div class="subline columns is-variable is-1 mt-2 has-text-grey-dark is-size-7">
             {#if dateLine}
-                <div class="level-left ">{dateLine}</div>
+                <div class="column ">{dateLine}</div>
             {/if}
             {#if displayLocale}
-                <div class="level-right">{chart.language}</div>
+                <div class="column is-narrow has-text-right">{chart.language}</div>
             {/if}
         </div>
     </a>

@@ -41,18 +41,25 @@
     .box:hover {
         border: 1px solid $dw-grey;
     }
+
+    .subline {
+        line-height: 1.2;
+    }
 </style>
 
 <div class="box has-border">
     <a href="/chart/{chart.id}/edit">
         <figure class="image is-4by3">
-            <figcaption title={purifyHTML(chart.title, '')} class="title is-size-5 mb-3">
+            <figcaption
+                title={purifyHTML(chart.title, '')}
+                class="title is-size-6 is-size-5-desktop mb-3"
+            >
                 {purifyHTML(chart.title, '')}
             </figcaption>
             <img alt="preview" src={thumbnail} />
         </figure></a
     >
     {#if dateLine}
-        <div class="mt-2 has-text-grey-dark is-size-7">{dateLine}</div>
+        <div class="subline mt-2 has-text-grey-dark is-size-7">{dateLine}</div>
     {/if}
 </div>

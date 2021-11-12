@@ -50,7 +50,7 @@
             padding-bottom: 0;
         }
         :global(.logo-datawrapper) {
-            width: 162px;
+            width: 150px;
         }
     }
 

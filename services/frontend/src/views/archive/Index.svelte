@@ -364,7 +364,7 @@
     </div>
     <section class="section body pt-5">
         <div class="container">
-            <div class="columns">
+            <div class="columns is-variable is-8-fullhd">
                 <div class="column" style="position: relative;">
                     {#if $currentFolder.search}
                         <CollapseGroup className="search" title={__('archive / section / search')}>

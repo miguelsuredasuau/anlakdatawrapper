@@ -14,9 +14,10 @@
 
 <style lang="scss">
     @import '../../styles/colors.scss';
+    @import 'bulma/sass/utilities/_all.sass';
     .box {
         border: 1px solid $dw-grey-lighter;
-        padding: 20px 25px;
+        padding: 10px 15px;
         box-shadow: none;
         &:hover {
             border-color: $dw-grey;
@@ -41,6 +42,12 @@
             border-radius: var(--radius);
             border: 10px solid $dw-scooter-lightest;
             background: transparent;
+        }
+    }
+
+    @include fullhd {
+        .box {
+            padding: 20px;
         }
     }
 </style>

@@ -21,7 +21,7 @@
 <MainLayout>
     <section class="section">
         <div class="container">
-            <div class="columns is-variable is-8">
+            <div class="columns is-variable is-8-fullhd">
                 <div class="column is-8">
                     {#if recentlyEdited.length}
                         <RecentVisualizations {__} {recentlyEdited} {recentlyPublished} />
