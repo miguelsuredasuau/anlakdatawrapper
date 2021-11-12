@@ -11,8 +11,9 @@
     import { selectAll } from './shared';
 
     const config = getContext('config');
+    const user = getContext('user');
     const { dayjs } = getContext('libraries');
-    const { deleteChart, duplicateChart, openChart } = getContext('page/archive');
+    const { deleteChart, duplicateChart, openChart, teams } = getContext('page/archive');
     const { handleDragStart } = getContext('page/archive/drag-and-drop');
 
     export let chart;
@@ -22,6 +23,9 @@
     let isDropdownActive = false;
     let isTitleEditable = false;
     let chartTitle;
+
+    $: displayLocale =
+        $user.activeTeam && !!teams.find(t => t.id === $user.activeTeam.id).settings.displayLocale;
 
     $: selected = $selectedCharts.has(chart);
     $: dateLine =
@@ -281,9 +285,14 @@
             </figcaption>
             <img alt="preview" src={thumbnail} />
         </figure>
-        {#if dateLine}
-            <div class="mt-2 has-text-grey-dark is-size-7">{dateLine}</div>
-        {/if}
+        <div class="level mt-2 has-text-grey-dark is-size-7">
+            {#if dateLine}
+                <div class="level-left ">{dateLine}</div>
+            {/if}
+            {#if displayLocale}
+                <div class="level-right">{chart.language}</div>
+            {/if}
+        </div>
     </a>
     <div class="box-checkbox">
         <CheckboxInput

@@ -57,7 +57,8 @@
         openChart,
         moveCharts,
         moveFolder,
-        themeBgColors
+        themeBgColors,
+        teams
     });
 
     $: userFolder = parseFolderTree(folders);
@@ -77,7 +78,6 @@
     let dragNotification;
     let dragTarget;
     let draggedObject;
-    let dragDestination;
 
     setContext('page/archive/drag-and-drop', {
         handleDragStart,
@@ -298,7 +298,6 @@
         if (!draggedObject) {
             return;
         }
-        dragDestination = destinationFolder;
         dragTarget = event.target;
         const teamName = () => teams.find(t => t.id === destinationFolder.teamId).name;
 
