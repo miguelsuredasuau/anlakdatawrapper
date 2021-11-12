@@ -36,6 +36,7 @@
         border: 1px solid $dw-grey-lighter;
         padding: 20px 25px;
         box-shadow: none;
+        margin-bottom: 0;
     }
     .box:hover {
         border: 1px solid $dw-grey;
@@ -45,7 +46,7 @@
 <div class="box has-border">
     <a href="/chart/{chart.id}/edit">
         <figure class="image is-4by3">
-            <figcaption title={purifyHTML(chart.title, '')} class="title is-6 mb-2">
+            <figcaption title={purifyHTML(chart.title, '')} class="title is-size-5 mb-3">
                 {purifyHTML(chart.title, '')}
             </figcaption>
             <img alt="preview" src={thumbnail} />

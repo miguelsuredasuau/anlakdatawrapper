@@ -137,6 +137,7 @@
         border: 1px solid $dw-grey-lighter;
         padding: 10px;
         box-shadow: none;
+        margin-bottom: 0;
         &:hover {
             border-color: $dw-grey;
             background-color: $dw-grey-lightest;
@@ -269,7 +270,7 @@
         <figure class="image is-4by3">
             <figcaption
                 title={purifyHTML(chart.title, '')}
-                class="title is-6 mb-2"
+                class="title is-size-5 mb-3"
                 bind:this={chartTitle}
                 contentEditable={isTitleEditable}
                 class:title-editable={isTitleEditable}
