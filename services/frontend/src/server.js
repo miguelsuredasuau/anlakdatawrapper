@@ -19,6 +19,7 @@ const { getUserLanguage } = require('./utils');
 const headerLinks = require('./utils/header-links');
 const adminPages = require('./utils/admin-pages');
 const viewComponents = require('./utils/view-components');
+const createAPI = require('./utils/create-api');
 const {
     SvelteView,
     getView,
@@ -150,6 +151,7 @@ const start = async () => {
     server.method('logAction', require('@datawrapper/orm/utils/action').logAction);
     server.method('isDevMode', () => process.env.DW_DEV_MODE);
     server.method('registerVisualization', registerVisualizations(server));
+    server.method('createAPI', createAPI(server));
 
     await server.register(viewComponents);
     await server.register(headerLinks);

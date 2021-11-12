@@ -10,7 +10,7 @@ module.exports = {
     name: 'routes/preview',
     version: '1.0.0',
     register: async server => {
-        const { loadLocales, loadVendorLocale, createAPI } = require('./utils');
+        const { loadLocales, loadVendorLocale } = require('./utils');
         const locales = await loadLocales();
         const config = server.methods.config();
         const apiBase = `${config.api.https ? 'https' : 'http'}://${config.api.subdomain}.${
@@ -48,14 +48,10 @@ module.exports = {
                 }
             },
             handler: async (request, h) => {
-                const { auth, params } = request;
+                const { params } = request;
                 const { chartId } = params;
 
-                const api = createAPI(
-                    apiBase,
-                    config.api.sessionID,
-                    auth.credentials && auth.credentials.data ? auth.credentials.data.id : ''
-                );
+                const api = server.methods.createAPI(request);
 
                 const queryString = Object.entries({
                     published: request.query.published,

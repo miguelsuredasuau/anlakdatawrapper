@@ -11,10 +11,7 @@ module.exports = {
     version: '1.0.0',
     register: async server => {
         const config = server.methods.config();
-        const { createAPI } = require('./preview/utils');
-        const apiBase = `${config.api.https ? 'https' : 'http'}://${config.api.subdomain}.${
-            config.api.domain
-        }/v3`;
+
         server.methods.prepareView('archive/Index.svelte');
         const Folder = server.methods.getModel('folder');
         const Chart = server.methods.getModel('chart');
@@ -80,11 +77,7 @@ module.exports = {
             const language = getUserLanguage(auth);
             const __ = key => server.methods.translate(key, { scope: 'core', language });
 
-            const api = createAPI(
-                apiBase,
-                config.api.sessionID,
-                auth.credentials && auth.credentials.data ? auth.credentials.data.id : ''
-            );
+            const api = server.methods.createAPI(request);
 
             if (folderId) {
                 // check if folder exists
