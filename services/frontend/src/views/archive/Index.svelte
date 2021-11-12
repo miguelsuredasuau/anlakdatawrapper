@@ -97,7 +97,7 @@
         apiQuery = $query;
 
         const qs = formatQueryString({
-            ...(limit && limit !== 15 && { limit }),
+            ...(limit && limit !== 96 && { limit }),
             ...($query.offset && { offset: $query.offset }),
             ...($query.groupBy && { groupBy: $query.groupBy }),
             ...($query.order &&
