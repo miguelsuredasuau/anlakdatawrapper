@@ -214,7 +214,7 @@
         class="self py-1"
         class:active={isCurrent}
         style="padding-left: {22 + folder.level * indentation}px"
-        draggable={!folder.search}
+        draggable={!folder.search && !!folder.id}
         on:dragstart|stopPropagation={() => {
             if (folder.search) return;
             handleDragStart('folder', folder);
