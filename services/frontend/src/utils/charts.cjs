@@ -18,13 +18,14 @@ function guessUserName(user, __) {
 }
 
 function getChartStatus(lastEditStep) {
-    if (lastEditStep > 4) {
-        return 'published';
+    switch (lastEditStep) {
+        case 5:
+            return 'archve / status / published';
+        case 4:
+        case 3:
+            return 'archve / status / draft';
     }
-    if (lastEditStep > 3) {
-        return 'drafts';
-    }
-    return 'just data';
+    return 'archive / status / just-data';
 }
 
 function groupItems({ items, getProperty, translateGroupName = k => k }) {
