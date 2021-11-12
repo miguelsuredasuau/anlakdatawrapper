@@ -18,6 +18,7 @@ module.exports = {
         server.methods.prepareView('archive/Index.svelte');
         const Folder = server.methods.getModel('folder');
         const Chart = server.methods.getModel('chart');
+        const TeamTheme = server.methods.getModel('team_theme');
         const Theme = server.methods.getModel('theme');
 
         const validQueryParams = Joi.object({
@@ -106,7 +107,10 @@ module.exports = {
                     }
                 }));
 
-            const themeBgColors = await getThemeBgColors(user, teams);
+            const themeBgColors = await getThemeBgColors(
+                teams,
+                config.general?.defaultThemes || []
+            );
 
             const qs = formatQueryString({
                 minLastEditStep,
@@ -140,27 +144,18 @@ module.exports = {
             });
         }
 
-        async function getThemeBgColors(user, teams) {
+        async function getThemeBgColors(teams, defaultThemes) {
             // query list of themes used by the user+team
             const themeIds = (
-                await Chart.findAll({
-                    attributes: ['theme'],
+                await TeamTheme.findAll({
+                    attributes: ['theme_id'],
                     where: {
-                        deleted: 0,
-                        [db.Op.or]: [
-                            {
-                                author_id: user.id,
-                                organization_id: null
-                            },
-                            {
-                                organization_id: teams.map(t => t.id)
-                            }
-                        ]
-                    },
-                    group: ['chart.theme']
+                        organization_id: teams.map(t => t.id)
+                    }
                 })
-            ).map(d => d.theme);
-
+            )
+                .map(d => d.theme_id)
+                .concat(defaultThemes);
             // query background colors for each theme
             const bgColQuery = db.fn(
                 'json_extract',
