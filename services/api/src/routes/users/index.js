@@ -138,22 +138,24 @@ async function getAllUsers(request) {
     const keyedUsers = keyBy(users, 'id');
 
     userList.total = count;
-    userList.list = rows.map(row => {
-        const { role, dataValues } = keyedUsers[row.id];
+    userList.list = rows
+        .filter(row => !!keyedUsers[row.id])
+        .map(row => {
+            const { role, dataValues } = keyedUsers[row.id];
 
-        const { teams, ...data } = dataValues;
+            const { teams, ...data } = dataValues;
 
-        if (teams) {
-            data.teams = teams.map(serializeTeam);
-        }
+            if (teams) {
+                data.teams = teams.map(serializeTeam);
+            }
 
-        return camelizeKeys({
-            ...data,
-            role,
-            chartCount: row.chart_count,
-            url: `${url.pathname}/${data.id}`
+            return camelizeKeys({
+                ...data,
+                role,
+                chartCount: row.chart_count,
+                url: `${url.pathname}/${data.id}`
+            });
         });
-    });
 
     if (query.limit + query.offset < count) {
         const nextParams = new URLSearchParams({

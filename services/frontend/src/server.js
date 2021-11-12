@@ -213,7 +213,7 @@ const start = async () => {
             return h
                 .view('Error.svelte', {
                     htmlClass: 'has-background-white-bis',
-                    props: err.output.payload
+                    props: { ...err.output.payload, data: err.data }
                 })
                 .code(err.output.payload.statusCode);
         }

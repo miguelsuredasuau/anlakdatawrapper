@@ -45,7 +45,6 @@ module.exports = {
         // no locale found at all
         return 'null';
     },
-
     initCaches(server) {
         const config = server.methods.config();
 

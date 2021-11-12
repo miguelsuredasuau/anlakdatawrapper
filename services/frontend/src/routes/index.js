@@ -36,6 +36,12 @@ module.exports = {
             });
         }
 
+        await server.register(require('./datawrapper-invite/index.js'), {
+            routes: {
+                prefix: '/datawrapper-invite'
+            }
+        });
+
         await server.register(require('./create'), {
             routes: {
                 prefix: '/create'
@@ -51,6 +57,12 @@ module.exports = {
         await server.register(require('./account/activate.js'), {
             routes: {
                 prefix: '/account/activate'
+            }
+        });
+
+        await server.register(require('./team/index.js'), {
+            routes: {
+                prefix: '/team'
             }
         });
 

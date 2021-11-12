@@ -9,6 +9,7 @@
     export let statusCode;
     export let error;
     export let message;
+    export let data;
 
     const heds = {
         404: 'error / not-found / hed',
@@ -23,8 +24,8 @@
         401: 'error / forbidden / text'
     };
 
-    $: niceHed = __(heds[statusCode] || 'error / unexpected / hed');
-    $: niceText = __(texts[statusCode] || 'error / unexpected / text');
+    $: niceHed = message || __(heds[statusCode] || 'error / unexpected / hed');
+    $: niceText = data?.text || __(texts[statusCode] || 'error / unexpected / text');
 
     export let __;
 </script>
@@ -38,7 +39,7 @@
                 </div>
                 <div class="column is-8">
                     <h3 class="is-size-4 mb-4 has-text-grey">
-                        Error {statusCode} - {error}{#if message !== error}&nbsp;/&nbsp;{message}{/if}
+                        Error {statusCode} - {error}
                     </h3>
                     <h1 class="title is-2 mt-1 mb-6">{niceHed}</h1>
                     <p class="is-4 is-size-4 has-text-danger">{niceText}</p>
