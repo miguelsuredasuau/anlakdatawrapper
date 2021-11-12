@@ -9,7 +9,7 @@
     const request = getContext('request');
     const user = getContext('user');
 
-    let items = [];
+    let items = undefined;
     export let link;
     export let __;
 
@@ -79,7 +79,7 @@
     >
 
     <div class="navbar-dropdown is-right is-boxed">
-        {#if !items.length}
+        {#if !items}
             <div class=" navbar-item has-text-grey is-size-7 has-text-centered">
                 <SvgIcon
                     valign="middle"
@@ -88,7 +88,12 @@
                     duration="1s"
                     className="mr-2 is-size-6 has-text-grey"
                     spin
-                /> loading...
+                />
+                {__('navbar / vis-archive / loading')}
+            </div>
+        {:else if !items.length}
+            <div class=" navbar-item has-text-grey is-size-7 has-text-centered">
+                {__('navbar / vis-archive / no-visualizations')}
             </div>
         {:else}
             {#each items as item}

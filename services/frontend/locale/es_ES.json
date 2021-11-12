@@ -1072,5 +1072,7 @@
   "dashboard / visualization / created": "",
   "dashboard / visualization / not-published": "",
   "archive / modal / copy-embed-code": "Copiar código de integración",
-  "archive / modal / copy-success": ""
+  "archive / modal / copy-success": "",
+  "navbar / vis-archive / no-visualizations": "",
+  "navbar / vis-archive / loading": ""
 }
