@@ -169,18 +169,10 @@
                 white-space: normal;
             }
         }
-        img {
-            position: relative;
-        }
-        // hide broken thumbnail if image doesn't load
-        img::after {
-            content: '';
+        .thumb {
             width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: #ffffff;
+            padding-bottom: 75%;
+            background-size: cover;
         }
         .box-checkbox {
             display: none;
@@ -297,7 +289,7 @@
             >
                 {purifyHTML(chart.title, '')}
             </figcaption>
-            <img alt="preview" src={thumbnail} />
+            <div class="thumb" style="background-image: url({thumbnail})" />
         </figure>
         <div class="subline columns is-variable is-1 mt-2 has-text-grey-dark is-size-7">
             {#if dateLine}

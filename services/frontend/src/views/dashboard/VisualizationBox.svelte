@@ -45,6 +45,12 @@
     .subline {
         line-height: 1.2;
     }
+
+    .thumb {
+        width: 100%;
+        padding-bottom: 75%;
+        background-size: cover;
+    }
 </style>
 
 <div class="box has-border">
@@ -56,7 +62,7 @@
             >
                 {purifyHTML(chart.title, '')}
             </figcaption>
-            <img alt="preview" src={thumbnail} />
+            <div class="thumb" style="background-image: url({thumbnail})" />
         </figure></a
     >
     {#if dateLine}
