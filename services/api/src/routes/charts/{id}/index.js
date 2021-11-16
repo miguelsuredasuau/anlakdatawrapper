@@ -160,7 +160,6 @@ module.exports = {
 
 async function getChart(request) {
     const { url, query, params, auth, server } = request;
-    const isAdmin = server.methods.isAdmin(request);
 
     const options = {
         where: {
@@ -169,9 +168,7 @@ async function getChart(request) {
         }
     };
 
-    if (isAdmin) {
-        set(options, ['include'], [{ model: User, attributes: ['name', 'email'] }]);
-    }
+    set(options, ['include'], [{ model: User, attributes: ['name', 'email'] }]);
 
     const chart = await Chart.findOne(options);
 
@@ -183,6 +180,7 @@ async function getChart(request) {
 
     let readonlyChart;
     if (query.published || !isEditable) {
+        if (!isEditable) delete chart.dataValues.user;
         if (chart.published_at) {
             const publicChart = await ChartPublic.findByPk(chart.id);
             if (!publicChart) {

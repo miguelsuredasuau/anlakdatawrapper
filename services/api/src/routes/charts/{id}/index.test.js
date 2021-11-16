@@ -40,6 +40,7 @@ test('It should be possible to create, fetch, edit and delete charts', async t =
 
     t.truthy(chart.result.authorId);
     t.is(chart.result.id.length, 5);
+    t.is(typeof chart.result.author, 'object');
 
     chart = await t.context.server.inject({
         method: 'PATCH',
@@ -277,7 +278,7 @@ test('PUT request replace metadata', async t => {
     }
 });
 
-test('Users can get only published charts', async t => {
+test('Users can get only published charts, author data is not included', async t => {
     const resChart = await t.context.server.inject({
         method: 'POST',
         url: '/v3/charts',
@@ -330,6 +331,7 @@ test('Users can get only published charts', async t => {
         t.is(resPublishedChart.statusCode, 200);
         t.is(resPublishedChart.result.id, resChart.result.id);
         t.is(resPublishedChart.result.title, 'Published version');
+        t.is(resPublishedChart.author, undefined);
     } finally {
         if (userObj) {
             await destroy(...Object.values(userObj));
