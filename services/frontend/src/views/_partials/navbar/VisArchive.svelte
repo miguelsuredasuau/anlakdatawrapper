@@ -1,6 +1,6 @@
 <script>
     import { onMount, getContext } from 'svelte';
-    import SvgIcon from '../SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
     import purifyHTML from '@datawrapper/shared/purifyHtml';
     import truncate from '@datawrapper/shared/truncate';
@@ -81,7 +81,7 @@
     <div class="navbar-dropdown is-right is-boxed">
         {#if !items}
             <div class=" navbar-item has-text-grey is-size-7 has-text-centered">
-                <SvgIcon
+                <IconDisplay
                     valign="middle"
                     icon="loading-spinner"
                     timing="steps(12)"

@@ -1,8 +1,8 @@
 <script type="text/javascript">
-    import Notification from '_partials/components/Notification.svelte';
+    import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
     import MainLayout from 'layout/MainLayout.svelte';
 
-    import ViewComponent from 'layout/partials/ViewComponent.svelte';
+    import ViewComponent from '_partials/ViewComponent.svelte';
 
     import RecentVisualizations from './RecentVisualizations.svelte';
     import Welcome from './Welcome.svelte';
@@ -31,8 +31,9 @@
                 </div>
                 <div class="column">
                     {#if notification}
-                        <Notification type={notification.type === 's' ? 'success' : 'warning'}
-                            >{notification.message}</Notification
+                        <NotificationDisplay
+                            type={notification.type === 's' ? 'success' : 'warning'}
+                            >{notification.message}</NotificationDisplay
                         >
                     {/if}
                     {#each sidebarBoxes as box}

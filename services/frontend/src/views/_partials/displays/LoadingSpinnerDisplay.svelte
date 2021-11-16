@@ -1,11 +1,11 @@
 <script>
-    import SvgIcon from './SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
     export let color;
     export let className;
 </script>
 
-<SvgIcon
+<IconDisplay
     valign="sub"
     icon="loading-spinner"
     timing="steps(12)"

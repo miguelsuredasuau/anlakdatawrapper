@@ -1,5 +1,5 @@
 <script>
-    import DatawrapperLogo from '_partials/DatawrapperLogo.svelte';
+    import DatawrapperLogoDisplay from '_partials/displays/DatawrapperLogoDisplay.svelte';
 
     export let title;
 </script>
@@ -44,7 +44,7 @@
 </svelte:head>
 
 <div class="container" style="max-width: 50rem">
-    <DatawrapperLogo color="#ffffff" height="60" />
+    <DatawrapperLogoDisplay color="#ffffff" height="60" />
     <div class="box mt-6 p-6">
         <slot />
     </div>

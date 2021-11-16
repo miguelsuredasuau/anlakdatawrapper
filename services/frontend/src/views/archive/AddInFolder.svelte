@@ -1,6 +1,6 @@
 <script>
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
-    import Dropdown from '_partials/components/Dropdown.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
+    import Dropdown from '_partials/Dropdown.svelte';
 
     import httpReq from '@datawrapper/shared/httpReq';
     import { getContext } from 'svelte';
@@ -64,11 +64,11 @@
             aria-controls="dropdown-menu"
             slot="trigger"
         >
-            <SvgIcon icon="add" size="20px" className="mr-2 ml-0" />
+            <IconDisplay icon="add" size="20px" className="mr-2 ml-0" />
             <span>
                 {__('archive / add-in-folder / new')}
             </span>
-            <SvgIcon
+            <IconDisplay
                 icon="expand-down-bold"
                 size="0.8em"
                 className:rotated-icon={isActive}
@@ -77,7 +77,7 @@
         </button>
         <div class="dropdown-content" slot="content">
             <a class="dropdown-item" href="#/" on:click|preventDefault={addSubfolder}>
-                <SvgIcon icon="folder" />
+                <IconDisplay icon="folder" />
                 <span>{__('archive / add-in-folder / folder')}</span>
             </a>
 
@@ -85,7 +85,7 @@
 
             {#each ['chart', 'map', 'table'] as type}
                 <a class="dropdown-item" href="/{type}/create{createQuery}">
-                    <SvgIcon icon="dw-{type}" />
+                    <IconDisplay icon="dw-{type}" />
                     <span>{__(`archive / add-in-folder / ${type}`)}</span>
                 </a>
             {/each}

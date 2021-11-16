@@ -1,7 +1,7 @@
 <script>
     import httpReq from '@datawrapper/shared/httpReq';
-    import Notification from '_partials/components/Notification.svelte';
-    import LoadingSpinner from 'layout/partials/LoadingSpinner.svelte';
+    import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
+    import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
     import ProviderButtons from './ProviderButtons.svelte';
     import { isValidEmail } from './utils';
 
@@ -103,9 +103,9 @@
     <p>{@html __('login / login / intro')}</p>
     {#if emailOpen}
         {#if loginError || loginSuccess}
-            <Notification type={loginError ? 'warning' : 'success'} deletable={false}>
+            <NotificationDisplay type={loginError ? 'warning' : 'success'} deletable={false}>
                 {@html loginError || loginSuccess}
-            </Notification>
+            </NotificationDisplay>
         {/if}
         <form class="signup-form" on:submit|preventDefault={handleSubmit}>
             {#if !needOTP}
@@ -152,7 +152,7 @@
             {#if !resetPassword}
                 <button type="submit" disabled={loggingIn} class="button is-primary mb-2">
                     {@html __('Login')}
-                    {#if loggingIn}<LoadingSpinner className="ml-1" />{/if}
+                    {#if loggingIn}<LoadingSpinnerDisplay className="ml-1" />{/if}
                 </button>
                 <div class="mt-3">
                     <a
@@ -170,7 +170,7 @@
             {:else}
                 <button type="submit" disabled={requestingPassword} class="button is-primary mb-2">
                     {@html __('Send new password')}
-                    {#if requestingPassword}<LoadingSpinner className="ml-1" />{/if}
+                    {#if requestingPassword}<LoadingSpinnerDisplay className="ml-1" />{/if}
                 </button>
                 <div class="mt-3">
                     <a on:click|preventDefault={() => (resetPassword = false)} href="#/return"

@@ -1,8 +1,8 @@
 <script>
-    import LoadingSpinner from 'layout/partials/LoadingSpinner.svelte';
+    import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
     import { onMount, getContext } from 'svelte';
     import Parser from 'rss-parser/dist/rss-parser';
-    import IconBox from 'layout/partials/IconBox.svelte';
+    import IconBox from '_partials/displays/IconBox.svelte';
     import purifyHtml from '@datawrapper/shared/purifyHtml';
 
     const allowedTags =
@@ -42,7 +42,7 @@
         <div>
             {#if !items.length}
                 <div class="has-text-grey">
-                    <LoadingSpinner />
+                    <LoadingSpinnerDisplay />
                     {__('dashboard / changelog / loading')}
                 </div>
             {:else}

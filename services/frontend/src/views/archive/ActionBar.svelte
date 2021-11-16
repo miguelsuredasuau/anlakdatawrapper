@@ -1,7 +1,7 @@
 <script>
     import AddInFolder from './AddInFolder.svelte';
     import ArrangeDropdown from './ArrangeDropdown.svelte';
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { selectedCharts } from './stores';
 
     export let __;
@@ -40,7 +40,7 @@
                     title={__('archive / action-bar / deselect-all')}
                     aria-label={__('archive / action-bar / deselect-all')}
                 >
-                    <SvgIcon icon="close" className="has-text-grey" size="18px" />
+                    <IconDisplay icon="close" className="has-text-grey" size="18px" />
                 </button>
             </div>
         {:else}
@@ -50,7 +50,7 @@
                     style="text-decoration:none"
                     on:click={selectAll}
                 >
-                    <SvgIcon icon="check-all" className="has-text-grey" size="18px" />
+                    <IconDisplay icon="check-all" className="has-text-grey" size="18px" />
                     <span>{__('archive / action-bar / select-all')}</span>
                 </button>
             </div>

@@ -54,7 +54,7 @@
             });
         } else {
             await loadScript(
-                `/lib/csr/layout/partials/svelte2/Svelte2Wrapper.element.svelte.${
+                `/lib/csr/_partials/svelte2/Svelte2Wrapper.element.svelte.${
                     window.document.documentMode ? 'ie.' : ''
                 }js`
             );

@@ -1,6 +1,6 @@
 <script>
     import { getContext } from 'svelte';
-    import IconBox from 'layout/partials/IconBox.svelte';
+    import IconBox from '_partials/displays/IconBox.svelte';
     const user = getContext('user');
 </script>
 

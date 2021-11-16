@@ -1,7 +1,7 @@
 <script>
     import CheckboxInput from '../_partials/controls/CheckboxInput.svelte';
-    import Dropdown from '../_partials/components/Dropdown.svelte';
-    import SvgIcon from '../layout/partials/SvgIcon.svelte';
+    import Dropdown from '../_partials/Dropdown.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
     import purifyHTML from '@datawrapper/shared/purifyHtml';
     import truncate from '@datawrapper/shared/truncate';
@@ -310,7 +310,7 @@
     </div>
     <Dropdown bind:active={isDropdownActive}>
         <div slot="trigger" class="context-menu-button">
-            <SvgIcon icon="menu-vertical" size="18px" />
+            <IconDisplay icon="menu-vertical" size="18px" />
         </div>
         <div slot="content" class="dropdown-content">
             <a
@@ -318,11 +318,11 @@
                 on:click|preventDefault={handleRenameButtonClick}
                 href="#/rename"
             >
-                <SvgIcon icon="rename" />
+                <IconDisplay icon="rename" />
                 <span>{__('archive / folder / rename')}</span>
             </a>
             <a class="dropdown-item" href="/chart/{chart.id}/edit">
-                <SvgIcon icon="edit" />
+                <IconDisplay icon="edit" />
                 <span>{__('archive / edit')}</span>
             </a>
             <a
@@ -330,7 +330,7 @@
                 on:click|preventDefault={handleDuplicateButtonClick}
                 href="#/duplicate"
             >
-                <SvgIcon icon="duplicate" />
+                <IconDisplay icon="duplicate" />
                 <span>{__('archive / duplicate')}</span>
             </a>
             <a
@@ -338,7 +338,7 @@
                 on:click|preventDefault={handleDeleteButtonClick}
                 href="#/delete"
             >
-                <SvgIcon icon="trash" />
+                <IconDisplay icon="trash" />
                 <span>{__('archive / delete')}</span>
             </a>
         </div>

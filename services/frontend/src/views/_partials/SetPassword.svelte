@@ -1,6 +1,6 @@
 <script>
-    import Notification from './Notification.svelte';
-    import CheckPassword from '../../shared/CheckPassword.svelte';
+    import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
+    import CheckPassword from '../shared/CheckPassword.svelte';
     import { createEventDispatcher } from 'svelte';
 
     import { getContext } from 'svelte';
@@ -58,9 +58,9 @@
 <p class="intro-p mb-3">{introText}</p>
 
 {#if submitError}
-    <Notification type="warning" deletable={false}>
+    <NotificationDisplay type="warning" deletable={false}>
         {@html submitError}
-    </Notification>
+    </NotificationDisplay>
 {/if}
 
 <div class="reset-form">

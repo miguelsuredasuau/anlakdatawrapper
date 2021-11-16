@@ -1,5 +1,5 @@
 <script>
-    import Notification from '_partials/components/Notification.svelte';
+    import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
     export let message;
     export let __;
 </script>
@@ -22,8 +22,8 @@
 
 <div class="drag-notification">
     <div class="container">
-        <Notification className="is-size-4 has-text-centered" type="info" deletable={false}>
+        <NotificationDisplay className="is-size-4 has-text-centered" type="info" deletable={false}>
             {@html __(message)}
-        </Notification>
+        </NotificationDisplay>
     </div>
 </div>

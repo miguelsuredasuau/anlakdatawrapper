@@ -1,7 +1,7 @@
 <script>
     import httpReq from '@datawrapper/shared/httpReq';
     import SignInPageLayout from 'layout/SignInPageLayout.svelte';
-    import Notification from '_partials/components/Notification.svelte';
+    import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
     import SetPasswordField from 'layout/partials/SetPasswordField.svelte';
 
     export let token;
@@ -53,13 +53,13 @@
     <p class="mb-3">{__('account / password-reset / intro')}</p>
 
     {#if resetSuccess}
-        <Notification type="success" deletable={false}>
+        <NotificationDisplay type="success" deletable={false}>
             {__('account / password-reset / success')}
-        </Notification>
+        </NotificationDisplay>
     {:else if resetError}
-        <Notification type="warning" deletable={false}>
+        <NotificationDisplay type="warning" deletable={false}>
             {@html resetError}
-        </Notification>
+        </NotificationDisplay>
     {/if}
 
     <div class="reset-form">

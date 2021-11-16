@@ -1,12 +1,12 @@
 <script>
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     export let item;
 </script>
 
 <style>
 </style>
 
-{#if item.svgIcon}<SvgIcon
+{#if item.svgIcon}<IconDisplay
         size={item.svgIconSize}
         crisp={!!item.svgIconCrisp}
         valign="top"

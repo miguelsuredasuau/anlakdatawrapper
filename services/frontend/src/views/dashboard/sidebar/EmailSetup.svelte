@@ -1,5 +1,5 @@
 <script>
-    import IconBox from 'layout/partials/IconBox.svelte';
+    import IconBox from '_partials/displays/IconBox.svelte';
 
     export let __;
 

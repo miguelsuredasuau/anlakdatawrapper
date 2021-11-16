@@ -1,5 +1,5 @@
 <script>
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     export let open = true;
     export let title;
     export let className;
@@ -45,7 +45,7 @@
         class:open
         class="collapse-toggle is-uppercase px-1 py-2"
     >
-        <SvgIcon icon="disclosure" valign="baseline" className="m-0" />
+        <IconDisplay icon="disclosure" valign="baseline" className="m-0" />
         {title}
     </button>
     {#if open}

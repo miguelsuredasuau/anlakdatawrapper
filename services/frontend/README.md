@@ -179,7 +179,7 @@ Example plugin `ExampleView.svelte`:
 
 This works because of two changes:
 
-1. when the plugins are loaded during `frontend` server start, the plugins `src/frontend/views` folder is sym-linked to the frontend `src/views/plugins/{plugin}` path.
+1. when the plugins are loaded during `frontend` server start, the plugins `src/frontend/views` folder is sym-linked to the frontend `src/views/_plugins/{plugin}` path.
 2. to alllow plugins to use core layouts we added an alias from `layout/*` to the corresponding path in the frontend. Otherwise plugins would have to resolve a long `../../../` path to find the layout folder
 
 ![https://user-images.githubusercontent.com/617518/105217547-e9e97c80-5b4b-11eb-859d-a1357958c5c0.gif](https://user-images.githubusercontent.com/617518/105217547-e9e97c80-5b4b-11eb-859d-a1357958c5c0.gif)
@@ -369,7 +369,7 @@ The core route can then dynamically import the view component during runtime usi
 <ViewComponent component="publish/export-pdf" {props} {__} />
 ```
 
-Internally, the view component import statements are [injected](src/utils/svelte-view/rollup-runtime.js#L97-L102) into the core `View.svelte` before it's being compiled, and then stored in the `viewComponents` context from which it's being [loaded by `ViewComponent.svelte`](src/views/layout/partials/ViewComponent.svelte#L13).
+Internally, the view component import statements are [injected](src/utils/svelte-view/rollup-runtime.js#L97-L102) into the core `View.svelte` before it's being compiled, and then stored in the `viewComponents` context from which it's being [loaded by `ViewComponent.svelte`](src/views/_partials/ViewComponent.svelte#L13).
 
 See [our dashboard](src/views/dashboard/Index.svelte) for a live example.
 

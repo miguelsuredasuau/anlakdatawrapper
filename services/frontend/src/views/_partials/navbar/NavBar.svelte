@@ -3,7 +3,7 @@
     import VisArchive from './VisArchive.svelte';
     import TeamSelect from './TeamSelect.svelte';
     import { post, patch } from '@datawrapper/shared/httpReq';
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import NavBarIcon from './NavBarIcon.svelte';
 
     export let isActive;
@@ -31,7 +31,7 @@
 </script>
 
 <style lang="scss">
-    @import '../../../../styles/colors.scss';
+    @import '../../../styles/colors.scss';
     @import 'bulma/sass/utilities/_all.sass';
 
     // Navbar Items
@@ -195,7 +195,7 @@
                                 <hr class="navbar-divider" />
                             {:else if subItem.type === 'activeTeam'}
                                 <div class="navbar-item active-team is-size-7 has-text-grey-dark">
-                                    In: <SvgIcon
+                                    In: <IconDisplay
                                         icon="folder{$user.activeTeam ? '-shared' : ''}"
                                         className="mx-1"
                                     />

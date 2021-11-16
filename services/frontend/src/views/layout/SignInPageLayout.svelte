@@ -1,5 +1,5 @@
 <script>
-    import DatawrapperLogo from '_partials/DatawrapperLogo.svelte';
+    import DatawrapperLogoDisplay from '_partials/displays/DatawrapperLogoDisplay.svelte';
     export let title;
 
     import { getContext } from 'svelte';
@@ -39,7 +39,7 @@
                     <div
                         class="p-6 is-flex is-flex-direction-column is-justify-content-space-between is-flex-grow-1"
                     >
-                        <DatawrapperLogo width="170px" />
+                        <DatawrapperLogoDisplay width="170px" />
 
                         <div class="terms is-size-7 is-hidden-mobile">
                             {@html __('signin / terms')}

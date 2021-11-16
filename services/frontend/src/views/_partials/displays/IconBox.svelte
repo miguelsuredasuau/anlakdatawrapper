@@ -1,5 +1,5 @@
 <script>
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     export let icon;
     export let iconColor = 'grey-light';
 </script>
@@ -18,7 +18,7 @@
 
 <div class="box">
     <div class="has-text-{iconColor} is-size-2 is-pulled-right">
-        <SvgIcon {icon} />
+        <IconDisplay {icon} />
     </div>
     {#if $$slots.title}
         <div class="content mb-0">

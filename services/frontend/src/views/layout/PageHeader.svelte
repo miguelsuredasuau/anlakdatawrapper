@@ -1,7 +1,7 @@
 <script>
     import { getContext } from 'svelte';
-    import DatawrapperLogo from '_partials/DatawrapperLogo.svelte';
-    import NavBar from './header/NavBar.svelte';
+    import DatawrapperLogoDisplay from '_partials/displays/DatawrapperLogoDisplay.svelte';
+    import NavBar from '_partials/navbar/NavBar.svelte';
 
     const config = getContext('config');
     const msg = getContext('messages');
@@ -16,7 +16,6 @@
     let isActive = false;
     let scrollY = 0;
     $: scrolledDown = scrollY > 0;
-    $: logoScale = scrolledDown ? 35 / 45 : 1;
 
     let innerHeight = 0;
 </script>
@@ -76,7 +75,7 @@
         >
             <div class="navbar-brand">
                 <a class="navbar-item" href="/" style="line-height: 1">
-                    <DatawrapperLogo />
+                    <DatawrapperLogoDisplay />
                 </a>
 
                 <a

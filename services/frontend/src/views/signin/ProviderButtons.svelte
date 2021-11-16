@@ -1,5 +1,5 @@
 <script>
-    import SvgIcon from '../layout/partials/SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
     export let emailOpen;
     export let providers;
@@ -88,7 +88,7 @@
 
 <div class="provider-buttons">
     <button class="button provider-email mb-2 is-fullwidth" on:click={() => (emailOpen = true)}>
-        <SvgIcon icon="mail" size="28px" />
+        <IconDisplay icon="mail" size="28px" />
         {__(signIn ? 'signin / sign-in-using' : 'signin / sign-up-using')}
         {__('email')}</button
     >
@@ -104,7 +104,7 @@
             href="{provider.url}{target ? `?ref=${target}` : ''}"
             class="button provider-{provider.label.toLowerCase()} mb-2 is-fullwidth"
         >
-            <SvgIcon icon={provider.icon} />
+            <IconDisplay icon={provider.icon} />
             {showTwoColumns ? '' : __(signIn ? 'signin / sign-in-using' : 'signin / sign-up-using')}
             {provider.label}</a
         >

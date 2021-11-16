@@ -1,5 +1,5 @@
 <script>
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { currentFolder, subfolderGridDropZone } from './stores';
     import { getContext } from 'svelte';
 
@@ -74,7 +74,7 @@
     on:drop|preventDefault|stopPropagation={() => handleDrop(folder)}
 >
     <div class="box has-border is-size-5">
-        <SvgIcon icon="folder" className="mr-1" valign="middle" />
+        <IconDisplay icon="folder" className="mr-1" valign="middle" />
         <span class="has-text-weight-medium">{folder.name}</span>
         {#if folder.chartCount}<span class="has-text-grey">({folder.chartCount})</span>{/if}
     </div>

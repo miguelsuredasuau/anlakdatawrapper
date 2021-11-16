@@ -1,7 +1,7 @@
 <script>
     import httpReq from '@datawrapper/shared/httpReq';
-    import Notification from '_partials/components/Notification.svelte';
-    import LoadingSpinner from 'layout/partials/LoadingSpinner.svelte';
+    import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
+    import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
     import SetPasswordField from 'layout/partials/SetPasswordField.svelte';
     import ProviderButtons from './ProviderButtons.svelte';
     import { trackEvent } from '@datawrapper/shared/analytics';
@@ -66,9 +66,9 @@
 
     {#if emailOpen}
         {#if signupError || signupSuccess}
-            <Notification type={signupError ? 'warning' : 'success'} deletable={false}>
+            <NotificationDisplay type={signupError ? 'warning' : 'success'} deletable={false}>
                 {@html signupError || signupSuccess}
-            </Notification>
+            </NotificationDisplay>
         {/if}
         <div class="signup-form">
             <div class="field">
@@ -87,7 +87,7 @@
 
             <button disabled={signingUp} class="button is-primary mb-2" on:click={() => doSignUp()}>
                 {@html __('Sign Up')}
-                {#if signingUp}<LoadingSpinner className="ml-1" />{/if}</button
+                {#if signingUp}<LoadingSpinnerDisplay className="ml-1" />{/if}</button
             >
             {#if providers.length}
                 <div class="mt-5">

@@ -1,6 +1,6 @@
 <script>
-    import Dropdown from '_partials/components/Dropdown.svelte';
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
+    import Dropdown from '_partials/Dropdown.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { formatQueryString } from '../../utils/url.cjs';
     import { query } from './stores';
     import { DEFAULT_SORT_ORDER } from './constants';
@@ -69,7 +69,7 @@
         >{__('archive / sorted-by')}&nbsp;
         <b>{(selectedArrangeOption && selectedArrangeOption.title) || '...'}</b>
         <span class="p-3" on:click|preventDefault|stopPropagation={reverseSortDirection}
-            ><SvgIcon size="20px" icon="arrow-{$query.order === 'ASC' ? 'down' : 'up'}" /></span
+            ><IconDisplay size="20px" icon="arrow-{$query.order === 'ASC' ? 'down' : 'up'}" /></span
         ></button
     >
     <div class="dropdown-content" slot="content">

@@ -1,6 +1,6 @@
 <script>
-    import PageHeader from './partials/PageHeader.svelte';
-    import PageFooter from './partials/PageFooter.svelte';
+    import PageHeader from './PageHeader.svelte';
+    import PageFooter from './PageFooter.svelte';
 
     export let title;
 </script>

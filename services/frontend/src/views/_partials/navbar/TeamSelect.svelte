@@ -1,5 +1,5 @@
 <script>
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { getContext } from 'svelte';
     import { patch } from '@datawrapper/shared/httpReq';
 
@@ -45,7 +45,7 @@
             class:is-active-team={team.active}
             on:click|preventDefault={() => select(team)}
         >
-            <SvgIcon
+            <IconDisplay
                 className={team.active ? '' : 'has-text-grey-light'}
                 icon="team{team.active ? '-check' : ''}"
                 size="20px"
@@ -59,7 +59,7 @@
         class="navbar-item team-select has-text-weight-normal"
         class:is-active-team={!$user.activeTeam}
     >
-        <SvgIcon
+        <IconDisplay
             className={!$user.activeTeam ? '' : 'has-text-grey-light'}
             icon="user{!$user.activeTeam ? '-check' : ''}"
             size="20px"

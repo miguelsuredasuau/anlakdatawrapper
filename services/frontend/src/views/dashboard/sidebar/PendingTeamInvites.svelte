@@ -1,6 +1,6 @@
 <script>
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
-    import IconBox from 'layout/partials/IconBox.svelte';
+    import IconBox from '_partials/displays/IconBox.svelte';
 
     export let pendingTeams;
     export let __;

@@ -1,7 +1,7 @@
 <script>
-    import Modal from '_partials/components/Modal.svelte';
-    import Dropdown from '_partials/components/Dropdown.svelte';
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
+    import ModalDisplay from '_partials/displays/ModalDisplay.svelte';
+    import Dropdown from '_partials/Dropdown.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
     import { beforeUpdate, getContext, tick } from 'svelte';
 
@@ -100,7 +100,7 @@
 </style>
 
 {#if chart}
-    <Modal bind:open on:close={close}>
+    <ModalDisplay bind:open on:close={close}>
         <div class="columns is-gapless has-background-white">
             <div class="column">
                 <div
@@ -115,7 +115,7 @@
             <div class="column is-one-third has-background-white-bis">
                 <div class="block p-6">
                     <button on:click={close} class="button is-text close">
-                        <SvgIcon icon="close" />
+                        <IconDisplay icon="close" />
                     </button>
                     <div class="block">
                         <div class="kicker">{__('archive / modal / vis-id')}</div>
@@ -162,7 +162,7 @@
                         <a
                             href="/chart/{chart.id}/edit"
                             class="edit-chart button is-primary is-large"
-                            ><SvgIcon icon="edit" />
+                            ><IconDisplay icon="edit" />
                             <span>{__('archive / edit')}</span></a
                         >
                     </div>
@@ -173,7 +173,7 @@
                                 <button
                                     on:click={() => duplicateChart(chart, true)}
                                     class="button is-ghost is-medium"
-                                    ><SvgIcon icon="duplicate" />
+                                    ><IconDisplay icon="duplicate" />
                                     <span>{__('archive / duplicate')}</span></button
                                 >
                             </li>
@@ -181,7 +181,7 @@
                                 <a
                                     href="/chart/{chart.id}/publish"
                                     class="button is-ghost is-medium"
-                                    ><SvgIcon icon="export-file" />
+                                    ><IconDisplay icon="export-file" />
                                     <span>{__('archive / modal / re-publish')}</span></a
                                 >
                             </li>
@@ -192,9 +192,12 @@
                                             slot="trigger"
                                             href="/chart/{chart.id}/publish"
                                             class="button is-ghost is-medium"
-                                            ><SvgIcon icon="source-code" />
+                                            ><IconDisplay icon="source-code" />
                                             <span>{__('archive / modal / copy-embed-code')}</span
-                                            ><SvgIcon size="12px" icon="expand-down-bold" /></button
+                                            ><IconDisplay
+                                                size="12px"
+                                                icon="expand-down-bold"
+                                            /></button
                                         >
                                         <div class="dropdown-content" slot="content">
                                             {#await loadEmbedCodes()}
@@ -233,12 +236,12 @@
                         <button
                             on:click={handleDeleteButtonClick}
                             class="button is-ghost is-medium has-text-danger"
-                            ><SvgIcon icon="trash" />
+                            ><IconDisplay icon="trash" />
                             <span>{__('archive / delete')}</span></button
                         >
                     </div>
                 </div>
             </div>
         </div>
-    </Modal>
+    </ModalDisplay>
 {/if}

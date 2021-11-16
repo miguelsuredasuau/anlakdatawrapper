@@ -1,7 +1,7 @@
 <script>
     import MainLayout from 'layout/MainLayout.svelte';
     import { getContext } from 'svelte';
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
     const request = getContext('request');
     const config = getContext('config');
@@ -35,7 +35,7 @@
         <div class="container">
             <div class="columns">
                 <div class="column is-2">
-                    <SvgIcon icon="warning" size="11rem" className="has-text-grey-lighter" />
+                    <IconDisplay icon="warning" size="11rem" className="has-text-grey-lighter" />
                 </div>
                 <div class="column is-8">
                     <h3 class="is-size-4 mb-4 has-text-grey">

@@ -1,6 +1,6 @@
 <script>
-    import Dropdown from '_partials/components/Dropdown.svelte';
-    import SvgIcon from 'layout/partials/SvgIcon.svelte';
+    import Dropdown from '_partials/Dropdown.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { onMount, getContext, beforeUpdate, tick } from 'svelte';
     import { currentFolder, folderTreeDropZone } from './stores';
     import { byName, selectAll } from './shared';
@@ -245,7 +245,7 @@
                 class="button is-ghost p-1 collapse-toggle"
                 on:click={() => (open = !open)}
             >
-                <SvgIcon icon="disclosure" valign="baseline" className="m-0" />
+                <IconDisplay icon="disclosure" valign="baseline" className="m-0" />
             </button>
         {/if}
         <a
@@ -254,7 +254,7 @@
                 $currentFolder = folder;
             }}
             draggable="false"
-            ><SvgIcon
+            ><IconDisplay
                 icon="folder{folder.search
                     ? '-search-outline'
                     : folder.id
@@ -278,7 +278,7 @@
                 {/if}
                 {#if folder.chartCount}<span class="has-text-grey">({folder.chartCount})</span>{/if}
                 {#if !folder.id && !folder.search && (!$user.activeTeam ? !folder.teamId : $user.activeTeam.id === folder.teamId)}
-                    <SvgIcon icon="check-circle" className="ml-1" valign="sub" />
+                    <IconDisplay icon="check-circle" className="ml-1" valign="sub" />
                 {/if}
             </span>
         </a>
@@ -286,21 +286,21 @@
             <div class="folder-menu">
                 <Dropdown bind:active={folderMenuActive}>
                     <div slot="trigger">
-                        <SvgIcon icon="menu-vertical" valign="middle" />
+                        <IconDisplay icon="menu-vertical" valign="middle" />
                     </div>
                     <div slot="content" class="dropdown-content">
                         <a
                             href="#/rename"
                             on:click|preventDefault={renameFolder}
                             class="dropdown-item"
-                            ><SvgIcon valign="text-bottom" icon="rename" />
+                            ><IconDisplay valign="text-bottom" icon="rename" />
                             <span>{__('archive / folder / rename')}</span></a
                         >
                         <a
                             href="#/delete"
                             on:click|preventDefault={() => deleteFolder(folder)}
                             class="dropdown-item"
-                            ><SvgIcon valign="text-bottom" icon="trash" />
+                            ><IconDisplay valign="text-bottom" icon="trash" />
                             <span>{__('archive / folder / delete')}</span></a
                         >
                     </div>

@@ -2,7 +2,7 @@
     import { beforeUpdate } from 'svelte';
     import { currentFolder, query } from './stores';
     import debounce from 'lodash/debounce';
-    import SvgIcon from '../layout/partials/SvgIcon.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
     $: searchFolder = $query.search
         ? {
@@ -64,5 +64,5 @@
 
 <div class="control has-icons-left">
     <input class="input" type="text" bind:value on:input={onInput} placeholder={__('Search')} />
-    <SvgIcon icon="search" size="1.5em" className="is-left mx-2" />
+    <IconDisplay icon="search" size="1.5em" className="is-left mx-2" />
 </div>
