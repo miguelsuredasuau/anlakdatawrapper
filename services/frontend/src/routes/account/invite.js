@@ -34,11 +34,15 @@ module.exports = {
                     const __ = key => server.methods.translate(key, { scope: 'core', language });
 
                     if (user) {
-                        return h.view('account/SetPassword.svelte', {
+                        return h.view('account/Invite.svelte', {
                             props: {
                                 token: activationToken,
                                 email: user.dataValues.email,
-                                chart: request.query.chart
+                                chart: request.query.chart,
+                                headlineText: __('invite / h1 / chart'),
+                                headlineTextBold: true,
+                                introText: __('invite / h1 / chart'),
+                                buttonText: __('account / invite / set-password')
                             }
                         });
                     } else {

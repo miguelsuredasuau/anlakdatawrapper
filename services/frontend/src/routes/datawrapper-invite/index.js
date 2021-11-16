@@ -45,7 +45,7 @@ module.exports = {
                     const invitedToTeam = activeTeam.dataValues.id;
                     const invitedToTeamName = activeTeam.dataValues.name;
 
-                    return h.view('Invite.svelte', {
+                    return h.view('account/DatawrapperInvite.svelte', {
                         props: {
                             token: inviteToken,
                             team: invitedToTeam,

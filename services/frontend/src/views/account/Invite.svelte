@@ -1,34 +1,41 @@
 <script>
-    import SignInPageLayout from './layout/SignInPageLayout.svelte';
-    import SetPassword from './shared/SetPassword.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
+    import SignInPageLayout from 'layout/SignInPageLayout.svelte';
+    import SetPassword from '../_partials/components/SetPassword.svelte';
 
-    export let __;
     export let token;
-    export let team;
+    export let email;
+    export let chart;
+    export let __;
     export let headlineText;
     export let introText;
     export let buttonText;
-    export let email;
 
+    let submitting;
     let submitError;
     const headlineTextBold = false;
 
     async function handleSubmit(event) {
         const password = event.detail.password;
+
+        submitting = true;
+
         try {
             await httpReq.post(`/v3/auth/activate/${token}`, {
                 payload: {
                     password
                 }
             });
-
-            await httpReq.post(`/v3/teams/${team}/invites/${token}`);
-
             setTimeout(() => {
-                window.location.href = `/team/${team}`;
+                if (chart) {
+                    window.location.href = `/chart/${chart}/edit`;
+                } else {
+                    window.location.href = '/';
+                }
             }, 400);
         } catch (error) {
+            submitting = false;
+
             if (error.name === 'HttpReqError') {
                 const body = await error.response.json();
                 submitError = body ? body.message : error.message;
@@ -47,6 +54,7 @@
         {buttonText}
         {email}
         bind:submitError
+        bind:submitting
         on:submit={handleSubmit}
     />
 </SignInPageLayout>

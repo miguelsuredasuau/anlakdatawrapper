@@ -1,6 +1,6 @@
 <script>
-    import Notification from 'layout/partials/bulma/Notification.svelte';
-    import CheckPassword from './CheckPassword.svelte';
+    import Notification from './Notification.svelte';
+    import CheckPassword from '../../shared/CheckPassword.svelte';
     import { createEventDispatcher } from 'svelte';
 
     import { getContext } from 'svelte';
@@ -16,9 +16,9 @@
     export let buttonText;
     export let email;
     export let submitError;
+    export let submitting;
 
     let password;
-    let submitting;
     let passwordClear = false;
     let passwordOk;
     let passwordHelp;
