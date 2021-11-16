@@ -15,7 +15,10 @@
         const val = window.localStorage.getItem(storageKey(folder));
         if (val !== undefined) {
             open = _open = val === 'expanded';
+        } else {
+            open = _open = folder.level < 3;
         }
+
         currentFolder.subscribe((newFolder = {}) => {
             // check if the user navigates into a sub-folder of the
             // current one, and if so, let's expand this folder
@@ -35,7 +38,7 @@
     export let folder;
     export let __;
 
-    let open = folder.level < 3;
+    let open = false;
     let _open = open;
 
     $: isCurrent = $currentFolder.path === folder.path;

@@ -20,5 +20,8 @@
             on:click|preventDefault={() => ($currentFolder = p)}
             class="has-text-weight-light">{p.name}</a
         ><span class="has-text-grey px-3">›</span>
-    {/each}<span class="has-text-weight-medium">{$currentFolder.name}</span>
+    {/each}
+    {#if $currentFolder.name}
+        <span class="has-text-weight-medium">{$currentFolder.name}</span>
+    {/if}
 </h1>
