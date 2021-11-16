@@ -66,7 +66,8 @@
         class="button is-text has-text-grey-dark"
         style="text-decoration:none"
         slot="trigger"
-        >{__('archive / sorted-by')}&nbsp;<b>{selectedArrangeOption?.title || '...'}</b>
+        >{__('archive / sorted-by')}&nbsp;
+        <b>{(selectedArrangeOption && selectedArrangeOption.title) || '...'}</b>
         <span class="p-3" on:click|preventDefault|stopPropagation={reverseSortDirection}
             ><SvgIcon size="20px" icon="arrow-{$query.order === 'ASC' ? 'down' : 'up'}" /></span
         ></button
