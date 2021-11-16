@@ -139,6 +139,7 @@ module.exports = async ({ server, user, payload = {}, session, token }) => {
         chartTeam = payload.folderId ? folderTeam : team || (await user.getActiveTeam(session));
 
         if (chartTeam) {
+            chartTeam = await Team.findByPk(chartTeam.id);
             chart.organization_id = chartTeam.id;
             if (!whitelistedPayload.in_folder && get(chartTeam.settings, 'default.folder')) {
                 const folder = await Folder.findByPk(get(chartTeam.settings, 'default.folder'));
