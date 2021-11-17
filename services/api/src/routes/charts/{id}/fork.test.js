@@ -292,7 +292,7 @@ test('User can fork unprotected chart, attributes match', async t => {
             ...attributes,
             theme: 'default',
             language: 'en-US',
-            isFork: false,
+            isFork: undefined,
             forkable: undefined, // not returned from API,
             metadata: {
                 ...attributes.metadata,
