@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const createChart = require('@datawrapper/service-utils/createChart');
 const set = require('lodash/set');
-const { Op, literal } = require('@datawrapper/orm').db;
+const { Op, QueryTypes, literal } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');
 const { Chart, User, Folder, Team, UserTeam } = require('@datawrapper/orm/models');
 const { listResponse, chartResponse } = require('../../schemas/response');
@@ -373,17 +373,13 @@ async function getAllCharts(request) {
     }
 
     if (query.search) {
-        const search = [
-            literal(
-                `MATCH(title, keywords) AGAINST ('${query.search.replace(
-                    /'/g,
-                    ''
-                )}' IN BOOLEAN MODE)`
-            )
-        ];
         filters.push({
-            [Op.or]: search
+            [Op.or]: literal('MATCH(title, keywords) AGAINST(:search_query IN BOOLEAN MODE)')
         });
+        options.replacements = {
+            search_query: query.search,
+            type: QueryTypes.SELECT
+        };
     }
 
     if (query.folderId) {
@@ -425,7 +421,9 @@ async function getAllCharts(request) {
             return Boom.notImplemented('Please filter the query by folderId, teamId or search');
         }
         // count search results
-        const resultCount = await Chart.count({ where: options.where });
+        const resultCount = await runAndIgnoreParseErrors(() =>
+            Chart.count({ where: options.where })
+        );
         if (resultCount > 10000) {
             return Boom.notAcceptable('Please provide a more specific search query');
         } else if (resultCount > 1000) {
@@ -434,7 +432,8 @@ async function getAllCharts(request) {
         }
     }
 
-    const { count, rows } = await Chart.findAndCountAll(options);
+    const { count = 0, rows = [] } =
+        (await runAndIgnoreParseErrors(() => Chart.findAndCountAll(options))) || {};
 
     const charts = [];
 
@@ -560,4 +559,20 @@ async function patchChartsHandler(request) {
         res.push(await prepareChart(chart));
     }
     return res;
+}
+
+/**
+ * Run an SQL query function `func` and ignore any parse errors that happen during its execution.
+ *
+ * This is useful to ignore syntax errors in user-provided full-text search expressions.
+ */
+async function runAndIgnoreParseErrors(func) {
+    try {
+        return await func();
+    } catch (ex) {
+        if (ex.original && ex.original.code === 'ER_PARSE_ERROR') {
+            return null;
+        }
+        throw ex;
+    }
 }

@@ -214,6 +214,50 @@ test('Should be possible to search in multiple fields', async t => {
     }
 });
 
+test('Search escapes the query parameter', async t => {
+    const userObj = await createUser(t.context.server);
+    const { createChart, auth } = getHelpers(t, userObj);
+    const title = "' FOO";
+    await createChart({ title });
+    const res = await t.context.server.inject({
+        method: 'GET',
+        url: `/v3/charts?search=${encodeURIComponent(title)}`,
+        auth
+    });
+    t.is(res.statusCode, 200);
+    t.is(res.result.list.length, 1);
+    t.is(res.result.list[0].title, title);
+});
+
+test('Search does not crash when passed an invalid natural expression', async t => {
+    const userObj = await createUser(t.context.server);
+    const { createChart, auth } = getHelpers(t, userObj);
+    const title = 'foo OR 1=1';
+    await createChart({ title });
+    const res = await t.context.server.inject({
+        method: 'GET',
+        url: `/v3/charts?search=${encodeURIComponent(title)}`,
+        auth
+    });
+    t.is(res.statusCode, 200);
+    t.is(res.result.list.length, 1);
+    t.is(res.result.list[0].title, title);
+});
+
+test('Search does not crash when passed an invalid relevance expression', async t => {
+    const userObj = await createUser(t.context.server);
+    const { createChart, auth } = getHelpers(t, userObj);
+    const title = '<';
+    await createChart({ title });
+    const res = await t.context.server.inject({
+        method: 'GET',
+        url: `/v3/charts?search=${encodeURIComponent(title)}`,
+        auth
+    });
+    t.is(res.statusCode, 200);
+    t.is(res.result.list.length, 0);
+});
+
 test('Should be possible to create chart in a folder', async t => {
     const { createChart, createFolder } = getHelpers(t);
     const folder = await createFolder({ name: 'A user folder' });
