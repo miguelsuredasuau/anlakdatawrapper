@@ -15,7 +15,14 @@ const targets = [];
 
 build('visualize');
 build('team-settings');
+build('team-settings/members', { view: 'tabs/Members' });
+build('team-settings/settings', { view: 'tabs/Settings' });
+build('team-settings/delete', { view: 'tabs/DeleteTeam' });
+build('team-settings/products', { view: 'tabs/ProductTable' });
 build('account');
+build('account/profile', { view: 'EditProfile' });
+build('account/myteams', { view: 'MyTeams' });
+build('account/security', { view: 'Security' });
 build('chart-breadcrumb');
 build('signin');
 build('invite');
@@ -31,17 +38,19 @@ build('upload');
 export default targets;
 
 function build(appId, opts) {
-    const { noAMD, entry, append } = Object.assign(
+    const { noAMD, entry, append, view } = Object.assign(
         {
             noAMD: false,
             entry: 'main.js',
+            view: 'App',
             append: ''
         },
         opts
     );
     if (!checkTarget(appId)) return;
+
     targets.push({
-        input: `${appId}/${entry}`,
+        input: `${opts?.view ? appId.split('/')[0] : appId}/${entry}`,
         external: [
             'Handsontable',
             'dayjs',
@@ -63,6 +72,9 @@ function build(appId, opts) {
             }
         },
         plugins: [
+            replace({
+                __view__: `./${view}.html`
+            }),
             svelte({
                 dev: !production,
                 css: css => {
@@ -138,7 +150,9 @@ function build(appId, opts) {
 
 function checkTarget(appId) {
     if (!process.env.ROLLUP_TGT_APP) return true;
-    return process.env.ROLLUP_TGT_APP === appId;
+    return process.env.ROLLUP_TGT_APP.endsWith('/')
+        ? appId.startsWith(process.env.ROLLUP_TGT_APP)
+        : process.env.ROLLUP_TGT_APP === appId;
 }
 
 function handleWarnings(warning) {
