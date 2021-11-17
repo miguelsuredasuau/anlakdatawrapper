@@ -120,6 +120,17 @@ module.exports = {
                 charts.list = groupCharts({ charts: charts.list, groupBy, __ });
             }
 
+            if (!charts.list.length && /[a-zA-Z0-9]{5}/.test(search)) {
+                // search for specific chart id
+                try {
+                    const chart = await api(`/charts/${search}`);
+                    charts.list.push(chart);
+                    charts.total = 1;
+                } catch (e) {
+                    // ignore error
+                }
+            }
+
             const folders = await getFolders(user, teams, minLastEditStep);
 
             return h.view('archive/Index.svelte', {
