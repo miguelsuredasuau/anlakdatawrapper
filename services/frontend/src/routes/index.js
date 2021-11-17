@@ -48,27 +48,15 @@ module.exports = {
             }
         });
 
-        await server.register(require('./account/invite.js'), {
+        await server.register(require('./account'), {
             routes: {
-                prefix: '/account/invite'
+                prefix: '/account'
             }
         });
 
-        await server.register(require('./account/activate.js'), {
-            routes: {
-                prefix: '/account/activate'
-            }
-        });
-
-        await server.register(require('./team/index.js'), {
+        await server.register(require('./team'), {
             routes: {
                 prefix: '/team'
-            }
-        });
-
-        await server.register(require('./account/reset-password.js'), {
-            routes: {
-                prefix: '/account/reset-password'
             }
         });
 
