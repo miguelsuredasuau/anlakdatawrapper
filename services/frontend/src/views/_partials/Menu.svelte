@@ -1,5 +1,7 @@
 <script>
     import { getContext } from 'svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
+
     const request = getContext('request');
 
     export let groups = [];
@@ -75,7 +77,11 @@
                     <a
                         class:is-active={isActive(page, scrollY, groups, content, $request)}
                         on:click|preventDefault={() => pageClick(page)}
-                        href={page.url}>{@html page.title}</a
+                        href={page.url}
+                        >{#if page.svgIcon}<IconDisplay
+                                className="mr-2"
+                                icon={page.svgIcon}
+                            />{/if}<span>{@html page.title}</span></a
                     >
                 </li>
             {/each}

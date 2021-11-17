@@ -19,5 +19,7 @@ module.exports = {
                 prefix: '/reset-password'
             }
         });
+
+        await server.register(require('./settings.js'));
     }
 };
