@@ -1,4 +1,3 @@
-const { User } = require('@datawrapper/orm/models');
 const Joi = require('joi');
 const { getUserLanguage } = require('../../utils/index');
 
@@ -6,6 +5,8 @@ module.exports = {
     name: 'routes/account/activate',
     version: '1.0.0',
     async register(server) {
+        const User = server.methods.getModel('user');
+
         server.route({
             method: 'GET',
             path: '/{token}',

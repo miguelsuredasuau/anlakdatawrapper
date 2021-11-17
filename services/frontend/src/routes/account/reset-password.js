@@ -1,12 +1,12 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const { User } = require('@datawrapper/orm/models');
 
-User;
 module.exports = {
     name: 'routes/account/reset-password',
     version: '1.0.0',
     register: async server => {
+        const User = server.methods.getModel('user');
+
         server.route({
             method: 'GET',
             path: '/{token}',
