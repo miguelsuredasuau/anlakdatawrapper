@@ -1,17 +1,17 @@
-const Joi = require('joi');
 const Boom = require('@hapi/boom');
+const Joi = require('joi');
 const ReadonlyChart = require('@datawrapper/orm/models/ReadonlyChart');
-const { Op } = require('@datawrapper/orm').db;
-const { Chart, ChartPublic, User, Folder } = require('@datawrapper/orm/models');
-const { getUserData, setUserData } = require('@datawrapper/orm/utils/userData');
-const uniq = require('lodash/uniq');
-const set = require('lodash/set');
-const get = require('lodash/get');
-const isEqual = require('lodash/isEqual');
+const assignWithEmptyObjects = require('../../../utils/assignWithEmptyObjects.js');
 const cloneDeep = require('lodash/cloneDeep');
-const assignWithEmptyObjects = require('../../../utils/assignWithEmptyObjects');
+const isEqual = require('lodash/isEqual');
+const set = require('lodash/set');
+const uniq = require('lodash/uniq');
+const validateChartPayload = require('@datawrapper/service-utils/validateChartPayload.js');
+const { Chart, ChartPublic, User } = require('@datawrapper/orm/models');
+const { Op } = require('@datawrapper/orm').db;
 const { decamelizeKeys } = require('humps');
 const { getAdditionalMetadata, prepareChart } = require('../../../utils/index.js');
+const { getUserData, setUserData } = require('@datawrapper/orm/utils/userData');
 const { noContentResponse, chartResponse } = require('../../../schemas/response');
 
 module.exports = {
@@ -214,9 +214,11 @@ async function getChart(request) {
 }
 
 async function editChart(request) {
-    const { params, payload, auth, url, server } = request;
+    const { auth, params, payload, server, url } = request;
+    const { session, token } = auth.credentials;
     const user = auth.artifacts;
-    const isAdmin = server.methods.isAdmin(request);
+    const { Op } = server.methods.getDB();
+    const Chart = server.methods.getModel('chart');
 
     const chart = await Chart.findOne({
         where: {
@@ -235,93 +237,38 @@ async function editChart(request) {
         return Boom.unauthorized();
     }
 
-    if (
-        payload.organizationId &&
-        !isAdmin &&
-        !(await user.hasActivatedTeam(payload.organizationId))
-    ) {
-        return Boom.unauthorized('User does not have access to the specified team.');
-    }
+    const { validatedPayload } = await validateChartPayload({
+        chart,
+        server,
+        payload: decamelizeKeys(payload),
+        session,
+        token,
+        user
+    });
 
-    if (payload && payload.type) {
-        // validate chart type
-        if (!server.app.visualizations.has(payload.type)) {
-            return Boom.badRequest('Invalid chart type');
-        }
-    }
+    const newDataValues = assignWithEmptyObjects(cloneDeep(chart.dataValues), validatedPayload);
 
-    if (payload.folderId) {
-        // check if folder belongs to user to team
-        const folder = await Folder.findOne({ where: { id: payload.folderId } });
-
-        if (
-            !folder ||
-            (!isAdmin &&
-                folder.user_id !== auth.artifacts.id &&
-                !(await user.hasActivatedTeam(folder.org_id)))
-        ) {
-            throw Boom.unauthorized(
-                'User does not have access to the specified folder, or it does not exist.'
-            );
-        }
-        payload.inFolder = payload.folderId;
-        payload.folderId = undefined;
-        payload.organizationId = folder.org_id ? folder.org_id : null;
-    }
-
-    if ('authorId' in payload && !isAdmin) {
-        delete payload.authorId;
-    }
-
-    if ('isFork' in payload && !isAdmin) {
-        delete payload.isFork;
-    }
-
-    // prevent information about earlier publish from being reverted
-    if (!isNaN(payload.publicVersion) && payload.publicVersion < chart.public_version) {
-        payload.publicVersion = chart.public_version;
-        payload.publicUrl = chart.public_url;
-        payload.publishedAt = chart.published_at;
-        payload.lastEditStep = chart.last_edit_step;
-        set(
-            payload,
-            'metadata.publish.embed-codes',
-            get(chart, 'metadata.publish.embed-codes', {})
-        );
-    }
-
-    const chartOld = cloneDeep(chart.dataValues);
-    const newData = assignWithEmptyObjects(await prepareChart(chart), payload);
-
-    if (request.method === 'put' && payload.metadata) {
+    if (request.method === 'put' && validatedPayload.metadata) {
         // in PUT request we replace the entire metadata object
-        newData.metadata = payload.metadata;
+        newDataValues.metadata = validatedPayload.metadata;
     }
 
     // check if we have actually changed something
-    const chartNew = {
-        ...chartOld,
-        ...decamelizeKeys(newData),
-        metadata: newData.metadata
-    };
     const ignoreKeys = new Set(['guest_session', 'public_id', 'created_at']);
-    const hasChanged = Object.keys(chartNew).find(
+    const hasChanged = Object.keys({ ...chart.dataValues, ...newDataValues }).find(
         key =>
             !ignoreKeys.has(key) &&
-            !isEqual(chartNew[key], chartOld[key]) &&
-            (chartNew[key] || chartOld[key])
+            (chart.dataValues[key] || newDataValues[key]) &&
+            !isEqual(chart.dataValues[key], newDataValues[key])
     );
 
     if (hasChanged) {
         // only update and log edit if something has changed
-        await Chart.update(
-            { ...decamelizeKeys(newData), metadata: newData.metadata },
-            { where: { id: chart.id }, limit: 1 }
-        );
+        await Chart.update(newDataValues, { where: { id: chart.id }, limit: 1 });
         await chart.reload();
 
         // log chart/edit
-        await request.server.methods.logAction(user.id, `chart/edit`, chart.id);
+        await request.server.methods.logAction(user.id, 'chart/edit', chart.id);
 
         if (user.role !== 'guest') {
             // log recently edited charts
@@ -341,6 +288,7 @@ async function editChart(request) {
             }
         }
     }
+
     return {
         ...(await prepareChart(chart)),
         url: `${url.pathname}`
