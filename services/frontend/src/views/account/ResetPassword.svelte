@@ -2,7 +2,7 @@
     import httpReq from '@datawrapper/shared/httpReq';
     import SignInPageLayout from 'layout/SignInPageLayout.svelte';
     import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
-    import SetPasswordField from 'layout/partials/SetPasswordField.svelte';
+    import SetPasswordInput from '_partials/controls/SetPasswordInput.svelte';
 
     export let token;
     export let __;
@@ -63,7 +63,7 @@
     {/if}
 
     <div class="reset-form">
-        <SetPasswordField bind:value={password} bind:ok={passwordOk} {__} />
+        <SetPasswordInput bind:value={password} bind:ok={passwordOk} {__} />
 
         <button class="button is-primary" on:click={submit} disabled={submitting || !passwordOk}>
             {__('account / password-reset / button')}

@@ -24,7 +24,7 @@
 {#if numPages > 1}
     <nav class="pagination" role="navigation" aria-label="pagination">
         <ul class="pagination-list">
-            {#if curPage > 1}
+            {#if centerPages[0] > 0}
                 <li>
                     <a
                         on:click|preventDefault={() => gotoPage(0)}
@@ -45,7 +45,7 @@
                     >
                 </li>
             {/each}
-            {#if curPage < lastPage - 1 && lastPage > 5}
+            {#if centerPages[centerPages.length - 1] < lastPage}
                 <li>
                     <a
                         on:click|preventDefault={() => gotoPage(lastPage)}

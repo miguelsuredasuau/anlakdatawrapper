@@ -10,12 +10,14 @@
             dispatch('close');
         }
     }
+
+    export let maxWidth;
 </script>
 
 {#if open}
     <div class="modal is-active">
         <div class="modal-background" on:click={close} />
-        <div class="modal-content">
+        <div class="modal-content" style={maxWidth ? `max-width: ${maxWidth}` : ''}>
             <slot />
         </div>
         {#if closeable}

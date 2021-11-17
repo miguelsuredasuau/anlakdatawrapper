@@ -1,24 +1,54 @@
 <script>
-    import CheckPassword from '../../shared/CheckPassword.svelte';
-
     let showPassword = false;
     let help = '';
     let success = '';
+
     let error = '';
+
+    const MIN_CHARACTERS = 8;
+
+    let zxcvbn;
+    let zxcvbnLoading = false;
+
+    function loadZxcvbn() {
+        zxcvbnLoading = true;
+        require(['/lib/static/js/zxcvbn/zxcvbn.js'], pkg => {
+            zxcvbn = pkg;
+        });
+        return false;
+    }
+
+    $: passwordStrength = !zxcvbn
+        ? !zxcvbnLoading && value.length > 4
+            ? loadZxcvbn()
+            : false
+        : zxcvbn(value);
+    $: passwordTooShort = value.length < MIN_CHARACTERS;
+
+    $: pwdTooShortMsg = __('account / pwd-too-short').replace('%num', MIN_CHARACTERS);
+
+    $: help =
+        value === '' || !passwordStrength
+            ? pwdTooShortMsg
+            : __(
+                  `account / password / ${
+                      ['bad', 'weak', 'ok', 'good', 'excellent'][passwordStrength.score]
+                  }`
+              );
+    $: error = !value
+        ? false
+        : passwordTooShort
+        ? pwdTooShortMsg
+        : passwordStrength && passwordStrength.score < 2
+        ? help
+        : false;
+    $: success = passwordStrength && passwordStrength.score > 2 ? help : false;
+    $: ok = value && !passwordTooShort;
 
     export let value = '';
     export let ok = '';
     export let __;
 </script>
-
-<CheckPassword
-    {__}
-    bind:password={value}
-    bind:passwordOk={ok}
-    bind:passwordHelp={help}
-    bind:passwordSuccess={success}
-    bind:passwordError={error}
-/>
 
 <div class="field mb-3">
     <label for="set-pwd" class="label">{__('password')}</label>

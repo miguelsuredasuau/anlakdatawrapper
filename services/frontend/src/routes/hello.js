@@ -5,7 +5,7 @@ module.exports = {
     name: 'routes/hello',
     version: '1.0.0',
     register: async server => {
-        server.methods.prepareView('HelloWorld.svelte');
+        server.methods.prepareView('hello/Index.svelte');
 
         server.route({
             method: 'GET',
@@ -20,7 +20,7 @@ module.exports = {
                         'src/icons'
                     );
                     const icons = (await readdir(iconPath)).map(file => file.replace('.svg', ''));
-                    return h.view('HelloWorld.svelte', {
+                    return h.view('hello/Index.svelte', {
                         htmlClass: 'has-background-white',
                         props: {
                             icons,

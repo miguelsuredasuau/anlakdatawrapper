@@ -2,7 +2,7 @@
     import httpReq from '@datawrapper/shared/httpReq';
     import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
     import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
-    import SetPasswordField from 'layout/partials/SetPasswordField.svelte';
+    import SetPasswordInput from '_partials/controls/SetPasswordInput.svelte';
     import ProviderButtons from './ProviderButtons.svelte';
     import { trackEvent } from '@datawrapper/shared/analytics';
     import { isValidEmail } from './utils';
@@ -83,7 +83,7 @@
                 />
             </div>
 
-            <SetPasswordField bind:value={password} bind:ok={passwordOk} {__} />
+            <SetPasswordInput bind:value={password} bind:ok={passwordOk} {__} />
 
             <button disabled={signingUp} class="button is-primary mb-2" on:click={() => doSignUp()}>
                 {@html __('Sign Up')}

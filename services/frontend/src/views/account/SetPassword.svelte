@@ -1,6 +1,6 @@
 <script>
     import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
-    import CheckPassword from '../shared/CheckPassword.svelte';
+    import SetPasswordInput from '_partials/controls/SetPasswordInput.svelte';
     import { createEventDispatcher } from 'svelte';
 
     import { getContext } from 'svelte';
@@ -19,11 +19,7 @@
     export let submitting;
 
     let password;
-    let passwordClear = false;
     let passwordOk;
-    let passwordHelp;
-    let passwordSuccess;
-    let passwordError;
 
     const dispatch = createEventDispatcher();
 
@@ -64,55 +60,9 @@
 {/if}
 
 <div class="reset-form">
-    <div class="field mb-3">
-        <label for="set-pwd" class="label">{__('password')}</label>
-
-        <!-- input types can't be dynamic when using two-way value binding -->
-        {#if passwordClear}
-            <input
-                id="set-pwd"
-                class="input"
-                type="text"
-                autocomplete="new-password"
-                bind:value={password}
-                class:is-danger={passwordError}
-                class:is-success={!passwordError && passwordSuccess}
-            />
-        {:else}
-            <input
-                id="set-pwd"
-                class="input"
-                type="password"
-                autocomplete="new-password"
-                bind:value={password}
-                class:is-danger={passwordError}
-                class:is-success={!passwordError && passwordSuccess}
-            />
-        {/if}
-
-        <CheckPassword
-            {__}
-            bind:password
-            bind:passwordHelp
-            bind:passwordSuccess
-            bind:passwordError
-            bind:passwordOk
-        />
-
-        {#if passwordError}
-            <p class="help is-danger">{@html passwordError}</p>
-        {:else if passwordSuccess}
-            <p class="help is-success is-dark">{@html passwordSuccess}</p>
-        {:else if passwordHelp}
-            <p class="help has-text-grey-dark">{@html passwordHelp}</p>
-        {/if}
-    </div>
+    <SetPasswordInput {__} bind:value={password} bind:ok={passwordOk} />
 
     <div class="field">
-        <label class="checkbox">
-            <input bind:checked={passwordClear} type="checkbox" />
-            {@html __('account / invite / password-clear-text')}
-        </label>
         <div class="control-group login-help">
             {#if email}
                 {@html __('account / invite / your-login-is').replace(
