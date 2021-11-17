@@ -17,7 +17,7 @@ const config = requireConfig();
 const path = require('path');
 const { getUserLanguage } = require('./utils');
 const headerLinks = require('./utils/header-links');
-const adminPages = require('./utils/admin-pages');
+const settingsPages = require('./utils/settings-pages');
 const viewComponents = require('./utils/view-components');
 const createAPI = require('./utils/create-api');
 const {
@@ -155,7 +155,7 @@ const start = async () => {
 
     await server.register(viewComponents);
     await server.register(headerLinks);
-    await server.register(adminPages);
+    await server.register(settingsPages);
 
     // hooks
     server.app.event = eventList;
