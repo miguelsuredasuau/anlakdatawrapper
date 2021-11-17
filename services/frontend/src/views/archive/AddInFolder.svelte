@@ -30,7 +30,8 @@
             addFolder({
                 teamId,
                 ...res,
-                key: res.id
+                key: res.id,
+                chartCount: 0
             });
         } catch (error) {
             if (error.status === 409) {
