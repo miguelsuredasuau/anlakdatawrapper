@@ -20,6 +20,7 @@
         selectedCharts,
         chartsLoading
     } from './stores';
+    import { headerProps } from '_layout/stores';
     import { formatQueryString } from '../../utils/url.cjs';
     import { groupCharts } from '../../utils/charts.cjs';
     import { onMount, getContext, setContext } from 'svelte';
@@ -126,6 +127,13 @@
     }
 
     const modalHashRegex = /^#\/([a-z0-9]{5})$/i;
+
+    let folderNavEl;
+    $: if (folderNavEl) {
+        const padding = 10;
+        const { isSticky, height } = $headerProps;
+        folderNavEl.style.top = `${isSticky ? height + padding : padding}px`;
+    }
 
     onMount(() => {
         if (modalHashRegex.test(window.location.hash)) {
@@ -390,30 +398,37 @@
         <div class="container">
             <div class="columns is-variable is-8-fullhd">
                 <div class="column" style="position: relative;">
-                    {#if $currentFolder.search}
-                        <CollapseGroup className="search" title={__('archive / section / search')}>
-                            <Folder {__} folder={$currentFolder} />
+                    <div bind:this={folderNavEl} style="position: sticky;">
+                        {#if $currentFolder.search}
+                            <CollapseGroup
+                                className="search"
+                                title={__('archive / section / search')}
+                            >
+                                <Folder {__} folder={$currentFolder} />
+                            </CollapseGroup>
+                        {/if}
+                        <CollapseGroup className="shared" title={__('archive / section / shared')}>
+                            {#each sortedTeamFolders as teamFolder, i}
+                                {#if i}<hr class="my-3" />{/if}
+                                <Folder {__} folder={teamFolder} />
+                            {:else}
+                                <div class="team-message">
+                                    <p class="pb-1">
+                                        {__('archive / section / shared / team-message')}
+                                    </p>
+                                    <a href="/account/teams">
+                                        {__('archive / section / shared / team-link')}
+                                    </a>
+                                </div>
+                            {/each}
                         </CollapseGroup>
-                    {/if}
-                    <CollapseGroup className="shared" title={__('archive / section / shared')}>
-                        {#each sortedTeamFolders as teamFolder, i}
-                            {#if i}<hr class="my-3" />{/if}
-                            <Folder {__} folder={teamFolder} />
-                        {:else}
-                            <div class="team-message">
-                                <p class="pb-1">
-                                    {__('archive / section / shared / team-message')}
-                                </p>
-                                <a href="/account/teams">
-                                    {__('archive / section / shared / team-link')}
-                                </a>
-                            </div>
-                        {/each}
-                    </CollapseGroup>
-
-                    <CollapseGroup className="private" title={__('archive / section / private')}>
-                        <Folder {__} folder={userFolder} />
-                    </CollapseGroup>
+                        <CollapseGroup
+                            className="private"
+                            title={__('archive / section / private')}
+                        >
+                            <Folder {__} folder={userFolder} />
+                        </CollapseGroup>
+                    </div>
                 </div>
                 <div class="column is-three-quarters">
                     <ActionBar {__} charts={charts.list} {folderId} {teamId} {apiQuery} />

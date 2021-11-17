@@ -2,6 +2,7 @@
     import { getContext } from 'svelte';
     import DatawrapperLogoDisplay from '_partials/displays/DatawrapperLogoDisplay.svelte';
     import NavBar from '_partials/navbar/NavBar.svelte';
+    import { headerProps } from './stores';
 
     const config = getContext('config');
     const msg = getContext('messages');
@@ -11,13 +12,18 @@
         __ = (key, scope = 'core') => msg.translate(key, scope, $msg);
     }
 
-    $: stickyHeaderThreshold = $config.stickyHeaderThreshold;
-
     let isActive = false;
     let scrollY = 0;
     $: scrolledDown = scrollY > 0;
 
     let innerHeight = 0;
+    let headerHeight;
+    $: stickyHeaderThreshold = $config.stickyHeaderThreshold;
+    $: isHeaderSticky = innerHeight > stickyHeaderThreshold;
+    $: $headerProps = {
+        isSticky: isHeaderSticky,
+        height: headerHeight
+    };
 </script>
 
 <style lang="scss">
@@ -28,7 +34,7 @@
         transition: padding 0.2s ease-in-out, margin 0.2s ease-in-out;
     }
     header.is-sticky {
-        position: sticky;
+        position: sticky !important;
         top: 0px;
         z-index: 1000;
     }
@@ -65,7 +71,7 @@
 
 <svelte:window bind:scrollY bind:innerHeight />
 
-<header class:is-sticky={innerHeight > stickyHeaderThreshold} id="top">
+<header class:is-sticky={isHeaderSticky} id="top" bind:clientHeight={headerHeight}>
     <div class="container">
         <nav
             class="navbar"
