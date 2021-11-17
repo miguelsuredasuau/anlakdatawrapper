@@ -1070,5 +1070,15 @@
   "archive / search-results": "Search results for \"%s\"",
   "archive / sorted-by": "Sorted by",
   "dashboard / visualization / created": "Created at",
-  "dashboard / visualization / not-published": "Not published"
+  "dashboard / visualization / not-published": "Not published",
+  "archive / modal / copy-embed-code": "Copy embed code",
+  "archive / modal / copy-success": "Successfully copied",
+  "navbar / vis-archive / no-visualizations": "You don't have any visualizations yet.",
+  "navbar / vis-archive / loading": "loading...",
+  "archive / status / just-data": "Just data",
+  "archive / status / draft": "Draft",
+  "archive / status / published": "Published",
+  "archive / search / error": "Something went wrong while searching for charts.",
+  "archive / section / shared / team-message": "You don’t have any shared folders yet. Start collaborating with others and create or join a team.",
+  "archive / section / shared / team-link": "Team settings"
 }

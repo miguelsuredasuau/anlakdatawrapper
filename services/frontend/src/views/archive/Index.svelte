@@ -354,9 +354,15 @@
     });
 </script>
 
-<style>
+<style lang="scss">
+    @import '../../styles/colors.scss';
     .section {
         padding: 2rem 3rem;
+    }
+    .team-message {
+        padding: 1rem;
+        color: $dw-grey-dark;
+        border: 1px dashed $dw-grey-light;
     }
 </style>
 
@@ -393,6 +399,15 @@
                         {#each sortedTeamFolders as teamFolder, i}
                             {#if i}<hr class="my-3" />{/if}
                             <Folder {__} folder={teamFolder} />
+                        {:else}
+                            <div class="team-message">
+                                <p class="pb-1">
+                                    {__('archive / section / shared / team-message')}
+                                </p>
+                                <a href="/account/teams">
+                                    {__('archive / section / shared / team-link')}
+                                </a>
+                            </div>
                         {/each}
                     </CollapseGroup>
 

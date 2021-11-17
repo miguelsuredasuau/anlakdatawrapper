@@ -1070,5 +1070,15 @@
   "archive / search-results": "",
   "archive / sorted-by": "",
   "dashboard / visualization / created": "",
-  "dashboard / visualization / not-published": ""
+  "dashboard / visualization / not-published": "",
+  "archive / modal / copy-embed-code": "Copia il codice d'incorporazione",
+  "archive / modal / copy-success": "",
+  "navbar / vis-archive / no-visualizations": "",
+  "navbar / vis-archive / loading": "",
+  "archive / status / just-data": "",
+  "archive / status / draft": "Bozza",
+  "archive / status / published": "Pubblicato",
+  "archive / search / error": "",
+  "archive / section / shared / team-message": "",
+  "archive / section / shared / team-link": ""
 }

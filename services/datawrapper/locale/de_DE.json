@@ -1070,5 +1070,15 @@
   "archive / search-results": "Suchergebnisse für \"%s\"",
   "archive / sorted-by": "Sortiert nach",
   "dashboard / visualization / created": "Erstellt",
-  "dashboard / visualization / not-published": "Nicht veröffentlicht"
+  "dashboard / visualization / not-published": "Nicht veröffentlicht",
+  "archive / modal / copy-embed-code": "Einbett-Code kopieren",
+  "archive / modal / copy-success": "Erfolgreich kopiert",
+  "navbar / vis-archive / no-visualizations": "Du hast noch keine Diagramme erstellt.",
+  "navbar / vis-archive / loading": "wird geladen...",
+  "archive / status / just-data": "Nur Daten",
+  "archive / status / draft": "Entwurf",
+  "archive / status / published": "Veröffentlicht",
+  "archive / search / error": "Bei der Suche ist ein Fehler aufgetreten.",
+  "archive / section / shared / team-message": "Du hast noch keine geteilten Ordner. Fange jetzt an mit anderen zusammenzuarbeiten und erstelle ein Team oder trete einem bei.",
+  "archive / section / shared / team-link": "Team-Einstellungen"
 }
