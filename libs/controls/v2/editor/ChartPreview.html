@@ -124,6 +124,7 @@ TODO for later:
     const RELOAD = ['type', 'theme', 'language', 'metadata.data.transpose', 'metadata.axes'];
     const RENDER = ['metadata.visualize'];
     const IGNORE = ['metadata.visualize.text-annotations', 'metadata.visualize.range-annotations'];
+    const DEFAULT_ALLOWED_HTML = '<a><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt>';
 
     export default {
         components: {
@@ -369,14 +370,18 @@ TODO for later:
         if (!get(chart.get().externalMetadata, 'describe.intro')) {
             makeElementEditable({
                 el: doc.querySelector('.description-block .block-inner'),
-                updateContent: sync('describe.intro')
+                updateContent: sync('describe.intro'),
+                allowedHTML:
+                    DEFAULT_ALLOWED_HTML +
+                    '<summary><details><table><thead><tbody><tfoot><caption><colgroup><col><tr><td><th>'
             });
         }
 
         if (!get(chart.get().externalMetadata, 'annotate.notes')) {
             makeElementEditable({
                 el: doc.querySelector('.notes-block .block-inner'),
-                updateContent: sync('annotate.notes')
+                updateContent: sync('annotate.notes'),
+                allowedHTML: DEFAULT_ALLOWED_HTML + '<summary><details>'
             });
         }
 
@@ -388,7 +393,7 @@ TODO for later:
             };
         }
 
-        function makeElementEditable({ el, updateContent }) {
+        function makeElementEditable({ el, updateContent, allowedHTML = DEFAULT_ALLOWED_HTML }) {
             if (!el) return;
             let lastValue = false;
 
@@ -411,7 +416,7 @@ TODO for later:
             // Persist changes when edited element loses focus:
             el.addEventListener('blur', () => {
                 // Remove trailing line breaks
-                updateContent(purifyHtml(el.innerHTML));
+                updateContent(purifyHtml(el.innerHTML, allowedHTML));
             });
         }
     }
