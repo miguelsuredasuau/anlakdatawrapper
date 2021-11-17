@@ -1,5 +1,5 @@
 <script>
-    import SignInPageLayout from '../layout/SignInPageLayout.svelte';
+    import SignInPageLayout from '_layout/SignInPageLayout.svelte';
     import SetPassword from './SetPassword.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
 

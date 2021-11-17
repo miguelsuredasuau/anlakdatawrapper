@@ -1,5 +1,5 @@
 <script>
-    import MainLayout from 'layout/MainLayout.svelte';
+    import MainLayout from '_layout/MainLayout.svelte';
     import { getContext } from 'svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
 

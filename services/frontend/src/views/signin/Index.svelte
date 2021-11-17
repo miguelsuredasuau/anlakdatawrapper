@@ -1,5 +1,5 @@
 <script>
-    import SignInPageLayout from 'layout/SignInPageLayout.svelte';
+    import SignInPageLayout from '_layout/SignInPageLayout.svelte';
     import SignUpForm from './SignUpForm.svelte';
 
     export let __;

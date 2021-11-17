@@ -109,7 +109,7 @@ function buildOptions(page, ssr) {
             }),
             alias({
                 entries: {
-                    layout: join(__dirname, '../../views/layout'),
+                    _layout: join(__dirname, '../../views/_layout'),
                     _partials: join(__dirname, '../../views/_partials')
                 }
             }),

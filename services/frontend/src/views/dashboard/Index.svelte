@@ -1,6 +1,6 @@
 <script type="text/javascript">
     import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
-    import MainLayout from 'layout/MainLayout.svelte';
+    import MainLayout from '_layout/MainLayout.svelte';
 
     import ViewComponent from '_partials/ViewComponent.svelte';
 

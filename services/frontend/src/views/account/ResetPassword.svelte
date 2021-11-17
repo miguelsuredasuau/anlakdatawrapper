@@ -1,6 +1,6 @@
 <script>
     import httpReq from '@datawrapper/shared/httpReq';
-    import SignInPageLayout from 'layout/SignInPageLayout.svelte';
+    import SignInPageLayout from '_layout/SignInPageLayout.svelte';
     import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
     import SetPasswordInput from '_partials/controls/SetPasswordInput.svelte';
 

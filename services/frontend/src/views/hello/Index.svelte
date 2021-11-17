@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    import MainLayout from 'layout/MainLayout.svelte';
+    import MainLayout from '_layout/MainLayout.svelte';
     import Menu from '_partials/Menu.svelte';
 
     import WelcomeSection from './WelcomeSection.svelte';

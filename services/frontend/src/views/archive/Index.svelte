@@ -4,7 +4,7 @@
     import DragNotification from './DragNotification.svelte';
     import Folder from './Folder.svelte';
     import FolderBreadcrumbNav from './FolderBreadcrumbNav.svelte';
-    import MainLayout from 'layout/MainLayout.svelte';
+    import MainLayout from '_layout/MainLayout.svelte';
     import Pagination from '../_partials/Pagination.svelte';
     import SearchInput from './SearchInput.svelte';
     import SubFolderGrid from './SubFolderGrid.svelte';

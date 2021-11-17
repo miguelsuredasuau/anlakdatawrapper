@@ -159,7 +159,7 @@ Example plugin `ExampleView.svelte`:
 ```html
 <!-- plugins/example/src/frontend/views/ExampleView.svelte -->
 <script type="text/javascript">
-    import MainLayout from 'layout/MainLayout.svelte';
+    import MainLayout from '_layout/MainLayout.svelte';
     import { user } from 'lib/stores';
     export let test;
 
@@ -219,7 +219,7 @@ To use (dynamic) translations in Svelte views you need to load the `messages` co
 
 ```html
 <script type="text/javascript">
-    import MainLayout from 'layout/MainLayout.svelte';
+    import MainLayout from '_layout/MainLayout.svelte';
 
     export let __;
 </script>
@@ -257,8 +257,8 @@ To avoid having to rewrite all our Svelte2 code at once the new frontend include
 
 ```jsx
 <script type="text/javascript">
-   import MainLayout from 'layout/MainLayout.svelte';
-   import Svelte2Wrapper from 'layout/partials/Svelte2Wrapper.svelte';
+   import MainLayout from '_layout/MainLayout.svelte';
+   import Svelte2Wrapper from '_layout/partials/Svelte2Wrapper.svelte';
 
    let data = {
       settings: {

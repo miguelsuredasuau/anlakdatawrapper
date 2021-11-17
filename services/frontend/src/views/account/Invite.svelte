@@ -1,6 +1,6 @@
 <script>
     import httpReq from '@datawrapper/shared/httpReq';
-    import SignInPageLayout from 'layout/SignInPageLayout.svelte';
+    import SignInPageLayout from '_layout/SignInPageLayout.svelte';
     import SetPassword from './SetPassword.svelte';
 
     export let token;
