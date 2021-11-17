@@ -35,7 +35,7 @@
     const menuGroups = [
         {
             title: 'Introduction',
-            items: [
+            pages: [
                 { url: '#welcome', title: 'Welcome' },
                 { url: '#icons', title: 'Icons' },
                 { url: '#buttons', title: 'Buttons' }
@@ -43,7 +43,7 @@
         },
         {
             title: 'Navigation',
-            items: [
+            pages: [
                 { url: '#breadcrumbs', title: 'Breadcrumbs' },
                 { url: '#pagination', title: 'Pagination' },
                 { url: '#tabs', title: 'Tabs' },
@@ -52,7 +52,7 @@
         },
         {
             title: 'Displays',
-            items: [
+            pages: [
                 { url: '#notifications', title: 'Notifications' },
                 { url: '#message', title: 'Message' },
                 { url: '#modal', title: 'Modal' },
@@ -61,14 +61,14 @@
         },
         {
             title: 'Controls',
-            items: [
+            pages: [
                 { url: '#checkbox', title: 'Checkbox' },
                 { url: '#setpassword', title: 'Set Password' }
             ]
         },
         {
             title: 'Content',
-            items: [
+            pages: [
                 { url: '#titles', title: 'Titles' },
                 { url: '#content', title: 'Content' },
                 { url: '#table', title: 'Table' },
@@ -78,7 +78,7 @@
         },
         {
             title: 'Misc.',
-            items: [
+            pages: [
                 { url: '#dropdown', title: 'Dropdown' },
                 { url: '#svelte2', title: 'Svelte2' },
                 { url: '#errors', title: 'Errors' }

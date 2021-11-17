@@ -5,27 +5,28 @@
     export let groups = [];
     export let sticky = false;
     export let content = null;
+    export let loadPage;
 
     function getTopMostElement(scrollY, groups, content) {
         let topMost;
         for (let i = 0; i < groups.length; i++) {
             const group = groups[i];
-            for (let j = 0; j < group.items.length; j++) {
-                const item = group.items[j];
-                if (item.url.startsWith('#')) {
-                    const el = content.querySelector(item.url);
+            for (let j = 0; j < group.pages.length; j++) {
+                const page = group.pages[j];
+                if (page.url.startsWith('#')) {
+                    const el = content.querySelector(page.url);
                     if (el) {
                         const { top } = el.getBoundingClientRect();
                         if (!topMost || top < 30) {
-                            topMost = item;
+                            topMost = page;
                         }
-                        // check last item
+                        // check last page
                         if (
                             i === groups.length - 1 &&
-                            j === group.items.length - 1 &&
+                            j === group.pages.length - 1 &&
                             innerHeight + scrollY >= content.ownerDocument.body.offsetHeight - 2
                         )
-                            topMost = item;
+                            topMost = page;
                     }
                 }
             }
@@ -33,13 +34,21 @@
         return topMost;
     }
 
-    function isActive(item, scrollY, groups, content) {
-        if (sticky && item.url.startsWith('#') && content) {
+    function isActive(page, scrollY, groups, content, req) {
+        if (sticky && page.url.startsWith('#') && content) {
             // check if target is the top most item
             const topItem = getTopMostElement(scrollY, groups, content);
-            return topItem === item;
+            return topItem === page;
         }
-        return $request.path === item.url;
+        return req.path === page.url;
+    }
+
+    function pageClick(page) {
+        if (typeof loadPage === 'function') {
+            loadPage(page);
+        } else {
+            window.location.href = page.url;
+        }
     }
 
     let scrollY;
@@ -61,10 +70,12 @@
             <h3 class="menu-label">{@html g.title}</h3>
         {/if}
         <ul role="navigation" class="menu-list">
-            {#each g.items as item}
+            {#each g.pages as page}
                 <li>
-                    <a class:is-active={isActive(item, scrollY, groups, content)} href={item.url}
-                        >{@html item.title}</a
+                    <a
+                        class:is-active={isActive(page, scrollY, groups, content, $request)}
+                        on:click|preventDefault={() => pageClick(page)}
+                        href={page.url}>{@html page.title}</a
                     >
                 </li>
             {/each}

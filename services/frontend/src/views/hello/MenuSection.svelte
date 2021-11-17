@@ -10,14 +10,14 @@
                 groups={[
                     {
                         title: 'Group A',
-                        items: [
+                        pages: [
                             { url: 'vis', title: 'Chart type' },
                             { url: '/v2/hello', title: 'Refine' }
                         ]
                     },
                     {
                         title: 'Group B',
-                        items: [
+                        pages: [
                             { url: 'vis', title: 'Chart type' },
                             { url: 'refine', title: 'Refine' }
                         ]
