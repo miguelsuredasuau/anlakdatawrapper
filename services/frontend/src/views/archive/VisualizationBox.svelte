@@ -60,6 +60,7 @@
     }
 
     function handleDeleteButtonClick() {
+        chart.isDeleting = true;
         deleteChart(chart);
         isDropdownActive = false;
     }
@@ -228,6 +229,11 @@
         .subline {
             line-height: 1.2;
         }
+
+        &.is-deleting {
+            opacity: 0.4;
+            pointer-events: none;
+        }
     }
 
     .drag-preview-outer {
@@ -272,6 +278,7 @@
 <div
     class="box has-border"
     class:selected
+    class:is-deleting={chart.isDeleting}
     draggable="true"
     on:dragstart|stopPropagation={handleVisualizationDragStart}
     on:dragend={() => (dragPreviewVisible = false)}
