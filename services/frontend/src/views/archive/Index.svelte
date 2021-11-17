@@ -17,7 +17,8 @@
         folderTreeDropZone,
         subfolderGridDropZone,
         query,
-        selectedCharts
+        selectedCharts,
+        chartsLoading
     } from './stores';
     import { formatQueryString } from '../../utils/url.cjs';
     import { groupCharts } from '../../utils/charts.cjs';
@@ -187,22 +188,29 @@
             ...(!search && { folderId: folderId || 'null' }),
             ...(!search && (teamId ? { teamId } : { authorId: 'me', teamId: 'null' }))
         });
-        const newCharts = await httpReq.get(`/v3/charts?${qs}`);
-        if (groupBy) {
-            newCharts.list = groupCharts({ charts: newCharts.list, groupBy, __ });
-        }
-        if (!newCharts.list.length && /[a-zA-Z0-9]{5}/.test(search)) {
-            // search for specific chart id
-            try {
-                const chart = await httpReq.get(`/v3/charts/${search}`);
-                newCharts.list.push(chart);
-                newCharts.total = 1;
-            } catch (e) {
-                // ignore error
+        try {
+            $chartsLoading = true;
+            const newCharts = await httpReq.get(`/v3/charts?${qs}`);
+            if (groupBy) {
+                newCharts.list = groupCharts({ charts: newCharts.list, groupBy, __ });
             }
+            if (!newCharts.list.length && /[a-zA-Z0-9]{5}/.test(search)) {
+                // search for specific chart id
+                try {
+                    const chart = await httpReq.get(`/v3/charts/${search}`);
+                    newCharts.list.push(chart);
+                    newCharts.total = 1;
+                } catch (e) {
+                    // ignore error
+                }
+            }
+            charts = newCharts;
+            $selectedCharts = new Set();
+        } catch (e) {
+            window.alert(__('archive / search / error'));
+        } finally {
+            $chartsLoading = false;
         }
-        charts = newCharts;
-        $selectedCharts = new Set();
     }
 
     function refreshFolders() {

@@ -10,4 +10,13 @@ const selectedCharts = new writable(new Set([]));
 
 const subfolderGridDropZone = new writable();
 
-export { currentFolder, folderTreeDropZone, query, selectedCharts, subfolderGridDropZone };
+const chartsLoading = new writable(false);
+
+export {
+    currentFolder,
+    folderTreeDropZone,
+    query,
+    selectedCharts,
+    subfolderGridDropZone,
+    chartsLoading
+};

@@ -1,6 +1,6 @@
 <script>
     import { beforeUpdate } from 'svelte';
-    import { currentFolder, query } from './stores';
+    import { currentFolder, query, chartsLoading } from './stores';
     import debounce from 'lodash/debounce';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
@@ -64,5 +64,17 @@
 
 <div class="control has-icons-left">
     <input class="input" type="text" bind:value on:input={onInput} placeholder={__('Search')} />
-    <IconDisplay icon="search" size="1.5em" className="is-left mx-2" />
+    {#if !$chartsLoading}
+        <IconDisplay icon="search" size="1.5em" className="is-left mx-2" />
+    {:else}
+        <IconDisplay
+            valign="middle"
+            icon="loading-spinner"
+            timing="steps(12)"
+            duration="1s"
+            spin
+            size="1.5em"
+            className="is-left mx-2 is-size-6 has-text-grey"
+        />
+    {/if}
 </div>
