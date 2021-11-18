@@ -15,11 +15,15 @@
     let curPage = flatPages.find(p => p.id === pageId) || flatPages[0];
 
     async function loadPage(page) {
-        $request.path = page.url;
-        curPage = null;
-        await tick();
-        window.history.replaceState({}, '', page.url);
-        curPage = page;
+        if (page.svelte2) {
+            $request.path = page.url;
+            curPage = null;
+            await tick();
+            window.history.replaceState({}, '', page.url);
+            curPage = page;
+        } else {
+            window.location.href = page.url;
+        }
     }
 </script>
 

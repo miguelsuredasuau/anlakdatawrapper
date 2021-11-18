@@ -9,7 +9,7 @@ module.exports = {
             return {
                 url: '/account/profile',
                 title: __('account / profile'),
-                group: 'Users',
+                group: __('account / settings / personal'),
                 svgIcon: 'user',
                 svelte2: {
                     id: 'svelte/account/profile',
@@ -26,7 +26,7 @@ module.exports = {
             return {
                 url: '/account/myteams',
                 title: __('account / my-teams'),
-                group: 'Users',
+                group: __('account / settings / personal'),
                 svgIcon: 'team',
                 svelte2: {
                     id: 'svelte/account/teams',
@@ -50,7 +50,21 @@ module.exports = {
                     })
                 },
                 async handler(request, h) {
+                    const user = request.auth.artifacts;
                     const settingsPages = await server.methods.getSettingsPages('account', request);
+                    const __ = server.methods.getTranslate(request);
+
+                    if (user.teams.length > 0) {
+                        // add group with links to team settings pages
+                        settingsPages.push({
+                            title: __('account / settings / team'),
+                            pages: user.teams.map(team => ({
+                                url: `/team/${team.id}/settings`,
+                                title: team.name,
+                                svgIcon: 'team'
+                            }))
+                        });
+                    }
 
                     return h.view('account/Settings.svelte', {
                         htmlClass: 'has-background-white-bis',

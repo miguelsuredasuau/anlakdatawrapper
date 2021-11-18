@@ -40,4 +40,11 @@
         <h3 class="title is-3">{curPage.headline || curPage.title}</h3>
         <Svelte2Wrapper {...curPage.svelte2} data={{ ...curPage.data, settings: team.settings }} />
     {/if}
+    <div slot="belowNav">
+        <hr />
+        <ul>
+            <li><a href="/account/teams">My Teams</a></li>
+            <li><a href="/archive/team/{team.id}">Teams charts</a></li>
+        </ul>
+    </div>
 </SettingsPageLayout>
