@@ -111,7 +111,7 @@
 	    $app->redirect('/team/' . $org_id . '/settings');
 	});
 
-	$app->get('/team/:org_id/:tab', function ($org_id, $tab)
+	$app->get('/v1/team/:org_id/:tab', function ($org_id, $tab)
 	    use ($app, $getLocales, $getThemeInfo, $getFolders, $getSystemDefaultTheme, $getVisArchive, $getVisualizations) {
 
 	    disable_cache($app);

@@ -13,7 +13,7 @@ call_user_func(function() {
         $app->redirect('/account');
     });
 
-    $app->get('/account(/:tab)?', function($tab = null) use ($app) {
+    $app->get('/v1/account(/:tab)?', function($tab = null) use ($app) {
         disable_cache($app);
 
         if (Session::isLoggedIn()) {

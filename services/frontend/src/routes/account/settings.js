@@ -29,7 +29,7 @@ module.exports = {
                 group: 'Users',
                 svgIcon: 'team',
                 svelte2: {
-                    id: 'svelte/account/myteams',
+                    id: 'svelte/account/teams',
                     js: '/static/js/svelte/account/myteams.js',
                     css: '/static/css/svelte/account/myteams.css'
                 },

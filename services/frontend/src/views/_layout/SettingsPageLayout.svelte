@@ -11,19 +11,20 @@
 <style type="text/css">
 </style>
 
-<MainLayout title={`Settings - ${title}`}>
+<MainLayout {title}>
     <section class="section">
         <div class="container">
+            <slot name="header" />
             <div class="columns is-variable is-6">
                 <div class="column">
                     <Menu groups={settingsPages} {loadPage} />
                     <slot name="belowNav" />
                 </div>
                 <div class="column is-four-fifths content">
-                    <h1 class="title">Settings >> {title}</h1>
                     <slot />
                 </div>
             </div>
+            <slot name="footer" />
         </div>
     </section>
 </MainLayout>

@@ -59,11 +59,12 @@
     }`;
         parent.appendChild(style);
 
-        require([id], ({ App }) => {
+        require([id], ({ App, store }) => {
             try {
                 loading = false;
                 _app = new App({
                     target: container,
+                    store,
                     data: JSON.parse(data)
                 });
                 _data = data;
