@@ -11,6 +11,7 @@ const {
     TeamProduct,
     TeamTheme
 } = require('@datawrapper/orm/models');
+const { db } = require('@datawrapper/orm');
 
 const { noContentResponse, teamResponse } = require('../../../schemas/response.js');
 
@@ -255,38 +256,56 @@ async function deleteTeam(request, h) {
         }
     }
 
-    const query = {
-        where: {
-            organization_id: params.id
-        }
-    };
-
-    await Promise.all([
-        // remove all relations to this team
-        UserTeam.destroy(query),
-        TeamProduct.destroy(query),
-        TeamTheme.destroy(query),
-        // move charts back to their owners
-        Chart.update(
-            {
-                organization_id: null,
-                in_folder: null
+    const destroyedRows = await db.transaction(async t => {
+        const query = {
+            where: {
+                organization_id: params.id
             },
-            query
-        )
-    ]);
+            transaction: t
+        };
 
-    // remove team folders
-    await Folder.destroy({
-        where: {
-            org_id: params.id
-        }
-    });
+        await Promise.all([
+            // remove all relations to this team
+            UserTeam.destroy(query),
+            TeamProduct.destroy(query),
+            TeamTheme.destroy(query),
+            // move charts back to their owners
+            Chart.update(
+                {
+                    organization_id: null,
+                    in_folder: null
+                },
+                query
+            ),
+            // remove relations between folders, so that we can destroy them without triggering
+            // foreign key constraint error
+            Folder.update(
+                {
+                    parent_id: null
+                },
+                {
+                    where: {
+                        org_id: params.id
+                    },
+                    transaction: t
+                }
+            )
+        ]);
 
-    const destroyedRows = await Team.destroy({
-        where: {
-            id: params.id
-        }
+        // remove team folders
+        await Folder.destroy({
+            where: {
+                org_id: params.id
+            },
+            transaction: t
+        });
+
+        return await Team.destroy({
+            where: {
+                id: params.id
+            },
+            transaction: t
+        });
     });
 
     /* no rows got updated, which means the team is already deleted or doesn't exist */

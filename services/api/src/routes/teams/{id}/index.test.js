@@ -3,6 +3,7 @@ const has = require('lodash/has');
 const set = require('lodash/set');
 const test = require('ava');
 const {
+    createFolder,
     createTeamWithUser,
     createUser,
     destroy,
@@ -514,6 +515,38 @@ test('restricted team settings are preserved in PUT request', async t => {
     } finally {
         if (teamObj) {
             await destroy(...Object.values(teamObj));
+        }
+    }
+});
+
+test('DELETE /teams/{id} deletes a team with nested folders', async t => {
+    let teamObj;
+    try {
+        teamObj = await createTeamWithUser(t.context.server);
+        const { session, team, user } = teamObj;
+        const parentFolder = await createFolder({ org_id: team.id });
+        await createFolder({ org_id: team.id, parent_id: parentFolder.id });
+
+        const res = await t.context.server.inject({
+            method: 'DELETE',
+            url: `/v3/teams/${team.id}`,
+            auth: {
+                strategy: 'session',
+                credentials: session,
+                artifacts: user
+            },
+            headers: t.context.headers,
+            payload: {
+                name: 'Testy'
+            }
+        });
+        t.is(res.statusCode, 204);
+
+        const { Team } = require('@datawrapper/orm/models');
+        t.is(await Team.findByPk(team.id), null);
+    } finally {
+        if (teamObj) {
+            await destroy(Object.values(teamObj));
         }
     }
 });
