@@ -163,6 +163,12 @@
             &:hover .folder-menu {
                 color: $dw-grey;
             }
+
+            .name {
+                line-height: 1.3;
+                overflow-wrap: break-word;
+                hyphens: auto;
+            }
         }
         &.is-search {
             .self {
@@ -214,7 +220,7 @@
     class:is-drop-zone={isDropZone}
 >
     <div
-        class="self py-1"
+        class="self py-1 pr-1"
         class:active={isCurrent}
         style="padding-left: {22 + folder.level * indentation}px"
         draggable={!folder.search && !!folder.id}
@@ -257,6 +263,7 @@
                 $currentFolder = folder;
             }}
             draggable="false"
+            class="is-flex is-align-items-start"
             ><IconDisplay
                 icon="folder{folder.search
                     ? '-search-outline'
@@ -268,7 +275,7 @@
                 className="mr-1"
                 valign="middle"
             />
-            <span>
+            <span class="name">
                 {#if editMode}
                     <span
                         bind:this={folderNameSpan}

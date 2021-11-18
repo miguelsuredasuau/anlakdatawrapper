@@ -287,7 +287,7 @@
         <figure class="image is-4by3">
             <figcaption
                 title={purifyHTML(chart.title, '')}
-                class="title is-size-6 is-size-5-fullhd mb-3"
+                class="title is-size-6 is-size-5-fullhd mb-3 is-font-weight-medium"
                 bind:this={chartTitle}
                 contentEditable={isTitleEditable}
                 class:title-editable={isTitleEditable}

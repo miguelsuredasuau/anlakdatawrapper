@@ -27,11 +27,14 @@
 </script>
 
 <style lang="scss">
+    @import '../../styles/export.scss';
+
     header {
         background: white;
         border-bottom: 1px solid var(--color-dw-grey-lighter);
         border-top: 3px solid var(--color-dw-scooter);
         transition: padding 0.2s ease-in-out, margin 0.2s ease-in-out;
+        padding: 0 1.5rem;
     }
     header.is-sticky {
         position: sticky !important;
@@ -66,6 +69,16 @@
 
         padding-top: 0.75em;
         padding-bottom: 0.75em;
+    }
+    @include touch {
+        .navbar-brand .navbar-item {
+            padding-left: 0;
+        }
+    }
+    @include desktop {
+        header {
+            padding: 0 3rem;
+        }
     }
 </style>
 

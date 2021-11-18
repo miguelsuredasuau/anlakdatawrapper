@@ -2,125 +2,13 @@
 
 @import './fonts';
 @import './colors';
-@import './spaces';
+@import './vars';
 
 // Global Defaults
 
 :focus-visible {
     outline-color: #ffb800;
 }
-
-// COLORS
-
-$primary: $dw-scooter;
-
-$info: $dw-blue;
-$success: $dw-green;
-$warning: $dw-yellow;
-$danger: $dw-red;
-
-$light: $dw-white-bis;
-$dark: $dw-black-bis;
-
-$black: $dw-black;
-$black-bis: $dw-black-bis;
-// $black-ter: $dw-black-ter;
-$grey-darker: $dw-grey-darker;
-$grey-dark: $dw-grey-dark;
-$grey: $dw-grey;
-$grey-light: $dw-grey-light;
-$grey-lighter: $dw-grey-lighter;
-$grey-lightest: $dw-grey-lightest;
-$white-ter: $dw-white-ter;
-$white-bis: $dw-white-bis;
-$white: $dw-white;
-
-$background: $dw-white-bis;
-$body-background-color: white;
-$footer-background-color: transparent;
-
-// $border:
-// $border-hover
-// $border-light
-// $border-light-hover
-
-$text: $dw-black-bis;
-$text-light: $dw-grey;
-$text-strong: $dw-black;
-
-$code: darken($dw-red, 15%);
-
-$link: $dw-scooter;
-// $link-visited
-$link-hover: $dw-scooter-dark;
-// $link-hover-border
-
-// FONTS
-
-$family-sans-serif: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans,
-    Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-$family-serif: 'Bitter', serif;
-$family-monospace: 'Roboto Mono', Menlo, Consolas, Monaco, 'Liberation Mono', monospace;
-
-// SIZES
-
-$body-size: 16px;
-$body-font-size: 14px;
-
-$size-1: 3rem; // = 48px @ 16px base
-$size-2: 2rem; // = 32px @ 16px base
-$size-3: 1.5rem; // = 24px @ 16px base
-$size-4: 1.25rem; // = 20px @ 16px base
-$size-5: 1rem; // 16px @ 16px base
-$size-6: 0.875rem; // = 14px @ 16px base
-$size-7: 0.75rem; // = 12px @ 16px base
-
-// $size-small: $size-7
-// $size-normal: $size-6
-// $size-medium: $size-5
-// $size-large: $size-4
-
-$radius: 4px;
-
-// ELEMENTS
-
-$hr-height: 1px;
-$hr-background-color: $dw-shade;
-
-$button-color: $black-bis;
-$button-hover-color: $black;
-
-// Box
-
-$box-radius: $radius;
-
-// COMPONENTS
-// Navbar
-
-$navbar-item-hover-background-color: $dw-white-bis;
-$navbar-item-active-background-color: $dw-scooter-lightest;
-$navbar-dropdown-item-active-background-color: $dw-scooter-lightest;
-$navbar-divider-height: 1px;
-$navbar-divider-background-color: $dw-grey-lighter;
-$navbar-dropdown-arrow: $dw-grey-darker;
-
-// Modal
-$modal-content-width: 1100px;
-$modal-z: 1100;
-$modal-background-background-color: rgba($dw-black-bis, 0.5);
-
-// LAYOUT
-$section-padding: 1.5rem;
-
-// INPUTS
-$input-border-color: $dw-grey-light;
-
-// Dropdown
-$dropdown-item-active-color: $dw-black;
-$dropdown-item-active-background-color: $dw-scooter-lightest;
-$dropdown-content-padding-top: 0.25rem;
-$dropdown-content-padding-bottom: 0.25rem;
-
 /*
  * BULMA
  */
@@ -191,6 +79,20 @@ $dropdown-content-padding-bottom: 0.25rem;
 // @import "../../node_modules/bulma/sass/layout/hero.sass";
 // @import "../../node_modules/bulma/sass/layout/section.sass";
 
-// set bulma variables as css vars. needs to be done after import of bulma
-@import './vars';
+// customization after import of bulma
 @import './customize';
+@import './customize-utils';
+
+// Export as HTML Vars
+
+html {
+    --radius-small:  #{$radius-small};
+    --radius:  #{$radius};
+    --radius-large:  #{$radius-large};
+    --mobile: #{$tablet} - 1px;
+    --tablet: #{$tablet};
+    --touch: #{$desktop} - 1px;
+    --desktop: #{$desktop};
+    --widescreen: #{$widescreen};
+    --fullhd: #{$fullhd};
+  }

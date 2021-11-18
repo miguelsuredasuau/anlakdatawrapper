@@ -31,10 +31,10 @@
 </script>
 
 <style lang="scss">
-    @import '../../../styles/colors.scss';
-    @import 'bulma/sass/utilities/_all.sass';
+    @import '../../../styles/export.scss';
 
     // Navbar Items
+
     .navbar-menu {
         :global(.navbar-item, .navbar-link) {
             border-radius: var(--radius);

@@ -1,0 +1,11 @@
+/*
+ * CUSTOMIZE BULMA UTILS
+ */
+
+// remove max witdh on desktop container
+
+@include until-widescreen {
+  .container:not(.is-max-desktop,.is-max-widescreen) {
+    max-width: none;
+  }
+}

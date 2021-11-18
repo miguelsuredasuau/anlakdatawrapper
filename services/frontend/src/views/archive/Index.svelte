@@ -365,7 +365,8 @@
 <style lang="scss">
     @import '../../styles/colors.scss';
     .section {
-        padding: 2rem 3rem;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
     }
     .team-message {
         padding: 1rem;

@@ -15,7 +15,15 @@
 <style lang="scss">
     @import '../../styles/colors.scss';
     @import 'bulma/sass/utilities/_all.sass';
+
+    .subfolderbox {
+        height: 100%;
+        display: block;
+    }
     .box {
+        height: 100%;
+        display: flex;
+        align-items: center;
         border: 1px solid $dw-grey-lighter;
         padding: 10px 15px;
         box-shadow: none;
@@ -24,8 +32,13 @@
         }
         :global(.icon) {
             color: $dw-scooter;
-            font-size: 30px;
+            font-size: 2em;
         }
+    }
+    .name {
+        line-height: 1.3;
+        overflow-wrap: break-word;
+        hyphens: auto;
     }
 
     .is-drop-zone .box {
@@ -47,7 +60,7 @@
 
     @include fullhd {
         .box {
-            padding: 20px;
+            padding: 15px 20px;
         }
     }
 </style>
@@ -55,6 +68,7 @@
 <a
     href={folder.path}
     class:is-drop-zone={isDropZone}
+    class="subfolderbox"
     draggable="true"
     on:click|preventDefault={() => ($currentFolder = folder)}
     on:dragstart|stopPropagation={() => handleDragStart('folder', folder)}
@@ -73,9 +87,9 @@
     }}
     on:drop|preventDefault|stopPropagation={() => handleDrop(folder)}
 >
-    <div class="box has-border is-size-5">
-        <IconDisplay icon="folder" className="mr-1" valign="middle" />
-        <span class="has-text-weight-medium">{folder.name}</span>
-        {#if folder.chartCount}<span class="has-text-grey">({folder.chartCount})</span>{/if}
+    <div class="box has-border is-size-5-fullhd is-size-6">
+        <IconDisplay icon="folder" className="mr-2" valign="middle" />
+        <span class="has-text-weight-medium name">{folder.name}</span>
+        {#if folder.chartCount}<span class="has-text-grey ml-1">({folder.chartCount})</span>{/if}
     </div>
 </a>

@@ -58,7 +58,7 @@
         <figure class="image is-4by3">
             <figcaption
                 title={purifyHTML(chart.title, '')}
-                class="title is-size-6 is-size-5-desktop mb-3"
+                class="title is-size-6 is-size-5-desktop is-font-weight-medium mb-3"
             >
                 {purifyHTML(chart.title, '')}
             </figcaption>
