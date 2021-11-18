@@ -10,7 +10,7 @@ const get = require('lodash/get');
 const isEqual = require('lodash/isEqual');
 const cloneDeep = require('lodash/cloneDeep');
 const assignWithEmptyObjects = require('../../../utils/assignWithEmptyObjects');
-const { decamelizeKeys } = require('humps');
+const { camelizeKeys, decamelizeKeys } = require('humps');
 const { getAdditionalMetadata, prepareChart } = require('../../../utils/index.js');
 const { noContentResponse, chartResponse } = require('../../../schemas/response');
 
@@ -215,6 +215,11 @@ async function getChart(request) {
 
 async function editChart(request) {
     const { params, payload, auth, url, server } = request;
+    const { metadata, ...payloadWithoutMetadata } = payload;
+    const camelizedPayload = {
+        ...camelizeKeys(payloadWithoutMetadata),
+        ...(metadata && { metadata }) // make sure the 'metadata' value is not undefined
+    };
     const user = auth.artifacts;
     const isAdmin = server.methods.isAdmin(request);
 
@@ -236,23 +241,24 @@ async function editChart(request) {
     }
 
     if (
-        payload.organizationId &&
+        camelizedPayload.organizationId &&
         !isAdmin &&
         !(await user.hasActivatedTeam(payload.organizationId))
     ) {
         return Boom.unauthorized('User does not have access to the specified team.');
     }
 
-    if (payload && payload.type) {
+    if (camelizedPayload && camelizedPayload.type) {
         // validate chart type
-        if (!server.app.visualizations.has(payload.type)) {
+        if (!server.app.visualizations.has(camelizedPayload.type)) {
             return Boom.badRequest('Invalid chart type');
         }
     }
 
-    if (payload.folderId) {
+    const folderId = camelizedPayload.folderId || camelizedPayload.inFolder;
+    if (folderId) {
         // check if folder belongs to user to team
-        const folder = await Folder.findOne({ where: { id: payload.folderId } });
+        const folder = await Folder.findOne({ where: { id: folderId } });
 
         if (
             !folder ||
@@ -264,38 +270,41 @@ async function editChart(request) {
                 'User does not have access to the specified folder, or it does not exist.'
             );
         }
-        payload.inFolder = payload.folderId;
-        payload.folderId = undefined;
-        payload.organizationId = folder.org_id ? folder.org_id : null;
+        camelizedPayload.inFolder = camelizedPayload.folderId;
+        camelizedPayload.folderId = undefined;
+        camelizedPayload.organizationId = folder.org_id ? folder.org_id : null;
     }
 
-    if ('authorId' in payload && !isAdmin) {
-        delete payload.authorId;
+    if ('authorId' in camelizedPayload && !isAdmin) {
+        delete camelizedPayload.authorId;
     }
 
-    if ('isFork' in payload && !isAdmin) {
-        delete payload.isFork;
+    if ('isFork' in camelizedPayload && !isAdmin) {
+        delete camelizedPayload.isFork;
     }
 
     // prevent information about earlier publish from being reverted
-    if (!isNaN(payload.publicVersion) && payload.publicVersion < chart.public_version) {
-        payload.publicVersion = chart.public_version;
-        payload.publicUrl = chart.public_url;
-        payload.publishedAt = chart.published_at;
-        payload.lastEditStep = chart.last_edit_step;
+    if (
+        !isNaN(camelizedPayload.publicVersion) &&
+        camelizedPayload.publicVersion < chart.public_version
+    ) {
+        camelizedPayload.publicVersion = chart.public_version;
+        camelizedPayload.publicUrl = chart.public_url;
+        camelizedPayload.publishedAt = chart.published_at;
+        camelizedPayload.lastEditStep = chart.last_edit_step;
         set(
-            payload,
+            camelizedPayload,
             'metadata.publish.embed-codes',
             get(chart, 'metadata.publish.embed-codes', {})
         );
     }
 
     const chartOld = cloneDeep(chart.dataValues);
-    const newData = assignWithEmptyObjects(await prepareChart(chart), payload);
+    const newData = assignWithEmptyObjects(await prepareChart(chart), camelizedPayload);
 
-    if (request.method === 'put' && payload.metadata) {
+    if (request.method === 'put' && camelizedPayload.metadata) {
         // in PUT request we replace the entire metadata object
-        newData.metadata = payload.metadata;
+        newData.metadata = camelizedPayload.metadata;
     }
 
     // check if we have actually changed something

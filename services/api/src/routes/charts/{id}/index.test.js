@@ -1,5 +1,11 @@
 const test = require('ava');
-const { createUser, destroy, setup } = require('../../../../test/helpers/setup');
+const {
+    createChart,
+    createUser,
+    destroy,
+    genNonExistentFolderId,
+    setup
+} = require('../../../../test/helpers/setup');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
@@ -110,6 +116,21 @@ test('Users can not change the author ID of a chart', async t => {
             },
             payload: {
                 authorId: null
+            }
+        });
+
+        t.is(chart.result.authorId, user.id);
+
+        chart = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.result.id}`,
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {
+                author_id: null
             }
         });
 
@@ -275,6 +296,46 @@ test('PUT request replace metadata', async t => {
         if (userObj) {
             await destroy(...Object.values(userObj));
         }
+    }
+});
+
+test('PUT request returns an error when trying to set inFolder to an unknown folder', async t => {
+    let chart;
+    try {
+        chart = await createChart();
+
+        const { session } = t.context.userObj;
+        const putRes = await t.context.server.inject({
+            method: 'PUT',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {
+                inFolder: genNonExistentFolderId()
+            }
+        });
+
+        t.is(putRes.statusCode, 401);
+
+        const putResCamelCase = await t.context.server.inject({
+            method: 'PUT',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {
+                in_folder: genNonExistentFolderId()
+            }
+        });
+
+        t.is(putResCamelCase.statusCode, 401);
+    } finally {
+        await destroy(chart);
     }
 });
 
