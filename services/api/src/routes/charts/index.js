@@ -500,9 +500,7 @@ async function patchChartsHandler(request) {
     const user = auth.artifacts;
     const { ids, patch } = payload;
 
-    const activatedTeams = (await user.getTeams())
-        .filter(t => t.user_team.getDataValue('invite_token') === '')
-        .map(t => t.id);
+    const activatedTeams = (await user.getAcceptedTeams()).map(t => t.id);
     const charts = await Chart.findAll({
         where: {
             id: payload.ids,

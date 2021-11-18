@@ -247,12 +247,20 @@ User.prototype.getActiveProduct = async function () {
 };
 
 /*
+ * returns all teams for the current user where the invitation was accepted
+ */
+User.prototype.getAcceptedTeams = async function () {
+    const teams = await this.getTeams();
+    return teams.filter(t => t.user_team.getDataValue('invite_token') === '');
+};
+
+/*
  * returns the currently active team, or null if it doesn't exist
  */
 User.prototype.getActiveTeam = async function (session) {
     const { getUserData } = require('../utils/userData');
 
-    const teams = this.teams || (await this.getTeams());
+    const teams = await this.getAcceptedTeams();
     if (teams.length < 1) return null;
 
     let activeTeam = await getUserData(this.id, 'active_team');

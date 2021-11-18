@@ -86,6 +86,16 @@ async function createUser({ teams, product, ...props } = {}) {
     return user;
 }
 
+async function createTeamInvite({ user, team }) {
+    const { UserTeam } = require('../../models');
+    await UserTeam.create({
+        user_id: user.id,
+        organization_id: team.id,
+        team_role: 'owner',
+        invite_token: randomInt(2 ** 16)
+    });
+}
+
 function createJob({ chart, user }) {
     const { ExportJob } = require('../../models');
     return ExportJob.create({
@@ -139,5 +149,6 @@ module.exports = {
     createTeam,
     createTheme,
     createUser,
+    createTeamInvite,
     destroy
 };

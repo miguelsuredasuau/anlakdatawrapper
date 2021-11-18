@@ -91,14 +91,12 @@ module.exports = {
                 if (!cnt) return h.redirect(`/archive${teamId ? `/${teamId}` : ''}`);
             }
 
-            const teams = (await user.getTeams())
-                .filter(d => !d.user_team.getDataValue('invite_token'))
-                .map(t => ({
-                    ...t.toJSON(),
-                    settings: {
-                        displayLocale: t.settings?.displayLocale || false
-                    }
-                }));
+            const teams = (await user.getAcceptedTeams()).map(t => ({
+                ...t.toJSON(),
+                settings: {
+                    displayLocale: t.settings?.displayLocale || false
+                }
+            }));
 
             const themeBgColors = await getThemeBgColors(
                 teams,

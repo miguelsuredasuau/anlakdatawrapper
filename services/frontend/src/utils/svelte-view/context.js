@@ -14,6 +14,7 @@ module.exports = function (request) {
     const generalConfig = server.methods.config('general');
     const isAdmin = server.methods.isAdmin(request);
     const userLang = server.methods.getUserLanguage(auth);
+
     const context = {
         stores: {
             config: {
@@ -43,7 +44,7 @@ module.exports = function (request) {
                           language: userLang,
                           isAdmin: auth.artifacts.isAdmin(),
                           isGuest: false,
-                          teams: auth.artifacts.teams,
+                          teams: auth.artifacts.teams.filter(team => !team.user_team.invite_token),
                           activeTeam: auth.artifacts.activeTeam,
                           isActivated: auth.artifacts.role !== 'pending'
                       }

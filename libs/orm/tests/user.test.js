@@ -1,10 +1,12 @@
 const test = require('ava');
+
 const {
     createChart,
     createPlugin,
     createProduct,
     createTeam,
     createUser,
+    createTeamInvite,
     destroy
 } = require('./helpers/fixtures');
 const { init } = require('./helpers/orm');
@@ -48,6 +50,11 @@ test.before(async t => {
     t.context.teamUserChart = await createChart({
         author_id: t.context.teamUser.id
     });
+
+    t.context.pendingTeamUser = await createUser({
+        role: 'editor'
+    });
+    await createTeamInvite({ user: t.context.pendingTeamUser, team: t.context.team2 });
 
     t.context.productUser = await createUser({
         role: 'editor',
@@ -105,7 +112,8 @@ test.after.always(async t => {
         t.context.userProduct,
         t.context.teamProductHightPrio,
         t.context.teamProduct,
-        t.context.defaultProduct
+        t.context.defaultProduct,
+        t.context.pendingTeamUser
     );
     await t.context.orm.db.close();
 });
@@ -282,4 +290,17 @@ test('user.getActive product returns team product with higher priority', async t
     const activeProduct = await pendingUser.getActiveProduct();
     t.truthy(activeProduct);
     t.is(activeProduct.id, teamProductHighPrio.id);
+});
+
+test('user.getAcceptedTeams returns no teams for which the user has a pending invite', async t => {
+    const { pendingTeamUser } = t.context;
+    const acceptedTeams = await pendingTeamUser.getAcceptedTeams();
+    t.deepEqual(acceptedTeams, []);
+});
+
+test('user.getAcceptedTeams returns all teams for which the user has no pending invite', async t => {
+    const { teamUser } = t.context;
+    const acceptedTeams = await teamUser.getAcceptedTeams();
+    t.is(acceptedTeams.length, 1);
+    t.is(acceptedTeams[0].name, 'Team No. 1');
 });
