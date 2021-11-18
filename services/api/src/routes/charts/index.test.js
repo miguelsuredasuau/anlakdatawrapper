@@ -713,6 +713,19 @@ test('Admins can not query charts from non-existing teams', async t => {
     await admin.getCharts(`?teamId=xxxxxxx`, 404);
 });
 
+test('POST /charts returns an error when an unknown chart type is set', async t => {
+    const res = await t.context.server.inject({
+        method: 'POST',
+        url: '/v3/charts',
+        auth: t.context.auth,
+        headers: t.context.headers,
+        payload: {
+            type: 'spam'
+        }
+    });
+    t.is(res.statusCode, 400);
+});
+
 test('PATCH /charts moves multiple charts into a folder of a user', async t => {
     let charts;
     let folder;

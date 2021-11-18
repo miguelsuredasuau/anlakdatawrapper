@@ -115,7 +115,7 @@ module.exports = async ({ server, user, payload = {}, session, token }) => {
     if (whitelistedPayload.type) {
         // validate chart type
         if (!server.app.visualizations.has(whitelistedPayload.type)) {
-            return Boom.badRequest('Invalid visualization type');
+            throw Boom.badRequest('Invalid visualization type');
         }
     }
 
