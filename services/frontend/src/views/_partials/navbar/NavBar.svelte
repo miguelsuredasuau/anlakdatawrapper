@@ -103,7 +103,7 @@
     }
 
     // Navbar touch sizes adjustment
-    @include touch {
+    @include until($navbar-breakpoint) {
         .navbar-menu {
             .navbar-item:not(:last-child),
             .navbar-link {
@@ -119,7 +119,7 @@
         }
     }
     // Navbar dekstop sizes adjustments
-    @include desktop {
+    @include from($navbar-breakpoint) {
         .navbar-menu {
             // Second level dropdown
             :global(.navbar-item.has-dropdown .navbar-item.has-dropdown .navbar-dropdown) {

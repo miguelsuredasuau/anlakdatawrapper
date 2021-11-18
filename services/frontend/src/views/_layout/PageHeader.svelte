@@ -70,7 +70,7 @@
         padding-top: 0.75em;
         padding-bottom: 0.75em;
     }
-    @include touch {
+    @include until($navbar-breakpoint) {
         .navbar-brand .navbar-item {
             padding-left: 0;
         }
