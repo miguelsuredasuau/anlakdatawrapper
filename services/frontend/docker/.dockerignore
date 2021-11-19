@@ -1,0 +1,9 @@
+.git
+*/*/.git
+services/*
+libs/*
+utils/*
+plugins/*
+!services/frontend
+services/frontend/node_modules
+plugins/*/node_modules

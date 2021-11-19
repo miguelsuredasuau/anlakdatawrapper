@@ -2,8 +2,8 @@
     "name": "datawrapper",
     "version": "1.25.2",
     "scripts": {
-        "lint": "cd ../.. && scripts/lint services/datawrapper",
-        "format": "cd ../.. && scripts/format services/datawrapper",
+        "lint": "cd ../.. && scripts/lint services/php",
+        "format": "cd ../.. && scripts/format services/php",
         "watch": "watch 'make assets' assets/"
     },
     "repository": {

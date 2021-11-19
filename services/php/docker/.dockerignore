@@ -1,0 +1,12 @@
+.git
+*/*/.git
+services/*
+libs/*
+utils/*
+!services/php
+!utils/docker/basemaps
+!utils/docker/config/datawrapper-conf.php
+!utils/docker/entrypoints/php-entrypoint.sh
+plugins/*/node_modules
+services/php/vendor
+services/php/node_modules

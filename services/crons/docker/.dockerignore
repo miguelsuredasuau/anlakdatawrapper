@@ -1,0 +1,9 @@
+.git
+*/*/.git
+services/*
+libs/*
+utils/*
+!services/crons
+!utils/docker/entrypoints/crons-entrypoint.sh
+servies/crons/node_modules
+plugins/*/node_modules

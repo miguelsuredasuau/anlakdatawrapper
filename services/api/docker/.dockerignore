@@ -1,0 +1,9 @@
+.git
+*/*/.git
+services/*
+libs/*
+utils/*
+!services/api
+!utils/docker/entrypoints/api-entrypoint.sh
+services/api/node_modules
+plugins/*/node_modules
