@@ -1,11 +1,14 @@
 {
-    "verbose": true,
+    "verbose": false,
+    "ext": "js, mjs, cjs, json",
     "ignore": [
-        "**/*.svelte",
         "/datawrapper/code/services/frontend/node_modules/*",
         "/datawrapper/code/plugins/*/node_modules/*",
         "/datawrapper/code/services/frontend/src/views/_plugins/*",
         "/datawrapper/code/plugins/*/src/frontend/views/**/*.js",
+        "/datawrapper/code/plugins/*/api.js",
+        "/datawrapper/code/plugins/*/crons.js",
+        "/datawrapper/code/plugins/*/orm.js",
         "/datawrapper/code/plugins/d3*/src/*",
         "/datawrapper/code/plugins/d3*/static/*",
         "/datawrapper/code/plugins/d3*/tests/*",
