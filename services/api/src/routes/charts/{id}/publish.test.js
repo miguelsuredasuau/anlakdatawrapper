@@ -1,5 +1,5 @@
 const test = require('ava');
-const { createUser, destroy, setup } = require('../../../../test/helpers/setup');
+const { createChart, createUser, destroy, setup } = require('../../../../test/helpers/setup');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
@@ -207,4 +207,20 @@ test('POST /charts/{id}/publish updates chart properties', async t => {
     t.is(res.result.publicVersion, 1);
     t.is(res.result.lastEditStep, 5);
     t.is(new Date(res.result.publishedAt) >= prePublicationDate, true);
+});
+
+test('POST /charts/{id}/publish returns an error 400 when trying to publish chart with invalid type', async t => {
+    let chart;
+    try {
+        chart = await createChart({ type: 'spam' });
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/publish`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+        t.is(res.statusCode, 400);
+    } finally {
+        await destroy(chart);
+    }
 });

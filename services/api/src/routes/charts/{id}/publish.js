@@ -356,6 +356,9 @@ async function publishData(request) {
 
     // the vis
     data.visualization = server.app.visualizations.get(chart.type);
+    if (!data.visualization) {
+        return Boom.badRequest('Invalid chart type');
+    }
     const themeId = query.theme || chart.theme;
 
     data.chart.theme = themeId;

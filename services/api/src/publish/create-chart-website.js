@@ -59,11 +59,15 @@ module.exports = async function createChartWebsite(
      * Load chart information
      * (including metadata, data, basemaps, etc.)
      */
-    let { result: publishData } = await server.inject({
+    const { result, statusCode } = await server.inject({
         url: `/v3/charts/${chart.id}/publish/data${publish ? '?publish=true' : ''}`,
         auth,
         headers
     });
+    if (statusCode >= 400) {
+        throw new Boom.Boom(result.message || 'Failed to publish chart data', { statusCode });
+    }
+    let publishData = result;
 
     if (chart.error) {
         throw Boom.notFound();
