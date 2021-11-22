@@ -299,6 +299,7 @@ module.exports = {
                 options: {
                     tags: ['api'],
                     description: route.description,
+                    notes: route.notes,
                     auth: {
                         access: { scope: [route.scope] }
                     },
