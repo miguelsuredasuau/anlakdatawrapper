@@ -196,6 +196,10 @@ async function updateFolder(request) {
         );
     }
 
+    if (request.payload.teamId === null && !request.payload.userId) {
+        update.userId = user.id;
+    }
+
     const possibleDuplicate = await Folder.findOne({
         where: {
             id: {

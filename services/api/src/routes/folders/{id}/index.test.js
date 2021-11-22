@@ -2105,6 +2105,94 @@ test('PATCH /folders/{id} moves a folder from a user to a team', async t => {
     }
 });
 
+test('PATCH /folders/{id} moves a folder from a team to a user implicitly', async t => {
+    let folder, child, grandchild, charts, teamObj;
+    try {
+        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
+        folder = await createFolder({
+            name: 'folder',
+            org_id: teamObj.team.id,
+            user_id: null
+        });
+        child = await createFolder({
+            name: 'child',
+            org_id: teamObj.team.id,
+            user_id: null,
+            parent_id: folder.id
+        });
+        grandchild = await createFolder({
+            name: 'grandchild',
+            user_id: null,
+            org_id: teamObj.team.id,
+            parent_id: child.id
+        });
+        charts = await createCharts([
+            {
+                id: randomId(),
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: teamObj.user.id,
+                organization_id: teamObj.team.id,
+                in_folder: folder.id
+            },
+            {
+                id: randomId(),
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: teamObj.user.id,
+                organization_id: teamObj.team.id,
+                in_folder: child.id
+            },
+            {
+                id: randomId(),
+                title: 'Chart 3',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: teamObj.user.id,
+                organization_id: teamObj.team.id,
+                in_folder: grandchild.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/folders/${folder.id}`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${teamObj.token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                teamId: null
+            }
+        });
+        t.is(res.statusCode, 200);
+        const result = await res.result;
+        t.is(result.userId, teamObj.user.id);
+        t.is(result.teamId, null);
+        folder = await findFolderById(folder.id);
+        t.is(folder.org_id, null);
+        t.is(folder.user_id, teamObj.user.id);
+        child = await findFolderById(child.id);
+        t.is(child.org_id, null);
+        t.is(child.user_id, teamObj.user.id);
+        grandchild = await findFolderById(grandchild.id);
+        t.is(grandchild.org_id, null);
+        t.is(grandchild.user_id, teamObj.user.id);
+        for (const chart of charts) {
+            const updated = await findChartById(chart.id);
+            t.is(updated.author_id, teamObj.user.id);
+            t.is(updated.organization_id, null);
+        }
+    } finally {
+        await destroy(charts, grandchild, child, folder, ...Object.values(teamObj));
+    }
+});
+
 test('PATCH /folders/{id} returns an error when trying to assign ownership of a folder to a user as well as a team', async t => {
     let folder, teamObj;
     try {
@@ -2208,7 +2296,7 @@ test('PATCH /folders/{id} returns error if parent belongs to a different user th
     }
 });
 
-test('PATCH /folders/{id} moves a folder from a team to a user', async t => {
+test('PATCH /folders/{id} moves a folder from a team to a user explicitly', async t => {
     let folder, child, grandchild, charts;
     try {
         folder = await createFolder({
