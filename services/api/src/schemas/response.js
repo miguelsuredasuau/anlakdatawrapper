@@ -47,15 +47,18 @@ schemas.folderResponse = createResponseConfig({
     schema: Joi.object({
         id: Joi.number().integer(),
         name: Joi.string().description('User-defined folder name'),
-        userId: Joi.integer()
+        userId: Joi.number()
+            .integer()
             .allow(null)
             .description(
                 'If set, this is a private folder, and it belongs to the indicated user. If unset, the folder is located in a shared team archive (see `teamId`).'
             ),
-        teamId: Joi.integer()
+        teamId: Joi.number()
+            .integer()
             .allow(null)
             .description('The team that this folder is in. If unset, this folder is private.'),
-        parentId: Joi.integer()
+        parentId: Joi.number()
+            .integer()
             .allow(null)
             .description(
                 "The id of the folder that this folder is in. If 'null', the folder is in the root of either a team, or your private charts. (See `userId` and `teamId`, to determine which)"
@@ -63,7 +66,7 @@ schemas.folderResponse = createResponseConfig({
         children: Joi.array()
             .items(
                 Joi.object({
-                    id: Joi.integer()
+                    id: Joi.number().integer()
                 })
             )
             .description('List of top-level subfolders of this folder.'),
