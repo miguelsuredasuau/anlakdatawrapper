@@ -7,3 +7,4 @@ src/views/_plugins/*
 !src/views/_plugins/.gitkeep
 .eslintcache
 *.swp
+build
