@@ -8,6 +8,7 @@
     export let js;
     export let css;
     export let data;
+    export let storeData;
 
     const messages = getContext('messages');
     const config = getContext('config');
@@ -35,17 +36,22 @@
                 loadStylesheet('/static/vendor/bootstrap/css/bootstrap.css'),
                 loadStylesheet('/static/vendor/bootstrap/css/bootstrap-responsive.css'),
                 loadStylesheet('/static/vendor/font-awesome/css/font-awesome.min.css'),
+                loadStylesheet('/static/vendor/iconicfont/css/iconmonstr-iconic-font.min.css'),
                 loadStylesheet('/static/css/datawrapper.css'),
                 loadScript(js),
                 loadStylesheet(css)
             ]);
-            require([id], ({ App }) => {
+            require([id], ({ App, store }) => {
                 try {
                     _app = new App({
                         target: container,
+                        store,
                         data
                     });
                     _data = clone(data);
+                    if (store && storeData) {
+                        store.set(storeData);
+                    }
                     _app.on('state', ({ current }) => {
                         data = clone(current);
                     });
@@ -67,6 +73,7 @@
 
     beforeUpdate(() => {
         // notify svelte2 wrapper about data changes from parent component
+        // @todo: also update if storeData changes
         if (!isEqual(_data, data)) {
             _data = clone(data);
             if (isIE) {
@@ -103,5 +110,6 @@
         {css}
         on:update={update}
         data={JSON.stringify(data)}
+        storeData={JSON.stringify(storeData)}
     />
 {/if}

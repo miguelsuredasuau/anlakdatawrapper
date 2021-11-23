@@ -42,7 +42,9 @@ module.exports = {
                     js: '/static/js/svelte/team-settings/members.js',
                     css: '/static/css/svelte/team-settings/members.css'
                 },
-                data: {},
+                data: {
+                    isAdmin: request.auth.artifacts.role === 'admin'
+                },
                 order: 10
             };
         });
@@ -92,6 +94,10 @@ module.exports = {
                         props: {
                             team,
                             pageId,
+                            storeData: {
+                                role: auth.artifacts.teams.find(t => t.id === teamId).user_team
+                                    .team_role
+                            },
                             settingsPages
                         }
                     });

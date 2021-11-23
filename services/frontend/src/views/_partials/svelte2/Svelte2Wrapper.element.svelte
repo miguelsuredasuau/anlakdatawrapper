@@ -17,9 +17,15 @@
     export let js;
     export let css;
     export let data;
+    export let storeData = {};
 
-    export function update(data) {
-        if (_app) _app.set(data);
+    export function update(data, storeData) {
+        if (_app) {
+            _app.set(data);
+        }
+        if (_store && storeData) {
+            _store.set(storeData);
+        }
     }
 
     let _data;
@@ -29,6 +35,7 @@
     let loading = true;
 
     let _app;
+    let _store;
 
     function loadCSS(src) {
         return new Promise((resolve, reject) => {
@@ -48,6 +55,7 @@
             loadCSS('/static/vendor/bootstrap/css/bootstrap.css'),
             loadCSS('/static/vendor/bootstrap/css/bootstrap-responsive.css'),
             loadCSS('/static/vendor/font-awesome/css/font-awesome.min.css'),
+            loadCSS('/static/vendor/iconicfont/css/iconmonstr-iconic-font.min.css'),
             loadCSS('/static/css/datawrapper.css'),
             loadScript(js),
             loadCSS(css)
@@ -68,6 +76,10 @@
                     store,
                     data: JSON.parse(data)
                 });
+                if (store) {
+                    store.set(storeData);
+                    _store = store;
+                }
                 _data = data;
                 _app.on('state', ({ current }) => {
                     data = current;

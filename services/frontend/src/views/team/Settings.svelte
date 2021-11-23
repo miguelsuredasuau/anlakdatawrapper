@@ -12,6 +12,7 @@
     export let team;
     export let pageId;
     export let settingsPages;
+    export let storeData;
 
     const flatPages = flatten(settingsPages.map(d => d.pages));
     let curPage = flatPages.find(p => p.id === pageId) || flatPages[0];
@@ -38,7 +39,11 @@
     </h2>
     {#if curPage && curPage.svelte2}
         <h3 class="title is-3">{curPage.headline || curPage.title}</h3>
-        <Svelte2Wrapper {...curPage.svelte2} data={{ ...curPage.data, settings: team.settings }} />
+        <Svelte2Wrapper
+            {...curPage.svelte2}
+            {storeData}
+            data={{ ...curPage.data, settings: team.settings }}
+        />
     {/if}
     <div slot="belowNav">
         <hr />
