@@ -47,6 +47,7 @@
         await Promise.all([
             loadCSS('/static/vendor/bootstrap/css/bootstrap.css'),
             loadCSS('/static/vendor/bootstrap/css/bootstrap-responsive.css'),
+            loadCSS('/static/vendor/font-awesome/css/font-awesome.min.css'),
             loadCSS('/static/css/datawrapper.css'),
             loadScript(js),
             loadCSS(css)
