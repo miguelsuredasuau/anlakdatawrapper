@@ -16,7 +16,9 @@ module.exports = {
                     js: '/static/js/svelte/account/profile.js',
                     css: '/static/css/svelte/account/profile.css'
                 },
-                data: {},
+                data: {
+                    email: request.auth.artifacts.email
+                },
                 order: 2
             };
         });

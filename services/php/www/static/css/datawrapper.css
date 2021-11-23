@@ -702,51 +702,51 @@ ul.footer-links a.highlight {
   margin-top: 5px;
   margin-bottom: 0;
 }
-html button {
+button {
   font-family: 'Roboto', Helvetica, sans-serif;
 }
-html .btn {
+.btn {
   border-radius: 4px;
-  background-image: none!important;
+  background-image: none !important;
   font-family: 'Roboto', Helvetica, sans-serif;
 }
-html .btn .fa {
+.btn .fa {
   line-height: 19px;
 }
-html .btn .fa.icon-btn-left {
+.btn .fa.icon-btn-left {
   margin-left: -6px;
 }
-html .btn .fa.icon-btn-right {
+.btn .fa.icon-btn-right {
   margin-right: -6px;
 }
-html .btn-primary,
-html .btn-success {
+.btn-primary,
+.btn-success {
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25) !important;
   box-shadow: none;
   background-repeat: repeat-x;
 }
-html .btn-primary {
+.btn-primary {
   color: #fff !important;
   background-color: #1d81a2;
   border-color: darker(#1d81a2, 5%);
 }
-html .btn-success {
+.btn-success {
   background-color: #09bb9f !important;
   border-color: darker(#09bb9f, 5%);
 }
-html .btn-primary:hover,
-html .btn-primary:focus,
-html .btn-primary:active,
-html .btn-primary.active,
-html .btn-primary.disabled,
-html .btn-primary[disabled] {
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.btn-primary.disabled,
+.btn-primary[disabled] {
   color: #ffffff;
   background: #1d81a2 !important;
 }
-html .btn-inverse {
+.btn-inverse {
   background: #555;
 }
-html .btn-danger {
+.btn-danger {
   background: #c71e1d;
 }
 #dwLoginForm {
