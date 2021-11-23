@@ -5,6 +5,8 @@
 
     import SettingsPageLayout from '_layout/SettingsPageLayout.svelte';
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
+    import httpReq from '@datawrapper/shared/httpReq';
+    import debounce from 'lodash/debounce';
 
     const request = getContext('request');
 
@@ -31,6 +33,20 @@
         window.history.replaceState({}, '', page.url);
         curPage = page;
     }
+
+    const storeTeamSettings = debounce(async function (event) {
+        const { team: eventTeam, settings, defaultTheme } = event.detail;
+        await httpReq.patch(`/v3/teams/${team.id}`, {
+            payload: {
+                name: eventTeam.name,
+                ...(settings ? { settings } : {}),
+                ...(defaultTheme ? { defaultTheme } : {})
+            }
+        });
+        team.name = eventTeam.name;
+        team.settings = settings;
+        team.defaultTheme = defaultTheme;
+    }, 1000);
 </script>
 
 <SettingsPageLayout {loadPage} {settingsPages} {title}>
@@ -42,6 +58,7 @@
         <Svelte2Wrapper
             {...curPage.svelte2}
             {storeData}
+            on:change={storeTeamSettings}
             data={{ ...curPage.data, team, settings: team.settings }}
         />
     {/if}

@@ -1,5 +1,5 @@
 <script>
-    import { onMount, getContext, beforeUpdate } from 'svelte';
+    import { onMount, getContext, beforeUpdate, createEventDispatcher } from 'svelte';
     import clone from '@datawrapper/shared/clone';
     import isEqual from 'underscore/modules/isEqual.js';
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch';
@@ -12,6 +12,8 @@
 
     const messages = getContext('messages');
     const config = getContext('config');
+
+    const dispatch = createEventDispatcher();
 
     let component;
     let container;
@@ -52,6 +54,9 @@
                     if (store && storeData) {
                         store.set(storeData);
                     }
+                    _app.on('change', event => {
+                        dispatch('change', event);
+                    });
                     _app.on('state', ({ current }) => {
                         data = clone(current);
                     });
@@ -109,6 +114,7 @@
         {js}
         {css}
         on:update={update}
+        on:change
         data={JSON.stringify(data)}
         storeData={JSON.stringify(storeData)}
     />

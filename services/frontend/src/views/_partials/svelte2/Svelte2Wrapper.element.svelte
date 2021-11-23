@@ -85,6 +85,9 @@
                     data = current;
                     dispatch('update', current);
                 });
+                _app.on('change', event => {
+                    dispatch('change', event);
+                });
             } catch (err) {
                 console.error(err);
             }
