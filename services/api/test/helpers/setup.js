@@ -264,13 +264,15 @@ async function destroyUser(user) {
 }
 
 async function destroy(...instances) {
-    const { Team, User } = require('@datawrapper/orm/models');
+    const { Chart, Team, User } = require('@datawrapper/orm/models');
     for (const instance of instances) {
         if (!instance) {
             continue;
         }
         if (Array.isArray(instance)) {
             await destroy(...instance);
+        } else if (instance instanceof Chart) {
+            await destroyChart(instance);
         } else if (instance instanceof Team) {
             await destroyTeam(instance);
         } else if (instance instanceof User) {

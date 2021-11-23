@@ -63,6 +63,99 @@ test.after.always(async t => {
     await destroy(...Object.values(t.context.userObj), t.context.publicChart, t.context.chart);
 });
 
+test('GET /charts/{id}/publish/data returns the default dataset', async t => {
+    const { chart } = t.context;
+    const res = await t.context.server.inject({
+        method: 'GET',
+        url: `/v3/charts/${chart.id}/publish/data`,
+        auth: t.context.auth,
+        headers: t.context.headers
+    });
+    t.is(res.statusCode, 200);
+    t.deepEqual(res.result.assets, [
+        {
+            name: 'dataset.csv',
+            shared: false,
+            value: ' '
+        }
+    ]);
+});
+
+test('GET /charts/{id}/publish/data returns the uploaded dataset', async t => {
+    let chart;
+    try {
+        chart = await createChart();
+
+        await t.context.server.inject({
+            method: 'PUT',
+            url: `/v3/charts/${chart.id}/data`,
+            auth: t.context.auth,
+            headers: {
+                ...t.context.headers,
+                'Content-Type': 'text/csv'
+            },
+            payload: `foo,1
+bar,2
+`
+        });
+
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}/publish/data`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+        t.is(res.statusCode, 200);
+        t.deepEqual(res.result.assets, [
+            {
+                name: 'dataset.csv',
+                shared: false,
+                value: `foo,1
+bar,2
+`
+            }
+        ]);
+    } finally {
+        await destroy(chart);
+    }
+});
+
+test('GET /charts/{id}/publish/data returns null value for an empty dataset', async t => {
+    let chart;
+    try {
+        chart = await createChart();
+
+        const { server } = t.context;
+        const { event, events } = server.app;
+        await events.emit(
+            event.PUT_CHART_ASSET,
+            {
+                chart: await server.methods.loadChart(chart.id),
+                data: '',
+                filename: `${chart.id}.csv`
+            },
+            { filter: 'first' }
+        );
+
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}/publish/data`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+        t.is(res.statusCode, 200);
+        t.deepEqual(res.result.assets, [
+            {
+                name: 'dataset.csv',
+                shared: false,
+                value: null
+            }
+        ]);
+    } finally {
+        await destroy(chart);
+    }
+});
+
 test('GET /charts/{id}/publish/data returns the latest data of an unpublished chart', async t => {
     const { chart } = t.context;
     const res = await t.context.server.inject({
@@ -207,6 +300,35 @@ test('POST /charts/{id}/publish updates chart properties', async t => {
     t.is(res.result.publicVersion, 1);
     t.is(res.result.lastEditStep, 5);
     t.is(new Date(res.result.publishedAt) >= prePublicationDate, true);
+});
+
+test('POST /charts/{id}/publish publishes a chart with an empty dataset', async t => {
+    let chart;
+    try {
+        chart = await createChart();
+
+        const { server } = t.context;
+        const { event, events } = server.app;
+        await events.emit(
+            event.PUT_CHART_ASSET,
+            {
+                chart: await server.methods.loadChart(chart.id),
+                data: '',
+                filename: `${chart.id}.csv`
+            },
+            { filter: 'first' }
+        );
+
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/publish`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+        t.is(res.statusCode, 200);
+    } finally {
+        await destroy(chart);
+    }
 });
 
 test('POST /charts/{id}/publish returns an error 400 when trying to publish chart with invalid type', async t => {

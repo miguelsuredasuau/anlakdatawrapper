@@ -124,7 +124,11 @@ module.exports = async function createChartWebsite(
             };
             assetsFiles.push(`lib/${assetPath}`);
         } else {
-            await fs.writeFile(path.join(outDir, name), value, { encoding: 'utf-8' });
+            // Make sure the file content is not null, which would make fs.writeFile() crash. This
+            // can happen, because GET /charts/{id}/publish/data can return null value for an asset.
+            const data = value ?? '';
+
+            await fs.writeFile(path.join(outDir, name), data, { encoding: 'utf-8' });
 
             assets[name] = {
                 url: name
