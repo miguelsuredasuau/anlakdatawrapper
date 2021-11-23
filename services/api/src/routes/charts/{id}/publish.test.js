@@ -326,6 +326,15 @@ test('POST /charts/{id}/publish publishes a chart with an empty dataset', async 
             headers: t.context.headers
         });
         t.is(res.statusCode, 200);
+
+        const resAsset = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}/assets/${chart.id}.public.csv`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+        t.is(resAsset.statusCode, 200);
+        t.is(resAsset.result, '');
     } finally {
         await destroy(chart);
     }

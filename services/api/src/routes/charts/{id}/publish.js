@@ -133,7 +133,8 @@ async function publishChart(request) {
     /* write public CSV file (used when forking a chart) */
     await events.emit(event.PUT_CHART_ASSET, {
         chart,
-        data: chartData,
+        // Make sure the data is not null, which would make fs.writeFile() crash.
+        data: chartData ?? '',
         filename: `${chart.id}.public.csv`
     });
 
