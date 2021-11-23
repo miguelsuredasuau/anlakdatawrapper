@@ -65,14 +65,15 @@
                 }
             });
         } else {
-            await loadScript(
-                `/lib/csr/_partials/svelte2/Svelte2Wrapper.element.svelte.${
-                    window.document.documentMode ? 'ie.' : ''
-                }js`
-            );
-            setTimeout(() => {
+            if (!customElements.get('svelte2-wrapper')) {
+                // only define svelte2-wrapper once
+                await loadScript('/lib/csr/_partials/svelte2/Svelte2Wrapper.element.svelte.js');
+                setTimeout(() => {
+                    ready = true;
+                }, 100);
+            } else {
                 ready = true;
-            }, 100);
+            }
         }
     });
 
