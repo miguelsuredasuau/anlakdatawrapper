@@ -42,7 +42,7 @@
         <Svelte2Wrapper
             {...curPage.svelte2}
             {storeData}
-            data={{ ...curPage.data, settings: team.settings }}
+            data={{ ...curPage.data, team, settings: team.settings }}
         />
     {/if}
     <div slot="belowNav">
