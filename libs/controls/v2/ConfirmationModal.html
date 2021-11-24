@@ -1,18 +1,15 @@
-<div class="modal hide" {id}>
+{#if open}
+<div class="modal">
     <div on:keyup|stopPropagation class="modal-body">
-        <button type="button" class="close" data-dismiss="modal" aria-label="{backButtonText}">
+        <button type="button" class="close" on:click="dismiss()" aria-label="{backButtonText}">
             <IconDisplay icon="close" size="20px" />
         </button>
         <div class="modal-content">
             <h1 class="modal-title mb-4">{@html title}</h1>
             <slot />
             <div class="actions pt-4 mt-4">
-                <button class="btn back" data-dismiss="modal">{@html backButtonText}</button>
-                <button
-                    class="btn btn-danger"
-                    data-dismiss="modal"
-                    on:click="set({isConfirmed: true})"
-                >
+                <button class="btn back" on:click="dismiss()">{@html backButtonText}</button>
+                <button class="btn btn-danger" on:click="confirm()">
                     {#if confirmButtonIcon}
                     <IconDisplay
                         icon="{confirmButtonIcon}"
@@ -26,6 +23,10 @@
         </div>
     </div>
 </div>
+<div class="modal-backdrop" on:click="dismiss()"></div>
+{/if}
+
+<svelte:window on:keydown="handleKeystroke(event.key)" />
 
 <style>
     .modal-title {
@@ -70,38 +71,37 @@
 </style>
 
 <script>
-    /* globals $ */
     import IconDisplay from './IconDisplay.html';
 
     export default {
         components: { IconDisplay },
         data() {
             return {
-                id: '',
                 title: 'Title',
                 confirmButtonText: 'Confirm',
                 confirmButtonIcon: false,
                 backButtonText: 'Back',
-                isConfirmed: false
+                open: false
             };
         },
         methods: {
             open() {
-                this.set({ isConfirmed: false });
-                $('#' + this.get().id).modal();
+                this.set({ open: true });
+            },
+            dismiss() {
+                this.set({ open: false });
+                this.fire('dismiss');
+            },
+            confirm() {
+                this.set({ open: false });
+                this.fire('confirm');
+            },
+            handleKeystroke(key) {
+                const { open } = this.get();
+                if (open && key === 'Escape') {
+                    this.dismiss();
+                }
             }
-        },
-        oncreate() {
-            $('#' + this.get().id).on(
-                'hidden.bs.modal',
-                function () {
-                    if (this.get().isConfirmed) {
-                        this.fire('confirm');
-                    } else {
-                        this.fire('dismiss');
-                    }
-                }.bind(this)
-            );
         }
     };
 </script>
