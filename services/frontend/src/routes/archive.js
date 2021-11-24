@@ -215,7 +215,8 @@ module.exports = {
                     key: folder.id || folder.teamId || folder.org_id || '$user',
                     teamId: folder.teamId || folder.org_id || null,
                     parentId: folder.parentId || null,
-                    name: folder.name
+                    name: folder.name,
+                    path: getFolderUri(folder)
                 };
             }
             await addChartCounts(user, teams, folders, minLastEditStep);
@@ -257,6 +258,16 @@ module.exports = {
                 const fid = folder.id || 'root';
                 folder.chartCount = byTeam.has(tid) ? byTeam.get(tid).get(fid) || 0 : 0;
             }
+        }
+
+        function getFolderUri(folder) {
+            const parts = ['archive'];
+            if (folder.teamId) {
+                parts.push('team');
+                parts.push(folder.teamId);
+            }
+            if (folder.id) parts.push(folder.id);
+            return `/${parts.join('/')}`;
         }
     }
 };

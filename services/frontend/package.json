@@ -77,7 +77,6 @@
             "chai/register-expect",
             "chai/register-should",
             "./src/test-utils/setup-browser-env.mjs",
-            "./src/test-utils/setup-global-dw.mjs",
             "source-map-support/register"
         ]
     }
