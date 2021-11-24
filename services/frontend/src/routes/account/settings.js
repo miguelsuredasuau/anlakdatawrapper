@@ -40,6 +40,26 @@ module.exports = {
             };
         });
 
+        server.methods.registerSettingsPage('account', request => {
+            const __ = server.methods.getTranslate(request);
+            const isAdmin = request.auth.artifacts.role === 'admin';
+            return (
+                isAdmin && {
+                    url: '/account/security',
+                    title: 'Security',
+                    group: __('account / settings / personal'),
+                    svgIcon: 'privacy',
+                    svelte2: {
+                        id: 'svelte/account/security',
+                        js: '/static/js/svelte/account/security.js',
+                        css: '/static/css/svelte/account/security.css'
+                    },
+                    data: {},
+                    order: 20
+                }
+            );
+        });
+
         server.route({
             method: 'GET',
             path: '/{pageId?}',
