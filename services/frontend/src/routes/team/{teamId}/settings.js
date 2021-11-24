@@ -75,12 +75,12 @@ module.exports = {
                 validate: {
                     params: Joi.object({
                         teamId: Joi.string().required(),
-                        pageId: Joi.string().alphanum().invalid('invite')
+                        pageId: Joi.string().invalid('invite')
                     })
                 },
                 async handler(request, h) {
                     const { auth, params } = request;
-                    const { teamId, pageId } = params;
+                    const { teamId } = params;
 
                     if (!auth.artifacts.teams.find(t => t.id === params.teamId)) {
                         throw Boom.notFound();
@@ -93,7 +93,6 @@ module.exports = {
                         htmlClass: 'has-background-white-bis',
                         props: {
                             team,
-                            pageId,
                             storeData: {
                                 role: auth.artifacts.teams.find(t => t.id === teamId).user_team
                                     .team_role

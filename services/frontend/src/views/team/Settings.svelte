@@ -12,13 +12,11 @@
 
     export let __;
     export let team;
-    export let pageId;
     export let settingsPages;
     export let storeData;
 
     const flatPages = flatten(settingsPages.map(d => d.pages));
-    let curPage = flatPages.find(p => p.id === pageId) || flatPages[0];
-
+    let curPage = flatPages.find(p => p.url === $request.path) || flatPages[0];
     $: titleParts = [
         truncate(team.name, 17, 8),
         __('nav / team / settings'),

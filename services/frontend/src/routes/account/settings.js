@@ -66,9 +66,7 @@ module.exports = {
             options: {
                 validate: {
                     params: Joi.object({
-                        pageId: Joi.string()
-                            .alphanum()
-                            .invalid('activate', 'invite', 'reset-password')
+                        pageId: Joi.string().invalid('activate', 'invite', 'reset-password')
                     })
                 },
                 async handler(request, h) {
