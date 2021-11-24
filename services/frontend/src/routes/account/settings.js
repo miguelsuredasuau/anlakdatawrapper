@@ -9,6 +9,7 @@ module.exports = {
             return {
                 url: '/account/profile',
                 title: __('account / profile'),
+                headline: __('Edit profile'),
                 group: __('account / settings / personal'),
                 svgIcon: 'user',
                 svelte2: {
