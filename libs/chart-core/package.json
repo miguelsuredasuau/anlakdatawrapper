@@ -17,7 +17,6 @@
         "dev": "rollup -cw rollup.config.js",
         "lint": "cd ../.. && scripts/lint libs/chart-core",
         "prepublishOnly": "npm run build",
-        "prepare": "npm run build",
         "test": "ava",
         "docs:parser": "jsdoc2md  --template docs/.tpl.hbs --files 'lib/dw/utils/parser.js' -g grouped  | sed '/\\*\\*Kind\\*\\*/d'  | sed '/\\*\\*Example\\*\\*/d' | sed '/## $/d' | sed 's/## \\([a-z]\\)/### \\1/' > docs/parser.md && node docs/.fix.js parser.md"
     },
