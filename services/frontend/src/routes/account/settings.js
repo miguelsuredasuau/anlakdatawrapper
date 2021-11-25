@@ -4,8 +4,40 @@ module.exports = {
     name: 'routes/account/settings',
     version: '1.0.0',
     register: async server => {
-        server.methods.registerSettingsPage('account', request => {
+        server.methods.registerSettingsPage('account', async request => {
             const __ = server.methods.getTranslate(request);
+            const user = request.auth.artifacts;
+            const { pageId } = request.params;
+            const { token } = request.query;
+            let emailChanged = false;
+
+            if (pageId === 'profile' && token) {
+                // email activation
+                const Action = server.methods.getModel('action');
+                const t = await Action.findOne({
+                    where: {
+                        user_id: user.id,
+                        key: 'email-change-request'
+                    },
+                    order: [['action_time', 'DESC']]
+                });
+                if (t) {
+                    // check if token is valid
+                    const details = JSON.parse(t.details);
+                    if (details.token && details.token === token) {
+                        // token matches
+                        await user.update({
+                            email: details['new-email']
+                        });
+                        emailChanged = true;
+                        // clear token to prevent future changes
+                        await t.update({
+                            details: JSON.stringify({ ...details, token: '' })
+                        });
+                    }
+                }
+            }
+
             return {
                 url: '/account/profile',
                 title: __('account / profile'),
@@ -18,7 +50,8 @@ module.exports = {
                     css: '/static/css/svelte/account/profile.css'
                 },
                 data: {
-                    email: request.auth.artifacts.email
+                    email: request.auth.artifacts.email,
+                    emailChanged
                 },
                 order: 2
             };
@@ -68,6 +101,9 @@ module.exports = {
                 validate: {
                     params: Joi.object({
                         pageId: Joi.string().invalid('activate', 'invite', 'reset-password')
+                    }),
+                    query: Joi.object({
+                        token: Joi.string()
                     })
                 },
                 async handler(request, h) {

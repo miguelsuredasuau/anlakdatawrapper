@@ -186,6 +186,7 @@
             return {
                 changePassword: false,
                 changeEmail: false,
+                emailChanged: false,
                 deleteAccount: false,
                 deleteAccount2: false,
                 deleteAccount3: false,
@@ -349,6 +350,16 @@
                 } else {
                     this.set({ errors });
                 }
+            }
+        },
+        oncreate() {
+            const { emailChanged } = this.get();
+            if (emailChanged) {
+                this.set({
+                    messages: [__('account / profile / email-changed')]
+                });
+                // remove ?token query string
+                window.history.replaceState('', '', window.location.pathname);
             }
         }
     };
