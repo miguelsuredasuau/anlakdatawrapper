@@ -366,6 +366,9 @@ async function publishData(request) {
 
     // the theme
     const theme = await Theme.findByPk(themeId);
+    if (!theme) {
+        return Boom.badRequest("Chart theme doesn't exist");
+    }
     data.theme = {
         id: theme.id,
         data: await theme.getMergedData(),

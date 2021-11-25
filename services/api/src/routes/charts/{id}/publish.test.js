@@ -355,3 +355,19 @@ test('POST /charts/{id}/publish returns an error 400 when trying to publish char
         await destroy(chart);
     }
 });
+
+test('POST /charts/{id}/publish returns an error 400 when trying to publish chart with nonexistent theme', async t => {
+    let chart;
+    try {
+        chart = await createChart({ theme: 'spam' });
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/publish`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+        t.is(res.statusCode, 400);
+    } finally {
+        await destroy(chart);
+    }
+});
