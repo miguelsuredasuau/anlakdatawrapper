@@ -149,20 +149,20 @@
 
 <!-- Publish error -->
 {#if publishError}
-<AlertDisplay type="error" visible="true" class="mt-4 mb-2"> {publishError} </AlertDisplay>
+<AlertDisplay type="error" visible="true" class="mt-4 mb-5"> {publishError} </AlertDisplay>
 {/if}
 
 <!-- Additional info, only shown intially -->
 {#if !published && !unpublished}
-<p class="publish-info pt-3">{@html __('publish / publish-info-1')}</p>
-<p class="publish-info">{@html __('publish / publish-info-2')}</p>
+<p class="publish-info mt-4">{@html __('publish / publish-info-1')}</p>
+<p class="publish-info mb-6">{@html __('publish / publish-info-2')}</p>
 {/if}
 
 <!-- Alert: Publish successful, redirects may need updating -->
 <AlertDisplay
     type="{redirectDisabled ? 'warning' : 'info'}"
     visible="{published && publishSuccess && publicVersion > 1}"
-    class="mt-4 mb-2"
+    class="mt-4 mb-4"
 >
     {#if published && publishSuccess && publicVersion > 1}
     <div class="embed-alert">
