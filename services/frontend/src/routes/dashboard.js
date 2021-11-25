@@ -2,7 +2,6 @@ const { Chart, Team, User } = require('@datawrapper/orm/models');
 const { getUserData } = require('@datawrapper/orm/utils/userData');
 const uniq = require('lodash/uniq');
 const get = require('lodash/get');
-const { Op } = require('sequelize');
 const flatten = require('lodash/flatten');
 const { byOrder } = require('../utils');
 const Joi = require('joi');
@@ -216,7 +215,7 @@ module.exports = {
                         through: {
                             attributes: ['invite_token'],
                             where: {
-                                invite_token: { [Op.ne]: '' }
+                                invite_token: { [User.sequelize.Op.ne]: '' }
                             }
                         }
                     }
