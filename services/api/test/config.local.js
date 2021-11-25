@@ -1,5 +1,5 @@
 require('dotenv').config({
-    path: require('path').resolve('../../utils/docker/.datawrapper_env')
+    path: require('path').resolve('../../.datawrapper_env')
 });
 
 module.exports = {

@@ -8,7 +8,8 @@ const {
     createTeam,
     createTeamWithUser,
     createCharts,
-    genRandomChartId
+    genRandomChartId,
+    addUserToTeam
 } = require('../../../../test/helpers/setup');
 
 const BASE_URL = 'http://api.datawrapper.local';
@@ -39,16 +40,6 @@ function findFolderById(id) {
 function findChartById(id) {
     const { Chart } = require('@datawrapper/orm/models');
     return Chart.findByPk(id);
-}
-
-async function addUserToTeam(user, team, role = 'member') {
-    const { UserTeam } = require('@datawrapper/orm/models');
-
-    await UserTeam.create({
-        user_id: user.id,
-        organization_id: team.id,
-        team_role: role
-    });
 }
 
 test.before(async t => {

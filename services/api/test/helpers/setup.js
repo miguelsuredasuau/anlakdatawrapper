@@ -196,7 +196,13 @@ function createFoldersWithParent(propsArray, parent) {
 function createChart(props = {}) {
     const { Chart } = require('@datawrapper/orm/models');
     return Chart.create({
-        metadata: {},
+        metadata: {
+            axes: [],
+            describe: {},
+            visualize: {},
+            annotate: {}
+        },
+        language: 'en-US',
         title: 'Default',
         theme: 'default',
         type: 'd3-bars',
@@ -207,6 +213,16 @@ function createChart(props = {}) {
 
 function createCharts(propsArray) {
     return Promise.all(propsArray.map(createChart));
+}
+
+async function addUserToTeam(user, team, role = 'member') {
+    const { UserTeam } = require('@datawrapper/orm/models');
+
+    await UserTeam.create({
+        user_id: user.id,
+        organization_id: team.id,
+        team_role: role
+    });
 }
 
 async function destroyChart(chart) {
@@ -297,5 +313,6 @@ module.exports = {
     genRandomChartId,
     genRandomFolderId,
     getCredentials,
-    setup
+    setup,
+    addUserToTeam
 };
