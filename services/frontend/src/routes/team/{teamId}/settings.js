@@ -68,6 +68,30 @@ module.exports = {
             };
         });
 
+        server.methods.registerSettingsPage('team', request => {
+            const __ = server.methods.getTranslate(request);
+            const { teamId } = request.params;
+            const isAdmin = request.auth.artifacts.role === 'admin';
+            return (
+                isAdmin && {
+                    id: 'products',
+                    url: `/team/${teamId}/products`,
+                    title: __('teams / tab / adminProducts'),
+                    group: __('teams / group / internal'),
+                    svgIcon: 'list',
+                    svelte2: {
+                        id: 'svelte/team-settings/products',
+                        js: '/static/js/svelte/team-settings/products.js',
+                        css: '/static/css/svelte/team-settings/products.css'
+                    },
+                    data: {
+                        isAdmin
+                    },
+                    order: 30
+                }
+            );
+        });
+
         server.route({
             method: 'GET',
             path: '/{teamId}/{pageId}',
