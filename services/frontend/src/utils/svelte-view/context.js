@@ -6,13 +6,11 @@ const clientSideStoreCache = new Set(['messages']);
 /*
  * set values for the global stores, based on request
  */
-module.exports = function (request) {
+module.exports = async function (request) {
     const { server, auth } = request;
-    const { events, event } = server.app;
     const apiConfig = server.methods.config('api');
     const frontendConfig = server.methods.config('frontend');
     const generalConfig = server.methods.config('general');
-    const isAdmin = server.methods.isAdmin(request);
     const userLang = server.methods.getUserLanguage(auth);
 
     const context = {
@@ -24,7 +22,7 @@ module.exports = function (request) {
                 dev: process.env.DW_DEV_MODE,
                 footerLinks: frontendConfig.footerLinks || [],
                 languages: frontendConfig.languages || [],
-                headerLinks: server.methods.getHeaderLinks(request),
+                headerLinks: await server.methods.getHeaderLinks(request),
                 stickyHeaderThreshold: 800
             },
             request: {
@@ -54,10 +52,7 @@ module.exports = function (request) {
                           isAdmin: false,
                           language: userLang
                       },
-            messages: allScopes(userLang || 'en-US'),
-            adminPages: isAdmin
-                ? events.emit(event.REGISTER_ADMIN_PAGE, { request }, { filter: 'success' })
-                : null
+            messages: allScopes(userLang || 'en-US')
         },
         storeHashes: {},
         storeCached: {}

@@ -10,13 +10,13 @@ module.exports = {
             server.app.headerLinks.add(headerLinkFunc);
         });
 
-        server.method('getHeaderLinks', request => {
+        server.method('getHeaderLinks', async request => {
             const linksById = new Map();
             const links = [];
             const subLinks = [];
             // evaluate links for each request, please use cache!
-            server.app.headerLinks.forEach(func => {
-                const items = func(request);
+            for (const func of server.app.headerLinks) {
+                const items = await func(request);
                 links.push.apply(
                     links,
                     items.filter(i => !i.parent)
@@ -25,7 +25,7 @@ module.exports = {
                     subLinks,
                     items.filter(i => i.parent)
                 );
-            });
+            }
 
             // register top-level links by id
             links.forEach(link => {
@@ -55,7 +55,7 @@ module.exports = {
         const frontendConfig = server.methods.config('frontend');
 
         // add some core header links
-        server.methods.registerHeaderLinks(request => {
+        server.methods.registerHeaderLinks(async request => {
             const user = request.auth.artifacts;
             const isGuest = !user || user.role === 'guest';
             const isAdmin = user && user.role === 'admin';
@@ -63,7 +63,7 @@ module.exports = {
             const adminPageLinks = [];
             if (isAdmin) {
                 let order = 0;
-                server.methods.getAdminPages(request).forEach(({ title, pages }) => {
+                (await server.methods.getAdminPages(request)).forEach(({ title, pages }) => {
                     order++;
                     adminPageLinks.push({
                         type: 'html',

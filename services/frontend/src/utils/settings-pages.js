@@ -14,18 +14,16 @@ module.exports = {
             server.app.settingsPages.get(settingsKey).add(settingsPageFunc);
         });
 
-        server.method('getSettingsPages', (settingsKey, request) => {
+        server.method('getSettingsPages', async (settingsKey, request) => {
             if (!server.app.settingsPages.has(settingsKey)) {
                 return [];
             }
-            return Object.entries(
-                groupBy(
-                    Array.from(server.app.settingsPages.get(settingsKey))
-                        .map(func => func(request))
-                        .filter(d => d),
-                    d => d.group
-                )
-            )
+            const pages = [];
+            for (const pageFunc of server.app.settingsPages.get(settingsKey)) {
+                const page = await pageFunc(request);
+                if (page) pages.push(page);
+            }
+            return Object.entries(groupBy(pages, 'group'))
                 .map(([title, pages]) => {
                     return {
                         title,
