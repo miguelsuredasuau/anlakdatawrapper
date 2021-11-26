@@ -208,42 +208,76 @@ User.prototype.getPlugins = async function () {
 };
 
 /*
- * returns the highest-priority product that is enabled for this user
+ * the "active" product is a concept from our old PHP implementation:
+ * a given user can have multiple products attached, both via UserProdct
+ * and via TeamProduct. Since these products define which features a user
+ * can use, we have to "pick" a single product. To do so, we introduced
+ * product.priority. In case a user has multile products, we pick the
+ * one with the highest priority. If a user has no products at all,
+ * we select the product with the lowest priority as default.
  */
 User.prototype.getActiveProduct = async function () {
+    const Team = require('./Team');
     const Product = require('./Product');
     const user = this;
-    // get user products, highest priority first
-    const userProducts = await user.getProducts({
+    const teams = await user.getAcceptedTeams();
+
+    // TODO: perhaps there is a way to do this in one
+    // query (in raw SQL there is), but I'm not sure
+    // how to do it in Sequelize
+    const userProduct = await Product.findOne({
+        where: {
+            deleted: false
+        },
+        include: [
+            {
+                model: User,
+                attributes: [],
+                required: true,
+                through: {
+                    attributes: ['user_id'],
+                    where: {
+                        user_id: user.id
+                    }
+                }
+            }
+        ],
         order: [['priority', 'DESC']]
     });
-    const userProduct = userProducts.length ? userProducts[0] : null;
-    // get team products, highest priority first
-    const teams = await user.getTeams();
-    const teamProducts = [];
-    if (teams.length) {
-        for (var i = teams.length - 1; i >= 0; i--) {
-            const tp = await teams[i].getProducts({
-                order: [['priority', 'DESC']]
-            });
-            if (tp.length) teamProducts.push(tp[0]);
-        }
-    }
-    // sort each teams highest priority products by priority, again
-    const teamProduct = teamProducts.sort((a, b) => b.priority - a.priority)[0];
-
-    if (userProduct && (!teamProduct || userProduct.priority >= teamProduct.priority)) {
-        return userProduct;
-    }
-    if (teamProduct && (!userProduct || teamProduct.priority > userProduct.priority)) {
-        return teamProduct;
-    }
-
-    const product = await Product.findOne({
-        order: [['priority', 'ASC']]
+    const teamProduct = await Product.findOne({
+        where: {
+            deleted: false
+        },
+        include: [
+            {
+                model: Team,
+                attributes: [],
+                required: true,
+                through: {
+                    attributes: ['organization_id'],
+                    where: {
+                        organization_id: teams.map(t => t.id)
+                    }
+                }
+            }
+        ],
+        order: [['priority', 'DESC']]
     });
-
-    return product || null;
+    if (!teamProduct && !userProduct) {
+        // return product with lowest priority as default fallback
+        // if a user has no products
+        return Product.findOne({
+            where: {
+                deleted: false
+            },
+            order: [['priority', 'ASC']]
+        });
+    }
+    if (teamProduct && userProduct) {
+        // return product with highest priority
+        return teamProduct.priority > userProduct.priority ? teamProduct : userProduct;
+    }
+    return teamProduct ? teamProduct : userProduct;
 };
 
 /*

@@ -34,7 +34,6 @@ test.before(async t => {
         name: 'Team No. 2',
         product: t.context.teamProductHighPrio
     });
-
     t.context.adminUser = await createUser({
         role: 'admin',
         pwd: 'test',
@@ -50,7 +49,6 @@ test.before(async t => {
     t.context.teamUserChart = await createChart({
         author_id: t.context.teamUser.id
     });
-
     t.context.pendingTeamUser = await createUser({
         role: 'editor'
     });
@@ -267,7 +265,7 @@ test('user.getActiveProduct returns default product', async t => {
     const activeProduct = await adminUser.getActiveProduct();
     // Check priority instead of id, because it can happen that an external testing database is
     // dirty and contains several products with low priority, in which case the default product will
-    // be chosen randomly and might not be out 'defaultProduct'.
+    // be chosen randomly and might not be our 'defaultProduct'.
     t.is(activeProduct.priority, defaultProduct.priority);
 });
 
@@ -278,18 +276,42 @@ test('user.getActiveProduct returns team product', async t => {
     t.is(activeProduct.id, teamProduct.id);
 });
 
-test('user.getActiveProduct returns prefers user product to team product', async t => {
+test('user.getActiveProduct prefers user product to team product', async t => {
     const { userProduct, productUser } = t.context;
     const activeProduct = await productUser.getActiveProduct();
     t.truthy(activeProduct);
     t.is(activeProduct.id, userProduct.id);
 });
 
-test('user.getActive product returns team product with higher priority', async t => {
+test('user.getActiveProduct returns team product with higher priority', async t => {
     const { teamProductHighPrio, pendingUser } = t.context;
     const activeProduct = await pendingUser.getActiveProduct();
     t.truthy(activeProduct);
     t.is(activeProduct.id, teamProductHighPrio.id);
+});
+
+test('user.getActiveProduct does not return deleted team product', async t => {
+    const { defaultProduct } = t.context;
+    const deletedProduct = await createProduct({
+        deleted: true
+    });
+    const team = await createTeam({
+        product: deletedProduct
+    });
+    const user = await createUser({
+        role: 'editor',
+        teams: [team]
+    });
+    const activeProduct = await user.getActiveProduct();
+    t.truthy(activeProduct);
+    t.is(activeProduct.id, defaultProduct.id);
+});
+
+test('user.getActiveProduct returns default product for pending team user', async t => {
+    const { defaultProduct, pendingTeamUser } = t.context;
+    const activeProduct = await pendingTeamUser.getActiveProduct();
+    t.truthy(activeProduct);
+    t.is(activeProduct.id, defaultProduct.id);
 });
 
 test('user.getAcceptedTeams returns no teams for which the user has a pending invite', async t => {

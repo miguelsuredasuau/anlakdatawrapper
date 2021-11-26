@@ -7,6 +7,9 @@ docker_compose := docker-compose -f docker-compose-test.yml
 test: | test-setup  ## Run unit tests
 	$(MAKE) test-run cmd="sh -c 'cd /app && npm test -- -m \"$(m)\"'"
 
+test-watch: | test-setup  ## Run unit tests
+	$(MAKE) test-run cmd="sh -c 'cd /app && npm test -- -w -m \"$(m)\"'"
+
 .PHONY: test-coverage
 test-coverage: | test-setup  ## Run unit tests with coverage report
 	$(MAKE) test-run cmd="sh -c 'cd /app && npm run test:coverage -- -m \"$(m)\"'"
