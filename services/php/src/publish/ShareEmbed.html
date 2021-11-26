@@ -14,7 +14,10 @@
                         value="{shareUrl}"
                         readonly
                     />
-                    <a target="_blank" class="share-url-link" href="{shareUrl}"> </a>
+                    <a target="_blank" class="btn btn-primary" href="{shareUrl}">
+                        <IconDisplay icon="external-link" size="15px" valign="-3px" />
+                        <span>Open</span>
+                    </a>
                 </div>
                 <button
                     class="btn copy-button"
@@ -46,11 +49,10 @@
                     <input
                         ref:embedcode
                         type="text"
+                        id="embed-code"
                         class="passive-input"
                         value="{embedCode}"
-                        id="embed-code"
                         readonly
-                        on:click="this.select()"
                     />
                 </div>
                 <button
@@ -141,6 +143,7 @@
     .passive-input {
         margin: 0;
         width: calc(100% - 15px);
+        height: 24px;
         overflow: hidden;
         background: transparent;
         border: none;
@@ -159,7 +162,6 @@
         font-size: 12px;
     }
 
-    /* Faux link styling for input */
     .share-url .passive-input {
         color: #1d81a2;
         font-size: 16px;
@@ -167,23 +169,23 @@
         padding-bottom: 0;
     }
 
-    /* Faux link hover styling for input */
-    .share-url:hover .passive-input {
-        text-decoration: underline;
-        color: #15607a;
-    }
-
-    /* Invisible link element for share URL */
-    .share-url-link {
+    .share-url .btn {
+        opacity: 0;
+        transition: opacity 100ms;
         position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        right: 3px;
+        top: 3px;
+        bottom: 3px;
+        padding: 0 5px;
+        font-size: 12px;
         outline: none;
     }
 
-    .embed-explanation {
+    .share-url:hover .btn {
+        opacity: 1;
+    }
+
+    .share-url .embed-explanation {
         font-size: 12px;
         color: #848484;
     }
