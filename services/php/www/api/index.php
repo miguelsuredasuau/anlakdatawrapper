@@ -160,7 +160,6 @@ $app->get('/status-v3', function() use ($app) {
 require_once ROOT_PATH . 'lib/api/users.php';
 require_once ROOT_PATH . 'lib/api/charts.php';
 require_once ROOT_PATH . 'lib/api/plugins.php';
-require_once ROOT_PATH . 'lib/api/teams.php';
 require_once ROOT_PATH . 'lib/api/products.php';
 require_once ROOT_PATH . 'lib/api/themes.php';
 
