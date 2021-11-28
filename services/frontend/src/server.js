@@ -199,6 +199,7 @@ const start = async () => {
     }
 
     await server.register(require('./auth/dw-auth'));
+    await server.register(require('./utils/features'));
     await server.register([require('./routes')]);
     server.logger.info('loading plugins...');
     await server.register([require('./utils/plugin-loader')]);
