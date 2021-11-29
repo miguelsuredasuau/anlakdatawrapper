@@ -1,5 +1,3 @@
-<h2>{@html __("account / my-teams") }</h2>
-
 {#if teams.length}
 <p>{@html __('account / my-teams / your-teams')}</p>
 
@@ -119,13 +117,11 @@
             <div class="flex">
                 <!-- prettier-ignore -->
                 <SelectInput width="250px" bind:value="currentTeam" options="{teamOptions}" />
-                {#if awaitActiveTeam} {#await awaitActiveTeam} &nbsp;<i
-                    class="fa fa-spinner fa-spin"
-                ></i>
-                {:then}<i class="fa fa-check fa-fw"></i>{:catch}<i
-                    class="fa fa-exclamation-triangle"
-                ></i
-                >{/await} {/if}
+                {#if newActiveTeamState === 'success'}
+                <i class="fa fa-check fa-fw"></i>
+                {:elseif newActiveTeamState === 'error'}
+                <i class="fa fa-exclamation-triangle"></i>
+                {/if}
             </div>
         </FormBlock>
     </div>
@@ -138,19 +134,18 @@
     import FormBlock from '@datawrapper/controls/FormBlock.html';
     import SelectInput from '@datawrapper/controls/SelectInput.html';
     import httpReq from '@datawrapper/shared/httpReq';
-    let initialCurrentTeam = null;
 
     export default {
         components: { FormBlock, SelectInput },
         data() {
             return {
                 teams: [],
-                awaitActiveTeam: null,
                 awaitCreateTeam: null,
                 currentTeam: '',
                 createTeam: false,
                 newTeamName: '',
-                newTeamSlug: ''
+                newTeamSlug: '',
+                newActiveTeamState: null
             };
         },
         computed: {
@@ -211,19 +206,22 @@
                 }
             }
         },
-        onstate({ changed, current }) {
-            if (changed.currentTeam && current.currentTeam !== undefined) {
-                if (!initialCurrentTeam) initialCurrentTeam = current.currentTeam;
-                else if (current.currentTeam !== initialCurrentTeam) {
-                    initialCurrentTeam = current.currentTeam;
+        onstate({ changed, current, previous }) {
+            if (previous && changed.currentTeam && current.currentTeam !== undefined) {
+                const res = httpReq.patch(`/v3/me/settings`, {
+                    payload: {
+                        activeTeam: current.currentTeam || null
+                    }
+                });
+                res.then(() =>
                     this.set({
-                        awaitActiveTeam: httpReq.patch(`/v3/me/settings`, {
-                            payload: {
-                                activeTeam: current.currentTeam || null
-                            }
-                        })
-                    });
-                }
+                        newActiveTeamState: 'success'
+                    })
+                ).catch(() =>
+                    this.set({
+                        newActiveTeamState: 'error'
+                    })
+                );
             }
         }
     };
