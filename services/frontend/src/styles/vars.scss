@@ -1,7 +1,7 @@
 // VIEWPORTS
 
 $desktop: 1200px;
-$widescreen: 1400px;  // was: 1216px
+$widescreen: 1400px; // was: 1216px
 $fullhd: 1680px; // was: 1408px
 $container-max-width: $widescreen; // was: $fullhd
 
@@ -116,3 +116,13 @@ $dropdown-item-active-color: $dw-black;
 $dropdown-item-active-background-color: $dw-scooter-lightest;
 $dropdown-content-padding-top: 0.25rem;
 $dropdown-content-padding-bottom: 0.25rem;
+
+// Menu
+$menu-label-color: $black-bis;
+$menu-label-font-size: 14px;
+$menu-list-line-height: 1.5;
+$menu-item-active-background-color: $dw-scooter;
+$menu-item-hover-color: $dw-scooter-dark;
+$menu-item-hover-background-color: $dw-white-ter;
+$menu-item-radius: $radius;
+$menu-label-letter-spacing: 0;

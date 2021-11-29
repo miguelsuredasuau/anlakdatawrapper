@@ -57,10 +57,16 @@
     let innerHeight;
 </script>
 
-<style>
+<style lang="scss">
     .menu.sticky {
         position: sticky;
         top: 20px;
+    }
+
+    .menu-list a {
+        &.is-active {
+            font-weight: bold;
+        }
     }
 </style>
 
@@ -68,23 +74,27 @@
 
 <aside class="menu" class:sticky>
     {#each groups as g}
-        {#if g.title}
-            <h3 class="menu-label">{@html g.title}</h3>
-        {/if}
-        <ul role="navigation" class="menu-list">
-            {#each g.pages as page}
-                <li>
-                    <a
-                        class:is-active={isActive(page, scrollY, groups, content, $request)}
-                        on:click|preventDefault={() => pageClick(page)}
-                        href={page.url}
-                        >{#if page.svgIcon}<IconDisplay
-                                className="mr-2"
-                                icon={page.svgIcon}
-                            />{/if}<span>{@html page.title}</span></a
-                    >
-                </li>
-            {/each}
-        </ul>
+        <div class="block">
+            {#if g.title}
+                <h3 class="menu-label is-size-7 has-text-black-bis has-text-weight-bold">
+                    {@html g.title}
+                </h3>
+            {/if}
+            <ul role="navigation" class="menu-list">
+                {#each g.pages as page}
+                    <li>
+                        <a
+                            class:is-active={isActive(page, scrollY, groups, content, $request)}
+                            on:click|preventDefault={() => pageClick(page)}
+                            href={page.url}
+                            >{#if page.svgIcon}<IconDisplay
+                                    className="mr-2"
+                                    icon={page.svgIcon}
+                                />{/if}<span>{@html page.title}</span></a
+                        >
+                    </li>
+                {/each}
+            </ul>
+        </div>
     {/each}
 </aside>
