@@ -1,11 +1,13 @@
 const test = require('ava');
 const {
+    BASE_URL,
     createChart,
     createUser,
     destroy,
     genNonExistentFolderId,
     setup
 } = require('../../../../test/helpers/setup');
+const fetch = require('node-fetch');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
@@ -459,3 +461,90 @@ test('An empty PATCH should not change last_modified_at ', async t => {
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+test('PHP GET /charts/{id} returns chart', async t => {
+    let userObj = {};
+    let chart = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            last_edit_step: 2
+        });
+
+        const chartId = chart.id;
+        t.is(chartId.length, 5);
+        const res = await fetch(`${BASE_URL}/charts/${chartId}`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+
+        t.is(res.status, 200);
+        const json = await res.json();
+
+        t.is(json.status, 'ok');
+        t.is(json.data.id.length, 5);
+        t.is(json.data.id, chartId);
+        t.is(json.data.authorId, chart.author_id);
+        t.truthy(json.data.author);
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test("PHP GET /charts/{id} returns an error if user does not have scope 'chart:read'", async t => {
+    let userObj = {};
+    let chart = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: [] });
+        chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            last_edit_step: 2
+        });
+
+        const chartId = chart.id;
+        t.is(chartId.length, 5);
+        const res = await fetch(`${BASE_URL}/charts/${chartId}`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+
+        t.is(res.status, 403);
+        const json = await res.json();
+
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts/{id} returns an error if chart does not exist', async t => {
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+
+        const res = await fetch(`${BASE_URL}/charts/00000`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+
+        t.is(res.status, 404);
+        const json = await res.json();
+
+        t.is(json.status, 'error');
+        t.is(json.code, 'chart-not-found');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});

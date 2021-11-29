@@ -9,6 +9,7 @@
         "/datawrapper/code/plugins/*/src/frontend/views/**/*.js",
         "/datawrapper/code/services/frontend/node_modules/*",
         "/datawrapper/code/services/frontend/src/views/_plugins/*",
+        "/datawrapper/code/services/api/src/**/*.test.js",
         "admin-*/src/*",
         "admin-*/static/*",
         "api-tokens/src/*",
