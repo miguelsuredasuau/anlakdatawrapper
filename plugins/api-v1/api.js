@@ -1,12 +1,12 @@
 const routes = {
-    account: require('./routes/account.js'),
-    visualizations: require('./routes/visualizations.js'),
-    folders: require('./routes/folders.js'),
-    teams: require('./routes/teams.js'),
-    charts: require('./routes/charts.js'),
-    'plugin/login-tokens': require('./routes/plugins/login-tokens.js'),
-    'plugin/oembed': require('./routes/plugins/oembed.js'),
-    plugin: require('./routes/plugins/publish-s3.js')
+    account: require('./src/api/routes/account.js'),
+    visualizations: require('./src/api/routes/visualizations.js'),
+    folders: require('./src/api/routes/folders.js'),
+    teams: require('./src/api/routes/teams.js'),
+    charts: require('./src/api/routes/charts'),
+    'plugin/login-tokens': require('./src/api/routes/plugins/login-tokens.js'),
+    'plugin/oembed': require('./src/api/routes/plugins/oembed.js'),
+    plugin: require('./src/api/routes/plugins/publish-s3.js')
 };
 
 module.exports = {
