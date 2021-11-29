@@ -3,6 +3,7 @@ const has = require('lodash/has');
 const set = require('lodash/set');
 const test = require('ava');
 const {
+    BASE_URL,
     createFolder,
     createTeamWithUser,
     createUser,
@@ -13,9 +14,6 @@ const {
     addUserToTeam
 } = require('../../../../test/helpers/setup');
 const fetch = require('node-fetch');
-
-const BASE_URL = 'http://api.datawrapper.local';
-const V1_BASE_URL = '/v3/api-v1';
 
 async function updateTeamSettings(server, headers, user, team, payload) {
     return await server.inject({

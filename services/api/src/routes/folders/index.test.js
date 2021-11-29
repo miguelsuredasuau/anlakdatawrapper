@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const { serial: test } = require('ava');
 const { randomInt } = require('crypto');
 const {
+    BASE_URL,
     createUser,
     destroy,
     setup,
@@ -10,8 +11,6 @@ const {
     createFolders,
     createFoldersWithParent
 } = require('../../../test/helpers/setup');
-
-const BASE_URL = 'http://api.datawrapper.local';
 
 function createFolder(props) {
     const { Folder } = require('@datawrapper/orm/models');

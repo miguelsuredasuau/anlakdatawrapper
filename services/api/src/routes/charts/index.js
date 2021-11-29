@@ -33,7 +33,7 @@ module.exports = {
                 },
                 notes: `Search and filter a list of your charts.
                         The returned chart objects, do not include the full chart metadata.
-                        To get the full metadata use [/v3/charts/{id}](ref:getchartsid).  Requires scope \`chart:read\`.`,
+                        To get the full metadata add ?expand=true or use [/v3/charts/{id}](ref:getchartsid).  Requires scope \`chart:read\`.`,
                 validate: {
                     query: Joi.object({
                         userId: Joi.alternatives(...authorIdFormats).description(
@@ -88,6 +88,11 @@ module.exports = {
                             .max(5)
                             .description(
                                 "Filter visualizations by the last editor step they've been opened in (1=upload, 2=describe, 3=visualize, etc)"
+                            ),
+                        expand: Joi.boolean()
+                            .default(false)
+                            .description(
+                                'When set to true, the response includes additional properties such as visualization metadata.'
                             )
                     })
                 },
@@ -357,6 +362,11 @@ async function getAllCharts(request) {
                 { organization_id: activeUserTeams.map(t => t.organization_id) }
             ]
         });
+    }
+
+    if (query.expand) {
+        options.include = [{ model: User, attributes: ['name'] }];
+        options.attributes.push('metadata');
     }
 
     if (isAdmin) {

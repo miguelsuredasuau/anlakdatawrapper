@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 const test = require('ava');
 const { randomInt } = require('crypto');
 const {
+    BASE_URL,
     createUser,
     destroy,
     setup,
@@ -11,8 +12,6 @@ const {
     genRandomChartId,
     addUserToTeam
 } = require('../../../../test/helpers/setup');
-
-const BASE_URL = 'http://api.datawrapper.local';
 
 const MAX_ID = 99999;
 

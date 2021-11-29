@@ -3,6 +3,7 @@ const routes = {
     visualizations: require('./routes/visualizations.js'),
     folders: require('./routes/folders.js'),
     teams: require('./routes/teams.js'),
+    charts: require('./routes/charts.js'),
     'plugin/login-tokens': require('./routes/plugins/login-tokens.js'),
     'plugin/oembed': require('./routes/plugins/oembed.js'),
     plugin: require('./routes/plugins/publish-s3.js')

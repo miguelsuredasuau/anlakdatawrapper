@@ -8,6 +8,8 @@ const { randomInt } = require('crypto');
 /* bcrypt hash for string "test-password" */
 const PASSWORD_HASH = '$2a$05$6B584QgS5SOXi1m.jM/H9eV.2tCaqNc5atHnWfYlFe5riXVW9z7ja';
 
+const BASE_URL = 'http://api.datawrapper.local';
+
 const ALL_SCOPES = [
     'user:read',
     'user:write',
@@ -300,6 +302,7 @@ async function destroy(...instances) {
 }
 
 module.exports = {
+    BASE_URL,
     createChart,
     createCharts,
     createFolder,

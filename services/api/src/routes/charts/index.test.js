@@ -1,6 +1,7 @@
 const test = require('ava');
 const assign = require('assign-deep');
 const {
+    BASE_URL,
     createTeamWithUser,
     createUser,
     destroy,
@@ -12,6 +13,7 @@ const {
     genNonExistentFolderId
 } = require('../../../test/helpers/setup');
 const { randomInt } = require('crypto');
+const fetch = require('node-fetch');
 
 function createFolder(props) {
     const { Folder } = require('@datawrapper/orm/models');
@@ -1601,5 +1603,481 @@ test('PATCH /charts moves multiple charts into a different folder of the same te
             Object.values(userObj),
             Object.values(otherUserObj)
         );
+    }
+});
+
+test('GET /charts?expand=true returns charts containing extra information', async t => {
+    let userObj = {};
+    let charts = [];
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: '/v3/charts?expand=true',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.statusCode, 200);
+        const json = await res.result;
+        t.is(json.list.length, 1);
+        t.truthy(json.list[0].author);
+        t.truthy(json.list[0].authorId);
+        t.truthy(json.list[0].metadata);
+    } finally {
+        await destroy(charts, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts returns charts of a user', async t => {
+    let userObj = {};
+    let charts = [];
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            },
+            {
+                title: 'Chart 2',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            }
+        ]);
+        const res = await fetch(`${BASE_URL}/charts`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 2);
+        t.truthy(json.data.find(el => el.id === charts[0].id));
+        t.truthy(json.data.find(el => el.id === charts[1].id));
+    } finally {
+        await destroy(charts, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts?offset=X returns charts offset by X', async t => {
+    let userObj = {};
+    let charts = [];
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            }
+        ]);
+        // default order is by last_modified_at DESC
+        // so create second chart a bit after first chart
+        // to make sure last_modified_at timestamps are different
+        await sleep(1);
+        charts.push(
+            ...(await createCharts([
+                {
+                    title: 'Chart 2',
+                    organization_id: null,
+                    author_id: userObj.user.id,
+                    last_edit_step: 2
+                }
+            ]))
+        );
+
+        const res = await fetch(`${BASE_URL}/charts?offset=1`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 1);
+        t.is(json.data[0].id, charts[0].id);
+    } finally {
+        await destroy(charts, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts?filter=q:X returns charts filtered by search query X', async t => {
+    let userObj = {};
+    let charts = [];
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        charts = await createCharts([
+            {
+                title: 'Fool',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            },
+            {
+                title: 'Chart 2',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            }
+        ]);
+        const res = await fetch(`${BASE_URL}/charts?filter=q:Fool`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 1);
+        t.is(json.data[0].id, charts[0].id);
+    } finally {
+        await destroy(charts, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts?filter=folder:X returns charts filtered by folder ID X', async t => {
+    let userObj = {};
+    let charts = [];
+    let folder;
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        folder = await createFolder({
+            user_id: userObj.user.id
+        });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2,
+                in_folder: folder.id
+            },
+            {
+                title: 'Chart 2',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            }
+        ]);
+        const res = await fetch(`${BASE_URL}/charts?filter=folder:${folder.id}`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 1);
+        t.is(json.data[0].id, charts[0].id);
+    } finally {
+        await destroy(charts, folder, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts?filter=status:published returns published charts', async t => {
+    let userObj = {};
+    let charts = [];
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 4
+            },
+            {
+                title: 'Chart 2',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            }
+        ]);
+        const res = await fetch(`${BASE_URL}/charts?filter=status:published`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 1);
+        t.is(json.data[0].id, charts[0].id);
+    } finally {
+        await destroy(charts, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts?filter=folder:X|status:published returns published charts filtered by folder X', async t => {
+    let userObj = {};
+    let charts = [];
+    let folder;
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        folder = await createFolder({
+            user_id: userObj.user.id
+        });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 4,
+                in_folder: folder.id
+            },
+            {
+                title: 'Chart 2',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 4
+            },
+            {
+                title: 'Chart 2',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2,
+                in_folder: folder.id
+            }
+        ]);
+        const res = await fetch(`${BASE_URL}/charts?filter=folder:${folder.id}|status:published`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 1);
+        t.is(json.data[0].id, charts[0].id);
+    } finally {
+        await destroy(charts, folder, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts?order=title returns charts ordered by title ascending', async t => {
+    let userObj = {};
+    let charts = [];
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        charts = await createCharts([
+            {
+                title: 'A',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            },
+            {
+                title: 'B',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            }
+        ]);
+        const res = await fetch(`${BASE_URL}/charts?order=title`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 2);
+        t.is(json.data[0].id, charts[0].id);
+        t.is(json.data[1].id, charts[1].id);
+    } finally {
+        await destroy(charts, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts?order=published_at returns charts ordered by publication date descending', async t => {
+    let userObj = {};
+    let charts = [];
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        charts = await createCharts([
+            {
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2,
+                published_at: '2021-11-26T12:00:00.000Z'
+            },
+            {
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2,
+                published_at: '2021-11-26T13:00:00.000Z'
+            }
+        ]);
+        const res = await fetch(`${BASE_URL}/charts?order=published_at`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 2);
+        t.is(json.data[0].id, charts[1].id);
+        t.is(json.data[1].id, charts[0].id);
+    } finally {
+        await destroy(charts, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts?order=status returns charts ordered by last edit step descending', async t => {
+    let userObj = {};
+    let charts = [];
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        charts = await createCharts([
+            {
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            },
+            {
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 4
+            },
+            {
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 3
+            }
+        ]);
+        const res = await fetch(`${BASE_URL}/charts?order=status`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 3);
+        t.is(json.data[0].id, charts[1].id);
+        t.is(json.data[1].id, charts[2].id);
+        t.is(json.data[2].id, charts[0].id);
+    } finally {
+        await destroy(charts, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts?order=created_at returns charts ordered by creation date descending', async t => {
+    let userObj = {};
+    let charts = [];
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            }
+        ]);
+        // default order is by last_modified_at DESC
+        // so create second chart a bit after first chart
+        // to make sure last_modified_at timestamps are different
+        await sleep(1);
+        charts.push(
+            ...(await createCharts([
+                {
+                    title: 'Chart 2',
+                    organization_id: null,
+                    author_id: userObj.user.id,
+                    last_edit_step: 2
+                }
+            ]))
+        );
+
+        const res = await fetch(`${BASE_URL}/charts?order=created_at`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 2);
+        t.is(json.data[0].id, charts[1].id);
+        t.is(json.data[1].id, charts[0].id);
+    } finally {
+        await destroy(charts, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts?expand=true returns charts containing extra information', async t => {
+    let userObj = {};
+    let charts = [];
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            }
+        ]);
+        const res = await fetch(`${BASE_URL}/charts?expand=true`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 1);
+        t.truthy(json.data[0].author);
+        t.truthy(json.data[0].authorId);
+        t.truthy(json.data[0].metadata);
+    } finally {
+        await destroy(charts, Object.values(userObj));
+    }
+});
+
+test("PHP GET /charts returns an error if user does not have scope 'chart:read'", async t => {
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['scope:invalid'] });
+        const res = await fetch(`${BASE_URL}/charts`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 403);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(Object.values(userObj));
     }
 });
