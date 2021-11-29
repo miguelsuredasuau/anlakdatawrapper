@@ -58,14 +58,35 @@
 </script>
 
 <style lang="scss">
+    @import '../../styles/export.scss';
     .menu.sticky {
         position: sticky;
         top: 20px;
     }
 
-    .menu-list a {
-        &.is-active {
-            font-weight: bold;
+    .menu-label {
+        font-weight: 700;
+    }
+    .menu-list {
+        border: 1px solid $dw-grey-lighter;
+        border-radius: $radius;
+
+        li:not(:last-of-type) {
+            border-bottom: 1px solid $dw-grey-lighter;
+        }
+        li:first-of-type a {
+            border-radius: $radius $radius 0 0;
+        }
+        li:last-of-type a {
+            border-radius: 0 0 $radius $radius;
+        }
+        a {
+            &.is-active {
+                font-weight: bold;
+            }
+            :global(.icon) {
+                font-size: 20px;
+            }
         }
     }
 </style>
@@ -76,7 +97,7 @@
     {#each groups as g}
         <div class="block">
             {#if g.title}
-                <h3 class="menu-label is-size-7 has-text-black-bis has-text-weight-bold">
+                <h3 class="menu-label">
                     {@html g.title}
                 </h3>
             {/if}

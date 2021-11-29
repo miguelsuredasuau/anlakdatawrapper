@@ -105,6 +105,15 @@ $modal-content-width: 1100px;
 $modal-z: 1100;
 $modal-background-background-color: rgba($dw-black-bis, 0.5);
 
+// Menu
+$menu-label-color: $grey-dark;
+$menu-label-font-size: 13px;
+$menu-label-letter-spacing: 0.05em;
+$menu-item-radius: none;
+$menu-item-hover-color: $dw-scooter-dark;
+$menu-item-hover-background-color: $dw-white-ter;
+$menu-item-active-background-color: $dw-scooter;
+
 // LAYOUT
 $section-padding: 1.5rem;
 
@@ -117,12 +126,3 @@ $dropdown-item-active-background-color: $dw-scooter-lightest;
 $dropdown-content-padding-top: 0.25rem;
 $dropdown-content-padding-bottom: 0.25rem;
 
-// Menu
-$menu-label-color: $black-bis;
-$menu-label-font-size: 14px;
-$menu-list-line-height: 1.5;
-$menu-item-active-background-color: $dw-scooter;
-$menu-item-hover-color: $dw-scooter-dark;
-$menu-item-hover-background-color: $dw-white-ter;
-$menu-item-radius: $radius;
-$menu-label-letter-spacing: 0;

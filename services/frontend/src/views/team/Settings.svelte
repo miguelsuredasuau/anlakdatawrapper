@@ -5,6 +5,7 @@
 
     import SettingsPageLayout from '_layout/SettingsPageLayout.svelte';
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
     import debounce from 'lodash/debounce';
 
@@ -63,8 +64,16 @@
     <div slot="belowNav">
         <hr />
         <ul>
-            <li><a href="/account/teams">My Teams</a></li>
-            <li><a href="/archive/team/{team.id}">Teams charts</a></li>
+            <li>
+                <a href="/account/teams"
+                    ><IconDisplay icon="arrow-left" size="20px" valign="-0.25em" /> My Teams</a
+                >
+            </li>
+            <li>
+                <a href="/archive/team/{team.id}"
+                    ><IconDisplay icon="arrow-left" size="20px" valign="-0.25em" /> Teams charts</a
+                >
+            </li>
         </ul>
     </div>
 </SettingsPageLayout>

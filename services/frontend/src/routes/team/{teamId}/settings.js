@@ -16,7 +16,7 @@ module.exports = {
                 title: __('teams / tab / settings'),
                 headline: __('teams / defaults / h1'),
                 group: __('teams / group / users'),
-                svgIcon: 'user',
+                svgIcon: 'settings',
                 svelte2: {
                     id: 'svelte/team-settings/settings',
                     js: '/static/js/svelte/team-settings/settings.js',
@@ -57,7 +57,7 @@ module.exports = {
                 url: `/team/${teamId}/delete`,
                 title: __('teams / tab / deleteTeam'),
                 group: __('teams / group / advanced'),
-                svgIcon: 'trash',
+                svgIcon: 'close',
                 svelte2: {
                     id: 'svelte/team-settings/delete',
                     js: '/static/js/svelte/team-settings/delete.js',
@@ -78,7 +78,7 @@ module.exports = {
                     url: `/team/${teamId}/products`,
                     title: __('teams / tab / adminProducts'),
                     group: __('teams / group / internal'),
-                    svgIcon: 'list',
+                    svgIcon: 'product-management',
                     svelte2: {
                         id: 'svelte/team-settings/products',
                         js: '/static/js/svelte/team-settings/products.js',

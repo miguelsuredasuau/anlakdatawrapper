@@ -49,7 +49,7 @@ module.exports = {
                 title: __('account / profile'),
                 headline: __('Edit profile'),
                 group: __('account / settings / personal'),
-                svgIcon: 'user',
+                svgIcon: 'user-menu',
                 svelte2: {
                     id: 'svelte/account/profile',
                     js: '/static/js/svelte/account/profile.js',
@@ -131,7 +131,7 @@ module.exports = {
                     url: '/account/security',
                     title: 'Security',
                     group: __('account / settings / personal'),
-                    svgIcon: 'privacy',
+                    svgIcon: 'lock',
                     svelte2: {
                         id: 'svelte/account/security',
                         js: '/static/js/svelte/account/security.js',

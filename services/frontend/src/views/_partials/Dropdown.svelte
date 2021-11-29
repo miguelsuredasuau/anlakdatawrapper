@@ -14,7 +14,7 @@
 </script>
 
 <style lang="scss">
-    @import '../../styles/colors.scss';
+    @import '../../styles/export.scss';
     .dropdown {
         :global(.dropdown-divider) {
             margin: 0.25rem 0;

@@ -4201,10 +4201,10 @@ button.dropdown-item.is-active {
 }
 
 .menu-list {
-  line-height: 1.5;
+  line-height: 1.25;
 }
 .menu-list a {
-  border-radius: 4px;
+  border-radius: none;
   color: #333333;
   display: block;
   padding: 0.5em 0.75em;
@@ -4224,9 +4224,9 @@ button.dropdown-item.is-active {
 }
 
 .menu-label {
-  color: #333333;
-  font-size: 14px;
-  letter-spacing: 0;
+  color: #858585;
+  font-size: 13px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 .menu-label:not(:first-child) {
