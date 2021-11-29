@@ -13,6 +13,7 @@
                         class="passive-input"
                         value="{shareUrl}"
                         readonly
+                        on:focus="this.select()"
                     />
                     <a target="_blank" class="btn btn-primary" href="{shareUrl}">
                         <IconDisplay icon="external-link" size="15px" valign="-3px" />
@@ -53,6 +54,7 @@
                         class="passive-input"
                         value="{embedCode}"
                         readonly
+                        on:focus="this.select()"
                     />
                 </div>
                 <button
