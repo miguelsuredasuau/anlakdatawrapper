@@ -58,6 +58,7 @@
                         dispatch('change', event);
                     });
                     _app.on('state', ({ current }) => {
+                        // TODO Process current with filterOutComputedProps().
                         data = clone(current);
                     });
                 } catch (err) {
@@ -95,6 +96,7 @@
     });
 
     function update(event) {
+        // TODO Notice that this is called all the time. Probably because data and event.detail differ, e.g. in data.settings.defaultTheme vs data.settings.default_theme.
         // notify parent component about data changes from svelte2 wrapper
         data = clone(event.detail);
     }

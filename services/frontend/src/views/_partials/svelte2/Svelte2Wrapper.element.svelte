@@ -19,6 +19,21 @@
     export let data;
     export let storeData = {};
 
+    function isComputedProp(app, prop) {
+        try {
+            app._checkReadOnly({ [prop]: true });
+            return false;
+        } catch (ex) {
+            return true;
+        }
+    }
+
+    function filterOutComputedProps(app, data) {
+        return Object.fromEntries(
+            Object.entries(data).filter(([prop]) => !isComputedProp(app, prop))
+        );
+    }
+
     export function update(data, storeData) {
         if (_app) {
             _app.set(data);
@@ -83,7 +98,7 @@
                 _data = data;
                 _app.on('state', ({ current }) => {
                     data = current;
-                    dispatch('update', current);
+                    dispatch('update', filterOutComputedProps(_app, current));
                 });
                 _app.on('change', event => {
                     dispatch('change', event);
