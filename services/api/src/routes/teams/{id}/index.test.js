@@ -15,6 +15,7 @@ const {
 const fetch = require('node-fetch');
 
 const BASE_URL = 'http://api.datawrapper.local';
+const V1_BASE_URL = '/v3/api-v1';
 
 async function updateTeamSettings(server, headers, user, team, payload) {
     return await server.inject({
@@ -56,7 +57,7 @@ function testTeamSettings(t, team, settings) {
 }
 
 test.before(async t => {
-    t.context.server = await setup({ usePlugins: false });
+    t.context.server = await setup({ usePlugins: true });
     t.context.teamObj = await createTeamWithUser(t.context.server);
     t.context.auth = {
         strategy: 'session',
@@ -557,7 +558,7 @@ test('DELETE /teams/{id} deletes a team with nested folders', async t => {
     }
 });
 
-async function testPHPGetTeamCharts(t, teamsPath = 'teams') {
+async function testV1GetTeamCharts(t, teamsPath = 'teams') {
     let teamObj = {};
     let otherTeam;
     let charts = [];
@@ -582,14 +583,16 @@ async function testPHPGetTeamCharts(t, teamsPath = 'teams') {
                 organization_id: otherTeam.id
             }
         ]);
-        const res = await fetch(`${BASE_URL}/${teamsPath}/${teamObj.team.id}/charts`, {
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: `${V1_BASE_URL}/${teamsPath}/${teamObj.team.id}/charts`,
             headers: {
                 ...t.context.headers,
                 Authorization: `Bearer ${teamObj.token}`
             }
         });
-        t.is(res.status, 200);
-        const json = await res.json();
+        t.is(res.statusCode, 200);
+        const json = await res.result;
         t.is(json.status, 'ok');
         t.is(json.data.total, 1);
         t.is(json.data.charts.length, 1);
@@ -601,15 +604,15 @@ async function testPHPGetTeamCharts(t, teamsPath = 'teams') {
     }
 }
 
-test('PHP GET /teams/{id}/charts returns charts of a team', testPHPGetTeamCharts, 'teams');
+test('V1 GET /teams/{id}/charts returns charts of a team', testV1GetTeamCharts, 'teams');
 
-test(
-    'PHP GET /organizations/{id}/charts returns charts of a team',
-    testPHPGetTeamCharts,
+test.skip(
+    'V1 GET /organizations/{id}/charts returns charts of a team',
+    testV1GetTeamCharts,
     'organizations'
-);
+); // skipped because /organizations route is defined by nginx and not by the api-v1 plugin
 
-async function testPHPGetTeamChartsMinLastEditStep(t, teamsPath = 'teams') {
+async function testV1GetTeamChartsMinLastEditStep(t, teamsPath = 'teams') {
     let teamObj = {};
     let otherTeam;
     let charts = [];
@@ -655,17 +658,17 @@ async function testPHPGetTeamChartsMinLastEditStep(t, teamsPath = 'teams') {
 
 test(
     'PHP GET /teams/{id}/charts returns only charts with data',
-    testPHPGetTeamChartsMinLastEditStep,
+    testV1GetTeamChartsMinLastEditStep,
     'teams'
 );
 
 test(
     'PHP GET /organizations/{id}/charts returns only charts with data',
-    testPHPGetTeamChartsMinLastEditStep,
+    testV1GetTeamChartsMinLastEditStep,
     'organizations'
 );
 
-async function testPHPGetTeamChartsAsAdmin(t, teamsPath) {
+async function testV1GetTeamChartsAsAdmin(t, teamsPath) {
     let team;
     let otherTeam;
     let charts = [];
@@ -713,17 +716,17 @@ async function testPHPGetTeamChartsAsAdmin(t, teamsPath) {
 
 test(
     'PHP GET /teams/{id}/charts returns charts of a team for admin users',
-    testPHPGetTeamChartsAsAdmin,
+    testV1GetTeamChartsAsAdmin,
     'teams'
 );
 
 test(
     'PHP GET /organizations/{id}/charts returns charts of a team for admin users',
-    testPHPGetTeamChartsAsAdmin,
+    testV1GetTeamChartsAsAdmin,
     'organizations'
 );
 
-async function testPHPGetTeamChartsWithInsufficientScope(t, teamsPath, scopes) {
+async function testV1GetTeamChartsWithInsufficientScope(t, teamsPath, scopes) {
     let userObj = {};
     let team;
     try {
@@ -748,33 +751,33 @@ async function testPHPGetTeamChartsWithInsufficientScope(t, teamsPath, scopes) {
 
 test(
     'PHP GET /teams/{id}/charts returns error if user does not have scope team:read',
-    testPHPGetTeamChartsWithInsufficientScope,
+    testV1GetTeamChartsWithInsufficientScope,
     'teams',
     ['chart:read']
 );
 
 test(
     'PHP GET /teams/{id}/charts returns error if user does not have scope chart:read',
-    testPHPGetTeamChartsWithInsufficientScope,
+    testV1GetTeamChartsWithInsufficientScope,
     'teams',
     ['team:read']
 );
 
 test(
     'PHP GET /organizations/{id}/charts returns error if user does not have scope team:read',
-    testPHPGetTeamChartsWithInsufficientScope,
+    testV1GetTeamChartsWithInsufficientScope,
     'organizations',
     ['chart:read']
 );
 
 test(
     'PHP GET /organizations/{id}/charts returns error if user does not have scope chart:read',
-    testPHPGetTeamChartsWithInsufficientScope,
+    testV1GetTeamChartsWithInsufficientScope,
     'organizations',
     ['team:read']
 );
 
-async function testPHPGetTeamChartsAsNonTeamMember(t, teamsPath = 'teams') {
+async function testV1GetTeamChartsAsNonTeamMember(t, teamsPath = 'teams') {
     let userObj = {};
     let team;
     try {
@@ -797,17 +800,17 @@ async function testPHPGetTeamChartsAsNonTeamMember(t, teamsPath = 'teams') {
 
 test(
     'PHP GET /teams/{id}/charts returns error if non-admin user is not part of the team',
-    testPHPGetTeamChartsAsNonTeamMember,
+    testV1GetTeamChartsAsNonTeamMember,
     'teams'
 );
 
 test(
     'PHP GET /organizations/{id}/charts returns error if non-admin user is not part of the team',
-    testPHPGetTeamChartsAsNonTeamMember,
+    testV1GetTeamChartsAsNonTeamMember,
     'organizations'
 );
 
-async function testPHPGetTeamChartsOfNonExistentTeam(t, teamsPath) {
+async function testV1GetTeamChartsOfNonExistentTeam(t, teamsPath) {
     let userObj = {};
     try {
         userObj = await createUser(t.context.server, { scopes: ['chart:read', 'team:read'] });
@@ -828,17 +831,17 @@ async function testPHPGetTeamChartsOfNonExistentTeam(t, teamsPath) {
 
 test(
     'PHP GET /teams/{id}/charts returns error if the team does not exist',
-    testPHPGetTeamChartsOfNonExistentTeam,
+    testV1GetTeamChartsOfNonExistentTeam,
     'teams'
 );
 
 test(
     'PHP GET /organizations/{id}/charts returns error if the team does not exist',
-    testPHPGetTeamChartsOfNonExistentTeam,
+    testV1GetTeamChartsOfNonExistentTeam,
     'organizations'
 );
 
-async function testPHPGetTeamChartsPaginated(t, teamsPath = 'teams', page, expectedNoOfCharts) {
+async function testV1GetTeamChartsPaginated(t, teamsPath = 'teams', page, expectedNoOfCharts) {
     let teamObj = {};
     let otherTeam;
     let charts = [];
@@ -876,7 +879,7 @@ async function testPHPGetTeamChartsPaginated(t, teamsPath = 'teams', page, expec
 
 test(
     'PHP GET /teams/{id}/charts returns charts of a team correctly paginated (page 1)',
-    testPHPGetTeamChartsPaginated,
+    testV1GetTeamChartsPaginated,
     'teams',
     0,
     48
@@ -884,7 +887,7 @@ test(
 
 test(
     'PHP GET /teams/{id}/charts returns charts of a team correctly paginated (page 2)',
-    testPHPGetTeamChartsPaginated,
+    testV1GetTeamChartsPaginated,
     'teams',
     1,
     2
@@ -892,7 +895,7 @@ test(
 
 test(
     'PHP GET /organizations/{id}/charts returns charts of a team correctly paginated (page 1)',
-    testPHPGetTeamChartsPaginated,
+    testV1GetTeamChartsPaginated,
     'organizations',
     0,
     48
@@ -900,13 +903,13 @@ test(
 
 test(
     'PHP GET /organizations/{id}/charts returns charts of a team correctly paginated (page 2)',
-    testPHPGetTeamChartsPaginated,
+    testV1GetTeamChartsPaginated,
     'organizations',
     1,
     2
 );
 
-async function testPHPGetTeamChartsWithSearchParam(t, teamsPath = 'teams') {
+async function testV1GetTeamChartsWithSearchParam(t, teamsPath = 'teams') {
     let teamObj = {};
     let charts = [];
     try {
@@ -950,17 +953,17 @@ async function testPHPGetTeamChartsWithSearchParam(t, teamsPath = 'teams') {
 
 test(
     'PHP GET /teams/{id}/charts?search=X searches in team charts',
-    testPHPGetTeamChartsWithSearchParam,
+    testV1GetTeamChartsWithSearchParam,
     'teams'
 );
 
 test(
     'PHP GET /organizations/{id}/charts?search=X searches in team charts',
-    testPHPGetTeamChartsWithSearchParam,
+    testV1GetTeamChartsWithSearchParam,
     'organizations'
 );
 
-async function testPHPGetTeamsOfUser(t, teamsPath = 'teams') {
+async function testV1GetTeamsOfUser(t, teamsPath = 'teams') {
     let userObj = {};
     let team1;
     let team2;
@@ -990,11 +993,11 @@ async function testPHPGetTeamsOfUser(t, teamsPath = 'teams') {
     }
 }
 
-test('PHP GET /teams/user returns teams of a user', testPHPGetTeamsOfUser, 'teams');
+test('PHP GET /teams/user returns teams of a user', testV1GetTeamsOfUser, 'teams');
 
-test('PHP GET /organizations/user returns teams of a user', testPHPGetTeamsOfUser, 'organizations');
+test('PHP GET /organizations/user returns teams of a user', testV1GetTeamsOfUser, 'organizations');
 
-async function testPHPGetTeamsOfUserIgnoreDisabled(t, teamsPath = 'teams') {
+async function testV1GetTeamsOfUserIgnoreDisabled(t, teamsPath = 'teams') {
     const disableTeam = async team => {
         // helper function to disable a team. Uses a raw query
         // since property 'disabled' is not part of the Sequelize model definition
@@ -1033,17 +1036,17 @@ async function testPHPGetTeamsOfUserIgnoreDisabled(t, teamsPath = 'teams') {
 
 test(
     'PHP GET /teams/user does not return disabled teams of a user',
-    testPHPGetTeamsOfUserIgnoreDisabled,
+    testV1GetTeamsOfUserIgnoreDisabled,
     'teams'
 );
 
 test(
     'PHP GET /organizations/user does not return disabled teams of a user',
-    testPHPGetTeamsOfUserIgnoreDisabled,
+    testV1GetTeamsOfUserIgnoreDisabled,
     'organizations'
 );
 
-async function testPHPGetTeamsOfUserWithInsufficientScope(t, teamsPath = 'teams') {
+async function testV1GetTeamsOfUserWithInsufficientScope(t, teamsPath = 'teams') {
     let userObj = {};
     let team1;
     let team2;
@@ -1073,12 +1076,12 @@ async function testPHPGetTeamsOfUserWithInsufficientScope(t, teamsPath = 'teams'
 
 test(
     "PHP GET /teams/user returns an error if user does not have scope 'team:read'",
-    testPHPGetTeamsOfUserWithInsufficientScope,
+    testV1GetTeamsOfUserWithInsufficientScope,
     'teams'
 );
 
 test(
     "PHP GET /organizations/user returns an error if user does not have scope 'team:read'",
-    testPHPGetTeamsOfUserWithInsufficientScope,
+    testV1GetTeamsOfUserWithInsufficientScope,
     'organizations'
 );

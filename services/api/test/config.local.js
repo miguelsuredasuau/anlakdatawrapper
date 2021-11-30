@@ -1,10 +1,11 @@
+const path = require('path');
 require('dotenv').config({
-    path: require('path').resolve('../../.datawrapper_env')
+    path: path.resolve('../../.datawrapper_env')
 });
 
 module.exports = {
     general: {
-        localPluginRoot: '/plugins',
+        localPluginRoot: path.join(process.cwd(), '../../plugins'),
         localChartAssetRoot: '/tmp/data',
         localChartPublishRoot: '/tmp/charts',
         imageDomain: process.env.DW_THUMBNAIL_URL
@@ -21,7 +22,9 @@ module.exports = {
         secretAuthSalt: 'MY_SECRET_AUTH_KEY',
         cors: ['*']
     },
-    plugins: {},
+    plugins: {
+        'api-v1': {}
+    },
     orm: {
         db: {
             dialect: 'mysql',

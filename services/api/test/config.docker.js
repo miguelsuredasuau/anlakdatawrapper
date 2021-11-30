@@ -1,6 +1,7 @@
+const path = require('path');
 module.exports = {
     general: {
-        localPluginRoot: '/plugins',
+        localPluginRoot: path.join(process.cwd(), '../../plugins'),
         localChartAssetRoot: '/tmp/data',
         localChartPublishRoot: '/tmp/charts',
         imageDomain: 'charts.datawrapper.local/preview'
@@ -17,7 +18,9 @@ module.exports = {
         secretAuthSalt: 'MY_SECRET_AUTH_KEY',
         cors: ['*']
     },
-    plugins: {},
+    plugins: {
+        'api-v1': {}
+    },
     orm: {
         chartIdSalt: 'TEST_SALT',
         skipTableTest: true,
