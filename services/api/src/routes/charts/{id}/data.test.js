@@ -1,5 +1,13 @@
 const test = require('ava');
-const { createUser, destroy, setup } = require('../../../../test/helpers/setup');
+const {
+    BASE_URL,
+    createUser,
+    destroy,
+    setup,
+    createChart,
+    createTeam
+} = require('../../../../test/helpers/setup');
+const fetch = require('node-fetch');
 
 async function getData(server, session, chart) {
     return server.inject({
@@ -118,5 +126,92 @@ test('User can read and write chart data', async t => {
         if (userObj) {
             await destroy(...Object.values(userObj));
         }
+    }
+});
+
+test('PHP GET /charts/{id}/data returns chart data', async t => {
+    let userObj = {};
+    let chart;
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['chart:read'] });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        t.assert(res.headers.get('content-type').includes('text/csv'));
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test("PHP GET /charts/{id}/data returns an error if user does not have scope 'chart:read'", async t => {
+    let userObj = {};
+    let chart;
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['scope:invalid'] });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 403);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test('PHP GET /charts/{id}/data returns an error if chart does not exist', async t => {
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['chart:read'] });
+        const res = await fetch(`${BASE_URL}/charts/00000/data`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'no-such-chart');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+test('PHP GET /charts/{id}/data returns an error if user does not have access to chart', async t => {
+    let userObj = {};
+    let chart;
+    let team;
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['chart:read'] });
+        team = await createTeam();
+        chart = await createChart({
+            organization_id: team.id
+        });
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(chart, team, Object.values(userObj));
     }
 });
