@@ -32,7 +32,7 @@ module.exports = {
     monthly: recordStats('monthly')
 };
 
-async function totalUsers (stats, time) {
+async function totalUsers(stats, time) {
     const cnt = await User.count({
         where: {
             deleted: 0,
@@ -44,7 +44,7 @@ async function totalUsers (stats, time) {
         value: cnt
     });
 }
-async function totalActivatedUsers (stats, time) {
+async function totalActivatedUsers(stats, time) {
     const cnt = await User.count({
         where: {
             deleted: 0,
@@ -57,7 +57,7 @@ async function totalActivatedUsers (stats, time) {
     });
 }
 
-async function newlyCreatedUsers (stats, time) {
+async function newlyCreatedUsers(stats, time) {
     const cnt = await User.count({
         where: {
             deleted: 0,
@@ -71,7 +71,7 @@ async function newlyCreatedUsers (stats, time) {
     });
 }
 
-async function newlyActivatedUsers (stats, time) {
+async function newlyActivatedUsers(stats, time) {
     const cnt = await User.count({
         where: {
             role: 1,
@@ -85,7 +85,7 @@ async function newlyActivatedUsers (stats, time) {
     });
 }
 
-async function teamCount (stats, time) {
+async function teamCount(stats, time) {
     const cnt = await Team.count({
         where: {
             deleted: 0
@@ -97,7 +97,7 @@ async function teamCount (stats, time) {
     });
 }
 
-async function newlyCreatedTeams (stats, time) {
+async function newlyCreatedTeams(stats, time) {
     const cnt = await Team.count({
         where: {
             deleted: 0,
@@ -110,7 +110,7 @@ async function newlyCreatedTeams (stats, time) {
     });
 }
 
-async function totalTeamMembers (stats, time) {
+async function totalTeamMembers(stats, time) {
     const cnt = await UserTeam.count({
         where: {
             invite_token: ''
@@ -123,7 +123,7 @@ async function totalTeamMembers (stats, time) {
     });
 }
 
-async function totalPendingTeamMembers (stats, time) {
+async function totalPendingTeamMembers(stats, time) {
     const cnt = await UserTeam.count({
         where: {
             invite_token: { [Op.not]: '' }

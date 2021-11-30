@@ -27,7 +27,7 @@ module.exports = {
     monthly: recordStats('monthly')
 };
 
-async function totalTokens (stats, time) {
+async function totalTokens(stats, time) {
     const cnt = await AuthToken.count();
     stats.push({
         metric: `api-tokens:${time}:total`,
@@ -35,7 +35,7 @@ async function totalTokens (stats, time) {
     });
 }
 
-async function totalUsedTokens (stats, time) {
+async function totalUsedTokens(stats, time) {
     const cnt = await AuthToken.count({
         where: {
             last_used_at: { [Op.not]: null }
@@ -47,7 +47,7 @@ async function totalUsedTokens (stats, time) {
     });
 }
 
-async function newlyCreatedTokens (stats, time) {
+async function newlyCreatedTokens(stats, time) {
     const cnt = await AuthToken.count({
         where: {
             created_at: { [Op.gt]: new Date(new Date() - duration[time]) }
@@ -59,7 +59,7 @@ async function newlyCreatedTokens (stats, time) {
     });
 }
 
-async function recentlyUsedTokens (stats, time) {
+async function recentlyUsedTokens(stats, time) {
     const cnt = await AuthToken.count({
         where: {
             last_used_at: { [Op.gt]: new Date(new Date() - duration[time]) }

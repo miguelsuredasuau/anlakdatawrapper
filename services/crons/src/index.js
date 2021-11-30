@@ -65,6 +65,8 @@ module.exports = async function () {
 
     // collect some stats about charts
     const chartStats = require('./tasks/chart-stats');
+    cron.schedule('* * * * *', chartStats.minutely);
+    cron.schedule('0 * * * *', chartStats.hourly);
     cron.schedule('0 0 * * *', chartStats.daily);
     cron.schedule('0 0 * * 0', chartStats.weekly);
     cron.schedule('0 0 1 * *', chartStats.monthly);
@@ -110,7 +112,7 @@ module.exports = async function () {
         .reduce(getPluginPath, [])
         .forEach(registerPlugin);
 
-    function getPluginPath (plugins, name) {
+    function getPluginPath(plugins, name) {
         // If available, use .cjs file (ES Module plugin):
         const cjsPath = path.join(pluginRoot, name, 'crons.cjs');
         if (fs.existsSync(cjsPath)) {
@@ -129,7 +131,7 @@ module.exports = async function () {
         return plugins;
     }
 
-    function registerPlugin ({ name, pluginPath }) {
+    function registerPlugin({ name, pluginPath }) {
         // load the plugin
         const plugin = require(pluginPath);
 

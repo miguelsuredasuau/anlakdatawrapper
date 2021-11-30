@@ -2,9 +2,19 @@ const { Op } = require('@datawrapper/orm').db;
 const { Chart, Stats } = require('@datawrapper/orm/models');
 
 const duration = {
+    minutely: 6e4, // analyze last minute
+    hourly: 36e5, // analyze last hour
     daily: 864e5, // analyze last day
     weekly: 864e5 * 7, // analyze last week
     monthly: 864e5 * 30 // analyze last week
+};
+
+const deleteAfter = {
+    monthly: false,
+    weekly: false,
+    daily: false,
+    hourly: 14 * 864e5, // keep 14 days
+    minutely: 864e5 // keep 24 hours
 };
 
 const recordStats = time => {
@@ -16,22 +26,34 @@ const recordStats = time => {
         await totalPublishedCharts(stats, time);
         await newlyCreatedCharts(stats, time);
         await newlyVisualizedCharts(stats, time);
+        await recentlyEditedCharts(stats, time);
         await newlyPublishedCharts(stats, time);
         await newlyRepublishedCharts(stats, time);
 
         // store all stats
         await Stats.bulkCreate(stats);
-        // stats.forEach(r => console.log(r));
+
+        // clean up stats
+        if (deleteAfter[time]) {
+            await Stats.destroy({
+                where: {
+                    metric: { [Op.like]: `charts:${time}:%` },
+                    time: { [Op.lt]: new Date(new Date() - deleteAfter[time]) }
+                }
+            });
+        }
     };
 };
 
 module.exports = {
+    minutely: recordStats('minutely'),
+    hourly: recordStats('hourly'),
     daily: recordStats('daily'),
     weekly: recordStats('weekly'),
     monthly: recordStats('monthly')
 };
 
-async function totalCharts (stats, time) {
+async function totalCharts(stats, time) {
     const cnt = await Chart.count({
         where: {
             deleted: 0,
@@ -44,7 +66,7 @@ async function totalCharts (stats, time) {
     });
 }
 
-async function totalVisualizedCharts (stats, time) {
+async function totalVisualizedCharts(stats, time) {
     const cnt = await Chart.count({
         where: {
             deleted: 0,
@@ -57,7 +79,7 @@ async function totalVisualizedCharts (stats, time) {
     });
 }
 
-async function totalPublishedCharts (stats, time) {
+async function totalPublishedCharts(stats, time) {
     const cnt = await Chart.count({
         where: {
             deleted: 0,
@@ -71,7 +93,7 @@ async function totalPublishedCharts (stats, time) {
     });
 }
 
-async function newlyCreatedCharts (stats, time) {
+async function newlyCreatedCharts(stats, time) {
     const cnt = await Chart.count({
         where: {
             deleted: 0,
@@ -85,7 +107,7 @@ async function newlyCreatedCharts (stats, time) {
     });
 }
 
-async function newlyVisualizedCharts (stats, time) {
+async function newlyVisualizedCharts(stats, time) {
     const cnt = await Chart.count({
         where: {
             deleted: 0,
@@ -99,7 +121,20 @@ async function newlyVisualizedCharts (stats, time) {
     });
 }
 
-async function newlyPublishedCharts (stats, time) {
+async function recentlyEditedCharts(stats, time) {
+    const cnt = await Chart.count({
+        where: {
+            deleted: 0,
+            last_modified_at: { [Op.gt]: new Date(new Date() - duration[time]) }
+        }
+    });
+    stats.push({
+        metric: `charts:${time}:edited`,
+        value: cnt
+    });
+}
+
+async function newlyPublishedCharts(stats, time) {
     const cnt = await Chart.count({
         where: {
             deleted: 0,
@@ -114,7 +149,7 @@ async function newlyPublishedCharts (stats, time) {
     });
 }
 
-async function newlyRepublishedCharts (stats, time) {
+async function newlyRepublishedCharts(stats, time) {
     const cnt = await Chart.count({
         where: {
             deleted: 0,

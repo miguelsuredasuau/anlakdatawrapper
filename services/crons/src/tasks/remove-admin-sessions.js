@@ -10,11 +10,13 @@ const logger = require('../logger');
 module.exports = async () => {
     const lastUpdatedAgo = db.fn('DATEDIFF', db.fn('NOW'), db.col('last_updated'));
 
-    const adminIds = (await User.findAll({
-        where: {
-            role: 'admin'
-        }
-    })).map(el => el.id);
+    const adminIds = (
+        await User.findAll({
+            where: {
+                role: 'admin'
+            }
+        })
+    ).map(el => el.id);
 
     const deletedAdminSessions = await Session.destroy({
         where: {

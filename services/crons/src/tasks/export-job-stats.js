@@ -55,7 +55,7 @@ module.exports = {
     minutely: recordStats('minutely')
 };
 
-async function queuedJobs (stats, time) {
+async function queuedJobs(stats, time) {
     const res = await ExportJob.findAll({
         attributes: ['key', [db.fn('count', db.literal('*')), 'cnt']],
         group: ['key'],
@@ -69,7 +69,7 @@ async function queuedJobs (stats, time) {
     });
 }
 
-async function newlyCreatedJobs (stats, time) {
+async function newlyCreatedJobs(stats, time) {
     const res = await ExportJob.findAll({
         attributes: ['key', [db.fn('count', db.literal('*')), 'cnt']],
         group: ['key'],
@@ -85,7 +85,7 @@ async function newlyCreatedJobs (stats, time) {
     });
 }
 
-async function completedJobs (stats, time) {
+async function completedJobs(stats, time) {
     const res = await ExportJob.findAll({
         attributes: ['key', [db.fn('count', db.literal('*')), 'cnt']],
         group: ['key'],
@@ -102,7 +102,7 @@ async function completedJobs (stats, time) {
     });
 }
 
-async function failedJobs (stats, time) {
+async function failedJobs(stats, time) {
     const res = await ExportJob.findAll({
         attributes: ['key', [db.fn('count', db.literal('*')), 'cnt']],
         group: ['key'],
@@ -119,7 +119,7 @@ async function failedJobs (stats, time) {
     });
 }
 
-async function completedJobsTime (stats, time) {
+async function completedJobsTime(stats, time) {
     const completedJobs = await ExportJob.findAll({
         attributes: [
             'key',
@@ -138,7 +138,10 @@ async function completedJobsTime (stats, time) {
             done_at: { [Op.gt]: new Date(new Date() - duration[time]) }
         }
     });
-    const grouped = groupBy(completedJobs.map(d => d.toJSON()), 'key');
+    const grouped = groupBy(
+        completedJobs.map(d => d.toJSON()),
+        'key'
+    );
     Object.keys(grouped).forEach(key => {
         const times = grouped[key].map(d => d.processing_time).sort((a, b) => a - b);
         [
