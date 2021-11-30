@@ -11,7 +11,7 @@ module.exports = {
                     mode: 'required'
                 }
             },
-            async handler(request) {
+            async handler(request, h) {
                 try {
                     const { query } = request;
 
@@ -81,7 +81,54 @@ module.exports = {
                     };
                 } catch (ex) {
                     server.logger.warn(ex);
-                    return { status: 'error', code: 'unknown_error', message: 'Unknown error' };
+                    return h
+                        .response({
+                            status: 'error',
+                            code: 'unknown_error',
+                            message: 'Unknown error'
+                        })
+                        .code(502);
+                }
+            }
+        });
+
+        server.route({
+            method: 'POST',
+            path: '/',
+            options: {
+                auth: {
+                    mode: 'required'
+                }
+            },
+            async handler(request, h) {
+                try {
+                    const res = await request.server.inject({
+                        method: 'POST',
+                        url: `/v3/charts`,
+                        auth: request.auth,
+                        headers: request.headers
+                    });
+
+                    if (res.result.message === 'Insufficient scope') {
+                        const error = Boom.forbidden('Insufficient scope');
+                        error.output.payload.status = 'error';
+                        error.output.payload.code = 'access-denied';
+                        return error;
+                    }
+
+                    return {
+                        status: 'ok',
+                        data: [res.result]
+                    };
+                } catch (ex) {
+                    server.logger.warn(ex);
+                    return h
+                        .response({
+                            status: 'error',
+                            code: 'unknown_error',
+                            message: 'Unknown error'
+                        })
+                        .code(502);
                 }
             }
         });

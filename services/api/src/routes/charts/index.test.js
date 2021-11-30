@@ -2081,3 +2081,47 @@ test("PHP GET /charts returns an error if user does not have scope 'chart:read'"
         await destroy(Object.values(userObj));
     }
 });
+
+test('PHP POST /charts creates a new chart', async t => {
+    let userObj = {};
+    let chart;
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        const res = await fetch(`${BASE_URL}/charts`, {
+            method: 'POST',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.length, 1);
+        t.truthy(json.data[0]);
+        chart = await findChartById(json.data[0].id);
+        t.truthy(chart);
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test("PHP POST /charts returns an error if user does not have scope 'chart:write'", async t => {
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['scope:invalid'] });
+        const res = await fetch(`${BASE_URL}/charts`, {
+            method: 'POST',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.status, 403);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
