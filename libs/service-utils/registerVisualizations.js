@@ -17,6 +17,7 @@ module.exports = function registerVisualization(server) {
 
             vis.__plugin = plugin;
             vis.libraries = vis.libraries || [];
+            vis['svelte-workflow'] = vis['svelte-workflow'] || 'chart';
 
             // load githead from plugin
             const pluginRoot = server.methods.config('general').localPluginRoot;
