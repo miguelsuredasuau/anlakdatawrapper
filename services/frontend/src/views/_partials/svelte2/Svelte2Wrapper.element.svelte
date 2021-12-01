@@ -121,7 +121,7 @@
     }
 </style>
 
-<div class="visconfig" bind:this={parent}>
+<div class="visconfig dw-create-visualize chart-editor" bind:this={parent}>
     <div class="svelte-2" bind:this={container}>
         {#if loading}<span class="loading">loading...</span>{/if}
     </div>
