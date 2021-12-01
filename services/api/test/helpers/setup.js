@@ -215,8 +215,37 @@ function createChart(props = {}) {
     });
 }
 
+async function createPublicChart(props = {}) {
+    const chart = await createChart({
+        ...props,
+        last_edit_step: 5,
+        published_at: new Date(),
+        public_verison: 1
+    });
+    const { ChartPublic } = require('@datawrapper/orm/models');
+    return ChartPublic.create({
+        metadata: {
+            axes: [],
+            describe: {},
+            visualize: {},
+            annotate: {}
+        },
+        language: 'en-US',
+        title: 'Default',
+        theme: 'default',
+        type: 'd3-bars',
+        ...props,
+        id: chart.id
+    });
+}
+
 function createCharts(propsArray) {
     return Promise.all(propsArray.map(createChart));
+}
+
+function getChart(id) {
+    const { Chart } = require('@datawrapper/orm/models');
+    return Chart.findByPk(id);
 }
 
 async function addUserToTeam(user, team, role = 'member') {
@@ -306,6 +335,7 @@ async function destroy(...instances) {
 module.exports = {
     BASE_URL,
     createChart,
+    createPublicChart,
     createCharts,
     createFolder,
     createFolders,
@@ -318,6 +348,7 @@ module.exports = {
     genRandomChartId,
     genRandomFolderId,
     getCredentials,
+    getChart,
     setup,
     addUserToTeam
 };

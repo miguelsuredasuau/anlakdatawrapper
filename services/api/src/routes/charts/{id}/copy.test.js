@@ -3,8 +3,12 @@ const {
     createTeamWithUser,
     createUser,
     destroy,
-    setup
+    setup,
+    BASE_URL,
+    createChart,
+    getChart
 } = require('../../../../test/helpers/setup');
+const fetch = require('node-fetch');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
@@ -275,5 +279,126 @@ test('Copies made by admins are stored in their personal root folder ', async t 
         if (adminObj) {
             await destroy(...Object.values(adminObj));
         }
+    }
+});
+
+test('PHP POST /charts/{id}/copy returns error for non existing chart copy', async t => {
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+
+        const res = await fetch(`${BASE_URL}/charts/00000/copy`, {
+            method: 'POST',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+
+        t.is(res.status, 200);
+
+        const json = await res.json();
+
+        t.is(json.status, 'error');
+        t.is(json.code, 'no-such-chart');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
+test('PHP POST /charts/{id}/copy creates a copy', async t => {
+    let userObj = {};
+    let chart = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            last_edit_step: 2
+        });
+
+        // upload chart data, otherwise PHP /copy fails
+        await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'text/csv'
+            },
+            body: 'hello,world'
+        });
+
+        t.is(chart.title, 'Chart 1');
+
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/copy`, {
+            method: 'POST',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+
+        t.is(res.status, 200);
+
+        const json = await res.json();
+
+        t.is(json.status, 'ok');
+        t.truthy(json.data);
+        t.truthy(json.data.id);
+
+        const copy = await getChart(json.data.id);
+        t.truthy(copy);
+        t.is(copy.title, 'Chart 1 (Copy)');
+        t.is(copy.is_fork, false);
+        t.is(copy.forked_from, chart.id);
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
+test('PHP POST /charts/{id}/copy does not allow to copy from anyone', async t => {
+    let userObj = {};
+    let userObj2 = {};
+    let chart = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        userObj2 = await createUser(t.context.server, { role: 'editor' });
+        chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            last_edit_step: 2
+        });
+
+        // upload chart data, otherwise PHP /copy fails
+        await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'text/csv'
+            },
+            body: 'hello,world'
+        });
+
+        t.is(chart.title, 'Chart 1');
+
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/copy`, {
+            method: 'POST',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj2.token}`
+            }
+        });
+
+        t.is(res.status, 200);
+
+        const json = await res.json();
+
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(Object.values(userObj), Object.values(userObj2));
     }
 });

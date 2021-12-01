@@ -134,5 +134,7 @@ module.exports = {
         });
 
         server.register(require('./{id}'));
+        server.register(require('./{id}/fork'));
+        server.register(require('./{id}/copy'));
     }
 };
