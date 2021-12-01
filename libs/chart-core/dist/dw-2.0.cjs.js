@@ -6832,6 +6832,9 @@ function chart (attributes) {
     let _translations = {};
     let _ds;
 
+    const flagsBoolean = ['svgonly', 'plain', 'static', 'map2svg', 'transparent', 'fitchart'];
+    const flagsString = ['theme', 'search'];
+
     // public interface
     const chart = {
         /**
@@ -6987,9 +6990,6 @@ function chart (attributes) {
 
             const heightMode = chart.getHeightMode();
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const urlFitChart = !!urlParams.get('fitchart');
-
             // only render if iframe has valid dimensions
             if (heightMode === 'fixed' ? w <= 0 : w <= 0 || h <= 0) {
                 console.warn('Aborting chart rendering due to invalid container dimensions');
@@ -7017,9 +7017,15 @@ function chart (attributes) {
             visualization.reset(container);
             visualization.size(w, h);
             visualization.__init();
-            visualization.render(container, {
-                isIframe
-            });
+
+            const flags = { isIframe };
+            const urlParams = new URLSearchParams(window.location.search);
+            if (isIframe) {
+                flagsBoolean.forEach(key => (flags[key] = !!urlParams.get(key)));
+                flagsString.forEach(key => (flags[key] = urlParams.get(key)));
+            }
+
+            visualization.render(container, flags);
 
             if (isIframe) {
                 window.clearInterval(this.__resizingInterval);
@@ -7028,7 +7034,7 @@ function chart (attributes) {
             }
 
             function postMessage() {
-                if (urlFitChart) return;
+                if (flags.fitchart) return;
 
                 let desiredHeight;
 
