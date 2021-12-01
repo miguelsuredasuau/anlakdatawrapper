@@ -9,6 +9,9 @@ const {
 } = require('../../../../test/helpers/setup');
 const fetch = require('node-fetch');
 const set = require('lodash/set');
+const tmp = require('tmp');
+const fs = require('fs');
+const FormData = require('form-data');
 
 async function getData(server, session, chart) {
     return server.inject({
@@ -386,5 +389,336 @@ test.skip('PHP PUT /charts/{id}/data returns an error if chart metadata custom.w
         t.is(json.code, 'read-only');
     } finally {
         await destroy(chart, Object.values(userObj));
+    }
+});
+
+async function testFileUpload(t, postfix = '.csv') {
+    let userObj = {};
+    let chart;
+    let tmpFile;
+    const expectedData = 'test,data';
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:write', 'chart:read']
+        });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        tmpFile = tmp.fileSync({ postfix });
+        fs.writeFileSync(tmpFile.name, expectedData);
+
+        const formData = new FormData();
+        formData.append('qqfile', fs.createReadStream(tmpFile.name));
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: formData
+        });
+
+        t.is(res.status, 200);
+        const actual = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        const csv = await actual.text();
+        t.assert(csv.includes(expectedData)); // the new csv data seems to be prepended with a line break ('\n'), hence the includes check
+    } finally {
+        await destroy(chart, Object.values(userObj));
+        if (tmpFile) {
+            tmpFile.removeCallback();
+        }
+    }
+}
+
+test('PHP POST /charts/{id}/data accepts a .csv file upload', testFileUpload, '.csv');
+
+test('PHP POST /charts/{id}/data accepts a .txt file upload', testFileUpload, '.txt');
+
+test('PHP POST /charts/{id}/data accepts a .tsv file upload', testFileUpload, '.tsv');
+
+test('PHP POST /charts/{id}/data returns an error if no file is uploaded', async t => {
+    let userObj = {};
+    let chart;
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:write', 'chart:read']
+        });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+
+        const formData = new FormData();
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: formData
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'upload-error');
+        t.is(json.message, 'No files were uploaded.');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test('PHP POST /charts/{id}/data returns an error if file with invalid extension is uploaded', async t => {
+    let userObj = {};
+    let chart;
+    let tmpFile;
+    const expectedData = 'test,data';
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:write', 'chart:read']
+        });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        tmpFile = tmp.fileSync({ postfix: '.bla' });
+        fs.writeFileSync(tmpFile.name, expectedData);
+
+        const formData = new FormData();
+        formData.append('qqfile', fs.createReadStream(tmpFile.name));
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: formData
+        });
+
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'upload-error');
+        t.is(json.message, 'File has an invalid extension, it should be one of txt, csv, tsv.');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+        if (tmpFile) {
+            tmpFile.removeCallback();
+        }
+    }
+});
+
+test('PHP POST /charts/{id}/data returns an error if file with no extension is uploaded', async t => {
+    let userObj = {};
+    let chart;
+    let tmpFile;
+    const expectedData = 'test,data';
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:write', 'chart:read']
+        });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        tmpFile = tmp.fileSync();
+        fs.writeFileSync(tmpFile.name, expectedData);
+
+        const formData = new FormData();
+        formData.append('qqfile', fs.createReadStream(tmpFile.name));
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: formData
+        });
+
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'upload-error');
+        t.is(json.message, 'File has an invalid extension, it should be one of txt, csv, tsv.');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+        if (tmpFile) {
+            tmpFile.removeCallback();
+        }
+    }
+});
+
+test('PHP POST /charts/{id}/data returns an error if empty file is uploaded', async t => {
+    let userObj = {};
+    let chart;
+    let tmpFile;
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:write', 'chart:read']
+        });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        tmpFile = tmp.fileSync({ postfix: '.csv' });
+        const formData = new FormData();
+        formData.append('qqfile', fs.createReadStream(tmpFile.name));
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: formData
+        });
+
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'upload-error');
+        t.is(json.message, 'File is empty');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+        if (tmpFile) {
+            tmpFile.removeCallback();
+        }
+    }
+});
+
+test('PHP POST /charts/{id}/data returns an error if file is too big', async t => {
+    let userObj = {};
+    let chart;
+    let tmpFile;
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:write', 'chart:read']
+        });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        tmpFile = tmp.fileSync({ postfix: '.csv' });
+        fs.writeSync(tmpFile.fd, '0,', 2 * 1024 * 1024);
+        fs.closeSync(tmpFile.fd);
+        const formData = new FormData();
+        formData.append('qqfile', fs.createReadStream(tmpFile.name));
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: formData
+        });
+
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'upload-error');
+        t.is(json.message, 'File is too large');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+        if (tmpFile) {
+            tmpFile.removeCallback();
+        }
+    }
+});
+
+test("PHP POST /charts/{id}/data returns an error if user does not have scope 'chart:write'", async t => {
+    let userObj = {};
+    let chart;
+    let tmpFile;
+    const expectedCsv = 'test,data';
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['chart:read'] });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        tmpFile = tmp.fileSync({ postfix: '.csv' });
+        fs.writeFileSync(tmpFile.name, expectedCsv);
+        const formData = new FormData();
+        formData.append('qqfile', fs.createReadStream(tmpFile.name));
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: formData
+        });
+        t.is(res.status, 403);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+        if (tmpFile) {
+            tmpFile.removeCallback();
+        }
+    }
+});
+
+test('PHP POST /charts/{id}/data returns an error if user cannot access chart', async t => {
+    let userObj = {};
+    let team;
+    let chart;
+    let tmpFile;
+    const expectedCsv = 'test,data';
+    try {
+        team = await createTeam();
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:read', 'chart:write']
+        });
+        chart = await createChart({
+            organization_id: team.id
+        });
+        tmpFile = tmp.fileSync({ postfix: '.csv' });
+        fs.writeFileSync(tmpFile.name, expectedCsv);
+        const formData = new FormData();
+        formData.append('qqfile', fs.createReadStream(tmpFile.name));
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: formData
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(chart, team, Object.values(userObj));
+        if (tmpFile) {
+            tmpFile.removeCallback();
+        }
+    }
+});
+
+test('PHP POST /charts/{id}/data returns an error if chart does not exist', async t => {
+    let userObj = {};
+    let tmpFile;
+    const expectedCsv = 'test,data';
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['chart:write'] });
+        tmpFile = tmp.fileSync({ postfix: '.csv' });
+        fs.writeFileSync(tmpFile.name, expectedCsv);
+        const formData = new FormData();
+        formData.append('qqfile', fs.createReadStream(tmpFile.name));
+        const res = await fetch(`${BASE_URL}/charts/00000/data`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: formData
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'no-such-chart');
+    } finally {
+        await destroy(Object.values(userObj));
+        if (tmpFile) {
+            tmpFile.removeCallback();
+        }
     }
 });

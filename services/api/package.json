@@ -79,10 +79,12 @@
     "devDependencies": {
         "ava": "^3.15.0",
         "dotenv": "^10.0.0",
+        "form-data": "^4.0.0",
         "node-fetch": "^2.6.5",
         "nodemon": "~2.0.3",
         "nyc": "^15.1.0",
-        "openapi-schema-validator": "^9.1.0"
+        "openapi-schema-validator": "^9.1.0",
+        "tmp": "^0.2.1"
     },
     "peerDependencies": {
         "joi": "^17.4.0"
