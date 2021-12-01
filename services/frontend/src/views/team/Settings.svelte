@@ -8,6 +8,7 @@
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
     import debounce from 'lodash/debounce';
+    import isEqual from 'lodash/isEqual';
 
     const request = getContext('request');
 
@@ -33,18 +34,32 @@
         curPage = page;
     }
 
-    const storeTeamSettings = debounce(async function (event) {
-        const { team: eventTeam, settings, defaultTheme } = event.detail;
-        await httpReq.patch(`/v3/teams/${team.id}`, {
-            payload: {
-                name: eventTeam.name,
-                ...(settings ? { settings } : {}),
-                ...(defaultTheme ? { defaultTheme } : {})
-            }
-        });
-        team.name = eventTeam.name;
-        team.settings = settings;
-        team.defaultTheme = defaultTheme;
+    const storeTeamSettings = debounce(async function ({ detail }) {
+        const { team: _team, settings, defaultTheme } = detail;
+        const changed = {
+            name: _team.name && team.name !== _team.name,
+            settings: settings && !isEqual(team.settings, settings),
+            defaultTheme: defaultTheme && !isEqual(team.defaultTheme, defaultTheme)
+        };
+
+        if (changed.name || changed.settings || changed.defaultTheme) {
+            await httpReq.patch(`/v3/teams/${team.id}`, {
+                payload: {
+                    name: _team.name,
+                    ...(settings ? { settings } : {}),
+                    ...(defaultTheme ? { defaultTheme } : {})
+                }
+            });
+        }
+        if (changed.name) {
+            team.name = _team.name;
+        }
+        if (changed.settings) {
+            team.settings = settings;
+        }
+        if (changed.defaultTheme) {
+            team.defaultTheme = defaultTheme;
+        }
     }, 1000);
 </script>
 

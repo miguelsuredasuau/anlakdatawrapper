@@ -43,8 +43,6 @@
         }
     }
 
-    let _data;
-
     let container;
     let parent;
     let loading = true;
@@ -95,7 +93,6 @@
                     store.set(storeData);
                     _store = store;
                 }
-                _data = data;
                 _app.on('state', ({ current }) => {
                     data = current;
                     dispatch('update', filterOutComputedProps(_app, current));
