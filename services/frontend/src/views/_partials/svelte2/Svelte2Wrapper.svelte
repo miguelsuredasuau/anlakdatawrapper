@@ -10,6 +10,24 @@
     export let data;
     export let storeData;
 
+    function isComputedProp(app, prop) {
+        try {
+            app._checkReadOnly({ [prop]: true });
+            return false;
+        } catch (ex) {
+            return true;
+        }
+    }
+
+    function filterOutComputedProps(app, data) {
+        return Object.keys(data)
+            .filter(key => !isComputedProp(app, key))
+            .reduce((result, key) => {
+                result[key] = data[key];
+                return result;
+            }, {});
+    }
+
     const messages = getContext('messages');
     const config = getContext('config');
 
@@ -58,8 +76,7 @@
                         dispatch('change', event);
                     });
                     _app.on('state', ({ current }) => {
-                        // TODO Process current with filterOutComputedProps().
-                        data = clone(current);
+                        data = filterOutComputedProps(_app, current);
                     });
                 } catch (err) {
                     console.error('x', err);
