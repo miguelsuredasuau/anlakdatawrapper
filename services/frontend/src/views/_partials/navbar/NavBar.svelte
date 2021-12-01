@@ -40,7 +40,7 @@
             border-radius: var(--radius);
         }
         :global(a.navbar-item:hover) {
-            color: var(--color-dw-scooter);
+            color: var(--color-dw-scooter-dark);
         }
         :global(.navbar-item.is-active:hover) {
             background-color: darken($dw-scooter-lightest, 02%);

@@ -1950,8 +1950,8 @@ a.box:active {
 .content h4,
 .content h5,
 .content h6 {
-  color: #111111;
-  font-weight: 600;
+  color: #333333;
+  font-weight: 500;
   line-height: 1.125;
 }
 .content h1 {
@@ -2830,9 +2830,9 @@ a.tag:hover {
 }
 
 .title {
-  color: #111111;
+  color: #333333;
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.125;
 }
 .title strong {
@@ -2872,7 +2872,7 @@ a.tag:hover {
 }
 .subtitle strong {
   color: #111111;
-  font-weight: 600;
+  font-weight: 500;
 }
 .subtitle:not(.is-spaced) + .title {
   margin-top: -1.25rem;

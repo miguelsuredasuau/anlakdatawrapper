@@ -27,7 +27,7 @@
 </script>
 
 <SettingsPageLayout {loadPage} {settingsPages} title="Account settings">
-    <h2 class="title is-2" slot="header">
+    <h2 class="title is-3" slot="header">
         {__('account / settings')}
     </h2>
     {#if curPage && curPage.svelte2}

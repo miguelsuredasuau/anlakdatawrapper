@@ -83,9 +83,13 @@
         a {
             &.is-active {
                 font-weight: bold;
+                :global(.icon) {
+                    color: white;
+                }
             }
             :global(.icon) {
                 font-size: 20px;
+                color: $dw-scooter;
             }
         }
     }
@@ -109,7 +113,7 @@
                             on:click|preventDefault={() => pageClick(page)}
                             href={page.url}
                             >{#if page.svgIcon}<IconDisplay
-                                    className="mr-2"
+                                    className="mr-3"
                                     icon={page.svgIcon}
                                 />{/if}<span>{@html page.title}</span></a
                         >

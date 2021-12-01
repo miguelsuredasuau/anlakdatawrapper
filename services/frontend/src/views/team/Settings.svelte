@@ -24,7 +24,7 @@
         __('nav / team / settings'),
         ...(curPage ? [curPage.title] : [])
     ];
-    $: title = titleParts.join(' » ');
+    $: title = titleParts.join(' › ');
 
     async function loadPage(page) {
         $request.path = page.url;
@@ -64,8 +64,10 @@
 </script>
 
 <SettingsPageLayout {loadPage} {settingsPages} {title}>
-    <h2 class="title is-2" slot="header">
-        {titleParts[0]} » {titleParts[1]}
+    <h2 class="title is-3" slot="header">
+        <span class="has-text-weight-light">{titleParts[0]}</span>
+        <span class="has-text-grey px-3">›</span>
+        {titleParts[1]}
     </h2>
     {#if curPage && curPage.svelte2}
         <h3 class="title is-3">{curPage.headline || curPage.title}</h3>
