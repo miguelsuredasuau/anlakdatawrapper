@@ -94,7 +94,7 @@ module.exports = {
 
             teams.forEach(team => {
                 team.role = team.user_team.team_role;
-                team.charts = chartCount[team.id].count;
+                team.charts = chartCount[team.id]?.count || 0;
                 team.members = userCount[team.id].find(d => d.emptyInvite === 1).count;
                 team.invites = userCount[team.id].find(d => d.emptyInvite === 0)?.count || 0;
             });
