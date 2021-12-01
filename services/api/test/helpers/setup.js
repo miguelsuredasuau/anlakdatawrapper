@@ -2,13 +2,14 @@ const path = require('path');
 const { ForeignKeyConstraintError } = require('sequelize');
 const { addScope } = require('@datawrapper/service-utils/l10n');
 const { init } = require('../../src/server');
-const { nanoid } = require('nanoid');
+const { nanoid, customAlphabet } = require('nanoid');
 const { randomInt } = require('crypto');
 
 /* bcrypt hash for string "test-password" */
 const PASSWORD_HASH = '$2a$05$6B584QgS5SOXi1m.jM/H9eV.2tCaqNc5atHnWfYlFe5riXVW9z7ja';
 
 const BASE_URL = 'http://api.datawrapper.local';
+// const BASE_URL = 'http://app.datawrapper.local/api';
 
 const ALL_SCOPES = [
     'user:read',
@@ -165,9 +166,10 @@ async function createTeamWithUser(server, { role = 'owner' } = {}) {
     return { team, user, session, token, addUser };
 }
 
-function genRandomChartId() {
-    return nanoid(5); // Must be exactly 5 characters long.
-}
+const genRandomChartId = customAlphabet(
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+    5
+);
 
 const MAX_FOLDER_ID = 99999;
 

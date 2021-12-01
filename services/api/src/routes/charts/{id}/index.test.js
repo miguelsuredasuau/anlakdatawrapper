@@ -8,6 +8,7 @@ const {
     setup
 } = require('../../../../test/helpers/setup');
 const fetch = require('node-fetch');
+const get = require('lodash/get');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
@@ -500,7 +501,7 @@ test("PHP GET /charts/{id} returns an error if user does not have scope 'chart:r
     let userObj = {};
     let chart = {};
     try {
-        userObj = await createUser(t.context.server, { role: 'editor', scopes: [] });
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['scope:invalid'] });
         chart = await createChart({
             title: 'Chart 1',
             organization_id: null,
@@ -539,11 +540,322 @@ test('PHP GET /charts/{id} returns an error if chart does not exist', async t =>
             }
         });
 
-        t.is(res.status, 404);
+        t.is(res.status, 200);
         const json = await res.json();
 
         t.is(json.status, 'error');
         t.is(json.code, 'chart-not-found');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
+test('PHP PUT /charts/{id} can update chart title', async t => {
+    let userObj = {};
+    let chart = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            last_edit_step: 2
+        });
+
+        t.is(chart.title, 'Chart 1');
+
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: JSON.stringify({
+                title: 'New Title'
+            })
+        });
+
+        t.is(res.status, 200);
+
+        await chart.reload();
+
+        t.is(chart.title, 'New Title');
+
+        const json = await res.json();
+
+        t.is(json.status, 'ok');
+        t.truthy(json.data);
+        t.is(json.data.title, 'New Title');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
+test('PHP PUT /charts/{id} replaces entire metadata', async t => {
+    let userObj = {};
+    let chart = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        chart = await createChart({
+            organization_id: null,
+            author_id: userObj.user.id,
+            metadata: {
+                describe: {
+                    intro: 'hello'
+                },
+                visualize: {
+                    foo: 42
+                }
+            },
+            last_edit_step: 2
+        });
+
+        t.is(get(chart.metadata, 'describe.intro'), 'hello');
+        t.is(get(chart.metadata, 'visualize.foo'), 42);
+
+        const metadata = {
+            visualize: {
+                foo: 1
+            }
+        };
+
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: JSON.stringify({
+                metadata
+            })
+        });
+
+        t.is(res.status, 200);
+
+        await chart.reload();
+
+        t.is(get(chart.metadata, 'visualize.foo'), 1);
+        t.is(get(chart.metadata, 'describe.intro'), undefined);
+        t.is(get(chart.metadata, 'describe.source-name'), undefined);
+
+        const json = await res.json();
+
+        t.is(json.status, 'ok');
+        t.truthy(json.data);
+        t.is(get(json.data.metadata, 'visualize.foo'), 1);
+        // somehow the old PHP endpoint still returns "virtual default" metadata
+        t.is(get(json.data.metadata, 'describe.intro'), '');
+        t.is(get(json.data.metadata, 'describe.source-name'), '');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
+test("PHP PUT /charts/{id} can't update chart title if user does not have scope 'chart:read'", async t => {
+    let userObj = {};
+    let chart = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['scope:invalid'] });
+        chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            last_edit_step: 2
+        });
+
+        t.is(chart.title, 'Chart 1');
+
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: JSON.stringify({
+                title: 'New Title'
+            })
+        });
+
+        t.is(res.status, 403);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test('PHP PUT /charts/{id} returns error if chart not exists', async t => {
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+
+        const res = await fetch(`${BASE_URL}/charts/00000`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: JSON.stringify({
+                title: 'New Title'
+            })
+        });
+
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'no-such-chart');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
+test('PHP PUT /charts/{id} returns error if chart belongs to different user', async t => {
+    let userObj1 = {};
+    let userObj2 = {};
+    let chart = {};
+    try {
+        userObj1 = await createUser(t.context.server, { role: 'editor' });
+        userObj2 = await createUser(t.context.server, { role: 'editor' });
+
+        chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj1.user.id,
+            last_edit_step: 2
+        });
+
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj2.token}`
+            },
+            body: JSON.stringify({
+                title: 'New Title'
+            })
+        });
+
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(chart, Object.values(userObj1), Object.values(userObj2));
+    }
+});
+
+test('PHP PUT /charts/{id} can update valid type', async t => {
+    let userObj = {};
+    let chart = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+
+        chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            last_edit_step: 2,
+            type: 'd3-bars'
+        });
+
+        t.is(chart.type, 'd3-bars');
+
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: JSON.stringify({
+                type: 'd3-lines'
+            })
+        });
+
+        t.is(res.status, 200);
+
+        await chart.reload();
+        t.is(chart.type, 'd3-lines');
+
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data.type, 'd3-lines');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test('PUT /charts/{id} allows updating to valid type', async t => {
+    let userObj = {};
+    let chart = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+
+        chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            last_edit_step: 2,
+            type: 'd3-bars'
+        });
+
+        t.is(chart.type, 'd3-bars');
+
+        t.context.server.app.visualizations.set('d3-lines', { id: 'd3-lines' });
+
+        const res = await t.context.server.inject({
+            method: 'PUT',
+            url: `/v3/charts/${chart.id}`,
+            auth: t.context.auth,
+            payload: {
+                type: 'd3-lines'
+            }
+        });
+
+        t.context.server.app.visualizations.delete('d3-lines');
+
+        t.is(res.statusCode, 200);
+        t.is(res.result.type, 'd3-lines');
+
+        await chart.reload();
+        t.is(chart.type, 'd3-lines');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
+test('PUT /charts/{id} refuses updating to invalid type', async t => {
+    let userObj = {};
+    let chart = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+
+        chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            last_edit_step: 2,
+            type: 'd3-bars'
+        });
+
+        t.is(chart.type, 'd3-bars');
+
+        const res = (
+            await t.context.server.inject({
+                method: 'PUT',
+                url: `/v3/charts/${chart.id}`,
+                auth: t.context.auth,
+                payload: {
+                    type: 'heatmap'
+                }
+            })
+        ).result;
+
+        t.is(res.statusCode, 400);
+        t.is(res.message, 'Invalid chart type');
+
+        await chart.reload();
+        t.is(chart.type, 'd3-bars');
     } finally {
         await destroy(Object.values(userObj));
     }
