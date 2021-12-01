@@ -14,17 +14,14 @@ const production = !process.env.ROLLUP_WATCH;
 const targets = [];
 
 build('visualize');
-build('team-settings');
 build('team-settings/members', { view: 'tabs/Members' });
 build('team-settings/settings', { view: 'tabs/Settings' });
 build('team-settings/delete', { view: 'tabs/DeleteTeam' });
 build('team-settings/products', { view: 'tabs/ProductTable' });
-build('account');
 build('account/profile', { view: 'EditProfile' });
 build('account/myteams', { view: 'MyTeams' });
 build('account/security', { view: 'Security' });
 build('chart-breadcrumb');
-build('signin');
 build('invite');
 build('publish', { append: '_old' });
 build('publish', { noAMD: true, entry: 'index.js' });

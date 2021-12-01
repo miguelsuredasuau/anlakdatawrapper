@@ -15,11 +15,6 @@ require_once ROOT_PATH . 'vendor/autoload.php';
 
 check_server();
 
-if (isset($_GET['xhr']) && $_GET['xhr'] == '1' &&
-    isset($_GET['no_plugins']) && $_GET['no_plugins'] == '1') {
-    define('NO_PLUGINS', true);
-}
-
 define('APP_DOMAIN', explode('.', $_SERVER['HTTP_HOST'])[0]);
 
 require ROOT_PATH . 'lib/bootstrap.php';
@@ -31,8 +26,6 @@ dwInitTwigEnvironment($twig);
 
 require_once ROOT_PATH . 'controller/plugin-templates.php';
 require_once ROOT_PATH . 'controller/edit.php';
-require_once ROOT_PATH . 'controller/home.php';
-require_once ROOT_PATH . 'controller/account.php';
 require_once ROOT_PATH . 'controller/chart/create.php';
 require_once ROOT_PATH . 'controller/chart/edit.php';
 require_once ROOT_PATH . 'controller/chart/upload.php';
@@ -42,7 +35,6 @@ require_once ROOT_PATH . 'controller/chart/data.php';
 require_once ROOT_PATH . 'controller/chart/preview.php';
 require_once ROOT_PATH . 'controller/chart/embed.php';
 require_once ROOT_PATH . 'controller/chart/publish.php';
-require_once ROOT_PATH . 'controller/xhr.php';
 require_once ROOT_PATH . 'controller/admin.php';
 
 
