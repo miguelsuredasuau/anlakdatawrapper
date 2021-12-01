@@ -651,7 +651,7 @@ test('PHP PUT /charts/{id} replaces entire metadata', async t => {
     }
 });
 
-test("PHP PUT /charts/{id} can't update chart title if user does not have scope 'chart:read'", async t => {
+test("PHP PUT /charts/{id} can't update chart title if user does not have scope 'chart:write'", async t => {
     let userObj = {};
     let chart = {};
     try {
@@ -826,11 +826,10 @@ test('PUT /charts/{id} allows updating to valid type', async t => {
 
 test('PUT /charts/{id} refuses updating to invalid type', async t => {
     let userObj = {};
-    let chart = {};
     try {
         userObj = await createUser(t.context.server, { role: 'editor' });
 
-        chart = await createChart({
+        const chart = await createChart({
             title: 'Chart 1',
             organization_id: null,
             author_id: userObj.user.id,
@@ -856,6 +855,125 @@ test('PUT /charts/{id} refuses updating to invalid type', async t => {
 
         await chart.reload();
         t.is(chart.type, 'd3-bars');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
+test('PHP DELETE /charts/{id} can delete a chart', async t => {
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+
+        const chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            last_edit_step: 2
+        });
+        await chart.reload(); // reload the chart to fetch all attributes
+        t.is(chart.deleted, false);
+
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}`, {
+            method: 'DELETE',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+
+        t.is(res.status, 200);
+
+        await chart.reload();
+        t.is(chart.deleted, true);
+
+        const json = await res.json();
+        t.is(json.status, 'ok');
+        t.is(json.data, '');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
+test('PHP DELETE /charts/{id} returns error if trying to delete non-existing chart', async t => {
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+
+        const res = await fetch(`${BASE_URL}/charts/00000`, {
+            method: 'DELETE',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+
+        t.is(res.status, 200);
+
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'no-such-chart');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
+test('PHP DELETE /charts/{id} returns error if chart belongs to different user', async t => {
+    let userObj1 = {};
+    let userObj2 = {};
+    try {
+        userObj1 = await createUser(t.context.server, { role: 'editor' });
+        userObj2 = await createUser(t.context.server, { role: 'editor' });
+
+        const chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj1.user.id,
+            last_edit_step: 2
+        });
+
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}`, {
+            method: 'DELETE',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj2.token}`
+            }
+        });
+
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(Object.values(userObj1), Object.values(userObj2));
+    }
+});
+
+test("PHP DELETE /charts/{id} can't delete chart if user does not have scope 'chart:write'", async t => {
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['scope:invalid'] });
+        const chart = await createChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            last_edit_step: 2
+        });
+
+        t.is(chart.title, 'Chart 1');
+
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}`, {
+            method: 'DELETE',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+
+        t.is(res.status, 403);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
     } finally {
         await destroy(Object.values(userObj));
     }
