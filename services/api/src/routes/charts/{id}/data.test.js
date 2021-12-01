@@ -8,6 +8,7 @@ const {
     createTeam
 } = require('../../../../test/helpers/setup');
 const fetch = require('node-fetch');
+const set = require('lodash/set');
 
 async function getData(server, session, chart) {
     return server.inject({
@@ -213,5 +214,177 @@ test('PHP GET /charts/{id}/data returns an error if user does not have access to
         t.is(json.code, 'access-denied');
     } finally {
         await destroy(chart, team, Object.values(userObj));
+    }
+});
+
+test('PHP PUT /charts/{id}/data sets the chart data', async t => {
+    let userObj = {};
+    let chart;
+    const expectedCsv = 'test,data';
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:write', 'chart:read']
+        });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'text/csv'
+            },
+            body: expectedCsv
+        });
+        t.is(res.status, 200);
+        const actual = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        const csv = await actual.text();
+        t.assert(csv.includes(expectedCsv)); // the new csv data seems to be prepended with a line break ('\n'), hence the includes check
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test("PHP PUT /charts/{id}/data returns an error if user does not have scope 'chart:write'", async t => {
+    let userObj = {};
+    let chart;
+    const expectedCsv = 'test,data';
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['chart:read'] });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'text/csv'
+            },
+            body: expectedCsv
+        });
+        t.is(res.status, 403);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test('PHP PUT /charts/{id}/data returns an error if user cannot access chart', async t => {
+    let userObj = {};
+    let team;
+    let chart;
+    const expectedCsv = 'test,data';
+    try {
+        team = await createTeam();
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:read', 'chart:write']
+        });
+        chart = await createChart({
+            organization_id: team.id
+        });
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'text/csv'
+            },
+            body: expectedCsv
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'access-denied');
+    } finally {
+        await destroy(chart, team, Object.values(userObj));
+    }
+});
+test('PHP PUT /charts/{id}/data returns an error if chart does not exist', async t => {
+    let userObj = {};
+    const expectedCsv = 'test,data';
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['chart:write'] });
+        const res = await fetch(`${BASE_URL}/charts/00000/data`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'text/csv'
+            },
+            body: expectedCsv
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'no-such-chart');
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+test.skip('PHP PUT /charts/{id}/data returns an error if chart is a fork', async t => {
+    let userObj = {};
+    let chart;
+    const expectedCsv = 'test,data';
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['chart:write'] });
+        chart = await createChart({
+            author_id: userObj.user.id,
+            is_fork: true
+        });
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'text/csv'
+            },
+            body: expectedCsv
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'read-only');
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test.skip('PHP PUT /charts/{id}/data returns an error if chart metadata custom.webToPrint.mode is print', async t => {
+    let userObj = {};
+    let chart;
+    const expectedCsv = 'test,data';
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['chart:write'] });
+        const metadata = set({}, 'custom.webToPrint.mode', 'print');
+        chart = await createChart({
+            author_id: userObj.user.id,
+            metadata
+        });
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'text/csv'
+            },
+            body: expectedCsv
+        });
+        t.is(res.status, 200);
+        const json = await res.json();
+        t.is(json.status, 'error');
+        t.is(json.code, 'read-only');
+    } finally {
+        await destroy(chart, Object.values(userObj));
     }
 });

@@ -110,6 +110,63 @@ module.exports = {
                 }
             }
         });
+        server.route({
+            method: 'PUT',
+            path: '/{id}/data',
+            options: {
+                auth: {
+                    mode: 'required'
+                }
+            },
+            async handler(request, h) {
+                try {
+                    const res = await request.server.inject({
+                        method: 'PUT',
+                        url: `/v3/charts/${request.params.id}/data`,
+                        auth: request.auth,
+                        headers: request.headers,
+                        payload: request.payload
+                    });
+
+                    if (res.statusCode === 204) {
+                        return h.response().code(200);
+                    }
+                    if (res.statusCode === 404) {
+                        return {
+                            status: 'error',
+                            code: 'no-such-chart',
+                            message: 'Chart not found'
+                        };
+                    }
+                    if (res.result.message === 'Insufficient scope') {
+                        return boomErrorWithData(Boom.forbidden('Insufficient scope'), {
+                            code: 'access-denied'
+                        });
+                    }
+                    if (res.result.message === 'Forbidden') {
+                        return {
+                            status: 'error',
+                            code: 'access-denied',
+                            message: 'Forbidden'
+                        };
+                    }
+                    // wrap generic errors
+                    return boomErrorWithData(
+                        new Boom.Boom(res.result.message, {
+                            statusCode: res.result.statusCode
+                        }),
+                        res.result
+                    );
+                } catch (ex) {
+                    server.logger.warn(ex);
+                    return boomErrorWithData(Boom.badGateway('unexpected error'), {
+                        status: 'error',
+                        code: 'unknown_error',
+                        message: 'Unknown error'
+                    });
+                }
+            }
+        });
     }
 };
 
