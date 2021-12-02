@@ -94,7 +94,7 @@ module.exports = {
 
         server.route({
             method: 'GET',
-            path: '/{teamId}/{pageId}',
+            path: '/{pageId}',
             options: {
                 validate: {
                     params: Joi.object({

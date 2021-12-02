@@ -10,7 +10,7 @@ module.exports = {
     async register(server) {
         server.route({
             method: 'GET',
-            path: '/{teamId}/invite/{token}/reject',
+            path: '/invite/{token}/reject',
             options: {
                 auth: 'guest',
                 validate: {
