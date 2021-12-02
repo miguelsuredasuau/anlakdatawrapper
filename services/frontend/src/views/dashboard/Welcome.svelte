@@ -29,7 +29,7 @@
         </li>
         <li>
             For inspiration for what to chart you can check out our <a
-                href="https://blog.datawrapper.de/category/weekly-chart/">Weekly charts</a
+                href="https://blog.datawrapper.de/category/weekly-charts/">Weekly charts</a
             >
             and the <a href="https://river.datawrapper.de">Datawrapper River</a>.
         </li>
