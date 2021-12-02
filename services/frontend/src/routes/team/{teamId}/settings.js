@@ -107,8 +107,9 @@ module.exports = {
                 async handler(request, h) {
                     const { auth, params } = request;
                     const { teamId } = params;
+                    const isAdmin = auth.artifacts.role === 'admin';
 
-                    if (!auth.artifacts.teams.find(t => t.id === params.teamId)) {
+                    if (!isAdmin && !auth.artifacts.teams.find(t => t.id === params.teamId)) {
                         throw Boom.notFound();
                     }
 
