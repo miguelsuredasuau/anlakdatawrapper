@@ -220,7 +220,7 @@ test('PHP GET /charts/{id}/data returns an error if user does not have access to
     }
 });
 
-test('PHP PUT /charts/{id}/data sets the chart data', async t => {
+test('PHP PUT /charts/{id}/data sets the chart data with CSV', async t => {
     let userObj = {};
     let chart;
     const expectedCsv = 'test,data';
@@ -238,6 +238,78 @@ test('PHP PUT /charts/{id}/data sets the chart data', async t => {
                 ...t.context.headers,
                 Authorization: `Bearer ${userObj.token}`,
                 'Content-Type': 'text/csv'
+            },
+            body: expectedCsv
+        });
+        t.is(res.status, 200);
+        const actual = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        const csv = await actual.text();
+        t.assert(csv.includes(expectedCsv)); // the new csv data seems to be prepended with a line break ('\n'), hence the includes check
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test('PHP PUT /charts/{id}/data sets the chart data with JSON', async t => {
+    let userObj = {};
+    let chart;
+    const expectedData = {
+        test: 'data'
+    };
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:write', 'chart:read']
+        });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(expectedData)
+        });
+        t.is(res.status, 200);
+        const actual = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        const json = await actual.json();
+        t.deepEqual(json, expectedData);
+    } finally {
+        await destroy(chart, Object.values(userObj));
+    }
+});
+
+test('PHP PUT /charts/{id}/data even accepts invalid json', async t => {
+    let userObj = {};
+    let chart;
+    const expectedCsv = 'hello, world';
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:write', 'chart:read']
+        });
+        chart = await createChart({
+            author_id: userObj.user.id
+        });
+        const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'application/json'
             },
             body: expectedCsv
         });

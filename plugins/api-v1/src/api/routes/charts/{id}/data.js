@@ -65,15 +65,25 @@ module.exports = {
             options: {
                 auth: {
                     mode: 'required'
+                },
+                payload: {
+                    parse: false
                 }
             },
             async handler(request, h) {
                 try {
+                    const headers = {
+                        ...request.headers,
+                        'content-type': 'text/csv'
+                    };
+                    if (isJSON(request.payload)) {
+                        headers['content-type'] = 'application/json';
+                    }
                     const res = await request.server.inject({
                         method: 'PUT',
                         url: `/v3/charts/${request.params.id}/data`,
                         auth: request.auth,
-                        headers: request.headers,
+                        headers: headers,
                         payload: request.payload
                     });
 
@@ -250,4 +260,16 @@ function boomErrorWithData(boom, data) {
         ...data
     };
     return boom;
+}
+
+function isJSON(str) {
+    if (typeof str !== 'string') {
+        return false;
+    }
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
 }
