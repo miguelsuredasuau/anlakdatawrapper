@@ -137,5 +137,6 @@ module.exports = {
         server.register(require('./{id}/data'));
         server.register(require('./{id}/fork'));
         server.register(require('./{id}/copy'));
+        server.register(require('./{id}/publish'));
     }
 };
