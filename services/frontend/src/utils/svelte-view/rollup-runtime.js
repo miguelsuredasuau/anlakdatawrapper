@@ -118,7 +118,7 @@ function buildOptions(page, ssr) {
                     dev: !production,
                     generate: ssr ? 'ssr' : 'csr',
                     hydratable: true,
-                    accessors: !production,
+                    accessors: true,
                     customElement: page.endsWith('.element.svelte')
                 },
                 preprocess: sveltePreprocess(),
