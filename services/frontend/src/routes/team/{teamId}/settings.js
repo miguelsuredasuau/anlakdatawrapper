@@ -92,6 +92,8 @@ module.exports = {
             );
         });
 
+        server.methods.prepareView('team/Settings.svelte');
+
         server.route({
             method: 'GET',
             path: '/{pageId}',
