@@ -4,6 +4,7 @@ const set = require('lodash/set');
 const test = require('ava');
 const {
     BASE_URL,
+    V1_BASE_URL,
     createFolder,
     createTeamWithUser,
     createUser,

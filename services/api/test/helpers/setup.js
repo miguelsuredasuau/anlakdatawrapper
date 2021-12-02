@@ -9,6 +9,7 @@ const { randomInt } = require('crypto');
 const PASSWORD_HASH = '$2a$05$6B584QgS5SOXi1m.jM/H9eV.2tCaqNc5atHnWfYlFe5riXVW9z7ja';
 
 const BASE_URL = 'http://api.datawrapper.local';
+const V1_BASE_URL = '/v3/api-v1';
 // const BASE_URL = 'http://app.datawrapper.local/api';
 
 const ALL_SCOPES = [
@@ -334,6 +335,7 @@ async function destroy(...instances) {
 
 module.exports = {
     BASE_URL,
+    V1_BASE_URL,
     createChart,
     createPublicChart,
     createCharts,
