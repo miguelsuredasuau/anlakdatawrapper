@@ -121,8 +121,10 @@ module.exports = {
                         props: {
                             team,
                             storeData: {
-                                role: auth.artifacts.teams.find(t => t.id === teamId).user_team
-                                    .team_role
+                                role: isAdmin
+                                    ? 'owner'
+                                    : auth.artifacts.teams.find(t => t.id === teamId).user_team
+                                          .team_role
                             },
                             settingsPages
                         }
