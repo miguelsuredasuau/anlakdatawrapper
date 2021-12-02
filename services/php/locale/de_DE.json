@@ -1080,5 +1080,9 @@
   "archive / status / published": "Veröffentlicht",
   "archive / search / error": "Bei der Suche ist ein Fehler aufgetreten.",
   "archive / section / shared / team-message": "Du hast noch keine geteilten Ordner. Fange jetzt an mit anderen zusammenzuarbeiten und erstelle ein Team oder trete einem bei.",
-  "archive / section / shared / team-link": "Team-Einstellungen"
+  "archive / section / shared / team-link": "Team-Einstellungen",
+  "account / profile / email-changed": "Das hat geklappt! Deine E-Mail Adresse wurde erfolgreich geändert!",
+  "describe / revert / delete-row / message": "",
+  "describe / revert / delete-row / button": "",
+  "describe / revert / delete-rows / message": ""
 }

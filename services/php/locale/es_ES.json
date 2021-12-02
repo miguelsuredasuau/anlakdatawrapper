@@ -1080,5 +1080,9 @@
   "archive / status / published": "Publicado",
   "archive / search / error": "",
   "archive / section / shared / team-message": "",
-  "archive / section / shared / team-link": ""
+  "archive / section / shared / team-link": "",
+  "account / profile / email-changed": "",
+  "describe / revert / delete-row / message": "",
+  "describe / revert / delete-row / button": "",
+  "describe / revert / delete-rows / message": ""
 }
