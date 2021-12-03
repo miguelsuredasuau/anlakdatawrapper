@@ -22,7 +22,7 @@
         "d3-lines*/src/*",
         "d3-maps*/src/*.js",
         "d3-maps*/src/controls/*",
-        "d3-maps*/src/renders/*",
+        "d3-maps*/src/render/*",
         "d3-maps*/src/v3/*",
         "d3-pies*/src/*",
         "d3-scatter-plot*/src/*",
