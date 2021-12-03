@@ -41,7 +41,11 @@
     }
 
     let isActive = false;
-    $: createQuery = folderId ? `?folder=${folderId}` : teamId ? `?team=${teamId}` : '';
+    $: createQuery = folderId
+        ? `?folder=${folderId}`
+        : teamId
+        ? `?team=${teamId}`
+        : `?team=${null}`;
 </script>
 
 <style lang="scss">
@@ -85,7 +89,7 @@
             <hr class="dropdown-divider" />
 
             {#each ['chart', 'map', 'table'] as type}
-                <a class="dropdown-item" href="/{type}/create{createQuery}">
+                <a class="dropdown-item" href="/create/{type}{createQuery}">
                     <IconDisplay icon="dw-{type}" />
                     <span>{__(`archive / add-in-folder / ${type}`)}</span>
                 </a>

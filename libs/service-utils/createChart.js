@@ -75,7 +75,7 @@ module.exports = async ({ server, user, payload = {}, session, token }) => {
     };
 
     let folderTeam = null;
-    let team = null;
+    let payloadTeam = null;
 
     const whitelistedPayload = {};
     PAYLOAD_KEYS.forEach(key => {
@@ -83,13 +83,13 @@ module.exports = async ({ server, user, payload = {}, session, token }) => {
     });
 
     if ((session || token) && user.role !== 'guest') {
-        if (payload.teamId) {
+        if (payload.teamId && payload.teamId !== 'null') {
             // check that team exists and user is member
-            team = await Team.findByPk(payload.teamId);
-            if (!team) throw Boom.forbidden('invalid team');
-            if (!(await team.hasUser(user))) throw Boom.forbidden('invalid team');
+            payloadTeam = await Team.findByPk(payload.teamId);
+            if (!payloadTeam) throw Boom.forbidden('invalid team');
+            if (!(await payloadTeam.hasUser(user))) throw Boom.forbidden('invalid team');
             // team is ok, let's use it
-            whitelistedPayload.organization_id = team.id;
+            whitelistedPayload.organization_id = payloadTeam.id;
         }
 
         if (payload.folderId) {
@@ -105,8 +105,10 @@ module.exports = async ({ server, user, payload = {}, session, token }) => {
                 folderTeam = await folder.getTeam();
                 // check that user has access to folder team
                 if (!(await folderTeam.hasUser(user))) throw Boom.forbidden('invalid folder');
+
                 // check that folder team matches teamId, if set
-                if (team && folderTeam.id !== team.id) throw Boom.forbidden('invalid folder');
+                if (payloadTeam && folderTeam.id !== payloadTeam.id)
+                    throw Boom.forbidden('invalid folder');
             }
             whitelistedPayload.in_folder = folder.id;
         }
@@ -131,12 +133,28 @@ module.exports = async ({ server, user, payload = {}, session, token }) => {
         author_id: user.id,
         id
     });
+
+    /*
+        if folderId is defined: use team from the folder
+        if teamId is defined but not "null": use that team
+        -> if teamId is "null": don't set a team
+        if teamId is undefined: use active team
+    */
+
     let chartTeam;
 
     if (user.role === 'guest' && session) {
         chart.guest_session = session.id;
     } else if (user.role !== 'guest' && (session || token)) {
-        chartTeam = payload.folderId ? folderTeam : team || (await user.getActiveTeam(session));
+        if (payload.folderId) {
+            chartTeam = folderTeam;
+        } else if (payload.teamId && payload.teamId !== 'null') {
+            chartTeam = payloadTeam;
+        } else if (payload.teamId === 'null') {
+            chartTeam = null;
+        } else {
+            chartTeam = await user.getActiveTeam(session);
+        }
 
         if (chartTeam) {
             chartTeam = await Team.findByPk(chartTeam.id);
