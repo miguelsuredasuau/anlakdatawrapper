@@ -43,7 +43,7 @@
             </button>
             {/if} {:elseif isTeamOwner && (user.role === 'owner')}
             <p class="mini-help">{ __('teams / edit-role / owner / info') }</p>
-            {/if}
+            {/if} {#if error}<AlertDisplay type="error" visible="{true}">{error}</AlertDisplay>{/if}
         </td>
     </tr>
     {/each}
@@ -82,11 +82,24 @@
         { value: 'member', label: __('teams / role / member').replace('&shy;', '') }
     ];
 
+    async function getHttpErrorMessage(ex) {
+        if (ex.name === 'HttpReqError') {
+            try {
+                const json = await ex.response.json();
+                return json.message;
+            } catch (ex) {
+                // do nothing
+            }
+        }
+        return ex.message;
+    }
+
     export default {
         components: { TableDisplay, SelectInput, ConfirmationModal, AlertDisplay },
         data() {
             return {
                 editId: false,
+                error: null,
                 updating: {},
                 users: [],
                 products: []
@@ -199,7 +212,13 @@
             async removeUser(user) {
                 if (!window.confirm(__('teams / remove / alert'))) return;
 
-                await httpReq.delete(`/v3/teams/${this.get().team.id}/members/${user.id}`);
+                try {
+                    this.set({ error: null });
+                    await httpReq.delete(`/v3/teams/${this.get().team.id}/members/${user.id}`);
+                } catch (ex) {
+                    this.set({ error: await getHttpErrorMessage(ex) });
+                    return;
+                }
 
                 var { users } = this.get();
                 users = users.filter(el => el.id !== user.id);
@@ -222,11 +241,16 @@
                 updating[user.id] = true;
                 this.set({ updating });
 
-                await httpReq.put(`/v3/teams/${this.get().team.id}/members/${user.id}/status`, {
-                    payload: {
-                        status: user.role
-                    }
-                });
+                try {
+                    this.set({ error: null });
+                    await httpReq.put(`/v3/teams/${this.get().team.id}/members/${user.id}/status`, {
+                        payload: {
+                            status: user.role
+                        }
+                    });
+                } catch (ex) {
+                    this.set({ error: await getHttpErrorMessage(ex), updating: false });
+                }
 
                 updating = this.get().updating;
                 updating[user.id] = false;
