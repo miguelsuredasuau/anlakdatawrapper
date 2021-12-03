@@ -13,9 +13,13 @@
     const request = getContext('request');
 
     export let __;
-    export let team;
+    export let defaultTheme;
+    export let folders;
+    export let locales;
     export let settingsPages;
     export let storeData;
+    export let team;
+    export let themes;
 
     const flatPages = flatten(settingsPages.map(d => d.pages));
     let curPage = flatPages.find(p => p.url === $request.path) || flatPages[0];
@@ -75,7 +79,15 @@
             {...curPage.svelte2}
             {storeData}
             on:change={storeTeamSettings}
-            data={{ ...curPage.data, team, settings: team.settings }}
+            data={{
+                ...curPage.data,
+                defaultTheme,
+                folders,
+                locales,
+                team,
+                themes,
+                settings: team.settings
+            }}
         />
     {/if}
     <div slot="belowNav">

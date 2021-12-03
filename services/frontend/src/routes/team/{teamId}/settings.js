@@ -1,5 +1,49 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
+const get = require('lodash/get');
+
+function getSystemDefaultTheme(config) {
+    return get(config, 'general.defaults.theme') || 'default';
+}
+
+async function getFolders({ team, __ }) {
+    const folders = [
+        {
+            value: null,
+            label: __('teams / defaults / none')
+        }
+    ];
+    for (const folder of await team.getFolders()) {
+        folders.push({
+            value: folder.id,
+            label: folder.name
+        });
+    }
+    return folders;
+}
+
+function getLocales(config) {
+    return (config.frontend?.languages || []).map(({ id, title }) => ({
+        value: id,
+        label: `${title} (${id})`
+    }));
+}
+
+async function getThemes({ Team, Theme, db, config, team }) {
+    const publicThemeIds = config.general?.defaultThemes ?? ['default'];
+    return (
+        await Theme.findAll({
+            attributes: ['id', 'title'],
+            include: {
+                model: Team,
+                attributes: ['id']
+            },
+            where: {
+                [db.Op.or]: [{ '$teams.id$': team.id }, { id: publicThemeIds }]
+            }
+        })
+    ).map(theme => ({ value: theme.id, label: theme.title }));
+}
 
 module.exports = {
     name: 'routes/team/settings',
@@ -113,20 +157,29 @@ module.exports = {
                         throw Boom.notFound();
                     }
 
+                    const Theme = server.methods.getModel('theme');
+                    const __ = server.methods.getTranslate(request);
+                    const config = server.methods.config();
+                    const db = server.methods.getDB();
+
                     const team = await Team.findByPk(teamId);
                     const settingsPages = await server.methods.getSettingsPages('team', request);
 
                     return h.view('team/Settings.svelte', {
                         htmlClass: 'has-background-white-bis',
                         props: {
-                            team,
+                            defaultTheme: team.defaultTheme || getSystemDefaultTheme(config),
+                            folders: await getFolders({ team, __ }),
+                            locales: getLocales(config),
+                            settingsPages,
                             storeData: {
                                 role: isAdmin
                                     ? 'owner'
                                     : auth.artifacts.teams.find(t => t.id === teamId).user_team
                                           .team_role
                             },
-                            settingsPages
+                            team,
+                            themes: await getThemes({ Team, Theme, config, db, team })
                         }
                     });
                 }
