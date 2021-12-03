@@ -104,6 +104,8 @@ class Organization extends BaseOrganization
     /**
      * the default settings will be extended from to make sure
      * the settings object is complete
+     *
+     * make sure to keep in sync with libs/orm/models/Team.js
      */
     protected function getDefaultSettings() {
         $default = [
