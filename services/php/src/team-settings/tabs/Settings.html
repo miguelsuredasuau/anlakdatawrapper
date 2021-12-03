@@ -1,3 +1,5 @@
+<!-- Check settings, because it can be null until oncreate() is called. -->
+{#if settings}
 <div class="row">
     <div class="span6">
         <p style="margin-bottom: 10px">{@html __('teams / defaults / p') }</p>
@@ -107,10 +109,12 @@
             label="{ __('teams / editor / preview-widths' ) }"
             help="{ __('teams / editor / preview-widths / help' ) }"
         >
-            <PreviewWidths bind:value="settings.previewWidths" />
+            <PreviewWidths bind:inputWidths="settings.previewWidths" />
         </FormBlock>
     </div>
 </div>
+{/if}
+
 <script>
     import FormBlock from '@datawrapper/controls/FormBlock.html';
     import SelectInput from '@datawrapper/controls/SelectInput.html';
@@ -152,7 +156,13 @@
         },
         helpers: { __ },
         oncreate() {
-            const { settings } = this.get();
+            const settings = this.get().settings || {};
+
+            // Set defaults, so that inputs bound to values such as `settings.embed.preferred_embed`
+            // don't crash.
+            settings.default = settings.default || {};
+            settings.embed = settings.embed || {};
+
             const publishMeta = arrayToObject(get(settings, 'default.metadata.publish', {}));
             set(settings, 'default.metadata.publish', publishMeta);
             this.set({ settings, initialized: true });
