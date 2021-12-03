@@ -47,7 +47,7 @@ module.exports = {
                                 return;
                             }
                             const [key, value] = filter.split(':');
-                            if (key === 'q') {
+                            if (key === 'q' && value) {
                                 queryParams.append('search', value);
                                 return;
                             }
