@@ -76,14 +76,20 @@
                 this.set({ visible: !visible });
             },
             windowClick(event) {
-                if (
-                    !event.target ||
-                    (this.refs &&
-                        this.refs.button &&
-                        (event.target === this.refs.button ||
-                            this.refs.button.contains(event.target)))
-                )
-                    return;
+                if (!event.target) return;
+                /*
+                 * when the control is inside of a svelte2 wrapper web component,
+                 * the event.target is the wrapper, and not what was actually clicked,
+                 * so we need to check for this
+                 */
+                const isSvelte2Wrapper = event.target.tagName === 'SVELTE2-WRAPPER';
+                if (isSvelte2Wrapper && !event.composedPath().length) return;
+
+                const targetToCheck = isSvelte2Wrapper ? event.composedPath()[0] : event.target;
+                const buttonRef = this.refs && this.refs.button;
+
+                if (buttonRef && buttonRef === targetToCheck) return;
+
                 // this is a hack for the colorpicker, need to find out how to get rid of
                 if (event.target.classList.contains('hex')) return;
                 this.set({ visible: false });
