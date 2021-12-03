@@ -17,6 +17,34 @@ const Team = db.define(
     }
 );
 
+Team.countTeamAndOwnerProducts = async function (teamId) {
+    const TeamProduct = require('./TeamProduct');
+    const UserProduct = require('./UserProduct');
+    const UserTeam = require('./UserTeam');
+
+    const teamOwner = await UserTeam.findOne({
+        where: {
+            organization_id: teamId,
+            organization_role: 'owner'
+        }
+    });
+
+    return Promise.all([
+        TeamProduct.count({
+            where: {
+                organization_id: teamId
+            }
+        }),
+        teamOwner
+            ? UserProduct.count({
+                  where: {
+                      user_id: teamOwner.user_id
+                  }
+              })
+            : Promise.resolve(0)
+    ]);
+};
+
 Team.prototype.invalidatePluginCache = async function () {
     const UserTeam = require('./UserTeam');
     const UserPluginCache = require('./UserPluginCache');
