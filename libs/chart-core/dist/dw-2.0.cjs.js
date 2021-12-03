@@ -6832,7 +6832,16 @@ function chart (attributes) {
     let _translations = {};
     let _ds;
 
-    const flagsBoolean = ['svgonly', 'plain', 'static', 'map2svg', 'transparent', 'fitchart'];
+    const flagsBoolean = [
+        'svgonly',
+        'plain',
+        'static',
+        'svgonly',
+        'map2svg',
+        'transparent',
+        'fitchart',
+        'fitheight'
+    ];
     const flagsString = ['theme', 'search'];
 
     // public interface
@@ -7034,7 +7043,7 @@ function chart (attributes) {
             }
 
             function postMessage() {
-                if (flags.fitchart) return;
+                if (flags && flags.fitchart) return;
 
                 let desiredHeight;
 
