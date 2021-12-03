@@ -1,4 +1,4 @@
-const { User } = require('@datawrapper/orm/models');
+const { User, Team } = require('@datawrapper/orm/models');
 const Joi = require('joi');
 const { getUserLanguage } = require('../../utils/index');
 const Boom = require('@hapi/boom');
@@ -41,21 +41,33 @@ module.exports = {
                         });
                     }
 
-                    const activeTeam = await invitee.getActiveTeam();
-                    const invitedToTeam = activeTeam.dataValues.id;
-                    const invitedToTeamName = activeTeam.dataValues.name;
+                    const inviteTeam = await Team.findOne({
+                        include: [
+                            {
+                                model: User,
+                                where: { id: invitee.id },
+                                through: {
+                                    attributes: ['invite_token'],
+                                    where: {
+                                        invite_token: inviteToken
+                                    }
+                                }
+                            }
+                        ]
+                    });
 
                     return h.view('account/DatawrapperInvite.svelte', {
                         props: {
                             token: inviteToken,
-                            team: invitedToTeam,
-                            headlineText: __('team / invite / headline').replace(
-                                '%s',
-                                invitedToTeamName
+                            team: inviteTeam ? inviteTeam.organization_id : false,
+                            headlineText: inviteTeam
+                                ? __('team / invite / headline').replace('%s', inviteTeam.name)
+                                : __('team / invite / headline-no-team'),
+                            introText: __(`team / invite / intro${!inviteTeam ? '-no-team' : ''}`),
+                            buttonText: __(
+                                `team / invite / button${!inviteTeam ? '-no-team' : ''}`
                             ),
-                            introText: __('team / invite / intro'),
-                            buttonText: __('team / invite / button'),
-                            email: invitee.dataValues.email
+                            email: invitee.email
                         }
                     });
                 }

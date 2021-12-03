@@ -1080,5 +1080,12 @@
   "archive / status / published": "Published",
   "archive / search / error": "Something went wrong while searching for charts.",
   "archive / section / shared / team-message": "You don’t have any shared folders yet. Start collaborating with others and create or join a team.",
-  "archive / section / shared / team-link": "Team settings"
+  "archive / section / shared / team-link": "Team settings",
+  "account / profile / email-changed": "Yay, that worked! Your email address has been successfully changed.",
+  "describe / revert / delete-row / message": "Successfully deleted 1 data row.",
+  "describe / revert / delete-row / button": "Revert",
+  "describe / revert / delete-rows / message": "Successfully deleted %num% data rows.",
+  "team / invite / headline-no-team": "Oops, look like that invitation doesn't exist anymore.",
+  "team / invite / intro-no-team": "You can still sign up and start creating visualizations though, if you like. Choose a password to confirm your new user account:",
+  "team / invite / button-no-team": "Set password & sign in"
 }

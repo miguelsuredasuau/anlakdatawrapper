@@ -25,10 +25,12 @@
                 }
             });
 
-            await httpReq.post(`/v3/teams/${team}/invites/${token}`);
+            if (team) {
+                await httpReq.post(`/v3/teams/${team}/invites/${token}`);
+            }
 
             setTimeout(() => {
-                window.location.href = `/team/${team}`;
+                window.location.href = team ? `/team/${team}` : '/archive';
             }, 400);
         } catch (error) {
             submitting = false;
