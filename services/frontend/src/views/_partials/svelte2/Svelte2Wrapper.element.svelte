@@ -1,4 +1,3 @@
-<!-- eslint-disable-next-line -->
 <svelte:options tag="svelte2-wrapper" />
 
 <script>

@@ -1,4 +1,5 @@
 const { Chart, Team, User } = require('@datawrapper/orm/models');
+const { db } = require('@datawrapper/orm');
 const { getUserData } = require('@datawrapper/orm/utils/userData');
 const uniq = require('lodash/uniq');
 const get = require('lodash/get');
@@ -148,7 +149,8 @@ module.exports = {
                             attributes: ['id'],
                             where: {
                                 author_id: user.id,
-                                deleted: false
+                                deleted: false,
+                                published_at: { [db.Op.not]: null }
                             },
                             order: [['published_at', 'DESC']],
                             limit: 30

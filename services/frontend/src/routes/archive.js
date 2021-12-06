@@ -247,9 +247,9 @@ module.exports = {
             });
 
             const byTeam = new Map();
-            chartCounts.forEach(({ organization_id, in_folder, ...o }) => {
-                const tid = organization_id || '--user--';
-                const fid = in_folder || 'root';
+            chartCounts.forEach(({ organization_id: teamId, in_folder: inFolder, ...o }) => {
+                const tid = teamId || '--user--';
+                const fid = inFolder || 'root';
                 if (!byTeam.has(tid)) byTeam.set(tid, new Map());
                 byTeam.get(tid).set(fid, o.dataValues.cnt);
             });
