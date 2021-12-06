@@ -23,7 +23,7 @@ async function getFolders({ team, __ }) {
 }
 
 function getLocales(config) {
-    return (config.frontend?.languages || []).map(({ id, title }) => ({
+    return (config.general?.locales || []).map(({ id, title }) => ({
         value: id,
         label: `${title} (${id})`
     }));

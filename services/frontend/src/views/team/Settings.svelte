@@ -80,7 +80,6 @@
             on:change={storeTeamSettings}
             data={{
                 ...curPage.data,
-                defaultTheme,
                 folders,
                 locales,
                 team,
