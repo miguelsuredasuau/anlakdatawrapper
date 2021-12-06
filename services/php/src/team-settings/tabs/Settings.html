@@ -25,7 +25,7 @@
             label="{ __('teams / defaults / theme' ) }"
             help="{ __('teams / defaults / theme / p' ) }"
         >
-            <SelectInput bind:value="defaultTheme" options="{themes}" />
+            <SelectInput bind:value="team.default_theme" options="{themes}" />
         </FormBlock>
 
         <FormBlock
@@ -138,7 +138,6 @@
                 themes: [],
                 folders: [],
                 locales: [],
-                defaultTheme: '',
                 settings: {},
                 team: {}
             };
@@ -168,11 +167,10 @@
             this.set({ settings, initialized: true });
         },
         onstate({ changed, current }) {
-            if (current.settings && (changed.settings || changed.team || changed.defaultTheme)) {
+            if (current.settings && (changed.settings || changed.team)) {
                 this.fire('change', {
                     team: current.team,
-                    settings: current.settings,
-                    defaultTheme: current.defaultTheme
+                    settings: current.settings
                 });
             }
         }

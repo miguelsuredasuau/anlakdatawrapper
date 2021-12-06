@@ -39,19 +39,18 @@
     }
 
     const storeTeamSettings = debounce(async function ({ detail }) {
-        const { team: _team, settings, defaultTheme } = detail;
+        const { team: _team, settings } = detail;
         const changed = {
             name: _team.name && team.name !== _team.name,
             settings: settings && !isEqual(team.settings, settings),
-            defaultTheme: defaultTheme && !isEqual(team.defaultTheme, defaultTheme)
+            defaultTheme: _team.default_theme && team.default_theme !== _team.default_theme
         };
-
         if (changed.name || changed.settings || changed.defaultTheme) {
-            await httpReq.patch(`/v3/teams/${team.id}`, {
+            await httpReq.put(`/v3/teams/${team.id}`, {
                 payload: {
                     name: _team.name,
-                    ...(settings ? { settings } : {}),
-                    ...(defaultTheme ? { defaultTheme } : {})
+                    defaultTheme: _team.default_theme,
+                    settings
                 }
             });
         }
@@ -62,7 +61,7 @@
             team.settings = settings;
         }
         if (changed.defaultTheme) {
-            team.defaultTheme = defaultTheme;
+            team.default_theme = _team.default_theme;
         }
     }, 1000);
 </script>

@@ -163,12 +163,14 @@ module.exports = {
                     const db = server.methods.getDB();
 
                     const team = await Team.findByPk(teamId);
+
+                    if (!team.default_theme) team.default_theme = getSystemDefaultTheme(config);
+
                     const settingsPages = await server.methods.getSettingsPages('team', request);
 
                     return h.view('team/Settings.svelte', {
                         htmlClass: 'has-background-white-bis',
                         props: {
-                            defaultTheme: team.defaultTheme || getSystemDefaultTheme(config),
                             folders: await getFolders({ team, __ }),
                             locales: getLocales(config),
                             settingsPages,
