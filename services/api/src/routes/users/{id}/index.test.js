@@ -240,3 +240,28 @@ test('User cannot change email if it already exists', async t => {
         }
     }
 });
+
+test('GET /users/:id - should not include unaccepted team invites', async t => {
+    /* create admin user to fetch different user with team */
+    const { session } = t.context.adminObj;
+
+    let teamObj;
+    try {
+        /* create a team invite with user to fetch */
+        teamObj = await createTeamWithUser(t.context.server, { invite_token: 'abcdefg' });
+
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/users/${teamObj.user.id}`,
+            headers: {
+                cookie: `DW-SESSION=${session.id}`
+            }
+        });
+
+        t.is(res.result.teams.length, 0);
+    } finally {
+        if (teamObj) {
+            await destroy(...Object.values(teamObj));
+        }
+    }
+});

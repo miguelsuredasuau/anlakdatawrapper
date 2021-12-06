@@ -1,9 +1,8 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { decamelizeKeys, camelizeKeys } = require('humps');
-const set = require('lodash/set');
 const { logAction } = require('@datawrapper/orm/utils/action');
-const { User, Chart, Team, UserTeam, Session } = require('@datawrapper/orm/models');
+const { User, Chart, UserTeam, Session } = require('@datawrapper/orm/models');
 const { serializeTeam } = require('../../teams/utils');
 const { getUserData } = require('@datawrapper/orm/utils/userData');
 const { noContentResponse, userResponse } = require('../../../schemas/response');
@@ -136,20 +135,17 @@ async function getUser(request) {
     };
 
     if (isAdmin) {
-        set(options, ['include', 1], { model: Team, attributes: ['id', 'name'] });
-
         options.attributes = options.attributes.concat([
             'created_at',
             'activate_token',
             'reset_password_token'
         ]);
-    } else {
-        set(options, ['include', 1], { model: Team, attributes: ['id', 'name'] });
     }
 
     const user = await User.findByPk(userId, options);
 
-    const { charts, teams, ...data } = user.dataValues;
+    const { charts, ...data } = user.dataValues;
+    const teams = await user.getAcceptedTeams();
 
     const activeTeam = await getUserData(user.id, 'active_team');
 

@@ -138,7 +138,7 @@ async function createTeam(props = {}) {
     });
 }
 
-async function createTeamWithUser(server, { role = 'owner' } = {}) {
+async function createTeamWithUser(server, { role = 'owner', invite_token = '' } = {}) {
     const { UserTeam } = require('@datawrapper/orm/models');
     const teamPromise = createTeam();
 
@@ -148,7 +148,8 @@ async function createTeamWithUser(server, { role = 'owner' } = {}) {
     await UserTeam.create({
         user_id: user.id,
         organization_id: team.id,
-        team_role: role
+        team_role: role,
+        invite_token
     });
 
     async function addUser(role = 'owner') {
