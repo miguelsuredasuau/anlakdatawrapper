@@ -20,10 +20,6 @@ const deleteAfter = {
 const recordStats = time => {
     return async () => {
         const stats = [];
-
-        await totalCharts(stats, time);
-        await totalVisualizedCharts(stats, time);
-        await totalPublishedCharts(stats, time);
         await newlyCreatedCharts(stats, time);
         await newlyVisualizedCharts(stats, time);
         await recentlyEditedCharts(stats, time);
@@ -52,46 +48,6 @@ module.exports = {
     weekly: recordStats('weekly'),
     monthly: recordStats('monthly')
 };
-
-async function totalCharts(stats, time) {
-    const cnt = await Chart.count({
-        where: {
-            deleted: 0,
-            last_edit_step: { [Op.gt]: 1 }
-        }
-    });
-    stats.push({
-        metric: `charts:${time}:total`,
-        value: cnt
-    });
-}
-
-async function totalVisualizedCharts(stats, time) {
-    const cnt = await Chart.count({
-        where: {
-            deleted: 0,
-            last_edit_step: { [Op.gt]: 2 }
-        }
-    });
-    stats.push({
-        metric: `charts:${time}:visualized-total`,
-        value: cnt
-    });
-}
-
-async function totalPublishedCharts(stats, time) {
-    const cnt = await Chart.count({
-        where: {
-            deleted: 0,
-            last_edit_step: { [Op.gt]: 4 },
-            published_at: { [Op.not]: null }
-        }
-    });
-    stats.push({
-        metric: `charts:${time}:published-total`,
-        value: cnt
-    });
-}
 
 async function newlyCreatedCharts(stats, time) {
     const cnt = await Chart.count({
