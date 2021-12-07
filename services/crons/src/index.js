@@ -5,11 +5,15 @@ const { validateRedis } = require('@datawrapper/schemas/config');
 const Catbox = require('@hapi/catbox');
 const CatboxRedis = require('@hapi/catbox-redis');
 const CatboxMemory = require('@hapi/catbox-memory');
+const ORM = require('@datawrapper/orm');
 
 // initialize database
 const config = require('./config');
 
 module.exports = async function () {
+    await ORM.init(config);
+    await ORM.registerPlugins();
+
     const models = require('@datawrapper/orm/models');
     const sequelize = require('@datawrapper/orm').db;
 

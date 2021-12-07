@@ -6,15 +6,18 @@ const stat = promisify(fs.stat);
 async function findPlugins(localPluginRoot, dwPlugins) {
     const plugins = {};
     for (const plugin of Object.entries(dwPlugins)) {
-        try {
-            const requirePath = path.resolve(localPluginRoot, plugin[0], 'orm.js');
-
-            await stat(requirePath);
-            plugins[plugin[0]] = plugin[1];
-            plugins[plugin[0]].requirePath = requirePath;
-        } catch (error) {
-            // intentionally left empty, this is not an error
-            // the plugin just does not have a orm.js file
+        const indexFiles = ['orm.cjs', 'orm.js'];
+        for (const indexFile of indexFiles) {
+            try {
+                const requirePath = path.resolve(localPluginRoot, plugin[0], indexFile);
+                await stat(requirePath);
+                plugins[plugin[0]] = plugin[1];
+                plugins[plugin[0]].requirePath = requirePath;
+                break;
+            } catch (error) {
+                // intentionally left empty, this is not an error
+                // the plugin just does not have a orm.js file
+            }
         }
     }
 

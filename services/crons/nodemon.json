@@ -2,17 +2,18 @@
     "verbose": false,
     "ext": "js, mjs, cjs, json",
     "ignore": [
-        "/datawrapper/code/plugins/*/crons.js",
-        "/datawrapper/code/plugins/*/crons.cjs",
+        "/datawrapper/code/plugins/*/api.js",
+        "/datawrapper/code/plugins/*/api.cjs",
         "/datawrapper/code/plugins/*/frontend.js",
         "/datawrapper/code/plugins/*/frontend.cjs",
         "/datawrapper/code/plugins/*/node_modules/*",
         "/datawrapper/code/plugins/*/orm.js",
         "/datawrapper/code/plugins/*/orm.cjs",
-        "/datawrapper/code/plugins/*/src/frontend/views/**/*.js",
+        "/datawrapper/code/plugins/*/src/api/**/*.js",
+        "/datawrapper/code/plugins/*/src/api/**/*.cjs",
+        "/datawrapper/code/plugins/*/src/frontend/**/*.js",
+        "/datawrapper/code/plugins/*/src/frontend/**/*.cjs",
         "/datawrapper/code/services/frontend/node_modules/*",
-        "/datawrapper/code/services/frontend/src/views/_plugins/*",
-        "/datawrapper/code/services/api/src/**/*.test.js",
         "admin-*/src/*",
         "admin-*/static/*",
         "api-tokens/src/*",
@@ -56,7 +57,7 @@
         "visualization*/tests/*"
     ],
     "watch": [
-        "/datawrapper/code/services/api",
+        "/datawrapper/code/services/crons",
         "/datawrapper/code/plugins",
         "/datawrapper/code/config.js"
     ]
