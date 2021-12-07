@@ -17,9 +17,7 @@ module.exports = {
             // only add api tag if you want to officially document this route
             // config: { tags: ['api'] },
             handler: (request, h) => {
-                return h
-                    .response('Hello world')
-                    .header('Content-Type', 'text/plain');
+                return h.response('Hello world').header('Content-Type', 'text/plain');
             }
         });
 
@@ -39,6 +37,4 @@ module.exports = {
             }
         });
     }
-
-
 };

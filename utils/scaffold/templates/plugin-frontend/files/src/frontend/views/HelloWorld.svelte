@@ -8,6 +8,6 @@
 
 <MainLayout title="Hello world">
     <div class="container">
-    	<h1>{__('Hello World', 'my-new-plugin')}</h1>
+        <h1>{__('Hello World', 'my-new-plugin')}</h1>
     </div>
 </MainLayout>
