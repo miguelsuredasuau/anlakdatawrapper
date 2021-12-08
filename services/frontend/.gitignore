@@ -8,3 +8,4 @@ src/views/_plugins/*
 .eslintcache
 *.swp
 build
+.viewcache

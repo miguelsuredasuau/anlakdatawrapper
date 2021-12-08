@@ -15,6 +15,7 @@ const { requireConfig } = require('@datawrapper/service-utils/findConfig');
 const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
 const config = requireConfig();
 const path = require('path');
+const { clearFileCache } = require('./utils/svelte-view/cache');
 const { getUserLanguage } = require('./utils');
 const headerLinks = require('./utils/header-links');
 const settingsPages = require('./utils/settings-pages');
@@ -31,6 +32,8 @@ const {
 const { FrontendEventEmitter, eventList } = require('./utils/events');
 
 const { addScope, translate } = require('@datawrapper/service-utils/l10n');
+
+const PREPARE_VIEWS = process.argv.includes('--prepare-views');
 
 const start = async () => {
     validateAPI(config.api);
@@ -221,26 +224,33 @@ const start = async () => {
         return h.continue;
     });
 
-    if (!process.env.DW_DEV_MODE) {
+    if (process.env.DW_DEV_MODE || PREPARE_VIEWS) {
+        await clearFileCache();
+    }
+    if (!process.env.DW_DEV_MODE || PREPARE_VIEWS) {
         // wait for all prepared views
         server.logger.info('preparing Svelte views...');
-        await prepareAllViews();
+        await prepareAllViews(PREPARE_VIEWS);
     }
-    await server.start();
+    if (!PREPARE_VIEWS) {
+        await server.start();
 
-    setTimeout(() => {
-        if (process.send) {
-            server.logger.info('sending READY signal to pm2');
-            process.send('ready');
-        }
-    }, 100);
+        setTimeout(() => {
+            if (process.send) {
+                server.logger.info('sending READY signal to pm2');
+                process.send('ready');
+            }
+        }, 100);
 
-    process.on('SIGINT', async function () {
-        server.logger.info('received SIGINT signal, closing all connections...');
-        await server.stop();
-        server.logger.info('server has stopped');
+        process.on('SIGINT', async function () {
+            server.logger.info('received SIGINT signal, closing all connections...');
+            await server.stop();
+            server.logger.info('server has stopped');
+            process.exit(0);
+        });
+    } else {
         process.exit(0);
-    });
+    }
 };
 
 start();

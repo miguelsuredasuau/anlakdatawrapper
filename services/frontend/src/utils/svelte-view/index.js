@@ -21,23 +21,24 @@ function prepareView(page) {
     templateQueue.push(page);
 }
 
-function prepareAllViews() {
+function prepareAllViews(writeFileCache = false) {
     return parallelLimit(
         templateQueue.map(page => {
             return async () => {
-                await getView(page);
+                await getView(page, writeFileCache);
             };
         }),
         4
     );
 }
 
-function getView(page) {
-    return withCache(page, () => compilePage(page));
+function getView(page, writeFileCache = false) {
+    return withCache(page, () => compilePage(page), writeFileCache);
 }
 
 async function compilePage(page) {
     try {
+        process.stdout.write(`Compiling ${page}\n`);
         const ssr = await build(page, true);
         const csr = await build(page, false);
         return {
