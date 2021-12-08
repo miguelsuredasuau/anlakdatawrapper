@@ -25,7 +25,7 @@ const defaultSettings = {
             template: ''
         }
     },
-    customFields: {},
+    customFields: [],
     sso: {
         openId: {
             domain: '',
