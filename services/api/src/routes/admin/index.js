@@ -13,5 +13,11 @@ module.exports = {
                 prefix: '/teams'
             }
         });
+
+        server.register(require('./themes'), {
+            routes: {
+                prefix: '/themes'
+            }
+        });
     }
 };

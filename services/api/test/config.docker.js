@@ -4,7 +4,8 @@ module.exports = {
         localPluginRoot: path.join(process.cwd(), '../../plugins'),
         localChartAssetRoot: '/tmp/data',
         localChartPublishRoot: '/tmp/charts',
-        imageDomain: 'charts.datawrapper.local/preview'
+        imageDomain: 'charts.datawrapper.local/preview',
+        defaultThemes: ['default', 'datawrapper']
     },
     frontend: {
         domain: 'localhost',

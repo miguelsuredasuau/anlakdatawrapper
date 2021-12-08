@@ -161,7 +161,6 @@ require_once ROOT_PATH . 'lib/api/users.php';
 require_once ROOT_PATH . 'lib/api/charts.php';
 require_once ROOT_PATH . 'lib/api/plugins.php';
 require_once ROOT_PATH . 'lib/api/products.php';
-require_once ROOT_PATH . 'lib/api/themes.php';
 
 /**
  * Step 4: Run the Slim application

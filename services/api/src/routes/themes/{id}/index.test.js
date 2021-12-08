@@ -1,5 +1,5 @@
 const test = require('ava');
-const { createUser, destroy, setup } = require('../../test/helpers/setup');
+const { createUser, destroy, setup } = require('../../../../test/helpers/setup');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });

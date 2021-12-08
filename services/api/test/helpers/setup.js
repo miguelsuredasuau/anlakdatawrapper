@@ -250,6 +250,21 @@ function getChart(id) {
     return Chart.findByPk(id);
 }
 
+function createTheme(props = {}) {
+    const { Theme } = require('@datawrapper/orm/models');
+    return Theme.create({
+        data: {},
+        assets: {},
+        title: 'Theme Title',
+        ...props,
+        id: props.id || nanoid(5)
+    });
+}
+
+function createThemes(propsArray) {
+    return Promise.all(propsArray.map(createTheme));
+}
+
 async function addUserToTeam(user, team, role = 'member') {
     const { UserTeam } = require('@datawrapper/orm/models');
 
@@ -314,8 +329,14 @@ async function destroyUser(user) {
     }
 }
 
+async function destroyTheme(theme) {
+    const { TeamTheme } = require('@datawrapper/orm/models');
+    await TeamTheme.destroy({ where: { theme_id: theme.id } });
+    await theme.destroy({ force: true });
+}
+
 async function destroy(...instances) {
-    const { Chart, Team, User } = require('@datawrapper/orm/models');
+    const { Chart, Team, User, Theme } = require('@datawrapper/orm/models');
     for (const instance of instances) {
         if (!instance) {
             continue;
@@ -328,6 +349,8 @@ async function destroy(...instances) {
             await destroyTeam(instance);
         } else if (instance instanceof User) {
             await destroyUser(instance);
+        } else if (instance instanceof Theme) {
+            await destroyTheme(instance);
         } else if (instance.destroy) {
             await instance.destroy({ force: true });
         }
@@ -345,6 +368,8 @@ module.exports = {
     createFoldersWithParent,
     createTeam,
     createTeamWithUser,
+    createTheme,
+    createThemes,
     createUser,
     destroy,
     genNonExistentFolderId,

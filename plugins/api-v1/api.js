@@ -4,6 +4,7 @@ const routes = {
     folders: require('./src/api/routes/folders.js'),
     teams: require('./src/api/routes/teams.js'),
     charts: require('./src/api/routes/charts'),
+    themes: require('./src/api/routes/themes.js'),
     'plugin/login-tokens': require('./src/api/routes/plugins/login-tokens.js'),
     'plugin/oembed': require('./src/api/routes/plugins/oembed.js'),
     plugin: require('./src/api/routes/plugins/publish-s3.js')

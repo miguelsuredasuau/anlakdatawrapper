@@ -8,7 +8,8 @@ module.exports = {
         localPluginRoot: path.join(process.cwd(), '../../plugins'),
         localChartAssetRoot: '/tmp/data',
         localChartPublishRoot: '/tmp/charts',
-        imageDomain: process.env.DW_THUMBNAIL_URL
+        imageDomain: process.env.DW_THUMBNAIL_URL,
+        defaultThemes: ['default', 'datawrapper']
     },
     frontend: {
         domain: 'localhost',

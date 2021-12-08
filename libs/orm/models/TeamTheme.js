@@ -20,6 +20,7 @@ Team.belongsToMany(Theme, {
 
 Theme.belongsToMany(Team, {
     through: TeamTheme,
+    foreignKey: 'theme_id',
     timestamps: false
 });
 
