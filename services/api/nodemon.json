@@ -58,6 +58,7 @@
     "watch": [
         "/datawrapper/code/services/api",
         "/datawrapper/code/plugins",
-        "/datawrapper/code/config.js"
+        "/datawrapper/code/config.js",
+        "/datawrapper/code/libs/schemas/build"
     ]
 }
