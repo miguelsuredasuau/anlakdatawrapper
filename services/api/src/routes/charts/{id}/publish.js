@@ -146,14 +146,10 @@ async function publishChart(request) {
 
     try {
         destination = await events.emit(
-            event.PUBLISH_CHART,
+            event.GET_PUBLIC_URL,
             {
-                outDir,
-                fileMap,
                 chart,
-                user,
-                newPublicVersion,
-                log: logPublishStatus
+                newPublicVersion
             },
             { filter: 'first' }
         );
@@ -161,6 +157,15 @@ async function publishChart(request) {
         server.logger.error(error);
         eventError = error;
     }
+
+    await events.emit(event.PUBLISH_CHART, {
+        outDir,
+        fileMap,
+        chart,
+        user,
+        newPublicVersion,
+        log: logPublishStatus
+    });
 
     /**
      * All files were moved and the temporary directory is not needed anymore.
