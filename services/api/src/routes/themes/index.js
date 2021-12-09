@@ -19,8 +19,8 @@ module.exports = {
         if (themesConfig?.s3 && themesConfig.s3.bucket) {
             const s3Config = {
                 apiVersion: '2006-03-01',
-                accessKeyId: themesConfig.s3.accesskey,
-                secretAccessKey: themesConfig.s3.secretkey,
+                accessKeyId: themesConfig.s3.accessKeyId,
+                secretAccessKey: themesConfig.s3.secretAccessKey,
                 // Needed for minio compatibility:
                 s3ForcePathStyle: true,
                 signatureVersion: 'v4'
