@@ -69,11 +69,12 @@ module.exports = server => {
             const method = payload['font-upload-method'];
             const urls = {};
             if (method === 'file') {
+                const { prefix, hostname, protocol } = themesConfig.s3;
                 const uploads = formats.map(format => {
                     const file = payload[`font-file-${format}`];
                     const origName = file.hapi.filename;
-                    const key = `${themesConfig.s3.prefix}/${theme.id}/${origName}`;
-                    urls[format] = `//${themesConfig.s3.hostname}/${key}`;
+                    const key = `${prefix}/${theme.id}/${origName}`;
+                    urls[format] = `${protocol ? `${protocol}:` : ''}//${hostname}/${key}`;
                     return streamToS3(key, file);
                 });
                 await Promise.all(uploads);

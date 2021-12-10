@@ -47,8 +47,9 @@ module.exports = server => {
             const origName = file.hapi.filename;
 
             // s3 upload
-            const key = `${themesConfig.s3.prefix}/${theme.id}/${origName}`;
-            const publicUrl = `${themesConfig.s3.protocol}://${themesConfig.s3.hostname}/${key}`;
+            const { prefix, hostname, protocol } = themesConfig.s3;
+            const key = `${prefix}/${theme.id}/${origName}`;
+            const publicUrl = `${protocol ? `${protocol}:` : ''}//${hostname}/${key}`;
             await streamToS3(key, file);
 
             // register with theme
