@@ -1,20 +1,21 @@
 (function() {
+    // author : Statistics Iceland (customer) odinn.th.kjartansson@hagstofa.is
     return {
         delimiters: {
             thousands: '.',
             decimal: ','
         },
         abbreviations: {
-            thousand: 'k',
-            million: 'm',
-            billion: 'b',
-            trillion: 't'
+            thousand: 'þús',
+            million: 'millj.',
+            billion: 'bma.',
+            trillion: 'billj.'
         },
-        ordinal: function(number) {
+        ordinal: function() {
             return '.';
         },
         currency: {
-            symbol: 'ISK'
+            symbol: 'kr.'
         }
     };
 })();
