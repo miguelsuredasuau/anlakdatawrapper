@@ -398,7 +398,7 @@
     <section class="section body pt-5">
         <div class="container">
             <div class="columns is-variable is-8-fullhd">
-                <div class="column" style="position: relative;">
+                <div class="column" style="position: relative; z-index: 20;">
                     <div bind:this={folderNavEl} style="position: sticky;">
                         {#if $currentFolder.search}
                             <CollapseGroup
