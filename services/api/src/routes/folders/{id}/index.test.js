@@ -108,6 +108,55 @@ test('GET /folders/{id} returns an error 404 when the requested folder does not 
     t.is(res.statusCode, 404);
 });
 
+test('GET /folders/{id} does not return deleted charts', async t => {
+    let folder, charts;
+    try {
+        folder = await createFolder({ user_id: t.context.teamObj.user.id });
+        charts = await createCharts([
+            {
+                id: randomId(),
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: t.context.teamObj.user.id,
+                in_folder: folder.id
+            },
+            {
+                id: randomId(),
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                author_id: t.context.teamObj.user.id,
+                in_folder: folder.id
+            }
+        ]);
+
+        const res1 = await t.context.server.inject({
+            method: 'DELETE',
+            url: `/v3/charts/${charts[0].id}`,
+            auth: t.context.auth
+        });
+
+        t.is(res1.statusCode, 204);
+
+        const res2 = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/folders/${folder.id}`,
+            auth: t.context.auth
+        });
+
+        const json = await res2.result;
+        t.is(res2.statusCode, 200);
+        t.is(json.charts.length, 1);
+        t.not(json.charts[0].id, charts[0].id);
+        t.is(json.charts[0].id, charts[1].id);
+    } finally {
+        await destroy(charts, folder);
+    }
+});
+
 test('GET /folders/{id} returns an error 403 when the API token does not have the folder:read scope', async t => {
     let folder;
     let userObj;

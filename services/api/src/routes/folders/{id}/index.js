@@ -54,7 +54,8 @@ const routes = [
             }
             const charts = await Chart.findAll({
                 where: {
-                    in_folder: folder.id
+                    in_folder: folder.id,
+                    deleted: false
                 },
                 attributes: ['id']
             });
