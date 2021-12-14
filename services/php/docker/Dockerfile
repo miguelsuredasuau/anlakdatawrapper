@@ -1,5 +1,5 @@
 # Production Image
-FROM php:7.3-fpm-alpine
+FROM php:7.3-fpm-alpine3.14
 
 # Install deps + sudo
 RUN apk update
@@ -29,7 +29,7 @@ RUN sed -i \
 	/usr/local/etc/php-fpm.d/zz-docker.conf
 
 
-RUN mkdir /etc/datawrapper && \ 
+RUN mkdir /etc/datawrapper && \
 	ln -s /datawrapper/code/config.yaml /etc/datawrapper/config.yaml
 
 USER datawrapper
