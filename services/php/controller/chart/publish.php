@@ -19,6 +19,14 @@ $app->get('/(chart|map|table)/:id/publish(/:sub_page)?', function ($id) use ($ap
             return;
         }
 
+        // check if path and namespace match
+        $path = explode('/', $app->request()->getPath())[1];
+        if ($path != $chart->getNamespace()) {
+            // and redirect
+            $app->redirect('/'.$chart->getNamespace().'/'.$chart->getId().'/publish');
+            return;
+        }
+
         $chartW = $chart->getMetadata('publish.embed-width');
         $chartH = $chart->getMetadata('publish.embed-height');
 
@@ -113,4 +121,3 @@ $app->get('/(chart|map|table)/:id/publish(/:sub_page)?', function ($id) use ($ap
         $app->render('chart/publish.twig', $page);
     });
 });
-
