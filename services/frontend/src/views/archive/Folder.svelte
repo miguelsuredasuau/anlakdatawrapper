@@ -6,7 +6,7 @@
     import { byName, selectAll } from './shared';
 
     const user = getContext('user');
-    const { deleteFolder, patchFolder } = getContext('page/archive');
+    const { deleteFolder, patchFolder, foreignTeam } = getContext('page/archive');
     const { handleDragStart, handleDrop, handleDragEnter, handleDragLeave } = getContext(
         'page/archive/drag-and-drop'
     );
@@ -120,6 +120,11 @@
             font-size: 20px;
             color: $dw-scooter;
         }
+
+        > .self.is-foreign > a > :global(.icon) {
+            color: $dw-red;
+        }
+
         > .self > a > span :global(.icon) {
             font-size: 17px;
             color: $dw-grey;
@@ -222,6 +227,7 @@
     <div
         class="self py-1 pr-1"
         class:active={isCurrent}
+        class:is-foreign={foreignTeam && foreignTeam === folder.teamId}
         style="padding-left: {22 + folder.level * indentation}px"
         draggable={!folder.search && !!folder.id}
         on:dragstart|stopPropagation={() => {

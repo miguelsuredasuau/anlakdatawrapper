@@ -7,6 +7,8 @@
         'page/archive/drag-and-drop'
     );
 
+    const { foreignTeam } = getContext('page/archive');
+
     $: isDropZone = $subfolderGridDropZone === folder.key;
 
     export let folder;
@@ -34,6 +36,9 @@
             color: $dw-scooter;
             font-size: 2em;
         }
+    }
+    .is-foreign .box :global(.icon) {
+        color: $dw-red;
     }
     .name {
         line-height: 1.3;
@@ -69,6 +74,7 @@
     href={folder.path}
     class:is-drop-zone={isDropZone}
     class="subfolderbox"
+    class:is-foreign={foreignTeam && foreignTeam === folder.teamId}
     draggable="true"
     on:click|preventDefault={() => ($currentFolder = folder)}
     on:dragstart|stopPropagation={() => handleDragStart('folder', folder)}

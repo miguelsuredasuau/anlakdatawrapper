@@ -6,6 +6,7 @@
     import FolderBreadcrumbNav from './FolderBreadcrumbNav.svelte';
     import MainLayout from '_layout/MainLayout.svelte';
     import Pagination from '_partials/Pagination.svelte';
+    import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import SearchInput from './SearchInput.svelte';
     import SubFolderGrid from './SubFolderGrid.svelte';
     import VisualizationGrid from './VisualizationGrid.svelte';
@@ -38,6 +39,7 @@
     export let folders;
     export let themeBgColors;
     export let minLastEditStep = 2;
+    export let foreignTeam;
 
     setContext('page/archive', {
         addFolder,
@@ -60,6 +62,7 @@
         moveCharts,
         moveFolder,
         themeBgColors,
+        foreignTeam,
         teams
     });
 
@@ -411,6 +414,16 @@
                         <CollapseGroup className="shared" title={__('archive / section / shared')}>
                             {#each sortedTeamFolders as teamFolder, i}
                                 {#if i}<hr class="my-3" />{/if}
+                                {#if foreignTeam && teamFolder.teamId === foreignTeam}
+                                    <MessageDisplay type="danger">
+                                        <p>
+                                            <strong>Heads up!</strong> You are not a member of team
+                                            <b>{teamFolder.name}</b>. You can only see it because
+                                            you have admin privileges! Please do not change anything
+                                            unless you know exactly what you're doing
+                                        </p>
+                                    </MessageDisplay>
+                                {/if}
                                 <Folder {__} folder={teamFolder} />
                             {:else}
                                 <div class="team-message">

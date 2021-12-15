@@ -14,6 +14,7 @@ module.exports = {
 
         server.methods.prepareView('archive/Index.svelte');
         const Folder = server.methods.getModel('folder');
+        const Team = server.methods.getModel('team');
         const Chart = server.methods.getModel('chart');
         const TeamTheme = server.methods.getModel('team_theme');
         const Theme = server.methods.getModel('theme');
@@ -91,7 +92,13 @@ module.exports = {
                 if (!cnt) return h.redirect(`/archive${teamId ? `/${teamId}` : ''}`);
             }
 
-            const teams = (await user.getAcceptedTeams()).map(t => ({
+            const adminAccessingForeignTeam =
+                user.isAdmin() && teamId && !user.teams.find(t => t.id === teamId);
+
+            const teams = [
+                ...(await user.getAcceptedTeams()),
+                ...(adminAccessingForeignTeam ? [await Team.findByPk(teamId)] : [])
+            ].map(t => ({
                 ...t.toJSON(),
                 settings: {
                     displayLocale: t.settings?.displayLocale || false
@@ -140,6 +147,7 @@ module.exports = {
                     folderId,
                     folders,
                     teams,
+                    foreignTeam: adminAccessingForeignTeam ? teamId : null,
                     minLastEditStep,
                     themeBgColors
                 }
