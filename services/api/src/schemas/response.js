@@ -7,26 +7,100 @@ function createResponseConfig(schema) {
     };
 }
 
+function createListResponse(items) {
+    return createResponseConfig({
+        schema: Joi.object({
+            list: Joi.array().items(items || Joi.object()),
+            total: Joi.number().integer(),
+            next: Joi.string().optional()
+        }).unknown()
+    });
+}
+
 const schemas = { createResponseConfig };
 
-schemas.listResponse = createResponseConfig({
-    schema: Joi.object({
-        list: Joi.array().items(Joi.object()),
-        total: Joi.number().integer(),
-        next: Joi.string().optional()
-    }).unknown()
+const chartListItem = Joi.object({
+    id: Joi.string().description('ID of the visualization'),
+    title: Joi.string().description('Title of the visualization'),
+    publicId: Joi.string().description(
+        'Public ID of the visualization. May be different from the internal ID, if *hash publishing* is enabled.'
+    ),
+    authorId: Joi.number().integer().description('ID of user that created the visualization.'),
+    organizationId: Joi.number()
+        .integer()
+        .description(
+            'ID of the team that the visualization is located in. If `null`, visualization is private.'
+        ),
+    folderId: Joi.number()
+        .integer()
+        .description(
+            'ID of the folder that the visualization is located in. If `null`, visualization is in the root of a team, or your private archive.'
+        ),
+    language: Joi.string().description('Visualization language (output locale), e.g `en-US`'),
+    theme: Joi.string().description('ID of theme applied to the visualization'),
+    type: Joi.string().description(
+        'Type of visualization, e.g `d3-lines`, `d3-maps-choropleth`, `tables`'
+    ),
+    createdAt: Joi.date().description('Time and date when the visualization was created.'),
+    lastModifiedAt: Joi.date().description('Time and date when the visualization was last edited.'),
+    publishedAt: Joi.date().description(
+        'Time and date when the visualization was last published. `null`, if the visualization has not been published yet.'
+    ),
+    lastEditStep: Joi.number()
+        .integer()
+        .min(0)
+        .max(5)
+        .description(
+            'A number encoding which of the editor steps this chart has been edited in so far. 5 = published.'
+        ),
+    publicVersion: Joi.number()
+        .integer()
+        .min(0)
+        .description('Indicates how many times a visualization has been published.'),
+    author: Joi.object({
+        name: Joi.string().description('Name of the user who created the visualization'),
+        email: Joi.string().description('Email address of the user who created the visualization')
+    }),
+    thumbnails: Joi.object({
+        full: Joi.string().description(
+            'URL pointing to the most recently generated preview thumbnail for the visualization. (Image includes header & footer).'
+        ),
+        plain: Joi.string().description(
+            'URL pointing to the most recently generated preview thumbnail for the visualization. (Image is just the visualization, without header & footer).'
+        )
+    }),
+    url: Joi.string().description(
+        'API URL for the visualization, can be used to retreive additional information, including its metadata.'
+    )
 });
+
+schemas.listResponse = createListResponse();
+
+schemas.chartListResponse = createListResponse(chartListItem);
 
 schemas.noContentResponse = createResponseConfig({
     status: { 204: Joi.any().empty() }
 });
 
 schemas.chartResponse = createResponseConfig({
-    schema: Joi.object({
-        id: Joi.string(),
-        title: Joi.string(),
-        metadata: Joi.object()
-    }).unknown()
+    schema: chartListItem.keys({
+        publicUrl: Joi.string().description('URL of published visualization.'),
+        deleted: Joi.boolean(),
+        deletedAt: Joi.date().description('Time and date when the visualization was deleted.'),
+        forkable: Joi.boolean().description(
+            'Indicates if the visualization has been shared in the Datawrapper River.'
+        ),
+        isFork: Joi.boolean().description(
+            'Indicates if the visualization is a copy of another visualization.'
+        ),
+        forkedFrom: Joi.string().description(
+            'ID of the visualization that this visualization was copied from. `null` if it is not a copy.'
+        ),
+        externalData: Joi.string().description(
+            'External data URL, relevant for live visualizations.'
+        ),
+        metadata: Joi.object().description("All of the visualization's settings.")
+    })
 });
 
 schemas.teamResponse = createResponseConfig({
@@ -53,10 +127,11 @@ schemas.folderResponse = createResponseConfig({
             .description(
                 'If set, this is a private folder, and it belongs to the indicated user. If unset, the folder is located in a shared team archive (see `teamId`).'
             ),
-        teamId: Joi.number()
-            .integer()
+        teamId: Joi.string()
             .allow(null)
-            .description('The team that this folder is in. If unset, this folder is private.'),
+            .description(
+                'The ID of the team that this folder is in. If unset, this folder is private.'
+            ),
         parentId: Joi.number()
             .integer()
             .allow(null)

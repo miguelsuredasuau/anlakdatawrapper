@@ -4,7 +4,7 @@ const set = require('lodash/set');
 const { Op, QueryTypes, literal } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');
 const { Chart, User, Folder, Team, UserTeam } = require('@datawrapper/orm/models');
-const { listResponse, chartResponse } = require('../../schemas/response');
+const { chartListResponse, chartResponse } = require('../../schemas/response');
 const { prepareChart } = require('../../utils/index.js');
 const Boom = require('@hapi/boom');
 
@@ -96,7 +96,7 @@ module.exports = {
                             )
                     })
                 },
-                response: listResponse
+                response: chartListResponse
             },
             handler: getAllCharts
         });
