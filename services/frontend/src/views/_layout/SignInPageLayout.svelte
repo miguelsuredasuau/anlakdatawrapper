@@ -14,15 +14,20 @@
 <style lang="scss">
     @import 'bulma/sass/utilities/_all.sass';
     :global(html) {
+        overflow-y: auto;
         background-color: var(--color-dw-scooter);
         background-image: url(/lib/static/img/dw-hero-16-9-bg.jpg);
     }
 
     @include desktop {
     }
-    @media screen and (min-height: 600px) and (min-width: 600px) {
+    @media screen and (min-height: 700px) and (min-width: 600px) {
         :global(html) {
             overflow-y: hidden;
+        }
+        .page-content {
+            max-height: 650px;
+            overflow-y: scroll;
         }
     }
 </style>
@@ -48,7 +53,7 @@
                 </div>
                 <div class="column has-background-light is-flex is-flex-direction-column">
                     <div
-                        class="p-6 is-flex is-flex-direction-column is-justify-content-space-between is-flex-grow-1"
+                        class="page-content p-6 is-flex is-flex-direction-column is-justify-content-space-between is-flex-grow-1"
                     >
                         <slot />
                         <div class="terms is-size-7 is-hidden-tablet mt-3">
