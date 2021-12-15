@@ -7,8 +7,8 @@ const { themeId } = require('../utils');
 module.exports = server => {
     const { general } = server.methods.config();
     const themesConfig = general.themes;
-    const requiredFileStream = () => Joi.object().instance(stream.Readable).required();
-    const requiredURI = () => Joi.string().uri().required();
+    const fileStream = () => Joi.object().instance(stream.Readable);
+    const URI = () => Joi.string().uri();
 
     // Upload theme font
     // POST /v3/themes/{id}/font
@@ -34,25 +34,33 @@ module.exports = server => {
                 })
                     .when(Joi.object({ 'font-upload-method': Joi.valid('file') }).unknown(), {
                         then: Joi.object({
-                            'font-file-eot': requiredFileStream(),
-                            'font-file-woff': requiredFileStream(),
-                            'font-file-woff2': requiredFileStream(),
-                            'font-file-ttf': requiredFileStream(),
-                            'font-file-svg': requiredFileStream()
+                            'font-file-eot': fileStream(),
+                            'font-file-woff': fileStream(),
+                            'font-file-woff2': fileStream().when('font-file-woff', {
+                                not: Joi.exist(),
+                                then: Joi.required()
+                            }),
+                            'font-file-otf': fileStream(),
+                            'font-file-ttf': fileStream(),
+                            'font-file-svg': fileStream()
                         })
                     })
                     .when(Joi.object({ 'font-upload-method': Joi.valid('url') }).unknown(), {
                         then: Joi.object({
-                            'font-url-eot': requiredURI(),
-                            'font-url-woff': requiredURI(),
-                            'font-url-woff2': requiredURI(),
-                            'font-url-ttf': requiredURI(),
-                            'font-url-svg': requiredURI()
+                            'font-url-eot': URI(),
+                            'font-url-woff': URI(),
+                            'font-url-woff2': URI().when('font-url-woff', {
+                                not: Joi.exist(),
+                                then: Joi.required()
+                            }),
+                            'font-url-otf': URI(),
+                            'font-url-ttf': URI(),
+                            'font-url-svg': URI()
                         })
                     })
                     .when(Joi.object({ 'font-upload-method': Joi.valid('import') }).unknown(), {
                         then: Joi.object({
-                            'font-import-url': requiredURI()
+                            'font-import-url': URI().required()
                         })
                     })
             }
@@ -65,21 +73,24 @@ module.exports = server => {
             const streamToS3 = request.server.methods.streamToThemesS3;
             if (!streamToS3) return Boom.notImplemented('no s3 config found');
 
-            const formats = ['eot', 'woff', 'woff2', 'ttf', 'svg'];
+            const formats = ['eot', 'woff', 'woff2', 'ttf', 'svg', 'otf'];
             const method = payload['font-upload-method'];
             const urls = {};
             if (method === 'file') {
                 const { prefix, hostname, protocol } = themesConfig.s3;
-                const uploads = formats.map(format => {
-                    const file = payload[`font-file-${format}`];
-                    const origName = file.hapi.filename;
-                    const key = `${prefix}/${theme.id}/${origName}`;
-                    urls[format] = `${protocol ? `${protocol}:` : ''}//${hostname}/${key}`;
-                    return streamToS3(key, file);
-                });
+                const uploads = formats
+                    .filter(format => payload[`font-file-${format}`])
+                    .map(format => {
+                        const file = payload[`font-file-${format}`];
+                        const origName = file.hapi.filename;
+                        const key = `${prefix}/${theme.id}/${origName}`;
+                        urls[format] = `${protocol ? `${protocol}:` : ''}//${hostname}/${key}`;
+                        return streamToS3(key, file);
+                    });
                 await Promise.all(uploads);
             } else if (method === 'url') {
                 formats.forEach(format => {
+                    if (!payload[`font-url-${format}`]) return;
                     urls[format] = payload[`font-url-${format}`];
                 });
             } else if (method === 'import') {

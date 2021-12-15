@@ -112,3 +112,74 @@ test('Should be possible to get extended theme data', async t => {
     t.snapshot(theme.less);
     t.snapshot(theme.data);
 });
+
+function constructFormData(items) {
+    const boundary = '----WebKitFormBoundaryz3uxR8Q4f0aAu3nl';
+    const payload =
+        items
+            .map(
+                ([key, val]) =>
+                    `--${boundary}\r\nContent-Disposition: form-data; name="${key}"\r\n\r\n${val}`
+            )
+            .join('\r\n') + `\r\n--${boundary}--\r\n`;
+
+    return { contentType: `multipart/form-data; boundary=${boundary}`, payload };
+}
+
+test("Should be possible to upload a fonts by url that doesn't include all font formats", async t => {
+    const { contentType, payload } = constructFormData([
+        ['font-upload-method', 'url'],
+        ['font-name', 'Roboto'],
+        ['font-url-woff', 'https://static.dwcdn.net/css/fonts/roboto/roboto_400.woff'],
+        ['font-url-ttf', 'https://static.dwcdn.net/css/fonts/roboto/roboto_400.ttf']
+    ]);
+    const res = await t.context.server.inject({
+        method: 'POST',
+        url: '/v3/themes/my-theme-3/font',
+        auth: t.context.auth,
+        headers: {
+            'Content-Type': contentType
+        },
+        payload
+    });
+
+    t.is(res.statusCode, 200);
+});
+
+test("Shouldn't be possible to upload a font that doesn't include woff or woff2", async t => {
+    const { contentType, payload } = constructFormData([
+        ['font-upload-method', 'url'],
+        ['font-name', 'Roboto'],
+        ['font-url-ttf', 'https://static.dwcdn.net/css/fonts/roboto/roboto_400.ttf']
+    ]);
+    const res = await t.context.server.inject({
+        method: 'POST',
+        url: '/v3/themes/my-theme-3/font',
+        auth: t.context.auth,
+        headers: {
+            'Content-Type': contentType
+        },
+        payload
+    });
+
+    t.is(res.statusCode, 400);
+});
+
+test('Should be possible to upload a font that includes woff2 only', async t => {
+    const { contentType, payload } = constructFormData([
+        ['font-upload-method', 'url'],
+        ['font-name', 'Roboto'],
+        ['font-url-woff2', 'https://static.dwcdn.net/css/fonts/roboto/roboto_400.woff2']
+    ]);
+    const res = await t.context.server.inject({
+        method: 'POST',
+        url: '/v3/themes/my-theme-3/font',
+        auth: t.context.auth,
+        headers: {
+            'Content-Type': contentType
+        },
+        payload
+    });
+
+    t.is(res.statusCode, 200);
+});

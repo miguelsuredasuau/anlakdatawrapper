@@ -123,24 +123,26 @@ function createFontEntries(fonts, themeData) {
         }
     }
 
-    function createFontCSS(font, { woff, ttf, svg }, props) {
-        let fontCSS = `@font-face {
-    font-family: '${font}';`;
+    function createFontCSS(font, fileFormats, props = {}) {
+        props = { display: 'auto', ...props };
+        const fmtMap = { ttf: 'truetype', otf: 'opentype' };
 
-        if (props) {
-            const { weight, style, display } = props;
-            fontCSS += `
-    font-weight:${weight};
-    font-style: ${style};
-    font-display: ${display || 'auto'};`;
-        }
+        const fontUrls = Object.entries(fileFormats)
+            .filter(([format]) => !['eot', 'woff2'].includes(format))
+            .map(([f, v]) => {
+                const fmt = fmtMap[f] || f;
+                return `url('${processUrl(v)}${f === 'svg' ? `#${font}` : ''}') format('${fmt}')`;
+            });
 
-        fontCSS += `
-    src: url('${processUrl(woff)}')  format('woff'),      /* Pretty Modern Browsers */
-         url('${processUrl(ttf)}')   format('truetype'),  /* Safari, Android, iOS */
-         url('${processUrl(svg)}#${font}')   format('svg');
+        const propsCSS = ['weight', 'style', 'display']
+            .filter(prop => props[prop])
+            .map(prop => `font-${prop}: ${props[prop]};`);
+
+        return `@font-face {
+    font-family: ${font};
+    ${propsCSS.join('\n\t')}
+    src: ${fontUrls.join(',\n\t\t ')};
 }`;
-        return fontCSS;
     }
 }
 
