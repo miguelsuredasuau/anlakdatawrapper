@@ -1,3 +1,4 @@
+const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const { db } = require('@datawrapper/orm');
 const { formatQueryString } = require('../utils/url.cjs');
@@ -98,12 +99,14 @@ module.exports = {
             const teams = [
                 ...(await user.getAcceptedTeams()),
                 ...(adminAccessingForeignTeam ? [await Team.findByPk(teamId)] : [])
-            ].map(t => ({
-                ...t.toJSON(),
-                settings: {
-                    displayLocale: t.settings?.displayLocale || false
-                }
-            }));
+            ]
+                .filter(Boolean) // Filter out null, because `Team.findByPk(teamId)` can return it.
+                .map(t => ({
+                    ...t.toJSON(),
+                    settings: {
+                        displayLocale: t.settings?.displayLocale || false
+                    }
+                }));
 
             const themeBgColors = await getThemeBgColors(
                 teams,
@@ -120,7 +123,17 @@ module.exports = {
                 ...(!search && { folderId: folderId || 'null' }),
                 ...(!search && (teamId ? { teamId } : { authorId: 'me', teamId: 'null' }))
             });
-            const charts = await api(`/charts?${qs}`);
+
+            let charts;
+            try {
+                charts = await api(`/charts?${qs}`);
+            } catch {
+                // The team probably doesn't exist or the user doesn't have permissions to access
+                // it. We can't tell for sure, because the `api()` function doesn't give us access
+                // to the API response.
+                throw Boom.notFound();
+            }
+
             if (groupBy) {
                 charts.list = groupCharts({ charts: charts.list, groupBy, __ });
             }
