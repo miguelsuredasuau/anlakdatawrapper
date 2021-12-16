@@ -69,7 +69,7 @@ module.exports = {
                 try {
                     props = await api(`/charts/${chartId}/publish/data?${queryString}`);
                 } catch (ex) {
-                    return Boom.unauthorized();
+                    return Boom.notFound();
                 }
 
                 const chartLocale = props.chart.language || 'en-US';
