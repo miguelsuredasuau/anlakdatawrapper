@@ -219,10 +219,10 @@ function createChart(props = {}) {
 
 async function createPublicChart(props = {}) {
     const chart = await createChart({
-        ...props,
         last_edit_step: 5,
+        public_verison: 1,
         published_at: new Date(),
-        public_verison: 1
+        ...props
     });
     const { ChartPublic } = require('@datawrapper/orm/models');
     return ChartPublic.create({
@@ -236,8 +236,16 @@ async function createPublicChart(props = {}) {
         title: 'Default',
         theme: 'default',
         type: 'd3-bars',
+        ...(props.published_at && { first_published_at: props.published_at }),
         ...props,
         id: chart.id
+    });
+}
+
+async function getPublicChart(id) {
+    const { ChartPublic, Chart } = require('@datawrapper/orm/models');
+    return ChartPublic.findByPk(id, {
+        include: [Chart]
     });
 }
 
@@ -336,13 +344,15 @@ async function destroyTheme(theme) {
 }
 
 async function destroy(...instances) {
-    const { Chart, Team, User, Theme } = require('@datawrapper/orm/models');
+    const { Chart, Team, User, Theme, ChartPublic } = require('@datawrapper/orm/models');
     for (const instance of instances) {
         if (!instance) {
             continue;
         }
         if (Array.isArray(instance)) {
             await destroy(...instance);
+        } else if (instance instanceof ChartPublic) {
+            await destroyChart(instance);
         } else if (instance instanceof Chart) {
             await destroyChart(instance);
         } else if (instance instanceof Team) {
@@ -377,6 +387,7 @@ module.exports = {
     genRandomFolderId,
     getCredentials,
     getChart,
+    getPublicChart,
     setup,
     addUserToTeam
 };

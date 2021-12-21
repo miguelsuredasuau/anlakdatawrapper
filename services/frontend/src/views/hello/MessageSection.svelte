@@ -10,7 +10,14 @@
 
     <div class="columns">
         <div class="column">
-            <MessageDisplay title="New locator maps">
+            <MessageDisplay type="">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong
+                    >Pellentesque risus mi</strong
+                >, tempus quis placerat ut, porta nec nulla. Vestibulum rhoncus ac ex sit amet
+                fringilla. Nullam gravida purus diam, et dictum
+                <a href="#/link">felis venenatis</a> efficitur.
+            </MessageDisplay>
+            <MessageDisplay type="success" deletable="true">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong
                     >Pellentesque risus mi</strong
                 >, tempus quis placerat ut, porta nec nulla. Vestibulum rhoncus ac ex sit amet
@@ -22,7 +29,7 @@
             </MessageDisplay>
         </div>
         <div class="column">
-            <MessageDisplay title="Heads up!" type="warning">
+            <MessageDisplay type="warning" deletable="true">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong
                     >Pellentesque risus mi</strong
                 >, tempus quis placerat ut, porta nec nulla. Vestibulum rhoncus ac ex sit amet
@@ -31,12 +38,15 @@
             </MessageDisplay>
         </div>
         <div class="column">
-            <MessageDisplay type="">
+            <MessageDisplay title="New locator maps" deletable="true">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong
                     >Pellentesque risus mi</strong
                 >, tempus quis placerat ut, porta nec nulla. Vestibulum rhoncus ac ex sit amet
                 fringilla. Nullam gravida purus diam, et dictum
-                <a href="#/link">felis venenatis</a> efficitur.
+                <a href="#/link">felis venenatis</a>
+                efficitur. Aenean ac <em>eleifend lacus</em>, in mollis lectus. Donec sodales, arcu
+                et sollicitudin porttitor, tortor urna tempor ligula, id porttitor mi magna a neque.
+                Donec dui urna, vehicula et sem eget, facilisis sodales sem.
             </MessageDisplay>
         </div>
     </div>

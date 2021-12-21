@@ -1,24 +1,11 @@
 <script>
     import purifyHTML from '@datawrapper/shared/purifyHtml';
-    import { getContext } from 'svelte';
+    import { getContext, createEventDispatcher } from 'svelte';
     const config = getContext('config');
-    const { dayjs } = getContext('libraries');
+    const dispatch = createEventDispatcher();
 
+    export let link;
     export let chart;
-    export let __;
-
-    export let sortField = 'last_modified_at';
-
-    $: dateLine =
-        sortField === 'last_modified_at'
-            ? `${__('dashboard / visualization / last-edited')} ${dayjs(
-                  chart.last_modified_at
-              ).fromNow()}`
-            : sortField === 'published_at'
-            ? `${__('dashboard / visualization / published')} ${dayjs(
-                  chart.published_at
-              ).fromNow()}`
-            : '';
 
     $: thumbnail =
         (chart.thumbnails && chart.thumbnails.plain) ||
@@ -26,7 +13,7 @@
 </script>
 
 <style lang="scss">
-    @import '../../styles/colors.scss';
+    @import '../../../styles/colors.scss';
     .title {
         overflow: hidden;
         white-space: nowrap;
@@ -54,7 +41,7 @@
 </style>
 
 <div class="box has-border">
-    <a href="/chart/{chart.id}/edit">
+    <a on:click={event => dispatch('click', { event, chart, link })} href={link}>
         <figure class="image is-4by3">
             <figcaption
                 title={purifyHTML(chart.title, '')}
@@ -62,10 +49,9 @@
             >
                 {purifyHTML(chart.title, '')}
             </figcaption>
+            <slot name="belowTitle" />
             <div class="thumb" style="background-image: url({thumbnail})" />
         </figure></a
     >
-    {#if dateLine}
-        <div class="subline mt-2 has-text-grey-dark is-size-7">{dateLine}</div>
-    {/if}
+    <slot name="footer" />
 </div>

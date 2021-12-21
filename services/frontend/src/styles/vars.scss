@@ -39,28 +39,13 @@ $footer-background-color: transparent;
 // $border-light
 // $border-light-hover
 
-$text: $dw-black-bis;
-$text-light: $dw-grey;
-$text-strong: $dw-black;
-
-$code: darken($dw-red, 15%);
-
-$link: $dw-scooter;
-// $link-visited
-$link-hover: $dw-scooter-dark;
-// $link-hover-border
-
-// FONTS
+// TYPOGRAHPY
 
 $family-sans-serif: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans,
     Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
 $family-serif: 'Bitter', serif;
 $family-monospace: 'Roboto Mono', Menlo, Consolas, Monaco, 'Liberation Mono', monospace;
 
-// SIZES
-
-$body-size: 16px;
-$body-font-size: 14px;
 
 $size-1: 3rem; // = 48px @ 16px base
 $size-2: 2rem; // = 32px @ 16px base
@@ -75,7 +60,25 @@ $size-7: 0.75rem; // = 12px @ 16px base
 // $size-medium: $size-5
 // $size-large: $size-4
 
+$text: $dw-black-bis;
+$text-light: $dw-grey;
+$text-strong: $dw-black;
+
+$code: darken($dw-red, 15%);
+
+$link: $dw-scooter;
+// $link-visited
+$link-hover: $dw-scooter-dark;
+// $link-hover-border
+
+$stong-color: inherit;
+
+// SIZES
+
+$body-size: 16px;
+$body-font-size: 14px;
 $radius: 4px;
+
 
 // ELEMENTS
 
@@ -113,7 +116,7 @@ $navbar-divider-background-color: $dw-grey-lighter;
 $navbar-dropdown-arrow: $dw-grey-darker;
 
 // Modal
-$modal-content-width: 1100px;
+$modal-content-width: calc(100vw - 40px);
 $modal-z: 1100;
 $modal-background-background-color: rgba($dw-black-bis, 0.5);
 
@@ -126,11 +129,16 @@ $menu-item-hover-color: $dw-scooter-dark;
 $menu-item-hover-background-color: $dw-white-ter;
 $menu-item-active-background-color: $dw-scooter;
 
+// Message
+$message-body-padding: 1.25em 2.5em 1.25em 1.5em;
+
 // LAYOUT
 $section-padding: 1.5rem;
 
-// INPUTS
+// FORM
+$input-color: $text-strong;
 $input-border-color: $dw-grey-light;
+$input-placeholder-color: rgba($input-color, 0.45);
 
 // Dropdown
 $dropdown-item-active-color: $dw-black;

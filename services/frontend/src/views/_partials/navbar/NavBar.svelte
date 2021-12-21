@@ -36,7 +36,8 @@
     // Navbar Items
 
     .navbar-menu {
-        :global(.navbar-item, .navbar-link) {
+        :global(.navbar-item),
+        :global(.navbar-link) {
             border-radius: var(--radius);
         }
         :global(a.navbar-item:hover) {

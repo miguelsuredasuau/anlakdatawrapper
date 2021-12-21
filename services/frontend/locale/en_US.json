@@ -1087,5 +1087,7 @@
   "describe / revert / delete-rows / message": "Successfully deleted %num% data rows.",
   "team / invite / headline-no-team": "Oops, look like that invitation doesn't exist anymore.",
   "team / invite / intro-no-team": "You can still sign up and start creating visualizations though, if you like. Choose a password to confirm your new user account:",
-  "team / invite / button-no-team": "Set password & sign in"
+  "team / invite / button-no-team": "Set password & sign in",
+  "previous": "Previous",
+  "next-page": "Next page"
 }

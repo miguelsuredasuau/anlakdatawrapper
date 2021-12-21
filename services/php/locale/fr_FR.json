@@ -1084,5 +1084,10 @@
   "account / profile / email-changed": "",
   "describe / revert / delete-row / message": "",
   "describe / revert / delete-row / button": "",
-  "describe / revert / delete-rows / message": ""
+  "describe / revert / delete-rows / message": "",
+  "team / invite / headline-no-team": "",
+  "team / invite / intro-no-team": "",
+  "team / invite / button-no-team": "",
+  "previous": "",
+  "next-page": ""
 }

@@ -19,9 +19,31 @@ const PluginData = db.define(
     },
     {
         createdAt: 'stored_at',
-        tableName: 'plugin_data'
+        tableName: 'plugin_data',
+        indexes: [
+            {
+                type: 'UNIQUE',
+                name: 'plugin_data_IDX_plugin_id_key',
+                fields: ['plugin_id', 'key']
+            }
+        ]
     }
 );
+
+PluginData.getJSONData = async function (pluginId, key) {
+    const pluginDataItem = await PluginData.findOne({
+        attributes: ['data'],
+        where: {
+            plugin_id: pluginId,
+            key
+        },
+        order: [['stored_at', 'DESC']]
+    });
+    if (!pluginDataItem) {
+        return [];
+    }
+    return JSON.parse(pluginDataItem.data);
+};
 
 const Plugin = require('./Plugin');
 

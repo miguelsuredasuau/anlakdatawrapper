@@ -1,5 +1,5 @@
 <script>
-    import VisualizationBox from './VisualizationBox.svelte';
+    import DashboardVisualizationBox from './DashboardVisualizationBox.svelte';
     import { getContext } from 'svelte';
     const user = getContext('user');
 
@@ -15,7 +15,7 @@
     <div class="columns is-multiline is-mobile">
         {#each recentlyEdited as chart}
             <div class="column is-one-third-desktop is-half-tablet is-half-mobile">
-                <VisualizationBox {__} sortField="last_modified_at" {chart} />
+                <DashboardVisualizationBox {__} sortField="last_modified_at" {chart} />
             </div>
         {/each}
     </div>
@@ -27,7 +27,7 @@
     <div class="columns is-multiline is-mobile">
         {#each recentlyPublished as chart}
             <div class="column is-one-third-desktop is-half-tablet is-half-mobile">
-                <VisualizationBox {__} sortField="published_at" {chart} />
+                <DashboardVisualizationBox {__} sortField="published_at" {chart} />
             </div>
         {/each}
     </div>

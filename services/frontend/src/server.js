@@ -20,7 +20,7 @@ const { getUserLanguage } = require('./utils');
 const headerLinks = require('./utils/header-links');
 const settingsPages = require('./utils/settings-pages');
 const viewComponents = require('./utils/view-components');
-const createAPI = require('./utils/create-api');
+const { createAPI, waitForAPI } = require('./utils/create-api');
 const {
     SvelteView,
     getView,
@@ -203,6 +203,9 @@ const start = async () => {
 
     await server.register(require('./auth/dw-auth'));
     await server.register(require('./utils/features'));
+
+    await waitForAPI(server);
+
     await server.register([require('./routes')]);
     server.logger.info('loading plugins...');
     await server.register([require('./utils/plugin-loader')]);

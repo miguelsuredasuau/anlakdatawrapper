@@ -1087,5 +1087,7 @@
   "describe / revert / delete-rows / message": "",
   "team / invite / headline-no-team": "Dieser Einladungslink existiert nicht mehr.",
   "team / invite / intro-no-team": "Du kannst dennoch einen Account anlegen und Visualisierungen erstellen. Wähle ein Passwort um mit einem neuen Account fortzufahren:",
-  "team / invite / button-no-team": "Passwort setzen & anmelden"
+  "team / invite / button-no-team": "Passwort setzen & anmelden",
+  "previous": "Vorherige",
+  "next-page": "Nächste Seite"
 }

@@ -24,5 +24,10 @@ module.exports = {
     language: SQ.STRING(5),
     external_data: SQ.STRING(),
 
+    // The value of the 'keywords' column is set automatically by a TRIGGER; see
+    // 016-chart-title-index.sql. Therefore any changes you make to this column value using the ORM
+    // will be overwritten.
+    keywords: SQ.TEXT(),
+
     utf8: SQ.BOOLEAN
 };

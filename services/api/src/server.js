@@ -55,12 +55,6 @@ const host = config.api.subdomain
     ? `${config.api.subdomain}.${config.api.domain}`
     : config.api.domain;
 const scheme = config.frontend.https ? 'https' : 'http';
-const origin = `${scheme}://${host}`;
-const frontendOrigin = `${scheme}://${config.frontend.domain}`;
-const acceptedOrigins = new Set([origin, frontendOrigin]);
-if (config.plugins.river && config.plugins.river.subdomain) {
-    acceptedOrigins.add(`${scheme}://${config.plugins.river.subdomain}.${config.api.domain}`);
-}
 
 const port = config.api.port || 3000;
 

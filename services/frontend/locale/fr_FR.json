@@ -1087,5 +1087,7 @@
   "describe / revert / delete-rows / message": "",
   "team / invite / headline-no-team": "",
   "team / invite / intro-no-team": "",
-  "team / invite / button-no-team": ""
+  "team / invite / button-no-team": "",
+  "previous": "",
+  "next-page": ""
 }

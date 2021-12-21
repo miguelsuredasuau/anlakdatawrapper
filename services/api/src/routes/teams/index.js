@@ -39,10 +39,12 @@ module.exports = {
                             .description('Attribute to order by'),
                         limit: Joi.number()
                             .integer()
+                            .min(1)
                             .default(100)
                             .description('Maximum items to fetch. Useful for pagination.'),
                         offset: Joi.number()
                             .integer()
+                            .min(0)
                             .default(0)
                             .description('Number of items to skip. Useful for pagination.')
                     })

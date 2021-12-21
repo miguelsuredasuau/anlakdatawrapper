@@ -159,7 +159,7 @@ require_once ROOT_PATH . 'lib/utils/call_v3_api.php';
                 'embedType' => $embed_type,
                 'shareurlType' => $user->getUserData()['shareurl_type'] ?? 'default',
                 'pluginShareurls' => $display_urls,
-                'afterEmbed' => Hooks::execute(Hooks::SVELTE_PUBLISH_AFTER_EMBED),
+                'afterEmbed' => Hooks::execute(Hooks::SVELTE_PUBLISH_AFTER_EMBED, $chart),
                 'guest_text_above' => Hooks::execute(Hooks::PUBLISH_TEXT_GUEST_ABOVE),
                 'guest_text_below' => Hooks::execute(Hooks::PUBLISH_TEXT_GUEST_BELOW),
                 'redirectDisabled' => $redirectDisabled,

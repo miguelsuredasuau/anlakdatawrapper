@@ -44,11 +44,11 @@
 <span
     class="icon {className}"
     class:spin
-    style="vertical-align: {valign}; {size ? `font-size:${size};` : ''} {spin
+    style="vertical-align: {valign}; {spin
         ? `animation-duration:${duration};  animation-timing-function: ${timing};`
         : ''}"
 >
-    <svg class="svg-{icon}-dims" class:crisp>
+    <svg class="svg-{icon}-dims" class:crisp style={size ? `font-size:${size};` : ''}>
         <use
             style="fill: {color}"
             xlink:href="/lib/icons/symbol/svg/sprite.symbol.svg?v={iconsVersion}#{icon}"

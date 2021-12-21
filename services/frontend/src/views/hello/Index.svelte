@@ -14,16 +14,20 @@
     import ModalSection from './ModalSection.svelte';
 
     import CheckboxSection from './CheckboxSection.svelte';
+    import MarkdownInputSection from './MarkdownInputSection.svelte';
     import SetPasswordSection from './SetPasswordSection.svelte';
     import ProgressBarSection from './ProgressBarSection.svelte';
     import TitlesSection from './TitlesSection.svelte';
     import ContentSection from './ContentSection.svelte';
     import TableSection from './TableSection.svelte';
+    import FormFieldSection from './FormFieldSection.svelte';
     import FormsSection from './FormsSection.svelte';
     import SignUpSection from './SignUpSection.svelte';
     import DropdownSection from './DropdownSection.svelte';
     import Svelte2Section from './Svelte2Section.svelte';
     import ErrorsSection from './ErrorsSection.svelte';
+    import SearchInputSection from './SearchInputSection.svelte';
+    import TagsInputSection from './TagsInputSection.svelte';
 
     export let visualizations;
     export let magicNumber;
@@ -63,7 +67,9 @@
             title: 'Controls',
             pages: [
                 { url: '#checkbox', title: 'Checkbox' },
-                { url: '#setpassword', title: 'Set Password' }
+                { url: '#setpassword', title: 'Set Password' },
+                { url: '#search', title: 'Search Input' },
+                { url: '#tagsinput', title: 'Tags Input' }
             ]
         },
         {
@@ -73,6 +79,8 @@
                 { url: '#content', title: 'Content' },
                 { url: '#table', title: 'Table' },
                 { url: '#forms', title: 'Forms' },
+                { url: '#form-field', title: 'Form Field' },
+                { url: '#markdown-input', title: 'Markdown Input' },
                 { url: '#signup', title: 'Sign Up' }
             ]
         },
@@ -114,10 +122,14 @@
                     <ProgressBarSection />
                     <CheckboxSection />
                     <SetPasswordSection {__} />
+                    <SearchInputSection />
+                    <TagsInputSection />
                     <TitlesSection />
                     <ContentSection />
                     <TableSection {visualizations} />
                     <FormsSection />
+                    <FormFieldSection {__} />
+                    <MarkdownInputSection {__} />
                     <SignUpSection {__} />
                     <DropdownSection />
                     <Svelte2Section />

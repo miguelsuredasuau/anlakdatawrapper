@@ -7,8 +7,13 @@
 // Global Defaults
 
 :focus-visible {
-    outline-color: #ffb800;
+    outline-color: $dw-orange;
 }
+mark {
+    background-color: $dw-orange;
+}
+
+
 /*
  * BULMA
  */
@@ -86,13 +91,15 @@
 // Export as HTML Vars
 
 html {
-    --radius-small:  #{$radius-small};
-    --radius:  #{$radius};
-    --radius-large:  #{$radius-large};
+    --radius-small: #{$radius-small};
+    --radius: #{$radius};
+    --radius-large: #{$radius-large};
     --mobile: #{$tablet} - 1px;
     --tablet: #{$tablet};
     --touch: #{$desktop} - 1px;
     --desktop: #{$desktop};
     --widescreen: #{$widescreen};
     --fullhd: #{$fullhd};
-  }
+
+    scroll-padding-top: 20px;
+}

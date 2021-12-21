@@ -23,7 +23,7 @@ module.exports = {
         const validQueryParams = Joi.object({
             groupBy: Joi.string().valid('author', 'status').default(null),
             limit: Joi.number().min(1).max(200).default(96),
-            offset: Joi.number().default(0),
+            offset: Joi.number().min(0).default(0),
             search: Joi.string().allow('').default(''),
             order: Joi.string().valid('ASC', 'DESC').default('DESC'),
             minLastEditStep: Joi.number().integer().min(0).max(5).default(2),

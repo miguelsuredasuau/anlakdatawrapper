@@ -314,4 +314,16 @@ User.prototype.getActiveTeam = async function (session) {
     return teams[0];
 };
 
+User.prototype.getActiveTeamIds = async function () {
+    const UserTeam = require('./UserTeam');
+    const activeUserTeams = await UserTeam.findAll({
+        attributes: ['organization_id'],
+        where: {
+            user_id: this.id,
+            invite_token: ''
+        }
+    });
+    return activeUserTeams.map(userTeam => userTeam.organization_id);
+};
+
 module.exports = User;

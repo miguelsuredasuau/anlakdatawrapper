@@ -108,10 +108,12 @@ module.exports = async server => {
                 query: Joi.object({
                     limit: Joi.number()
                         .integer()
+                        .min(1)
                         .default(100)
                         .description('Maximum items to fetch. Useful for pagination.'),
                     offset: Joi.number()
                         .integer()
+                        .min(0)
                         .default(0)
                         .description('Number of items to skip. Useful for pagination.')
                 })

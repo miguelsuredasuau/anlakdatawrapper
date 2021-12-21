@@ -3,9 +3,10 @@ const createChart = require('@datawrapper/service-utils/createChart');
 const set = require('lodash/set');
 const { Op, QueryTypes, literal } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');
-const { Chart, User, Folder, Team, UserTeam } = require('@datawrapper/orm/models');
+const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
 const { chartListResponse, chartResponse } = require('../../schemas/response');
 const { prepareChart } = require('../../utils/index.js');
+const { runAndIgnoreParseErrors } = require('@datawrapper/orm/utils/run');
 const Boom = require('@hapi/boom');
 
 const authorIdFormats = [
@@ -76,10 +77,12 @@ module.exports = {
                             .description('Attribute to order by'),
                         limit: Joi.number()
                             .integer()
+                            .min(1)
                             .default(100)
                             .description('Maximum items to fetch. Useful for pagination.'),
                         offset: Joi.number()
                             .integer()
+                            .min(0)
                             .default(0)
                             .description('Number of items to skip. Useful for pagination.'),
                         minLastEditStep: Joi.number()
@@ -350,16 +353,10 @@ async function getAllCharts(request) {
     } else {
         // default, search through all my charts and team charts
         // no author or team filter, include all
-        const activeUserTeams = await UserTeam.findAll({
-            where: {
-                user_id: auth.artifacts.id,
-                invite_token: ''
-            }
-        });
         filters.push({
             [Op.or]: [
                 { author_id: auth.artifacts.id },
-                { organization_id: activeUserTeams.map(t => t.organization_id) }
+                { organization_id: await auth.artifacts.getActiveTeamIds() }
             ]
         });
     }
@@ -430,7 +427,9 @@ async function getAllCharts(request) {
         if (!query.search) {
             return Boom.notImplemented('Please filter the query by folderId, teamId or search');
         }
-        // count search results
+        // Count search results.
+        // Use `runAndIgnoreParseErrors()`, so that the query doesn't crash when the user-provided
+        // search string is not a valid MySQL full-text search string.
         const resultCount = await runAndIgnoreParseErrors(() =>
             Chart.count({ where: options.where })
         );
@@ -567,20 +566,4 @@ async function patchChartsHandler(request) {
         res.push(await prepareChart(chart));
     }
     return res;
-}
-
-/**
- * Run an SQL query function `func` and ignore any parse errors that happen during its execution.
- *
- * This is useful to ignore syntax errors in user-provided full-text search expressions.
- */
-async function runAndIgnoreParseErrors(func) {
-    try {
-        return await func();
-    } catch (ex) {
-        if (ex.original && ex.original.code === 'ER_PARSE_ERROR') {
-            return null;
-        }
-        throw ex;
-    }
 }

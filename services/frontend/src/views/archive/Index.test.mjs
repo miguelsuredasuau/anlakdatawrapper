@@ -1,15 +1,41 @@
-import { configure } from '@testing-library/svelte';
 import Index from './Index.svelte';
 import { tick } from 'svelte';
 import { loadLocales } from '../../test-utils/setup-locales.mjs';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
-import { renderWithContext } from '../../test-utils';
+import { renderWithContext, setConfig } from '../../test-utils';
+
+setConfig({ testIdAttribute: 'data-uid' });
+
 chai.use(chaiDom);
 
-configure({ testIdAttribute: 'data-uid' });
-
-const props = {};
+const props = {
+    apiQuery: {
+        groupBy: null,
+        limit: 96,
+        offset: 0,
+        search: '',
+        order: 'DESC',
+        minLastEditStep: 2,
+        orderBy: 'lastModifiedAt'
+    },
+    charts: { list: [], total: 0 },
+    teamId: undefined,
+    folderId: undefined,
+    folders: {
+        $user: {
+            id: null,
+            key: '$user',
+            teamId: null,
+            parentId: null,
+            name: 'My archive',
+            chartCount: 0
+        }
+    },
+    teams: [],
+    minLastEditStep: 2,
+    themeBgColors: {}
+};
 
 describe('archive', () => {
     before(async () => {
@@ -33,6 +59,7 @@ describe('archive', () => {
 
         beforeEach(async () => {
             renderResult = await renderWithContext(Index, {
+                ...props,
                 folders: {
                     $user: {
                         id: null,

@@ -31,7 +31,7 @@
     {/if}
 
     <!-- BEFORE EXPORT -->
-    <svelte:component this="{beforeExport}" />
+    <svelte:component this="{beforeExport}" data="{beforeExportData}" />
 
     <!-- EXPORT -->
     <div class="export-and-duplicate">
@@ -145,6 +145,7 @@
                 publishHed: '',
                 publishIntro: '',
                 beforeExport: null,
+                beforeExportData: {},
                 exportHed: __('publish / export-duplicate'),
                 exportIntro: __('publish / export-duplicate / intro'),
                 embedCode: '',

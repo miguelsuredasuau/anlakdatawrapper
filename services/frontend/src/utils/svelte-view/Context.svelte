@@ -1,6 +1,9 @@
 <script>
     import { setContext, getContext } from 'svelte';
     import { writable } from 'svelte/store';
+    import debounce from 'lodash/debounce';
+    import isEqual from 'lodash/isEqual';
+    import { httpReq, clone } from '@datawrapper/shared';
 
     import dayjs from 'dayjs';
     import relativeTime from 'dayjs/plugin/relativeTime';
@@ -37,8 +40,20 @@
     export let view;
 
     Object.keys(stores).forEach(key => {
-        const store = writable(stores[key]);
+        const store = writable(clone(stores[key]));
         if (key === 'messages') store.translate = translate;
+        if (key === 'userData' && typeof window !== 'undefined') {
+            store.subscribe(
+                debounce(async function (value) {
+                    if (!isEqual(value, stores[key])) {
+                        await httpReq.patch(`/v3/me/data`, {
+                            payload: value
+                        });
+                        stores[key] = value;
+                    }
+                }, 1000)
+            );
+        }
         setContext(key, store);
     });
 

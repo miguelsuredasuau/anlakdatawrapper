@@ -316,6 +316,12 @@
   font-weight: 700;
   src: local("Bitter Bold"), local("Bitter-Bold"), url("fonts/bitter/bitter_700.woff2") format("woff2"), url("fonts/bitter/bitter_700.woff") format("woff"), url("fonts/bitter/bitter_700.eot?#iefix") format("embedded-opentype"), url("fonts/bitter/bitter_700.svg#Bitter") format("svg"), url("fonts/bitter/bitter_700.ttf") format("truetype");
 }
+@font-face {
+  font-family: "Bitter";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Bitter"), local("Bitter"), url("fonts/bitter/bitter_400.woff2") format("woff2"), url("fonts/bitter/bitter_400.woff") format("woff"), url("fonts/bitter/bitter_400.eot?#iefix") format("embedded-opentype"), url("fonts/bitter/bitter_400.svg#Bitter") format("svg"), url("fonts/bitter/bitter_400.ttf") format("truetype");
+}
 /*
  * CUSTOM COLORS
  */
@@ -341,7 +347,11 @@ html {
 }
 
 :focus-visible {
-  outline-color: #ffb800;
+  outline-color: #FFB327;
+}
+
+mark {
+  background-color: #FFB327;
 }
 
 /*
@@ -2911,16 +2921,16 @@ a.tag:hover {
   color: #111111;
 }
 .select select::-moz-placeholder, .textarea::-moz-placeholder, .input::-moz-placeholder {
-  color: rgba(17, 17, 17, 0.3);
+  color: rgba(17, 17, 17, 0.45);
 }
 .select select::-webkit-input-placeholder, .textarea::-webkit-input-placeholder, .input::-webkit-input-placeholder {
-  color: rgba(17, 17, 17, 0.3);
+  color: rgba(17, 17, 17, 0.45);
 }
 .select select:-moz-placeholder, .textarea:-moz-placeholder, .input:-moz-placeholder {
-  color: rgba(17, 17, 17, 0.3);
+  color: rgba(17, 17, 17, 0.45);
 }
 .select select:-ms-input-placeholder, .textarea:-ms-input-placeholder, .input:-ms-input-placeholder {
-  color: rgba(17, 17, 17, 0.3);
+  color: rgba(17, 17, 17, 0.45);
 }
 .select select:hover, .textarea:hover, .input:hover, .select select.is-hovered, .is-hovered.textarea, .is-hovered.input {
   border-color: #c9c9c9;
@@ -4393,7 +4403,7 @@ button.dropdown-item.is-active {
   border-style: solid;
   border-width: 0 0 0 4px;
   color: #333333;
-  padding: 1.25em 1.5em;
+  padding: 1.25em 2.5em 1.25em 1.5em;
 }
 .message-body code,
 .message-body pre {
@@ -4433,7 +4443,7 @@ button.dropdown-item.is-active {
 .modal-card {
     margin: 0 auto;
     max-height: calc(100vh - 40px);
-    width: 1100px;
+    width: calc(100vw - 40px);
   }
 }
 
@@ -10193,14 +10203,6 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 /*
  * CUSTOMIZE BULMA
  */
-.select:not(.is-multiple):not(.is-loading)::after,
-.navbar-link:not(.is-arrowless)::after {
-  border-width: 2px;
-  border-radius: 0;
-  width: 0.5em;
-  height: 0.5em;
-}
-
 .button {
   font-weight: 500;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
@@ -10209,8 +10211,41 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   box-shadow: none;
 }
 
+.message.is-deletable .message-body {
+  position: relative;
+}
+.message.is-deletable .message-body > .delete {
+  position: absolute;
+  right: 0.5rem;
+  top: 0.5rem;
+}
+
+.modal .modal-content {
+  max-width: 1100px;
+}
+
 .help {
   line-height: 1.3;
+}
+
+.select:not(.is-multiple):not(.is-loading)::after,
+.navbar-link:not(.is-arrowless)::after {
+  border-width: 2px;
+  border-radius: 0;
+  width: 0.5em;
+  height: 0.5em;
+}
+
+.control .textarea {
+  line-height: 1.3;
+}
+.control.has-icons-left .icon, .control.has-icons-right .icon {
+  color: #a7a7a7;
+  width: 2.5em !important;
+  height: 2.5em !important;
+}
+.control.has-icons-left .icon svg {
+  font-size: 1.2em;
 }
 
 /*
@@ -10231,4 +10266,5 @@ html {
   --desktop: 1200px;
   --widescreen: 1400px;
   --fullhd: 1680px;
+  scroll-padding-top: 20px;
 }

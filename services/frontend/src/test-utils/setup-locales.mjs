@@ -3,9 +3,23 @@ import path from 'path';
 import fs from 'fs-extra';
 import { addScope, allScopes } from '@datawrapper/service-utils/l10n';
 
-export async function loadLocales() {
+/**
+ * loads locales so they are available in frontend tests.
+ * will always load the 'core' scope, scopes for plugins are
+ * loaded if the pluginId is given.
+ *
+ * @param rootPath path to code root
+ * @param pluginIds array of plugin ids to load translations for
+ */
+export async function loadLocales(rootPath = path.join(__dirname, '../../..'), pluginIds = []) {
+    await loadLocalesForScope('core', path.join(rootPath, 'services/frontend/locale'));
+    for (const pluginId of pluginIds) {
+        await loadLocalesForScope(pluginId, path.join(rootPath, `plugins/${pluginId}/locale`));
+    }
+}
+
+async function loadLocalesForScope(scope, localePath) {
     try {
-        const localePath = path.join(__dirname, '../locale');
         const localeFiles = await fs.readdir(localePath);
         const locales = {};
         for (let i = 0; i < localeFiles.length; i++) {
@@ -16,9 +30,9 @@ export async function loadLocales() {
                 );
             }
         }
-        addScope('core', locales);
+        addScope(scope, locales);
     } catch (e) {
-        console.error('error loading locales', e);
+        console.error('error loading locales for scope ' + scope, e);
     }
 }
 

@@ -16,7 +16,7 @@ test.after.always(async t => {
     await t.context.orm.db.close();
 });
 
-test('create a new ChartAccessToken', async t => {
+test('store plugin data', async t => {
     const { PluginData, plugin } = t.context;
     try {
         const res = await PluginData.create({
@@ -31,20 +31,22 @@ test('create a new ChartAccessToken', async t => {
         t.is(res.data, 'It works');
         t.true(res.stored_at instanceof Date);
 
-        // store another one
-        await PluginData.create({
-            plugin_id: plugin.id,
-            stored_at: new Date(),
-            key: 'orm-test',
-            data: 'It worked again'
+        t.throwsAsync(async () => {
+            // not allowed to store another one
+            // because of unique index
+            await PluginData.create({
+                plugin_id: plugin.id,
+                stored_at: new Date(),
+                key: 'orm-test',
+                data: 'It worked again'
+            });
         });
 
         // load plugin data
         const pd = await plugin.getPluginData();
-        t.is(pd.length, 2);
+        t.is(pd.length, 1);
         t.is(pd[0].key, 'orm-test');
         t.is(pd[0].plugin_id, plugin.id);
-        t.is(pd[1].plugin_id, plugin.id);
     } finally {
         await PluginData.destroy({ where: { key: 'orm-test' } });
     }

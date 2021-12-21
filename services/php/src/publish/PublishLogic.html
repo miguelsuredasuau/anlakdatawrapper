@@ -12,6 +12,7 @@
     {:else}
     <Publish
         {beforeExport}
+        {beforeExportData}
         {redirectDisabled}
         {embedTemplates}
         {embedType}
@@ -41,6 +42,7 @@
                 pluginShareurls: [],
                 shareurlType: 'default',
                 beforeExport: null,
+                beforeExportData: {},
                 guest_text_above: '',
                 guest_text_below: '',
                 redirectDisabled: false
@@ -53,7 +55,8 @@
                 Promise.all([loadStylesheet(p.css), loadScript(p.js)]).then(() => {
                     require([p.module], mod => {
                         this.set({
-                            beforeExport: mod.App
+                            beforeExport: mod.App,
+                            beforeExportData: p.data || {}
                         });
                     });
                 });

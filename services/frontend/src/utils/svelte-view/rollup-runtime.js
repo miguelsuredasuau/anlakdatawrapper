@@ -2,6 +2,7 @@
 
 const alias = require('@rollup/plugin-alias');
 const commonjs = require('@rollup/plugin-commonjs');
+const json = require('@rollup/plugin-json');
 const replace = require('@rollup/plugin-replace');
 const rollup = require('rollup');
 const svelte = require('rollup-plugin-svelte');
@@ -113,6 +114,7 @@ function buildOptions(page, ssr) {
                     _partials: join(__dirname, '../../views/_partials')
                 }
             }),
+            json(),
             svelte({
                 compilerOptions: {
                     dev: !production,

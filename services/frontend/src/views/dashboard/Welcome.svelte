@@ -31,7 +31,7 @@
             For inspiration for what to chart you can check out our <a
                 href="https://blog.datawrapper.de/category/weekly-charts/">Weekly charts</a
             >
-            and the <a href="https://river.datawrapper.de">Datawrapper River</a>.
+            and the <a href="/river">Datawrapper River</a>.
         </li>
     </ul>
 </div>

@@ -12,6 +12,7 @@ module.exports = async function (request) {
     const frontendConfig = server.methods.config('frontend');
     const generalConfig = server.methods.config('general');
     const userLang = server.methods.getUserLanguage(auth);
+    const userData = await getUserData(server, auth.artifacts.id);
 
     const context = {
         stores: {
@@ -52,6 +53,7 @@ module.exports = async function (request) {
                           isAdmin: false,
                           language: userLang
                       },
+            userData,
             messages: allScopes(userLang || 'en-US')
         },
         storeHashes: {},
@@ -72,6 +74,21 @@ module.exports = async function (request) {
     }
     return context;
 };
+
+async function getUserData(server, userId) {
+    const UserData = server.methods.getModel('user_data');
+    return (
+        await UserData.findAll({
+            attributes: ['key', 'value'],
+            where: {
+                user_id: userId
+            }
+        })
+    ).reduce((settings, row) => {
+        const value = row.get('value');
+        return { ...settings, [row.key]: value };
+    }, {});
+}
 
 function md5(string) {
     return crypto.createHash('md5').update(string).digest('hex');

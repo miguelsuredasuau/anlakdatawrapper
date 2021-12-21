@@ -13,7 +13,8 @@ ChartPublic.init(
         external_data: SQ.STRING(),
         first_published_at: SQ.DATE(),
         author_id: SQ.INTEGER(),
-        organization_id: SQ.STRING(128)
+        organization_id: SQ.STRING(128),
+        keywords: SQ.TEXT()
     },
     {
         sequelize: db,
@@ -24,5 +25,6 @@ ChartPublic.init(
 );
 
 ChartPublic.belongsTo(Chart, { foreignKey: 'id' });
+Chart.hasOne(ChartPublic, { foreignKey: 'id' });
 
 module.exports = ChartPublic;

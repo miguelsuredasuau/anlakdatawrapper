@@ -52,29 +52,7 @@
     });
 </script>
 
-<style lang="scss">
-    @import '../../styles/colors.scss';
-    .control {
-        :global(.icon) {
-            bottom: 0;
-            color: $dw-grey;
-        }
-    }
-</style>
-
-<div class="control has-icons-left">
+<div class="control has-icons-left" class:is-loading={$chartsLoading}>
     <input class="input" type="text" bind:value on:input={onInput} placeholder={__('Search')} />
-    {#if !$chartsLoading}
-        <IconDisplay icon="search" size="1.5em" className="is-left mx-2" />
-    {:else}
-        <IconDisplay
-            valign="middle"
-            icon="loading-spinner"
-            timing="steps(12)"
-            duration="1s"
-            spin
-            size="1.5em"
-            className="is-left mx-2 is-size-6 has-text-grey"
-        />
-    {/if}
+    <IconDisplay icon="search" size="18px" className="is-left" />
 </div>

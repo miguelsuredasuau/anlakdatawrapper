@@ -2,12 +2,16 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import multi from '@rollup/plugin-multi-entry';
 import svelte from 'rollup-plugin-svelte';
+import json from 'rollup-plugin-json';
 import { join } from 'path';
 import alias from '@rollup/plugin-alias';
 import sveltePreprocess from 'svelte-preprocess';
 
 export default {
-    input: 'src/**/*.test.*js',
+    input: {
+        include: ['src/**/*.test.*js'],
+        exclude: ['src/views/_plugins/**']
+    },
     output: {
         sourcemap: true,
         format: 'cjs',
@@ -16,6 +20,7 @@ export default {
     },
     plugins: [
         multi(),
+        json(),
         alias({
             entries: {
                 _layout: join(__dirname, 'src/views/_layout'),
