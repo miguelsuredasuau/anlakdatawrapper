@@ -26,7 +26,7 @@
     <textarea
         bind:this={refTextarea}
         bind:value
-        {ariaLabel}
+        aria-label={ariaLabel}
         class="textarea"
         placeholder={__('editor / notes / placeholder', 'river')}
         {style}

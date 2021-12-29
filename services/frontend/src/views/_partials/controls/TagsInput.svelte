@@ -62,7 +62,7 @@
         on:blur={onBlur}
         data-lpignore="true"
         autocomplete="off"
-        {ariaLabel}
+        aria-label={ariaLabel}
     />
     {#if tags.length}
         <div class="tags mt-2">
