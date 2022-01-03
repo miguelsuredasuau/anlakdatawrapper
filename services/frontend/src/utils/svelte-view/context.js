@@ -12,7 +12,10 @@ module.exports = async function (request) {
     const frontendConfig = server.methods.config('frontend');
     const generalConfig = server.methods.config('general');
     const userLang = server.methods.getUserLanguage(auth);
-    const userData = await getUserData(server, auth.artifacts.id);
+    const userData =
+        auth.isAuthenticated && auth.artifacts && auth.artifacts.id
+            ? await getUserData(server, auth.artifacts.id)
+            : {};
 
     const context = {
         stores: {
