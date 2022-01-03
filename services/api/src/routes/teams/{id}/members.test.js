@@ -372,6 +372,30 @@ test('admins can remove members, themselves but not owners', async t => {
     }
 });
 
+test('DELETE /teams/{id}/members/{id} removes a team member with no charts even if team has no owner', async t => {
+    let teamObj = {};
+    let userObj = {};
+    try {
+        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
+        userObj = await teamObj.addUser('admin');
+
+        const res = await t.context.server.inject({
+            method: 'DELETE',
+            url: `/v3/teams/${teamObj.team.id}/members/${teamObj.user.id}`,
+            auth: {
+                strategy: 'session',
+                credentials: userObj.session,
+                artifacts: userObj.user
+            },
+            headers: t.context.headers
+        });
+        /* check if api call was successful */
+        t.is(res.statusCode, 204);
+    } finally {
+        await destroy(...Object.values(userObj), ...Object.values(teamObj));
+    }
+});
+
 test('Datawrapper admins can not change their own role if they are the team owner', async t => {
     const { UserTeam } = require('@datawrapper/orm/models');
     let adminObj;

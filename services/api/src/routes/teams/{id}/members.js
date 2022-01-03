@@ -379,6 +379,12 @@ async function deleteTeamMember(request, h) {
         }
     });
 
+    if (!row) return Boom.notFound();
+
+    if (row.team_role === ROLE_OWNER) {
+        return Boom.unauthorized('Can not delete team owner.');
+    }
+
     const owner = await UserTeam.findOne({
         where: {
             team_role: ROLE_OWNER,
@@ -386,13 +392,19 @@ async function deleteTeamMember(request, h) {
         }
     });
 
-    if (!row) return Boom.notFound();
-
-    if (row.team_role === ROLE_OWNER) {
-        return Boom.unauthorized('Can not delete team owner.');
-    }
-
-    if (!owner) {
+    if (owner) {
+        await Chart.update(
+            {
+                author_id: owner.user_id
+            },
+            {
+                where: {
+                    author_id: params.userId,
+                    organization_id: params.id
+                }
+            }
+        );
+    } else {
         const chartCount = await Chart.count({
             where: {
                 author_id: params.userId,
@@ -406,18 +418,6 @@ async function deleteTeamMember(request, h) {
             );
         }
     }
-
-    await Chart.update(
-        {
-            author_id: owner.user_id
-        },
-        {
-            where: {
-                author_id: params.userId,
-                organization_id: params.id
-            }
-        }
-    );
 
     await row.destroy();
 
