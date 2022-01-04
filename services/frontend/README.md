@@ -16,7 +16,9 @@ Repository overview:
 
 ## Testing
 
-Execute tests with `npm test` or `npm run test`.
+We use [Mocha](https://mochajs.org/api/mocha) for frontend unit tests. Execute tests with `npm test` or `npm run test`. You can pass any [Mocha command line parameters](https://mochajs.org/#command-line-usage) to the test command. For example, to only run the tests for an specific component, you could use the `fgrep` option:
+
+`npm test -- --fgrep 'YourComponent'`
 
 Take a look at [src/views/archive/Index.test.js](src/views/archive/Index.svelte) for an example test setup. The example uses [@testing-library/svelte](https://testing-library.com/docs/svelte-testing-library/api/) and [chai-dom](https://www.chaijs.com/plugins/chai-dom/) to create and test the [src/views/archive/Index.svelte](src/views/archive/Index.svelte) component.
 

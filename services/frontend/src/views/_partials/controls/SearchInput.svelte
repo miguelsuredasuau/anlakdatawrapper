@@ -1,6 +1,6 @@
 <script>
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
-    import { createEventDispatcher, getContext } from 'svelte';
+    import { getContext } from 'svelte';
     import debounce from 'lodash/debounce';
 
     const messages = getContext('messages');
@@ -10,15 +10,14 @@
         __ = (key, scope = 'core') => messages.translate(key, scope, $messages);
     }
 
-    const dispatch = createEventDispatcher();
-
     export let value = '';
+    export let onInput;
 
     let isLoading = false;
 
-    const onInput = (() => {
+    const handleInput = (() => {
         const dispatchEvent = debounce(() => {
-            dispatch('search', {
+            onInput({
                 done() {
                     isLoading = false;
                 }
@@ -31,7 +30,7 @@
     })();
 </script>
 
-<div class="control has-icons-left" class:is-loading={isLoading}>
-    <input class="input" type="text" bind:value on:input={onInput} placeholder={__('Search')} />
+<div class="control has-icons-left" class:is-loading={isLoading} data-uid="search-input">
+    <input class="input" type="text" bind:value on:input={handleInput} placeholder={__('Search')} />
     <IconDisplay icon="search" className="is-left" size="20px" />
 </div>
