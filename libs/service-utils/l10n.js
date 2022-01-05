@@ -41,7 +41,14 @@ function addScope(scope, messages) {
 function translate(key, { scope = 'core', language = defaultLanguage }) {
     try {
         const messages = getScope(scope, language);
-        return messages[key] || key;
+        if (messages[key]) {
+            return messages[key];
+        }
+        if (process.env.DW_DEV_MODE) {
+            return 'MISSING ' + key;
+        }
+        const fallback = getScope(scope, defaultLanguage);
+        return fallback[key] || key;
     } catch (e) {
         return key;
     }
@@ -56,7 +63,7 @@ function allScopes(locale = defaultLanguage) {
             const fallback = getScope(scope, defaultLanguage);
             Object.keys(out[scope]).forEach(key => {
                 if (!out[scope][key] && fallback[key]) {
-                    out[scope][key] = fallback[key];
+                    out[scope][key] = process.env.DW_DEV_MODE ? 'MISSING ' + key : fallback[key];
                 }
             });
         }
