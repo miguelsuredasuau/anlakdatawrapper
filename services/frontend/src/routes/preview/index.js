@@ -106,7 +106,7 @@ module.exports = {
 
                 const { html, head } = chartCore.svelte.render(props);
 
-                return h.view('preview.pug', {
+                const response = h.view('preview.pug', {
                     __DW_SVELTE_PROPS__: jsesc(JSON.stringify(props), {
                         isScriptContext: true,
                         json: true,
@@ -127,6 +127,8 @@ module.exports = {
                         `vis-${get(props.visualization, 'id')}`
                     ]
                 });
+                response.header('X-Robots-Tag', 'noindex, nofollow');
+                return response;
             }
         });
     }
