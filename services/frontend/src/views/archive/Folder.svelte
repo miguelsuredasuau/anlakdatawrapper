@@ -41,7 +41,7 @@
     let open = false;
     let _open = open;
 
-    $: isCurrent = $currentFolder.path === folder.path;
+    $: isCurrent = $currentFolder.key === folder.key;
     $: hasChildren = folder.children && folder.children.length;
     $: isSharedFolder = !!folder.teamId;
 
