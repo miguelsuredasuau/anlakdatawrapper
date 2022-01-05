@@ -277,14 +277,24 @@ module.exports = {
                         user = await User.findOne({ where: { oauth_signin: oAuthSignin } });
 
                         if (!user) {
-                            // create new user
+                            // check if we already have a user in this team with the same email
+                            user = await User.findOne({ where: { email: profile.email } });
 
-                            user = await User.create({
-                                role: 'editor',
-                                email: profile.email || '',
-                                pwd: '',
-                                oauth_signin: oAuthSignin
-                            });
+                            if (user && (await user.hasActivatedTeam(state.team))) {
+                                // in that case, make this user use SSO instead
+                                user.oauth_signin = oAuthSignin;
+                                user.role = 'editor';
+                                user.pwd = '';
+                                await user.save();
+                            } else {
+                                // else, create new user
+                                user = await User.create({
+                                    role: 'editor',
+                                    email: profile.email || '',
+                                    pwd: '',
+                                    oauth_signin: oAuthSignin
+                                });
+                            }
                         }
                     }
 
