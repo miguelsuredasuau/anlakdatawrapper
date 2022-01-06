@@ -6372,7 +6372,7 @@ Please make sure you called __(key) with a key of type "string".
           delete obj.title;
         }
 
-        Object.assign(chart.metadata, obj);
+        chart.metadata = cjs(chart.metadata, obj);
         chart = chart;
       } catch {
         console.warn("Invalid external metadata JSON, falling back on chart metadata");
