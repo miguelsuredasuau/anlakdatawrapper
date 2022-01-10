@@ -482,8 +482,8 @@
   "Confirm": "Confirm",
   "customize colors...": "customize colors...",
   "Customize colors...": "Customize colors...",
-  "controls / color-category / color": "Color:",
-  "controls / color-category / text": "Text:",
+  "controls / color-category / color": "Color",
+  "controls / color-category / text": "Text",
   "controls / color / customize-colors / info": "Please select an element on the left to change colors for individual elements...",
   "controls / color / reset-all-colors": "Reset all colors",
   "controls / color / reset-all": "Reset all",
@@ -1089,5 +1089,6 @@
   "team / invite / intro-no-team": "You can still sign up and start creating visualizations though, if you like. Choose a password to confirm your new user account:",
   "team / invite / button-no-team": "Set password & sign in",
   "previous": "Previous",
-  "next-page": "Next page"
+  "next-page": "Next page",
+  "controls / color-category / include-in-key": "Include in key"
 }

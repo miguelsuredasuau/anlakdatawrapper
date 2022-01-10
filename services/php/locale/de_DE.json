@@ -482,8 +482,8 @@
   "Confirm": "Bestätigen",
   "customize colors...": "Farben verändern",
   "Customize colors...": "Farben verändern",
-  "controls / color-category / color": "Farbe:",
-  "controls / color-category / text": "Text:",
+  "controls / color-category / color": "Farbe",
+  "controls / color-category / text": "Text",
   "controls / color / customize-colors / info": "Wähle links ein Element aus, um dessen Farbe zu verändern.",
   "controls / color / reset-all-colors": "Alle zurücksetzen",
   "controls / color / reset-all": "Alle zurücksetzen",
@@ -1089,5 +1089,6 @@
   "team / invite / intro-no-team": "Du kannst dennoch einen Account anlegen und Visualisierungen erstellen. Wähle ein Passwort um mit einem neuen Account fortzufahren:",
   "team / invite / button-no-team": "Passwort setzen & anmelden",
   "previous": "Vorherige",
-  "next-page": "Nächste Seite"
+  "next-page": "Nächste Seite",
+  "controls / color-category / include-in-key": "In Legende anzeigen"
 }

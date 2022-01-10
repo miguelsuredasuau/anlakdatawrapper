@@ -26,27 +26,36 @@
     </div>
     <div class="column">
         {#if selection.length}
-        <div class="well" style="margin-bottom: 5px; padding: 9px">
-            <div style="margin-bottom: 5px">
-                <label>{__('controls / color-category / color')}</label>
+        <div class="mb-2">
+            <ControlGroup label="{__('controls / color-category / color')}" labelWidth="auto">
                 <ColorPickerInput
                     on:change="handleColorPickerChange(event)"
                     bind:color="activeColor"
                 />
-            </div>
-            {#if allowLabeling}
-            <label
-                >{__('controls / color-category / text')}
-                <input
-                    bind:value="selectionLabel"
-                    type="text"
-                    style="width: 93%"
-                    placeholder="{selection[0]}"
-            /></label>
-            {/if}
-            <button on:click="handleCloseClick()" class="btn btn-small">{__('Close')}</button>
-            <button on:click="handleResetClick()" class="btn btn-small">{__('Reset')}</button>
+            </ControlGroup>
         </div>
+
+        <!-- Change label: -->
+        {#if allowLabeling}
+        <input
+            class="label-input"
+            bind:value="selectionLabel"
+            type="text"
+            placeholder="{selection[0]}"
+            aria-label="{__('controls / color-category / text')}"
+        />
+        {/if}
+
+        <!-- Show in color key: -->
+        {#if allowExcludeFromKey}
+        <CheckboxControl
+            label="{__('controls / color-category / include-in-key')}"
+            bind:value="selectionIncludeInKey"
+        />
+        {/if}
+
+        <button on:click="handleCloseClick()" class="btn btn-small mt-2">{__('Close')}</button>
+        <button on:click="handleResetClick()" class="btn btn-small mt-2">{__('Reset')}</button>
         {:else}
         <p class="mini-help" style="margin-top: 5px">
             {__('controls / color-category / select-one-or-more'+(allowLabeling?'-w-label':''))}
@@ -55,7 +64,6 @@
         <button on:click="handleResetAllClick()" class="btn btn-small">
             {__('controls / color / reset-all')}
         </button>
-
         {/if}
     </div>
 </div>
@@ -65,24 +73,34 @@
     import ListInput from './ListInput.html';
     import ColorPickerInput from './ColorPickerInput.html';
     import ColorListItem from './ColorListItem.html';
+    import ControlGroup from './ControlGroup.html';
+    import CheckboxControl from './CheckboxControl.html';
     import { __ } from '@datawrapper/shared/l10n';
 
     export default {
-        components: { ListInput, ColorPickerInput },
+        components: {
+            CheckboxControl,
+            ColorPickerInput,
+            ControlGroup,
+            ListInput
+        },
         data() {
             return {
                 draggable: true,
                 allowLabeling: true,
+                allowExcludeFromKey: false,
                 palette: [],
                 baseColor: '#cccccc',
                 activeColor: false,
                 values: [],
                 selection: [],
                 selectionLabel: '',
+                selectionIncludeInKey: '',
                 value: {
                     map: {},
                     categoryOrder: [],
-                    categoryLabels: {}
+                    categoryLabels: {},
+                    excludeFromKey: []
                 },
                 uid: ''
             };
@@ -99,12 +117,12 @@
             },
             swatches({
                 allowLabeling,
-                uniqueValues,
-                value,
-                palette,
-                categoryOrder,
+                baseColor,
                 categoryLabels,
-                baseColor
+                categoryOrder,
+                palette,
+                uniqueValues,
+                value
             }) {
                 let paletteUsed = 0;
                 // sort by categoryOrder
@@ -150,6 +168,7 @@
                 selection.forEach(sel => {
                     delete value.map[sel];
                     delete value.categoryLabels[sel];
+                    value.excludeFromKey = value.excludeFromKey.filter(key => key !== sel);
                 });
                 this.set({ value, selection: [] });
             },
@@ -158,6 +177,7 @@
                 value.map = {};
                 value.categoryOrder = [];
                 value.categoryLabels = {};
+                value.excludeFromKey = [];
                 this.set({ value, selection: [] });
             },
             handleColorPickerChange(color) {
@@ -174,30 +194,35 @@
             }
         },
         onstate({ changed, current }) {
-            if (changed.selection && current.selection.length) {
+            const { value, selection, selectionIncludeInKey } = current;
+            if (changed.selection && selection.length) {
                 this.set({
-                    activeColor: current.value.map[current.selection[0]] || false,
-                    selectionLabel: current.categoryLabels[current.selection[0]] || ''
+                    activeColor: value.map[selection[0]] || false,
+                    selectionLabel: current.categoryLabels[selection[0]] || '',
+                    selectionIncludeInKey: !value.excludeFromKey.includes(selection[0])
                 });
             }
-            if (changed.selectionLabel && current.selection.length) {
-                current.selection.forEach(id => {
-                    current.value.categoryLabels[id] = current.selectionLabel;
+            if (changed.selectionLabel && selection.length) {
+                selection.forEach(id => {
+                    value.categoryLabels[id] = current.selectionLabel;
                 });
-                this.set({ value: current.value });
+                this.set({ value });
+            }
+            if (changed.selectionIncludeInKey && selection.length) {
+                value.excludeFromKey = value.excludeFromKey || [];
+                selection.forEach(id => {
+                    value.excludeFromKey = value.excludeFromKey.filter(key => key !== id);
+                    if (!selectionIncludeInKey) value.excludeFromKey.push(id);
+                });
+                this.set({ value });
             }
         }
     };
 </script>
 
 <style>
-    .well label {
-        color: #555;
-        font-size: 11px;
-        text-transform: uppercase;
-        display: inline-block;
-        vertical-align: top;
-        margin-right: 10px;
+    .label-input {
+        width: 100%;
     }
 
     .column {

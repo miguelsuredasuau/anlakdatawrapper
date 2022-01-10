@@ -482,8 +482,8 @@
   "Confirm": "Confirmar",
   "customize colors...": "personalizar colores...",
   "Customize colors...": "Personalizar colores...",
-  "controls / color-category / color": "Color:",
-  "controls / color-category / text": "Texto:",
+  "controls / color-category / color": "Color",
+  "controls / color-category / text": "Texto",
   "controls / color / customize-colors / info": "Selecciona un elemento de la izquierda para cambiar los colores de los elementos individuales...",
   "controls / color / reset-all-colors": "Restablecer todos los colores",
   "controls / color / reset-all": "Restablecer todo",
@@ -1089,5 +1089,6 @@
   "team / invite / intro-no-team": "",
   "team / invite / button-no-team": "",
   "previous": "",
-  "next-page": ""
+  "next-page": "",
+  "controls / color-category / include-in-key": ""
 }

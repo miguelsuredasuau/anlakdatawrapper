@@ -482,8 +482,8 @@
   "Confirm": "确认",
   "customize colors...": "自定义颜色……",
   "Customize colors...": "自定义颜色……",
-  "controls / color-category / color": "颜色：",
-  "controls / color-category / text": "文本：",
+  "controls / color-category / color": "颜色",
+  "controls / color-category / text": "文本",
   "controls / color / customize-colors / info": "请选择左侧的元素以更改各个元素的颜色……",
   "controls / color / reset-all-colors": "重置所有颜色",
   "controls / color / reset-all": "重置所有",
@@ -1089,5 +1089,6 @@
   "team / invite / intro-no-team": "",
   "team / invite / button-no-team": "",
   "previous": "",
-  "next-page": ""
+  "next-page": "",
+  "controls / color-category / include-in-key": ""
 }

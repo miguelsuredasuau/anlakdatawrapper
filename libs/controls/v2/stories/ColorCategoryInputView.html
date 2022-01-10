@@ -8,6 +8,16 @@
     values="{column ? column.values() : []}"
 />
 
+<p>Allow excluding items from color key:</p>
+
+<ColorCategoryInput
+    baseColor="{usePalette ? '#cccccc' : '#18a1cd'}"
+    palette="{usePalette ? $themeData.colors.categories[0] : []}"
+    bind:value
+    values="{column ? column.values() : []}"
+    allowExcludeFromKey
+/>
+
 <p>Non-draggable items:</p>
 
 <ColorCategoryInput
@@ -89,7 +99,8 @@
                     map: { CDU: '#222222', SPD: '#dd0000' },
                     palette: [],
                     categoryOrder: ['CDU', 'SPD'],
-                    categoryLabels: { CDU: 'CDU/CSU' }
+                    categoryLabels: { CDU: 'CDU/CSU' },
+                    excludeFromKey: ['SPD', 'AFD (sogenannte "Alternative für Deutschland")']
                 }
             };
         },
