@@ -25,7 +25,7 @@
     };
 
     $: niceHed = message || __(heds[statusCode] || 'error / unexpected / hed');
-    $: niceText = data?.text || __(texts[statusCode] || 'error / unexpected / text');
+    $: niceText = (data && data.text) || __(texts[statusCode] || 'error / unexpected / text');
 
     export let __;
 </script>

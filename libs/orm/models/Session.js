@@ -200,7 +200,7 @@ function phpUnserialize(data) {
     //   example 3: unserialize('a:3:{s:2:"ü";s:2:"ü";s:3:"四";s:3:"四";s:4:"𠜎";s:4:"𠜎";}')
     //   returns 3: {'ü': 'ü', '四': '四', '𠜎': '𠜎'}
 
-    var $global = typeof window !== 'undefined' ? window : global;
+    var $global = typeof window !== 'undefined' ? window : global; // eslint-disable-line
 
     var utf8Overhead = function (str) {
         var s = str.length;

@@ -6374,7 +6374,7 @@ Please make sure you called __(key) with a key of type "string".
 
         chart.metadata = cjs(chart.metadata, obj);
         chart = chart;
-      } catch {
+      } catch (e) {
         console.warn("Invalid external metadata JSON, falling back on chart metadata");
       }
     } // initialize dw.chart object

@@ -377,10 +377,11 @@
             let resizeObserver;
 
             try {
-                resizeObserver = new ResizeObserver(makePreviewSticky);
+                resizeObserver = new ResizeObserver(makePreviewSticky); // eslint-disable-line
                 resizeObserver.observe(document.body);
-                // eslint-disable-next-line
-            } catch (ex) {}
+            } catch (ex) {
+                // do nothing when the browser doesn't support ResizeObserver
+            }
 
             // remove event handler when this component is destroyed:
             this.on('destroy', () => {
