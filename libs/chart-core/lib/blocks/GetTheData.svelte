@@ -11,15 +11,13 @@
 
     $: externalData = get(dwChart, 'externalData');
     $: caption = get(theme, 'data.options.blocks.get-the-data.data.caption', __('Get the data'));
-    $: filename = get(
-        theme,
-        'data.options.blocks.get-the-data.data.filename',
-        'data-%chart_id%.csv'
-    )
-        .replace(/%custom_(.*?)%/g, (match, key) => {
-            return get(chart, `metadata.custom.${key}`, '');
-        })
-        .replace(/%chart_id%/g, chart.id);
+    $: defaultFilename = `data-${chart.id}.csv`;
+    $: filename =
+        get(theme, 'data.options.blocks.get-the-data.data.filename', '')
+            .replace(/%custom_(.*?)%/g, (match, key) => {
+                return get(chart, `metadata.custom.${key}`, '');
+            })
+            .replace(/%chart_id%/g, chart.id) || defaultFilename;
 
     $: {
         // update data link to point to edited dataset

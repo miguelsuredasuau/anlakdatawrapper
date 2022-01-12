@@ -363,9 +363,10 @@ const GetTheData = create_ssr_component(($$result, $$props, $$bindings, $$slots)
   } = props;
   let externalData = get(dwChart, "externalData");
   let caption = get(theme, "data.options.blocks.get-the-data.data.caption", __("Get the data"));
-  let filename = get(theme, "data.options.blocks.get-the-data.data.filename", "data-%chart_id%.csv").replace(/%custom_(.*?)%/g, (match, key) => {
+  let defaultFilename = `data-${chart.id}.csv`;
+  let filename = get(theme, "data.options.blocks.get-the-data.data.filename", "").replace(/%custom_(.*?)%/g, (match, key) => {
     return get(chart, `metadata.custom.${key}`, "");
-  }).replace(/%chart_id%/g, chart.id);
+  }).replace(/%chart_id%/g, chart.id) || defaultFilename;
 
    {
     {
