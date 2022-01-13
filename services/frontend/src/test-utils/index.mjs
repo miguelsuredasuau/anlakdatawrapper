@@ -44,7 +44,7 @@ export async function renderWithContext(view, props = {}, stores = {}) {
     // load locales again, in case the test loaded
     // additional plugin locales
     defaultStores.messages = getLocale();
-    return render(Context, {
+    const context = render(Context, {
         props: {
             stores: {
                 ...defaultStores,
@@ -54,4 +54,6 @@ export async function renderWithContext(view, props = {}, stores = {}) {
             ...props
         }
     });
+
+    return { ...context, component: context.component.ref };
 }

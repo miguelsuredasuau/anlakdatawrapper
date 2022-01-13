@@ -16,6 +16,8 @@
     let isLoading = false;
 
     const handleInput = (() => {
+        if (!onInput) return;
+
         const dispatchEvent = debounce(() => {
             onInput({
                 done() {

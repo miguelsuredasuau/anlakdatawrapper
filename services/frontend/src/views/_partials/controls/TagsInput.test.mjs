@@ -1,8 +1,11 @@
+/* eslint-disable no-unused-expressions */
+
 import TagsInput from './TagsInput.svelte';
 import { fireEvent } from '@testing-library/svelte';
 import { renderWithContext, setConfig } from '../../../test-utils';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
+import sinon from 'sinon';
 import { tick } from 'svelte';
 
 setConfig({ testIdAttribute: 'data-uid' });
@@ -74,24 +77,32 @@ describe('TagsInput', () => {
 
     describe('when the user adds a tag', function () {
         let result;
+        let input;
         const tags = ['apple', 'banana'];
+        const onChange = sinon.spy();
 
         beforeEach(async () => {
             result = await renderWithContext(TagsInput, { uid: 'test', tags });
+            result.component.$on('change', onChange);
+            input = result.getByTestId('test').querySelector('input');
+            await fireEvent.focus(input);
+            await fireEvent.input(input, { target: { value: 'apple, banana,lemon' } });
         });
 
         it('the new tags shows up in input and tags div', async () => {
-            const input = result.getByTestId('test').querySelector('input');
-            expect(input).to.exist;
-            await fireEvent.focus(input);
-            await fireEvent.input(input, { target: { value: 'apple, banana,lemon' } });
             expect(input).to.have.value('apple, banana,lemon');
-            // check if input gets re-serialized on blur
-            await fireEvent.blur(input);
-            expect(input).to.have.value('apple, banana, lemon');
             const tagsDiv = result.getByTestId('test').querySelector('.tags');
             expect(tagsDiv).to.exist;
             expect(tagsDiv).to.have.length(3);
+        });
+
+        it('the input gets re-serialized on blur', async () => {
+            await fireEvent.blur(input);
+            expect(input).to.have.value('apple, banana, lemon');
+        });
+
+        it('a change event is fired', async () => {
+            expect(onChange.called).to.equal(true);
         });
     });
 

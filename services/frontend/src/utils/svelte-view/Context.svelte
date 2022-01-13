@@ -38,6 +38,7 @@
     setContext('libraries', { dayjs });
 
     export let view;
+    export let ref;
 
     Object.keys(stores).forEach(key => {
         const store = writable(clone(stores[key]));
@@ -75,4 +76,4 @@
     }
 </script>
 
-<svelte:component this={view} {__} {...$$restProps} />
+<svelte:component this={view} bind:this={ref} {__} {...$$restProps} />
