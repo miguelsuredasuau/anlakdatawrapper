@@ -88,6 +88,8 @@
             return {
                 auto: false,
                 axis: false,
+                allowEmpty: false,
+                emptyOptionLabel: null,
                 value: '',
                 custom: '',
                 selected: null,
@@ -122,7 +124,7 @@
                 const colname = typeof colids === 'object' ? colids[0] : colids;
                 return $dataset.hasColumn(colname) ? $dataset.column(colname) : null;
             },
-            options({ columnType, $teamSettings, auto }) {
+            options({ columnType, $teamSettings, auto, allowEmpty, emptyOptionLabel }) {
                 const teamCustomFormats = get(
                     $teamSettings || {},
                     `controls.customFormats.${columnType}`,
@@ -139,6 +141,12 @@
                     formatOptions.unshift({
                         value: 'auto',
                         label: __('controls / custom-format / auto', 'core')
+                    });
+                }
+                if (allowEmpty) {
+                    formatOptions.unshift({
+                        value: null,
+                        label: emptyOptionLabel || __('controls / custom-format / empty', 'core')
                     });
                 }
                 formatOptions.push({
@@ -164,7 +172,7 @@
 
         onstate({ changed, previous, current: { selected, custom, value, options } }) {
             // watch external value changes
-            if (changed.value && value && previous) {
+            if (changed.value && value !== undefined && previous) {
                 const selectedOption = options.find(o => o.value === value);
                 if (selectedOption) {
                     this.set({ selected: value, custom: '' });
@@ -174,7 +182,7 @@
             }
 
             // watch select changes
-            if (changed.selected && selected && previous) {
+            if (changed.selected && selected !== undefined && previous) {
                 this.set({ value: selected !== 'custom' ? selected : custom + ' ' });
             }
 

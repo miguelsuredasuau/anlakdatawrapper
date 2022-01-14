@@ -93,6 +93,16 @@ test("Add and select an 'auto' option", t => {
     t.is(t.context.find('select').val(), 'auto');
 });
 
+test("Add and select an optional 'empty' option", t => {
+    new CustomFormatControl({
+        target: t.context[0],
+        data: { value: null, allowEmpty: true, emptyOptionLabel: 'Empty' },
+        store
+    });
+    t.is(t.context.find('option[value=null]').text(), 'Empty');
+    t.is(t.context.find('select').val(), 'null');
+});
+
 test('When disabled, select element is disabled', t => {
     new CustomFormatControl({
         target: t.context[0],
