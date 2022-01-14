@@ -209,6 +209,7 @@
                         action() {
                             const colors = window
                                 .prompt(__('controls / gradient-editor / import / text', 'core'))
+                                .trim()
                                 .split(/[, ]+/);
                             app.select(colors);
                         }
