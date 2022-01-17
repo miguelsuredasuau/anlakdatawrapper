@@ -7,6 +7,7 @@
 
     export let ariaLabel = null;
     export let style = null;
+    export let uid = null;
 
     let html = snarkdown(value);
     let opened = true;
@@ -22,7 +23,7 @@
     }
 </script>
 
-<div class="mb-2" style="position: relative" on:input>
+<div class="mb-2" style="position: relative" on:input data-uid={uid}>
     <textarea
         bind:this={refTextarea}
         bind:value

@@ -1,6 +1,6 @@
 <script>
     export let color = '#333333';
-    export let width;
+    export let width = null;
 </script>
 
 <style>

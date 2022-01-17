@@ -11,7 +11,7 @@
         }
     }
 
-    export let maxWidth;
+    export let maxWidth = null;
 </script>
 
 {#if open}
