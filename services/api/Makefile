@@ -13,6 +13,11 @@ test: | test-setup  ## Run unit tests
 test-coverage: | test-setup  ## Run unit tests with coverage report
 	$(MAKE) test-run cmd="sh -c 'cd \"/app/$(test_dir)\" && npm run test:coverage -- -m \"$(m)\"'"
 
+.PHONY: test-plugins
+test-plugins: | test-setup  ## Run unit tests including all plugins
+	export DW_CONFIG_PATH=/app/services/api/test/config-plugins.docker.js; \
+	$(MAKE) test-run cmd="sh -c 'cd \"/app/services/api\" && npm run test:plugins -- -m \"$(m)\"'"
+
 .PHONY: test-setup
 test-setup:  ## Create the testing database if it isn't running
 	[[ -n $$($(docker_compose) ps --services --filter status=running mysql) ]] || \

@@ -5,7 +5,8 @@
     "keywords": [],
     "author": "Datawrapper GmbH",
     "scripts": {
-        "test": "DW_CONFIG_PATH=${DW_CONFIG_PATH-src/tests/config.local.cjs} ava --verbose",
+        "test": "npm run test:api --",
+        "test:api": "DW_CONFIG_PATH=${DW_CONFIG_PATH-src/tests/config.local.cjs} ava --verbose",
         "test:coverage": "DW_CONFIG_PATH=${DW_CONFIG_PATH-src/tests/config.local.cjs} nyc --reporter=html --reporter=text ava --verbose",
         "lint": "cd ../.. && scripts/lint plugins/api-v1",
         "format": "cd ../.. && scripts/format plugins/api-v1"
