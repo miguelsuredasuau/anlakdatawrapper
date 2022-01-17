@@ -114,7 +114,7 @@ test('GET /folders/{id} does not return deleted charts', async t => {
         folder = await createFolder({ user_id: t.context.teamObj.user.id });
         charts = await createCharts([
             {
-                id: randomId(),
+                id: genRandomChartId(),
                 title: 'Chart 1',
                 theme: 'theme1',
                 type: 'bar',
@@ -123,7 +123,7 @@ test('GET /folders/{id} does not return deleted charts', async t => {
                 in_folder: folder.id
             },
             {
-                id: randomId(),
+                id: genRandomChartId(),
                 title: 'Chart 2',
                 theme: 'theme1',
                 type: 'bar',
