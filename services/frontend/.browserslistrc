@@ -1,0 +1,6 @@
+> 0.2%
+chrome >= 77
+not android > 0
+not dead
+not ie > 0
+not op_mini all
