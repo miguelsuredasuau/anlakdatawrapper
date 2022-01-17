@@ -1,5 +1,5 @@
 const { customAlphabet } = require('nanoid');
-const { camelizeKeys } = require('humps');
+const { camelize } = require('humps');
 const Boom = require('@hapi/boom');
 const path = require('path');
 const jsesc = require('jsesc');
@@ -10,6 +10,18 @@ const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
 const utils = {};
 
+utils.camelizeTopLevelKeys = obj => {
+    // Taken from humps library, see here:
+    // https://github.com/domchristie/humps/blob/d612998749922a76c68d4d9c8b5ae93f02595019/humps.js#L29-L34
+    const outputObj = {};
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            outputObj[camelize(key)] = obj[key];
+        }
+    }
+    return outputObj;
+};
+
 utils.prepareChart = async (chart, additionalData = {}) => {
     const { user, in_folder, ...dataValues } = chart.dataValues;
 
@@ -17,11 +29,11 @@ utils.prepareChart = async (chart, additionalData = {}) => {
         typeof chart.getPublicId === 'function' ? await chart.getPublicId() : undefined;
 
     return {
-        ...camelizeKeys(additionalData),
+        ...utils.camelizeTopLevelKeys(additionalData),
         publicId,
         language: 'en_US',
         theme: 'datawrapper',
-        ...camelizeKeys(dataValues),
+        ...utils.camelizeTopLevelKeys(dataValues),
         folderId: in_folder,
         metadata: dataValues.metadata,
         author: user ? { name: user.name, email: user.email } : undefined,
