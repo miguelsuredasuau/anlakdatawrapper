@@ -1,0 +1,48 @@
+<h3>Default (with Body)</h3>
+
+<TemplateStringEditor variables="{variables}" bind:value="withBody" />
+
+<h4>Value:</h4>
+<pre>
+{JSON.stringify(withBody, null, 4)}
+</pre>
+<hr style="margin-top: 20px" />
+
+<h3>Without body</h3>
+
+<TemplateStringEditor variables="{variables}" bind:value="withoutBody" disableBody="{true}" />
+
+<h4>Value:</h4>
+<pre>
+{JSON.stringify(withoutBody, null, 4)}
+</pre>
+<hr style="margin-top: 20px" />
+<script>
+    import TemplateStringEditor from '../TemplateStringEditor.html';
+
+    const variables = [
+        { label: 'Country Name', name: 'country_name', value: 'germany', type: 'text' },
+        { label: 'Continent', name: 'continent', value: 'Europe', type: 'text' },
+        { label: 'Population', name: 'population', value: 80716000, type: 'number' },
+        { label: 'Pop. density', name: 'pop_density', value: 226, type: 'number' },
+        { label: 'Date', name: 'date', value: '2019-01-01', type: 'date' }
+    ];
+    export default {
+        components: { TemplateStringEditor },
+        data() {
+            return {
+                withBody: {
+                    title: '',
+                    body: 'The big advantage of line charts is that they enable the comparison of slopes, which is not easily possible in a bar {{ population }}, for instance. The problem, however, is that the perceivable slopes are highly dependent on the aspect ratio of the chart. The Facebook stock data would have looked much more dramatic in a taller chart. So which aspect ratio to chose? Some years ago, William Cleveland suggested a technique called banking to solve this problem.The core idea is that the slopes in a line chart are most readable if they average t'
+                },
+                withoutBody: {
+                    title: '{{ population }}',
+                    body: ''
+                }
+            };
+        },
+        helpers: {
+            variables
+        }
+    };
+</script>

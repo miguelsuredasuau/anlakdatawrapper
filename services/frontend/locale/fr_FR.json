@@ -1090,5 +1090,8 @@
   "team / invite / button-no-team": "",
   "previous": "",
   "next-page": "",
-  "controls / color-category / include-in-key": ""
+  "controls / color-category / include-in-key": "",
+  "controls / template-string-editor / title-placeholder": "",
+  "controls / template-string-editor / body-placeholder": "",
+  "controls / template-string-editor / help": ""
 }

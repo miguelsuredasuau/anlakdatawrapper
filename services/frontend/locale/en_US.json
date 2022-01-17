@@ -1090,5 +1090,8 @@
   "team / invite / button-no-team": "Set password & sign in",
   "previous": "Previous",
   "next-page": "Next page",
-  "controls / color-category / include-in-key": "Include in key"
+  "controls / color-category / include-in-key": "Include in key",
+  "controls / template-string-editor / title-placeholder": "Enter title",
+  "controls / template-string-editor / body-placeholder": "Enter body text",
+  "controls / template-string-editor / help": "Construct the template string by adding different variables. Use our formula syntax to perform calculations (see <a target=\"_blank\" href=\"https://academy.datawrapper.de/article/237-i-want-to-change-how-my-data-appears-in-tooltips\">full syntax reference</a>)."
 }

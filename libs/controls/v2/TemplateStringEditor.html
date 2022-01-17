@@ -1,0 +1,507 @@
+<div style="margin-top: 10px" class:disable-highlighting-on-focus="noSyntaxHighlighting">
+    <div class="title">
+        <div class="textarea single-line">
+            <div ref:coloredTitle class="inner">{@html titleColors.text}</div>
+        </div>
+        <input
+            ref:textAreaTitle
+            on:scroll="handleScroll(event, false)"
+            on:input="handleCursorChange(event)"
+            on:propertychange="handleCursorChange(event)"
+            on:click="handleCursorChange(event)"
+            on:keyup="handleCursorChange(event)"
+            on:focus="set({lastFocus:'title'})"
+            placeholder="{placeholderTitle}"
+            type="text"
+            bind:value="internalTitle"
+        />
+    </div>
+    {#if !disableBody}
+    <div class="body">
+        <div class="textarea">
+            <div ref:coloredBody style="right: {7+scrollbarSize}px" class="inner">
+                {@html bodyColors.text}
+            </div>
+        </div>
+        <textarea
+            ref:textAreaBody
+            on:scroll="handleScroll(event, true)"
+            on:input="handleCursorChange(event)"
+            on:propertychange="handleCursorChange(event)"
+            on:click="handleCursorChange(event)"
+            on:keyup="handleCursorChange(event)"
+            on:focus="set({lastFocus:'body'})"
+            rows="8"
+            placeholder="{placeholderBody}"
+            bind:value="internalBody"
+        ></textarea>
+    </div>
+    {/if} {#if errors.length} {#each errors as err}
+    <p class="mini-help error mt-2">
+        <b>{@html __('controls / tooltip-editor / err', 'core')}</b> {err}
+    </p>
+    {/each}{/if}
+
+    <div class="form form-horizontal insert-columns mt-2">
+        {#each (showAllVariables ? variables : variables.slice(0,maxVariables)) as variable}
+        <DropdownListInput
+            split="{true}"
+            on:click="addVariable(variable)"
+            on:select="addVariable(variable, event)"
+            icon="im im-plus"
+            disabled="{false}"
+            btnClass="btn btn-mini btn-primary"
+            label="{truncate(variable.label, 15)}"
+            items="{formatItems(variable)}"
+        />
+        {/each} {#if variables.length > maxVariables}
+        <a on:click|preventDefault="set({showAllVariables: !showAllVariables})" href="#/show-all"
+            >show {showAllVariables ? 'fewer' : 'more'} variables</a
+        >
+        {/if}
+    </div>
+    <p class="mt-1">{@html help}</p>
+</div>
+
+<script>
+    import { __ } from '@datawrapper/shared/l10n';
+    import truncate from '@datawrapper/shared/truncate';
+    import DropdownListInput from './DropdownListInput.html';
+    import formats from './utils/formats';
+    import htmlTemplate from '@datawrapper/chart-core/lib/dw/utils/htmlTemplate';
+    import { isDate, debounce } from 'underscore';
+
+    const COL_REG = /{{[^}]*}}/g;
+    const AGGREGATIONS = ['min', 'max', 'sum', 'mean', 'median'];
+
+    function variableFormats(variable) {
+        const varType = variable.type;
+        if (varType === 'text') {
+            return [
+                { l: 'UPPERCASE', f: 'UPPER(%x)' },
+                { l: 'lowercase', f: 'LOWER(%x)' },
+                { l: 'TitleCase', f: 'TITLE(%x)' },
+                { l: 'ProperCase', f: 'PROPER(%x)' }
+            ];
+        } else if (varType === 'array') {
+            // for cluster tooltips
+            const val = variable.value[0];
+            const more = [];
+            if (typeof val === 'object') {
+                more.push({
+                    l: 'Blocks',
+                    f: `JOIN(MAP(TOOLTIP, %x), "<hr>")`
+                });
+
+                Object.keys(val).forEach(key => {
+                    more.push(
+                        typeof val[key] === 'number'
+                            ? { l: `SUM $.${key}`, f: `SUM(PLUCK(%x, "${key}"))` }
+                            : isDate(val[key])
+                            ? {
+                                  l: `JOIN $.${key}`,
+                                  f: `JOIN(MAP(f(x) = FORMAT(x.${key}, "YYYY-MM"), %x), ", ")`
+                              }
+                            : { l: `JOIN $.${key}`, f: `JOIN(PLUCK(%x, "${key}"), ", ")` }
+                    );
+                });
+            }
+            return [{ l: 'Count', f: 'LENGTH(%x)' }, ...more];
+        } else if (varType === 'object') {
+            // also for cluster tooltips
+            return Object.keys(variable.value).map(k => ({
+                l: `$.${k}`,
+                f: `%x.${k}`
+            }));
+        }
+        const addedFormat =
+            varType === 'number'
+                ? AGGREGATIONS.map(k => ({
+                      l: `${k.toUpperCase()}`,
+                      f: `%x__${k}`
+                  }))
+                : [];
+        return [
+            ...formats(varType).map(({ l, f }) => ({ l, f: `FORMAT(%x, "${f}")` })),
+            ...addedFormat
+        ];
+    }
+
+    export default {
+        components: { DropdownListInput },
+        data() {
+            return {
+                open: false,
+                value: {
+                    title: '',
+                    body: ''
+                },
+                internalTitle: '',
+                internalBody: '',
+                disableBody: false,
+                _updateValue: null,
+                isCluster: false,
+                showAllVariables: false,
+                disabled: false,
+                variables: [],
+                lastFocus: 'title',
+                lastCursorPosition: [-1, -1],
+                placeholderTitle: __(
+                    'controls / template-string-editor / title-placeholder',
+                    'core'
+                ),
+                placeholderBody: __('controls / template-string-editor / body-placeholder', 'core'),
+                scrollbarSize: 0,
+                noSyntaxHighlighting: true,
+                help: __('controls / template-string-editor / help', 'core'),
+                uid: '',
+                validateFn: validateHtml
+            };
+        },
+        computed: {
+            title({ value }) {
+                return value.title;
+            },
+            body({ value }) {
+                return value.body;
+            },
+            titleColors({ title, placeholderTitle, isCluster, variables, validateExpr }) {
+                return toColors(title, variables, placeholderTitle, isCluster, validateExpr);
+            },
+            bodyColors({ body, variables, placeholderBody, isCluster, validateExpr }) {
+                return toColors(body, variables, placeholderBody, isCluster, validateExpr);
+            },
+            errors({ bodyColors, titleColors }) {
+                const errors = [...bodyColors.errors, ...titleColors.errors];
+                return errors.map(error =>
+                    error
+                        .replace(
+                            /(\w+) is not defined/,
+                            (a, b) =>
+                                `"${b}" ` +
+                                __('controls / tooltip-editor / err / not-defined', 'core')
+                        )
+                        .replace(
+                            'unexpected token',
+                            __('controls / tooltip-editor / err / unexpected-token', 'core')
+                        )
+                        .replace('unexpected TOP', __('cc / formula / error / unexpected top'))
+                        .replace(': Expected EOF', '')
+                        .replace(
+                            'unexpected TPAREN',
+                            __('cc / formula / error / unexpected tparen')
+                        )
+                        .replace(
+                            'unexpected TBRACKET',
+                            __('cc / formula / error / unexpected tparen')
+                        )
+                        .replace(
+                            'unexpected TEOF: EOF',
+                            __('cc / formula / error / unexpected teof')
+                        )
+                        .replace(
+                            'unexpected TCOMMA',
+                            __('cc / formula / error / unexpected tcomma')
+                        )
+                        .replace(
+                            'unexpected TSEMICOLON',
+                            __('cc / formula / error / unexpected tsemicolon')
+                        )
+                        .replace(
+                            'undefined variable',
+                            __('cc / formula / error / undefined variable')
+                        )
+                        .replace('parse error', __('cc / formula / error / parser error'))
+                        .replace(
+                            'Unknown character',
+                            __('cc / formula / error / unknown-character')
+                        )
+                        .replace('unexpected', __('cc / formula / error / unexpected'))
+                        .replace(
+                            'member access is not permitted',
+                            __('cc / formula / error / member-access')
+                        )
+                );
+            },
+            validateExpr({ validateFn }) {
+                return (expr, ctx) => {
+                    try {
+                        validateFn(`{{ ${expr} }}`, ctx);
+                        return null;
+                    } catch (e) {
+                        return e.message;
+                    }
+                };
+            }
+        },
+        helpers: {
+            __,
+            truncate,
+            maxVariables: 8,
+            formatItems(variable) {
+                return variableFormats(variable).map(({ l, f }) => ({
+                    label: l,
+                    action(dropdown) {
+                        dropdown.fire('select', f);
+                    }
+                }));
+            }
+        },
+        methods: {
+            acceptMigrationWarning() {
+                const { value } = this.get();
+                delete value.migrated;
+                this.set({ value });
+            },
+            handleScroll(event, syncWithBody) {
+                this.refs[syncWithBody ? 'coloredBody' : 'coloredTitle'].scrollTop =
+                    event.target.scrollTop;
+                this.refs[syncWithBody ? 'coloredBody' : 'coloredTitle'].scrollLeft =
+                    event.target.scrollLeft;
+            },
+            handleCursorChange(event) {
+                const input = event.target;
+                let selection = [];
+                if (input.selectionStart !== undefined) {
+                    selection = [input.selectionStart, input.selectionEnd];
+                }
+                this.set({ lastCursorPosition: selection });
+            },
+            addVariable(selectedVariable, selectedFormat) {
+                const { lastFocus, lastCursorPosition, value } = this.get();
+                if (!selectedVariable) return;
+                const varName = selectedVariable.name;
+                const insert = selectedFormat
+                    ? `{{ ${selectedFormat.replace('%x', varName)} }}`
+                    : `{{ ${varName} }}`;
+                const insertAt =
+                    lastCursorPosition[0] < 0 ? value[lastFocus].length : lastCursorPosition[0];
+                const removeChars = lastCursorPosition[1] - lastCursorPosition[0];
+                const before = value[lastFocus].substr(0, insertAt);
+                const after = value[lastFocus].substr(insertAt + removeChars);
+                value[lastFocus] = `${before}${insert}${after}`;
+                this.set({ value });
+                const focussedTextArea =
+                    this.refs[lastFocus === 'title' ? 'textAreaTitle' : 'textAreaBody'];
+                focussedTextArea.selectionEnd = before.length + insert.length;
+                focussedTextArea.focus();
+            }
+        },
+        oncreate() {
+            const { value } = this.get();
+            this.set({
+                scrollbarSize: getScrollbarSize(),
+                internalTitle: value.title || '',
+                internalBody: value.body || '',
+                _updateValue: debounce(({ title, body }) => {
+                    const { value } = this.get();
+                    value.title = title;
+                    value.body = body;
+                    this.set({ value });
+                }, 500)
+            });
+            // const isIE = !!window.MSInputMethodContext && !!document.documentMode;
+            // const isEdge = !isIE && !!window.StyleMedia;
+            // this.set({ noSyntaxHighlighting: isIE || isEdge });
+        },
+        onstate({ changed, current, previous }) {
+            if (
+                current._updateValue &&
+                (changed.internalTitle || changed.internalBody) &&
+                previous
+            ) {
+                // update value (with some delay)
+                current._updateValue({
+                    title: current.internalTitle,
+                    body: current.internalBody
+                });
+            }
+            if ((changed.title || changed.body) && previous) {
+                // check if title or body have been changed from outside
+                if (current.title !== current.internalTitle) {
+                    this.set({ internalTitle: current.title });
+                }
+                if (current.body !== current.internalBody) {
+                    this.set({ internalBody: current.body });
+                }
+            }
+        }
+    };
+
+    function toColors(str, variables, placeholder, isCluster, validateExpr) {
+        const context = {
+            FORMAT(val) {
+                return String(val);
+            }
+        };
+        if (isCluster) {
+            context.TOOLTIP = s => String(s);
+        }
+        const errors = [];
+        let text = '';
+        if (str !== '') {
+            variables.forEach(variable => {
+                const key = variable.name;
+                context[key] = variable.value;
+                if (variable.type === 'number') {
+                    AGGREGATIONS.forEach(k => {
+                        context[`${key}__${k}`] = variable.value;
+                    });
+                }
+            });
+
+            text = str
+                .replace(COL_REG, s => {
+                    const expr = s.substr(2, s.length - 4).trim();
+                    const error = validateExpr(expr, context);
+                    if (error) errors.push(error);
+                    return `[[[span class="var ${!error ? '' : 'in'}valid"]]]${s}[[[/span]]]`;
+                })
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\[\[\[span/g, '<span')
+                .replace(/\[\[\[\/span\]\]\]/g, '</span>')
+                .replace(/\]\]\]/g, '>');
+        }
+        return { text, errors };
+    }
+
+    function validateHtml(template, ctx) {
+        const tpl = htmlTemplate(template);
+        tpl(ctx);
+    }
+
+    function getScrollbarSize() {
+        const outer = document.createElement('div');
+        const inner = document.createElement('div');
+        outer.appendChild(inner);
+        outer.style.position = 'absolute';
+        outer.style.visibility = 'hidden';
+        outer.style.width = '100px';
+        inner.style.width = '100%';
+        document.body.appendChild(outer);
+        const before = inner.getBoundingClientRect().width;
+        outer.style.overflowY = 'scroll';
+        const after = inner.getBoundingClientRect().width;
+        document.body.removeChild(outer);
+        return before - after;
+    }
+</script>
+
+<style>
+    textarea,
+    input {
+        width: 100%;
+        position: relative;
+        z-index: 1;
+        color: transparent;
+        caret-color: black;
+        background: transparent;
+    }
+    .disable-highlighting-on-focus textarea:focus,
+    .disable-highlighting-on-focus input:focus {
+        color: black;
+        background: white;
+    }
+    textarea {
+        overflow-y: auto;
+    }
+    .body,
+    .title {
+        position: relative;
+        width: 94%;
+    }
+    .textarea {
+        color: #222;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: -14px;
+        bottom: 5px;
+        z-index: 0;
+        background: white;
+        pointer-events: none;
+    }
+    .textarea .inner {
+        position: absolute;
+        top: 5px;
+        left: 7px;
+        right: 22px;
+        bottom: 5px;
+        z-index: 0;
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+    .textarea:after {
+        content: '';
+        display: block;
+        height: 5px;
+    }
+    .textarea:focus {
+        border-color: rgba(82, 168, 236, 0.8);
+    }
+    .title .textarea .inner {
+        overflow: hidden;
+        bottom: 0;
+        white-space: nowrap;
+        right: 7px;
+        top: 6px;
+        bottom: 5px;
+    }
+    .title .textarea .inner {
+    }
+    input,
+    textarea,
+    .textarea {
+        line-height: 1.5 !important;
+        font-family: 'Roboto Mono', monospace !important;
+        font-size: 12px !important;
+        white-space: pre-wrap;
+    }
+    .textarea :global(span.var) {
+        background: #fee;
+        box-sizing: border-box;
+        position: relative;
+        top: 0px;
+        left: 0px;
+        color: #dd0000;
+    }
+    input::placeholder,
+    textarea::placeholder {
+        color: #000;
+        opacity: 0.4;
+    }
+    .textarea :global(span.var.valid) {
+        background: #eeffef;
+        color: #01862c;
+    }
+    .textarea :global(span.var.invalid) {
+        background: #fee;
+        color: #c71e1d;
+    }
+    textarea {
+        resize: none;
+    }
+    .mini-help.error {
+        color: #c71e1d;
+    }
+    .mt-1 {
+        margin-top: 1ex;
+    }
+    .mt-2 {
+        margin-top: 2ex;
+    }
+    .insert-columns :global(.base-drop-btn .btn-group .btn-mini .im) {
+        font-size: 0.5rem !important;
+        margin-right: 0.25em;
+    }
+    .insert-columns :global(.base-drop-btn .btn-group .btn-mini) {
+        text-shadow: none !important;
+        font-weight: bold;
+    }
+    .insert-columns :global(.base-drop-btn .btn-group) {
+        margin-left: 0px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+</style>

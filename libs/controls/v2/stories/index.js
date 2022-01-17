@@ -93,6 +93,8 @@ import SwitchControlView from './SwitchControlView.html';
 import SwitchControlDocs from '../SwitchControl.md';
 import TableDisplayView from './TableDisplayView.html';
 import TableDisplayDocs from '../TableDisplay.md';
+import TemplateStringEditorView from './TemplateStringEditorView.html';
+import TemplateStringEditorDocs from '../TemplateStringEditor.md';
 import TextControlView from './TextControlView.html';
 import TextControlDocs from '../TextControl.md';
 import TextInputView from './TextInputView.html';
@@ -326,6 +328,11 @@ addStory('SwitchControl', SwitchControlDocs, () => ({
 
 addStory('TableDisplay', TableDisplayDocs, () => ({
     Component: TableDisplayView,
+    data: { options }
+}));
+
+addStory('TemplateStringEditor', TemplateStringEditorDocs, () => ({
+    Component: TemplateStringEditorView,
     data: { options }
 }));
 
