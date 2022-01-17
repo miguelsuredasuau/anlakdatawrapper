@@ -10,7 +10,6 @@ const PASSWORD_HASH = '$2a$05$6B584QgS5SOXi1m.jM/H9eV.2tCaqNc5atHnWfYlFe5riXVW9z
 
 const BASE_URL = 'http://api.datawrapper.local';
 const V1_BASE_URL = '/v3/api-v1';
-// const BASE_URL = 'http://app.datawrapper.local/api';
 
 const ALL_SCOPES = [
     'user:read',
@@ -283,6 +282,15 @@ async function addUserToTeam(user, team, role = 'member') {
     });
 }
 
+async function addThemeToTeam(theme, team) {
+    const { TeamTheme } = require('@datawrapper/orm/models');
+
+    await TeamTheme.create({
+        organization_id: team.id,
+        theme_id: theme.id
+    });
+}
+
 async function destroyChart(chart) {
     const { Chart, ChartPublic } = require('@datawrapper/orm/models');
     await ChartPublic.destroy({ where: { id: chart.id }, force: true });
@@ -370,12 +378,14 @@ async function destroy(...instances) {
 module.exports = {
     BASE_URL,
     V1_BASE_URL,
+    addThemeToTeam,
+    addUserToTeam,
     createChart,
-    createPublicChart,
     createCharts,
     createFolder,
     createFolders,
     createFoldersWithParent,
+    createPublicChart,
     createTeam,
     createTeamWithUser,
     createTheme,
@@ -385,9 +395,8 @@ module.exports = {
     genNonExistentFolderId,
     genRandomChartId,
     genRandomFolderId,
-    getCredentials,
     getChart,
+    getCredentials,
     getPublicChart,
-    setup,
-    addUserToTeam
+    setup
 };

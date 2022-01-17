@@ -5,13 +5,25 @@
     "keywords": [],
     "author": "Datawrapper GmbH",
     "scripts": {
-        "lint": "(cd ../.. && scripts/lint plugins/api-v1)",
-        "format": "(cd ../.. && scripts/format plugins/api-v1)"
+        "test": "DW_CONFIG_PATH=${DW_CONFIG_PATH-src/tests/config.local.cjs} ava --verbose",
+        "test:coverage": "DW_CONFIG_PATH=${DW_CONFIG_PATH-src/tests/config.local.cjs} nyc --reporter=html --reporter=text ava --verbose",
+        "lint": "cd ../.. && scripts/lint plugins/api-v1",
+        "format": "cd ../.. && scripts/format plugins/api-v1"
     },
     "dependencies": {
         "@hapi/boom": "^9.1.0",
         "assign-deep": "^1.0.1",
         "lodash": "^4.17.20"
+    },
+    "devDependencies": {
+        "ava": "^4.0.0",
+        "node-fetch": "^2.6.6",
+        "nyc": "^15.1.0"
+    },
+    "ava": {
+        "files": [
+            "src/**/*.test.js"
+        ]
     },
     "peerDependencies": {
         "joi": "17.x"
