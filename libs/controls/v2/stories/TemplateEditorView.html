@@ -1,6 +1,6 @@
 <h3>Default (with Body)</h3>
 
-<TemplateStringEditor variables="{variables}" bind:value="withBody" />
+<TemplateEditor variables="{variables}" bind:value="withBody" />
 
 <h4>Value:</h4>
 <pre>
@@ -8,17 +8,40 @@
 </pre>
 <hr style="margin-top: 20px" />
 
-<h3>Without body</h3>
+<h3>Without body and help</h3>
 
-<TemplateStringEditor variables="{variables}" bind:value="withoutBody" disableBody="{true}" />
-
+<TemplateEditor
+    variables="{variables}"
+    bind:value="withoutBody"
+    disableBody="{true}"
+    showHelp="{false}"
+/>
 <h4>Value:</h4>
 <pre>
 {JSON.stringify(withoutBody, null, 4)}
 </pre>
 <hr style="margin-top: 20px" />
+
+<h3>With template validation</h3>
+<p>
+    Pass a function that throws an error if the template string (without variable placeholders) is
+    invalid.
+</p>
+
+<TemplateEditor
+    variables="{variables}"
+    bind:value="withValidation"
+    disableBody="{true}"
+    validateTemplate="{validateTemplate}"
+/>
+
+<h4>Value:</h4>
+<pre>
+{JSON.stringify(withValidation, null, 4)}
+</pre>
+<hr style="margin-top: 20px" />
 <script>
-    import TemplateStringEditor from '../TemplateStringEditor.html';
+    import TemplateEditor from '../TemplateEditor.html';
 
     const variables = [
         { label: 'Country Name', name: 'country_name', value: 'germany', type: 'text' },
@@ -28,7 +51,7 @@
         { label: 'Date', name: 'date', value: '2019-01-01', type: 'date' }
     ];
     export default {
-        components: { TemplateStringEditor },
+        components: { TemplateEditor },
         data() {
             return {
                 withBody: {
@@ -38,11 +61,19 @@
                 withoutBody: {
                     title: '{{ population }}',
                     body: ''
+                },
+                withValidation: {
+                    title: '{{ population }} // ..',
+                    body: ''
                 }
             };
         },
         helpers: {
-            variables
+            variables,
+            validateTemplate(template) {
+                const invalid = template.match(/[./]/g);
+                if (invalid) throw 'Template contains invalid characters';
+            }
         }
     };
 </script>

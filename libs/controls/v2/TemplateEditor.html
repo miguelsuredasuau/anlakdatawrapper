@@ -17,7 +17,7 @@
         />
     </div>
     {#if !disableBody}
-    <div class="body">
+    <div class="body mt-2">
         <div class="textarea">
             <div ref:coloredBody style="right: {7+scrollbarSize}px" class="inner">
                 {@html bodyColors.text}
@@ -60,7 +60,9 @@
         >
         {/if}
     </div>
+    {#if showHelp}
     <p class="mt-1">{@html help}</p>
+    {/if}
 </div>
 
 <script>
@@ -71,7 +73,7 @@
     import htmlTemplate from '@datawrapper/chart-core/lib/dw/utils/htmlTemplate';
     import { isDate, debounce } from 'underscore';
 
-    const COL_REG = /{{[^}]*}}/g;
+    const PLACEHOLDER_REG = /{{[^}]*}}/g;
     const AGGREGATIONS = ['min', 'max', 'sum', 'mean', 'median'];
 
     function variableFormats(variable) {
@@ -127,6 +129,16 @@
         ];
     }
 
+    function validateVariables(expr, ctx) {
+        try {
+            const tpl = htmlTemplate(`{{ ${expr} }}`);
+            tpl(ctx);
+            return null;
+        } catch (e) {
+            return e.message;
+        }
+    }
+
     export default {
         components: { DropdownListInput },
         data() {
@@ -142,6 +154,7 @@
                 _updateValue: null,
                 isCluster: false,
                 showAllVariables: false,
+                showHelp: true,
                 disabled: false,
                 variables: [],
                 lastFocus: 'title',
@@ -155,7 +168,7 @@
                 noSyntaxHighlighting: true,
                 help: __('controls / template-string-editor / help', 'core'),
                 uid: '',
-                validateFn: validateHtml
+                validateTemplate() {}
             };
         },
         computed: {
@@ -165,11 +178,11 @@
             body({ value }) {
                 return value.body;
             },
-            titleColors({ title, placeholderTitle, isCluster, variables, validateExpr }) {
-                return toColors(title, variables, placeholderTitle, isCluster, validateExpr);
+            titleColors({ title, placeholderTitle, isCluster, variables, validateTemplate }) {
+                return toColors(title, variables, placeholderTitle, isCluster, validateTemplate);
             },
-            bodyColors({ body, variables, placeholderBody, isCluster, validateExpr }) {
-                return toColors(body, variables, placeholderBody, isCluster, validateExpr);
+            bodyColors({ body, variables, placeholderBody, isCluster, validateTemplate }) {
+                return toColors(body, variables, placeholderBody, isCluster, validateTemplate);
             },
             errors({ bodyColors, titleColors }) {
                 const errors = [...bodyColors.errors, ...titleColors.errors];
@@ -222,16 +235,6 @@
                             __('cc / formula / error / member-access')
                         )
                 );
-            },
-            validateExpr({ validateFn }) {
-                return (expr, ctx) => {
-                    try {
-                        validateFn(`{{ ${expr} }}`, ctx);
-                        return null;
-                    } catch (e) {
-                        return e.message;
-                    }
-                };
             }
         },
         helpers: {
@@ -328,7 +331,7 @@
         }
     };
 
-    function toColors(str, variables, placeholder, isCluster, validateExpr) {
+    function toColors(str, variables, placeholder, isCluster, validateTemplate) {
         const context = {
             FORMAT(val) {
                 return String(val);
@@ -349,11 +352,10 @@
                     });
                 }
             });
-
             text = str
-                .replace(COL_REG, s => {
+                .replace(PLACEHOLDER_REG, s => {
                     const expr = s.substr(2, s.length - 4).trim();
-                    const error = validateExpr(expr, context);
+                    const error = validateVariables(expr, context);
                     if (error) errors.push(error);
                     return `[[[span class="var ${!error ? '' : 'in'}valid"]]]${s}[[[/span]]]`;
                 })
@@ -362,13 +364,14 @@
                 .replace(/\[\[\[span/g, '<span')
                 .replace(/\[\[\[\/span\]\]\]/g, '</span>')
                 .replace(/\]\]\]/g, '>');
+            const withoutVars = str.replace(PLACEHOLDER_REG, '');
+            try {
+                validateTemplate(withoutVars);
+            } catch (e) {
+                errors.push(e);
+            }
         }
         return { text, errors };
-    }
-
-    function validateHtml(template, ctx) {
-        const tpl = htmlTemplate(template);
-        tpl(ctx);
     }
 
     function getScrollbarSize() {
@@ -397,6 +400,7 @@
         color: transparent;
         caret-color: black;
         background: transparent;
+        margin: 0 !important;
     }
     .disable-highlighting-on-focus textarea:focus,
     .disable-highlighting-on-focus input:focus {
@@ -417,7 +421,7 @@
         top: 0;
         left: 0;
         right: -14px;
-        bottom: 5px;
+        bottom: 0;
         z-index: 0;
         background: white;
         pointer-events: none;
@@ -446,7 +450,6 @@
         white-space: nowrap;
         right: 7px;
         top: 6px;
-        bottom: 5px;
     }
     .title .textarea .inner {
     }
@@ -462,8 +465,8 @@
         background: #fee;
         box-sizing: border-box;
         position: relative;
-        top: 0px;
-        left: 0px;
+        top: 0;
+        left: 0;
         color: #dd0000;
     }
     input::placeholder,

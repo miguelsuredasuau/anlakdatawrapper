@@ -43,7 +43,7 @@ export { default as SelectButtonsControl } from './SelectButtonsControl.html';
 export { default as SelectHighlightsEditor } from './SelectHighlightsEditor.html';
 export { default as SwitchControl } from './SwitchControl.html';
 export { default as TableDisplay } from './TableDisplay.html';
-export { default as TemplateStringEditor } from './TemplateStringEditor.html';
+export { default as TemplateEditor } from './TemplateEditor.html';
 export { default as TextControl } from './TextControl.html';
 export { default as TextInput } from './TextInput.html';
 export { default as TextAreaControl } from './TextAreaControl.html';

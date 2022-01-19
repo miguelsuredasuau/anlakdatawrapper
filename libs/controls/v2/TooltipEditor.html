@@ -21,7 +21,7 @@
         aria-hidden="true"
     ></i>
     {/if} {#if open}
-    <TemplateStringEditor
+    <TemplateEditor
         bind:value="template"
         bind:errors="templateErrors"
         variables="{variables}"
@@ -29,7 +29,7 @@
         placeholderBody="{__('controls / tooltip-editor / body-placeholder', 'core')}"
         help="{__('controls / tooltip-editor / mini-help', 'core')}"
     >
-    </TemplateStringEditor>
+    </TemplateEditor>
 
     {/if} {#if value.migrated && templateErrors.length}
     <div class="mt-1" style="margin-bottom: -1ex">
@@ -57,12 +57,12 @@
     import SwitchControl from './SwitchControl.html';
     import CheckboxControl from './CheckboxControl.html';
     import AlertDisplay from './AlertDisplay.html';
-    import TemplateStringEditor from './TemplateStringEditor.html';
+    import TemplateEditor from './TemplateEditor.html';
     import columnNameToVariable from '@datawrapper/shared/columnNameToVariable';
     import { debounce } from 'underscore';
 
     export default {
-        components: { SwitchControl, CheckboxControl, AlertDisplay, TemplateStringEditor },
+        components: { SwitchControl, CheckboxControl, AlertDisplay, TemplateEditor },
         data() {
             return {
                 open: false,
