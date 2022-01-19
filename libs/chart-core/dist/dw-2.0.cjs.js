@@ -7082,7 +7082,7 @@ function chart (attributes) {
                 // Medium
                 window.parent.postMessage(
                     JSON.stringify({
-                        src: window.location.toString(),
+                        src: location.href,
                         context: 'iframe.resize',
                         height: desiredHeight
                     }),
