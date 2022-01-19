@@ -165,10 +165,11 @@
             },
             handleResetClick() {
                 const { value, selection } = this.get();
+                const excludeFromKey = value.excludeFromKey || [];
                 selection.forEach(sel => {
+                    value.excludeFromKey = excludeFromKey.filter(key => key !== sel);
                     delete value.map[sel];
                     delete value.categoryLabels[sel];
-                    value.excludeFromKey = value.excludeFromKey.filter(key => key !== sel);
                 });
                 this.set({ value, selection: [] });
             },
@@ -196,10 +197,11 @@
         onstate({ changed, current }) {
             const { value, selection, selectionIncludeInKey } = current;
             if (changed.selection && selection.length) {
+                const excludeFromKey = value.excludeFromKey || [];
                 this.set({
+                    selectionIncludeInKey: !excludeFromKey.includes(selection[0]),
                     activeColor: value.map[selection[0]] || false,
-                    selectionLabel: current.categoryLabels[selection[0]] || '',
-                    selectionIncludeInKey: !value.excludeFromKey.includes(selection[0])
+                    selectionLabel: current.categoryLabels[selection[0]] || ''
                 });
             }
             if (changed.selectionLabel && selection.length) {
