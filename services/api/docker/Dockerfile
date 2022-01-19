@@ -1,7 +1,5 @@
 FROM node:14-alpine
 
-RUN npm set audit=false && npm install -g --no-fund nodemon
-
 RUN	ln -s /datawrapper/code/libs /usr/local/lib/node_modules/@datawrapper && \
 	mkdir /etc/datawrapper && \
 	ln -s /datawrapper/code/config.js /etc/datawrapper/config.js && \

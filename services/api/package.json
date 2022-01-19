@@ -20,8 +20,6 @@
         "dw-update": "scripts/update.js"
     },
     "scripts": {
-        "dev": "NODE_ENV=development nodemon src/index.js",
-        "api": "node src/index.js",
         "start": "node src/index.js",
         "update-translations": "echo \"\\e[1;33mupdate-translation script has been moved to the code root now\\e[0m\ntry cd ../.. && npm run update-translations\" && exit 1",
         "test": "DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} ava --verbose",
@@ -83,7 +81,6 @@
         "dotenv": "^10.0.0",
         "form-data": "^4.0.0",
         "node-fetch": "^2.6.5",
-        "nodemon": "~2.0.3",
         "nyc": "^15.1.0",
         "openapi-schema-validator": "^9.1.0",
         "tmp": "^0.2.1"
