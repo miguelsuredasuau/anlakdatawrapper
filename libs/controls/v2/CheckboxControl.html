@@ -4,7 +4,7 @@
 </HelpDisplay>
 {/if}
 <div
-    class="control-group vis-option-group vis-option-type-checkbox"
+    class="control-group vis-option-group vis-option-type-checkbox {class}"
     class:is-compact="compact"
     data-uid="{uid}"
 >
@@ -145,7 +145,8 @@
                 indeterminate: false,
                 disabledMessage: '',
                 help: false,
-                uid: ''
+                uid: '',
+                class: ''
             };
         },
         transitions: { slide }

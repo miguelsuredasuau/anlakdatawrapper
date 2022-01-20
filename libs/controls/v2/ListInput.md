@@ -13,6 +13,7 @@ A list of things that can be selected, multi-selected and drag-resorted. You can
 | `disabled`        | _false_    | If set to true, the entire ListInput will be disabled                                                                  |
 | `compact`         | _false_    | If set to true, the ListInput will use a smaller font size and less padding                                            |
 | `maxHeight`       | _220px_    | The max height of ListInput items (default for `compact` Lists is _120px_)                                             |
+| `minHeight`       | _0_        | The min height of ListInput items                                                                                      |
 | `className`       | ""         | A custom class that can be added to the list                                                                           |
 | `data`            | ""         | A custom data object that will be passed on to the list item components                                                |
 
@@ -91,7 +92,5 @@ To handle the drag guesture you can listen to the `itemDrag` event:
 The default list item renderer is a simple `<div>` showing the item name.
 
 ```html
-<div>
-    {@html item.name || item.label || item.id}
-</div>
+<div>{@html item.name || item.label || item.id}</div>
 ```

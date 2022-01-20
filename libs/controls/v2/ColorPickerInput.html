@@ -1,6 +1,6 @@
 <svelte:window on:keydown="windowKeydown(event)" on:click="windowClick(event)" />
 
-<div class="color-picker-cont" ref:picker data-uid="{uid}">
+<div class="color-picker-cont {class}" ref:picker data-uid="{uid}">
     <DropdownInput bind:visible="open">
         <span slot="button">
             <slot>
@@ -121,6 +121,7 @@
         components: { DropdownInput },
         data() {
             return {
+                class: '',
                 reset: false,
                 initial: false,
                 prepend: [],

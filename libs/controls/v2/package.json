@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/controls",
-    "version": "2.48.0",
+    "version": "2.49.0",
     "scripts": {
         "format": "cd ../../.. && scripts/format libs/controls/v2",
         "lint": "cd ../../.. && scripts/lint libs/controls/v2",

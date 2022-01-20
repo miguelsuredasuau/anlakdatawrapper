@@ -1,5 +1,5 @@
-<div class="column-container" data-uid="{uid}">
-    <div class="column">
+<div class="column-container {class}" data-uid="{uid}">
+    <div class="column mr-4">
         <ListInput
             items="{swatches}"
             bind:selected="selection"
@@ -10,62 +10,71 @@
             selectable="{true}"
             multiselectable="{true}"
             deselectable="{true}"
+            minHeight="118px"
+            maxHeight="118px"
+            className="mb-1"
         />
-        <div style="font-size: 12px; text-align: left; margin-bottom: 10px">
+        <div class="list-actions mb-3">
             {__('Select:')} &nbsp;
-            <a on:click|preventDefault="handleSelectAllClick()" href="#/select-all">{__('all')}</a>
+            <button class="plain-link" on:click|preventDefault="handleSelectAllClick()">
+                {__('all')}
+            </button>
             &nbsp;
-            <a on:click|preventDefault="handleSelectNoneClick()" href="#/select-none"
-                >{__('none')}</a
-            >
+            <button class="plain-link" on:click|preventDefault="handleSelectNoneClick()">
+                {__('none')}
+            </button>
             &nbsp;
-            <a on:click|preventDefault="handleSelectInvertClick()" href="#/select-invert"
-                >{__('invert')}</a
-            >
+            <button class="plain-link" on:click|preventDefault="handleSelectInvertClick()">
+                {__('invert')}
+            </button>
         </div>
     </div>
+    {#if selection.length}
     <div class="column">
-        {#if selection.length}
-        <div class="mb-2">
-            <ControlGroup label="{__('controls / color-category / color')}" labelWidth="auto">
+        <div class="well">
+            <div>
                 <ColorPickerInput
                     on:change="handleColorPickerChange(event)"
                     bind:color="activeColor"
                 />
-            </ControlGroup>
+            </div>
+            <!-- Change label: -->
+            {#if allowLabeling}
+            <input
+                class="label-input mt-2 mb-0"
+                bind:value="selectionLabel"
+                type="text"
+                placeholder="{selection[0]}"
+                aria-label="{__('controls / color-category / text')}"
+            />
+            {/if}
+
+            <!-- Show in color key: -->
+            {#if allowExcludeFromKey}
+            <CheckboxControl
+                label="{__('controls / color-category / include-in-key')}"
+                bind:value="selectionIncludeInKey"
+                class="mb-1 mt-1"
+            />
+            {/if}
+
+            <button on:click="handleResetClick()" class="btn mt-2">{__('Reset')}</button>
+            <button on:click="handleCloseClick()" class="btn btn-close" aria-label="{__('Close')}">
+                <IconDisplay icon="close" size="10px" color="#a7a7a7" />
+            </button>
         </div>
-
-        <!-- Change label: -->
-        {#if allowLabeling}
-        <input
-            class="label-input"
-            bind:value="selectionLabel"
-            type="text"
-            placeholder="{selection[0]}"
-            aria-label="{__('controls / color-category / text')}"
-        />
-        {/if}
-
-        <!-- Show in color key: -->
-        {#if allowExcludeFromKey}
-        <CheckboxControl
-            label="{__('controls / color-category / include-in-key')}"
-            bind:value="selectionIncludeInKey"
-        />
-        {/if}
-
-        <button on:click="handleCloseClick()" class="btn btn-small mt-2">{__('Close')}</button>
-        <button on:click="handleResetClick()" class="btn btn-small mt-2">{__('Reset')}</button>
-        {:else}
-        <p class="mini-help" style="margin-top: 5px">
+    </div>
+    {:else}
+    <div class="column">
+        <p class="mini-help mt-1">
             {__('controls / color-category / select-one-or-more'+(allowLabeling?'-w-label':''))}
         </p>
 
-        <button on:click="handleResetAllClick()" class="btn btn-small">
+        <button on:click="handleResetAllClick()" class="btn">
             {__('controls / color / reset-all')}
         </button>
-        {/if}
     </div>
+    {/if}
 </div>
 
 <script>
@@ -73,19 +82,20 @@
     import ListInput from './ListInput.html';
     import ColorPickerInput from './ColorPickerInput.html';
     import ColorListItem from './ColorListItem.html';
-    import ControlGroup from './ControlGroup.html';
     import CheckboxControl from './CheckboxControl.html';
+    import IconDisplay from './IconDisplay.html';
     import { __ } from '@datawrapper/shared/l10n';
 
     export default {
         components: {
             CheckboxControl,
             ColorPickerInput,
-            ControlGroup,
+            IconDisplay,
             ListInput
         },
         data() {
             return {
+                class: '',
                 draggable: true,
                 allowLabeling: true,
                 allowExcludeFromKey: false,
@@ -224,16 +234,43 @@
 
 <style>
     .label-input {
-        width: 100%;
+        width: calc(100% - 1em);
     }
 
-    .column {
-        width: 50%;
-        padding-right: 20px;
+    .list-actions {
+        font-size: 12px;
     }
 
     .column-container {
         display: flex;
-        padding-right: 15px;
+        margin-right: 3em;
+    }
+
+    .column {
+        flex-basis: 50%;
+    }
+
+    .well {
+        padding: 10px;
+        margin: 0;
+        position: relative;
+    }
+
+    .btn-close {
+        padding: 0;
+        margin: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        border: 0;
+        outline: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.3) 0px 1px 3px;
+    }
+
+    .btn-close:hover {
+        outline: 1px solid rgba(0, 0, 0, 0.1);
     }
 </style>

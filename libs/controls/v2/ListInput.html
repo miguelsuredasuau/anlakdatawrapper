@@ -7,7 +7,7 @@
     ref:list
     on:drop|preventDefault="drop(event)"
     on:dragover|preventDefault="dragover(event)"
-    style="max-height: {maxHeight ? maxHeight : compact ? '120px' : '220px'}"
+    style="max-height: {maxHeight ? maxHeight : compact ? '120px' : '220px'}; min-height: {minHeight || 0}"
     data-uid="{uid}"
 >
     {#each items as item, index}
@@ -49,7 +49,8 @@
                 compact: false,
                 multiselectable: true,
                 deselectable: false,
-                maxHeight: false,
+                maxHeight: null,
+                minHeight: null,
                 className: '',
                 // internal state
                 dragging: false,

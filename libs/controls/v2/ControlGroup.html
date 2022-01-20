@@ -4,7 +4,10 @@
 </HelpDisplay>
 {/if}
 
-<div class="control-group vis-option-group vis-option-group-{type} label-{valign}" data-uid="{uid}">
+<div
+    class="control-group vis-option-group vis-option-group-{type} label-{valign} {class}"
+    data-uid="{uid}"
+>
     {#if label}
     <label style="width:{labelWidth||def.labelWidth}" class:disabled class="control-label"
         >{@html label } {#if labelHelp}
@@ -80,6 +83,7 @@
                 miniHelp: false,
                 label: false,
                 labelHelp: false,
+                class: '',
                 inline: false,
                 labelWidth: false,
                 type: 'default',
