@@ -21,11 +21,11 @@ A component for editing templates, for example for tooltips or custom download f
                     body: ''
                 },
                 variables: [
-                    { label: 'Country Name', name: 'country_name', value: 'germany', type: 'text' },
-                    { label: 'Continent', name: 'continent', value: 'Europe', type: 'text' },
-                    { label: 'Population', name: 'population', value: 80716000, type: 'number' },
-                    { label: 'Pop. density', name: 'pop_density', value: 226, type: 'number' },
-                    { label: 'Date', name: 'date', value: '2019-01-01', type: 'date' },
+                    { label: 'Country Name', name: 'country_name', type: 'text' },
+                    { label: 'Continent', name: 'continent', type: 'text' },
+                    { label: 'Population', name: 'population', type: 'number' },
+                    { label: 'Pop. density', name: 'pop_density', type: 'number' },
+                    { label: 'Date', name: 'date', type: 'date' },
                 ];
             }
         }

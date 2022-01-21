@@ -87,7 +87,7 @@
             ];
         } else if (varType === 'array') {
             // for cluster tooltips
-            const val = variable.value[0];
+            const val = defaultValue(varType)[0];
             const more = [];
             if (typeof val === 'object') {
                 more.push({
@@ -111,7 +111,7 @@
             return [{ l: 'Count', f: 'LENGTH(%x)' }, ...more];
         } else if (varType === 'object') {
             // also for cluster tooltips
-            return Object.keys(variable.value).map(k => ({
+            return Object.keys(defaultValue(varType)).map(k => ({
                 l: `$.${k}`,
                 f: `%x.${k}`
             }));
@@ -345,10 +345,10 @@
         if (str !== '') {
             variables.forEach(variable => {
                 const key = variable.name;
-                context[key] = variable.value;
+                context[key] = defaultValue(variable.type);
                 if (variable.type === 'number') {
                     AGGREGATIONS.forEach(k => {
-                        context[`${key}__${k}`] = variable.value;
+                        context[`${key}__${k}`] = defaultValue(variable.type);
                     });
                 }
             });
@@ -372,6 +372,27 @@
             }
         }
         return { text, errors };
+    }
+
+    // To validate the variables in the template,
+    // we have to construct a context with 'real' values for each variable.
+    // These values don't have any function other then being used as example values
+    // so we just use default values for each variable type.
+    function defaultValue(type) {
+        switch (type) {
+            case 'text':
+                return 'Hasta';
+            case 'number':
+                return 0;
+            case 'array':
+                return ['la'];
+            case 'date':
+                return '2022-01-20';
+            case 'object':
+                return { value: 'vista' };
+            default:
+                return 'baby';
+        }
     }
 
     function getScrollbarSize() {
