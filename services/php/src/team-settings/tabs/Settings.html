@@ -8,17 +8,6 @@
             <input type="text" bind:value="team.name" placeholder="" />
         </FormBlock>
 
-        <FormBlock
-            label="{ __('teams / defaults / folder-status' ) }"
-            help="{ __('teams / defaults / folder-status / p' ) }"
-        >
-            <RadioControl
-                label=""
-                bind:value="settings.folders"
-                options="{[ {label: __('teams / defaults / expanded' ), value: 'expanded'}, {label: __('teams / defaults / collapsed' ), value: 'collapsed'}] }"
-            />
-        </FormBlock>
-
         <h3>{ __('teams / defaults / h3') }</h3>
 
         <FormBlock

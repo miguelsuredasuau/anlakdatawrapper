@@ -2,6 +2,7 @@
     import CheckboxInput from '../_partials/controls/CheckboxInput.svelte';
     import Dropdown from '../_partials/Dropdown.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
+    import ViewComponent from '_partials/ViewComponent.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
     import purifyHTML from '@datawrapper/shared/purifyHtml';
     import truncate from '@datawrapper/shared/truncate';
@@ -13,7 +14,8 @@
     const config = getContext('config');
     const user = getContext('user');
     const { dayjs } = getContext('libraries');
-    const { deleteChart, duplicateChart, openChart, teams } = getContext('page/archive');
+    const { deleteChart, duplicateChart, openChart, teams, visBoxSublines } =
+        getContext('page/archive');
     const { handleDragStart } = getContext('page/archive/drag-and-drop');
 
     export let chart;
@@ -24,8 +26,10 @@
     let isTitleEditable = false;
     let chartTitle;
 
-    $: displayLocale =
-        $user.activeTeam && !!teams.find(t => t.id === $user.activeTeam.id).settings.displayLocale;
+    $: teamSettings = $user.activeTeam
+        ? teams.find(t => t.id === $user.activeTeam.id).settings
+        : {};
+    $: displayLocale = $user.activeTeam && !!teamSettings.displayLocale;
 
     $: selected = $selectedCharts.has(chart);
     $: dateLine =
@@ -170,6 +174,9 @@
                 white-space: normal;
             }
         }
+        .dateline {
+            margin-top: -0.25rem;
+        }
         .thumb {
             width: 100%;
             padding-bottom: 75%;
@@ -228,6 +235,13 @@
         }
         .subline {
             line-height: 1.2;
+            gap: 0.5rem;
+        }
+        .subline > :global(div) {
+            margin-top: 0.75rem;
+        }
+        .locale {
+            flex: 0 0 auto;
         }
 
         &.is-deleting {
@@ -287,7 +301,7 @@
         <figure class="image is-4by3">
             <figcaption
                 title={purifyHTML(chart.title, '')}
-                class="title is-size-6 is-size-5-fullhd mb-3 is-font-weight-medium"
+                class="title is-size-6 is-size-5-fullhd mb-2 is-font-weight-medium"
                 bind:this={chartTitle}
                 contentEditable={isTitleEditable}
                 class:title-editable={isTitleEditable}
@@ -296,14 +310,23 @@
             >
                 {purifyHTML(chart.title, '')}
             </figcaption>
+            {#if dateLine}
+                <div class="mb-2 has-text-grey-dark is-size-7 dateline">{dateLine}</div>
+            {/if}
             <div class="thumb" style="background-image: url({thumbnail})" />
         </figure>
-        <div class="subline columns is-variable is-1 mt-2 has-text-grey-dark is-size-7">
-            {#if dateLine}
-                <div class="column ">{dateLine}</div>
-            {/if}
+        <div
+            class="subline is-flex is-justify-content-space-between is-align-items-end has-text-grey-dark is-size-7"
+        >
+            {#each visBoxSublines as subline}
+                <ViewComponent
+                    {__}
+                    id={subline.component}
+                    props={{ ...subline.props, chart, teamSettings }}
+                />
+            {/each}
             {#if displayLocale}
-                <div class="column is-narrow has-text-right">{chart.language}</div>
+                <div class="locale">{chart.language}</div>
             {/if}
         </div>
     </a>

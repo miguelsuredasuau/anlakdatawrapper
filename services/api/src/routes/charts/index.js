@@ -441,6 +441,13 @@ async function getAllCharts(request) {
         }
     }
 
+    const { events, event } = request.server.app;
+
+    await events.emit(event.EXTEND_LIST_CHART_OPTIONS, {
+        options,
+        request
+    });
+
     const { count = 0, rows = [] } =
         (await runAndIgnoreParseErrors(() => Chart.findAndCountAll(options))) || {};
 

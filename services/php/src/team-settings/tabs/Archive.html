@@ -1,0 +1,92 @@
+<div class="row">
+    <div class="span6">
+        <p>{ __('teams / archive / p') }</p>
+        <FormBlock
+            label="{ __('teams / defaults / folder-status') }"
+            help="{ __('teams / defaults / folder-status / p') }"
+        >
+            <RadioControl
+                label=""
+                bind:value="settings.folders"
+                options="{[ {label: __('teams / defaults / expanded' ), value: 'expanded'}, {label: __('teams / defaults / collapsed' ), value: 'collapsed'}] }"
+            />
+        </FormBlock>
+        <FormBlock label="{ __('teams / archive / locale') }" help="{localeHelpText}">
+            <SwitchControl
+                label="{ __('teams / archive / locale / label') }"
+                bind:value="settings.displayLocale"
+            />
+        </FormBlock>
+        {#if customFieldsEnabled}
+        <FormBlock label="{ __('teams / archive / custom-fields') }" help="{customFieldsHelpText}">
+            <SwitchControl
+                label="{ __('teams / archive / custom-fields / label') }"
+                bind:value="settings.displayCustomField.enabled"
+                disabled="{!customFieldExists}"
+            >
+                <SelectInput
+                    bind:value="settings.displayCustomField.key"
+                    options="{customFieldOptions}"
+                />
+            </SwitchControl>
+        </FormBlock>
+        {/if}
+    </div>
+</div>
+
+<script>
+    import FormBlock from '@datawrapper/controls/FormBlock.html';
+    import RadioControl from '@datawrapper/controls/RadioControl.html';
+    import SelectInput from '@datawrapper/controls/SelectInput.html';
+    import SwitchControl from '@datawrapper/controls/SwitchControl.html';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        components: { FormBlock, RadioControl, SelectInput, SwitchControl },
+        computed: {
+            customFieldExists({ settings }) {
+                const customFields = settings.customFields || [];
+                return customFields.length > 0;
+            },
+            customFieldOptions({ settings }) {
+                const customFields = settings.customFields || [];
+                return customFields.map(customField => ({
+                    value: customField.key,
+                    label: customField.title
+                }));
+            },
+            customFieldsHelpText({ team }) {
+                const customFieldsPageUrl = `/team/${team.id}/custom-fields`;
+                return __('teams / archive / custom-fields / p')
+                    .replace('$1', customFieldsPageUrl)
+                    .replace('$2', team.name);
+            },
+            localeHelpText({ team }) {
+                return __('teams / archive / locale / p').replace('$1', team.name);
+            }
+        },
+        data() {
+            return {
+                customFieldsEnabled: false
+            };
+        },
+        helpers: { __ },
+        onstate({ changed, current }) {
+            const { settings, team } = current;
+            if (settings && (changed.settings || changed.team)) {
+                // populate `displayCustomField.key` if it hasn't been set yet
+                if (settings.displayCustomField.enabled && settings.displayCustomField.key === '') {
+                    const { customFieldOptions } = this.get();
+                    const firstOption = customFieldOptions[0];
+                    if (firstOption && firstOption.value) {
+                        settings.displayCustomField.key = firstOption.value;
+                    }
+                }
+                this.fire('change', {
+                    team,
+                    settings
+                });
+            }
+        }
+    };
+</script>

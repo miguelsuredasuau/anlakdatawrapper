@@ -23,15 +23,15 @@
 <style lang="scss">
     @import '../../styles/colors.scss';
 
-    .subline {
-        line-height: 1.2;
+    .dateline {
+        margin-top: -0.25rem;
     }
 </style>
 
 <VisualizationBoxDisplay link={`/chart/${chart.id}/edit`} {chart}>
-    <div slot="footer">
+    <div slot="belowTitle">
         {#if dateLine}
-            <div class="subline mt-2 has-text-grey-dark is-size-7">{dateLine}</div>
+            <div class="mb-2 has-text-grey-dark is-size-7 dateline">{dateLine}</div>
         {/if}
     </div>
 </VisualizationBoxDisplay>

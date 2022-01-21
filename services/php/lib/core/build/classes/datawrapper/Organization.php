@@ -163,7 +163,12 @@ class Organization extends BaseOrganization
             ],
             'restrictDefaultThemes' => false,
             'css' => '',
-            'flags' => []
+            'flags' => [],
+            'displayLocale' => false,
+            'displayCustomField' => [
+                'enabled' => false,
+                'key' => ""
+            ]
         ];
 
         $flagGroups = Hooks::execute(Hooks::TEAM_FLAGS) ?? [];

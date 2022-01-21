@@ -6,6 +6,7 @@ const { getUserLanguage } = require('../utils/index');
 const { groupCharts } = require('../utils/charts.cjs');
 const keyBy = require('lodash/keyBy');
 const mapValues = require('lodash/mapValues');
+const { byOrder } = require('../utils');
 
 module.exports = {
     name: 'routes/archive',
@@ -14,6 +15,7 @@ module.exports = {
         const config = server.methods.config();
 
         server.methods.prepareView('archive/Index.svelte');
+
         const Folder = server.methods.getModel('folder');
         const Team = server.methods.getModel('team');
         const Chart = server.methods.getModel('chart');
@@ -37,6 +39,20 @@ module.exports = {
                     'title'
                 )
                 .default('lastModifiedAt')
+        });
+
+        // we allow plugins like team-custom-fields to expose additional
+        // team settings instead of hard-coding them here
+        const pluginTeamSettingsFunctions = [];
+        server.method('addPublicTeamSettingsToArchive', func => {
+            pluginTeamSettingsFunctions.push(func);
+        });
+
+        // we allow plugins like team-custom-fields to display additional
+        // view components inside VisualizationBoxes
+        const pluginVisualizationBoxSublineFunctions = [];
+        server.method('registerArchiveVisualizationBoxSubline', func => {
+            pluginVisualizationBoxSublineFunctions.push(func);
         });
 
         server.route({
@@ -101,12 +117,19 @@ module.exports = {
                 ...(adminAccessingForeignTeam ? [await Team.findByPk(teamId)] : [])
             ]
                 .filter(Boolean) // Filter out null, because `Team.findByPk(teamId)` can return it.
-                .map(t => ({
-                    ...t.toJSON(),
-                    settings: {
-                        displayLocale: t.settings?.displayLocale || false
-                    }
-                }));
+                .map(t => {
+                    const pluginTeamSettings = {};
+                    pluginTeamSettingsFunctions.forEach(func => {
+                        Object.assign(pluginTeamSettings, func({ request, settings: t.settings }));
+                    });
+                    return {
+                        ...t.toJSON(),
+                        settings: {
+                            displayLocale: t.settings?.displayLocale || false,
+                            ...pluginTeamSettings
+                        }
+                    };
+                });
 
             const themeBgColors = await getThemeBgColors(
                 teams,
@@ -151,6 +174,11 @@ module.exports = {
 
             const folders = await getFolders(user, teams, minLastEditStep);
 
+            const visBoxSublines = [];
+            for (const func of pluginVisualizationBoxSublineFunctions) {
+                visBoxSublines.push(await func(request));
+            }
+
             return h.view('archive/Index.svelte', {
                 htmlClass: 'has-background-white-bis',
                 props: {
@@ -162,7 +190,8 @@ module.exports = {
                     teams,
                     foreignTeam: adminAccessingForeignTeam ? teamId : null,
                     minLastEditStep,
-                    themeBgColors
+                    themeBgColors,
+                    visBoxSublines: visBoxSublines.sort(byOrder)
                 }
             });
         }

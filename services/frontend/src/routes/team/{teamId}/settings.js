@@ -93,6 +93,34 @@ module.exports = {
             };
         });
 
+        server.methods.registerSettingsPage('team', async request => {
+            const __ = server.methods.getTranslate(request);
+            const { teamId } = request.params;
+            const user = request.auth.artifacts;
+            // TODO: when moving this view to the new frontend server we need
+            // to move the custom-field logic + ui to the team-custom-fields plugin
+            // therefor the /team/archive settings page needs to dispatch an event
+            // using which plugins can add "sections" to the archive setting page
+            const customFieldsEnabled = await user.mayUsePlugin('team-custom-fields');
+            return {
+                id: 'archive',
+                url: `/team/${teamId}/archive`,
+                title: __('teams / tab / archive'),
+                headline: __('teams / archive / h1'),
+                group: __('teams / group / users'),
+                svgIcon: 'cabinet',
+                svelte2: {
+                    id: 'svelte/team-settings/archive',
+                    js: '/static/js/svelte/team-settings/archive.js',
+                    css: '/static/css/svelte/team-settings/archive.css'
+                },
+                data: {
+                    customFieldsEnabled
+                },
+                order: 15
+            };
+        });
+
         server.methods.registerSettingsPage('team', request => {
             const __ = server.methods.getTranslate(request);
             const { teamId } = request.params;

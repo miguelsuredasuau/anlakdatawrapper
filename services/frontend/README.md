@@ -288,7 +288,9 @@ To avoid having to rewrite all our Svelte2 code at once the new frontend include
 
 Server methods are a way for plugins to hook new functionality into existing `frontend` components.
 
-### getDB
+## General server methods
+
+### `getDB`
 
 Useful for getting the server database instance
 
@@ -381,7 +383,9 @@ Internally, the view component import statements are [injected](src/utils/svelte
 
 See [our dashboard](src/views/dashboard/Index.svelte) for a live example.
 
-### `registerDashboardSidebarBoxes`
+## View-specific server methods
+
+### `registerDashboardSidebarBoxes` (dashboard)
 
 Register one or many boxes to be shown in our dashboard sidebar
 
@@ -390,7 +394,7 @@ Register one or many boxes to be shown in our dashboard sidebar
 server.methods.registerViewComponent({
     id: 'helloworld/name',
     page: 'dashboard/Index.svelte',
-    view: 'plugins/helloworld/PrintName.svelte'
+    view: '_plugins/hello-world/PrintName.svelte'
 });
 
 // then register the box controller
@@ -398,18 +402,42 @@ server.methods.registerDashboardSidebarBoxes(async request => {
     return [
         {
             order: 10,
-            component: 'helloworld/name',
+            component: 'hello-world/name',
             props: {
                 name: 'Alice'
             }
         },
         {
             order: 13,
-            component: 'helloworld/name',
+            component: 'hello-world/name',
             props: {
                 name: 'Bob'
             }
         }
     ];
 });
+```
+
+### `addPublicTeamSettingsToArchive` (archive)
+
+Plugins may expose additional team settings to the archive view:
+
+```js
+server.methods.addPublicTeamSettingsToArchive(({ settings }) => ({
+    myCustomSetting: settings?.myCustomSetting || false
+}));
+```
+
+### `registerArchiveVisualizationBoxSubline` (archive)
+
+Plugins may render additional view components (see above) as part of archive VisualizationBox sublines.
+
+```js
+server.methods.registerArchiveVisualizationBoxSubline(async () => ({
+    component: 'team-custom-fields/archive-custom-field',
+    order: 10,
+    props: {
+        someData: 42
+    }
+}));
 ```

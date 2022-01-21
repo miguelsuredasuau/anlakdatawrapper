@@ -59,7 +59,12 @@ const defaultSettings = {
     },
     restrictDefaultThemes: false,
     css: '',
-    flags: {}
+    flags: {},
+    displayLocale: false,
+    displayCustomField: {
+        enabled: false,
+        key: ''
+    }
 };
 
 const Team = db.define(
