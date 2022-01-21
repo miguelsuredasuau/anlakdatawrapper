@@ -37,3 +37,14 @@ test('chart has publicId', t => {
     const { chart } = t.context;
     t.is(typeof chart.getPublicId, 'function');
 });
+
+test('getThumbnailHash returns an md5 hash', async t => {
+    const { chart } = t.context;
+    t.is(chart.getThumbnailHash().length, 32);
+});
+
+test('getThumbnailHash throws an error when createdAt is not available', async t => {
+    const Chart = require('../models/Chart');
+    const chart = await Chart.findByPk(t.context.chart.id, { attributes: ['id'] });
+    t.throws(() => chart.getThumbnailHash());
+});

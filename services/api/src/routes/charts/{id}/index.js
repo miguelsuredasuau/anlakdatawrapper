@@ -162,6 +162,28 @@ async function getChart(request) {
     const { url, query, params, auth, server } = request;
 
     const options = {
+        attributes: [
+            'author_id',
+            'created_at',
+            'createdAt',
+            'external_data',
+            'forkable',
+            'forked_from',
+            'id',
+            'in_folder',
+            'is_fork',
+            'language',
+            'last_edit_step',
+            'last_modified_at',
+            'metadata',
+            'organization_id',
+            'public_url',
+            'public_version',
+            'published_at',
+            'theme',
+            'title',
+            'type'
+        ],
         where: {
             id: params.id,
             deleted: { [Op.not]: true }

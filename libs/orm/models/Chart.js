@@ -58,12 +58,12 @@ Chart.prototype.isPublishableBy = async function (user) {
 };
 
 Chart.prototype.getThumbnailHash = function () {
-    if (this.createdAt) {
-        return crypto
-            .createHash('md5')
-            .update(`${this.id}--${this.createdAt.getTime() / 1000}`)
-            .digest('hex');
-    }
+    if (!this.createdAt)
+        throw new Error("can't compute thumbnail hash without createdAt timestamp");
+    return crypto
+        .createHash('md5')
+        .update(`${this.id}--${this.createdAt.getTime() / 1000}`)
+        .digest('hex');
 };
 
 module.exports = Chart;
