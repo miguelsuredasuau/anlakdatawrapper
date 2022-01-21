@@ -3,13 +3,13 @@
     import Dropdown from '../_partials/Dropdown.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import ViewComponent from '_partials/ViewComponent.svelte';
+    import decodeHtml from '@datawrapper/shared/decodeHtml';
     import httpReq from '@datawrapper/shared/httpReq';
-    import purifyHTML from '@datawrapper/shared/purifyHtml';
-    import truncate from '@datawrapper/shared/truncate';
     import range from 'lodash/range';
+    import truncate from '@datawrapper/shared/truncate';
     import { getContext, tick } from 'svelte';
-    import { selectedCharts, query } from './stores';
     import { selectAll } from './shared';
+    import { selectedCharts, query } from './stores';
 
     const config = getContext('config');
     const user = getContext('user');
@@ -300,7 +300,7 @@
     <a on:click|preventDefault={() => openChart(chart)} href="/chart/{chart.id}/edit" class="viz">
         <figure class="image is-4by3">
             <figcaption
-                title={purifyHTML(chart.title, '')}
+                title={decodeHtml(chart.title)}
                 class="title is-size-6 is-size-5-fullhd mb-2 is-font-weight-medium"
                 bind:this={chartTitle}
                 contentEditable={isTitleEditable}
@@ -308,7 +308,7 @@
                 on:keypress={chartTitleKeyUp}
                 on:blur={chartTitleBlur}
             >
-                {purifyHTML(chart.title, '')}
+                {decodeHtml(chart.title)}
             </figcaption>
             {#if dateLine}
                 <div class="mb-2 has-text-grey-dark is-size-7 dateline">{dateLine}</div>
@@ -379,7 +379,7 @@
     <div class="drag-preview box">
         <div class="columns">
             <div class="column is-one-third"><img alt="preview" src={thumbnail} /></div>
-            <div class="column"><b>{truncate(purifyHTML(chart.title, ''), 40, 5)}</b></div>
+            <div class="column"><b>{truncate(decodeHtml(chart.title), 40, 5)}</b></div>
         </div>
     </div>
     {#if $selectedCharts && $selectedCharts.size > 1}

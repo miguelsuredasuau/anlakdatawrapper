@@ -23,7 +23,7 @@
         "@datawrapper/polyfills": "file:../../libs/polyfills",
         "@datawrapper/schemas": "file:../../libs/schemas",
         "@datawrapper/service-utils": "file:../../libs/service-utils",
-        "@datawrapper/shared": "^0.35.3",
+        "@datawrapper/shared": "^0.41.0",
         "@hapi/bell": "^12.2.0",
         "@hapi/catbox-memory": "^5.0.1",
         "@hapi/catbox-redis": "^6.0.2",

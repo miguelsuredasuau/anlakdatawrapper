@@ -111,7 +111,12 @@ function buildOptions(page, ssr) {
             alias({
                 entries: {
                     _layout: join(__dirname, '../../views/_layout'),
-                    _partials: join(__dirname, '../../views/_partials')
+                    _partials: join(__dirname, '../../views/_partials'),
+                    ...(ssr
+                        ? {
+                              '@datawrapper/shared/decodeHtml': '@datawrapper/shared/decodeHtml.ssr'
+                          }
+                        : {})
                 }
             }),
             json(),

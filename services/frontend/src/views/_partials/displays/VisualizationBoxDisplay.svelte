@@ -1,5 +1,5 @@
 <script>
-    import purifyHTML from '@datawrapper/shared/purifyHtml';
+    import decodeHtml from '@datawrapper/shared/decodeHtml';
     import { getContext, createEventDispatcher } from 'svelte';
     const config = getContext('config');
     const dispatch = createEventDispatcher();
@@ -45,10 +45,10 @@
     <a on:click={event => dispatch('click', { event, chart, link })} href={link}>
         <figure class="image is-4by3">
             <figcaption
-                title={purifyHTML(chart.title, '')}
+                title={decodeHtml(chart.title)}
                 class="title is-size-6 is-size-5-desktop is-font-weight-medium mb-2"
             >
-                {purifyHTML(chart.title, '')}
+                {decodeHtml(chart.title)}
             </figcaption>
             <slot name="belowTitle" />
             <div class="thumb" style="background-image: url({thumbnail})" />
