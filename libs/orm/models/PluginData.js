@@ -15,7 +15,7 @@ const PluginData = db.define(
             allowNull: false
         },
 
-        data: SQ.STRING(4096)
+        data: SQ.TEXT
     },
     {
         createdAt: 'stored_at',

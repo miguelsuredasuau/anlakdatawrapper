@@ -16,7 +16,7 @@ const UserData = db.define(
         },
 
         data: {
-            type: SQ.STRING(4096),
+            type: SQ.TEXT,
             field: 'value'
         }
     },
