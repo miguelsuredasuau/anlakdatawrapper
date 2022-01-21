@@ -1109,10 +1109,12 @@
   "teams / archive / p": "Manage settings of the archive view.",
   "teams / archive / locale": "Locale",
   "teams / archive / locale / label": "Show locale of visualizations",
-  "teams / archive / custom-fields": "Custom fields",
-  "teams / archive / custom-fields / label": "Show custom fields",
+  "teams / archive / custom-fields": "Custom field",
+  "teams / archive / custom-fields / label": "Show custom field",
   "teams / archive / custom-fields / p": "You can <a href='$1'>create custom fields here</a> and select one field to show in the archive view. Selected custom field will be shown when you select this team (\"$2\") as your active team.",
   "darkmode / caption-short": "Dark Mode",
   "teams / archive / locale / p": "Locale will be shown when you select this team (\"$1\") as your active team.",
-  "layout / auto-dark / intro / preview": "You can preview dark mode using these buttons below your visualization:"
+  "layout / auto-dark / intro / preview": "You can preview dark mode using these buttons below your visualization:",
+  "teams / archive / thumbnails / h3": "Visualization thumbnails",
+  "teams / archive / thumbnails / p": "Configure the labels displayed on the thumbnails in the archive."
 }

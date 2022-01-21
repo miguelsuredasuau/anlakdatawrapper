@@ -1099,7 +1099,7 @@
   "layout / auto-dark / help": "",
   "layout / auto-dark / label": "",
   "layout / auto-dark / disabled / always-on": "",
-  "layout / auto-dark / disabled / always-off": "",
+  "layout / auto-dark / disabled / always-off": "Der automatische Dunkelmodus wurde für das ausgewählte Design deaktiviert und kann nicht aktiviert werden.",
   "new": "Neu",
   "controls / template-string-editor / title-placeholder": "Titel eingeben",
   "controls / template-string-editor / body-placeholder": "Body Text eingeben",
@@ -1109,10 +1109,12 @@
   "teams / archive / p": "Verwalte die Einstellungen der Archiv-Seite.",
   "teams / archive / locale": "Sprache",
   "teams / archive / locale / label": "Sprache der Visualisierungen anzeigen",
-  "teams / archive / custom-fields": "Custom-Fields",
-  "teams / archive / custom-fields / label": "Custom-Fields anzeigen",
+  "teams / archive / custom-fields": "Custom-Field",
+  "teams / archive / custom-fields / label": "Custom-Field anzeigen",
   "teams / archive / custom-fields / p": "Du kannst <a href='$1'>Custom-Fields hier anlegen</a> und dann eins auswählen um auf der Archiv-Seite anzuzeigen. Das ausgewählte Custom-Field wird angezeigt, wenn du dieses Team (\"$2\") als dein aktives Team setzt.",
   "darkmode / caption-short": "",
   "teams / archive / locale / p": "Sprache wird angezeigt, wenn du dieses Team (\"$1\") als dein aktives Team setzt.",
-  "layout / auto-dark / intro / preview": ""
+  "layout / auto-dark / intro / preview": "Mit diesen Schaltflächen unter deiner Visualisierung kannst du eine Vorschau des Dunkelmodus anzeigen:",
+  "teams / archive / thumbnails / h3": "Visualisierungs-Vorschaubilder",
+  "teams / archive / thumbnails / p": "Setze Beschriftungen für die Vorschaubilder im Archiv."
 }
