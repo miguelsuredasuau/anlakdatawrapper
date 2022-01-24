@@ -7,8 +7,8 @@
     "author": "Datawrapper GmbH",
     "files": [],
     "scripts": {
-        "format": "prettier --plugin-search-dir=. '**/*.{js,cjs,mjs,html,svelte}' --write",
-        "lint": "prettier --check '**/*.{js,cjs,mjs,html,svelte}'",
+        "format": "scripts/format",
+        "lint": "scripts/lint",
         "test": "echo \"Error: no test specified\" && exit 1",
         "sync": "datawrapper-orm-sync",
         "api": "datawrapper-api",
@@ -45,6 +45,7 @@
         "rollup-plugin-node-resolve": "^5.2.0",
         "rollup-plugin-svelte": "^5.1.0",
         "rollup-plugin-uglify": "^6.0.4",
+        "shellcheck": "^1.1.0",
         "svelte": "^3.42.6"
     },
     "prettier": {
@@ -64,6 +65,9 @@
         "*.{js,cjs,mjs}": [
             "prettier --write",
             "eslint"
+        ],
+        "*.sh": [
+            "shellcheck"
         ]
     },
     "dependencies": {
