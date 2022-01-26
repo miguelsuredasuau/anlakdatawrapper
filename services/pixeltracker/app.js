@@ -1,20 +1,18 @@
-var express = require('express'),
-    http = require('http'),
-    mysql = require('mysql'),
-    moment = require('moment'),
-    _ = require('underscore'),
-    fs = require('fs'),
-    async = require('async'),
-    URL = require('url'),
-    normalizeUrl = require('normalize-url');
+const express = require('express');
+const http = require('http');
+const mysql = require('mysql');
+const moment = require('moment');
+const async = require('async');
+const URL = require('url');
+const normalizeUrl = require('normalize-url');
+const logger = require('./src/logger');
 
-var app = express();
+const app = express();
 
-var config_file = __dirname + '/production-config.json';
-// config_file = './config-gregor.json';
-const config = require(config_file);
+const configFile = __dirname + '/production-config.json';
+const config = require(configFile);
 
-app.configure(function(){
+app.configure(function () {
     app.set('port', 1234);
     app.use(express.favicon());
     app.use(express.bodyParser());
@@ -22,244 +20,337 @@ app.configure(function(){
     app.use(app.router);
 });
 
-var times = {};
+let times = {};
 
 app.set('connection', mysql.createConnection(config));
 
 function init() {
-    var chartHits = {},
-        domainHits = {},
-        chartUrls = {},
-        flushInterval,
-        pixel = require('fs').readFileSync(__dirname + '/pixel.gif');
+    let chartHits = {};
+    let domainHits = {};
+    let chartUrls = {};
+    const pixel = require('fs').readFileSync(__dirname + '/pixel.gif');
 
-    app.get('/health', function(req, res) {
-        var message = "";
+    app.get('/health', function (req, res) {
+        let message = '';
 
         if (!times.total) {
             message = 'I have no flush in memory at the moment.';
         } else {
-            message = ('The last flush took ' + times.total + "ms.\r\n\r\n"+
-              "- Fetching chart info took " + times.fetchChartInfo + "ms.\r\n"+
-              "- Creating the inserts took " + times.createInserts + "ms.\r\n"+
-              "- Running the inserts took " + times.runInserts + "ms."
-              );
+            message =
+                'The last flush took ' +
+                times.total +
+                'ms.\r\n\r\n' +
+                '- Fetching chart info took ' +
+                times.fetchChartInfo +
+                'ms.\r\n' +
+                '- Creating the inserts took ' +
+                times.createInserts +
+                'ms.\r\n' +
+                '- Running the inserts took ' +
+                times.runInserts +
+                'ms.';
         }
 
-        var msg = {
-            "response_type": "in_channel",
-            "text": message
+        const msg = {
+            response_type: 'in_channel',
+            text: message
         };
-
 
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(msg));
     });
 
-    app.get(/([a-zA-Z0-9]+)\/(?:pixel|datawrapper).gif/, function(req, res) {
-        var chart_id = req.params[0];
-        if (!chartHits[chart_id]) chartHits[chart_id] = 0;
-        chartHits[chart_id]++;
+    app.get(/([a-zA-Z0-9]+)\/(?:pixel|datawrapper).gif/, function (req, res) {
+        const chartId = req.params[0];
+        if (!chartHits[chartId]) chartHits[chartId] = 0;
+        chartHits[chartId]++;
 
-        var ref = req.query.r;
-        var domain = ref ? getDomain(ref) : 'direct';
+        const ref = req.query.r;
+        const domain = ref ? getDomain(ref) : 'direct';
         if (!domainHits[domain]) domainHits[domain] = 0;
         domainHits[domain]++;
 
-        var url = ref ? getNormalizedUrl(ref) : 'direct';
-        if (!chartUrls[chart_id]) chartUrls[chart_id] = {};
-        if (chartUrls[chart_id][url] === undefined) chartUrls[chart_id][url] = 0;
-        chartUrls[chart_id][url]++;
+        const url = ref ? getNormalizedUrl(ref) : 'direct';
+        if (!chartUrls[chartId]) chartUrls[chartId] = {};
+        if (chartUrls[chartId][url] === undefined) chartUrls[chartId][url] = 0;
+        chartUrls[chartId][url]++;
         res.end(pixel, 'binary');
     });
 
     function flush() {
-        console.log('Flushing Hits to DB...');
+        logger.info('Flushing Hits to DB...');
 
         // copy counter
-        var chartHits_copy = _.extend({}, chartHits),
-            domainHits_copy = _.extend({}, domainHits),
-            chartUrls_copy = _.extend({}, chartUrls);
+        const chartHitsCopy = { ...chartHits };
+        const domainHitsCopy = { ...domainHits };
+        const chartUrlsCopy = { ...chartUrls };
 
         // reset counter
         chartHits = {};
         domainHits = {};
         chartUrls = {};
 
-        var connection = app.get('connection');
+        const connection = app.get('connection');
 
         times = {
-            "start": Date.now(),
-            "fetchChartInfo": 0,
-            "createInserts": 0,
-            "runInserts": 0,
-            "end": 0,
-            "total": 0
+            start: Date.now(),
+            fetchChartInfo: 0,
+            createInserts: 0,
+            runInserts: 0,
+            end: 0,
+            total: 0
         };
 
         function getUserAndOrgForChartId(chartId, callback) {
-            connection.query('SELECT id, author_id, organization_id FROM chart WHERE id = ?', chartId, function(err, rows) {
-                if (rows.length == 0) {
-                    callback(undefined, {});
-                    return;
-                }
+            connection.query(
+                'SELECT id, author_id, organization_id FROM chart WHERE id = ?',
+                chartId,
+                function (err, rows) {
+                    if (rows.length === 0) {
+                        callback(undefined, {});
+                        return;
+                    }
 
-                callback(undefined, {
-                    "chartId": rows[0].id,
-                    "userId": rows[0].author_id,
-                    "orgId": rows[0].organization_id
-                });
-            });
+                    callback(undefined, {
+                        chartId: rows[0].id,
+                        userId: rows[0].author_id,
+                        orgId: rows[0].organization_id
+                    });
+                }
+            );
         }
 
-        console.log('Got connection. Fetching chart info...');
+        logger.info('Got connection. Fetching chart info...');
 
-        async.map(Object.keys(chartHits_copy), getUserAndOrgForChartId, function (err, results) {
-            console.log('Got chart info. Building inserts...');
+        async.map(Object.keys(chartHitsCopy), getUserAndOrgForChartId, function (err, results) {
+            logger.info('Got chart info. Building inserts...');
 
             times.fetchChartInfo = Date.now() - times.start;
 
-            connection.beginTransaction(function(err) {
-                var inserts = [];
+            connection.beginTransaction(function (err) {
+                if (err) {
+                    logger.warn(err);
+                }
+                const inserts = [];
 
-                _.each(domainHits_copy, function(views, domain) {
-                    if (domain && domain != "direct" && domain != "datawrapper.de" && domain != "datawrapper.dwcdn.net" && domain != 'null') {
-                        var thisMonth = moment().startOf('month').format('YYYY-MM-DD');
+                Object.keys(domainHitsCopy).forEach(domain => {
+                    if (
+                        domain &&
+                        domain !== 'direct' &&
+                        domain !== 'datawrapper.de' &&
+                        domain !== 'datawrapper.dwcdn.net' &&
+                        domain !== 'null'
+                    ) {
+                        const thisMonth = moment().startOf('month').format('YYYY-MM-DD');
 
-                        inserts.push(function(callback) {
+                        inserts.push(function (callback) {
                             connection.query(
-                              'INSERT INTO pixeltracker_domain_month (domain, date, views)' +
-                              'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                              [ domain, thisMonth, domainHits_copy[domain], domainHits_copy[domain] ],
-                              function (err) {
-                                  callback(null, 'finished');
-                            });
+                                'INSERT INTO pixeltracker_domain_month (domain, date, views)' +
+                                    'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
+                                [domain, thisMonth, domainHitsCopy[domain], domainHitsCopy[domain]],
+                                function (err) {
+                                    if (err) {
+                                        logger.warn(err);
+                                    }
+                                    callback(null, 'finished');
+                                }
+                            );
                         });
                     }
                 });
 
-                _.each(chartUrls_copy, function(urls, chart_id) {
-                    _.each(urls, function(views, url) {
-                        if (url != 'direct' && url.substr(0,28) != 'http://datawrapper.dwcdn.net') {
-                            // console.log(chart_id, views, url);
-                            inserts.push(function(callback) {
+                Object.keys(chartUrlsCopy).forEach(chartId => {
+                    Object.keys(chartUrlsCopy[chartId]).forEach(url => {
+                        if (
+                            url !== 'direct' &&
+                            url.substr(0, 28) !== 'http://datawrapper.dwcdn.net'
+                        ) {
+                            const views = chartUrlsCopy[chartId][url];
+                            inserts.push(function (callback) {
                                 connection.query(
-                                  'INSERT INTO pixeltracker_chart_embedurl (chart_id, url, views)' +
-                                  'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ? ',
-                                  [ chart_id, url, views, views ],
-                                  function (err) {
-                                      callback(null, 'finished');
-                                });
+                                    'INSERT INTO pixeltracker_chart_embedurl (chart_id, url, views)' +
+                                        'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ? ',
+                                    [chartId, url, views, views],
+                                    function (err) {
+                                        if (err) {
+                                            logger.warn(err);
+                                        }
+                                        callback(null, 'finished');
+                                    }
+                                );
                             });
                         }
                     });
                 });
 
-                results.forEach(function(el) {
+                results.forEach(function (el) {
                     if (el.chartId === undefined) {
                         return;
                         // if no chartId is set, the chart was not found in the database,
                         // and we don't want to track this hit.
                     }
 
-                    inserts.push(function(callback) {
+                    inserts.push(function (callback) {
                         connection.query(
-                          'INSERT INTO pixeltracker_chart (chart_id, views)' +
-                          'VALUES (?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                          [ el.chartId, chartHits_copy[el.chartId], chartHits_copy[el.chartId] ],
-                          function (err) {
-                              callback(null, 'finished');
-                        });
+                            'INSERT INTO pixeltracker_chart (chart_id, views)' +
+                                'VALUES (?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
+                            [el.chartId, chartHitsCopy[el.chartId], chartHitsCopy[el.chartId]],
+                            function (err) {
+                                if (err) {
+                                    logger.warn(err);
+                                }
+                                callback(null, 'finished');
+                            }
+                        );
                     });
 
-
-                    if (typeof el.userId == "number") {
-                        inserts.push(function(callback) {
-                            var today = moment().startOf('day').format('YYYY-MM-DD');
+                    if (typeof el.userId === 'number') {
+                        inserts.push(function (callback) {
+                            const today = moment().startOf('day').format('YYYY-MM-DD');
 
                             connection.query(
-                              'INSERT INTO pixeltracker_user_day (user_id, date, views)' +
-                              'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                              [ el.userId, today, chartHits_copy[el.chartId], chartHits_copy[el.chartId] ],
-                              function (err) {
-                                  callback(null, 'finished');
-                            });
+                                'INSERT INTO pixeltracker_user_day (user_id, date, views)' +
+                                    'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
+                                [
+                                    el.userId,
+                                    today,
+                                    chartHitsCopy[el.chartId],
+                                    chartHitsCopy[el.chartId]
+                                ],
+                                function (err) {
+                                    if (err) {
+                                        logger.warn(err);
+                                    }
+                                    callback(null, 'finished');
+                                }
+                            );
                         });
 
-                        inserts.push(function(callback) {
-                            var thisWeek = moment().startOf('isoweek').format('YYYY-MM-DD');
+                        inserts.push(function (callback) {
+                            const thisWeek = moment().startOf('isoweek').format('YYYY-MM-DD');
 
                             connection.query(
-                              'INSERT INTO pixeltracker_user_week (user_id, date, views)' +
-                              'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                              [ el.userId, thisWeek, chartHits_copy[el.chartId], chartHits_copy[el.chartId] ],
-                              function (err) {
-                                  callback(null, 'finished');
-                            });
+                                'INSERT INTO pixeltracker_user_week (user_id, date, views)' +
+                                    'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
+                                [
+                                    el.userId,
+                                    thisWeek,
+                                    chartHitsCopy[el.chartId],
+                                    chartHitsCopy[el.chartId]
+                                ],
+                                function (err) {
+                                    if (err) {
+                                        logger.warn(err);
+                                    }
+                                    callback(null, 'finished');
+                                }
+                            );
                         });
 
-                        inserts.push(function(callback) {
-                            var thisMonth = moment().startOf('month').format('YYYY-MM-DD');
+                        inserts.push(function (callback) {
+                            const thisMonth = moment().startOf('month').format('YYYY-MM-DD');
 
                             connection.query(
-                              'INSERT INTO pixeltracker_user_month (user_id, date, views)' +
-                              'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                              [ el.userId, thisMonth, chartHits_copy[el.chartId], chartHits_copy[el.chartId] ],
-                              function (err) {
-                                  callback(null, 'finished');
-                            });
-                        });
-                    }
-
-                    if (typeof el.orgId === "string") {
-                        inserts.push(function(callback) {
-                            var today = moment().startOf('day').format('YYYY-MM-DD');
-
-                            connection.query(
-                              'INSERT INTO pixeltracker_organization_day (organization_id, date, views)' +
-                              'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                              [ el.orgId, today, chartHits_copy[el.chartId], chartHits_copy[el.chartId] ],
-                              function (err) {
-                                  callback(null, 'finished');
-                            });
-                        });
-
-                        inserts.push(function(callback) {
-                            var thisWeek = moment().startOf('isoweek').format('YYYY-MM-DD');
-
-                            connection.query(
-                              'INSERT INTO pixeltracker_organization_week (organization_id, date, views)' +
-                              'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                              [ el.orgId, thisWeek, chartHits_copy[el.chartId], chartHits_copy[el.chartId] ],
-                              function (err) {
-                                  callback(null, 'finished');
-                            });
-                        });
-
-                        inserts.push(function(callback) {
-                            var thisMonth = moment().startOf('month').format('YYYY-MM-DD');
-
-                            connection.query(
-                              'INSERT INTO pixeltracker_organization_month (organization_id, date, views)' +
-                              'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                              [ el.orgId, thisMonth, chartHits_copy[el.chartId], chartHits_copy[el.chartId] ],
-                              function (err) {
-                                  callback(null, 'finished');
-                            });
+                                'INSERT INTO pixeltracker_user_month (user_id, date, views)' +
+                                    'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
+                                [
+                                    el.userId,
+                                    thisMonth,
+                                    chartHitsCopy[el.chartId],
+                                    chartHitsCopy[el.chartId]
+                                ],
+                                function (err) {
+                                    if (err) {
+                                        logger.warn(err);
+                                    }
+                                    callback(null, 'finished');
+                                }
+                            );
                         });
                     }
 
+                    if (typeof el.orgId === 'string') {
+                        inserts.push(function (callback) {
+                            const today = moment().startOf('day').format('YYYY-MM-DD');
+
+                            connection.query(
+                                'INSERT INTO pixeltracker_organization_day (organization_id, date, views)' +
+                                    'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
+                                [
+                                    el.orgId,
+                                    today,
+                                    chartHitsCopy[el.chartId],
+                                    chartHitsCopy[el.chartId]
+                                ],
+                                function (err) {
+                                    if (err) {
+                                        logger.warn(err);
+                                    }
+                                    callback(null, 'finished');
+                                }
+                            );
+                        });
+
+                        inserts.push(function (callback) {
+                            const thisWeek = moment().startOf('isoweek').format('YYYY-MM-DD');
+
+                            connection.query(
+                                'INSERT INTO pixeltracker_organization_week (organization_id, date, views)' +
+                                    'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
+                                [
+                                    el.orgId,
+                                    thisWeek,
+                                    chartHitsCopy[el.chartId],
+                                    chartHitsCopy[el.chartId]
+                                ],
+                                function (err) {
+                                    if (err) {
+                                        logger.warn(err);
+                                    }
+                                    callback(null, 'finished');
+                                }
+                            );
+                        });
+
+                        inserts.push(function (callback) {
+                            const thisMonth = moment().startOf('month').format('YYYY-MM-DD');
+
+                            connection.query(
+                                'INSERT INTO pixeltracker_organization_month (organization_id, date, views)' +
+                                    'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
+                                [
+                                    el.orgId,
+                                    thisMonth,
+                                    chartHitsCopy[el.chartId],
+                                    chartHitsCopy[el.chartId]
+                                ],
+                                function (err) {
+                                    if (err) {
+                                        logger.warn(err);
+                                    }
+                                    callback(null, 'finished');
+                                }
+                            );
+                        });
+                    }
                 });
 
                 times.createInserts = Date.now() - times.start - times.fetchChartInfo;
 
-                console.log('Inserts are ready. Executing them...');
+                logger.info('Inserts are ready. Executing them...');
 
-                async.series(inserts, function(err, results) {
-                    console.log('Committing Transaction...');
-                    connection.commit(function(err) {
-                        console.log('We are done here!');
-                        times.runInserts = Date.now() - times.start - times.fetchChartInfo - times.createInserts;
+                async.series(inserts, function (err) {
+                    if (err) {
+                        logger.warn(err);
+                    }
+                    logger.info('Committing Transaction...');
+                    connection.commit(function (err) {
+                        if (err) {
+                            logger.warn(err);
+                        }
+                        logger.info('We are done here!');
+                        times.runInserts =
+                            Date.now() - times.start - times.fetchChartInfo - times.createInserts;
                         times.end = Date.now();
                         times.total = times.end - times.start;
                     });
@@ -268,34 +359,38 @@ function init() {
         });
     }
 
-    var interval = config.intervalMin + Math.round(Math.random() * (config.intervalMax - config.intervalMin));
-    flushInterval = setInterval(flush, interval);
+    const interval =
+        config.intervalMin + Math.round(Math.random() * (config.intervalMax - config.intervalMin));
+    setInterval(flush, interval);
 
-    http.createServer(app).listen(app.get('port'), function(){
-        console.log("Express server listening on port " + app.get('port'));
+    http.createServer(app).listen(app.get('port'), function () {
+        logger.info('Express server listening on port ' + app.get('port'));
     });
 }
 
-var client = app.get('connection');
-async.series([
-    function connect(callback) {
-        client.connect(callback);
-    },
-    function use_db(callback) {
-        client.query('USE ' + config.database, callback);
+const client = app.get('connection');
+async.series(
+    [
+        function connect(callback) {
+            client.connect(callback);
+        },
+        function useDb(callback) {
+            client.query('USE ' + config.database, callback);
+        }
+    ],
+    function (err) {
+        if (err) {
+            logger.warn('Exception initializing database.');
+            throw err;
+        } else {
+            logger.info('Database initialization complete.');
+            init();
+        }
     }
-], function (err, results) {
-    if (err) {
-        console.log('Exception initializing database.');
-        throw err;
-    } else {
-        console.log('Database initialization complete.');
-        init();
-    }
-});
+);
 
 function getDomain(url) {
-    var hn = URL.parse(url).hostname;
+    const hn = URL.parse(url).hostname;
     try {
         return hn ? hn.replace(/^www\./, '') : hn;
     } catch (e) {
