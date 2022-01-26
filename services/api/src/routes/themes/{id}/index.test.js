@@ -1,5 +1,6 @@
 const test = require('ava');
 const { createUser, destroy, setup } = require('../../../../test/helpers/setup');
+const { findDarkModeOverrideKeys } = require('./utils');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
@@ -182,4 +183,29 @@ test('Should be possible to upload a font that includes woff2 only', async t => 
     });
 
     t.is(res.statusCode, 200);
+});
+
+test('findDarkModeOverrideKeys works as expected ', async t => {
+    const colorKeys = await findDarkModeOverrideKeys();
+
+    // findDarkModeOverrideKeys identifies colorkeys within schema objects of type 'link'
+    const blocksColorKeys = colorKeys
+        .map(d => d.path)
+        .filter(path => path.match(/^options\.blocks/));
+    const expected = [
+        'options.blocks.logo.data.options',
+        'options.blocks.hr.data.border',
+        'options.blocks.hr1.data.border',
+        'options.blocks.hr2.data.border',
+        'options.blocks.svg-rule.data.color',
+        'options.blocks.svg-rule1.data.color',
+        'options.blocks.svg-rule2.data.color'
+    ];
+
+    t.deepEqual(blocksColorKeys, expected);
+
+    // findDarkModeOverrideKeys identifies items that specify meta({overrideSupport: ["darkMode"]})
+    ['options.blocks.logo.data.options', 'vis.locator-maps.mapStyles'].forEach(path => {
+        t.is(colorKeys.map(d => d.path).includes(path), true);
+    });
 });

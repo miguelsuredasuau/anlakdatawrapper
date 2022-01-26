@@ -3,7 +3,13 @@ html(lang=CHART_LOCALE)
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    style!=CSS
+    style!=FONT_CSS
+    if DARK_MODE
+      style(id="css-dark")!=CSS_DARK
+      style(id="css-light" media="--disabled--")!=CSS
+    else
+      style(id="css-dark" media="--disabled--")!=CSS_DARK
+      style(id="css-light")!=CSS
     | !{CHART_HEAD}
 
   body

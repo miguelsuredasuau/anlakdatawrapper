@@ -4,14 +4,25 @@ const assign = require('assign-deep');
 const { compileFontCSS } = require('../../../publish/compile-css.js');
 const { themeId } = require('../utils');
 const { Theme, User, Team, Chart } = require('@datawrapper/orm/models');
+const get = require('lodash/get');
+const set = require('lodash/set');
+const chroma = require('chroma-js');
+const invertColor = require('@datawrapper/shared/invertColor.cjs');
+const { findDarkModeOverrideKeys } = require('./utils');
 
 module.exports = {
     name: 'routes/themes/{id}',
     version: '1.0.0',
     register: server => {
+        const config = server.methods.config();
+        const useThemeCache = get(config, 'general.cache.themes');
         const styleCache = server.cache({ segment: 'vis-styles', shared: true });
         const githeadCache = server.cache({ segment: 'vis-githead', shared: true });
-        const themeCache = server.cache({ segment: 'themes', shared: true });
+        const themeCache = server.cache({
+            segment: 'themes',
+            shared: true,
+            expiresIn: 86400000 /* 1 day */
+        });
 
         // GET /v3/themes/{id}
         server.route({
@@ -27,7 +38,8 @@ module.exports = {
                         id: themeId().required()
                     }),
                     query: Joi.object({
-                        extend: Joi.boolean().default(false)
+                        extend: Joi.boolean().default(false),
+                        dark: Joi.boolean().default(false)
                     })
                 }
             },
@@ -112,6 +124,7 @@ module.exports = {
                     }
 
                     await themeCache.drop(`${t.id}`);
+                    await themeCache.drop(`${t.id}/dark`);
                 }
 
                 return theme.toJSON();
@@ -150,6 +163,8 @@ module.exports = {
                     }
                 );
                 await theme.destroy();
+                await themeCache.drop(`${theme.id}`);
+                await themeCache.drop(`${theme.id}/dark`);
                 return h.response().code(204);
             }
         });
@@ -170,65 +185,175 @@ module.exports = {
                 }
             }
         }
+
+        async function getTheme(request) {
+            const { server, params, query, url } = request;
+            const themeCacheKey = `${params.id}${query.dark ? '/dark' : ''}`;
+            if (useThemeCache) {
+                const cachedTheme = await themeCache.get(themeCacheKey);
+                if (cachedTheme) return cachedTheme;
+            }
+
+            let originalExtend;
+            let dataValues = { extend: params.id, data: {} };
+            let overrides = [];
+
+            while (dataValues.extend) {
+                const extendedTheme = await Theme.findByPk(dataValues.extend);
+
+                if (!extendedTheme) return Boom.notFound();
+
+                if (get(extendedTheme.data, 'overrides')) {
+                    overrides = [...get(extendedTheme.data, 'overrides'), ...overrides];
+                }
+
+                if (!originalExtend) {
+                    originalExtend = extendedTheme.extend;
+                }
+
+                if (!dataValues.id) {
+                    dataValues = {
+                        ...extendedTheme.dataValues,
+                        assets: extendedTheme.assets,
+                        data: extendedTheme.data
+                    };
+                }
+
+                if (extendedTheme.less !== dataValues.less) {
+                    dataValues.less = `${extendedTheme.less || ''}
+${dataValues.less || ''}
+`;
+                }
+
+                dataValues.data = assign(extendedTheme.data, dataValues.data);
+                dataValues.assets = { ...extendedTheme.assets, ...dataValues.assets };
+                dataValues.extend = extendedTheme.extend;
+
+                if (!query.extend) break;
+            }
+
+            dataValues.extend = originalExtend;
+            dataValues.url = url.pathname;
+            if (overrides.length) {
+                dataValues.data.overrides = overrides;
+            }
+
+            if (server.methods.isAdmin(request)) {
+                try {
+                    await server.methods.validateThemeData(dataValues.data);
+                    dataValues.errors = [];
+                } catch (err) {
+                    if (err.name === 'ValidationError') {
+                        dataValues.errors = err.details;
+                    } else {
+                        throw err;
+                    }
+                }
+            }
+
+            const { created_at, ...theme } = dataValues;
+
+            const { darkBg, origBg, origBgLum: bgColorLum } = getBackgroundColors(theme);
+            const origGradients = get(theme, 'data.colors.gradients', []);
+
+            if (bgColorLum >= 0.3) {
+                if (query.dark) {
+                    await convertToDarkMode({ theme, darkBg, origBg });
+                }
+            } else {
+                // this theme is dark already, prevent dark mode preview
+                set(
+                    theme,
+                    'data.options.darkMode.preview',
+                    get(theme, 'data.options.darkMode.preview', false)
+                );
+            }
+            set(theme, '_computed.bgLight', origBg);
+            set(theme, '_computed.bgDark', darkBg);
+            set(theme, '_computed.origGradients', origGradients);
+
+            const fonts = getThemeFonts(theme);
+            const fontsCSS = await compileFontCSS(fonts, theme.data);
+            const result = { ...theme, fonts, createdAt: created_at, fontsCSS };
+            if (useThemeCache) {
+                themeCache.set(themeCacheKey, result);
+            }
+            return result;
+        }
     }
 };
 
-async function getTheme(request) {
-    const { server, params, query, url } = request;
+async function convertToDarkMode({ theme, darkBg, origBg }) {
+    // get dark mode settings
+    const darkMode = mergeOverrides(theme, d => d.type === 'darkMode');
 
-    let originalExtend;
-    let dataValues = { extend: params.id, data: {} };
+    const themeColorKeys = await findDarkModeOverrideKeys(theme);
 
-    while (dataValues.extend) {
-        const extendedTheme = await Theme.findByPk(dataValues.extend);
-
-        if (!extendedTheme) return Boom.notFound();
-
-        if (!originalExtend) {
-            originalExtend = extendedTheme.extend;
-        }
-
-        if (!dataValues.id) {
-            dataValues = {
-                ...extendedTheme.dataValues,
-                assets: extendedTheme.assets,
-                data: extendedTheme.data
-            };
-        }
-
-        if (extendedTheme.less !== dataValues.less) {
-            dataValues.less = `${extendedTheme.less || ''}
-${dataValues.less || ''}
-`;
-        }
-
-        dataValues.data = assign(extendedTheme.data, dataValues.data);
-        dataValues.assets = { ...extendedTheme.assets, ...dataValues.assets };
-        dataValues.extend = extendedTheme.extend;
-
-        if (!query.extend) break;
-    }
-
-    dataValues.extend = originalExtend;
-    dataValues.url = url.pathname;
-
-    if (server.methods.isAdmin(request)) {
-        try {
-            await server.methods.validateThemeData(dataValues.data);
-            dataValues.errors = [];
-        } catch (err) {
-            if (err.name === 'ValidationError') {
-                dataValues.errors = err.details;
-            } else {
-                throw err;
+    themeColorKeys.forEach(({ path: key, noInvert }) => {
+        const darkThemeVal = get(darkMode, key);
+        if (darkThemeVal) {
+            set(theme.data, key, darkThemeVal);
+        } else {
+            const oldVal = get(theme.data, key);
+            if (oldVal && !noInvert) {
+                set(
+                    theme.data,
+                    key,
+                    Array.isArray(oldVal)
+                        ? oldVal.map(convertColor)
+                        : typeof oldVal === 'string' && oldVal.includes(' ')
+                        ? oldVal
+                              .split(' ')
+                              .map(part => (chroma.valid(part) ? convertColor(part) : part))
+                              .join(' ')
+                        : convertColor(oldVal)
+                );
+            } else if (key === 'colors.chartContentBaseColor') {
+                set(theme.data, key, '#eeeeee');
             }
         }
-    }
 
-    const { created_at, ...theme } = dataValues;
-    const fonts = getThemeFonts(theme);
-    const fontsCSS = await compileFontCSS(fonts, theme.data);
-    return { ...theme, fonts, createdAt: created_at, fontsCSS };
+        function convertColor(lightColor) {
+            if (!chroma.valid(lightColor)) return lightColor;
+            const lightContrast = chroma.contrast(origBg, lightColor);
+            return invertColor(
+                lightColor,
+                darkBg,
+                origBg,
+                1.4 +
+                    // boost text contrast if old text contrast was low already
+                    (lightContrast < 8 && (key.includes('typography') || key.includes('text'))
+                        ? 0.2
+                        : 0)
+            );
+        }
+    });
+
+    set(theme, 'data.colors.background', darkBg);
+    if (get(theme, 'data.style.body.background')) {
+        set(theme, 'data.style.body.background', darkBg);
+    }
+}
+
+function getBackgroundColors(theme) {
+    const origBg = get(
+        theme.data,
+        'colors.background',
+        get(theme.data, 'style.body.background', '#ffffff')
+    );
+    const origBgLum = chroma(origBg).luminance();
+    const darkMode = mergeOverrides(theme, d => d.type === 'darkMode');
+    const darkBg =
+        origBgLum < 0.3
+            ? origBg
+            : get(
+                  darkMode,
+                  'colors.background',
+                  chroma(origBg)
+                      .luminance(origBgLum > 0.5 ? 1 - origBgLum : origBgLum * 0.5)
+                      .hex()
+              );
+    return { darkBg, origBg, origBgLum };
 }
 
 function getThemeFonts(theme) {
@@ -238,4 +363,16 @@ function getThemeFonts(theme) {
         if (theme.assets[key].type === 'font') fonts[key] = value;
     }
     return fonts;
+}
+
+function mergeOverrides(theme, filterFunc) {
+    const merged = {};
+    get(theme.data, 'overrides', []).forEach(({ type, settings }) => {
+        if (!filterFunc || filterFunc({ type, settings })) {
+            Object.entries(settings).forEach(([key, value]) => {
+                set(merged, key, value);
+            });
+        }
+    });
+    return merged;
 }

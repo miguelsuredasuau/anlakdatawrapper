@@ -5,21 +5,13 @@ const { getUserData, setUserData } = require('@datawrapper/orm/utils/userData');
 const uniq = require('lodash/uniq');
 const set = require('lodash/set');
 const get = require('lodash/get');
-const {
-    Action,
-    Chart,
-    ChartAccessToken,
-    ChartPublic,
-    User,
-    Theme
-} = require('@datawrapper/orm/models');
+const { Action, Chart, ChartAccessToken, ChartPublic, User } = require('@datawrapper/orm/models');
 const { Op } = require('@datawrapper/orm').db;
 const { createResponseConfig } = require('../../../schemas/response');
 const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
 const { getAdditionalMetadata, prepareChart } = require('../../../utils/index.js');
 const { getEmbedCodes } = require('./utils');
 const { getScope } = require('@datawrapper/service-utils/l10n');
-const { compileFontCSS } = require('../../../publish/compile-css.js');
 
 const configPath = findConfigPath();
 const config = require(configPath);
@@ -61,6 +53,9 @@ module.exports = server => {
                 access: { scope: ['chart:write'] }
             },
             validate: {
+                query: Joi.object({
+                    dark: Joi.boolean().default(false)
+                }).unknown(true),
                 params: Joi.object({
                     id: Joi.string().length(5).required()
                 })
@@ -371,22 +366,23 @@ async function publishData(request) {
     data.chart.theme = themeId;
 
     // the theme
-    const theme = await Theme.findByPk(themeId);
-    if (!theme) {
+    const themeRes = await request.server.inject({
+        url: `/v3/themes/${themeId}?extend=true&dark=${query.dark}`,
+        auth,
+        headers
+    });
+
+    if (themeRes.result.statusCode === 404) {
         return Boom.badRequest("Chart theme doesn't exist");
     }
-    data.theme = {
-        id: theme.id,
-        data: await theme.getMergedData(),
-        fonts: await theme.getMergedAssets()
-    };
-    data.theme.fontsCSS = await compileFontCSS(data.theme.fonts, data.theme.data);
+    data.theme = themeRes.result;
+    // data.theme.fontsCSS = await compileFontCSS(data.theme.fonts, data.theme.data);
 
     // the styles
     const styleRes = await request.server.inject({
-        url: `/v3/visualizations/${
-            data.visualization.id
-        }/styles.css?theme=${themeId}&transparent=${!!query.transparent}`,
+        url: `/v3/visualizations/${data.visualization.id}/styles.css?theme=${themeId}&dark=${
+            query.dark
+        }&transparent=${!!query.transparent}`,
         auth,
         headers
     });

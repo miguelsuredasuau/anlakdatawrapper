@@ -28,6 +28,7 @@ module.exports = server => {
             validate: {
                 query: Joi.object({
                     theme: Joi.string().default('datawrapper'),
+                    dark: Joi.boolean().optional().default(false),
                     transparent: Joi.boolean().optional().default(false)
                 })
             }
@@ -42,7 +43,7 @@ module.exports = server => {
         if (!vis) return Boom.notFound();
 
         const { result: theme, statusCode: themeCode } = await server.inject({
-            url: `/v3/themes/${query.theme}?extend=true`
+            url: `/v3/themes/${query.theme}?extend=true&dark=${query.dark}`
         });
 
         if (themeCode !== 200) return Boom.badRequest(`Theme [${query.theme}] does not exist.`);
@@ -57,7 +58,7 @@ module.exports = server => {
 
         const githead = (await githeadCache.get(vis.id)) || 'head';
 
-        const cacheKey = `${query.theme}__${params.id}__${githead}`;
+        const cacheKey = `${query.theme}__${params.id}${query.dark ? '__dark' : ''}__${githead}`;
         const cachedCSS = await styleCache.get(cacheKey);
         const cacheStyles = get(server.methods.config('general'), 'cache.styles', false);
 

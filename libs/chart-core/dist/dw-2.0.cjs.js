@@ -28,7 +28,7 @@ function formatDelimited(
         .join(lineTerminator);
 }
 
-var delimited = {
+var delimited$1 = {
     formatDelimited
 };
 
@@ -190,7 +190,7 @@ var isDataView$1 = (hasStringTagBug ? ie10IsDataView : isDataView);
 var isArray = nativeIsArray || tagTester('Array');
 
 // Internal function to check whether `key` is an own property name of `obj`.
-function has(obj, key) {
+function has$1(obj, key) {
   return obj != null && hasOwnProperty.call(obj, key);
 }
 
@@ -201,7 +201,7 @@ var isArguments = tagTester('Arguments');
 (function() {
   if (!isArguments(arguments)) {
     isArguments = function(obj) {
-      return has(obj, 'callee');
+      return has$1(obj, 'callee');
     };
   }
 }());
@@ -288,7 +288,7 @@ function collectNonEnumProps(obj, keys) {
 
   // Constructor is a special case.
   var prop = 'constructor';
-  if (has(obj, prop) && !keys.contains(prop)) keys.push(prop);
+  if (has$1(obj, prop) && !keys.contains(prop)) keys.push(prop);
 
   while (nonEnumIdx--) {
     prop = nonEnumerableProps[nonEnumIdx];
@@ -304,7 +304,7 @@ function keys(obj) {
   if (!isObject(obj)) return [];
   if (nativeKeys) return nativeKeys(obj);
   var keys = [];
-  for (var key in obj) if (has(obj, key)) keys.push(key);
+  for (var key in obj) if (has$1(obj, key)) keys.push(key);
   // Ahem, IE < 9.
   if (hasEnumBug) collectNonEnumProps(obj, keys);
   return keys;
@@ -338,24 +338,24 @@ function isMatch(object, attrs) {
 // If Underscore is called as a function, it returns a wrapped object that can
 // be used OO-style. This wrapper holds altered versions of all functions added
 // through `_.mixin`. Wrapped objects may be chained.
-function _(obj) {
-  if (obj instanceof _) return obj;
-  if (!(this instanceof _)) return new _(obj);
+function _$1(obj) {
+  if (obj instanceof _$1) return obj;
+  if (!(this instanceof _$1)) return new _$1(obj);
   this._wrapped = obj;
 }
 
-_.VERSION = VERSION;
+_$1.VERSION = VERSION;
 
 // Extracts the result from a wrapped and chained object.
-_.prototype.value = function() {
+_$1.prototype.value = function() {
   return this._wrapped;
 };
 
 // Provide unwrapping proxies for some methods used in engine operations
 // such as arithmetic and JSON stringification.
-_.prototype.valueOf = _.prototype.toJSON = _.prototype.value;
+_$1.prototype.valueOf = _$1.prototype.toJSON = _$1.prototype.value;
 
-_.prototype.toString = function() {
+_$1.prototype.toString = function() {
   return String(this._wrapped);
 };
 
@@ -390,8 +390,8 @@ function eq(a, b, aStack, bStack) {
 // Internal recursive comparison function for `_.isEqual`.
 function deepEq(a, b, aStack, bStack) {
   // Unwrap any wrapped objects.
-  if (a instanceof _) a = a._wrapped;
-  if (b instanceof _) b = b._wrapped;
+  if (a instanceof _$1) a = a._wrapped;
+  if (b instanceof _$1) b = b._wrapped;
   // Compare `[[Class]]` names.
   var className = toString.call(a);
   if (className !== toString.call(b)) return false;
@@ -483,7 +483,7 @@ function deepEq(a, b, aStack, bStack) {
     while (length--) {
       // Deep compare each member
       key = _keys[length];
-      if (!(has(b, key) && eq(a[key], b[key], aStack, bStack))) return false;
+      if (!(has$1(b, key) && eq(a[key], b[key], aStack, bStack))) return false;
     }
   }
   // Remove the first object from the stack of traversed objects.
@@ -647,7 +647,7 @@ function create(prototype, props) {
 }
 
 // Create a (shallow-cloned) duplicate of an object.
-function clone(obj) {
+function clone$1(obj) {
   if (!isObject(obj)) return obj;
   return isArray(obj) ? obj.slice() : extend({}, obj);
 }
@@ -662,15 +662,15 @@ function tap(obj, interceptor) {
 
 // Normalize a (deep) property `path` to array.
 // Like `_.iteratee`, this function can be customized.
-function toPath(path) {
+function toPath$1(path) {
   return isArray(path) ? path : [path];
 }
-_.toPath = toPath;
+_$1.toPath = toPath$1;
 
 // Internal wrapper for `_.toPath` to enable minification.
 // Similar to `cb` for `_.iteratee`.
-function toPath$1(path) {
-  return _.toPath(path);
+function toPath(path) {
+  return _$1.toPath(path);
 }
 
 // Internal function to obtain a nested property in `obj` along `path`.
@@ -687,20 +687,20 @@ function deepGet(obj, path) {
 // If any property in `path` does not exist or if the value is
 // `undefined`, return `defaultValue` instead.
 // The `path` is normalized through `_.toPath`.
-function get(object, path, defaultValue) {
-  var value = deepGet(object, toPath$1(path));
+function get$1(object, path, defaultValue) {
+  var value = deepGet(object, toPath(path));
   return isUndefined(value) ? defaultValue : value;
 }
 
 // Shortcut function for checking if an object has a given property directly on
 // itself (in other words, not on a prototype). Unlike the internal `has`
 // function, this public version can also traverse nested properties.
-function has$1(obj, path) {
-  path = toPath$1(path);
+function has(obj, path) {
+  path = toPath(path);
   var length = path.length;
   for (var i = 0; i < length; i++) {
     var key = path[i];
-    if (!has(obj, key)) return false;
+    if (!has$1(obj, key)) return false;
     obj = obj[key];
   }
   return !!length;
@@ -723,7 +723,7 @@ function matcher(attrs) {
 // Creates a function that, when passed an object, will traverse that object’s
 // properties down the given `path`, specified as an array of keys or indices.
 function property(path) {
-  path = toPath$1(path);
+  path = toPath(path);
   return function(obj) {
     return deepGet(obj, path);
   };
@@ -767,12 +767,12 @@ function baseIteratee(value, context, argCount) {
 function iteratee(value, context) {
   return baseIteratee(value, context, Infinity);
 }
-_.iteratee = iteratee;
+_$1.iteratee = iteratee;
 
 // The function we call internally to generate a callback. It invokes
 // `_.iteratee` if overridden, otherwise `baseIteratee`.
 function cb(value, context, argCount) {
-  if (_.iteratee !== iteratee) return _.iteratee(value, context);
+  if (_$1.iteratee !== iteratee) return _$1.iteratee(value, context);
   return baseIteratee(value, context, argCount);
 }
 
@@ -797,7 +797,7 @@ function noop(){}
 function propertyOf(obj) {
   if (obj == null) return noop;
   return function(path) {
-    return get(obj, path);
+    return get$1(obj, path);
   };
 }
 
@@ -810,7 +810,7 @@ function times(n, iteratee, context) {
 }
 
 // Return a random integer between `min` and `max` (inclusive).
-function random(min, max) {
+function random$1(min, max) {
   if (max == null) {
     max = min;
     min = 0;
@@ -850,17 +850,17 @@ var escapeMap = {
 };
 
 // Function for escaping strings to HTML interpolation.
-var _escape = createEscaper(escapeMap);
+var escape = createEscaper(escapeMap);
 
 // Internal list of HTML entities for unescaping.
 var unescapeMap = invert(escapeMap);
 
 // Function for unescaping strings from HTML interpolation.
-var _unescape = createEscaper(unescapeMap);
+var unescape = createEscaper(unescapeMap);
 
 // By default, Underscore uses ERB-style template delimiters. Change the
 // following template settings to use alternative delimiters.
-var templateSettings = _.templateSettings = {
+var templateSettings = _$1.templateSettings = {
   evaluate: /<%([\s\S]+?)%>/g,
   interpolate: /<%=([\s\S]+?)%>/g,
   escape: /<%-([\s\S]+?)%>/g
@@ -901,7 +901,7 @@ var bareIdentifier = /^\s*(\w|\$)+\s*$/;
 // NB: `oldSettings` only exists for backwards compatibility.
 function template(text, settings, oldSettings) {
   if (!settings && oldSettings) settings = oldSettings;
-  settings = defaults({}, settings, _.templateSettings);
+  settings = defaults({}, settings, _$1.templateSettings);
 
   // Combine delimiters into one regular expression via alternation.
   var matcher = RegExp([
@@ -955,7 +955,7 @@ function template(text, settings, oldSettings) {
   }
 
   var template = function(data) {
-    return render.call(this, data, _);
+    return render.call(this, data, _$1);
   };
 
   // Provide the compiled source as a convenience for precompilation.
@@ -968,7 +968,7 @@ function template(text, settings, oldSettings) {
 // is invoked with its parent as context. Returns the value of the final
 // child, or `fallback` if any child is undefined.
 function result(obj, path, fallback) {
-  path = toPath$1(path);
+  path = toPath(path);
   var length = path.length;
   if (!length) {
     return isFunction$1(fallback) ? fallback.call(obj) : fallback;
@@ -994,7 +994,7 @@ function uniqueId(prefix) {
 
 // Start chaining a wrapped Underscore object.
 function chain(obj) {
-  var instance = _(obj);
+  var instance = _$1(obj);
   instance._chain = true;
   return instance;
 }
@@ -1028,7 +1028,7 @@ var partial = restArguments(function(func, boundArgs) {
   return bound;
 });
 
-partial.placeholder = _;
+partial.placeholder = _$1;
 
 // Create a function bound to a given object (assigning `this`, and arguments,
 // optionally).
@@ -1047,7 +1047,7 @@ var bind = restArguments(function(func, context, args) {
 var isArrayLike = createSizePropertyCheck(getLength);
 
 // Internal implementation of a recursive `flatten` function.
-function flatten(input, depth, strict, output) {
+function flatten$1(input, depth, strict, output) {
   output = output || [];
   if (!depth && depth !== 0) {
     depth = Infinity;
@@ -1060,7 +1060,7 @@ function flatten(input, depth, strict, output) {
     if (isArrayLike(value) && (isArray(value) || isArguments$1(value))) {
       // Flatten current level of array or arguments object.
       if (depth > 1) {
-        flatten(value, depth - 1, strict, output);
+        flatten$1(value, depth - 1, strict, output);
         idx = output.length;
       } else {
         var j = 0, len = value.length;
@@ -1077,7 +1077,7 @@ function flatten(input, depth, strict, output) {
 // are the method names to be bound. Useful for ensuring that all callbacks
 // defined on an object belong to it.
 var bindAll = restArguments(function(obj, keys) {
-  keys = flatten(keys, false, false);
+  keys = flatten$1(keys, false, false);
   var index = keys.length;
   if (index < 1) throw new Error('bindAll must be passed function names');
   while (index--) {
@@ -1092,7 +1092,7 @@ function memoize(func, hasher) {
   var memoize = function(key) {
     var cache = memoize.cache;
     var address = '' + (hasher ? hasher.apply(this, arguments) : key);
-    if (!has(cache, address)) cache[address] = func.apply(this, arguments);
+    if (!has$1(cache, address)) cache[address] = func.apply(this, arguments);
     return cache[address];
   };
   memoize.cache = {};
@@ -1109,7 +1109,7 @@ var delay = restArguments(function(func, wait, args) {
 
 // Defers a function, scheduling it to run after the current call stack has
 // cleared.
-var defer = partial(delay, _, 1);
+var defer = partial(delay, _$1, 1);
 
 // Returns a function, that, when invoked, will only be triggered at most once
 // during a given window of time. Normally, the throttled function will run
@@ -1443,7 +1443,7 @@ function some(obj, predicate, context) {
 }
 
 // Determine if the array or object contains a given item (using `===`).
-function contains(obj, item, fromIndex, guard) {
+function contains$1(obj, item, fromIndex, guard) {
   if (!isArrayLike(obj)) obj = values(obj);
   if (typeof fromIndex != 'number' || guard) fromIndex = 0;
   return indexOf(obj, item, fromIndex) >= 0;
@@ -1455,7 +1455,7 @@ var invoke = restArguments(function(obj, path, args) {
   if (isFunction$1(path)) {
     func = path;
   } else {
-    path = toPath$1(path);
+    path = toPath(path);
     contextPath = path.slice(0, -1);
     path = path[path.length - 1];
   }
@@ -1484,7 +1484,7 @@ function where(obj, attrs) {
 }
 
 // Return the maximum element (or element-based computation).
-function max(obj, iteratee, context) {
+function max$1(obj, iteratee, context) {
   var result = -Infinity, lastComputed = -Infinity,
       value, computed;
   if (iteratee == null || typeof iteratee == 'number' && typeof obj[0] != 'object' && obj != null) {
@@ -1509,7 +1509,7 @@ function max(obj, iteratee, context) {
 }
 
 // Return the minimum element (or element-based computation).
-function min(obj, iteratee, context) {
+function min$1(obj, iteratee, context) {
   var result = Infinity, lastComputed = Infinity,
       value, computed;
   if (iteratee == null || typeof iteratee == 'number' && typeof obj[0] != 'object' && obj != null) {
@@ -1540,14 +1540,14 @@ function min(obj, iteratee, context) {
 function sample(obj, n, guard) {
   if (n == null || guard) {
     if (!isArrayLike(obj)) obj = values(obj);
-    return obj[random(obj.length - 1)];
+    return obj[random$1(obj.length - 1)];
   }
-  var sample = isArrayLike(obj) ? clone(obj) : values(obj);
+  var sample = isArrayLike(obj) ? clone$1(obj) : values(obj);
   var length = getLength(sample);
   n = Math.max(Math.min(n, length), 0);
   var last = length - 1;
   for (var index = 0; index < n; index++) {
-    var rand = random(index, last);
+    var rand = random$1(index, last);
     var temp = sample[index];
     sample[index] = sample[rand];
     sample[rand] = temp;
@@ -1597,7 +1597,7 @@ function group(behavior, partition) {
 // Groups the object's values by a criterion. Pass either a string attribute
 // to group by, or a function that returns the criterion.
 var groupBy = group(function(result, value, key) {
-  if (has(result, key)) result[key].push(value); else result[key] = [value];
+  if (has$1(result, key)) result[key].push(value); else result[key] = [value];
 });
 
 // Indexes the object's values by a criterion, similar to `_.groupBy`, but for
@@ -1610,7 +1610,7 @@ var indexBy = group(function(result, value, key) {
 // either a string attribute to count by, or a function that returns the
 // criterion.
 var countBy = group(function(result, value, key) {
-  if (has(result, key)) result[key]++; else result[key] = 1;
+  if (has$1(result, key)) result[key]++; else result[key] = 1;
 });
 
 // Split a collection into two arrays: one whose elements all pass the given
@@ -1653,7 +1653,7 @@ var pick = restArguments(function(obj, keys) {
     keys = allKeys(obj);
   } else {
     iteratee = keyInObj;
-    keys = flatten(keys, false, false);
+    keys = flatten$1(keys, false, false);
     obj = Object(obj);
   }
   for (var i = 0, length = keys.length; i < length; i++) {
@@ -1671,9 +1671,9 @@ var omit = restArguments(function(obj, keys) {
     iteratee = negate(iteratee);
     if (keys.length > 1) context = keys[1];
   } else {
-    keys = map(flatten(keys, false, false), String);
+    keys = map(flatten$1(keys, false, false), String);
     iteratee = function(value, key) {
-      return !contains(keys, key);
+      return !contains$1(keys, key);
     };
   }
   return pick(obj, iteratee, context);
@@ -1716,16 +1716,16 @@ function compact(array) {
 
 // Flatten out an array, either recursively (by default), or up to `depth`.
 // Passing `true` or `false` as `depth` means `1` or `Infinity`, respectively.
-function flatten$1(array, depth) {
-  return flatten(array, depth, false);
+function flatten(array, depth) {
+  return flatten$1(array, depth, false);
 }
 
 // Take the difference between one array and a number of other arrays.
 // Only the elements present in just the first array will remain.
 var difference = restArguments(function(array, rest) {
-  rest = flatten(rest, true, true);
+  rest = flatten$1(rest, true, true);
   return filter(array, function(value){
-    return !contains(rest, value);
+    return !contains$1(rest, value);
   });
 });
 
@@ -1755,11 +1755,11 @@ function uniq(array, isSorted, iteratee, context) {
       if (!i || seen !== computed) result.push(value);
       seen = computed;
     } else if (iteratee) {
-      if (!contains(seen, computed)) {
+      if (!contains$1(seen, computed)) {
         seen.push(computed);
         result.push(value);
       }
-    } else if (!contains(result, value)) {
+    } else if (!contains$1(result, value)) {
       result.push(value);
     }
   }
@@ -1769,7 +1769,7 @@ function uniq(array, isSorted, iteratee, context) {
 // Produce an array that contains the union: each distinct element from all of
 // the passed-in arrays.
 var union = restArguments(function(arrays) {
-  return uniq(flatten(arrays, true, true));
+  return uniq(flatten$1(arrays, true, true));
 });
 
 // Produce an array that contains every item shared between all the
@@ -1779,10 +1779,10 @@ function intersection(array) {
   var argsLength = arguments.length;
   for (var i = 0, length = getLength(array); i < length; i++) {
     var item = array[i];
-    if (contains(result, item)) continue;
+    if (contains$1(result, item)) continue;
     var j;
     for (j = 1; j < argsLength; j++) {
-      if (!contains(arguments[j], item)) break;
+      if (!contains$1(arguments[j], item)) break;
     }
     if (j === argsLength) result.push(item);
   }
@@ -1792,7 +1792,7 @@ function intersection(array) {
 // Complement of zip. Unzip accepts an array of arrays and groups
 // each array's elements on shared indices.
 function unzip(array) {
-  var length = array && max(array, getLength).length || 0;
+  var length = array && max$1(array, getLength).length || 0;
   var result = Array(length);
 
   for (var index = 0; index < length; index++) {
@@ -1856,26 +1856,26 @@ function chunk(array, count) {
 
 // Helper function to continue chaining intermediate results.
 function chainResult(instance, obj) {
-  return instance._chain ? _(obj).chain() : obj;
+  return instance._chain ? _$1(obj).chain() : obj;
 }
 
 // Add your own custom functions to the Underscore object.
 function mixin(obj) {
   each(functions(obj), function(name) {
-    var func = _[name] = obj[name];
-    _.prototype[name] = function() {
+    var func = _$1[name] = obj[name];
+    _$1.prototype[name] = function() {
       var args = [this._wrapped];
       push.apply(args, arguments);
-      return chainResult(this, func.apply(_, args));
+      return chainResult(this, func.apply(_$1, args));
     };
   });
-  return _;
+  return _$1;
 }
 
 // Add all mutator `Array` functions to the wrapper.
 each(['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'], function(name) {
   var method = ArrayProto[name];
-  _.prototype[name] = function() {
+  _$1.prototype[name] = function() {
     var obj = this._wrapped;
     if (obj != null) {
       method.apply(obj, arguments);
@@ -1890,7 +1890,7 @@ each(['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'], function(
 // Add all accessor `Array` functions to the wrapper.
 each(['concat', 'join', 'slice'], function(name) {
   var method = ArrayProto[name];
-  _.prototype[name] = function() {
+  _$1.prototype[name] = function() {
     var obj = this._wrapped;
     if (obj != null) obj = method.apply(obj, arguments);
     return chainResult(this, obj);
@@ -1941,24 +1941,24 @@ var allExports = /*#__PURE__*/Object.freeze({
     assign: extendOwn,
     defaults: defaults,
     create: create,
-    clone: clone,
+    clone: clone$1,
     tap: tap,
-    get: get,
-    has: has$1,
+    get: get$1,
+    has: has,
     mapObject: mapObject,
     identity: identity,
     constant: constant,
     noop: noop,
-    toPath: toPath,
+    toPath: toPath$1,
     property: property,
     propertyOf: propertyOf,
     matcher: matcher,
     matches: matcher,
     times: times,
-    random: random,
+    random: random$1,
     now: now,
-    escape: _escape,
-    unescape: _unescape,
+    escape: escape,
+    unescape: unescape,
     templateSettings: templateSettings,
     template: template,
     result: result,
@@ -2004,14 +2004,14 @@ var allExports = /*#__PURE__*/Object.freeze({
     all: every,
     some: some,
     any: some,
-    contains: contains,
-    includes: contains,
-    include: contains,
+    contains: contains$1,
+    includes: contains$1,
+    include: contains$1,
     invoke: invoke,
     pluck: pluck,
     where: where,
-    max: max,
-    min: min,
+    max: max$1,
+    min: min$1,
     shuffle: shuffle,
     sample: sample,
     sortBy: sortBy,
@@ -2032,7 +2032,7 @@ var allExports = /*#__PURE__*/Object.freeze({
     tail: rest,
     drop: rest,
     compact: compact,
-    flatten: flatten$1,
+    flatten: flatten,
     without: without,
     uniq: uniq,
     unique: uniq,
@@ -2046,15 +2046,15 @@ var allExports = /*#__PURE__*/Object.freeze({
     range: range,
     chunk: chunk,
     mixin: mixin,
-    'default': _
+    'default': _$1
 });
 
 // Default Export
 
 // Add all of the Underscore functions to the wrapper object.
-var _$1 = mixin(allExports);
+var _ = mixin(allExports);
 // Legacy Node.js API.
-_$1._ = _$1;
+_._ = _;
 
 /*
  * Dataset class
@@ -2582,7 +2582,7 @@ each(MONTHS, function (abbr, m) {
     });
 });
 
-rx.MMM = { parse: new RegExp('(' + flatten$1(values(MONTHS)).join('|') + ')') };
+rx.MMM = { parse: new RegExp('(' + flatten(values(MONTHS)).join('|') + ')') };
 
 each(rx, function (r) {
     r.parse = r.parse.source;
@@ -3001,13 +3001,15 @@ function purifyHTML(input, allowed) {
             // special treatment for <a> elements
             if (sel[i].getAttribute('target') !== '_self') sel[i].setAttribute('target', '_blank');
             sel[i].setAttribute('rel', 'nofollow noopener noreferrer');
+            const hrefNormalized = (sel[i].getAttribute('href') || '')
+                .toLowerCase()
+                // remove invalid uri characters
+                .replace(/[^a-z0-9 -/:?=]/g, '')
+                .trim();
             if (
-                sel[i].getAttribute('href') &&
-                sel[i]
-                    .getAttribute('href')
-                    .trim()
-                    .replace(/[^a-zA-Z0-9 -:]/g, '')
-                    .startsWith('javascript:')
+                hrefNormalized.startsWith('javascript:') ||
+                hrefNormalized.startsWith('vbscript:') ||
+                hrefNormalized.startsWith('data:')
             ) {
                 // remove entire href to be safe
                 sel[i].setAttribute('href', '');
@@ -3036,6 +3038,7 @@ function stripTags(input, allowed) {
     var before = input;
     var after = input;
     // recursively remove tags to ensure that the returned string doesn't contain forbidden tags after previous passes (e.g. '<<bait/>switch/>')
+    // eslint-disable-next-line no-constant-condition
     while (true) {
         before = after;
         after = before.replace(COMMENTS_AND_PHP_TAGS, '').replace(TAGS, function ($0, $1) {
@@ -3371,7 +3374,7 @@ function d3Ascending(a, b) {
  * dataset source for delimited files (CSV, TSV, ...)
  */
 
-function delimited$1(opts) {
+function delimited(opts) {
     function loadAndParseCsv() {
         if (opts.url) {
             const ts = new Date().getTime();
@@ -3404,7 +3407,7 @@ function delimited$1(opts) {
     };
 }
 
-Dataset.delimited = delimited$1;
+Dataset.delimited = delimited;
 
 class DelimitedParser {
     constructor(opts) {
@@ -3826,7 +3829,7 @@ function equalish(a, b) {
  * @param {*} object - the thing that should be cloned
  * @returns {*} - the cloned thing
  */
-function clone$1(o) {
+function clone(o) {
     if (!o || typeof o !== 'object') return o;
     try {
         return JSON.parse(JSON.stringify(o));
@@ -4431,7 +4434,7 @@ function ternaryInstruction(value) {
   return new Instruction(IOP3, value);
 }
 
-function contains$1(array, obj) {
+function contains(array, obj) {
   for (var i = 0; i < array.length; i++) {
     if (array[i] === obj) {
       return true;
@@ -4460,7 +4463,7 @@ ParserState.prototype.tokenMatches = function (token, value) {
   if (typeof value === 'undefined') {
     return true;
   } else if (Array.isArray(value)) {
-    return contains$1(value, token.value);
+    return contains(value, token.value);
   } else if (typeof value === 'function') {
     return value(token);
   } else {
@@ -4840,7 +4843,7 @@ function trunc(a) {
   return a < 0 ? Math.ceil(a) : Math.floor(a);
 }
 
-function random$1(a) {
+function random(a) {
   return Math.random() * (a || 1);
 }
 
@@ -4886,7 +4889,7 @@ function arrayIndex(array, index) {
   return array[index | 0];
 }
 
-function max$1(array) {
+function max(array) {
   if (arguments.length === 1 && Array.isArray(array)) {
     return Math.max.apply(Math, array);
   } else {
@@ -4894,7 +4897,7 @@ function max$1(array) {
   }
 }
 
-function min$1(array) {
+function min(array) {
   if (arguments.length === 1 && Array.isArray(array)) {
     return Math.min.apply(Math, array);
   } else {
@@ -5434,7 +5437,7 @@ function Parser(options) {
          * RANDOM(100)
          * @returns {number}
          */
-        RANDOM: random$1,
+        RANDOM: random,
         // fac: factorial,
 
         /**
@@ -5448,7 +5451,7 @@ function Parser(options) {
          */
         MIN() {
             const v = filterNumbers.apply(this, arguments);
-            return min$1(v);
+            return min(v);
         },
 
         /**
@@ -5461,7 +5464,7 @@ function Parser(options) {
          * @returns {number}
          */
         MAX() {
-            return max$1(filterNumbers.apply(this, arguments));
+            return max(filterNumbers.apply(this, arguments));
         },
 
         /**
@@ -6374,8 +6377,8 @@ var utils = /*#__PURE__*/Object.freeze({
     round: round,
     smartRound: smartRound,
     equalish: equalish,
-    clone: clone$1,
-    delimited: delimited,
+    clone: clone,
+    delimited: delimited$1,
     getNonChartHeight: getNonChartHeight,
     outerHeight: outerHeight,
     htmlTemplate: htmlTemplate,
@@ -6417,7 +6420,7 @@ var utils = /*#__PURE__*/Object.freeze({
  * get(someObject, 'missing.key') // returns undefined
  * get(someObject, 'missing.key', false) // returns false
  */
-function get$1(object, key = null, _default = null) {
+function get(object, key = null, _default = null) {
     if (!key) return object;
     const keys = Array.isArray(key) ? key : key.split('.');
     let pt = object;
@@ -6567,7 +6570,7 @@ function columnNameToVariable(name) {
 }
 
 function addComputedColumns(chart, dataset) {
-    let virtualColumns = get$1(chart.get(), 'metadata.describe.computed-columns', {});
+    let virtualColumns = get(chart.get(), 'metadata.describe.computed-columns', {});
     if (!Array.isArray(virtualColumns)) {
         // convert to array
         virtualColumns = Object.keys(virtualColumns).reduce((acc, cur) => {
@@ -6729,7 +6732,7 @@ function addComputedColumns(chart, dataset) {
         }
 
         // create a map of changes for this column
-        const changes = get$1(chart, 'metadata.data.changes', [])
+        const changes = get(chart, 'metadata.data.changes', [])
             .filter(change => change.column === index && change.row > 0)
             .reduce((acc, cur) => {
                 const old = acc.get(cur.row - 1);
@@ -6810,7 +6813,7 @@ function addComputedColumns(chart, dataset) {
     }
 }
 
-let visualization;
+let visualization$1;
 
 /**
  * Chart
@@ -6850,11 +6853,11 @@ function chart (attributes) {
          * @function chart.get
          */
         get(key, _default) {
-            return get$1(attributes, key, _default);
+            return get(attributes, key, _default);
         },
 
         getMetadata(key, _default) {
-            return get$1(attributes, `metadata.${key}`, _default);
+            return get(attributes, `metadata.${key}`, _default);
         },
 
         set(key, value) {
@@ -6869,7 +6872,7 @@ function chart (attributes) {
         },
 
         getElementBounds(element) {
-            const rootBounds = visualization.target().getBoundingClientRect();
+            const rootBounds = visualization$1.target().getBoundingClientRect();
             const elementBounds = element.getBoundingClientRect();
 
             return {
@@ -6892,7 +6895,7 @@ function chart (attributes) {
             if ((csv || csv === '') && !externalData) dsopts.csv = csv;
             else dsopts.url = externalData || 'data.csv';
 
-            const datasource = chart.get('metadata.data.json') ? json(dsopts) : delimited$1(dsopts);
+            const datasource = chart.get('metadata.data.json') ? json(dsopts) : delimited(dsopts);
 
             return datasource
                 .dataset()
@@ -6931,11 +6934,11 @@ function chart (attributes) {
         // sets or gets the visualization
         vis(_vis) {
             if (arguments.length) {
-                visualization = _vis;
-                visualization.chart(chart);
+                visualization$1 = _vis;
+                visualization$1.chart(chart);
                 return chart;
             }
-            return visualization;
+            return visualization$1;
         },
 
         // returns true if the user has set any highlights
@@ -6983,13 +6986,13 @@ function chart (attributes) {
         },
 
         render(isIframe, outerContainer) {
-            if (!visualization || !theme || !dataset) {
+            if (!visualization$1 || !theme || !dataset) {
                 throw new Error('cannot render the chart!');
             }
 
             const container = chart.vis().target();
 
-            visualization.chart(chart);
+            visualization$1.chart(chart);
 
             // compute chart dimensions
             const w = width(container);
@@ -7017,15 +7020,15 @@ function chart (attributes) {
             });
 
             // set mobile class
-            const breakpoint = get$1(theme, `vis.${chart.type}.mobileBreakpoint`, 450);
+            const breakpoint = get(theme, `vis.${chart.type}.mobileBreakpoint`, 450);
             outerContainer.classList.toggle('is-mobile', outerContainer.clientWidth <= breakpoint);
 
             // really needed?
-            outerContainer.classList.add('vis-' + visualization.id);
+            outerContainer.classList.add('vis-' + visualization$1.id);
 
-            visualization.reset(container);
-            visualization.size(w, h);
-            visualization.__init();
+            visualization$1.reset(container);
+            visualization$1.size(w, h);
+            visualization$1.__init();
 
             const flags = { isIframe };
             const urlParams = new URLSearchParams(window.location.search);
@@ -7034,7 +7037,7 @@ function chart (attributes) {
                 flagsString.forEach(key => (flags[key] = urlParams.get(key)));
             }
 
-            visualization.render(container, flags);
+            visualization$1.render(container, flags);
 
             if (isIframe) {
                 window.clearInterval(this.__resizingInterval);
@@ -7097,14 +7100,14 @@ function chart (attributes) {
 
         getHeightMode() {
             const themeFitChart =
-                get$1(visualization.theme(), 'vis.d3-pies.fitchart', false) &&
+                get(visualization$1.theme(), 'vis.d3-pies.fitchart', false) &&
                 ['d3-pies', 'd3-donuts', 'd3-multiple-pies', 'd3-multiple-donuts'].indexOf(
-                    visualization.meta.id
+                    visualization$1.meta.id
                 ) > -1;
             const urlParams = new URLSearchParams(window.location.search);
             const urlFitChart = !!urlParams.get('fitchart');
 
-            return themeFitChart || urlFitChart || visualization.meta.height !== 'fixed'
+            return themeFitChart || urlFitChart || visualization$1.meta.height !== 'fixed'
                 ? 'fit'
                 : 'fixed';
         },
@@ -7236,7 +7239,7 @@ extend(base, {
      * short-cut for this.chart.get('metadata.visualize.*')
      */
     get(str, _default) {
-        return get$1(this.chart().get(), 'metadata.visualize' + (str ? '.' + str : ''), _default);
+        return get(this.chart().get(), 'metadata.visualize' + (str ? '.' + str : ''), _default);
     },
 
     chart(chart) {
@@ -7245,7 +7248,7 @@ extend(base, {
         me.dataset = chart.dataset();
         me.theme(chart.theme());
         me.__chart = chart;
-        var columnFormat = get$1(chart.get(), 'metadata.data.column-format', {});
+        var columnFormat = get(chart.get(), 'metadata.data.column-format', {});
         var ignore = {};
         each(columnFormat, function (format, key) {
             ignore[key] = !!format.ignore;
@@ -7256,7 +7259,7 @@ extend(base, {
 
     axes(returnAsColumns, noCache) {
         const me = this;
-        const userAxes = get$1(me.chart().get(), 'metadata.axes', {});
+        const userAxes = get(me.chart().get(), 'metadata.axes', {});
 
         if (
             !noCache &&
@@ -7268,7 +7271,7 @@ extend(base, {
             return me.__axisCache[returnAsColumns ? 'axesAsColumns' : 'axes'];
         }
 
-        const visAxes = clone$1(me.meta.axes);
+        const visAxes = clone(me.meta.axes);
         const dataset = me.dataset;
         const usedColumns = {};
         const axes = {};
@@ -7282,7 +7285,7 @@ extend(base, {
                 if (
                     o.optional &&
                     o.overrideOptionalKey &&
-                    !get$1(me.chart().get(), 'metadata.' + o.overrideOptionalKey, false)
+                    !get(me.chart().get(), 'metadata.' + o.overrideOptionalKey, false)
                 ) {
                     return;
                 }
@@ -7309,7 +7312,7 @@ extend(base, {
                 // chart settings may override this
                 if (
                     axisDef.overrideOptionalKey &&
-                    get$1(me.chart().get(), 'metadata.' + axisDef.overrideOptionalKey, false)
+                    get(me.chart().get(), 'metadata.' + axisDef.overrideOptionalKey, false)
                 ) {
                     // now the axis is mandatory
                     axisDef.optional = false;
@@ -7442,7 +7445,7 @@ extend(base, {
         me.__axisCache = {
             axes: axes,
             axesAsColumns: axesAsColumns,
-            userAxes: clone$1(userAxes),
+            userAxes: clone(userAxes),
             overrideKeys: getOverrideKeys(),
             transpose: me.chart().getMetadata('data.transpose')
         };
@@ -7451,7 +7454,7 @@ extend(base, {
             const overrideKeys = {};
             each(me.meta.axes, o => {
                 if (o.optional && o.overrideOptionalKey) {
-                    overrideKeys[o.overrideOptionalKey] = get$1(
+                    overrideKeys[o.overrideOptionalKey] = get(
                         me.chart().get(),
                         'metadata.' + o.overrideOptionalKey,
                         false
@@ -7553,15 +7556,37 @@ extend(base, {
     colorMap(cm) {
         if (!arguments.length) {
             return color => {
+                const applyDarkModeMap = this.__darkMode && this.__darkModeColorMap;
                 this.__colors[color] = 1;
                 if (this.__colorMap) {
+                    if (applyDarkModeMap) color = this.__darkModeColorMap(color);
                     return this.__colorMap(color);
+                } else if (applyDarkModeMap) {
+                    color = this.__darkModeColorMap(color);
                 }
                 return color;
             };
         }
 
         this.__colorMap = cm;
+    },
+
+    initDarkMode(cb, cm) {
+        this.__onDarkModeChange = cb;
+        this.__darkModeColorMap = cm;
+    },
+
+    /**
+     * set or get dark mode state of vis
+     */
+    darkMode(dm) {
+        // can't initialize in __init because that sets it back to false on each render
+        if (this.__darkMode === undefined) this.__darkMode = false;
+        if (!arguments.length) return this.__darkMode;
+        if (!this.__onDarkModeChange) return;
+
+        this.__darkMode = dm;
+        this.__onDarkModeChange(dm);
     },
 
     colorsUsed() {
@@ -7592,7 +7617,7 @@ extend(base, {
 
 const __vis = {};
 
-function visualization$1(id, target) {
+function visualization(id, target) {
     if (!__vis[id]) {
         console.warn('unknown visualization type: ' + id);
         const known = Object.keys(__vis);
@@ -7611,7 +7636,7 @@ function visualization$1(id, target) {
         return parents.reverse();
     }
 
-    const vis = clone(base);
+    const vis = clone$1(base);
 
     const parents = getParents(__vis[id]);
     parents.push({ id, vis: __vis[id] });
@@ -7630,7 +7655,7 @@ function visualization$1(id, target) {
     return vis;
 }
 
-visualization$1.register = function (id) {
+visualization.register = function (id) {
     let parentVis, init;
 
     if (arguments.length === 2) {
@@ -7647,11 +7672,11 @@ visualization$1.register = function (id) {
     };
 };
 
-visualization$1.has = function (id) {
+visualization.has = function (id) {
     return __vis[id] !== undefined;
 };
 
-visualization$1.base = base;
+visualization.base = base;
 
 const __themes = {};
 
@@ -7703,12 +7728,12 @@ const dw$1 = {
     dataset: Dataset,
     column: Column,
     datasource: {
-        delimited: delimited$1,
+        delimited,
         json
     },
     utils,
     chart,
-    visualization: visualization$1,
+    visualization,
     theme,
     block,
     notify

@@ -26,12 +26,16 @@
     import set from '@datawrapper/shared/set.js';
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch.js';
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
+    import invertColor from '@datawrapper/shared/invertColor.cjs';
     import { clean } from './shared.mjs';
     import { isObject } from 'underscore';
+    import chroma from 'chroma-js';
 
     export let chart;
     export let visualization = {};
     export let theme = {};
+    export let themeDataDark = {};
+    export let themeDataLight = {};
     export let locales = {};
     export let translations;
     export let blocks = {};
@@ -48,6 +52,9 @@
     export let isStylePlain = false;
     // static style means user can't interact (e.g. in a png version)
     export let isStyleStatic = false;
+    export let isStyleDark = false;
+    // autodark means dark/light display follows user prefers-color-scheme
+    export let isAutoDark = false;
     // can be on|off|auto (on/off will overwrite chart setting)
     export let forceLogo = 'auto';
     export let logoId = null;
@@ -490,6 +497,24 @@ Please make sure you called __(key) with a key of type "string".
             });
         }
 
+        // we only apply dark mode if base theme is light
+        const lightBg = get(themeDataLight, 'colors.background', '#ffffff');
+        if (chroma(lightBg).luminance() >= 0.3) {
+            vis.initDarkMode(
+                onDarkModeChange,
+                initDarkModeColormap({ themeDataDark, themeDataLight })
+            );
+            if (isStyleDark) vis.darkMode(true);
+        }
+        if (!isPreview && isAutoDark) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                vis.darkMode(e.matches);
+            });
+        }
+
+        // add theme._computed to theme.data for better dark mode support
+        theme.data._computed = theme._computed;
+
         // render chart
         dwChart.render(isIframe, outerContainer);
 
@@ -504,6 +529,36 @@ Please make sure you called __(key) with a key of type "string".
         }
 
         isIframe && initResizeHandler(target);
+
+        function onDarkModeChange(isDark) {
+            /*
+             * Preserve pre-existing theme object,
+             * as render code generally captures vis.theme() in variable just once.
+             *
+             * @todo: Implement more foolproof solution. E.g using svelte/store
+             */
+            const newThemeData = isDark ? themeDataDark : themeDataLight;
+            Object.keys(theme.data).forEach(key => {
+                if (key !== '_computed') delete theme.data[key];
+                if (newThemeData[key]) theme.data[key] = newThemeData[key];
+            });
+
+            // swap active css
+            // @todo: access these without using document
+            const cssLight = document.getElementById('css-light');
+            const cssDark = document.getElementById('css-dark');
+            if (isPreview || !isAutoDark) {
+                (isDark ? cssLight : cssDark).setAttribute('media', '--disabled--');
+                (isDark ? cssDark : cssLight).removeAttribute('media');
+            }
+
+            // revert dark palette to prevent double-mapping
+            if (isDark) {
+                set(theme.data, 'colors.palette', get(themeDataLight, 'colors.palette', []));
+            }
+            outerContainer.classList.toggle('is-dark-mode', isDark);
+            dwChart.render(isIframe, outerContainer);
+        }
 
         function initResizeHandler(container) {
             let reloadTimer;
@@ -575,6 +630,90 @@ Please make sure you called __(key) with a key of type "string".
             window.fontsJSON = theme.fonts;
         }
     });
+
+    function initDarkModeColormap({ themeDataLight, themeDataDark }) {
+        const colorCache = new Map();
+        const darkPalette = get(themeDataDark, 'colors.palette', []);
+        const lightPalette = get(themeDataLight, 'colors.palette', []);
+
+        const lightBg = get(themeDataLight, 'colors.background', '#ffffff');
+        const darkBg = get(themeDataDark, 'colors.background');
+
+        const themeColorMap = Object.fromEntries(
+            lightPalette.map((light, i) => [light, darkPalette[i]])
+        );
+
+        return function (color) {
+            if (!chroma.valid(color)) return color;
+
+            if (themeColorMap[color]) {
+                // theme has a hard replacement color
+                return themeColorMap[color];
+            }
+
+            if (colorCache.has(color)) {
+                // we've already mapped this color
+                return colorCache.get(color);
+            }
+
+            let alpha = chroma(color).alpha();
+            const opaqueColor = chroma(color).alpha(1);
+
+            // compute color with similar bg-ratio
+            const newOpaqueColHex = invertColor(opaqueColor, darkBg, lightBg, 1.4);
+            if (alpha < 1) {
+                // adjust opacity
+                const perceivedColor = chroma.mix(darkBg, newOpaqueColHex, alpha, 'rgb');
+                const perceivedContrast = chroma.contrast(darkBg, perceivedColor);
+                const boostedContrast =
+                    perceivedContrast * getContrastBoost(perceivedContrast, 1.05);
+                alpha = correctOpacity(newOpaqueColHex, darkBg, alpha, boostedContrast);
+            }
+            const newAlphaColHex = chroma(newOpaqueColHex).alpha(alpha).hex();
+            colorCache.set(color, newAlphaColHex);
+            return newAlphaColHex;
+        };
+
+        function getContrastBoost(contrast, maxBoost) {
+            const cMin = 1.5;
+            const cMax = 3;
+            return (
+                1 +
+                (contrast < cMin
+                    ? 1
+                    : contrast > cMax
+                    ? 0
+                    : 1 - (contrast - cMin) / (cMax - cMin)) *
+                    (maxBoost - 1)
+            );
+        }
+
+        function correctOpacity(color, background, opacity, targetContrast) {
+            const MAX_ITER = 10;
+            const EPS = 0.01;
+            const fgOpaque = chroma.mix(background, color, opacity, 'rgb');
+            const contrast = chroma.contrast(fgOpaque, background);
+
+            if (contrast - targetContrast > -EPS || !opacity) {
+                // we do have enough contrast, keep opacity
+                return opacity;
+            }
+
+            return test(opacity, 1, MAX_ITER);
+
+            function test(low, high, i) {
+                const mid = (low + high) / 2;
+                const fgOpaque = chroma.mix(background, color, mid, 'rgb');
+                const contrast = chroma.contrast(fgOpaque, background);
+
+                if (Math.abs(contrast - targetContrast) < EPS || !i) {
+                    // close enough
+                    return mid;
+                }
+                return contrast < targetContrast ? test(mid, high, i - 1) : test(low, mid, i - 1);
+            }
+        }
+    }
 
     let contentBelowChart;
     $: contentBelowChart =

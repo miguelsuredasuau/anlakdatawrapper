@@ -2,7 +2,10 @@
     <ul class="nav nav-tabs visualize-nav-tabs">
         {#each tabs as t}
         <li class:active="tab === t.id">
-            <a on:click|preventDefault="set({tab:t.id})" href="#{t.id}">{@html t.title}</a>
+            {#if shouldShowNotification(t.id, notifications)}
+            <div class="notification"></div>
+            {/if}
+            <a on:click|preventDefault="handleTabClick(t.id)" href="#{t.id}">{@html t.title}</a>
         </li>
         {/each}
     </ul>
@@ -40,11 +43,33 @@
         computed: {
             tabs({ showChartPicker }) {
                 return showChartPicker ? allTabs : allTabs.slice(1);
+            },
+            notifications({ $userNotifications }) {
+                if (!$userNotifications) return [];
+                return $userNotifications.filter(d => d.type === 'tab');
             }
         },
         onstate({ changed, current, previous }) {
             if (changed.tab && previous && current.tab) {
                 window.location.hash = '#' + current.tab;
+            }
+        },
+        methods: {
+            handleTabClick(id) {
+                const { userNotifications } = this.store.get();
+                const notification = userNotifications.find(d => d.data.tabId === id && d.show);
+
+                if (notification) {
+                    notification.show = false;
+                    this.store.set({ userNotifications });
+                }
+
+                this.set({ tab: id });
+            }
+        },
+        helpers: {
+            shouldShowNotification(id, notifications) {
+                return notifications.find(d => d.data.tabId === id && d.show === true);
             }
         }
     };

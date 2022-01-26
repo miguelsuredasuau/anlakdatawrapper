@@ -11,7 +11,7 @@
                     <ChartPreview
                         ref:preview
                         bind:loading
-                        src="/preview/{ $id }{mode === 'print' ? '?fitchart=1' : ''}"
+                        src="/preview/{ $id }?{queryString}"
                         on:resize="makePreviewSticky()"
                         on:iframeLoaded="onIframeLoaded()"
                     />
@@ -19,6 +19,9 @@
                     <div class="toolbar">
                         <Resizer bind:webToPrint bind:loading ref:resizer bind:uiMode="mode" />
                         <ColorblindCheck />
+                        {#if mode !== 'print'}
+                        <DarkModeToggle />
+                        {/if}
                     </div>
                 </div>
             </div>
@@ -120,6 +123,7 @@
 <script>
     /* globals dw, chart */
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch';
+    import get from '@datawrapper/shared/get';
     import { __ } from '@datawrapper/shared/l10n';
     import ChartPreview from '@datawrapper/controls/editor/ChartPreview.html';
     import ChartLayout from '@datawrapper/controls/editor/ChartLayout.html';
@@ -133,6 +137,19 @@
     import Resizer from './Resizer.html';
     import Notifications from './Notifications.html';
     import ColorblindCheck from './colorblind-check/ColorblindCheck.html';
+    import DarkModeToggle from './DarkModeToggle.html';
+
+    // maybe one day this could come from some db
+    const allUserNotifications = [
+        {
+            id: 'dark-mode',
+            type: 'tab',
+            data: {
+                tabId: 'design'
+            },
+            show: true
+        }
+    ];
 
     export default {
         components: {
@@ -146,7 +163,8 @@
             ColorblindCheck,
             ChartPreview,
             Notifications,
-            AlertDisplay
+            AlertDisplay,
+            DarkModeToggle
         },
         data() {
             return {
@@ -167,6 +185,20 @@
             };
         },
         computed: {
+            queryString({ mode }) {
+                return new URLSearchParams({
+                    ...(mode === 'print' ? { fitchart: 1 } : {})
+                });
+            },
+            darkMode({ $darkMode }) {
+                return $darkMode;
+            },
+            userNotifications({ $userNotifications }) {
+                return $userNotifications;
+            },
+            previewBackground({ $computedThemeData, $darkMode }) {
+                return $computedThemeData[$darkMode ? 'bgDark' : 'bgLight'];
+            },
             resizable({ mode }) {
                 return mode !== 'print';
             },
@@ -355,8 +387,22 @@
                                     }
                                 });
                             }
+                            this.store.set({ darkMode: iframeWindow.__dw.vis.darkMode() });
                         });
                     }
+                });
+            },
+            setPreviewBackground() {
+                const { themeData } = this.store.get();
+                const { previewBackground } = this.get();
+                themeData.colors.background = previewBackground;
+                this.store.set({ themeData });
+            },
+            setDarkModeState() {
+                const { darkMode } = this.store.get();
+                this.refs.preview.getContext(iframeWindow => {
+                    iframeWindow.__dw.vis.darkMode(darkMode);
+                    this.setPreviewBackground();
                 });
             }
         },
@@ -398,10 +444,37 @@
             });
 
             window.chart = this.store;
+
+            // initialize user notifications
+            const previousUserNotifications = JSON.parse(
+                get(window.dw, 'backend.__userData.notifications', '[]')
+            );
+            const newNotifications = allUserNotifications.filter(({ id }) => {
+                return !previousUserNotifications.find(n => n.id === id);
+            });
+            this.store.set({
+                userNotifications: previousUserNotifications.concat(newNotifications)
+            });
         },
         onstate({ previous, current, changed }) {
             if (previous && changed.chartNotifications) {
                 this.updateNotifications(current.chartNotifications);
+            }
+            if (previous && changed.$darkMode) {
+                this.setDarkModeState();
+            }
+            if (previous && changed.$computedThemeData) {
+                this.setPreviewBackground();
+            }
+            if (previous && changed.$userNotifications) {
+                const notificationUpdateInterval = setInterval(() => {
+                    if (window.dw && window.dw.backend && window.dw.backend.setUserData) {
+                        window.dw.backend.setUserData({
+                            notifications: JSON.stringify(current.$userNotifications)
+                        });
+                        clearInterval(notificationUpdateInterval);
+                    }
+                }, 100);
             }
         }
     };

@@ -4,7 +4,12 @@ html(lang=CHART_LANGUAGE)
     meta(charset="UTF-8")
     meta(name="robots", content=META_ROBOTS)
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    link(rel="stylesheet", href!=CSS)
+    link(rel="stylesheet", id="css-light", media="(prefers-color-scheme: light)", href!=CSS)
+    link(rel="stylesheet", id="css-dark", media="(prefers-color-scheme: dark)", href!=CSS_DARK)
+    style(id="hide-all").
+      * { opacity: 0 }
+    | !{CHART_HEAD}
+    | !{CHART_HEAD}
     | !{CHART_HEAD}
     | !{CHART_AFTER_HEAD_HTML}
 
@@ -12,11 +17,34 @@ html(lang=CHART_LANGUAGE)
     div(class="dw-chart chart" class=CHART_CLASS id="__svelte-dw")
       | !{CHART_HTML}
 
-    //- https://v8.dev/blog/cost-of-javascript-2019#json
     script.
-      window.__DW_SVELTE_PROPS__ = JSON.parse(!{__DW_SVELTE_PROPS__});
-      window.__DW_SVELTE_PROPS__.isStylePlain = /[?&]plain=1/.test(window.location.search);
-      window.__DW_SVELTE_PROPS__.isStyleStatic = /[?&]static=1/.test(window.location.search);
+      (function() {
+        var autoDark = !/[?&]dark=(1|true|0|false)/.test(window.location.search) && !{AUTO_DARK};
+        var isDark = /[?&]dark=(1|true)/.test(window.location.search)
+          || (!/[?&]dark=(0|false)/.test(window.location.search)
+            && !{AUTO_DARK} && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) document.getElementById('__svelte-dw').className += ' is-dark-mode';
+        function removeHideStyles() {
+          document.getElementById('hide-all').remove();
+        }
+        if (autoDark) {
+          removeHideStyles();
+        } else {
+          if (isDark) {
+            document.getElementById('css-light').setAttribute('media', '--disabled--');
+            document.getElementById('css-dark').removeAttribute('media');
+          } else {
+            document.getElementById('css-dark').setAttribute('media', '--disabled--');
+            document.getElementById('css-light').removeAttribute('media');
+          }
+          removeHideStyles();
+        }
+        window.__DW_SVELTE_PROPS__ = JSON.parse(!{__DW_SVELTE_PROPS__});
+        window.__DW_SVELTE_PROPS__.isStylePlain = /[?&]plain=(1|true)/.test(window.location.search);
+        window.__DW_SVELTE_PROPS__.isStyleStatic = /[?&]static=(1|true)/.test(window.location.search);
+        window.__DW_SVELTE_PROPS__.isStyleDark = isDark;
+        window.__DW_SVELTE_PROPS__.isAutoDark = autoDark;
+      })();
 
     script(src=POLYFILL_SCRIPT)
 

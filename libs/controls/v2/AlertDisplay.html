@@ -1,19 +1,29 @@
 {#if visible}
 <div
+    class:alert-intro="type==='intro'"
     class:alert-success="type==='success'"
     class:alert-warning="type==='warning'"
     class:alert-error="type==='error'"
     class:alert-info="type==='info'"
     class:alert-upgrade-info="type==='upgrade-info'"
+    class:has-header="!!title"
     class="alert {class}"
     data-uid="{uid}"
 >
     {#if type ==='upgrade-info'}
     <div class="icon"><span class="upgrade-icon">{@html upgradeIcon}</span></div>
     <div><span class="title">{__('upgrade-available')}</span> {@html __('upgrade-info')}</div>
-    {:else} {#if closeable}
-    <button type="button" aria-label="close" class="close" on:click="close()">&times;</button>
-    {/if}
+    {:else} {#if closeable || title}
+    <div class:header="!!title">
+        {#if title}
+        <div class="title">{title}</div>
+        {/if} {#if closeable}
+        <button type="button" aria-label="close" class="close" on:click="close()">&times;</button>
+        {/if}
+    </div>
+    {#if title}
+    <hr />
+    {/if} {/if}
     <slot>content</slot>
     {/if}
 </div>
@@ -23,6 +33,29 @@
     .alert :global(a) {
         color: inherit;
         text-decoration: underline;
+    }
+    .alert.has-header {
+        padding: 8px 14px;
+    }
+    .alert .header {
+        display: flex;
+        justify-content: space-between;
+    }
+    .alert .header .close {
+        right: 0px;
+        top: 0px;
+        font-size: 25px;
+        font-weight: 400;
+    }
+    .alert .header .title {
+        font-weight: 500;
+        font-size: 17px;
+        margin: 4px 0px;
+    }
+    .alert hr {
+        margin: 4px 0px 12px 0px;
+        border: 0px;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .alert-warning {
@@ -45,6 +78,23 @@
     .alert-upgrade-info span.title {
         color: #09bb9f;
         font-weight: 700;
+    }
+    .alert-intro {
+        border: none;
+        text-shadow: none;
+        border-radius: 4px;
+        background: #d7eff7;
+        box-shadow: 0px 0px 10px rgba(70, 136, 215, 0.15);
+        color: #333;
+    }
+    .alert-intro .close {
+        opacity: 1;
+        text-shadow: none;
+    }
+    .alert-intro :global(a) {
+        font-weight: bold;
+        color: #1d81a2;
+        text-decoration: none;
     }
     .upgrade-icon {
         display: inline-flex;
@@ -74,7 +124,8 @@
                 closeable: true,
                 class: '',
                 closeFunc: false,
-                uid: ''
+                uid: '',
+                title: ''
             };
         },
         methods: {

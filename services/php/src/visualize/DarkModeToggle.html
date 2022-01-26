@@ -1,0 +1,46 @@
+{#if showDarkModePreview}
+<div class="toolbar-container with-note">
+    <div class="toolbar-container">
+        <div class="toolbar-caption" style="white-space: nowrap">{__('darkmode / caption')}</div>
+        <div class="button" class:active="!$darkMode" on:click="toggleDarkMode()">
+            <IconDisplay icon="sun" color="{$darkMode ?  '#c9c9c9' : '#ffb327'}" size="16px" />
+        </div>
+        <div class="button" class:active="$darkMode" on:click="toggleDarkMode()">
+            <IconDisplay icon="moon" color="{$darkMode ? '#ffb327' : '#c9c9c9'}" size="16px" />
+        </div>
+    </div>
+    <div class="toolbar-note" on:click="switchToLayoutTab(event)" style="max-width: 160px">
+        {@html __('darkmode / note')}
+    </div>
+</div>
+{/if}
+
+<script>
+    import get from '@datawrapper/shared/get';
+    import { __ } from '@datawrapper/shared/l10n';
+    import IconDisplay from '@datawrapper/controls/IconDisplay.html';
+
+    export default {
+        components: {
+            IconDisplay
+        },
+        computed: {
+            showDarkModePreview({ $themeData }) {
+                return get($themeData, 'options.darkMode.preview', true);
+            }
+        },
+        methods: {
+            toggleDarkMode() {
+                const { darkMode } = this.store.get();
+                this.store.set({ darkMode: !darkMode });
+            },
+            switchToLayoutTab(e) {
+                if (e.srcElement.id === 'to-layout-tab') {
+                    e.preventDefault();
+                    this.root.set({ tab: 'design' });
+                }
+            }
+        },
+        helpers: { __ }
+    };
+</script>

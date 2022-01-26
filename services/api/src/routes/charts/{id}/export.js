@@ -37,7 +37,8 @@ module.exports = server => {
                     ligatures: Joi.boolean().default(true),
                     transparent: Joi.boolean().default(false),
                     logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto'),
-                    logoId: logoId().optional().allow(null)
+                    logoId: logoId().optional().allow(null),
+                    dark: Joi.boolean().default(false)
                 })
             }
         },
@@ -86,7 +87,8 @@ module.exports = server => {
                     ligatures: Joi.boolean().default(true),
                     transparent: Joi.boolean().default(false),
                     logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto'),
-                    logoId: logoId().optional().allow(null)
+                    logoId: logoId().optional().allow(null),
+                    dark: Joi.boolean().default(false)
                 })
             }
         },

@@ -64,6 +64,23 @@ module.exports = async function createChartWebsite(
         auth,
         headers
     });
+
+    // also load dark mode theme & styles
+    const themeDark = (
+        await server.inject({
+            url: `/v3/themes/${chart.theme}?extend=true&dark=true`,
+            auth,
+            headers
+        })
+    ).result;
+    const cssDark = (
+        await server.inject({
+            url: `/v3/visualizations/${chart.type}/styles.css?theme=${chart.theme}&dark=true`,
+            auth,
+            headers
+        })
+    ).result;
+
     if (statusCode >= 400) {
         throw new Boom.Boom(result.message || 'Failed to publish chart data', { statusCode });
     }
@@ -87,7 +104,9 @@ module.exports = async function createChartWebsite(
         isIframe: true,
         isPreview: false,
         locales,
-        polyfillUri: `../../lib/vendor`
+        polyfillUri: `../../lib/vendor`,
+        themeDataDark: themeDark.data,
+        themeDataLight: publishData.theme.data
     });
 
     log('rendering');
@@ -202,6 +221,18 @@ module.exports = async function createChartWebsite(
         outDir
     );
 
+    const cssFileDark = await writeFileHashed(
+        `${chart.type}.${chart.theme}-dark.css`,
+        `${fonts}\n${cssDark}`,
+        outDir
+    );
+
+    const themeAutoDark = get(publishData.theme.data, 'options.darkMode.auto', 'user');
+    const autoDark =
+        themeAutoDark === 'user'
+            ? get(chart, 'metadata.publish.autoDarkMode', false)
+            : themeAutoDark;
+
     /**
      * Render the visualizations entry: "index.html"
      */
@@ -215,6 +246,8 @@ module.exports = async function createChartWebsite(
         POLYFILL_SCRIPT: getAssetLink(`../../lib/${polyfillScript}`),
         CORE_SCRIPT: getAssetLink(`../../lib/${coreScript}`),
         CSS: getAssetLink(`../../lib/vis/${cssFile}`),
+        CSS_DARK: getAssetLink(`../../lib/vis/${cssFileDark}`),
+        AUTO_DARK: autoDark,
         SCRIPTS: dependencies.map(file => getAssetLink(`../../${file}`)),
         CHART_CLASS: [
             `vis-height-${get(publishData.visualization, 'height', 'fit')}`,
@@ -265,6 +298,7 @@ module.exports = async function createChartWebsite(
         { path: path.join('lib/', polyfillScript), hashed: true },
         { path: path.join('lib/', coreScript), hashed: true },
         { path: path.join('lib/vis', cssFile), hashed: true },
+        { path: path.join('lib/vis', cssFileDark), hashed: true },
         { path: 'index.html', hashed: false },
         { path: dataFile, hashed: false }
     ];

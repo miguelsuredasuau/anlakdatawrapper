@@ -2,7 +2,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     width: auto;
     margin: 20px 0;
 
@@ -10,15 +10,27 @@
         margin: 50px 0;
     }
 
-    .toolbar-container {
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        background: #fff;
-        height: 38px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    > .toolbar-container {
         margin: 20px 0 10px 20px;
-        position: relative;
+        &:first-child {
+            margin-left:0px;
+        }
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+
+    .toolbar-container {
+
+        &:not(.with-note) {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: #fff;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
         &:first-child {
             margin-left: 0;
@@ -31,6 +43,7 @@
             text-transform: uppercase;
             font-size: 11px;
             color: #999;
+            line-height: 1.25;
 
             -webkit-touch-callout: none; /* iOS Safari */
             -webkit-user-select: none; /* Safari */
@@ -51,17 +64,28 @@
             }
         }
 
+        &.with-note {
+
+            .toolbar-container {
+                display: inline-flex;
+            }
+
+            .toolbar-note {
+                margin-top: 10px;
+                font-size: 12px;
+                line-height: 16px;
+                color:  #999;
+            }
+        }
+
         &.hide {
             display: none;
         }
 
-        &:last-child {
-            margin-right: 0;
-        }
-
         .button {
             cursor: pointer;
-            padding: 0px 16px;
+            padding: 0px 5px;
+            min-width: 2em;
 
             height: 39px;
 
@@ -69,7 +93,7 @@
             align-items: center;
             justify-content: center;
 
-            font-size: 14px;
+            font-size: 12px;
             border-right: 1px solid rgba(0, 0, 0, 0.1);
 
             &:hover {
@@ -142,18 +166,19 @@
             text-align: center;
             background: transparent;
             margin-bottom: 4px;
+            padding: 4px 2px;
         }
 
         #resize-w,
         #resize-mm-w {
-            margin-left: 10px;
-            margin-right: 5px;
+            margin-left: 4px;
+            margin-right: 0px;
         }
 
         #resize-h,
         #resize-mm-h {
-            margin-right: 10px;
-            margin-left: 5px;
+            margin-right: 4px;
+            margin-left: 0px;
         }
 
         .btn-ppm .btn {

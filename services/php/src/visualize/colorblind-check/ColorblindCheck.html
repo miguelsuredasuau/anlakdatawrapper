@@ -125,7 +125,6 @@
                 if (!iframeWin.__dw) return setTimeout(() => this.initIframe(callback), 5);
 
                 __dw = iframeWin.__dw;
-
                 __dw.vis.colorMap(color => this.colorMap(color));
 
                 if (typeof callback === 'function') callback();

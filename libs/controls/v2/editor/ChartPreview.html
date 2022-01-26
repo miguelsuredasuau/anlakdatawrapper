@@ -8,7 +8,8 @@ TODO for later:
         class:loading
         class:resizable
         class:resizing
-        style="width: {width}px; height: {height}px; overflow: visible; padding: {border}px; transform: scale({scale || 1}); background:{themeBackground};"
+        class:dark-background="{darkBackground}"
+        style="width: {width}px; height: {height}px; overflow: visible; padding: {border}px; transform: scale({scale || 1}); background:{containerBackground};"
     >
         <iframe
             title="chart-preview"
@@ -95,6 +96,9 @@ TODO for later:
     .notifications :global(.alert) {
         margin-bottom: 8px;
     }
+    :global(.dark-background .resizer) {
+        filter: invert(0.5);
+    }
 </style>
 
 <script>
@@ -104,6 +108,7 @@ TODO for later:
     import clone from '@datawrapper/shared/clone';
     import { __ } from '@datawrapper/shared/l10n';
     import get from '@datawrapper/shared/get';
+    import colorLightness from '@datawrapper/shared/colorLightness';
     import AlertDisplay from '../AlertDisplay.html';
 
     let startX;
@@ -145,7 +150,9 @@ TODO for later:
                 // inline editing:
                 editable: true,
                 previousAttributes: null,
-                notifications: []
+                notifications: [],
+                // display
+                background: null
             };
         },
         computed: {
@@ -153,8 +160,11 @@ TODO for later:
                 // eslint-disable-next-line
                 return src ? src : $id ? `/chart/${$id}/preview` : '';
             },
-            themeBackground({ $themeData }) {
-                return get($themeData, 'colors.background', '#ffffff');
+            containerBackground({ $themeData, background }) {
+                return background || get($themeData, 'colors.background', '#ffffff');
+            },
+            darkBackground({ containerBackground }) {
+                return colorLightness(containerBackground) < 30;
             }
         },
         methods: {

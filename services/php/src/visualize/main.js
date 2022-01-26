@@ -34,6 +34,7 @@ function init({
     theme,
     themes,
     themeData,
+    computedThemeData,
     teamSettings,
     customLayouts,
     flags
@@ -60,7 +61,10 @@ function init({
     });
     let app;
     const themeCache = {};
-    themeCache[theme] = themeData;
+    themeCache[theme] = {
+        data: themeData,
+        computed: computedThemeData
+    };
     dw.theme.register(theme, themeData);
 
     dw.backend.currentChart = chart;
@@ -69,13 +73,15 @@ function init({
 
     chart.set({
         writable: true,
-        themeData: themeData,
+        themeData,
+        computedThemeData,
         teamSettings,
         externalMetadata,
         themes,
         customLayouts,
         flags,
-        visualization: visualizations[chartData.type]
+        visualization: visualizations[chartData.type],
+        userNotifications: []
     });
 
     if (chart.get().lastEditStep < 3) {
@@ -134,15 +140,29 @@ function init({
         if (changed.theme) {
             if (themeCache[current.theme]) {
                 // re-use cached theme
-                chart.set({ themeData: themeCache[current.theme] });
+                chart.set({
+                    themeData: themeCache[current.theme].data,
+                    computedThemeData: themeCache[current.theme].computed
+                });
             } else {
                 // load new theme data
                 getJSON(
-                    '//' + dw.backend.__api_domain + '/v3/themes/' + current.theme + '?extend=true',
+                    '//' +
+                        dw.backend.__api_domain +
+                        '/v3/themes/' +
+                        current.theme +
+                        '?extend=true&dark=' +
+                        (current.darkMode || false),
                     function (res) {
-                        themeCache[current.theme] = res.data;
+                        themeCache[current.theme] = {
+                            data: res.data,
+                            computed: res._computed
+                        };
                         dw.theme.register(current.theme, res.data);
-                        chart.set({ themeData: res.data });
+                        chart.set({
+                            themeData: res.data,
+                            computedThemeData: res._computed
+                        });
                     }
                 );
             }

@@ -43,7 +43,8 @@ module.exports = {
                         map2svg: fakeBoolean(),
                         transparent: fakeBoolean(),
                         logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto'),
-                        logoId: logoId().optional()
+                        logoId: logoId().optional(),
+                        dark: Joi.boolean().default(false)
                     })
                 }
             },
@@ -72,6 +73,21 @@ module.exports = {
                     return Boom.notFound();
                 }
 
+                // also load dark mode theme & styles
+                const themeDark = {};
+                const themeId = props.chart.theme;
+
+                const darkThemePromises = [
+                    `/themes/${themeId}?extend=true&dark=true`,
+                    `/visualizations/${props.chart.type}/styles.css?theme=${themeId}&dark=true`
+                ].map((url, i) =>
+                    api(url, { json: i === 0 }).then(res => {
+                        themeDark[i === 0 ? 'json' : 'css'] = res;
+                    })
+                );
+
+                await Promise.all(darkThemePromises);
+
                 const chartLocale = props.chart.language || 'en-US';
 
                 const dependencies = ['dw-2.0.min.js'];
@@ -80,11 +96,15 @@ module.exports = {
                 props = Object.assign(props, {
                     isIframe: true,
                     isPreview: true,
+                    isStyleDark: request.query.dark,
+                    themeDataDark: themeDark.json.data,
+                    themeDataLight: props.theme.data,
                     polyfillUri: '/lib/polyfills',
                     locales: {
                         dayjs: loadVendorLocale(locales, 'dayjs', chartLocale, team),
                         numeral: loadVendorLocale(locales, 'numeral', chartLocale, team)
-                    }
+                    },
+                    ...(request.query.dark ? { theme: themeDark.json } : {})
                 });
 
                 const css = props.styles;
@@ -120,7 +140,10 @@ module.exports = {
                     POLYFILL_SCRIPT: '/lib/chart-core/load-polyfills.js',
                     DEPS: dependencies.map(el => `/lib/chart-core/${el}`),
                     LIBRARIES: libraries,
-                    CSS: `${fonts}\n${css}`,
+                    FONT_CSS: fonts,
+                    CSS: css,
+                    CSS_DARK: themeDark.css,
+                    DARK_MODE: request.query.dark,
                     CHART_CLASS: [
                         `vis-height-${get(props.visualization, 'height', 'fit')}`,
                         `theme-${get(props.theme, 'id')}`,

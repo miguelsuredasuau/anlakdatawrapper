@@ -15,11 +15,16 @@
     export let assets;
     export let externalDataUrl;
     export let outerContainer;
+    export let themeDataDark = {};
+    export let themeDataLight = {};
 
     // plain style means no header and footer
     export let isStylePlain = false;
     // static style means user can't interact (e.g. in a png version)
     export let isStyleStatic = false;
+    export let isStyleDark = false;
+    // autodark means dark/light display follows user prefers-color-scheme
+    export let isAutoDark = false;
     // can be on|off|auto (on/off will overwrite chart setting)
     export let forceLogo = 'auto';
     export let logoId = null;
@@ -52,6 +57,8 @@
     {chart}
     {visualization}
     {theme}
+    {themeDataDark}
+    {themeDataLight}
     {locales}
     {translations}
     {blocks}
@@ -62,6 +69,8 @@
     {externalDataUrl}
     {isStylePlain}
     {isStyleStatic}
+    {isStyleDark}
+    {isAutoDark}
     {forceLogo}
     {logoId}
     {outerContainer}
