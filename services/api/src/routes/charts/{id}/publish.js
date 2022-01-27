@@ -24,9 +24,9 @@ module.exports = server => {
         options: {
             tags: ['api'],
             description: 'Publish a chart',
-            notes: 'Requires scope `chart:write`.',
+            notes: 'Requires scopes `chart:write` and `theme:read`.',
             auth: {
-                access: { scope: ['chart:write'] }
+                access: { scope: ['chart:write', 'theme:read'] }
             },
             validate: {
                 params: Joi.object({
@@ -50,12 +50,9 @@ module.exports = server => {
         path: '/publish/data',
         options: {
             auth: {
-                access: { scope: ['chart:write'] }
+                access: { scope: ['chart:write', 'theme:read'] }
             },
             validate: {
-                query: Joi.object({
-                    dark: Joi.boolean().default(false)
-                }).unknown(true),
                 params: Joi.object({
                     id: Joi.string().length(5).required()
                 })
@@ -367,7 +364,7 @@ async function publishData(request) {
 
     // the theme
     const themeRes = await request.server.inject({
-        url: `/v3/themes/${themeId}?extend=true&dark=${query.dark}`,
+        url: `/v3/themes/${themeId}?extend=true`,
         auth,
         headers
     });
@@ -375,14 +372,18 @@ async function publishData(request) {
     if (themeRes.result.statusCode === 404) {
         return Boom.badRequest("Chart theme doesn't exist");
     }
+
+    if (themeRes.result.statusCode === 403) {
+        return Boom.badRequest('Scope theme:read required');
+    }
+
     data.theme = themeRes.result;
-    // data.theme.fontsCSS = await compileFontCSS(data.theme.fonts, data.theme.data);
 
     // the styles
     const styleRes = await request.server.inject({
-        url: `/v3/visualizations/${data.visualization.id}/styles.css?theme=${themeId}&dark=${
-            query.dark
-        }&transparent=${!!query.transparent}`,
+        url: `/v3/visualizations/${
+            data.visualization.id
+        }/styles.css?theme=${themeId}&transparent=${!!query.transparent}`,
         auth,
         headers
     });
