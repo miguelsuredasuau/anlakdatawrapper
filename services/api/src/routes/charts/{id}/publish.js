@@ -24,9 +24,9 @@ module.exports = server => {
         options: {
             tags: ['api'],
             description: 'Publish a chart',
-            notes: 'Requires scopes `chart:write` and `theme:read`.',
+            notes: 'Requires scopes `chart:write`, `theme:read` and `visualization:read`.',
             auth: {
-                access: { scope: ['chart:write', 'theme:read'] }
+                access: { scope: ['chart:write', 'theme:read', 'visualization:read'] }
             },
             validate: {
                 params: Joi.object({
@@ -50,7 +50,7 @@ module.exports = server => {
         path: '/publish/data',
         options: {
             auth: {
-                access: { scope: ['chart:write', 'theme:read'] }
+                access: { scope: ['chart:write', 'theme:read', 'visualization:read'] }
             },
             validate: {
                 params: Joi.object({
@@ -374,7 +374,7 @@ async function publishData(request) {
     }
 
     if (themeRes.result.statusCode === 403) {
-        return Boom.badRequest('Scope theme:read required');
+        return Boom.unauthorized('Scope theme:read required');
     }
 
     data.theme = themeRes.result;
