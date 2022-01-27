@@ -188,7 +188,7 @@ module.exports = {
 
         async function getTheme(request) {
             const { server, params, query, url } = request;
-            const themeCacheKey = `${params.id}${query.dark ? '/dark' : ''}`;
+            const themeCacheKey = `${params.id}${url.search}`;
             if (useThemeCache) {
                 const cachedTheme = await themeCache.get(themeCacheKey);
                 if (cachedTheme) return cachedTheme;
