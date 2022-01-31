@@ -1,4 +1,7 @@
-<svelte:window on:keydown="handleWindowKeydown(event)" on:click="handleWindowClick(event)" />
+<svelte:window
+    on:keydown="handleWindowKeydown(event)"
+    on:mousedown="handleWindowMousedown(event)"
+/>
 
 <div id="svelte-annotations-wrap" ref:wrap>
     <Group label="{__('controls / annotations / text-annotations')}">
@@ -361,9 +364,11 @@
                     this.exitCreateMode();
                 }
             },
-            handleWindowClick(event) {
+            handleWindowMousedown(event) {
                 if (typeof event.composedPath === 'function') {
                     const path = event.composedPath();
+                    // ignore if click path doesn't include `body` (this happens when clicking the scrollbar)
+                    if (!path.includes(document.body)) return;
                     if (this.refs.wrap && !path.some(item => item.id === this.refs.wrap.id)) {
                         setTimeout(() => this.setEditorState({ selectedTextAnnotations: [] }));
                     }
