@@ -40,6 +40,7 @@
         border-radius: 4px;
         padding: 15px 20px;
         font-size: 14px;
+        z-index: 100;
     }
 
     .embed-code .close {

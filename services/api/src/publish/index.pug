@@ -25,7 +25,8 @@ html(lang=CHART_LANGUAGE)
             && !{AUTO_DARK} && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
         if (isDark) document.getElementById('__svelte-dw').className += ' is-dark-mode';
         function removeHideStyles() {
-          document.getElementById('hide-all').remove();
+          var st = document.getElementById('hide-all');
+          st.parentNode.removeChild(st);
         }
         if (autoDark) {
           removeHideStyles();

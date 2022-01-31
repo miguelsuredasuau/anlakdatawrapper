@@ -19,7 +19,7 @@ const output = {
 
 const babelConfig = {
     exclude: [/node_modules\/(?!(@datawrapper|svelte)\/).*/],
-    extensions: ['.js', '.mjs', '.svelte']
+    extensions: ['.js', '.mjs', '.svelte', '.cjs']
 };
 
 function onwarn(warning, warn) {
