@@ -660,7 +660,7 @@ Please make sure you called __(key) with a key of type "string".
             const opaqueColor = chroma(color).alpha(1);
 
             // compute color with similar bg-ratio
-            const newOpaqueColHex = invertColor(opaqueColor, darkBg, lightBg, 1.4);
+            const newOpaqueColHex = invertColor(opaqueColor, darkBg, lightBg, 0.85);
             if (alpha < 1) {
                 // adjust opacity
                 const perceivedColor = chroma.mix(darkBg, newOpaqueColHex, alpha, 'rgb');

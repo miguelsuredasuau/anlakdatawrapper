@@ -320,7 +320,7 @@ async function convertToDarkMode({ theme, darkBg, origBg }) {
                 lightColor,
                 darkBg,
                 origBg,
-                1.4 +
+                0.85 -
                     // boost text contrast if old text contrast was low already
                     (lightContrast < 8 && (key.includes('typography') || key.includes('text'))
                         ? 0.2
