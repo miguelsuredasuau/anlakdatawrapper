@@ -5,15 +5,17 @@ const moment = require('moment');
 const async = require('async');
 const URL = require('url');
 const normalizeUrl = require('normalize-url');
-const logger = require('./src/logger');
+const logger = require('./utils/logger');
+const { requireConfig } = require('@datawrapper/service-utils/findConfig');
+const { validatePixeltracker } = require('@datawrapper/schemas/config');
 
 const app = express();
 
-const configFile = __dirname + '/production-config.json';
-const config = require(configFile);
+const config = requireConfig().pixeltracker;
+validatePixeltracker(config);
 
 app.configure(function () {
-    app.set('port', 1234);
+    app.set('port', config.port);
     app.use(express.favicon());
     app.use(express.bodyParser());
     app.use(express.methodOverride());
@@ -22,7 +24,7 @@ app.configure(function () {
 
 let times = {};
 
-app.set('connection', mysql.createConnection(config));
+app.set('connection', mysql.createConnection(config.db));
 
 function init() {
     let chartHits = {};
@@ -375,7 +377,7 @@ async.series(
             client.connect(callback);
         },
         function useDb(callback) {
-            client.query('USE ' + config.database, callback);
+            client.query('USE ' + config.db.database, callback);
         }
     ],
     function (err) {
