@@ -21,7 +21,7 @@ module.exports = {
         const themeCache = server.cache({
             segment: 'themes',
             shared: true,
-            expiresIn: 86400000 /* 1 day */
+            expiresIn: 30 * 864e5 /* 30 days */
         });
 
         // GET /v3/themes/{id}
@@ -123,8 +123,10 @@ module.exports = {
                         await styleCache.drop(`${t.id}__${visId}`);
                     }
 
-                    await themeCache.drop(`${t.id}`);
-                    await themeCache.drop(`${t.id}/dark`);
+                    await themeCache.drop(`${t.id}?dark=false&extend=false`);
+                    await themeCache.drop(`${t.id}?dark=false&extend=true`);
+                    await themeCache.drop(`${t.id}?dark=true&extend=false`);
+                    await themeCache.drop(`${t.id}?dark=true&extend=true`);
                 }
 
                 return theme.toJSON();
@@ -188,7 +190,7 @@ module.exports = {
 
         async function getTheme(request) {
             const { server, params, query, url } = request;
-            const themeCacheKey = `${params.id}${url.search}`;
+            const themeCacheKey = `${params.id}?dark=${query.dark}&extend=${query.extend}`;
             if (useThemeCache) {
                 const cachedTheme = await themeCache.get(themeCacheKey);
                 if (cachedTheme) return cachedTheme;
