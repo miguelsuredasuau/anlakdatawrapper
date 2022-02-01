@@ -239,7 +239,7 @@ module.exports = async function createChartWebsite(
     const indexHTML = renderHTML({
         __DW_SVELTE_PROPS__: stringify(publishData),
         CHART_LANGUAGE: chartLocale.split(/_|-/)[0],
-        META_ROBOTS: 'noindex, nofollow',
+        META_ROBOTS: 'noindex, indexifembedded, nofollow',
         CHART_HTML: html,
         CHART_HEAD: head,
         CHART_AFTER_HEAD_HTML: publishData.chartAfterHeadHTML,
