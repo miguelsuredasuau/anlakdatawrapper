@@ -376,7 +376,7 @@ server.methods.registerViewComponent({
 The core route can then dynamically import the view component during runtime using the `ViewComponent` element:
 
 ```svelte
-<ViewComponent component="publish/export-pdf" {props} {__} />
+<ViewComponent id="publish/export-pdf" {props} {__} />
 ```
 
 Internally, the view component import statements are [injected](src/utils/svelte-view/rollup-runtime.js#L97-L102) into the core `View.svelte` before it's being compiled, and then stored in the `viewComponents` context from which it's being [loaded by `ViewComponent.svelte`](src/views/_partials/ViewComponent.svelte#L13).

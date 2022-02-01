@@ -9,6 +9,7 @@
     import relativeTime from 'dayjs/plugin/relativeTime';
     import advancedFormat from 'dayjs/plugin/advancedFormat';
     import localizedFormat from 'dayjs/plugin/localizedFormat';
+    import isoWeek from 'dayjs/plugin/isoWeek';
 
     import de from 'dayjs/locale/de';
     import es from 'dayjs/locale/es';
@@ -31,6 +32,7 @@
     dayjs.extend(relativeTime);
     dayjs.extend(advancedFormat);
     dayjs.extend(localizedFormat);
+    dayjs.extend(isoWeek);
     if (dayjsLocales[userLang.substr(0, 2)]) {
         dayjs.locale(dayjsLocales[userLang.substr(0, 2)]);
     }

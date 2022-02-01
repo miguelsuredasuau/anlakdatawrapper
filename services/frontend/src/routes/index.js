@@ -10,6 +10,12 @@ module.exports = {
 
         await server.register(require('./dashboard'));
 
+        await server.register(require('./admin'), {
+            routes: {
+                prefix: '/v2/admin'
+            }
+        });
+
         await server.register(require('./archive.js'), {
             routes: {
                 prefix: '/archive'

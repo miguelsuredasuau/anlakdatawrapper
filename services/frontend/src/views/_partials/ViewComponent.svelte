@@ -2,7 +2,7 @@
     import { getContext } from 'svelte';
 
     export let id;
-    export let props;
+    export let props = {};
     export let __;
 
     const viewComponents = getContext('viewComponents');

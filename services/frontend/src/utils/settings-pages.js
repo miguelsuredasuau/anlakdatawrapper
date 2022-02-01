@@ -14,14 +14,21 @@ module.exports = {
             server.app.settingsPages.get(settingsKey).add(settingsPageFunc);
         });
 
-        server.method('getSettingsPages', async (settingsKey, request) => {
+        /**
+         * retrieve grouped settings pages for a given request
+         *
+         * @param settingsKey - key of settings page (e.g. account, team, admin)
+         * @param request     - current requests
+         * @param filter      - an optional filter function
+         */
+        server.method('getSettingsPages', async (settingsKey, request, filter = null) => {
             if (!server.app.settingsPages.has(settingsKey)) {
                 return [];
             }
             const pages = [];
             for (const pageFunc of server.app.settingsPages.get(settingsKey)) {
                 const page = await pageFunc(request);
-                if (page) pages.push(page);
+                if ((page && !filter) || filter(page)) pages.push(page);
             }
             return Object.entries(groupBy(pages, 'group'))
                 .map(([title, pages]) => {
