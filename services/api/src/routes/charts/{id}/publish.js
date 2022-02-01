@@ -8,13 +8,9 @@ const get = require('lodash/get');
 const { Action, Chart, ChartAccessToken, ChartPublic, User } = require('@datawrapper/orm/models');
 const { Op } = require('@datawrapper/orm').db;
 const { createResponseConfig } = require('../../../schemas/response');
-const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
 const { getAdditionalMetadata, prepareChart } = require('../../../utils/index.js');
 const { getEmbedCodes } = require('./utils');
 const { getScope } = require('@datawrapper/service-utils/l10n');
-
-const configPath = findConfigPath();
-const config = require(configPath);
 
 module.exports = server => {
     // POST /v3/charts/{id}/publish
@@ -114,6 +110,10 @@ async function publishChart(request) {
     }
 
     const options = { auth, headers, server, log: logPublishStatus, publish: true };
+
+    // refresh external data
+    await server.app.events.emit(server.app.event.CUSTOM_EXTERNAL_DATA, { chart });
+
     const { chartData, outDir, fileMap, cleanup } = await createChartWebsite(chart, options);
 
     /**
@@ -232,22 +232,6 @@ async function publishChart(request) {
         }
     } catch (err) {
         request.logger.error(`Broken user_data 'recently_published' for user [${user.id}]`);
-    }
-    // refresh external data if request isn't coming from the app
-    if (headers.origin !== `http${config.frontend.https ? 's' : ''}://${config.frontend.domain}`) {
-        try {
-            await server.inject({
-                url: `/v3/charts/${chart.id}/data/refresh`,
-                method: 'POST',
-                auth,
-                headers
-            });
-        } catch (ex) {
-            server.logger.debug(
-                `Error while injecting POST /v3/charts/${chart.id}/data/refresh request`,
-                ex
-            );
-        }
     }
 
     // for image publishing and things that we want to (optionally)

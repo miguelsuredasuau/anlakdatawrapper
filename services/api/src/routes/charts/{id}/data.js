@@ -1,9 +1,6 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { noContentResponse } = require('../../../schemas/response');
-const checkUrl = require('@datawrapper/service-utils/checkUrl');
-const got = require('got');
-const get = require('lodash/get');
 
 module.exports = server => {
     const { events, event } = server.app;
@@ -91,64 +88,13 @@ module.exports = server => {
             const { params, auth } = request;
 
             const chart = await server.methods.loadChart(params.id);
-
             if (!chart) {
                 return Boom.notFound();
             }
 
             const isEditable = await chart.isEditableBy(auth.artifacts, auth.credentials.session);
-
             if (!isEditable) {
                 return Boom.notFound();
-            }
-
-            if (
-                get(chart, 'metadata.data.upload-method') === 'external-data' &&
-                chart.external_data &&
-                checkUrl(chart.external_data)
-            ) {
-                try {
-                    const data = (await got(chart.external_data)).body;
-
-                    await events.emit(event.PUT_CHART_ASSET, {
-                        chart,
-                        data,
-                        filename: `${chart.id}.csv`
-                    });
-
-                    chart.changed('last_modified_at', true);
-                    await chart.save();
-                } catch (ex) {
-                    server.logger.debug(`Error during PUT_CHART_ASSET for ${chart.id}`, ex);
-                }
-
-                if (get(chart, 'metadata.data.external-metadata')) {
-                    try {
-                        const metadataUrl = get(chart, 'metadata.data.external-metadata');
-
-                        if (checkUrl(metadataUrl)) {
-                            const metadata = (await got(metadataUrl)).body;
-
-                            try {
-                                JSON.parse(metadata);
-
-                                // @todo: validate against metadata schema
-                                await events.emit(event.PUT_CHART_ASSET, {
-                                    chart,
-                                    data: metadata,
-                                    filename: `${chart.id}.metadata.json`
-                                });
-                            } catch (ex) {
-                                server.logger.debug(
-                                    `Error during PUT_CHART_ASSET for ${chart.id}`,
-                                    ex
-                                );
-                            }
-                        }
-                    } catch (ex) {
-                        server.logger.debug(`Error during PUT_CHART_ASSET for ${chart.id}`, ex);
-                    }
-                }
             }
 
             await events.emit(event.CUSTOM_EXTERNAL_DATA, { chart });
