@@ -28,7 +28,7 @@ module.exports = {
             const pages = [];
             for (const pageFunc of server.app.settingsPages.get(settingsKey)) {
                 const page = await pageFunc(request);
-                if ((page && !filter) || filter(page)) pages.push(page);
+                if (page && (!filter || filter(page))) pages.push(page);
             }
             return Object.entries(groupBy(pages, 'group'))
                 .map(([title, pages]) => {
