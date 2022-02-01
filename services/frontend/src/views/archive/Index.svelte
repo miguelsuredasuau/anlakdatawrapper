@@ -60,6 +60,7 @@
         deleteChart,
         duplicateChart,
         openChart,
+        closeChart,
         moveCharts,
         moveFolder,
         themeBgColors,
@@ -81,7 +82,6 @@
 
     // Current chart
     let currentChart;
-    let currentChartOpen = false;
     let dragNotification;
     let dragTarget;
     let draggedObject;
@@ -116,8 +116,11 @@
         });
 
         if ($currentFolder.path) {
-            const currentURL = $currentFolder.path + (qs && '?') + qs;
-            window.history.pushState({}, '', currentURL);
+            const path = $currentFolder.path + (qs && '?') + qs;
+            const state = window.history.state || {};
+            if (state.path !== path) {
+                window.history.pushState({ path }, '', path);
+            }
             loadCharts();
         }
     }
@@ -131,8 +134,6 @@
         $query = { ...$query, offset };
     }
 
-    const modalHashRegex = /^#\/([a-z0-9]{5})$/i;
-
     let folderNavEl;
     $: if (folderNavEl) {
         const padding = 10;
@@ -141,11 +142,30 @@
     }
 
     onMount(() => {
-        if (modalHashRegex.test(window.location.hash)) {
-            const m = window.location.hash.match(modalHashRegex);
-            openChart(m[1]);
+        const chartId = getChartIdFromHash();
+        if (chartId) {
+            openChart(chartId, false);
         }
+
+        window.addEventListener('popstate', ({ state }) => {
+            // Handle browser history for folders:
+            $currentFolder = findFolderByPath(folders, window.location.pathname);
+
+            // Handle browser history for charts:
+            const chartId = (state && state.chartId) || getChartIdFromHash();
+            if (chartId) {
+                openChart(chartId, false);
+            } else {
+                closeChart(false);
+            }
+        });
     });
+
+    function getChartIdFromHash() {
+        const chartHashRegex = /^#\/([a-z0-9]{5})$/i;
+        const match = window.location.hash.match(chartHashRegex);
+        return match && match[1];
+    }
 
     function findFolderByPath(folders, path) {
         for (const f of Object.values(folders)) {
@@ -279,11 +299,20 @@
         }
     }
 
-    async function openChart(chart) {
-        currentChart = await httpReq.get(
-            `/v3/charts/${typeof chart === 'string' ? chart : chart.id}`
-        );
-        currentChartOpen = true;
+    async function openChart(chartId, pushState = true) {
+        currentChart = await httpReq.get(`/v3/charts/${chartId}`);
+        if (pushState) {
+            const path = window.location.pathname + (window.location.search || '');
+            window.history.pushState({ chartId }, '', `${path}#/${chartId}`);
+        }
+    }
+
+    function closeChart(pushState = true) {
+        currentChart = null;
+        if (pushState) {
+            const path = window.location.pathname + (window.location.search || '');
+            window.history.pushState({ chartId: null }, '', path);
+        }
     }
 
     async function moveFolder(folder, destinationFolder) {
@@ -381,7 +410,7 @@
 </style>
 
 <MainLayout title="{$currentFolder.name || ''} - Archive">
-    <VisualizationModal {__} bind:open={currentChartOpen} bind:chart={currentChart} />
+    <VisualizationModal {__} bind:chart={currentChart} />
     {#if dragNotification}
         <DragNotification {__} message={dragNotification} />
     {/if}

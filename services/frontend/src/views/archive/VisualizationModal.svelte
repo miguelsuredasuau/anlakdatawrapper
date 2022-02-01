@@ -5,31 +5,20 @@
     import httpReq from '@datawrapper/shared/httpReq';
     import { beforeUpdate, getContext, tick } from 'svelte';
 
-    const { deleteChart, duplicateChart, openChart } = getContext('page/archive');
+    const { deleteChart, duplicateChart, openChart, closeChart } = getContext('page/archive');
     const { dayjs } = getContext('libraries');
     const { themeBgColors } = getContext('page/archive');
 
     export let __;
-    export let open;
     export let chart;
 
     let _chart = chart;
 
     beforeUpdate(() => {
         if (chart !== _chart) {
-            if (open) window.location.hash = `#/${chart.id}`;
             _chart = chart;
         }
     });
-
-    function close() {
-        open = false;
-        window.history.replaceState(
-            '',
-            '',
-            window.location.pathname + (window.location.search || '')
-        );
-    }
 
     let embedCodes;
     let selectedEmbedCode;
@@ -41,7 +30,7 @@
 
     async function handleDeleteButtonClick() {
         await deleteChart(chart);
-        close();
+        closeChart();
     }
 
     async function copyEmbedCode(code) {
@@ -100,7 +89,7 @@
 </style>
 
 {#if chart}
-    <ModalDisplay bind:open on:close={close}>
+    <ModalDisplay open={!!chart} on:close={closeChart}>
         <div class="columns is-gapless has-background-white">
             <div class="column">
                 <div
@@ -114,7 +103,7 @@
             </div>
             <div class="column is-one-third has-background-white-bis">
                 <div class="block p-6">
-                    <button on:click={close} class="button is-text close">
+                    <button on:click={closeChart} class="button is-text close">
                         <IconDisplay icon="close" />
                     </button>
                     <div class="block">

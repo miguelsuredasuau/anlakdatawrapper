@@ -297,7 +297,11 @@
     on:dragstart|stopPropagation={handleVisualizationDragStart}
     on:dragend={() => (dragPreviewVisible = false)}
 >
-    <a on:click|preventDefault={() => openChart(chart)} href="/chart/{chart.id}/edit" class="viz">
+    <a
+        on:click|preventDefault={() => openChart(chart.id)}
+        href="/chart/{chart.id}/edit"
+        class="viz"
+    >
         <figure class="image is-4by3">
             <figcaption
                 title={decodeHtml(chart.title)}
