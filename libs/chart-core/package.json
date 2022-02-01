@@ -32,7 +32,7 @@
     "dependencies": {
         "@datawrapper/expr-eval": "^2.0.4",
         "@datawrapper/polyfills": "file:../polyfills",
-        "@datawrapper/shared": "^0.40.2-darkmode.0",
+        "@datawrapper/shared": "^0.40.2",
         "@emotion/css": "^11.1.3",
         "core-js": "3.6.5",
         "deepmerge": "^4.2.2",
