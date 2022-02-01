@@ -104,6 +104,7 @@ module.exports = {
                         dayjs: loadVendorLocale(locales, 'dayjs', chartLocale, team),
                         numeral: loadVendorLocale(locales, 'numeral', chartLocale, team)
                     },
+                    teamPublicSettings: team ? team.getPublicSettings() : {},
                     ...(request.query.dark ? { theme: themeDark.json } : {})
                 });
 

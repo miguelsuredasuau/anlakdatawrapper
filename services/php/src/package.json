@@ -15,7 +15,7 @@
         "@babel/preset-env": "^7.11.5",
         "@datawrapper/chart-core": "file:../../../libs/chart-core",
         "@datawrapper/controls": "^2.49.2",
-        "@datawrapper/shared": "^0.35.0",
+        "@datawrapper/shared": "^0.41.1-numeral2",
         "@rollup/plugin-babel": "^5.3.0",
         "@rollup/plugin-commonjs": "^20.0.0",
         "@rollup/plugin-json": "^4.1.0",

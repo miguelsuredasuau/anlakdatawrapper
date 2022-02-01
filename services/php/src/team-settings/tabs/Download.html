@@ -1,0 +1,38 @@
+<div class="row">
+    <div class="span6">
+        <p class="mb-6">{ __('teams / download / p') }</p>
+
+        <h3 class="mb-4">{ __('teams / download / data-localized' ) }</h3>
+
+        <SwitchControl
+            label="{ __('teams / download / data-localized / switch') }"
+            bind:value="settings.downloadDataLocalized"
+        />
+        <p>{ __('teams / download / data-localized / help' ) }</p>
+    </div>
+</div>
+
+<script>
+    import SwitchControl from '@datawrapper/controls/SwitchControl.html';
+    import { __ } from '@datawrapper/shared/l10n';
+
+    export default {
+        components: {
+            SwitchControl
+        },
+        data() {
+            return {
+                settings: {}
+            };
+        },
+        helpers: { __ },
+        onstate({ changed, current }) {
+            if (current.settings && (changed.settings || changed.team)) {
+                this.fire('change', {
+                    team: current.team,
+                    settings: current.settings
+                });
+            }
+        }
+    };
+</script>

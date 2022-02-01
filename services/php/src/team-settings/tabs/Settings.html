@@ -106,16 +106,21 @@
 
 <script>
     import FormBlock from '@datawrapper/controls/FormBlock.html';
-    import SelectInput from '@datawrapper/controls/SelectInput.html';
-    import RadioControl from '@datawrapper/controls/RadioControl.html';
     import PreviewWidths from './PreviewWidths.html';
+    import RadioControl from '@datawrapper/controls/RadioControl.html';
+    import SelectInput from '@datawrapper/controls/SelectInput.html';
     import { __ } from '@datawrapper/shared/l10n';
     import set from '@datawrapper/shared/set';
     import get from '@datawrapper/shared/get';
     import arrayToObject from '@datawrapper/shared/arrayToObject';
 
     export default {
-        components: { SelectInput, FormBlock, RadioControl, PreviewWidths },
+        components: {
+            FormBlock,
+            PreviewWidths,
+            RadioControl,
+            SelectInput
+        },
         data() {
             return {
                 initialized: false,

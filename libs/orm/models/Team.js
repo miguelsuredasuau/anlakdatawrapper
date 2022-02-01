@@ -1,7 +1,7 @@
 const SQ = require('sequelize');
 const { db } = require('../index');
 const merge = require('merge-deep');
-const { clone } = require('underscore');
+const { clone, pick } = require('underscore');
 
 /* make sure to keep in sync with services/php/lib/core/build/conf/datawrapper/Organization.php */
 const defaultSettings = {
@@ -17,6 +17,7 @@ const defaultSettings = {
     ga_enabled: false,
     ga_id: '',
     downloadImageFormat: 'full',
+    downloadFilenameTemplate: '{{ LOWER(title) }}',
     embed: {
         preferred_embed: 'responsive',
         custom_embed: {
@@ -138,6 +139,10 @@ Team.prototype.invalidatePluginCache = async function () {
     await UserPluginCache.destroy({
         where: userQuery
     });
+};
+
+Team.prototype.getPublicSettings = function () {
+    return pick(this.settings, 'downloadDataLocalized');
 };
 
 const Theme = require('./Theme');

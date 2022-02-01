@@ -1,60 +1,58 @@
 <script>
-    // external props
     export let props;
     const { get, __, purifyHtml } = props;
-    $: ({ chart, dwChart, data, theme } = props);
+    $: ({ chart, dwChart, data, teamPublicSettings, theme } = props);
 
-    let dataLink;
-    let hidden = false;
-    let href = 'data';
-    let download = '';
-
-    $: externalData = get(dwChart, 'externalData');
+    $: externalData = get(chart, 'externalData');
     $: caption = get(theme, 'data.options.blocks.get-the-data.data.caption', __('Get the data'));
-    $: defaultFilename = `data-${chart.id}.csv`;
-    $: filename =
-        get(theme, 'data.options.blocks.get-the-data.data.filename', '')
-            .replace(/%custom_(.*?)%/g, (match, key) => {
-                return get(chart, `metadata.custom.${key}`, '');
-            })
-            .replace(/%chart_id%/g, chart.id) || defaultFilename;
 
-    $: {
-        // update data link to point to edited dataset
+    function createCSV() {
+        if (teamPublicSettings.downloadDataLocalized) {
+            const { numeral } = dwChart.vis().libraries();
+            return dwChart.dataset().csv({ numeral });
+        }
+        return dwChart.dataset().csv();
+    }
 
-        if (dwChart && dwChart.dataset()) {
-            const csv = dwChart.dataset().toCSV && dwChart.dataset().toCSV();
+    function getFilename() {
+        const defaultFilename = `data-${chart.id}.csv`;
+        return (
+            get(theme, 'data.options.blocks.get-the-data.data.filename', '')
+                .replace(/%custom_(.*?)%/g, (match, key) =>
+                    get(chart, `metadata.custom.${key}`, '')
+                )
+                .replace(/%chart_id%/g, chart.id) || defaultFilename
+        );
+    }
 
-            if (!csv || (csv && csv.trim && csv.trim() === 'X.1')) {
-                hidden = true;
-            } else {
-                if (window.navigator.msSaveOrOpenBlob) {
-                    const blobObject = new Blob([csv]);
-                    dataLink.addEventListener('click', event => {
-                        window.navigator.msSaveOrOpenBlob(blobObject, filename);
-                        event.preventDefault();
-                        return false;
-                    });
-                } else {
-                    download = filename;
-                    href =
-                        'data:application/octet-stream;charset=utf-8,' +
-                        encodeURIComponent('\uFEFF' + csv);
-                }
-            }
+    function download(data, filename) {
+        const blob = new Blob([data]);
+        if (window.navigator.msSaveOrOpenBlob) {
+            window.navigator.msSaveOrOpenBlob(blob, filename);
+        } else {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+    }
+
+    function handleClick(event) {
+        if (!externalData && dwChart && dwChart.dataset) {
+            const csv = createCSV();
+            const filename = getFilename();
+            download(csv, filename);
+            event.preventDefault();
         }
     }
 </script>
 
-{#if !hidden}
-    <a
-        this="dataLink"
-        class="dw-data-link"
-        aria-label="{__(caption)}: {purifyHtml(chart.title, '')}"
-        {download}
-        target={externalData ? '_blank' : '_self'}
-        href={externalData || href}
-    >
-        {__(caption)}
-    </a>
-{/if}
+<a
+    class="dw-data-link"
+    aria-label="{__(caption)}: {purifyHtml(chart.title, '')}"
+    target={externalData ? '_blank' : '_self'}
+    href={externalData || 'javascript:void(0)'}
+    on:click={handleClick}
+>
+    {__(caption)}
+</a>

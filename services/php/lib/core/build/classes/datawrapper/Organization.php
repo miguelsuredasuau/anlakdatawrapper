@@ -121,6 +121,7 @@ class Organization extends BaseOrganization
             'ga_enabled' => false,
             'ga_id' => '',
             'downloadImageFormat' => 'full',
+            'downloadFilenameTemplate' => '{{ title }}',
             'embed' => [
                 'preferred_embed' => 'responsive',
                 'custom_embed' => [

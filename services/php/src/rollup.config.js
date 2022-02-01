@@ -18,6 +18,7 @@ build('team-settings/members', { view: 'tabs/Members' });
 build('team-settings/settings', { view: 'tabs/Settings' });
 build('team-settings/archive', { view: 'tabs/Archive' });
 build('team-settings/delete', { view: 'tabs/DeleteTeam' });
+build('team-settings/download', { view: 'tabs/Download' });
 build('team-settings/products', { view: 'tabs/ProductTable' });
 build('account/profile', { view: 'EditProfile' });
 build('account/myteams', { view: 'MyTeams' });

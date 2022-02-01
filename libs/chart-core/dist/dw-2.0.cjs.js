@@ -1,6 +1,30 @@
 'use strict';
 
+var numeral = require('numeral');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var numeral__default = /*#__PURE__*/_interopDefaultLegacy(numeral);
+
+function guessDelimiterFromLocale(numeral) {
+    try {
+        if (numeral.localeData().delimiters.decimal === ',') {
+            return ';';
+        }
+    } catch (e) {
+        // invalid locale data
+    }
+    return ',';
+}
+
 function escapeDelimitedValue(value, delimiter, quoteChar) {
+    if (
+        value === null ||
+        value === undefined ||
+        (typeof value === 'number' && !Number.isFinite(value))
+    ) {
+        return '';
+    }
     const s = String(value);
     if (s.indexOf(quoteChar) !== -1) {
         // A double-quote appearing inside a field MUST be escaped by preceding it with another
@@ -29,7 +53,8 @@ function formatDelimited(
 }
 
 var delimited$1 = {
-    formatDelimited
+    formatDelimited,
+    guessDelimiterFromLocale
 };
 
 // Current version.
@@ -2188,23 +2213,21 @@ function Dataset(columns) {
          * @param {Object} opt -- options
          * @param {boolean} [opt.includeComputedColumns=true] -- include computed columns in the CSV
          * @param {boolean} [opt.includeHeader=true] -- include header row in the CSV
+         * @param {string} [opt.numeral=null] -- format numbers using this Numeral.js instance
          * @returns {string}
          */
-        csv({ includeComputedColumns = true, includeHeader = true, ...opts } = {}) {
+        csv({ includeComputedColumns = true, includeHeader = true, numeral = null, ...opts } = {}) {
             const numRows = dataset.numRows();
-            const rows = [];
             const filteredColumns = includeComputedColumns
                 ? columns
                 : columns.filter(col => !col.isComputed);
-            if (includeHeader) {
-                rows.push(filteredColumns.map(col => col.title()));
-            }
-            for (var row = 0; row < numRows; row++) {
-                rows.push(
-                    filteredColumns.map(col =>
-                        col.type() === 'date' ? col.raw(row) : col.val(row)
-                    )
-                );
+            const table = filteredColumns.map(col => [
+                ...(includeHeader ? [col.title()] : []),
+                ...col.formatted(numeral)
+            ]);
+            const rows = table[0].map((_, i) => table.map(row => row[i])).slice(0, numRows + 1);
+            if (!opts.delimiter && numeral) {
+                opts.delimiter = guessDelimiterFromLocale(numeral);
             }
             return formatDelimited(rows, opts);
         },
@@ -3160,7 +3183,25 @@ function Column(name, rows, type) {
             return type.parse(isDate(r[i]) || isNumber(r[i]) ? r[i] : purifyHTML(r[i]));
         },
 
-        /*
+        /**
+         * returns an array of formatted values
+         *
+         * @param {string} [opt.numeral=null] -- format numbers using this Numeral.js instance
+         */
+        formatted(numeral = null) {
+            if (numeral && this.type() === 'number') {
+                return this.values().map(val => {
+                    if (Number.isFinite(val)) {
+                        return numeral(val).format('0.[00000000000000000000]');
+                    }
+                    // When the value is null, undefined, NaN, Infinity, or when parsing failed.
+                    return val;
+                });
+            }
+            return this.raw();
+        },
+
+        /**
          * returns an array of parsed values
          */
         values(unfiltered) {
@@ -6238,13 +6279,11 @@ Parser.prototype.isOperatorEnabled = function (op) {
 };
 
 const TPL_REG = /\{\{(.+?)\}\}/g;
-const ALLOWED_TAGS =
-    '<a><abbr><address><b><big><blockquote><br/><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figure><font><h1><h2><h3><h4><h5><h6><hr><hgroup><i><img><ins><kbd><li><mark><meter><ol><p><pre><q><s><small><span><strike><strong><sub><summary><sup><table><tbody><td><th><thead><tfoot><tr><tt><u><ul><wbr>';
 /*
  * returns a function that evaluates template strings
  * using `expr-eval`.
  */
-function htmlTemplate(template) {
+function templateParser(template) {
     const expressions = {};
     const parser = new Parser();
     template.replace(TPL_REG, (s, formula) => {
@@ -6254,13 +6293,21 @@ function htmlTemplate(template) {
         }
     });
     return context =>
-        purifyHTML(
-            template.replace(TPL_REG, (s, formula) => {
-                const result = formula.trim() ? expressions[formula.trim()].evaluate(context) : '';
-                return result === null ? '' : result;
-            }),
-            ALLOWED_TAGS
-        );
+        template.replace(TPL_REG, (s, formula) => {
+            const result = formula.trim() ? expressions[formula.trim()].evaluate(context) : '';
+            return result === null ? '' : result;
+        });
+}
+
+const ALLOWED_TAGS =
+    '<a><abbr><address><b><big><blockquote><br/><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figure><font><h1><h2><h3><h4><h5><h6><hr><hgroup><i><img><ins><kbd><li><mark><meter><ol><p><pre><q><s><small><span><strike><strong><sub><summary><sup><table><tbody><td><th><thead><tfoot><tr><tt><u><ul><wbr>';
+/*
+ * returns a function that evaluates template strings
+ * using `expr-eval`.
+ */
+function htmlTemplate(template) {
+    const evaluateTemplate = templateParser(template);
+    return context => purifyHTML(evaluateTemplate(context), ALLOWED_TAGS);
 }
 
 /*
@@ -6382,6 +6429,7 @@ var utils = /*#__PURE__*/Object.freeze({
     getNonChartHeight: getNonChartHeight,
     outerHeight: outerHeight,
     htmlTemplate: htmlTemplate,
+    templateParser: templateParser,
     minMax: minMax,
     columnNameColumn: columnNameColumn,
     name: name,
@@ -7218,6 +7266,15 @@ extend(base, {
         return this;
     },
 
+    libraries(libraries) {
+        if (!arguments.length) {
+            return this.__libraries || {};
+        }
+
+        this.__libraries = libraries;
+        return this;
+    },
+
     target(target) {
         if (!arguments.length) {
             return this.__target;
@@ -7254,6 +7311,20 @@ extend(base, {
             ignore[key] = !!format.ignore;
         });
         if (me.dataset.filterColumns) me.dataset.filterColumns(ignore);
+
+        // set locale
+        const { numeral } = me.libraries();
+        if (numeral && chart.locales && chart.locales.numeral) {
+            try {
+                numeral.register('locale', 'dw', chart.locales.numeral);
+            } catch (e) {
+                if (e instanceof TypeError) ; else {
+                    throw e;
+                }
+            }
+            numeral.locale('dw');
+        }
+
         return me;
     },
 
@@ -7648,6 +7719,8 @@ function visualization(id, target) {
         );
     });
 
+    vis.libraries(visualization.libraries);
+
     if (target) {
         vis.target(target);
     }
@@ -7674,6 +7747,10 @@ visualization.register = function (id) {
 
 visualization.has = function (id) {
     return __vis[id] !== undefined;
+};
+
+visualization.libraries = {
+    numeral: numeral__default["default"]
 };
 
 visualization.base = base;

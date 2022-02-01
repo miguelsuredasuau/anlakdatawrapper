@@ -6,6 +6,7 @@
 
     export let chart = {};
     export let visualization = {};
+    export let teamPublicSettings = {};
     export let theme = {};
     export let locales = {};
     export let translations;
@@ -56,6 +57,7 @@
 <Visualization
     {chart}
     {visualization}
+    {teamPublicSettings}
     {theme}
     {themeDataDark}
     {themeDataLight}

@@ -87,6 +87,21 @@
                 settings: team.settings
             }}
         />
+        {#each curPage.sections as section}
+            <Svelte2Wrapper
+                {...section.svelte2}
+                {storeData}
+                on:change={storeTeamSettings}
+                data={{
+                    ...section.data,
+                    folders,
+                    locales,
+                    team,
+                    themes,
+                    settings: team.settings
+                }}
+            />
+        {/each}
     {/if}
     <div slot="belowNav">
         <hr />

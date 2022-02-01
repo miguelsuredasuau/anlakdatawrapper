@@ -33,6 +33,7 @@
 
     export let chart;
     export let visualization = {};
+    export let teamPublicSettings = {};
     export let theme = {};
     export let themeDataDark = {};
     export let themeDataLight = {};
@@ -217,6 +218,7 @@
         __,
         purifyHtml: clean,
         get,
+        teamPublicSettings,
         theme,
         chart,
         dwChart,

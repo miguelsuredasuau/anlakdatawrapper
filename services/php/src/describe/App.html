@@ -194,7 +194,7 @@
 </div>
 
 <script>
-    /* global chart */
+    /* global dw, chart */
     import ComputedColumnEditor from './ComputedColumnEditor.html';
     import CustomColumnFormat from './CustomColumnFormat.html';
     import Histogram from './Histogram.html';
@@ -254,8 +254,14 @@
                 return activeColumn ? activeColumn.values() : [];
             },
             activeFormat({ activeColumn, $dw_chart }) {
+                const { numeral } = dw.visualization.libraries;
                 return activeColumn
-                    ? columnFormatter(activeColumn, $dw_chart.get().metadata, activeColumn.name())
+                    ? columnFormatter(
+                          numeral,
+                          activeColumn,
+                          $dw_chart.get().metadata,
+                          activeColumn.name()
+                      )
                     : d => d;
             },
             // eslint-disable-next-line

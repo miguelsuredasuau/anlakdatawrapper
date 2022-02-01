@@ -9,9 +9,22 @@ module.exports = {
 
         server.method('registerSettingsPage', (settingsKey, settingsPageFunc) => {
             if (!server.app.settingsPages.has(settingsKey)) {
-                server.app.settingsPages.set(settingsKey, new Set());
+                server.app.settingsPages.set(settingsKey, {
+                    pageFuncs: new Set(),
+                    sectionFuncs: new Set()
+                });
             }
-            server.app.settingsPages.get(settingsKey).add(settingsPageFunc);
+            server.app.settingsPages.get(settingsKey).pageFuncs.add(settingsPageFunc);
+        });
+
+        server.method('registerSettingsSection', (settingsKey, settingsSectionFunc) => {
+            if (!server.app.settingsPages.has(settingsKey)) {
+                server.app.settingsPages.set(settingsKey, {
+                    pageFuncs: new Set(),
+                    sectionFuncs: new Set()
+                });
+            }
+            server.app.settingsPages.get(settingsKey).sectionFuncs.add(settingsSectionFunc);
         });
 
         /**
@@ -25,11 +38,27 @@ module.exports = {
             if (!server.app.settingsPages.has(settingsKey)) {
                 return [];
             }
+            const { pageFuncs, sectionFuncs } = server.app.settingsPages.get(settingsKey);
+
             const pages = [];
-            for (const pageFunc of server.app.settingsPages.get(settingsKey)) {
+            for (const pageFunc of pageFuncs) {
                 const page = await pageFunc(request);
                 if (page && (!filter || filter(page))) pages.push(page);
             }
+
+            const sections = [];
+            for (const sectionFunc of sectionFuncs) {
+                const section = await sectionFunc(request);
+                if (section) sections.push(section);
+            }
+
+            pages.forEach(
+                page =>
+                    (page.sections = sections
+                        .filter(section => section.pageId === page.id)
+                        .sort(byOrder))
+            );
+
             return Object.entries(groupBy(pages, 'group'))
                 .map(([title, pages]) => {
                     return {

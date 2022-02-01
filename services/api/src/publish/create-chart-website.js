@@ -105,6 +105,7 @@ module.exports = async function createChartWebsite(
         isPreview: false,
         locales,
         polyfillUri: `../../lib/vendor`,
+        teamPublicSettings: team ? team.getPublicSettings() : {},
         themeDataDark: themeDark.data,
         themeDataLight: publishData.theme.data
     });

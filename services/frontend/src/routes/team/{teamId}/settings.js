@@ -164,6 +164,26 @@ module.exports = {
             );
         });
 
+        server.methods.registerSettingsPage('team', request => {
+            const __ = server.methods.getTranslate(request);
+            const { teamId } = request.params;
+            return {
+                id: 'download',
+                url: `/team/${teamId}/download`,
+                title: __('teams / tab / download'),
+                headline: __('teams / download / h1'),
+                group: __('teams / group / publishing'),
+                svgIcon: 'file-download',
+                svelte2: {
+                    id: 'svelte/team-settings/download',
+                    js: '/static/js/svelte/team-settings/download.js',
+                    css: '/static/css/svelte/team-settings/download.css'
+                },
+                data: {},
+                order: 25
+            };
+        });
+
         server.methods.prepareView('team/Settings.svelte');
 
         server.route({

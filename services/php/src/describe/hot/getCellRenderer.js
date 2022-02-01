@@ -1,3 +1,4 @@
+/* global dw */
 import purifyHtml from '@datawrapper/shared/purifyHtml';
 import { columnFormatter } from '@datawrapper/shared/columnFormatter';
 
@@ -5,6 +6,7 @@ import { columnFormatter } from '@datawrapper/shared/columnFormatter';
  * getCellRenderer defines what classes are set on each HOT cell
  */
 export default function (app, chart, dataset, Handsontable) {
+    const { numeral } = dw.visualization.libraries;
     const colTypeIcons = {
         date: 'fa fa-clock-o'
     };
@@ -19,7 +21,7 @@ export default function (app, chart, dataset, Handsontable) {
         const colFormat = app.getColumnFormat(column.name());
         row = instance.toPhysicalRow(row);
         if (row > 0) {
-            var formatter = columnFormatter(column, chart.get().metadata, column.name());
+            var formatter = columnFormatter(numeral, column, chart.get().metadata, column.name());
             value =
                 column.val(row - 1) === null || column.val(row - 1) === ''
                     ? '–'
