@@ -120,6 +120,7 @@ module.exports = {
                         const githead = (await githeadCache.get(vis.id)) || vis.githead || 'head';
 
                         await styleCache.drop(`${t.id}__${visId}__${githead}`);
+                        await styleCache.drop(`${t.id}__${visId}__dark__${githead}`);
                         await styleCache.drop(`${t.id}__${visId}`);
                     }
 
