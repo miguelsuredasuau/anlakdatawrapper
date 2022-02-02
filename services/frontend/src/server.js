@@ -25,7 +25,6 @@ const {
     SvelteView,
     getView,
     prepareView,
-    transpileView,
     prepareAllViews,
     wsClients
 } = require('./utils/svelte-view');
@@ -182,7 +181,6 @@ const start = async () => {
 
     server.method('getView', getView);
     server.method('prepareView', prepareView);
-    server.method('transpileView', transpileView);
     server.method('getUserLanguage', getUserLanguage);
     server.method('translate', translate);
     server.method('getTranslate', request => {

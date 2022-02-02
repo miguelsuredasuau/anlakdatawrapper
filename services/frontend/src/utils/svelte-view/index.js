@@ -1,6 +1,5 @@
 'use strict';
 
-const babel = require('@babel/core');
 const EventEmmiter = require('events');
 const { join, relative } = require('path');
 const { readFile } = require('fs').promises;
@@ -80,19 +79,6 @@ function watchPage(page) {
         });
     }
     return eventEmmiter;
-}
-
-async function transpileView(view) {
-    if (!view.csrBabel) {
-        // transpile now
-        view.csrBabel = (
-            await babel.transformAsync(view.csr, {
-                presets: [['@babel/env', { targets: { ie: 11 }, corejs: 3, useBuiltIns: 'entry' }]],
-                plugins: ['babel-plugin-transform-async-to-promises']
-            })
-        ).code;
-    }
-    return view.csrBabel;
 }
 
 const SvelteView = {
@@ -184,7 +170,6 @@ module.exports = {
     getView,
     prepareView,
     prepareAllViews,
-    transpileView,
     SvelteView,
     wsClients,
     watchPage(page) {

@@ -17,6 +17,8 @@ module.exports = async function (request) {
             ? await getUserData(server, auth.artifacts.id)
             : {};
 
+    const userAgent = request.headers['user-agent'];
+
     const context = {
         stores: {
             config: {
@@ -28,6 +30,9 @@ module.exports = async function (request) {
                 languages: frontendConfig.languages || [],
                 headerLinks: await server.methods.getHeaderLinks(request),
                 stickyHeaderThreshold: 800
+            },
+            browser: {
+                isIE: userAgent.includes('MSIE') || userAgent.includes('Trident')
             },
             request: {
                 method: request.method,

@@ -23,18 +23,7 @@
     <link href="{{ config.static_path }}/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="{{ config.static_path }}/vendor/iconicfont/css/iconmonstr-iconic-font.min.css" rel="stylesheet" type="text/css">
 
-    {# Polyfills for Internet Explorer #}
-    <script type="text/javascript">
-        if (navigator.userAgent.indexOf('MSIE') !== -1
-            || navigator.appVersion.indexOf('Internet Explorer/') > -1
-            || navigator.appVersion.indexOf('Trident/7.0') > -1) {
-            document.write("<script src=\"/lib/polyfills/ie-11.js\"><\/script>");
 
-            // svg4everybody: Polyfill for SVG External Content (used in @datawrapper/icons)
-            document.write("<script src=\"{{ config.static_path }}/vendor/svg4everybody/svg4everybody.min.js\"><\/script>");
-            document.write("<script>svg4everybody();<\/script>");
-        }
-    </script>
 
     {% if config.custom_css %}<link href="{{ config.static_path }}/custom/{{ config.custom_css }}?v={{ COMMIT_SHA }}" rel="stylesheet">{% endif %}
     {% if config.custom_favicon %}<link href="{{ config.custom_favicon }}" rel="shortcut icon">{% endif %}
@@ -142,7 +131,6 @@
 
   </head>
 
-
   <body class="dw {{ pageClass }} {{ language }}" data-locale="{{ locale }}">
     <script type="text/javascript">
         if (window.top != window.self) {
@@ -181,25 +169,14 @@
 
     <div class="{% if containerClass %}{{containerClass}}{% else %}container{% endif %}">
 
-
-
-    <!--[if lt IE 9]>
-    <div style="position:relative">
-        <div id="disclaimer" class="alert alert-warning span8 offset2" style="font-size:14px;line-height:22px" style="color:#821">
+      <div id="browser-warning" class='row' style="display:none">
+        <div style="position:relative">
+          <div id="disclaimer" class="alert alert-warning span8" style="font-size:14px;line-height:22px" style="color:#821">
             <h3>{% trans "Your browser is not supported" %}</h3>
-            <p>{% trans "You are using a browser that is not supported at the moment. Please use one of the following browsers instead. Note that this only applies to the chart editor. The charts itself can be viewed with any major browser." %}</p>
-
-            <div style="text-align:center">
-                <a href="http://mozilla.org/firefox/" title="Firefox" class="browser firefox"></a>
-                <a href="http://google.com/chrome" title="Chrome" class="browser chrome"></a>
-                <a href="http://www.opera.com/" title="Opera" class="browser opera"></a>
-                <a href="http://www.apple.com/safari/" title="Safari" class="browser safari"></a>
-                <a href="http://windows.microsoft.com/en-US/internet-explorer/help/ie-9/9-reasons-to-get-internet-explorer-9" title="Internet Explorer 9.0" class="browser msie"></a>
-            </div>
+            <p>{% trans "You are using a browser that is not supported at the moment. Please use a different browser instead. Note that this only applies to the chart editor. The charts itself can be viewed with any major browser." %}</p>
+           </div>
         </div>
-    </div>
-    <![endif]-->
-
+      </div>
 
       {{ block('content') }}
 
@@ -248,6 +225,19 @@ L143.178,296.9z M124.338,205.555H73.211v25.062h51.127V205.555z"></path> </svg>
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+
+
+    {# Polyfills for Internet Explorer #}
+    <script type="text/javascript">
+        if (navigator.userAgent.indexOf('MSIE') !== -1
+            || navigator.appVersion.indexOf('Internet Explorer/') > -1
+            || navigator.appVersion.indexOf('Trident/7.0') > -1) {
+
+
+            document.getElementById("browser-warning").style.display = "block";
+        }
+
+    </script>
 
     <script type="text/javascript" src="{{ config.static_path }}/vendor/bootstrap/js/bootstrap.min.js"></script>
 

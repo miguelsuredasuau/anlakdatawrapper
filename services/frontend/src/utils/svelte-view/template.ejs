@@ -80,10 +80,7 @@
 
         <script>
             document.write(
-                '<script type="text/javascript" src="/lib/csr/<%= PAGE %>.' +
-                    (window.document.documentMode ? 'ie.' : '') +
-                    'js"></s' +
-                    'cript>'
+                '<script type="text/javascript" src="/lib/csr/<%= PAGE %>.js"></s' + 'cript>'
             );
         </script>
         <script async defer>
@@ -156,11 +153,7 @@
             /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
             _paq.push([
                 'setDomains',
-                [
-                    '*.<%= DW_DOMAIN %>',
-                    '*.app.<%= DW_DOMAIN %>',
-                    '*.www.<%= DW_DOMAIN %>'
-                ]
+                ['*.<%= DW_DOMAIN %>', '*.app.<%= DW_DOMAIN %>', '*.www.<%= DW_DOMAIN %>']
             ]);
             _paq.push(['setDoNotTrack', true]);
             _paq.push(['trackPageView']);

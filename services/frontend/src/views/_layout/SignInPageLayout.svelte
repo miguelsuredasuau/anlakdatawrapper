@@ -1,5 +1,6 @@
 <script>
     import DatawrapperLogoDisplay from '_partials/displays/DatawrapperLogoDisplay.svelte';
+    import OutdatedBrowserDisplay from '_partials/displays/OutdatedBrowserDisplay.svelte';
     export let title;
 
     import { getContext } from 'svelte';
@@ -35,6 +36,8 @@
 <svelte:head>
     <title>Datawrapper{title ? ` - ${title}` : ''}</title>
 </svelte:head>
+
+<OutdatedBrowserDisplay />
 
 <section class="hero is-fullheight">
     <div class="hero-body">

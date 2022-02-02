@@ -18,6 +18,9 @@ export const defaultStores = {
         stickyHeaderThreshold: 800
     },
     messages: getLocale(),
+    browser: {
+        isIE: false
+    },
     user: {
         id: 2,
         name: 'user@datawrapper.de',

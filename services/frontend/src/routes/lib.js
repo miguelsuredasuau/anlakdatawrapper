@@ -105,13 +105,11 @@ module.exports = {
                 async handler(request, h) {
                     const { file } = request.params;
                     const { anonymous } = request.query;
-                    const isIE = file.endsWith('.ie.js');
-                    const file2 = isIE ? file.replace('.ie.js', '.js') : file;
-                    const isJS = file2.endsWith('.js');
-                    const isSvelte = file2.includes('.svelte.js');
-                    const isJSMap = file2.endsWith('.js.map');
+                    const isJS = file.endsWith('.js');
+                    const isSvelte = file.includes('.svelte.js');
+                    const isJSMap = file.endsWith('.js.map');
                     const page = isSvelte
-                        ? file2.replace(/\.svelte(\.ie)?\.js(\.map)?/, '.svelte')
+                        ? file.replace(/\.svelte\.js(\.map)?/, '.svelte')
                         : isJS
                         ? file
                         : `${file}.js`;
@@ -126,9 +124,7 @@ module.exports = {
                     if (error) {
                         return Boom.notImplemented(error.message);
                     }
-                    const code = isIE
-                        ? await server.methods.transpileView(view)
-                        : isJSMap
+                    const code = isJSMap
                         ? csrMap
                         : csr.replace(
                               /\/\/# sourceMappingURL=.*\.js\.map/,

@@ -5,7 +5,6 @@ import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
-import babel from '@rollup/plugin-babel';
 import replace from '@rollup/plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 
@@ -109,28 +108,6 @@ function build(appId, opts) {
             resolve(),
             commonjs(),
             json(),
-
-            production &&
-                babel({
-                    // don't exclude anything!
-                    // exclude: [/node_modules\/(?!(@datawrapper|svelte)\/).*/],
-                    extensions: ['.js', '.mjs', '.html'],
-                    babelHelpers: 'runtime',
-                    presets: [
-                        [
-                            '@babel/env',
-                            {
-                                targets: 'last 2 versions, not IE 10, not dead',
-                                corejs: 3,
-                                useBuiltIns: 'entry'
-                            }
-                        ]
-                    ],
-                    plugins: [
-                        'babel-plugin-transform-async-to-promises',
-                        '@babel/plugin-transform-runtime'
-                    ]
-                }),
 
             /* hack to fix recursion problem caused by transpiling twice
              * https://github.com/rollup/rollup-plugin-babel/issues/252#issuecomment-421541785
