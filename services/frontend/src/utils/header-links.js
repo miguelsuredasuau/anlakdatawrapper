@@ -75,7 +75,6 @@ module.exports = {
                         order++;
                         adminPageLinks.push({
                             ...page,
-                            url: `/admin${page.url}`,
                             order
                         });
                     });
