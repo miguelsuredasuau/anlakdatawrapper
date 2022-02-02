@@ -32,7 +32,7 @@ module.exports = async function (request) {
                 stickyHeaderThreshold: 800
             },
             browser: {
-                isIE: userAgent.includes('MSIE') || userAgent.includes('Trident')
+                isIE: userAgent && (userAgent.includes('MSIE') || userAgent.includes('Trident'))
             },
             request: {
                 method: request.method,
