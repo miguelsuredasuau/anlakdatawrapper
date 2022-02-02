@@ -404,7 +404,8 @@ module.exports = function createAuth(
                     data: {
                         ...session.data,
                         'dw-user-id': userId,
-                        last_action_time: Math.floor(Date.now() / 1000)
+                        last_action_time: Math.floor(Date.now() / 1000),
+                        persistent: keepSession
                     },
                     user_id: userId,
                     persistent: keepSession
