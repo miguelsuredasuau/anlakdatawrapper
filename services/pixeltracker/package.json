@@ -6,7 +6,7 @@
         "start": "node src/app",
         "lint": "cd ../.. && scripts/lint services/pixeltracker",
         "format": "cd ../.. && scripts/format services/pixeltracker",
-        "test": "DW_CONFIG_PATH=test/config.local.js mocha --exit"
+        "test": "DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} mocha --exit"
     },
     "dependencies": {
         "@datawrapper/schemas": "^1.16.0",

@@ -11,4 +11,14 @@ npm test
 ```
 
 ### On Docker
-TODO
+Ensure Docker is running.
+
+Then execute:
+```shell
+make test
+```
+
+To teardown the test infrastructure run:
+```shell
+make test-teardown
+```
