@@ -64,6 +64,15 @@ test.before(async t => {
                     }
                 }
             }
+        }),
+        await Theme.findOrCreate({
+            where: { id: 'my-theme-5' },
+            defaults: {
+                title: 'Test Theme 5',
+                data: {},
+                less: '',
+                assets: {}
+            }
         })
     ]);
 });
@@ -208,4 +217,40 @@ test('findDarkModeOverrideKeys works as expected ', async t => {
     ['options.blocks.logo.data.options', 'vis.locator-maps.mapStyles'].forEach(path => {
         t.is(colorKeys.map(d => d.path).includes(path), true);
     });
+});
+
+test('Should be possible to update theme with valid less', async t => {
+    const payload = {
+        less: '.dw-chart { border: 5px solid red; }'
+    };
+
+    const res = await t.context.server.inject({
+        method: 'PATCH',
+        url: '/v3/themes/my-theme-5',
+        auth: t.context.auth,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        payload
+    });
+
+    t.is(res.statusCode, 200);
+});
+
+test("Shouldn't be possible to update theme with invalid less", async t => {
+    const payload = {
+        less: '{.dw-chart { border: 5px solid red; }'
+    };
+
+    const res = await t.context.server.inject({
+        method: 'PATCH',
+        url: '/v3/themes/my-theme-5',
+        auth: t.context.auth,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        payload
+    });
+
+    t.is(res.statusCode, 400);
 });

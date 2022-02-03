@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const S3 = require('aws-sdk/clients/s3');
 const stream = require('stream');
-const { themeId } = require('./utils');
+const { themeId, validateThemeData, validateThemeLess } = require('./utils');
 const { Theme, TeamTheme } = require('@datawrapper/orm/models');
 const { listResponse } = require('../../schemas/response');
 
@@ -146,7 +146,8 @@ module.exports = {
                     return Boom.conflict();
                 }
 
-                await validateThemeData(payload.data);
+                await validateThemeLess(payload.less);
+                await validateThemeData(payload.data, server);
 
                 const theme = await Theme.create({
                     id: payload.id,
@@ -172,17 +173,6 @@ module.exports = {
             }
         });
 
-        async function validateThemeData(data) {
-            try {
-                await server.methods.validateThemeData(data);
-            } catch (err) {
-                if (err.name === 'ValidationError') {
-                    throw Boom.badRequest(err.details.map(e => `- ${e.message}`).join('\n'));
-                } else {
-                    throw err;
-                }
-            }
-        }
         function cleanTheme(theme) {
             return {
                 id: theme.id,

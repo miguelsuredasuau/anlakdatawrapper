@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const assign = require('assign-deep');
 const { compileFontCSS } = require('../../../publish/compile-css.js');
-const { themeId } = require('../utils');
+const { themeId, validateThemeData, validateThemeLess } = require('../utils');
 const { Theme, User, Team, Chart } = require('@datawrapper/orm/models');
 const get = require('lodash/get');
 const set = require('lodash/set');
@@ -90,7 +90,9 @@ module.exports = {
                 ['title', 'extend', 'data', 'assets', 'less'].forEach(key => {
                     if (payload[key] !== undefined) data[key] = payload[key];
                 });
-                if (data.data) await validateThemeData(data.data);
+
+                if (data.less) await validateThemeLess(data.less, server, theme.id);
+                if (data.data) await validateThemeData(data.data, server);
                 await theme.update(data);
 
                 async function findDescendants(theme) {
@@ -176,18 +178,6 @@ module.exports = {
         require('./font')(server);
         require('./users')(server);
         require('./teams')(server);
-
-        async function validateThemeData(data) {
-            try {
-                await server.methods.validateThemeData(data);
-            } catch (err) {
-                if (err.name === 'ValidationError') {
-                    throw Boom.badRequest(err.details.map(e => `- ${e.message}`).join('\n'));
-                } else {
-                    throw err;
-                }
-            }
-        }
 
         async function getTheme(request) {
             const { server, params, query, url } = request;

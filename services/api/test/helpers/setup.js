@@ -257,6 +257,11 @@ function getChart(id) {
     return Chart.findByPk(id);
 }
 
+function getTheme(id) {
+    const { Theme } = require('@datawrapper/orm/models');
+    return Theme.findByPk(id);
+}
+
 function createTheme(props = {}) {
     const { Theme } = require('@datawrapper/orm/models');
     return Theme.create({
@@ -398,5 +403,6 @@ module.exports = {
     getChart,
     getCredentials,
     getPublicChart,
+    getTheme,
     setup
 };
