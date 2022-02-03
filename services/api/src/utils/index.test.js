@@ -87,3 +87,57 @@ test('camelizeTopLevelKeys does not crash on empty object', t => {
     const camelizedObj = utils.camelizeTopLevelKeys(obj);
     t.true(isEmpty(camelizedObj));
 });
+
+test('isValidMySQLJSON returns true for a valid JSON', t => {
+    t.true(
+        utils.isValidMySQLJSON({
+            null: null,
+            boolean: true,
+            number: 1,
+            string: 'a',
+            object: {
+                0: 'number',
+                string: 'a',
+                nested: {
+                    string: 'a'
+                }
+            },
+            arrays: {
+                empty: [],
+                numbers: [1, 2],
+                strings: ['a', 'b'],
+                objects: [{ string: 'a' }, { string: 'a' }]
+            }
+        })
+    );
+});
+
+test('isValidMySQLJSON returns false for a JSON with too large object key', t => {
+    t.false(utils.isValidMySQLJSON({ ['a'.repeat(2 ** 16)]: 'value' }));
+    t.false(
+        utils.isValidMySQLJSON({
+            nested: { ['a'.repeat(2 ** 16)]: 'value' }
+        })
+    );
+    t.false(
+        utils.isValidMySQLJSON({
+            array: [{ ['a'.repeat(2 ** 16)]: 'value' }]
+        })
+    );
+});
+
+test('isValidMySQLJSON returns false for a JSON with an invalid UTF-16 string', t => {
+    // This testing string is invalid UTF-16, because it misses the tail surrogate.
+    // See https://mnaoumov.wordpress.com/2014/06/14/stripping-invalid-characters-from-utf-16-strings/
+    t.false(utils.isValidMySQLJSON('\ud800b'));
+    t.false(
+        utils.isValidMySQLJSON({
+            nested: '\ud800b'
+        })
+    );
+    t.false(
+        utils.isValidMySQLJSON({
+            array: ['\ud800b']
+        })
+    );
+});

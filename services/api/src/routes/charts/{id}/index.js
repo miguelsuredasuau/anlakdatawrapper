@@ -11,7 +11,11 @@ const isEqual = require('lodash/isEqual');
 const cloneDeep = require('lodash/cloneDeep');
 const assignWithEmptyObjects = require('../../../utils/assignWithEmptyObjects');
 const { camelizeKeys, decamelizeKeys } = require('humps');
-const { getAdditionalMetadata, prepareChart } = require('../../../utils/index.js');
+const {
+    getAdditionalMetadata,
+    isValidMySQLJSON,
+    prepareChart
+} = require('../../../utils/index.js');
 const { noContentResponse, chartResponse } = require('../../../schemas/response');
 
 module.exports = {
@@ -95,6 +99,12 @@ module.exports = {
             })
                 .description('Metadata that saves all chart specific settings and options.')
                 .unknown(true)
+                .custom(v => {
+                    if (!isValidMySQLJSON(v)) {
+                        throw new Error('Invalid JSON');
+                    }
+                    return v;
+                })
         }).unknown();
 
         // PATCH /v3/charts/{id}

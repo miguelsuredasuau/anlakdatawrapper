@@ -10,6 +10,10 @@ const {
 const fetch = require('node-fetch');
 const get = require('lodash/get');
 
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
     t.context.userObj = await createUser(t.context.server, { role: 'admin' });
@@ -403,10 +407,10 @@ test('Users can get only published charts, author data is not included', async t
     }
 });
 
-test('An empty PATCH should not change last_modified_at ', async t => {
+test('An empty PATCH should not change last_modified_at', async t => {
     let chart;
     try {
-        let chart = (
+        chart = (
             await t.context.server.inject({
                 method: 'POST',
                 url: '/v3/charts',
@@ -459,9 +463,72 @@ test('An empty PATCH should not change last_modified_at ', async t => {
     }
 });
 
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+test('PATCH returns error 400 when the metadata contains a too long JSON object key', async t => {
+    let chart;
+    try {
+        const { user } = t.context.userObj;
+        chart = await createChart({ author_id: user.id });
+
+        const resGood = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.id}`,
+            auth: t.context.auth,
+            headers: t.context.headers,
+            payload: {
+                metadata: {
+                    ['a'.repeat(2 ** 16 - 1)]: 'b'
+                }
+            }
+        });
+        t.is(resGood.statusCode, 200);
+
+        const resBad = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.id}`,
+            auth: t.context.auth,
+            headers: t.context.headers,
+            payload: {
+                metadata: {
+                    ['a'.repeat(2 ** 16)]: 'b'
+                }
+            }
+        });
+        t.is(resBad.statusCode, 400);
+        t.true(resBad.result.message.includes('Invalid JSON'));
+    } finally {
+        if (chart) {
+            await destroy(...Object.values(chart));
+        }
+    }
+});
+
+test('PATCH returns error 400 when the metadata contains an invalid UTF-16', async t => {
+    let chart;
+    try {
+        const { user } = t.context.userObj;
+        chart = await createChart({ author_id: user.id });
+
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.id}`,
+            auth: t.context.auth,
+            headers: t.context.headers,
+            payload: {
+                metadata: {
+                    // This testing string is invalid UTF-16, because it misses the tail surrogate.
+                    // See https://mnaoumov.wordpress.com/2014/06/14/stripping-invalid-characters-from-utf-16-strings/
+                    a: '\ud800b'
+                }
+            }
+        });
+        t.is(res.statusCode, 400);
+        t.true(res.result.message.includes('Invalid JSON'));
+    } finally {
+        if (chart) {
+            await destroy(...Object.values(chart));
+        }
+    }
+});
 
 test('PHP GET /charts/{id} returns chart', async t => {
     let userObj = {};
