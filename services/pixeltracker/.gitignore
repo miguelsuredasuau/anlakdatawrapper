@@ -1,3 +1,4 @@
 config.yml
 node_modules
 node_modules/*
+!test/config.local.js

@@ -4,7 +4,7 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['src/**/*.test.*'],
+            files: ['test/**/*.test.*'],
             env: {
                 mocha: true
             },

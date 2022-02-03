@@ -5,16 +5,24 @@
     "scripts": {
         "start": "node src/app",
         "lint": "cd ../.. && scripts/lint services/pixeltracker",
-        "format": "cd ../.. && scripts/format services/pixeltracker"
+        "format": "cd ../.. && scripts/format services/pixeltracker",
+        "test": "DW_CONFIG_PATH=test/config.local.js mocha --exit"
     },
     "dependencies": {
         "@datawrapper/schemas": "^1.16.0",
         "@datawrapper/service-utils": "^1.4.0",
-        "async": "*",
         "express": "3.11.0",
         "moment": "^2.15.1",
-        "mysql": "*",
+        "mysql2": "^2.3.3",
         "normalize-url": "^1.9.1",
         "winston": "^3.4.0"
+    },
+    "devDependencies": {
+        "@datawrapper/orm": "file:../../libs/orm",
+        "chai": "^4.3.6",
+        "chai-http": "^4.3.0",
+        "mocha": "^9.2.0",
+        "nanoid": "^3.2.0",
+        "sinon": "^13.0.1"
     }
 }
