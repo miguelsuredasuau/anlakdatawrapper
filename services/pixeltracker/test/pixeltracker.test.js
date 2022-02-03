@@ -11,9 +11,12 @@ const sleep = require('../src/utils/sleep');
 const {
     getChartViewStatistics,
     resetChartViewStatistics,
-    createChart,
-    destroy
+    destroy,
+    createTeam,
+    createUser,
+    createCharts
 } = require('./helpers');
+const { getDomain } = require('../src/utils/url');
 
 describe('Pixeltracker', () => {
     let pixeltracker;
@@ -34,27 +37,59 @@ describe('Pixeltracker', () => {
 
     describe('GET /pixel', () => {
         it('should track chart view correctly', async () => {
-            let chart;
+            let charts;
+            let user;
+            let team;
+            const testUrlA = 'http://test.datawrapper.de';
+            const testUrlB = 'http://test.datawrapper.de/foo';
+            const testUrlC = 'http://other.datawrapper.de/foo';
+            const testDomainA = getDomain(testUrlB);
+            const testDomainB = getDomain(testUrlC);
             try {
-                chart = await createChart();
-                await chai
-                    .request(pixeltracker.app)
-                    .get(`/${chart.id}/pixel.gif`)
-                    // .query({value1: 'value1', value2: 'value2'})
-                    .then(res => {
-                        expect(res).to.have.status(200);
-                    });
+                user = await createUser();
+                team = await createTeam();
+                charts = await createCharts([
+                    { author_id: user.id, organization_id: team.id },
+                    { author_id: user.id, organization_id: team.id }
+                ]);
+                const testRequests = [
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlB)}`,
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlB)}`,
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlC)}`,
+                    `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
+                    `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
+                    `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlB)}`,
+                    `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlB)}`,
+                    `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlC)}`
+                ];
+                await Promise.all(
+                    testRequests.map(request =>
+                        chai
+                            .request(pixeltracker.app)
+                            .get(request)
+                            .then(res => {
+                                expect(res).to.have.status(200);
+                            })
+                    )
+                );
+
                 clock.tick(20000);
 
                 // Restore fake time so that sleep will actually
                 // wait for db operations to finish
                 clock.restore();
-                await sleep(20);
+                await sleep(100);
                 await chai
                     .request(pixeltracker.app)
                     .get('/health')
                     .then(res => {
                         expect(res).to.have.status(200);
+                        // confirm that flusher has run
                         expect(res.body.text).not.to.equal(
                             'I have no flush in memory at the moment.'
                         );
@@ -62,12 +97,34 @@ describe('Pixeltracker', () => {
                     .catch(err => {
                         throw err;
                     });
-                const statistics = await getChartViewStatistics(pixeltracker.connection, chart.id);
-                expect(statistics.length).to.equal(1);
-                expect(statistics[0].views).to.equal(1);
+
+                // check correct chart view statistics
+                const chartViews = await getChartViewStatistics(
+                    pixeltracker.connection,
+                    charts[0],
+                    user,
+                    team,
+                    testDomainA,
+                    testUrlA
+                );
+                expect(chartViews.total).to.equal(8);
+                expect(chartViews.perEmbedUrl).to.equal(5);
+                expect(chartViews.perDomain.perMonth).to.equal(11);
+                expect(chartViews.perUser.perDay).to.equal(13);
+                expect(chartViews.perUser.perMonth).to.equal(13);
+                expect(chartViews.perUser.perWeek).to.equal(13);
+                expect(chartViews.perTeam.perDay).to.equal(13);
+                expect(chartViews.perTeam.perMonth).to.equal(13);
+                expect(chartViews.perTeam.perWeek).to.equal(13);
             } finally {
-                await resetChartViewStatistics(pixeltracker.connection, chart?.id);
-                await destroy(chart);
+                await resetChartViewStatistics(
+                    pixeltracker.connection,
+                    charts,
+                    [user],
+                    [team],
+                    [testDomainA, testDomainB]
+                );
+                await destroy(charts, team, user);
             }
         });
     });

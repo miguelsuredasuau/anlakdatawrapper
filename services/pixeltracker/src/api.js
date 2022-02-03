@@ -1,11 +1,10 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const moment = require('moment');
-const URL = require('url');
-const normalizeUrl = require('normalize-url');
 const logger = require('./utils/logger');
 const sleep = require('./utils/sleep');
 const { validatePixeltracker } = require('@datawrapper/schemas/config');
+const { getDomain, getNormalizedUrl } = require('./utils/url');
 
 class Api {
     constructor(config) {
@@ -319,27 +318,6 @@ async function waitForDb(dbConfig) {
         logger.warn('Exception initializing database, trying again in 5 seconds...');
         await sleep(5000);
         return await waitForDb(dbConfig);
-    }
-}
-
-function getDomain(url) {
-    const hn = URL.parse(url).hostname;
-    try {
-        return hn ? hn.replace(/^www\./, '') : hn;
-    } catch (e) {
-        return null;
-    }
-}
-
-function getNormalizedUrl(url) {
-    try {
-        return normalizeUrl(url, {
-            normalizeHttps: true,
-            removeQueryParameters: [/.*/],
-            removeDirectoryIndex: true
-        });
-    } catch (e) {
-        return url;
     }
 }
 

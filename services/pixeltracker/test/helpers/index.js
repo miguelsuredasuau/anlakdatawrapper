@@ -1,17 +1,109 @@
-const { customAlphabet } = require('nanoid');
+const { customAlphabet, nanoid } = require('nanoid');
 const { ForeignKeyConstraintError } = require('sequelize');
 
-async function getChartViewStatistics(db, chartId) {
-    const [rows] = await db.query(
-        'SELECT chart_id, views FROM pixeltracker_chart WHERE chart_id = ?',
-        [chartId]
-    );
-    return rows;
+/* bcrypt hash for string "test-password" */
+const PASSWORD_HASH = '$2a$05$6B584QgS5SOXi1m.jM/H9eV.2tCaqNc5atHnWfYlFe5riXVW9z7ja';
+
+async function getTotalChartViews(db, chartId) {
+    const [rows] = await db.query('SELECT views FROM pixeltracker_chart WHERE chart_id = ?', [
+        chartId
+    ]);
+    return rows.length ? rows[0].views : 0;
 }
 
-async function resetChartViewStatistics(db, chartId) {
-    if (!chartId) return;
-    return await db.query('DELETE FROM pixeltracker_chart WHERE chart_id = ?', [chartId]);
+async function getChartViewsPerUser(db, userId) {
+    const [perDay] = await db.query('SELECT views FROM pixeltracker_user_day WHERE user_id = ?', [
+        userId
+    ]);
+    const [perMonth] = await db.query(
+        'SELECT views FROM pixeltracker_user_month WHERE user_id = ?',
+        [userId]
+    );
+    const [perWeek] = await db.query('SELECT views FROM pixeltracker_user_week WHERE user_id = ?', [
+        userId
+    ]);
+    return {
+        perDay: perDay.length ? perDay[0].views : 0,
+        perMonth: perMonth.length ? perMonth[0].views : 0,
+        perWeek: perWeek.length ? perWeek[0].views : 0
+    };
+}
+
+async function getChartViewsPerTeam(db, teamId) {
+    const [perDay] = await db.query(
+        'SELECT views FROM pixeltracker_organization_day WHERE organization_id = ?',
+        [teamId]
+    );
+    const [perMonth] = await db.query(
+        'SELECT views FROM pixeltracker_organization_month WHERE organization_id = ?',
+        [teamId]
+    );
+    const [perWeek] = await db.query(
+        'SELECT views FROM pixeltracker_organization_week WHERE organization_id = ?',
+        [teamId]
+    );
+    return {
+        perDay: perDay.length ? perDay[0].views : 0,
+        perMonth: perMonth.length ? perMonth[0].views : 0,
+        perWeek: perWeek.length ? perWeek[0].views : 0
+    };
+}
+
+async function getChartViewsPerDomain(db, domain) {
+    const [perMonth] = await db.query(
+        'SELECT views FROM pixeltracker_domain_month WHERE domain = ?',
+        [domain]
+    );
+    return {
+        perMonth: perMonth.length ? perMonth[0].views : 0
+    };
+}
+
+async function getChartViewsPerEmbedUrl(db, chartId, embedUrl) {
+    const [perEmbedUrl] = await db.query(
+        'SELECT views FROM pixeltracker_chart_embedurl WHERE chart_id = ? AND url = ?',
+        [chartId, embedUrl]
+    );
+    return perEmbedUrl.length ? perEmbedUrl[0].views : 0;
+}
+
+async function getChartViewStatistics(db, chart, user, team, domain, embedUrl) {
+    return {
+        total: await getTotalChartViews(db, chart.id),
+        perEmbedUrl: await getChartViewsPerEmbedUrl(db, chart.id, embedUrl),
+        perDomain: await getChartViewsPerDomain(db, domain),
+        perTeam: await getChartViewsPerTeam(db, team.id),
+        perUser: await getChartViewsPerUser(db, user.id)
+    };
+}
+
+async function resetChartViewStatistics(db, charts, users, teams, domains) {
+    for (const chart of charts) {
+        await db.query('DELETE FROM pixeltracker_chart WHERE chart_id = ?', [chart.id]);
+        await db.query('DELETE FROM pixeltracker_chart_embedurl WHERE chart_id = ?', [chart.id]);
+    }
+
+    for (const user of users) {
+        await db.query('DELETE FROM pixeltracker_user_day WHERE user_id = ?', [user.id]);
+        await db.query('DELETE FROM pixeltracker_user_month WHERE user_id = ?', [user.id]);
+        await db.query('DELETE FROM pixeltracker_user_week WHERE user_id = ?', [user.id]);
+    }
+
+    for (const team of teams) {
+        await db.query('DELETE FROM pixeltracker_organization_day WHERE organization_id = ?', [
+            team.id
+        ]);
+        await db.query('DELETE FROM pixeltracker_organization_month WHERE organization_id = ?', [
+            team.id
+        ]);
+        await db.query('DELETE FROM pixeltracker_organization_week WHERE organization_id = ?', [
+            team.id
+        ]);
+    }
+
+    for (const domain of domains) {
+        await db.query('DELETE FROM pixeltracker_domain_month WHERE domain = ?', [domain]);
+    }
 }
 
 const genRandomChartId = customAlphabet(
@@ -34,6 +126,52 @@ function createChart(props = {}) {
         type: 'd3-bars',
         ...props,
         id: props.id || genRandomChartId()
+    });
+}
+
+function createCharts(propsArray) {
+    return Promise.all(propsArray.map(createChart));
+}
+
+async function createUser() {
+    const { User } = require('@datawrapper/orm/models');
+    const email = `test-${nanoid(5)}@pixeltracker.de`;
+    const pwd = PASSWORD_HASH;
+    const role = 'editor';
+    return await User.create({
+        name: `name-${email.split('@').shift()}`,
+        email: `test-${nanoid(5)}@pixeltracker.de`,
+        pwd,
+        role
+    });
+}
+
+async function createTeam(props = {}) {
+    const { Team } = require('@datawrapper/orm/models');
+
+    return await Team.create({
+        id: `test-${nanoid(5)}`,
+        name: 'Test Team',
+        settings: {
+            default: {
+                locale: 'en-US'
+            },
+            flags: {
+                embed: true,
+                byline: true,
+                pdf: false
+            },
+            css: 'body {background:red;}',
+            embed: {
+                custom_embed: {
+                    text: '',
+                    title: 'Chart ID',
+                    template: '%chart_id%'
+                },
+                preferred_embed: 'responsive'
+            }
+        },
+        ...props
     });
 }
 
@@ -125,5 +263,8 @@ module.exports = {
     getChartViewStatistics,
     resetChartViewStatistics,
     createChart,
+    createCharts,
+    createUser,
+    createTeam,
     destroy
 };
