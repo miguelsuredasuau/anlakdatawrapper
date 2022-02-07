@@ -1,14 +1,28 @@
 module.exports = {
     pixeltracker: {
-        port: 3333,
-        intervalMin: 10000,
-        intervalMax: 20000,
-        db: {
-            host: 'mysql',
-            port: 3306,
-            user: 'test',
-            password: 'test',
-            database: 'test'
+        queue: {
+            name: 'pixeltracker:flush',
+            removeOnComplete: 1,
+            removeOnFail: 50
+        },
+        api: {
+            port: 3333,
+            intervalMin: 10000,
+            intervalMax: 20000
+        },
+        flusher: {
+            port: 3334,
+            db: {
+                host: 'mysql',
+                port: 3306,
+                user: 'test',
+                password: 'test',
+                database: 'test'
+            }
+        },
+        redis: {
+            host: 'redis',
+            port: 6379
         }
     },
     orm: {

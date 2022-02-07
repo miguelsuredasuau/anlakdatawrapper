@@ -8,10 +8,16 @@ services:
       - MYSQL_USER=test
       - MYSQL_PASSWORD=test
       - MYSQL_DATABASE=test
+  redis:
+    image: "redis:6.0.5-alpine3.12"
+    command: redis-server --appendonly yes
+    expose:
+      - "6379"
   node:
     image: "node:14"
     depends_on:
       - mysql
+      - redis
     volumes:
       - "../..:/app"
 networks:

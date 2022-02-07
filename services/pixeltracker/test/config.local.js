@@ -5,15 +5,30 @@ require('dotenv').config({
 
 module.exports = {
     pixeltracker: {
-        port: 3333,
-        intervalMin: 10000,
-        intervalMax: 20000,
-        db: {
+        queue: {
+            name: 'pixeltracker:test:flush',
+            removeOnComplete: 1,
+            removeOnFail: 50
+        },
+        api: {
+            port: 3333,
+            intervalMin: 10000,
+            intervalMax: 20000
+        },
+        flusher: {
+            port: 3334,
+            db: {
+                host: 'localhost',
+                port: process.env.DW_DATABASE_HOST_PORT,
+                user: process.env.DW_DATABASE_USER,
+                password: process.env.DW_DATABASE_PASS,
+                database: process.env.DW_DATABASE_NAME
+            }
+        },
+        redis: {
             host: 'localhost',
-            port: process.env.DW_DATABASE_HOST_PORT,
-            user: process.env.DW_DATABASE_USER,
-            password: process.env.DW_DATABASE_PASS,
-            database: process.env.DW_DATABASE_NAME
+            port: process.env.DW_REDIS_PORT,
+            password: process.env.DW_REDIS_PASS
         }
     },
     orm: {

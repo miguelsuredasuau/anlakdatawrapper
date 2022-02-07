@@ -17,22 +17,31 @@ const {
     createCharts
 } = require('./helpers');
 const { getDomain } = require('../src/utils/url');
+const { waitForDb } = require('../src/utils/db');
+const Flusher = require('../src/flusher');
 
 describe('Pixeltracker', () => {
-    let pixeltracker;
+    let pixeltrackerApi;
+    let pixeltrackerFlusher;
     let clock;
+    let connection;
 
     before(async () => {
         await ORM.init(config);
+        connection = await waitForDb(config.orm.db);
     });
 
     beforeEach(async () => {
         // initialize fake timer before pixeltracker so that
         // intervals and timeouts within pixeltracker are affected
         clock = sinon.useFakeTimers();
-        pixeltracker = new Api(config.pixeltracker);
-        await pixeltracker.init();
-        await pixeltracker.start();
+        pixeltrackerApi = new Api(config.pixeltracker);
+        await pixeltrackerApi.init();
+        await pixeltrackerApi.start();
+
+        pixeltrackerFlusher = new Flusher(config.pixeltracker);
+        await pixeltrackerFlusher.init();
+        await pixeltrackerFlusher.start();
     });
 
     describe('GET /pixel', () => {
@@ -70,7 +79,7 @@ describe('Pixeltracker', () => {
                 await Promise.all(
                     testRequests.map(request =>
                         chai
-                            .request(pixeltracker.app)
+                            .request(pixeltrackerApi.app)
                             .get(request)
                             .then(res => {
                                 expect(res).to.have.status(200);
@@ -83,16 +92,15 @@ describe('Pixeltracker', () => {
                 // Restore fake time so that sleep will actually
                 // wait for db operations to finish
                 clock.restore();
-                await sleep(100);
+                await sleep(200);
                 await chai
-                    .request(pixeltracker.app)
+                    .request(pixeltrackerApi.app)
                     .get('/health')
                     .then(res => {
                         expect(res).to.have.status(200);
-                        // confirm that flusher has run
-                        expect(res.body.text).not.to.equal(
-                            'I have no flush in memory at the moment.'
-                        );
+                        expect(res.body.text).to.equal(`Still counting chart hits`);
+                        expect(res.body.queue.name).to.equal(config.pixeltracker.queue.name);
+                        expect(res.body.queue.completed).to.equal(1);
                     })
                     .catch(err => {
                         throw err;
@@ -100,7 +108,7 @@ describe('Pixeltracker', () => {
 
                 // check correct chart view statistics
                 const chartViews = await getChartViewStatistics(
-                    pixeltracker.connection,
+                    connection,
                     charts[0],
                     user,
                     team,
@@ -118,7 +126,7 @@ describe('Pixeltracker', () => {
                 expect(chartViews.perTeam.perWeek).to.equal(13);
             } finally {
                 await resetChartViewStatistics(
-                    pixeltracker.connection,
+                    connection,
                     charts,
                     [user],
                     [team],
@@ -130,7 +138,12 @@ describe('Pixeltracker', () => {
     });
 
     afterEach(async () => {
-        await pixeltracker.stop();
+        await pixeltrackerApi.stop();
+        await pixeltrackerFlusher.stop();
         clock.restore();
+    });
+
+    after(async () => {
+        await connection.close();
     });
 });

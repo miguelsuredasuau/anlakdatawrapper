@@ -1,6 +1,10 @@
 module.exports = {
     env: {
-        node: true
+        node: true,
+        browser: false
+    },
+    rules: {
+        'compat/compat': 0
     },
     overrides: [
         {
