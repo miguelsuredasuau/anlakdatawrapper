@@ -1,11 +1,11 @@
-
 .select-visualization p {
     margin-top: 15px;
-    @media @viewport-medium { font-size: 13px; }
+    @media @viewport-medium {
+        font-size: 13px;
+    }
 }
 
 .vis-thumbs {
-
     margin-right: -10px;
 
     .vis-thumb {
@@ -29,8 +29,15 @@
             margin-top: 10px; //5
             overflow: visible;
 
-            path, rect, circle, ellipse, polyline, polygon { fill: @dw_blue_medium; }
-          //  line { stroke: @bright-blue; }
+            path,
+            rect,
+            circle,
+            ellipse,
+            polyline,
+            polygon {
+                fill: @dw_scooter;
+            }
+            //  line { stroke: @bright-blue; }
 
             @media (max-width: 1199px) {
                 width: 30px;
@@ -50,38 +57,54 @@
             font-weight: 500;
             line-height: 14px;
             text-align: center;
-            text-shadow: 1px 1px 0px @light-grey,0px 1px 0px @light-grey,-1px 1px 0px @light-grey,
-                1px -1px 0px @light-grey,0px -1px 0px @light-grey,-1px -1px 0px @light-grey,
-                1px 0px 0px @light-grey,0px 0px 0px @light-grey,-1px 0px 0px @light-grey;
+            text-shadow: 1px 1px 0px @light-grey, 0px 1px 0px @light-grey, -1px 1px 0px @light-grey,
+                1px -1px 0px @light-grey, 0px -1px 0px @light-grey, -1px -1px 0px @light-grey,
+                1px 0px 0px @light-grey, 0px 0px 0px @light-grey, -1px 0px 0px @light-grey;
             color: #555;
         }
 
         &:hover {
             //border: 2px solid @bright-blue;
-            background: fade(@dw_blue_medium, 20%);
+            background: fade(@dw_scooter, 20%);
 
             .title {
-                text-shadow: 1px 1px 0px #CCE7F5,0px 1px 0px #CCE7F5,-1px 1px 0px #CCE7F5,
-                    1px -1px 0px #CCE7F5, 0px -1px 0px #CCE7F5, -1px -1px 0px #CCE7F5,
-                    1px 0px 0px #CCE7F5, 0px 0px 0px #CCE7F5, -1px 0px 0px #CCE7F5;
+                text-shadow: 1px 1px 0px #cce7f5, 0px 1px 0px #cce7f5, -1px 1px 0px #cce7f5,
+                    1px -1px 0px #cce7f5, 0px -1px 0px #cce7f5, -1px -1px 0px #cce7f5,
+                    1px 0px 0px #cce7f5, 0px 0px 0px #cce7f5, -1px 0px 0px #cce7f5;
             }
         }
 
-        &.active, &:active, &.active:hover {
-            @active_color: @dw_blue_medium;
+        &.active,
+        &:active,
+        &.active:hover {
+            @active_color: @dw_scooter;
             background: @active_color;
 
             .title {
-                color:#fff;
-                text-shadow: 1px 1px 0px @active_color,0px 1px 0px @active_color,-1px 1px 0px @active_color,
-                    1px -1px 0px @active_color, 0px -1px 0px @active_color, -1px -1px 0px @active_color,
+                color: #fff;
+                text-shadow: 1px 1px 0px @active_color, 0px 1px 0px @active_color,
+                    -1px 1px 0px @active_color, 1px -1px 0px @active_color,
+                    0px -1px 0px @active_color, -1px -1px 0px @active_color,
                     1px 0px 0px @active_color, 0px 0px 0px @active_color, -1px 0px 0px @active_color;
             }
 
             svg {
-                path, rect, circle, ellipse, polyline, polygon { fill:#fff; }
-                .st0, .st1, .st2, .st3, .st4 { opacity: 1}
-              //  line { stroke: #000; }
+                path,
+                rect,
+                circle,
+                ellipse,
+                polyline,
+                polygon {
+                    fill: #fff;
+                }
+                .st0,
+                .st1,
+                .st2,
+                .st3,
+                .st4 {
+                    opacity: 1;
+                }
+                //  line { stroke: #000; }
             }
         }
     }

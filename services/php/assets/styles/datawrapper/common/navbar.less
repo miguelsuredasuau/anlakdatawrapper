@@ -10,22 +10,21 @@ html .navbar .navbar-inner {
     font-weight: 400;
     background: white;
 
-    border-top: 5px solid @dw_blue_medium;
+    border-top: 5px solid @dw_scooter;
     border-bottom: 1px solid #eee;
     box-shadow: none;
 
     padding-top: 15px;
-    padding-bottom:15px; 
-
+    padding-bottom: 15px;
 
     .nav {
-
         & > li {
-            
-            .fa, .im, .no-icon {
-                color: @dw_blue_medium;
+            .fa,
+            .im,
+            .no-icon {
+                color: @dw_scooter;
                 font-size: 1.2em;
-                margin-right: .25em;
+                margin-right: 0.25em;
                 vertical-align: middle;
                 display: inline-block;
                 min-width: 1em;
@@ -36,7 +35,6 @@ html .navbar .navbar-inner {
                 font-size: 14px;
                 line-height: 18px;
             }
-                
 
             & > a {
                 padding: 1em;
@@ -48,46 +46,47 @@ html .navbar .navbar-inner {
                     padding-right: 0.5em;
                 }
 
-                .fa { color: @dw_blue_medium; }
+                .fa {
+                    color: @dw_scooter;
+                }
 
                 .fa.fa-river {
                     top: -1px;
                 }
 
                 &:hover {
-                    color: @dw_blue_medium;
+                    color: @dw_scooter;
                     background-color: #f9f9f9;
-
                 }
-                b { font-weight: 500; }
+                b {
+                    font-weight: 500;
+                }
             }
 
             &.divider-vertical {
                 height: 3em;
-                border-left-color: #E5E5E5;
-                margin: .25em 5px;
+                border-left-color: #e5e5e5;
+                margin: 0.25em 5px;
             }
-
-            
         }
-        
-        &> .active > a,
-        &> .active > a:hover,
-        &> .active > a:focus {
+
+        & > .active > a,
+        & > .active > a:hover,
+        & > .active > a:focus {
             box-shadow: none;
             background-color: #f9f9f9;
         }
-        &> .active > a,
+        & > .active > a,
         li.dropdown.active > .dropdown-toggle {
             background-color: transparent;
         }
-        
+
         li.dropdown.open > .dropdown-toggle,
         li.dropdown.open.active > .dropdown-toggle,
         li.dropdown.active:hover > .dropdown-toggle {
             background-color: #f9f9f9;
         }
-        
+
         .dropdown a.group {
             color: #999;
             font-size: 11px;
@@ -100,20 +99,18 @@ html .navbar .navbar-inner {
         .dropdown-menu > li > a:hover,
         .dropdown-menu > li > a:focus {
             background: #f9f9f9;
-            color: @dw_blue_medium;
+            color: @dw_scooter;
             &::after {
-                border-left-color: #C9C9C9;
+                border-left-color: #c9c9c9;
             }
-
         }
 
-        .admin>a .fa,
-        .mycharts_dd>a .fa,
-        .account>a .fa {
+        .admin > a .fa,
+        .mycharts_dd > a .fa,
+        .account > a .fa {
             margin-right: 0;
             min-width: auto;
         }
-
     } // end .nav
 
     img.logo {
@@ -141,9 +138,8 @@ html .navbar .navbar-inner {
     }
 
     .mycharts_dd.dropdown {
-        
-        &>a {
-            padding: 1em .5em;
+        & > a {
+            padding: 1em 0.5em;
         }
 
         ul {
@@ -156,8 +152,8 @@ html .navbar .navbar-inner {
             min-height: 26px;
 
             img.icon {
-                height: 20px!important;
-                width: 30px!important;
+                height: 20px !important;
+                width: 30px !important;
                 position: absolute;
                 left: 10px;
                 top: 4px;
@@ -182,16 +178,15 @@ html .navbar .navbar-inner {
         }
     }
 
-
     .nav li.dropdown .dropdown-toggle .caret,
     .nav li.dropdown.open .caret,
-    li a .tt { 
+    li a .tt {
         display: none;
     }
 }
 
 html .navbar.navbar-transparent .navbar-inner {
-    background: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.3);
     border-bottom-color: transparent;
     position: relative;
     z-index: 100000;
@@ -221,24 +216,29 @@ html .navbar.navbar-transparent .navbar-inner {
     }
 }
 
-
 html .navbar.navbar-inverse {
     .navbar-inner {
         background: #000;
 
-        li a i.fa { color: #bbb; }
+        li a i.fa {
+            color: #bbb;
+        }
 
-        li a:hover i.fa { color: #08c; }
+        li a:hover i.fa {
+            color: #08c;
+        }
 
         .nav {
             & > li > a {
-                &:hover { color: #fff; }
+                &:hover {
+                    color: #fff;
+                }
             }
             .active > a,
             .active > a:hover,
             li.dropdown.active > .dropdown-toggle:hover {
                 background: #111111;
-                color: #fff!important;
+                color: #fff !important;
             }
         }
         .brand {
@@ -246,12 +246,9 @@ html .navbar.navbar-inverse {
             text-shadow: none;
         }
     }
-
 }
 
-
 @media screen and (min-width: 980px) {
-
     html .navbar .navbar-inner {
         padding-top: 20px;
         padding-bottom: 25px;
@@ -264,5 +261,4 @@ html .navbar.navbar-inverse {
             margin: 5px 0 0;
         }
     }
-    
 }

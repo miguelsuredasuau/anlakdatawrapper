@@ -409,7 +409,7 @@ html .navbar .navbar-inner .nav > li > a b {
 }
 html .navbar .navbar-inner .nav > li.divider-vertical {
   height: 3em;
-  border-left-color: #E5E5E5;
+  border-left-color: #e5e5e5;
   margin: 0.25em 5px;
 }
 html .navbar .navbar-inner .nav > .active > a,
@@ -442,7 +442,7 @@ html .navbar .navbar-inner .nav .dropdown-menu > li > a:focus {
 }
 html .navbar .navbar-inner .nav .dropdown-menu > li > a:hover::after,
 html .navbar .navbar-inner .nav .dropdown-menu > li > a:focus::after {
-  border-left-color: #C9C9C9;
+  border-left-color: #c9c9c9;
 }
 html .navbar .navbar-inner .nav .admin > a .fa,
 html .navbar .navbar-inner .nav .mycharts_dd > a .fa,
@@ -484,8 +484,8 @@ html .navbar .navbar-inner .mycharts_dd.dropdown li {
   min-height: 26px;
 }
 html .navbar .navbar-inner .mycharts_dd.dropdown li img.icon {
-  height: 20px!important;
-  width: 30px!important;
+  height: 20px !important;
+  width: 30px !important;
   position: absolute;
   left: 10px;
   top: 4px;
@@ -609,7 +609,7 @@ ul.footer-links li + li:before {
   content: ' – ';
 }
 ul.footer-links a.highlight {
-  background: #18a1cd;
+  background: #4688d7;
   color: white;
   padding: 4px 9px;
   font-weight: bold;
@@ -2109,7 +2109,7 @@ Each of these property-direction combinations needs to be appended with one of 6
   background: rgba(29, 129, 162, 0.2);
 }
 .chart-editor.dw-create-visualize .vis-thumbs .vis-thumb:hover .title {
-  text-shadow: 1px 1px 0px #CCE7F5, 0px 1px 0px #CCE7F5, -1px 1px 0px #CCE7F5, 1px -1px 0px #CCE7F5, 0px -1px 0px #CCE7F5, -1px -1px 0px #CCE7F5, 1px 0px 0px #CCE7F5, 0px 0px 0px #CCE7F5, -1px 0px 0px #CCE7F5;
+  text-shadow: 1px 1px 0px #cce7f5, 0px 1px 0px #cce7f5, -1px 1px 0px #cce7f5, 1px -1px 0px #cce7f5, 0px -1px 0px #cce7f5, -1px -1px 0px #cce7f5, 1px 0px 0px #cce7f5, 0px 0px 0px #cce7f5, -1px 0px 0px #cce7f5;
 }
 .chart-editor.dw-create-visualize .vis-thumbs .vis-thumb.active,
 .chart-editor.dw-create-visualize .vis-thumbs .vis-thumb:active,
