@@ -22,3 +22,9 @@ To teardown the test infrastructure run:
 ```shell
 make test-teardown
 ```
+
+### Performance test
+You can test the pixeltrackers performance on your local machine with
+```shell
+npm run test:performance
+```

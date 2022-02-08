@@ -45,7 +45,7 @@ describe('Pixeltracker', () => {
     });
 
     describe('GET /pixel', () => {
-        it('should track chart view correctly', async () => {
+        it('should track chart views correctly', async () => {
             let charts;
             let user;
             let team;

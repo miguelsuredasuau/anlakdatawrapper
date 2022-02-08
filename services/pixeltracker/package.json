@@ -6,7 +6,8 @@
         "start": "node src/app",
         "lint": "cd ../.. && scripts/lint services/pixeltracker",
         "format": "cd ../.. && scripts/format services/pixeltracker",
-        "test": "DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} mocha --exit"
+        "test": "DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} mocha --exclude **/performance.test.js --exit",
+        "test:performance": "DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} mocha **/performance.test.js --exit"
     },
     "dependencies": {
         "@datawrapper/schemas": "^1.17.0",
@@ -22,7 +23,9 @@
         "@datawrapper/orm": "file:../../libs/orm",
         "chai": "^4.3.6",
         "chai-http": "^4.3.0",
+        "got": "^11.8.3",
         "mocha": "^9.2.0",
+        "mocha-steps": "^1.3.0",
         "nanoid": "^3.2.0",
         "sinon": "^13.0.1"
     }

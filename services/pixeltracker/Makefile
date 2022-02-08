@@ -8,6 +8,10 @@ docker_compose := docker-compose -f docker-compose-test.yml
 test: | test-setup  ## Run unit tests
 	$(MAKE) test-run cmd="sh -c 'cd \"/app/$(test_dir)\" && npm test'"
 
+.PHONY: test-performance
+test-performance: | test-setup  ## Run performance tests
+	$(MAKE) test-run cmd="sh -c 'cd \"/app/$(test_dir)\" && npm run test:performance'"
+
 .PHONY: test-setup
 test-setup:  ## Create the testing database if it isn't running
 	[[ -n $$($(docker_compose) ps --services --filter status=running mysql) ]] || \

@@ -83,7 +83,8 @@ class Flusher {
 
         const msg = {
             response_type: 'in_channel',
-            text: message
+            text: message,
+            times: this.times
         };
 
         res.setHeader('Content-Type', 'application/json');
@@ -108,9 +109,7 @@ class Flusher {
         logger.info('Got connection. Fetching chart info...');
         try {
             this.times.start = Date.now();
-            const results = await Promise.all(
-                Object.keys(chartHits).map(chartId => this.getUserAndOrgForChartId(chartId))
-            );
+            const results = await this.getUserAndOrgForChartIds(Object.keys(chartHits));
             this.times.fetchChartInfo = Date.now() - this.times.start;
             logger.info('Got chart info. Building inserts...');
 
@@ -244,19 +243,19 @@ class Flusher {
         }
     }
 
-    async getUserAndOrgForChartId(chartId) {
+    async getUserAndOrgForChartIds(chartIds) {
         const [rows] = await this.connection.query(
-            'SELECT id, author_id, organization_id FROM chart WHERE id = ?',
-            [chartId]
+            'SELECT id, author_id, organization_id FROM chart WHERE id in (?)',
+            [chartIds]
         );
         if (rows.length === 0) {
             return {};
         }
-        return {
-            chartId: rows[0].id,
-            userId: rows[0].author_id,
-            orgId: rows[0].organization_id
-        };
+        return rows.map(row => ({
+            chartId: row.id,
+            userId: row.author_id,
+            orgId: row.organization_id
+        }));
     }
 }
 
