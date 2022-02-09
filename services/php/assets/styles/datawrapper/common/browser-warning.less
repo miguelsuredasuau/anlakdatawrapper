@@ -1,0 +1,85 @@
+.browser-warning {
+    display: none; // Hidden by default, only shown in IE
+    background: @light-blue;
+    box-shadow: 0px 0px 0px 1px rgba(16, 16, 16, 0.05), 0px 8px 16px -2px rgba(16, 16, 16, 0.1);
+    padding: 40px;
+    margin: 30px 0 50px 0;
+    font-size: 16px;
+    line-height: 24px;
+    color: @dw_black_bis;
+
+    h3 {
+        font-size: 24px;
+        font-weight: bold;
+        color: @dw_black_bis;
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    li {
+        flex: 1;
+        display: flex;
+        margin: 0 0 30px 0;
+        line-height: 24px;
+    }
+
+    li a {
+        font-weight: bold;
+    }
+
+    li:last-child {
+        margin: 0;
+    }
+
+    @media only screen and (min-width: 1000px) {
+        ul {
+            display: flex;
+        }
+
+        li {
+            margin: 0 40px 0 0;
+        }
+    }
+}
+
+.browser-warning-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid fade(@dw_black, 10%);
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+}
+
+.browser-warning-arrow {
+    fill: currentColor;
+    color: inherit;
+    vertical-align: middle;
+}
+
+.browser-warning-icon {
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    margin-right: 20px;
+
+    svg {
+        fill: currentColor;
+        color: inherit;
+        margin: 7px;
+    }
+}
+
+.browser-warning-icon.is-warning {
+    background: @dw_yellow;
+    color: @dw_grey_darker;
+}
+
+.browser-warning-icon.is-ok {
+    background: @dw_green;
+    color: @dw_white;
+}

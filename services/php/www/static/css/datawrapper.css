@@ -1,6 +1,78 @@
 /*
  * le styles for datawrapper
  */
+.browser-warning {
+  display: none;
+  background: #eef8fc;
+  box-shadow: 0px 0px 0px 1px rgba(16, 16, 16, 0.05), 0px 8px 16px -2px rgba(16, 16, 16, 0.1);
+  padding: 40px;
+  margin: 30px 0 50px 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: #333333;
+}
+.browser-warning h3 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333333;
+}
+.browser-warning ul {
+  margin: 0;
+  padding: 0;
+}
+.browser-warning li {
+  flex: 1;
+  display: flex;
+  margin: 0 0 30px 0;
+  line-height: 24px;
+}
+.browser-warning li a {
+  font-weight: bold;
+}
+.browser-warning li:last-child {
+  margin: 0;
+}
+@media only screen and (min-width: 1000px) {
+  .browser-warning ul {
+    display: flex;
+  }
+  .browser-warning li {
+    margin: 0 40px 0 0;
+  }
+}
+.browser-warning-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.1);
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+}
+.browser-warning-arrow {
+  fill: currentColor;
+  color: inherit;
+  vertical-align: middle;
+}
+.browser-warning-icon {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  margin-right: 20px;
+}
+.browser-warning-icon svg {
+  fill: currentColor;
+  color: inherit;
+  margin: 7px;
+}
+.browser-warning-icon.is-warning {
+  background: #ffdc27;
+  color: #4f4f4f;
+}
+.browser-warning-icon.is-ok {
+  background: #3ed081;
+  color: #ffffff;
+}
 @font-face {
   font-family: 'Desyrel';
   src: url('fonts/desyrel/desyrel-webfont.eot');

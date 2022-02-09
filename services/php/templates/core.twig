@@ -168,35 +168,25 @@
     {% endif %}
 
     <div class="{% if containerClass %}{{containerClass}}{% else %}container{% endif %}">
-
-      <div id="browser-warning" class='row' style="display:none">
-        <div style="position:relative">
-          <div id="disclaimer" class="alert alert-warning span8" style="font-size:14px;line-height:22px" style="color:#821">
-            <h3>{% trans "Your browser is not supported" %}</h3>
-            <p>{% trans "You are using a browser that is not supported at the moment. Please use a different browser instead. Note that this only applies to the chart editor. The charts itself can be viewed with any major browser." %}</p>
-           </div>
-        </div>
-      </div>
+      {% include 'browser-warning.twig' %}
 
       {{ block('content') }}
 
+      {% if not noFooter %}
+        <footer class="footer">
 
-    {% if not noFooter %}
-      <footer class="footer">
+          <p class="pull-right" style="text-align:right">
+            <a href="#top">{% trans "Back to top" %}</a>
+            <span class="version">version <a href="//www.datawrapper.de/changelog">{{ DW_VERSION }}</a> {{ BRANCH | raw }}</span>
+          </p>
 
-        <p class="pull-right" style="text-align:right">
-          <a href="#top">{% trans "Back to top" %}</a>
-          <span class="version">version <a href="//www.datawrapper.de/changelog">{{ DW_VERSION }}</a> {{ BRANCH | raw }}</span>
-        </p>
-
-        {% if has_hook('get_footer') %}
-          {{ hook('get_footer') }}
-        {% else %}
-          {% include 'footer.twig' %}
-        {% endif %}
-      </footer>
-    {% endif %}
-
+          {% if has_hook('get_footer') %}
+            {{ hook('get_footer') }}
+          {% else %}
+            {% include 'footer.twig' %}
+          {% endif %}
+        </footer>
+      {% endif %}
     </div>
 
     <div id="alertModal" class="modal hide">
@@ -225,19 +215,6 @@ L143.178,296.9z M124.338,205.555H73.211v25.062h51.127V205.555z"></path> </svg>
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-
-
-    {# Polyfills for Internet Explorer #}
-    <script type="text/javascript">
-        if (navigator.userAgent.indexOf('MSIE') !== -1
-            || navigator.appVersion.indexOf('Internet Explorer/') > -1
-            || navigator.appVersion.indexOf('Trident/7.0') > -1) {
-
-
-            document.getElementById("browser-warning").style.display = "block";
-        }
-
-    </script>
 
     <script type="text/javascript" src="{{ config.static_path }}/vendor/bootstrap/js/bootstrap.min.js"></script>
 

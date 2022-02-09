@@ -1122,5 +1122,10 @@
   "teams / download / data-localized / switch": "",
   "teams / download / data-localized / help": "",
   "teams / download / h1": "",
-  "teams / download / p": ""
+  "teams / download / p": "",
+  "browser-warning / title": "",
+  "browser-warning / learn-more": "",
+  "browser-warning / not-supported": "",
+  "browser-warning / switch-browser": "",
+  "browser-warning / visualizations": ""
 }
