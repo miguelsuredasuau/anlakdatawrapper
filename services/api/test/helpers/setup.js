@@ -296,6 +296,14 @@ async function addThemeToTeam(theme, team) {
     });
 }
 
+async function createProduct(props = {}) {
+    const { Product } = require('@datawrapper/orm/models');
+    return Product.create({
+        ...props,
+        name: props.name || nanoid(5)
+    });
+}
+
 async function destroyChart(chart) {
     const { Chart, ChartPublic } = require('@datawrapper/orm/models');
     await ChartPublic.destroy({ where: { id: chart.id }, force: true });
@@ -390,6 +398,7 @@ module.exports = {
     createFolder,
     createFolders,
     createFoldersWithParent,
+    createProduct,
     createPublicChart,
     createTeam,
     createTeamWithUser,
