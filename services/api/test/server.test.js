@@ -53,3 +53,14 @@ test('CSRF check is skipped for requests authenticated with a token', async t =>
 
     t.is(res.statusCode, 204);
 });
+
+test('server does not throw an exception when getting a key from a disconnected cache', async t => {
+    const testCache = t.context.server.cache({
+        segment: 'test-segment',
+        expiresIn: 30 * 864e5 /* 30 days */
+    });
+    await testCache.set('foo', 'bar');
+    t.is(await testCache.get('foo'), 'bar');
+    t.context.server._core.caches.get('_default').client.connection.cache = null; // Make the cache seem disconnected.
+    t.is(await testCache.get('foo'), null);
+});

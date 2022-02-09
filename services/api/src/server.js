@@ -121,6 +121,23 @@ const server = Hapi.server({
     }
 });
 
+/**
+ * Wrap cache get(), set() and drop() to not crash the API when Redis is temporarily unavailable.
+ */
+server.events.on('cachePolicy', cachePolicy => {
+    for (const methodName of ['get', 'set', 'drop']) {
+        const oldMethod = cachePolicy[methodName];
+        cachePolicy[methodName] = async function wrapped() {
+            try {
+                return await oldMethod.apply(cachePolicy, arguments);
+            } catch (e) {
+                server.logger.error(`[Cache] Error while calling cache.${methodName}: ${e}`);
+                return null;
+            }
+        };
+    }
+});
+
 function getLogLevel() {
     if (DW_DEV_MODE) {
         return 'debug';
