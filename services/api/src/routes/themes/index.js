@@ -145,8 +145,7 @@ module.exports = {
                 if (await Theme.findByPk(payload.id)) {
                     return Boom.conflict();
                 }
-
-                await validateThemeLess(payload.less);
+                await validateThemeLess(payload.less, server, payload.extend, payload.data);
                 await validateThemeData(payload.data, server);
 
                 const theme = await Theme.create({

@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
+const assign = require('assign-deep');
 const { compileCSS } = require('../../publish/compile-css.js');
 
 const themeId = () =>
@@ -20,23 +21,23 @@ async function validateThemeData(data, server) {
     }
 }
 
-async function validateThemeLess(less, server, themeId) {
+async function validateThemeLess(less, server, themeId, data) {
     try {
-        let data = {};
-        if (themeId && server) {
-            // get extended theme to ensure we get full `theme.data`
+        let extendedThemeData = {};
+        if (server && themeId) {
             const { result: theme } = await server.inject({
                 url: `/v3/themes/${themeId}?extend=true`
             });
-            data = theme.data;
+            extendedThemeData = theme.data;
+            if (data) assign(extendedThemeData, data);
         }
-        const themeToValidate = { less, data };
+        const themeToValidate = { less, data: extendedThemeData };
         await compileCSS({
             theme: themeToValidate,
             filePaths: []
         });
     } catch (err) {
-        if (err.type === 'Parse') {
+        if (['Parse', 'Name'].includes(err.type)) {
             throw Boom.badRequest(`LESS error: "${err.message}"`);
         } else {
             throw err;

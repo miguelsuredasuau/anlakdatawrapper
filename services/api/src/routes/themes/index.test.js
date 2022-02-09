@@ -312,3 +312,72 @@ test('POST /themes returns error when invalid less is passed', async t => {
         await destroy(theme);
     }
 });
+
+test('POST /themes creates theme when less contains valid less variables', async t => {
+    let userObj = {};
+    const themeId = 'test-valid-less-3';
+    try {
+        userObj = await createUser(t.context.server, { role: 'admin' });
+        const payload = {
+            id: themeId,
+            title: 'Test valid less 3',
+            extend: 'default',
+            data: {
+                typography: {
+                    description: {
+                        color: '#333333'
+                    }
+                }
+            },
+            less: [
+                '.dw-chart { background: @colors_background; }', // defined in default theme
+                '.caption-block { color: @typography_description_color; }' // not defined in default theme
+            ].join('\n')
+        };
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/themes`,
+            headers: {
+                ...defaultHeaders,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'application/json'
+            },
+            payload
+        });
+        t.is(res.statusCode, 201);
+    } finally {
+        await destroy(Object.values(userObj));
+        const theme = await getTheme(themeId);
+        await destroy(theme);
+    }
+});
+
+test('POST /themes returns error when nonexistent less variable is passed', async t => {
+    let userObj = {};
+    const themeId = 'test-valid-less-4';
+    try {
+        userObj = await createUser(t.context.server, { role: 'admin' });
+        const payload = {
+            id: themeId,
+            title: 'Test valid less 4',
+            extend: 'default',
+            less: '.dw-chart { border: 5px solid @my_favorite_color; }'
+        };
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/themes`,
+            headers: {
+                ...defaultHeaders,
+                Authorization: `Bearer ${userObj.token}`,
+                'Content-Type': 'application/json'
+            },
+            payload
+        });
+        t.is(res.statusCode, 400);
+        t.is(res.result.message, 'LESS error: "variable @my_favorite_color is undefined"');
+    } finally {
+        await destroy(Object.values(userObj));
+        const theme = await getTheme(themeId);
+        await destroy(theme);
+    }
+});
