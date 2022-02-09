@@ -26,6 +26,7 @@ const ALL_SCOPES = [
     'plugin:write',
     'theme:read',
     'product:read',
+    'product:write',
     'visualization:read'
 ];
 
@@ -296,6 +297,11 @@ async function addThemeToTeam(theme, team) {
     });
 }
 
+function getProduct(id) {
+    const { Product } = require('@datawrapper/orm/models');
+    return Product.findByPk(id);
+}
+
 async function createProduct(props = {}) {
     const { Product } = require('@datawrapper/orm/models');
     return Product.create({
@@ -411,6 +417,7 @@ module.exports = {
     genRandomFolderId,
     getChart,
     getCredentials,
+    getProduct,
     getPublicChart,
     getTheme,
     setup

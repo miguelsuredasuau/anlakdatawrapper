@@ -1,52 +1,6 @@
 <?php
 
 /*
- * get list of all products
- */
-$app->get('/products', function() use ($app) {
-    if (!check_scopes(['product:read'])) return;
-    disable_cache($app);
-    if_is_admin(function() use ($app) {
-        try {
-            $products = ProductQuery::create()->filterByDeleted(false)->find();
-            $res      = array();
-            foreach ($products as $product) {
-                $res[] = $product->toArray();
-            }
-            ok($res);
-        } catch (Exception $e) {
-            error('io-error', $e->getMessage());
-        }
-    });
-});
-
-/*
- * create new product
- */
-$app->post('/products', function() use ($app) {
-    if (!check_scopes(['product:write'])) return;
-    disable_cache($app);
-    // only admins can create products
-    if_is_admin(function() use ($app) {
-        try {
-            $params  = json_decode($app->request()->getBody(), true);
-            $product = new Product();
-            $product->setName($params['name']);
-            $product->setCreatedAt(time());
-
-            if (isset($params['data'])) {
-                $product->setData(json_encode($params['data']));
-            }
-
-            $product->save();
-            ok($product->toArray());
-        } catch (Exception $e) {
-            error('io-error', $e->getMessage());
-        }
-    });
-});
-
-/*
  * change product
  */
 $app->put('/products/:id', function($id) use ($app) {
