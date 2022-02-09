@@ -12,11 +12,12 @@
     }
 
     export let maxWidth = null;
+    export let backgroundOpacity = 0.5;
 </script>
 
 {#if open}
     <div class="modal is-active">
-        <div class="modal-background" on:click={close} />
+        <div class="modal-background" style={`opacity: ${backgroundOpacity}`} on:click={close} />
         <div class="modal-content" style={maxWidth ? `max-width: ${maxWidth}` : ''}>
             <slot />
         </div>

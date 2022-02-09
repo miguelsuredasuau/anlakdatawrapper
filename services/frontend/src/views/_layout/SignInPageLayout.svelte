@@ -5,6 +5,7 @@
 
     import { getContext } from 'svelte';
     const msg = getContext('messages');
+    const browser = getContext('browser');
 
     let __;
     $: {
@@ -39,32 +40,34 @@
 
 <OutdatedBrowserDisplay />
 
-<section class="hero is-fullheight">
-    <div class="hero-body">
-        <div class="container is-max-desktop box p-0 is-radiusless">
-            <div class="columns is-gapless">
-                <div class="column is-one-third is-flex is-flex-direction-column">
-                    <div
-                        class="p-6 is-flex is-flex-direction-column is-justify-content-space-between is-flex-grow-1"
-                    >
-                        <DatawrapperLogoDisplay width="170px" />
+{#if !$browser.isIE}
+    <section class="hero is-fullheight">
+        <div class="hero-body">
+            <div class="container is-max-desktop box p-0 is-radiusless">
+                <div class="columns is-gapless">
+                    <div class="column is-one-third is-flex is-flex-direction-column">
+                        <div
+                            class="p-6 is-flex is-flex-direction-column is-justify-content-space-between is-flex-grow-1"
+                        >
+                            <DatawrapperLogoDisplay width="170px" />
 
-                        <div class="terms is-size-7 is-hidden-mobile">
-                            {@html __('signin / terms')}
+                            <div class="terms is-size-7 is-hidden-mobile">
+                                {@html __('signin / terms')}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="column has-background-light is-flex is-flex-direction-column">
-                    <div
-                        class="page-content p-6 is-flex is-flex-direction-column is-justify-content-space-between is-flex-grow-1"
-                    >
-                        <slot />
-                        <div class="terms is-size-7 is-hidden-tablet mt-3">
-                            {@html __('signin / terms')}
+                    <div class="column has-background-light is-flex is-flex-direction-column">
+                        <div
+                            class="page-content p-6 is-flex is-flex-direction-column is-justify-content-space-between is-flex-grow-1"
+                        >
+                            <slot />
+                            <div class="terms is-size-7 is-hidden-tablet mt-3">
+                                {@html __('signin / terms')}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+{/if}

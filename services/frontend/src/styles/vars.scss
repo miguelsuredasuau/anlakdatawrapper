@@ -118,7 +118,7 @@ $navbar-dropdown-arrow: $dw-grey-darker;
 // Modal
 $modal-content-width: calc(100vw - 40px);
 $modal-z: 1100;
-$modal-background-background-color: rgba($dw-black-bis, 0.5);
+$modal-background-background-color: $dw-black;
 
 // Menu
 $menu-label-color: $grey-dark;
@@ -145,4 +145,3 @@ $dropdown-item-active-color: $dw-black;
 $dropdown-item-active-background-color: $dw-scooter-lightest;
 $dropdown-content-padding-top: 0.25rem;
 $dropdown-content-padding-bottom: 0.25rem;
-

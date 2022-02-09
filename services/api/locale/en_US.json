@@ -1126,6 +1126,6 @@
   "browser-warning / title": "Your browser is not supported",
   "browser-warning / learn-more": "Learn more about Datawrapper",
   "browser-warning / not-supported": "You are using a browser (Internet Explorer) that is <strong>not supported by the Datawrapper editor</strong> at the moment.",
-  "browser-warning / switch-browser": "Please switch to a different browser to continue using the site. Here are some browsers that are supported: <a href=\"https://www.mozilla.org/firefox/\">Mozilla Firefox</a>, <a href=\"https://www.google.com/chrome/\">Google Chrome</a>, <a href=\"https://www.microsoft.com/edge/\">Microsoft Edge</a>.",
+  "browser-warning / switch-browser": "Please switch to a different browser to continue using the site.<br/> Here are some browsers that are supported: <a href=\"https://www.mozilla.org/firefox/\">Mozilla Firefox</a>, <a href=\"https://www.google.com/chrome/\">Google Chrome</a>, <a href=\"https://www.microsoft.com/edge/\">Microsoft Edge</a>.",
   "browser-warning / visualizations": "<strong>Please note that your Datwarapper visualizations can be viewed everywhere.</strong> All visualizations support any major browser, including <em>Internet Explorer</em>."
 }

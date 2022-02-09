@@ -1,6 +1,7 @@
 <script>
     export let color = '#333333';
     export let width = null;
+    export let height = null;
 </script>
 
 <style>
@@ -12,7 +13,10 @@
     }
 </style>
 
-<div class="logo-datawrapper" style={width ? `max-width: ${width}` : ''}>
+<div
+    class="logo-datawrapper"
+    style="{width ? `max-width: ${width};` : ''}{height ? `height: ${height};` : ''}"
+>
     <svg alt="Datawrapper logo" viewBox="0 0 336 90" fill="none" xmlns="http://www.w3.org/2000/svg"
         ><g fill={color}
             ><path d="M5 0H0v91h335v-5H5V0z" /><path
