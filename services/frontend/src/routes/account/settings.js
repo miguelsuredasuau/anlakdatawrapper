@@ -169,6 +169,7 @@ module.exports = {
                             pages: user.teams.map(team => ({
                                 url: `/team/${team.id}/settings`,
                                 title: team.name,
+                                escape: true,
                                 svgIcon: 'team'
                             }))
                         });

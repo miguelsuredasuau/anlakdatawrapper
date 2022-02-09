@@ -115,7 +115,9 @@
                             >{#if page.svgIcon}<IconDisplay
                                     className="mr-3"
                                     icon={page.svgIcon}
-                                />{/if}<span>{@html page.title}</span></a
+                                />{/if}<span
+                                >{#if page.escape}{page.title}{:else}{@html page.title}{/if}</span
+                            ></a
                         >
                     </li>
                 {/each}

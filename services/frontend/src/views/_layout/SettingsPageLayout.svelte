@@ -8,9 +8,6 @@
     export let loadPage;
 </script>
 
-<style type="text/css">
-</style>
-
 <MainLayout {title}>
     <section class="header section py-5">
         <div class="container">
