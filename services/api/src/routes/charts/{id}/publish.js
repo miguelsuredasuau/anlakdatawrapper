@@ -86,7 +86,7 @@ module.exports = server => {
 
 async function publishChart(request) {
     const { params, auth, headers, server } = request;
-    const { events, event } = server.app;
+    const { events, event, visualizations } = server.app;
     const { createChartWebsite } = server.methods;
     const user = auth.artifacts;
     const chart = await server.methods.loadChart(params.id);
@@ -181,12 +181,12 @@ async function publishChart(request) {
 
     /* store new embed codes in chart metadata */
     const embedCodes = {};
-    const res = await request.server.inject({
-        url: `/v3/charts/${params.id}/embed-codes`,
-        auth,
-        headers
+    const res = await getEmbedCodes({
+        chart,
+        visualizations,
+        user
     });
-    res.result.forEach(embed => {
+    res.forEach(embed => {
         embedCodes[`embed-method-${embed.id}`] = embed.code;
     });
     set(chart, 'metadata.publish.embed-codes', embedCodes);

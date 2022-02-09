@@ -342,6 +342,34 @@ test('POST /charts/:id/publish updates keywords', async t => {
     }
 });
 
+test('POST /charts/{id}/publish updates embed codes', async t => {
+    let chart;
+    const { userObj } = t.context;
+    const { ChartPublic } = require('@datawrapper/orm/models');
+    try {
+        chart = await createChart({ author_id: userObj.user.id });
+
+        t.is(chart.metadata.publish?.['embed-codes']?.['embed-method-iframe'], undefined);
+        t.is(chart.metadata.publish?.['embed-codes']?.['embed-method-responsive'], undefined);
+
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/publish`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+
+        t.is(res.statusCode, 200);
+
+        const ormChartPublic = await ChartPublic.findByPk(chart.id);
+
+        t.truthy(ormChartPublic.metadata.publish['embed-codes']['embed-method-iframe']);
+        t.truthy(ormChartPublic.metadata.publish['embed-codes']['embed-method-responsive']);
+    } finally {
+        await destroy(chart);
+    }
+});
+
 test('POST /charts/{id}/publish publishes a chart with an empty dataset', async t => {
     let chart;
     try {
