@@ -41,6 +41,7 @@
 <script>
     /* globals $, chart */
     import { __ } from '@datawrapper/shared/l10n';
+    import { uniq } from 'underscore';
     import blinder from './blinder';
     import chroma from 'chroma-js';
 
@@ -65,7 +66,7 @@
             modes: [
                 {
                     id: 'normal',
-                    label: 'Norm',
+                    label: 'None',
                     icon: 'norm.png',
                     info: false
                 },
@@ -157,10 +158,12 @@
                         this.runTests();
                     }, 1000);
                 }
-                let colors = __dw.vis
-                    .colorsUsed()
-                    .filter(c => chroma.valid(c) && chroma(c).get('lch.c') > 1.5);
-
+                let colors = uniq(
+                    __dw.vis
+                        .colorsUsed()
+                        .filter(c => chroma.valid(c) && chroma(c).get('lch.c') > 1.5)
+                        .map(c => chroma(c).hex())
+                );
                 let sample;
                 if (colors.length > 30) {
                     colors = colors
