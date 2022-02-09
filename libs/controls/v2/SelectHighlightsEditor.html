@@ -10,7 +10,7 @@
     <ul class="highlights">
         {#each highlights as item}
         <li class="highlights-item" class:valid="item.valid">
-            <span class="highlights-text">{ item.value }</span>
+            <span class="highlights-text">{ item.label }</span>
             <button
                 aria-label="Remove"
                 on:click="remove(item.value)"
@@ -86,7 +86,7 @@
             labels({ $vis }) {
                 return $vis.keys().sort();
             },
-            options({ labels }) {
+            options({ labels, $vis }) {
                 return [
                     {
                         label: `(${__('select element')})`,
@@ -94,13 +94,14 @@
                     },
                     ...labels.map(label => ({
                         value: label,
-                        label: label
+                        label: $vis.keyLabel(label)
                     }))
                 ];
             },
-            highlights({ value, labels }) {
+            highlights({ value, labels, $vis }) {
                 return value.map(item => ({
                     value: item,
+                    label: $vis.keyLabel(item),
                     valid: labels.includes(item)
                 }));
             }
