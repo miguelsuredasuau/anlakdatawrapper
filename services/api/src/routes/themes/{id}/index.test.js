@@ -1,5 +1,6 @@
 const test = require('ava');
 const { createUser, destroy, setup } = require('../../../../test/helpers/setup');
+const { darkModeTestTheme } = require('../../../../test/data/testThemes.js');
 const { findDarkModeOverrideKeys } = require('./utils');
 
 test.before(async t => {
@@ -70,6 +71,16 @@ test.before(async t => {
             defaults: {
                 title: 'Test Theme 5',
                 data: {},
+                less: '',
+                assets: {}
+            }
+        }),
+        await Theme.findOrCreate({
+            where: { id: 'test-dark-mode-1' },
+            defaults: {
+                extend: 'my-theme-1',
+                title: 'Test dark mode',
+                data: darkModeTestTheme,
                 less: '',
                 assets: {}
             }
@@ -194,13 +205,13 @@ test('Should be possible to upload a font that includes woff2 only', async t => 
     t.is(res.statusCode, 200);
 });
 
-test('findDarkModeOverrideKeys works as expected ', async t => {
+test('findDarkModeOverrideKeys identifies keys within schema items of type link', async t => {
     const colorKeys = await findDarkModeOverrideKeys();
 
-    // findDarkModeOverrideKeys identifies colorkeys within schema objects of type 'link'
     const blocksColorKeys = colorKeys
         .map(d => d.path)
         .filter(path => path.match(/^options\.blocks/));
+
     const expected = [
         'options.blocks.logo.data.options',
         'options.blocks.hr.data.border',
@@ -212,11 +223,58 @@ test('findDarkModeOverrideKeys works as expected ', async t => {
     ];
 
     t.deepEqual(blocksColorKeys, expected);
+});
 
-    // findDarkModeOverrideKeys identifies items that specify meta({overrideSupport: ["darkMode"]})
-    ['options.blocks.logo.data.options', 'vis.locator-maps.mapStyles'].forEach(path => {
-        t.is(colorKeys.map(d => d.path).includes(path), true);
+test('findDarkModeOverrideKeys finds keys nested in arrays', async t => {
+    // test theme is valid
+    await t.context.server.methods.validateThemeData(darkModeTestTheme);
+    const colorKeys = await findDarkModeOverrideKeys({ data: darkModeTestTheme });
+    const colorKeyPaths = colorKeys.map(d => d.path);
+
+    [
+        'options.blocks.logo.data.options.0.imgSrc',
+        'options.blocks.logo.data.options.1.imgSrc',
+        'vis.locator-maps.mapStyles.0.colors.land',
+        'vis.locator-maps.mapStyles.0.layers.water.paint.fill-color',
+        'colors.gradients.0.0',
+        'colors.categories.0.0',
+        'colors.palette.0'
+    ].forEach(path => {
+        t.is(colorKeyPaths.includes(path), true);
     });
+
+    //  color arrays don't get mapped by array, but by individual items
+    ['colors.gradients.0', 'colors.categories.0', 'colors.palette'].forEach(path => {
+        t.is(colorKeyPaths.includes(path), false);
+    });
+});
+
+test('Dark mode overrides work as expected', async t => {
+    const res = await t.context.server.inject({
+        method: 'GET',
+        url: '/v3/themes/test-dark-mode-1?dark=true',
+        auth: t.context.auth
+    });
+
+    t.is(res.statusCode, 200);
+
+    const data = res.result.data;
+
+    // specific override has been applied
+    t.is(data.colors.palette[1], '#00ff00');
+
+    // automatic conversion has been applied to remaining colors
+    t.not(data.colors.palette[0], darkModeTestTheme.colors.palette[0]);
+    t.not(data.colors.palette[2], darkModeTestTheme.colors.palette[2]);
+
+    // color keys with 'noDarkModeInvert' don't get inverted
+    t.is(data.vis['locator-maps'].mapStyles[0].colors.land, '#ffffff');
+
+    // non-color items with overrideSupport: ['darkMode'] can be overwritten
+    t.is(data.options.blocks.logo.data.options[0].imgSrc, 'https://domain/logo-white.png');
+
+    // gradient has been overwritten
+    t.deepEqual(data.colors.gradients[0], ['#ffffff', '#ffff00', '#ff0000']);
 });
 
 test('Should be possible to update theme with valid less', async t => {
