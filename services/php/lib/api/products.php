@@ -1,29 +1,4 @@
 <?php
-
-/*
- * change product
- */
-$app->put('/products/:id', function($id) use ($app) {
-    if (!check_scopes(['product:write'])) return;
-    if_is_admin(function() use ($app, $id) {
-        $product = ProductQuery::create()->findPk($id);
-        if ($product) {
-            $params = json_decode($app->request()->getBody(), true);
-            $product->setName($params['name']);
-            $product->setData(json_encode($params['data']));
-
-            if (isset($params['priority'])) {
-                $product->setPriority($params['priority']);
-            }
-
-            $product->save();
-            ok($product->toArray());
-        } else {
-            return error('unknown-product', 'Product not found');
-        }
-    });
-});
-
 /*
  * add plugin to product
  */

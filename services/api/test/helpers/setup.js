@@ -306,6 +306,7 @@ async function createProduct(props = {}) {
     const { Product } = require('@datawrapper/orm/models');
     return Product.create({
         ...props,
+        data: props.data && JSON.stringify(props.data),
         name: props.name || nanoid(5)
     });
 }
