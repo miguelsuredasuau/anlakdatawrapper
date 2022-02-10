@@ -48,11 +48,8 @@ class Api {
             })
             .on('error', function (err) {
                 logger.error(err);
-                process.exit();
             });
-        const interval =
-            this.config.api.intervalMin +
-            Math.round(Math.random() * (this.config.api.intervalMax - this.config.api.intervalMin));
+        const interval = this.config.api.interval;
         this.flushInterval = setInterval(() => {
             if (isEmpty(this.chartHits) && isEmpty(this.domainHits) && isEmpty(this.chartUrls)) {
                 return;
@@ -74,9 +71,21 @@ class Api {
             throw new Error('Not started');
         }
         logger.info('Shutting down...');
-        await this.server.close();
         clearInterval(this.flushInterval);
-        logger.info('Bye bye.');
+        if (!isEmpty(this.chartHits) || !isEmpty(this.domainHits) || !isEmpty(this.chartUrls)) {
+            logger.info('Adding remaining chart hits as one last job...');
+            await this.queue.add('flush', {
+                chartHits: { ...this.chartHits },
+                domainHits: { ...this.domainHits },
+                chartUrls: { ...this.chartUrls }
+            });
+        }
+        await this.queue.close();
+        logger.info('Closed queue.');
+        await this.server.close(() => {
+            logger.info('HTTP server is closed.');
+            logger.info('Bye bye.');
+        });
     }
 
     getPixel(req, res) {
@@ -114,9 +123,11 @@ class Api {
                 ...counts
             }
         };
-
+        const raiseWarning =
+            counts.waiting >= this.config.api.reportQueuedJobs ||
+            counts.failed >= this.config.api.reportFailedJobs;
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(msg));
+        res.status(raiseWarning ? 555 : 200).end(JSON.stringify(msg));
     }
 
     async getJobs(req, res) {

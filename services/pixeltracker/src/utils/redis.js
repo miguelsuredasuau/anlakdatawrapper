@@ -8,7 +8,7 @@ async function waitForRedis(redisConfig) {
             retryStrategy(times) {
                 if (times > 5) {
                     logger.error(`Unable to connect to Redis in ${times} attempts, exiting`);
-                    return null;
+                    process.exit();
                 }
                 const backoff = 2 ** (times - 1) * 1000;
                 logger.warn(`Unable to connect to Redis, trying again in ${backoff}ms`);

@@ -1,6 +1,5 @@
 const moment = require('moment');
 const logger = require('./utils/logger');
-const sleep = require('./utils/sleep');
 const { validatePixeltracker } = require('@datawrapper/schemas/config');
 const { waitForDb } = require('./utils/db');
 const { Worker } = require('bullmq');
@@ -17,6 +16,9 @@ class Flusher {
 
     async init() {
         this.connection = await waitForDb(this.config.flusher.db);
+        if (!this.connection) {
+            return;
+        }
         await waitForRedis(this.config.redis);
         this.app = express();
         this.app.get('/health', this.getHealth.bind(this));
@@ -33,6 +35,12 @@ class Flusher {
         this.worker.on('error', err => {
             logger.error(err);
         });
+        this.worker.on('closing', () => {
+            logger.info('Redis connection is closing...');
+        });
+        this.worker.on('closed', () => {
+            logger.info('Redis connection closed.');
+        });
         const port = this.config.flusher.port;
         this.server = this.app
             .listen(port, function () {
@@ -40,7 +48,6 @@ class Flusher {
             })
             .on('error', function (err) {
                 logger.error(err);
-                process.exit();
             });
         logger.info(`Flusher ready (queue: ${this.config.queue.name})`);
     }
@@ -50,14 +57,12 @@ class Flusher {
         if (!this.worker) {
             throw new Error('Not started');
         }
-        await this.server.close();
-        while (this.isFlushing) {
-            logger.info('Waiting for end of flush...');
-            await sleep(1000);
-        }
-        // force stop as we already waited for the end of the flush
-        await this.worker.close(true);
-        logger.info('Bye bye.');
+        await this.worker.close();
+        await this.connection.end();
+        this.server.close(() => {
+            logger.info('HTTP server is closed.');
+            logger.info('Bye bye.');
+        });
     }
 
     getHealth(req, res) {
@@ -239,7 +244,8 @@ class Flusher {
             this.isFlushing = false;
             logger.info('We are done here!');
         } catch (e) {
-            logger.warn('Failed to flush chart view statistics', e);
+            logger.warn(`Failed to flush chart view statistics: ${e.stack || e}`);
+            throw e;
         }
     }
 
@@ -249,7 +255,7 @@ class Flusher {
             [chartIds]
         );
         if (rows.length === 0) {
-            return {};
+            return [];
         }
         return rows.map(row => ({
             chartId: row.id,

@@ -2,6 +2,7 @@ const { requireConfig } = require('@datawrapper/service-utils/findConfig');
 const Api = require('../src/api');
 const config = requireConfig();
 const ORM = require('@datawrapper/orm');
+const { Queue } = require('bullmq');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
@@ -21,9 +22,6 @@ const { waitForDb } = require('../src/utils/db');
 const Flusher = require('../src/flusher');
 
 describe('Pixeltracker', () => {
-    let pixeltrackerApi;
-    let pixeltrackerFlusher;
-    let clock;
     let connection;
 
     before(async () => {
@@ -31,20 +29,29 @@ describe('Pixeltracker', () => {
         connection = await waitForDb(config.orm.db);
     });
 
-    beforeEach(async () => {
-        // initialize fake timer before pixeltracker so that
-        // intervals and timeouts within pixeltracker are affected
-        clock = sinon.useFakeTimers();
-        pixeltrackerApi = new Api(config.pixeltracker);
-        await pixeltrackerApi.init();
-        await pixeltrackerApi.start();
-
-        pixeltrackerFlusher = new Flusher(config.pixeltracker);
-        await pixeltrackerFlusher.init();
-        await pixeltrackerFlusher.start();
-    });
-
     describe('GET /pixel', () => {
+        let pixeltrackerApi;
+        let pixeltrackerFlusher;
+        let clock;
+        beforeEach(async () => {
+            // initialize fake timer before pixeltracker so that
+            // intervals and timeouts within pixeltracker are affected
+            clock = sinon.useFakeTimers();
+            pixeltrackerApi = new Api(config.pixeltracker);
+            await pixeltrackerApi.init();
+            await pixeltrackerApi.start();
+
+            pixeltrackerFlusher = new Flusher(config.pixeltracker);
+            await pixeltrackerFlusher.init();
+            await pixeltrackerFlusher.start();
+        });
+
+        afterEach(async () => {
+            await pixeltrackerApi.stop();
+            await pixeltrackerFlusher.stop();
+            clock.restore();
+        });
+
         it('should track chart views correctly', async () => {
             let charts;
             let user;
@@ -137,10 +144,103 @@ describe('Pixeltracker', () => {
         });
     });
 
-    afterEach(async () => {
-        await pixeltrackerApi.stop();
-        await pixeltrackerFlusher.stop();
-        clock.restore();
+    describe('GET /health', () => {
+        let charts;
+        let clock;
+        let pixeltrackerApi;
+        let team;
+        let user;
+
+        beforeEach(async () => {
+            // initialize fake timer before pixeltracker so that
+            // intervals and timeouts within pixeltracker are affected
+            clock = sinon.useFakeTimers();
+            pixeltrackerApi = new Api(config.pixeltracker);
+
+            await pixeltrackerApi.init();
+            await pixeltrackerApi.start();
+            await pixeltrackerApi.queue.obliterate({ force: true });
+
+            user = await createUser();
+            team = await createTeam();
+            charts = await createCharts([{ author_id: user.id, organization_id: team.id }]);
+        });
+
+        afterEach(async () => {
+            await pixeltrackerApi.stop();
+            clock.restore();
+
+            await destroy(charts, team, user);
+        });
+
+        it('should throw error if too many jobs are queued', async () => {
+            try {
+                const testRequests = [
+                    `/${charts[0].id}/pixel.gif`,
+                    `/${charts[0].id}/pixel.gif`,
+                    `/${charts[0].id}/pixel.gif`,
+                    `/${charts[0].id}/pixel.gif`,
+                    `/${charts[0].id}/pixel.gif`
+                ];
+                for (const request of testRequests) {
+                    await chai
+                        .request(pixeltrackerApi.app)
+                        .get(request)
+                        .then(res => {
+                            expect(res).to.have.status(200);
+                        });
+                    clock.tick(20000);
+                }
+                // Now all the jobs should be in the queue
+                // The flusher should not have processed any jobs yet
+                await chai
+                    .request(pixeltrackerApi.app)
+                    .get('/health')
+                    .then(res => {
+                        expect(res).to.have.status(555);
+                        expect(res.body.text).to.equal(`Still counting chart hits`);
+                        expect(res.body.queue.name).to.equal(config.pixeltracker.queue.name);
+                        expect(res.body.queue.waiting).to.equal(5);
+                    });
+            } finally {
+                await resetChartViewStatistics(connection, charts, [user], [team], []);
+            }
+        });
+
+        it('should throw error if a flush job fails', async () => {
+            let pixeltrackerFlusher;
+            let job;
+
+            try {
+                pixeltrackerFlusher = new Flusher(config.pixeltracker);
+                await pixeltrackerFlusher.init();
+                await pixeltrackerFlusher.start();
+
+                // Add an invalid job.
+                const queue = new Queue(config.pixeltracker.queue.name, {
+                    connection: config.pixeltracker.redis
+                });
+                job = await queue.add('flush', 'invalid job data');
+
+                clock.tick(20000);
+                // Restore fake time so that sleep will actually
+                // wait for db operations to finish
+                clock.restore();
+                await sleep(200);
+                await chai
+                    .request(pixeltrackerApi.app)
+                    .get('/health')
+                    .then(res => {
+                        expect(res).to.have.status(555);
+                        expect(res.body.text).to.equal(`Still counting chart hits`);
+                        expect(res.body.queue.name).to.equal(config.pixeltracker.queue.name);
+                        expect(res.body.queue.failed).to.equal(1);
+                    });
+            } finally {
+                await job.remove();
+                await pixeltrackerFlusher.stop();
+            }
+        });
     });
 
     after(async () => {
