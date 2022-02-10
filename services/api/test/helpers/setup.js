@@ -310,6 +310,14 @@ async function createProduct(props = {}) {
     });
 }
 
+async function addProductToTeam(product, team) {
+    const { TeamProduct } = require('@datawrapper/orm/models');
+    return TeamProduct.create({
+        organization_id: team.id,
+        productId: product.id
+    });
+}
+
 async function destroyChart(chart) {
     const { Chart, ChartPublic } = require('@datawrapper/orm/models');
     await ChartPublic.destroy({ where: { id: chart.id }, force: true });
@@ -399,6 +407,7 @@ module.exports = {
     V1_BASE_URL,
     addThemeToTeam,
     addUserToTeam,
+    addProductToTeam,
     createChart,
     createCharts,
     createFolder,

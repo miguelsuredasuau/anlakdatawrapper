@@ -2,6 +2,8 @@ const test = require('ava');
 const {
     createProduct,
     createUser,
+    createTeam,
+    addProductToTeam,
     destroy,
     getProduct,
     setup
@@ -221,6 +223,77 @@ test('POST /products returns error 403 when the token does not have the product:
         const res = await t.context.server.inject({
             method: 'POST',
             url: '/v3/products',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${adminObj.token}`
+            }
+        });
+        t.is(res.statusCode, 403);
+    } finally {
+        await destroy(...Object.keys(adminObj));
+    }
+});
+
+test('DELETE /products/{id} deletes product by ID', async t => {
+    const product = await createProduct({ data: `{ "foo": "bar" }` });
+    try {
+        const res = await t.context.server.inject({
+            method: 'DELETE',
+            url: `/v3/products/${product.id}`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${t.context.adminObj.token}`
+            }
+        });
+        const { deleted } = await getProduct(product.id);
+        t.is(res.statusCode, 204);
+        t.is(deleted, true);
+    } finally {
+        await destroy(product);
+    }
+});
+
+test('DELETE /products/{id} does not delete product that is in use', async t => {
+    const product = await createProduct({ data: `{ "foo": "bar" }` });
+    const team = await createTeam();
+    await addProductToTeam(product, team);
+    try {
+        const res = await t.context.server.inject({
+            method: 'DELETE',
+            url: `/v3/products/${product.id}`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${t.context.adminObj.token}`
+            }
+        });
+        const { deleted } = await getProduct(product.id);
+        t.is(res.statusCode, 403);
+        t.is(deleted, false);
+    } finally {
+        await destroy(team);
+        await destroy(product);
+    }
+});
+
+test('DELETE /products/{id} returns error 401 when the user is not admin', async t => {
+    const res = await t.context.server.inject({
+        method: 'DELETE',
+        url: '/v3/products/FOO',
+        headers: {
+            ...t.context.headers,
+            Authorization: `Bearer ${t.context.userObj.token}`
+        }
+    });
+    t.is(res.statusCode, 401);
+});
+
+test('DELETE /products/{id} returns error 403 when the token does not have the product:write scope', async t => {
+    let adminObj = {};
+    try {
+        adminObj = await createUser(t.context.server, { role: 'admin', scopes: [] });
+        const res = await t.context.server.inject({
+            method: 'DELETE',
+            url: '/v3/products/FOO',
             headers: {
                 ...t.context.headers,
                 Authorization: `Bearer ${adminObj.token}`

@@ -24,30 +24,6 @@ $app->put('/products/:id', function($id) use ($app) {
     });
 });
 
-
-
-/*
- * delete product
- */
-$app->delete('/products/:id', function($id) use ($app) {
-    if (!check_scopes(['product:write'])) return;
-    if_is_admin(function() use ($app, $id) {
-        $product = ProductQuery::create()->findPk($id);
-
-        if (!$product) {
-            return error('unknown-product', 'Product not found');
-        }
-
-        if ($product->hasActiveOrganization() || $product->hasActiveUser()) {
-            return error('product-in-use', 'Product is still in use');
-        }
-
-        $product->setDeleted(true);
-        $product->save();
-        ok();
-    });
-});
-
 /*
  * add plugin to product
  */
