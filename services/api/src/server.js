@@ -64,6 +64,7 @@ const OpenAPI = {
         debug: DW_DEV_MODE,
         host: DW_DEV_MODE ? `${host}:${port}` : host,
         schemes: [scheme],
+        grouping: 'tags',
         info: {
             title: 'Datawrapper API v3 Documentation',
             version: pkg.version,
