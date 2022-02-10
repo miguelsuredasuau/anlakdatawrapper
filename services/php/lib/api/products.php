@@ -202,27 +202,3 @@ $app->put('/products/:id/organizations', function($id) use ($app) {
         }
     });
 });
-
-$app->delete('/products/:id/organizations', function($id) use ($app) {
-    if (!check_scopes(['product:write'])) return;
-    if_is_admin(function() use ($app, $id) {
-        $product = ProductQuery::create()->findPk($id);
-        if ($product) {
-            $data = json_decode($app->request()->getBody(), true);
-            foreach ($data as $orgid) {
-                $org = OrganizationQuery::create()->findPk($orgid);
-                if ($org) {
-                    $product->removeOrganization($org);
-                }
-            }
-            try {
-                $product->save();
-                ok();
-            } catch (Exception $e) {
-                error('io-error', $e->getMessage());
-            }
-        } else {
-            return error('unknown-product', 'Product not found');
-        }
-    });
-});
