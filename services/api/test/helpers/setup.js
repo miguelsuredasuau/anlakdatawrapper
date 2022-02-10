@@ -311,6 +311,24 @@ async function createProduct(props = {}) {
     });
 }
 
+function createPlugin(props = {}) {
+    const { Plugin } = require('@datawrapper/orm/models');
+    return Plugin.create(props);
+}
+
+function getProductPlugin(productId, pluginId) {
+    const { ProductPlugin } = require('@datawrapper/orm/models');
+    return ProductPlugin.findOne({ where: { productId, pluginId } });
+}
+
+async function addPluginToProduct(plugin, product) {
+    const { ProductPlugin } = require('@datawrapper/orm/models');
+    return ProductPlugin.create({
+        pluginId: plugin.id,
+        productId: product.id
+    });
+}
+
 async function addProductToTeam(product, team) {
     const { TeamProduct } = require('@datawrapper/orm/models');
     return TeamProduct.create({
@@ -408,12 +426,14 @@ module.exports = {
     V1_BASE_URL,
     addThemeToTeam,
     addUserToTeam,
+    addPluginToProduct,
     addProductToTeam,
     createChart,
     createCharts,
     createFolder,
     createFolders,
     createFoldersWithParent,
+    createPlugin,
     createProduct,
     createPublicChart,
     createTeam,
@@ -428,6 +448,7 @@ module.exports = {
     getChart,
     getCredentials,
     getProduct,
+    getProductPlugin,
     getPublicChart,
     getTheme,
     setup

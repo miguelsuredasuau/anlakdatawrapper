@@ -72,5 +72,7 @@ module.exports = {
                 prefix: '/{id}'
             }
         });
+
+        server.register(require('./{id}/plugins'));
     }
 };
