@@ -212,6 +212,8 @@ module.exports = {
 
                     const team = await Team.findByPk(teamId);
 
+                    if (!team) throw Boom.notFound();
+
                     if (!team.default_theme) team.default_theme = getSystemDefaultTheme(config);
 
                     const settingsPages = await server.methods.getSettingsPages('team', request);
