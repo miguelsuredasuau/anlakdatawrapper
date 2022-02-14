@@ -1,17 +1,11 @@
-const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { decamelize, camelizeKeys } = require('humps');
-const set = require('lodash/set');
-const keyBy = require('lodash/keyBy');
+const Joi = require('joi');
+const { db } = require('@datawrapper/orm');
 const { User, Chart, Team } = require('@datawrapper/orm/models');
-const { queryUsers } = require('../../utils/raw-queries');
-const { serializeTeam } = require('../teams/utils');
-const { listResponse } = require('../../schemas/response.js');
-
-const { Op } = require('@datawrapper/orm').db;
-const attributes = ['id', 'email', 'name', 'role', 'language'];
-
 const { createUserPayload } = require('../../schemas/payload');
+const { decamelize, camelizeKeys } = require('humps');
+const { listResponse } = require('../../schemas/response.js');
+const { serializeTeam } = require('../teams/utils');
 
 module.exports = {
     name: 'routes/users',
@@ -95,81 +89,80 @@ async function isDeleted(id) {
 async function getAllUsers(request) {
     const { query, auth, url, server } = request;
     const isAdmin = server.methods.isAdmin(request);
+    const { Op } = db;
 
-    const userList = {
-        list: [],
-        total: 0
-    };
+    const attributes = ['id', 'email', 'name', 'role', 'language'];
+    if (isAdmin) {
+        attributes.push('created_at', 'activate_token', 'reset_password_token');
+    }
 
-    const { rows, count } = await queryUsers({
-        attributes: ['user.id', 'COUNT(chart.id) AS chart_count'],
-        orderBy: decamelize(
-            query.orderBy === 'createdAt' ? `user.${query.orderBy}` : query.orderBy
-        ),
-        order: query.order,
-        search: query.search,
-        limit: query.limit,
-        offset: query.offset,
-        teamId: isAdmin ? query.teamId : null
-    });
+    const filters = [{ deleted: { [Op.not]: true } }];
+    if (!isAdmin) {
+        filters.push({ id: auth.artifacts.id });
+    }
+    if (query.search) {
+        filters.push({
+            [Op.or]: {
+                email: { [Op.like]: `%${query.search}%` },
+                name: { [Op.like]: `%${query.search}%` }
+            }
+        });
+    }
+    if (isAdmin && query.teamId) {
+        filters.push({ organization_id: query.teamId });
+    }
+    const where = { [Op.and]: filters };
 
-    const options = {
-        attributes,
-        where: {
-            id: { [Op.in]: rows.map(row => row.id) }
-        },
+    let orderBy = decamelize(query.orderBy);
+    if (orderBy === 'chart_count') {
+        orderBy = db.literal(orderBy);
+    }
+
+    const { rows, count } = await User.findAndCountAll({
+        attributes: [...attributes, [db.fn('COUNT', 'charts.id'), 'chart_count']],
         include: [
+            {
+                model: Chart,
+                attributes: ['id']
+            },
             {
                 model: Team,
                 attributes: ['id', 'name']
             }
-        ]
-    };
+        ],
+        where,
+        group: attributes,
+        order: [[orderBy, query.order]],
+        limit: query.limit,
+        offset: query.offset
+    });
 
-    if (isAdmin) {
-        options.attributes = options.attributes.concat([
-            'created_at',
-            'activate_token',
-            'reset_password_token'
-        ]);
-    } else {
-        set(options, ['where', 'id'], auth.artifacts.id);
-    }
+    const list = rows.map(row =>
+        camelizeKeys({
+            ...Object.fromEntries(attributes.map(prop => [prop, row[prop]])),
+            ...(row.teams && { teams: row.teams.map(serializeTeam) }),
+            chart_count: row.dataValues.chart_count,
+            url: `${url.pathname}/${row.id}`
+        })
+    );
 
-    const users = await User.findAll(options);
-    const keyedUsers = keyBy(users, 'id');
+    const total = count.reduce((acc, curr) => acc + curr.count, 0);
 
-    userList.total = count;
-    userList.list = rows
-        .filter(row => !!keyedUsers[row.id])
-        .map(row => {
-            const { role, dataValues } = keyedUsers[row.id];
-
-            const { teams, ...data } = dataValues;
-
-            if (teams) {
-                data.teams = teams.map(serializeTeam);
-            }
-
-            return camelizeKeys({
-                ...data,
-                role,
-                chartCount: row.chart_count,
-                url: `${url.pathname}/${data.id}`
-            });
-        });
-
+    let next;
     if (query.limit + query.offset < count) {
         const nextParams = new URLSearchParams({
             ...query,
             offset: query.limit + query.offset,
             limit: query.limit
         });
-
-        set(userList, 'next', `${url.pathname}?${nextParams.toString()}`);
+        next = `${url.pathname}?${nextParams.toString()}`;
     }
 
-    return userList;
+    return {
+        list,
+        total,
+        ...(next && { next })
+    };
 }
 
 async function createUser(request, h) {

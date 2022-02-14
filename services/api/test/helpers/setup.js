@@ -70,7 +70,7 @@ async function setup(options) {
 
 async function createUser(
     server,
-    { role = 'editor', pwd = PASSWORD_HASH, scopes = ALL_SCOPES } = {}
+    { role = 'editor', pwd = PASSWORD_HASH, scopes = ALL_SCOPES, ...props } = {}
 ) {
     const { AccessToken, Session, User } = require('@datawrapper/orm/models');
     const credentials = getCredentials();
@@ -78,7 +78,8 @@ async function createUser(
         name: `name-${credentials.email.split('@').shift()}`,
         email: credentials.email,
         pwd,
-        role
+        role,
+        ...props
     });
 
     const session = await Session.create({
