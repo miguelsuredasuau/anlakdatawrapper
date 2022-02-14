@@ -42,25 +42,18 @@
 
 <!-- Add products: -->
 {#if addableProducts.length }
-<div style="display: flex">
-    <div style="display: block">
-        <SelectControl
-            label="{ __('teams / products / add-product') }"
-            bind:value="addProduct"
-            options="{addableProducts}"
-        />
-    </div>
+<SelectControl
+    label="{ __('teams / products / add-product') }"
+    bind:value="addProduct"
+    options="{addableProducts}"
+/>
 
-    {#if addProduct}
-    <div style="display: block">
-        <button on:click="addProduct()" class="btn btn-primary" style="margin-left: 10px">
-            <i class="fa { addingProduct ? 'fa fa-spin fa-circle-o-notch' : 'fa-plus' }"></i>
-            {@html __('teams / products / add') }
-        </button>
-    </div>
-    {/if}
-</div>
-{/if} {/if} {/if}
+{#if addProduct}
+<button on:click="addProduct()" class="btn btn-primary">
+    <i class="fa { addingProduct ? 'fa fa-spin fa-circle-o-notch' : 'fa-plus' }"></i>
+    {@html __('teams / products / add') }
+</button>
+{/if} {/if} {/if} {/if}
 
 <script>
     import TableDisplay from '@datawrapper/controls/TableDisplay.html';
@@ -88,16 +81,25 @@
             addableProducts({ products, allProducts }) {
                 if (!allProducts || !products) return [];
 
-                return allProducts
-                    .filter(el => {
-                        return !products.filter(pr => pr.id === el.id).length;
-                    })
-                    .map(el => {
-                        return {
-                            value: el.id,
-                            label: el.name
-                        };
-                    });
+                const addableProducts = [
+                    {
+                        value: null,
+                        label: '---'
+                    }
+                ];
+                addableProducts.push(
+                    ...allProducts
+                        .filter(el => {
+                            return !products.filter(pr => pr.id === el.id).length;
+                        })
+                        .map(el => {
+                            return {
+                                value: el.id,
+                                label: el.name
+                            };
+                        })
+                );
+                return addableProducts;
             }
         },
         helpers: {
