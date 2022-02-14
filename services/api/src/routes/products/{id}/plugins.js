@@ -19,9 +19,12 @@ module.exports = {
                 },
                 validate: {
                     params: Joi.object({
-                        id: Joi.string().required().description('ID of the product to delete.')
+                        id: Joi.string().required().description('ID of the product to modify')
                     }),
-                    payload: Joi.array().items(Joi.string())
+                    payload: Joi.array()
+                        .items(Joi.string())
+                        .required()
+                        .description('IDs of the plugins to remove from the product')
                 }
             },
 
@@ -45,6 +48,42 @@ module.exports = {
                 });
 
                 return h.response().code(204);
+            }
+        });
+
+        server.route({
+            method: 'POST',
+            path: '/{id}/plugins',
+            options: {
+                auth: {
+                    strategy: 'admin',
+                    access: { scope: ['product:write'] }
+                },
+                validate: {
+                    params: Joi.object({
+                        id: Joi.string().required().description('ID of the product to modify')
+                    }),
+                    payload: Joi.array()
+                        .items(Joi.string())
+                        .required()
+                        .description('IDs of the plugins to add to the product')
+                }
+            },
+
+            async handler(request, h) {
+                const { params, server, payload } = request;
+
+                server.methods.isAdmin(request, { throwError: true });
+
+                const product = await Product.findByPk(params.id);
+                if (!product) {
+                    return Boom.notFound('Product not found');
+                }
+
+                const entries = payload.map(pluginId => ({ pluginId, productId: product.id }));
+                await ProductPlugin.bulkCreate(entries);
+
+                return h.response().code(201);
             }
         });
     }
