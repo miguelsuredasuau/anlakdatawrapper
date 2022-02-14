@@ -188,12 +188,13 @@ module.exports = async function createChartWebsite(
         return zipExport ? path.basename(asset) : asset;
     }
 
+    const config = server.methods.config('general');
     const blocksFilePromises = publishData.blocks
         .filter(block => block.include && block.prefix)
         .map(async ({ prefix, publish, blocks }) => {
             const [js, css] = await Promise.all([
-                copyFileHashed(publish.js, outDir, { prefix }),
-                copyFileHashed(publish.css, outDir, { prefix })
+                copyFileHashed(path.join(config.localPluginRoot, publish.js), outDir, { prefix }),
+                copyFileHashed(path.join(config.localPluginRoot, publish.css), outDir, { prefix })
             ]);
             return {
                 source: {
