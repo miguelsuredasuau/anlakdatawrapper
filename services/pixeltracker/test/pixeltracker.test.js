@@ -22,11 +22,11 @@ const { waitForDb } = require('../src/utils/db');
 const Flusher = require('../src/flusher');
 
 describe('Pixeltracker', () => {
-    let connection;
+    let connectionPool;
 
     before(async () => {
         await ORM.init(config);
-        connection = await waitForDb(config.orm.db);
+        connectionPool = await waitForDb(config.orm.db);
     });
 
     describe('GET /pixel', () => {
@@ -115,7 +115,7 @@ describe('Pixeltracker', () => {
 
                 // check correct chart view statistics
                 const chartViews = await getChartViewStatistics(
-                    connection,
+                    connectionPool,
                     charts[0],
                     user,
                     team,
@@ -133,7 +133,7 @@ describe('Pixeltracker', () => {
                 expect(chartViews.perTeam.perWeek).to.equal(13);
             } finally {
                 await resetChartViewStatistics(
-                    connection,
+                    connectionPool,
                     charts,
                     [user],
                     [team],
@@ -203,7 +203,7 @@ describe('Pixeltracker', () => {
                         expect(res.body.queue.waiting).to.equal(5);
                     });
             } finally {
-                await resetChartViewStatistics(connection, charts, [user], [team], []);
+                await resetChartViewStatistics(connectionPool, charts, [user], [team], []);
             }
         });
 
@@ -244,6 +244,6 @@ describe('Pixeltracker', () => {
     });
 
     after(async () => {
-        await connection.close();
+        await connectionPool.end();
     });
 });

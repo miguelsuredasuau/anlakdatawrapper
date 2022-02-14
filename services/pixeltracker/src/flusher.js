@@ -15,8 +15,8 @@ class Flusher {
     }
 
     async init() {
-        this.connection = await waitForDb(this.config.flusher.db);
-        if (!this.connection) {
+        this.connectionPool = await waitForDb(this.config.flusher.db);
+        if (!this.connectionPool) {
             return;
         }
         await waitForRedis(this.config.redis);
@@ -26,7 +26,7 @@ class Flusher {
     }
 
     async start() {
-        if (!this.connection) {
+        if (!this.connectionPool) {
             throw new Error('Not initialized');
         }
         this.worker = new Worker(this.config.queue.name, async job => this.flush(job.data), {
@@ -58,7 +58,7 @@ class Flusher {
             throw new Error('Not started');
         }
         await this.worker.close();
-        await this.connection.end();
+        await this.connectionPool.end();
         this.server.close(() => {
             logger.info('HTTP server is closed.');
             logger.info('Bye bye.');
@@ -110,11 +110,11 @@ class Flusher {
             total: 0
         };
 
-        const connection = this.connection;
+        const connection = await this.connectionPool.getConnection();
         logger.info('Got connection. Fetching chart info...');
         try {
             this.times.start = Date.now();
-            const results = await this.getUserAndOrgForChartIds(Object.keys(chartHits));
+            const results = await this.getUserAndOrgForChartIds(connection, Object.keys(chartHits));
             this.times.fetchChartInfo = Date.now() - this.times.start;
             logger.info('Got chart info. Building inserts...');
 
@@ -246,11 +246,13 @@ class Flusher {
         } catch (e) {
             logger.warn(`Failed to flush chart view statistics: ${e.stack || e}`);
             throw e;
+        } finally {
+            await connection.release();
         }
     }
 
-    async getUserAndOrgForChartIds(chartIds) {
-        const [rows] = await this.connection.query(
+    async getUserAndOrgForChartIds(db, chartIds) {
+        const [rows] = await db.query(
             'SELECT id, author_id, organization_id FROM chart WHERE id in (?)',
             [chartIds]
         );

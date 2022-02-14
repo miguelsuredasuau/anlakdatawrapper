@@ -26,7 +26,7 @@ const resultsFile = 'results/performance.csv';
 
 describe('Pixeltracker Performance', function () {
     this.timeout(5 * 60 * 1000); // 5 minutes
-    let connection;
+    let connectionPool;
 
     before(async () => {
         await fs.mkdir(path.dirname(resultsFile), { recursive: true });
@@ -35,7 +35,7 @@ describe('Pixeltracker Performance', function () {
             toCSVString(['noOfCharts', 'fetchChartInfo', 'createInserts', 'runInserts'])
         );
         await ORM.init(config);
-        connection = await waitForDb(config.orm.db);
+        connectionPool = await waitForDb(config.orm.db);
     });
 
     const start = 1000;
@@ -114,7 +114,7 @@ describe('Pixeltracker Performance', function () {
                     );
                 } finally {
                     console.log('Cleaning up...');
-                    await resetChartViewStatistics(connection, charts, [user], [team], []);
+                    await resetChartViewStatistics(connectionPool, charts, [user], [team], []);
                     await destroy(charts, team, user);
                     console.log('Clean up done.');
                 }
@@ -123,7 +123,7 @@ describe('Pixeltracker Performance', function () {
     });
 
     after(async () => {
-        await connection.close();
+        await connectionPool.close();
     });
 });
 

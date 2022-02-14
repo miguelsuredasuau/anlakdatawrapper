@@ -4,10 +4,7 @@ const sleep = require('./sleep');
 
 async function waitForDb(dbConfig, times = 1) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
-        await connection.connect();
-        await connection.query('USE ' + dbConfig.database);
-        return connection;
+        return await mysql.createPool(dbConfig);
     } catch (e) {
         if (times > 5) {
             logger.error(`Unable to connect to database in ${times} attempts, exiting`);

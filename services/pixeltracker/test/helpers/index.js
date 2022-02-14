@@ -67,42 +67,65 @@ async function getChartViewsPerEmbedUrl(db, chartId, embedUrl) {
     return perEmbedUrl.length ? perEmbedUrl[0].views : 0;
 }
 
-async function getChartViewStatistics(db, chart, user, team, domain, embedUrl) {
-    return {
-        total: await getTotalChartViews(db, chart.id),
-        perEmbedUrl: await getChartViewsPerEmbedUrl(db, chart.id, embedUrl),
-        perDomain: await getChartViewsPerDomain(db, domain),
-        perTeam: await getChartViewsPerTeam(db, team.id),
-        perUser: await getChartViewsPerUser(db, user.id)
-    };
+async function getChartViewStatistics(dbPool, chart, user, team, domain, embedUrl) {
+    const connection = await dbPool.getConnection();
+    try {
+        return {
+            total: await getTotalChartViews(connection, chart.id),
+            perEmbedUrl: await getChartViewsPerEmbedUrl(connection, chart.id, embedUrl),
+            perDomain: await getChartViewsPerDomain(connection, domain),
+            perTeam: await getChartViewsPerTeam(connection, team.id),
+            perUser: await getChartViewsPerUser(connection, user.id)
+        };
+    } finally {
+        await connection.release();
+    }
 }
 
-async function resetChartViewStatistics(db, charts, users, teams, domains) {
-    for (const chart of charts) {
-        await db.query('DELETE FROM pixeltracker_chart WHERE chart_id = ?', [chart.id]);
-        await db.query('DELETE FROM pixeltracker_chart_embedurl WHERE chart_id = ?', [chart.id]);
-    }
+async function resetChartViewStatistics(dbPool, charts, users, teams, domains) {
+    const connection = await dbPool.getConnection();
+    try {
+        for (const chart of charts) {
+            await connection.query('DELETE FROM pixeltracker_chart WHERE chart_id = ?', [chart.id]);
+            await connection.query('DELETE FROM pixeltracker_chart_embedurl WHERE chart_id = ?', [
+                chart.id
+            ]);
+        }
 
-    for (const user of users) {
-        await db.query('DELETE FROM pixeltracker_user_day WHERE user_id = ?', [user.id]);
-        await db.query('DELETE FROM pixeltracker_user_month WHERE user_id = ?', [user.id]);
-        await db.query('DELETE FROM pixeltracker_user_week WHERE user_id = ?', [user.id]);
-    }
+        for (const user of users) {
+            await connection.query('DELETE FROM pixeltracker_user_day WHERE user_id = ?', [
+                user.id
+            ]);
+            await connection.query('DELETE FROM pixeltracker_user_month WHERE user_id = ?', [
+                user.id
+            ]);
+            await connection.query('DELETE FROM pixeltracker_user_week WHERE user_id = ?', [
+                user.id
+            ]);
+        }
 
-    for (const team of teams) {
-        await db.query('DELETE FROM pixeltracker_organization_day WHERE organization_id = ?', [
-            team.id
-        ]);
-        await db.query('DELETE FROM pixeltracker_organization_month WHERE organization_id = ?', [
-            team.id
-        ]);
-        await db.query('DELETE FROM pixeltracker_organization_week WHERE organization_id = ?', [
-            team.id
-        ]);
-    }
+        for (const team of teams) {
+            await connection.query(
+                'DELETE FROM pixeltracker_organization_day WHERE organization_id = ?',
+                [team.id]
+            );
+            await connection.query(
+                'DELETE FROM pixeltracker_organization_month WHERE organization_id = ?',
+                [team.id]
+            );
+            await connection.query(
+                'DELETE FROM pixeltracker_organization_week WHERE organization_id = ?',
+                [team.id]
+            );
+        }
 
-    for (const domain of domains) {
-        await db.query('DELETE FROM pixeltracker_domain_month WHERE domain = ?', [domain]);
+        for (const domain of domains) {
+            await connection.query('DELETE FROM pixeltracker_domain_month WHERE domain = ?', [
+                domain
+            ]);
+        }
+    } finally {
+        await connection.release();
     }
 }
 
