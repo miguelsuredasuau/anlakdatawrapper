@@ -85,39 +85,35 @@ async function getChartViewStatistics(dbPool, chart, user, team, domain, embedUr
 async function resetChartViewStatistics(dbPool, charts, users, teams, domains) {
     const connection = await dbPool.getConnection();
     try {
-        for (const chart of charts) {
-            await connection.query('DELETE FROM pixeltracker_chart WHERE chart_id = ?', [chart.id]);
-            await connection.query('DELETE FROM pixeltracker_chart_embedurl WHERE chart_id = ?', [
-                chart.id
-            ]);
-        }
+        await connection.query('DELETE FROM pixeltracker_chart WHERE chart_id IN (?)', [
+            charts.map(c => c.id)
+        ]);
+        await connection.query('DELETE FROM pixeltracker_chart_embedurl WHERE chart_id IN (?)', [
+            charts.map(c => c.id)
+        ]);
 
-        for (const user of users) {
-            await connection.query('DELETE FROM pixeltracker_user_day WHERE user_id = ?', [
-                user.id
-            ]);
-            await connection.query('DELETE FROM pixeltracker_user_month WHERE user_id = ?', [
-                user.id
-            ]);
-            await connection.query('DELETE FROM pixeltracker_user_week WHERE user_id = ?', [
-                user.id
-            ]);
-        }
+        await connection.query('DELETE FROM pixeltracker_user_day WHERE user_id IN (?)', [
+            users.map(u => u.id)
+        ]);
+        await connection.query('DELETE FROM pixeltracker_user_month WHERE user_id IN (?)', [
+            users.map(u => u.id)
+        ]);
+        await connection.query('DELETE FROM pixeltracker_user_week WHERE user_id IN (?)', [
+            users.map(u => u.id)
+        ]);
 
-        for (const team of teams) {
-            await connection.query(
-                'DELETE FROM pixeltracker_organization_day WHERE organization_id = ?',
-                [team.id]
-            );
-            await connection.query(
-                'DELETE FROM pixeltracker_organization_month WHERE organization_id = ?',
-                [team.id]
-            );
-            await connection.query(
-                'DELETE FROM pixeltracker_organization_week WHERE organization_id = ?',
-                [team.id]
-            );
-        }
+        await connection.query(
+            'DELETE FROM pixeltracker_organization_day WHERE organization_id IN (?)',
+            [teams.map(t => t.id)]
+        );
+        await connection.query(
+            'DELETE FROM pixeltracker_organization_month WHERE organization_id IN (?)',
+            [teams.map(t => t.id)]
+        );
+        await connection.query(
+            'DELETE FROM pixeltracker_organization_week WHERE organization_id IN (?)',
+            [teams.map(t => t.id)]
+        );
 
         for (const domain of domains) {
             await connection.query('DELETE FROM pixeltracker_domain_month WHERE domain = ?', [

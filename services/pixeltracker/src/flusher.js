@@ -121,6 +121,7 @@ class Flusher {
             await connection.beginTransaction();
             const inserts = [];
 
+            const domainHitsPerMonthValues = [];
             Object.keys(domainHits).forEach(domain => {
                 if (
                     domain &&
@@ -130,103 +131,130 @@ class Flusher {
                     domain !== 'null'
                 ) {
                     const thisMonth = moment().startOf('month').format('YYYY-MM-DD');
-                    inserts.push(
-                        connection.query(
-                            'INSERT INTO pixeltracker_domain_month (domain, date, views)' +
-                                'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                            [domain, thisMonth, domainHits[domain], domainHits[domain]]
-                        )
-                    );
+                    domainHitsPerMonthValues.push([domain, thisMonth, domainHits[domain]]);
                 }
             });
+            inserts.push(
+                ...this.createViewsInsertQueries(
+                    connection,
+                    'pixeltracker_domain_month',
+                    ['domain', 'date', 'views'],
+                    domainHitsPerMonthValues
+                )
+            );
 
             Object.keys(chartUrls).forEach(chartId => {
+                const perChartIdAndEmbedUrlValues = [];
                 Object.keys(chartUrls[chartId]).forEach(url => {
                     if (url !== 'direct' && url.substr(0, 28) !== 'http://datawrapper.dwcdn.net') {
                         const views = chartUrls[chartId][url];
-                        inserts.push(
-                            connection.query(
-                                'INSERT INTO pixeltracker_chart_embedurl (chart_id, url, views)' +
-                                    'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ? ',
-                                [chartId, url, views, views]
-                            )
-                        );
+                        perChartIdAndEmbedUrlValues.push([chartId, url, views]);
                     }
                 });
+                inserts.push(
+                    ...this.createViewsInsertQueries(
+                        connection,
+                        'pixeltracker_chart_embedurl',
+                        ['chart_id', 'url', 'views'],
+                        perChartIdAndEmbedUrlValues
+                    )
+                );
             });
 
+            const chartHitValues = [];
+            const userPerDayValues = [];
+            const userPerWeekValues = [];
+            const userPerMonthValues = [];
+            const teamPerDayValues = [];
+            const teamPerWeekValues = [];
+            const teamPerMonthValues = [];
             results.forEach(function (el) {
                 if (el.chartId === undefined) {
                     return;
                     // if no chartId is set, the chart was not found in the database,
                     // and we don't want to track this hit.
                 }
-                inserts.push(
-                    connection.query(
-                        'INSERT INTO pixeltracker_chart (chart_id, views)' +
-                            'VALUES (?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                        [el.chartId, chartHits[el.chartId], chartHits[el.chartId]]
-                    )
-                );
+                chartHitValues.push([el.chartId, chartHits[el.chartId]]);
+
+                const today = moment().startOf('day').format('YYYY-MM-DD');
+                const thisWeek = moment().startOf('isoweek').format('YYYY-MM-DD');
+                const thisMonth = moment().startOf('month').format('YYYY-MM-DD');
 
                 if (typeof el.userId === 'number') {
-                    const today = moment().startOf('day').format('YYYY-MM-DD');
-                    inserts.push(
-                        connection.query(
-                            'INSERT INTO pixeltracker_user_day (user_id, date, views)' +
-                                'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                            [el.userId, today, chartHits[el.chartId], chartHits[el.chartId]]
-                        )
-                    );
-
-                    const thisWeek = moment().startOf('isoweek').format('YYYY-MM-DD');
-                    inserts.push(
-                        connection.query(
-                            'INSERT INTO pixeltracker_user_week (user_id, date, views)' +
-                                'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                            [el.userId, thisWeek, chartHits[el.chartId], chartHits[el.chartId]]
-                        )
-                    );
-
-                    const thisMonth = moment().startOf('month').format('YYYY-MM-DD');
-                    inserts.push(
-                        connection.query(
-                            'INSERT INTO pixeltracker_user_month (user_id, date, views)' +
-                                'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                            [el.userId, thisMonth, chartHits[el.chartId], chartHits[el.chartId]]
-                        )
-                    );
+                    userPerDayValues.push([el.userId, today, chartHits[el.chartId]]);
+                    userPerWeekValues.push([el.userId, thisWeek, chartHits[el.chartId]]);
+                    userPerMonthValues.push([el.userId, thisMonth, chartHits[el.chartId]]);
                 }
 
                 if (typeof el.orgId === 'string') {
-                    const today = moment().startOf('day').format('YYYY-MM-DD');
-                    inserts.push(
-                        connection.query(
-                            'INSERT INTO pixeltracker_organization_day (organization_id, date, views)' +
-                                'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                            [el.orgId, today, chartHits[el.chartId], chartHits[el.chartId]]
-                        )
-                    );
-
-                    const thisWeek = moment().startOf('isoweek').format('YYYY-MM-DD');
-                    inserts.push(
-                        connection.query(
-                            'INSERT INTO pixeltracker_organization_week (organization_id, date, views)' +
-                                'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                            [el.orgId, thisWeek, chartHits[el.chartId], chartHits[el.chartId]]
-                        )
-                    );
-
-                    const thisMonth = moment().startOf('month').format('YYYY-MM-DD');
-                    inserts.push(
-                        connection.query(
-                            'INSERT INTO pixeltracker_organization_month (organization_id, date, views)' +
-                                'VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE views = views + ?',
-                            [el.orgId, thisMonth, chartHits[el.chartId], chartHits[el.chartId]]
-                        )
-                    );
+                    teamPerDayValues.push([el.orgId, today, chartHits[el.chartId]]);
+                    teamPerWeekValues.push([el.orgId, thisWeek, chartHits[el.chartId]]);
+                    teamPerMonthValues.push([el.orgId, thisMonth, chartHits[el.chartId]]);
                 }
             });
+
+            inserts.push(
+                ...this.createViewsInsertQueries(
+                    connection,
+                    'pixeltracker_chart',
+                    ['chart_id', 'views'],
+                    chartHitValues
+                )
+            );
+
+            inserts.push(
+                ...this.createViewsInsertQueries(
+                    connection,
+                    'pixeltracker_user_day',
+                    ['user_id', 'date', 'views'],
+                    userPerDayValues
+                )
+            );
+
+            inserts.push(
+                ...this.createViewsInsertQueries(
+                    connection,
+                    'pixeltracker_user_week',
+                    ['user_id', 'date', 'views'],
+                    userPerWeekValues
+                )
+            );
+
+            inserts.push(
+                ...this.createViewsInsertQueries(
+                    connection,
+                    'pixeltracker_user_month',
+                    ['user_id', 'date', 'views'],
+                    userPerMonthValues
+                )
+            );
+
+            inserts.push(
+                ...this.createViewsInsertQueries(
+                    connection,
+                    'pixeltracker_organization_day',
+                    ['organization_id', 'date', 'views'],
+                    teamPerDayValues
+                )
+            );
+
+            inserts.push(
+                ...this.createViewsInsertQueries(
+                    connection,
+                    'pixeltracker_organization_week',
+                    ['organization_id', 'date', 'views'],
+                    teamPerWeekValues
+                )
+            );
+
+            inserts.push(
+                ...this.createViewsInsertQueries(
+                    connection,
+                    'pixeltracker_organization_month',
+                    ['organization_id', 'date', 'views'],
+                    teamPerMonthValues
+                )
+            );
 
             this.times.createInserts = Date.now() - this.times.start - this.times.fetchChartInfo;
             logger.info('Inserts are ready. Executing them...');
@@ -264,6 +292,24 @@ class Flusher {
             userId: row.author_id,
             orgId: row.organization_id
         }));
+    }
+
+    /* Returns an array of promises */
+    createViewsInsertQueries(db, tableName, columns, values) {
+        // The reason for splitting the queries via multiple value "chunks"
+        // is so that we don't run into the maximum size for one query.
+        const chunkSize = 1000;
+        const queryPromises = [];
+        for (let i = 0; i < values.length; i += chunkSize) {
+            const valuesChunk = values.slice(i, i + chunkSize);
+            queryPromises.push(
+                db.query(
+                    'INSERT INTO ?? (??) VALUES ? ON DUPLICATE KEY UPDATE views = views + VALUES(views)',
+                    [tableName, columns, valuesChunk]
+                )
+            );
+        }
+        return queryPromises;
     }
 }
 

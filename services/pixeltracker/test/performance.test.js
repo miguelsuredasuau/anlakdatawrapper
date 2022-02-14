@@ -123,7 +123,7 @@ describe('Pixeltracker Performance', function () {
     });
 
     after(async () => {
-        await connectionPool.close();
+        await connectionPool.end();
     });
 });
 

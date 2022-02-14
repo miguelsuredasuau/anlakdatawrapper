@@ -68,17 +68,11 @@ describe('Pixeltracker', () => {
                     { author_id: user.id, organization_id: team.id },
                     { author_id: user.id, organization_id: team.id }
                 ]);
-                const testRequests = [
+                let testRequests = [
                     `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
                     `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
                     `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
                     `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
-                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
-                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlB)}`,
-                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlB)}`,
-                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlC)}`,
-                    `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
-                    `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
                     `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlB)}`,
                     `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlB)}`,
                     `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlC)}`
@@ -96,10 +90,31 @@ describe('Pixeltracker', () => {
 
                 clock.tick(20000);
 
+                testRequests = [
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlB)}`,
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlB)}`,
+                    `/${charts[0].id}/pixel.gif?r=${encodeURIComponent(testUrlC)}`,
+                    `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`,
+                    `/${charts[1].id}/pixel.gif?r=${encodeURIComponent(testUrlA)}`
+                ];
+                await Promise.all(
+                    testRequests.map(request =>
+                        chai
+                            .request(pixeltrackerApi.app)
+                            .get(request)
+                            .then(res => {
+                                expect(res).to.have.status(200);
+                            })
+                    )
+                );
+
+                clock.tick(20000);
+
                 // Restore fake time so that sleep will actually
                 // wait for db operations to finish
                 clock.restore();
-                await sleep(200);
+                await sleep(1000);
                 await chai
                     .request(pixeltrackerApi.app)
                     .get('/health')
@@ -107,7 +122,7 @@ describe('Pixeltracker', () => {
                         expect(res).to.have.status(200);
                         expect(res.body.text).to.equal(`Still counting chart hits`);
                         expect(res.body.queue.name).to.equal(config.pixeltracker.queue.name);
-                        expect(res.body.queue.completed).to.equal(1);
+                        expect(res.body.queue.completed).to.equal(2);
                     })
                     .catch(err => {
                         throw err;

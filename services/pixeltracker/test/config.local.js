@@ -7,7 +7,7 @@ module.exports = {
     pixeltracker: {
         queue: {
             name: 'pixeltracker:test:flush',
-            removeOnComplete: 1,
+            removeOnComplete: 50,
             removeOnFail: 50
         },
         api: {
