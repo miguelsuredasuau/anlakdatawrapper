@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
+const orm = require('@datawrapper/orm');
+const { Chart, User, Folder } = require('@datawrapper/orm/models');
 
 const { listResponse } = require('../../schemas/response');
 
@@ -20,27 +21,47 @@ const routes = [
         async handler(request) {
             const compact = request.query.compact !== undefined;
             const { auth } = request;
+            const { Op } = orm.db;
 
-            const { teams } = await User.findByPk(auth.artifacts.id, {
-                include: [{ model: Team, attributes: ['id', 'name'] }]
-            });
+            const teams = await auth.artifacts.getAcceptedTeams();
+
+            const where = {
+                deleted: false,
+                [Op.or]: [
+                    { author_id: auth.artifacts.id },
+                    { organization_id: teams.map(t => t.id) }
+                ]
+            };
+
+            const charts = compact
+                ? await Chart.count({ where, group: ['organization_id', 'in_folder'] })
+                : await Chart.findAll({
+                      where,
+                      attributes: [
+                          'id',
+                          'title',
+                          'type',
+                          'theme',
+                          'createdAt',
+                          'in_folder',
+                          'organization_id'
+                      ]
+                  });
+
+            const folders = (
+                await Folder.findAll({
+                    where: {
+                        [Op.or]: [{ user_id: auth.artifacts.id }, { org_id: teams.map(t => t.id) }]
+                    }
+                })
+            ).map(f => f.toJSON());
 
             const all = [
                 {
                     type: 'user',
                     id: auth.artifacts.id,
-                    charts: compact
-                        ? await countAllCharts({
-                              author_id: auth.artifacts.id,
-                              in_folder: null,
-                              deleted: false
-                          })
-                        : await findAllCharts({
-                              author_id: auth.artifacts.id,
-                              in_folder: null,
-                              deleted: false
-                          }),
-                    folders: await getFolders('user_id', auth.artifacts.id)
+                    charts: getCharts(charts, null, null),
+                    folders: getFolders(folders, charts, null, null)
                 }
             ];
 
@@ -49,52 +70,36 @@ const routes = [
                     type: 'team',
                     id: team.id,
                     name: team.name,
-                    charts: compact
-                        ? await countAllCharts({
-                              organization_id: team.id,
-                              in_folder: null,
-                              deleted: false
-                          })
-                        : await findAllCharts({
-                              organization_id: team.id,
-                              in_folder: null,
-                              deleted: false
-                          }),
-                    folders: await getFolders('org_id', team.id)
+                    charts: getCharts(charts, team.id, null),
+                    folders: getFolders(folders, charts, team.id, null)
                 });
             }
 
-            async function findAllCharts(where) {
-                return await Chart.findAll({
-                    attributes: ['id', 'title', 'type', 'theme', 'createdAt'],
-                    where
-                });
+            function getCharts(charts, teamId, folderId) {
+                return compact
+                    ? charts.find(d => d.organization_id === teamId && d.in_folder === folderId)
+                          ?.count || 0
+                    : charts
+                          .filter(d => d.organization_id === teamId && d.in_folder === folderId)
+                          .map(c => ({
+                              id: c.id,
+                              title: c.title,
+                              type: c.type,
+                              theme: c.theme,
+                              createdAt: c.createdAt
+                          }));
             }
 
-            async function countAllCharts(where) {
-                return await Chart.count({
-                    where
-                });
-            }
-
-            async function getFolders(by, owner, parent) {
-                const arr = [];
-                const folders = await Folder.findAll({
-                    where: { [by]: owner, parent_id: parent || null }
-                });
-
-                for (const folder of folders) {
-                    arr.push({
+            function getFolders(folders, charts, teamId, parentFolderId) {
+                return folders
+                    .filter(f => f.org_id === teamId && f.parent_id === parentFolderId)
+                    .map(folder => ({
                         id: folder.id,
                         name: folder.name,
-                        charts: compact
-                            ? await countAllCharts({ in_folder: folder.id, deleted: false })
-                            : await findAllCharts({ in_folder: folder.id, deleted: false }),
-                        folders: await getFolders(by, owner, folder.id)
-                    });
-                }
-
-                return arr;
+                        folders: getFolders(folders, charts, teamId, folder.id),
+                        charts: getCharts(charts, teamId, folder.id)
+                    }))
+                    .sort((a, b) => a.id - b.id);
             }
 
             return {

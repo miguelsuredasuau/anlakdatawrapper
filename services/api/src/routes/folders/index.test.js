@@ -50,61 +50,75 @@ test.after.always(async t => {
     await destroy(...Object.values(t.context.teamObj), ...Object.values(t.context.adminObj));
 });
 
+async function createTestCharts(t) {
+    let folders = await createFolders([
+        { name: 'Test Folder' },
+        { name: 'User Folder', user_id: t.context.teamObj.user.id },
+        { name: 'Team Folder', org_id: t.context.teamObj.team.id }
+    ]);
+    const nestedFolders = await createFoldersWithParent(
+        [{ name: 'Nested Folder', user_id: t.context.teamObj.user.id }],
+        folders[1]
+    );
+    folders = [...folders, ...nestedFolders];
+    const charts = await createCharts([
+        // one chars in user root folder
+        {
+            id: String(randomInt(99999)),
+            title: 'user root chart',
+            theme: 'theme1',
+            type: 'bar',
+            metadata: {},
+            author_id: t.context.teamObj.user.id
+        },
+        // one chart in organization root folder
+        {
+            id: String(randomInt(99999)),
+            title: 'org root chart',
+            theme: 'theme1',
+            type: 'bar',
+            metadata: {},
+            organization_id: t.context.teamObj.team.id
+        },
+        // one chart in user sub folder
+        {
+            id: String(randomInt(99999)),
+            title: 'user folder chart',
+            theme: 'theme1',
+            type: 'bar',
+            metadata: {},
+            author_id: t.context.teamObj.user.id,
+            in_folder: folders[1].id
+        },
+        // one chart in org sub folder
+        {
+            id: String(randomInt(99999)),
+            title: 'org folder chart',
+            theme: 'theme1',
+            type: 'bar',
+            metadata: {},
+            in_folder: folders[2].id,
+            organization_id: t.context.teamObj.team.id
+        },
+        // one chart in nested user folder
+        {
+            id: String(randomInt(99999)),
+            title: 'user nested folder chart',
+            theme: 'theme1',
+            type: 'bar',
+            metadata: {},
+            author_id: t.context.teamObj.user.id,
+            in_folder: folders[3].id
+        }
+    ]);
+    return () => destroy(charts, folders.reverse()); // reverse so that nested folders are destroyed first
+}
+
 test('GET /folders should return all folders of a user', async t => {
-    let folders, charts;
+    let cleanup;
     try {
-        folders = await createFolders([
-            { name: 'Test Folder' },
-            { name: 'User Folder', user_id: t.context.teamObj.user.id },
-            { name: 'Team Folder', org_id: t.context.teamObj.team.id }
-        ]);
-        const nestedFolders = await createFoldersWithParent(
-            [{ name: 'Nested Folder', user_id: t.context.teamObj.user.id }],
-            folders[1]
-        );
-        folders = [...folders, ...nestedFolders];
-        charts = await createCharts([
-            {
-                id: String(randomInt(99999)),
-                title: 'Chart 1',
-                theme: 'theme1',
-                type: 'bar',
-                metadata: {},
-                author_id: t.context.teamObj.user.id
-            },
-            {
-                id: String(randomInt(99999)),
-                title: 'Chart 2',
-                theme: 'theme1',
-                type: 'bar',
-                metadata: {},
-                organization_id: t.context.teamObj.team.id
-            },
-            {
-                id: String(randomInt(99999)),
-                title: 'Chart 3',
-                theme: 'theme1',
-                type: 'bar',
-                metadata: {},
-                in_folder: folders[1].id
-            },
-            {
-                id: String(randomInt(99999)),
-                title: 'Chart 4',
-                theme: 'theme1',
-                type: 'bar',
-                metadata: {},
-                in_folder: folders[2].id
-            },
-            {
-                id: String(randomInt(99999)),
-                title: 'Chart 5',
-                theme: 'theme1',
-                type: 'bar',
-                metadata: {},
-                in_folder: folders[3].id
-            }
-        ]);
+        cleanup = await createTestCharts(t);
+
         const resp = await t.context.server.inject({
             method: 'GET',
             url: '/v3/folders',
@@ -115,17 +129,53 @@ test('GET /folders should return all folders of a user', async t => {
         t.is(resp.result.total, 2);
 
         const foldersAndChartsOfUser = resp.result.list.find(el => el.type === 'user');
-        const foldersAndChartsOfTeam = resp.result.list.find(el => el.type === 'team');
         t.is(foldersAndChartsOfUser.folders.length, 1);
         t.is(foldersAndChartsOfUser.charts.length, 1);
-        t.is(foldersAndChartsOfTeam.folders.length, 1);
+        t.is(foldersAndChartsOfUser.charts[0].title, 'user root chart');
         t.is(foldersAndChartsOfUser.folders[0].folders.length, 1);
-        t.is(foldersAndChartsOfUser.folders[0].folders[0].charts.length, 1);
         t.is(foldersAndChartsOfUser.folders[0].charts.length, 1);
-        t.is(foldersAndChartsOfTeam.charts.length, 1);
+        t.is(foldersAndChartsOfUser.folders[0].charts[0].title, 'user folder chart');
+        t.is(foldersAndChartsOfUser.folders[0].folders[0].charts.length, 1);
+        t.is(
+            foldersAndChartsOfUser.folders[0].folders[0].charts[0].title,
+            'user nested folder chart'
+        );
         t.is(foldersAndChartsOfUser.charts[0].metadata, undefined); // check that chart data is cleaned
+        t.is(foldersAndChartsOfUser.folders[0].charts.length, 1);
+
+        const foldersAndChartsOfTeam = resp.result.list.find(el => el.type === 'team');
+        t.is(foldersAndChartsOfTeam.charts.length, 1);
+        t.is(foldersAndChartsOfTeam.folders.length, 1);
+        t.is(foldersAndChartsOfTeam.charts[0].title, 'org root chart');
+        t.is(foldersAndChartsOfTeam.folders[0].charts[0].title, 'org folder chart');
     } finally {
-        await destroy(charts, folders.reverse()); // reverse so that nested folders are destroyed first
+        if (cleanup) await cleanup();
+    }
+});
+
+test('GET /folders?compact returns chart counts', async t => {
+    let cleanup;
+    try {
+        cleanup = await createTestCharts(t);
+
+        const resp = await t.context.server.inject({
+            method: 'GET',
+            url: '/v3/folders?compact',
+            auth: t.context.auth
+        });
+
+        t.is(resp.statusCode, 200);
+        t.is(resp.result.total, 2);
+
+        const foldersAndChartsOfUser = resp.result.list.find(el => el.type === 'user');
+        t.is(foldersAndChartsOfUser.charts, 1);
+        t.is(foldersAndChartsOfUser.folders[0].charts, 1);
+
+        const foldersAndChartsOfTeam = resp.result.list.find(el => el.type === 'team');
+        t.is(foldersAndChartsOfTeam.charts, 1);
+        t.is(foldersAndChartsOfTeam.folders[0].charts, 1);
+    } finally {
+        if (cleanup) await cleanup();
     }
 });
 
@@ -159,6 +209,7 @@ test('PHP GET /folders returns the list of folders for the current user', async 
                 type: 'bar',
                 metadata: {},
                 in_folder: folder.id,
+                author_id: t.context.teamObj.user.id,
                 last_edit_step: 3
             }
         ]);
