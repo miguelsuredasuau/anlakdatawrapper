@@ -42,7 +42,7 @@
             const topItem = getTopMostElement(scrollY, groups, content);
             return topItem === page;
         }
-        return req.path === page.url;
+        return req.path === page.url || req.path.startsWith(`${page.url}/`);
     }
 
     function pageClick(page) {
@@ -107,19 +107,21 @@
             {/if}
             <ul role="navigation" class="menu-list">
                 {#each g.pages as page}
-                    <li>
-                        <a
-                            class:is-active={isActive(page, scrollY, groups, content, $request)}
-                            on:click|preventDefault={() => pageClick(page)}
-                            href={page.url}
-                            >{#if page.svgIcon}<IconDisplay
-                                    className="mr-3"
-                                    icon={page.svgIcon}
-                                />{/if}<span
-                                >{#if page.escape}{page.title}{:else}{@html page.title}{/if}</span
-                            ></a
-                        >
-                    </li>
+                    {#if page.url}
+                        <li>
+                            <a
+                                class:is-active={isActive(page, scrollY, groups, content, $request)}
+                                on:click|preventDefault={() => pageClick(page)}
+                                href={page.url}
+                                >{#if page.svgIcon}<IconDisplay
+                                        className="mr-3"
+                                        icon={page.svgIcon}
+                                    />{/if}<span
+                                    >{#if page.escape}{page.title}{:else}{@html page.title}{/if}</span
+                                ></a
+                            >
+                        </li>
+                    {/if}
                 {/each}
             </ul>
         </div>

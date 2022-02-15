@@ -348,8 +348,7 @@ To register admin pages, which as of now only adds a link to the admin submenu, 
 server.methods.registerAdminPage(request => {
     const __ = server.methods.getTranslate(request);
     return {
-        url: '/users',
-        route: '/users(/|/:user_id)?',
+        url: '/v2/admin/users',
         title: __('Users', 'admin-users'),
         group: __('Users'),
         svgIcon: 'user',
@@ -357,6 +356,24 @@ server.methods.registerAdminPage(request => {
     };
 });
 ```
+
+Some admin pages may need more flexible routing to support sub-pages (e.g. `/v2/admin/users/foo`).
+This can now be achieved using the `pathRegex` property:
+
+```js
+server.methods.registerAdminPage(request => {
+    const __ = server.methods.getTranslate(request);
+    return {
+        pathRegex: '/v2/admin/teams/([a-zA-Z0-9-]+)',
+        title: __('Users', 'admin-users'),
+        group: __('Users'),
+        svgIcon: 'user',
+        order: 2
+    };
+});
+```
+
+Note that for admin pages without a `url` there won't be an automatic menu item. Instead, the menu will highlight the entry based on a common prefix (e.g. `/v2/admin/teams`).
 
 ### `registerViewComponent`
 

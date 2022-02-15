@@ -12,7 +12,15 @@
     export let settingsPages;
 
     const flatPages = flatten(settingsPages.map(d => d.pages));
-    let curPage = flatPages.find(p => p.url === $request.path) || flatPages[0];
+
+    let curPage =
+        flatPages.find(p =>
+            p.url
+                ? p.url === $request.path
+                : p.pathRegex
+                ? new RegExp(p.pathRegex).test($request.path)
+                : false
+        ) || flatPages[0];
 
     async function loadPage(page) {
         if (page.svelte2 || page.view) {
