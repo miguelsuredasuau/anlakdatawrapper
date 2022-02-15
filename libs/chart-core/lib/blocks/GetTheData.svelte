@@ -7,11 +7,12 @@
     $: caption = get(theme, 'data.options.blocks.get-the-data.data.caption', __('Get the data'));
 
     function createCSV() {
+        const opts = {};
         if (teamPublicSettings.downloadDataLocalized) {
-            const { numeral } = dwChart.vis().libraries();
-            return dwChart.dataset().csv({ numeral });
+            opts.numeral = dwChart.vis().libraries().numeral;
         }
-        return dwChart.dataset().csv();
+        const csv = dwChart.dataset().csv(opts);
+        return '\uFEFF' + csv; // Add BOM, otherwise Excel doesn't open files as unicode.
     }
 
     function getFilename() {
