@@ -16,13 +16,10 @@
 
     function getFilename() {
         const defaultFilename = `data-${chart.id}.csv`;
-        return (
-            get(theme, 'data.options.blocks.get-the-data.data.filename', '')
-                .replace(/%custom_(.*?)%/g, (match, key) =>
-                    get(chart, `metadata.custom.${key}`, '')
-                )
-                .replace(/%chart_id%/g, chart.id) || defaultFilename
-        );
+        const filename = get(theme, 'data.options.blocks.get-the-data.data.filename', '')
+            .replace(/%custom_(.*?)%/g, (match, key) => get(chart, `metadata.custom.${key}`, ''))
+            .replace(/%chart_id%/g, chart.id);
+        return filename && filename !== '.csv' ? filename : defaultFilename;
     }
 
     function download(data, filename) {
