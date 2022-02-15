@@ -1331,7 +1331,7 @@ Each of these property-direction combinations needs to be appended with one of 6
 /** dw-create-upload **/
 .dw-create-upload textarea {
   width: 100%;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
   height: 200px;
   margin-top: 20px;
   font-family: 'Roboto Mono', fixed;
@@ -1346,10 +1346,6 @@ Each of these property-direction combinations needs to be appended with one of 6
 }
 .dw-create-upload p {
   margin-bottom: 1.5em;
-}
-.dw-create-upload .btn {
-  /*height: 32px;
-        line-height: 32px;*/
 }
 .dw-create-upload .upload-form ul {
   margin: 0;

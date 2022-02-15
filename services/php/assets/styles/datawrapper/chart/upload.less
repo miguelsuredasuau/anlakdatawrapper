@@ -1,13 +1,9 @@
 /** dw-create-upload **/
 
-
 .dw-create-upload {
-
-    label.control-label {  }
-
     textarea {
         width: 100%;
-        box-sizing: border-box;
+        box-sizing: border-box !important; // Override global 'textarea' style.
         height: 200px;
         margin-top: 20px;
         font-family: @base-font-mono;
@@ -20,16 +16,10 @@
             padding: 20px;
             text-align: left;
         }
-
     }
 
     p {
         margin-bottom: 1.5em;
-    }
-
-    .btn {
-        /*height: 32px;
-        line-height: 32px;*/
     }
 
     .upload-form ul {
