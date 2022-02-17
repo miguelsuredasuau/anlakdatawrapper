@@ -18,7 +18,7 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        height: 1em;
+        min-height: 1em;
     }
     .box {
         border: 1px solid $dw-grey-lighter;
