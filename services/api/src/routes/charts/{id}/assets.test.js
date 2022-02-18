@@ -68,8 +68,7 @@ test('User can write chart asset with almost 2MB', async t => {
         // see if that worked
         res = await getAsset(t.context.server, headers, chart, `${chart.id}.map.json`);
         t.is(res.statusCode, 200);
-        const dataLength = JSON.parse(res.result).data.length;
-        t.true(dataLength === bytes || dataLength === bytes + 1);
+        t.is(JSON.parse(res.result).data.length, bytes);
 
         // try writing some oversize JSON
         res = await putAsset(

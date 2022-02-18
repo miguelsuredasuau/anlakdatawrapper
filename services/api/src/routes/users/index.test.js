@@ -1,14 +1,6 @@
 const test = require('ava');
 const sortBy = require('lodash/sortBy');
-const {
-    addUserToTeam,
-    createChart,
-    createTeam,
-    createUser,
-    destroy,
-    getCredentials,
-    setup
-} = require('../../../test/helpers/setup');
+const { createUser, destroy, getCredentials, setup } = require('../../../test/helpers/setup');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
@@ -166,108 +158,6 @@ test("New users can't set protected fields", async t => {
     t.is(statusCode, 400);
 });
 
-test('Users see only their user excluding private fields', async t => {
-    let chart;
-    let team;
-    let userObj = {};
-    try {
-        userObj = await createUser(t.context.server, {
-            language: 'de-DE',
-            activate_token: 'foo',
-            reset_password_token: 'bar'
-        });
-        const { session, user } = userObj;
-        team = await createTeam();
-        await addUserToTeam(user, team);
-        chart = await createChart({ author_id: userObj.user.id });
-
-        const res = await t.context.server.inject({
-            method: 'GET',
-            url: '/v3/users',
-            headers: {
-                cookie: `DW-SESSION=${session.id}`
-            }
-        });
-
-        t.is(res.statusCode, 200);
-        t.is(res.result.total, 1);
-        t.is(res.result.list.length, 1);
-        const row = res.result.list[0];
-        t.deepEqual(row, {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: 'editor',
-            language: 'de-DE',
-            chartCount: 1,
-            url: `/v3/users/${user.id}`,
-            teams: [
-                {
-                    id: team.id,
-                    name: team.name,
-                    url: `/v3/teams/${team.id}`
-                }
-            ]
-        });
-    } finally {
-        await destroy(chart, team, ...Object.values(userObj));
-    }
-});
-
-test('Admin sees all users including private fields', async t => {
-    let chart;
-    let team;
-    let userObj = {};
-    try {
-        const { session } = t.context.adminObj;
-
-        userObj = await createUser(t.context.server, {
-            language: 'de-DE',
-            activate_token: 'foo',
-            reset_password_token: 'bar'
-        });
-        const { user } = userObj;
-        team = await createTeam();
-        await addUserToTeam(user, team);
-        chart = await createChart({ author_id: userObj.user.id });
-
-        const res = await t.context.server.inject({
-            method: 'GET',
-            url: '/v3/users?orderBy=id&order=desc',
-            headers: {
-                cookie: `DW-SESSION=${session.id}`
-            }
-        });
-
-        t.is(res.statusCode, 200);
-        t.true(res.result.total > 1);
-        t.true(res.result.list.length > 1);
-        const row = res.result.list.find(x => x.email === user.email);
-        const { createdAt, ...data } = row;
-        t.deepEqual(data, {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: 'editor',
-            language: 'de-DE',
-            chartCount: 1,
-            url: `/v3/users/${user.id}`,
-            teams: [
-                {
-                    id: team.id,
-                    name: team.name,
-                    url: `/v3/teams/${team.id}`
-                }
-            ],
-            activateToken: 'foo',
-            resetPasswordToken: 'bar'
-        });
-        t.truthy(createdAt);
-    } finally {
-        await destroy(chart, team, ...Object.values(userObj));
-    }
-});
-
 test('Admin can sort users by creation date - Ascending', async t => {
     const { session } = t.context.adminObj;
 
@@ -318,8 +208,8 @@ test('Admin can sort users by chart count - Ascending', async t => {
         }
     });
 
-    t.is(res.statusCode, 200);
     const sortedChartCount = sortBy(res.result.list.map(d => d.chartCount));
+    t.is(res.statusCode, 200);
     t.deepEqual(
         res.result.list.map(d => d.chartCount),
         sortedChartCount
@@ -340,9 +230,10 @@ test('Admin can sort users by chart count - Descending', async t => {
             }
         });
 
-        t.is(res.statusCode, 200);
         const sortedChartCount = sortBy(res.result.list.map(d => d.chartCount));
         sortedChartCount.reverse();
+
+        t.is(res.statusCode, 200);
         t.deepEqual(
             res.result.list.map(d => d.chartCount),
             sortedChartCount
@@ -366,8 +257,8 @@ test('Users endpoint searches in name field', async t => {
         }
     });
 
-    t.is(res.statusCode, 200);
     const user = res.result.list.find(u => u.name.includes(search));
+    t.is(res.statusCode, 200);
     t.truthy(user);
     t.true(user.name.includes(search));
     t.false(user.email.includes(search));
@@ -385,9 +276,9 @@ test('Users endpoint searches in email field', async t => {
         }
     });
 
-    t.is(res.statusCode, 200);
     const user = res.result.list.find(u => u.email.includes(search));
     const name = user.name || '';
+    t.is(res.statusCode, 200);
     t.truthy(user);
     t.true(user.email.includes(search));
     t.false(name.includes(search));
