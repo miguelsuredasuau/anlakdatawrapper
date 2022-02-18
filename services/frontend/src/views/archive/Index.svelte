@@ -388,6 +388,11 @@
     }
 
     $: sortedTeamFolders = teamFolders.sort((a, b) => {
+        if (foreignTeam) {
+            // show foreign team on top
+            if (a.teamId === foreignTeam) return -1;
+            if (b.teamId === foreignTeam) return 1;
+        }
         if ($user.activeTeam) {
             if (a.teamId === $user.activeTeam.id) return -1;
             if (b.teamId === $user.activeTeam.id) return 1;
