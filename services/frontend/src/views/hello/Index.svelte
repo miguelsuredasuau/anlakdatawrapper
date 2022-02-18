@@ -5,6 +5,7 @@
     import WelcomeSection from './WelcomeSection.svelte';
     import IconsSection from './IconsSection.svelte';
     import ButtonsSection from './ButtonsSection.svelte';
+    import ButtonGroupSection from './ButtonGroupSection.svelte';
     import BreadcrumbsSection from './BreadcrumbsSection.svelte';
     import PaginationSection from './PaginationSection.svelte';
     import TabsSection from './TabsSection.svelte';
@@ -42,7 +43,8 @@
             pages: [
                 { url: '#welcome', title: 'Welcome' },
                 { url: '#icons', title: 'Icons' },
-                { url: '#buttons', title: 'Buttons' }
+                { url: '#buttons', title: 'Buttons' },
+                { url: '#button-groups', title: 'Button groups' }
             ]
         },
         {
@@ -112,6 +114,7 @@
                     <WelcomeSection {magicNumber} {__} />
                     <IconsSection {icons} />
                     <ButtonsSection />
+                    <ButtonGroupSection />
                     <BreadcrumbsSection />
                     <PaginationSection />
                     <TabsSection />

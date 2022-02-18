@@ -11,7 +11,7 @@
         <td>{ user.email }</td>
         {#if isAdmin}
         <td>
-            <a href="/admin/users/{user.id}">{ user.id }</a>
+            <a href="/v2/admin/chart/by/user/{user.id}">{ user.id }</a>
         </td>
         {/if}
         <td>{ user.charts }</td>
@@ -154,7 +154,7 @@
                     if (isAdmin) {
                         return __('teams / charts-total-admin')
                             .replace('%i%', numCharts)
-                            .replace('%link%', `/admin/chart/by/${team.id}`);
+                            .replace('%link%', `/v2/admin/chart/by/team/${team.id}`);
                     } else {
                         return __('teams / charts-total').replace('%i%', numCharts);
                     }
