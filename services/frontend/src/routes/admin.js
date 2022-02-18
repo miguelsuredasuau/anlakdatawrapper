@@ -38,6 +38,8 @@ module.exports = {
                         return Boom.notFound();
                     }
 
+                    server.methods.prepareView('admin/Index.svelte');
+
                     return h.view('admin/Index.svelte', {
                         htmlClass: 'has-background-white-bis',
                         props: {
