@@ -1,13 +1,9 @@
 const fs = require('fs');
+const fsPromises = require('fs/promises');
 const path = require('path');
 const models = require('@datawrapper/orm/models');
 const get = require('lodash/get');
-const { promisify } = require('util');
 const { addScope } = require('@datawrapper/service-utils/l10n');
-const symlink = promisify(fs.symlink);
-const unlink = promisify(fs.unlink);
-const readFile = promisify(fs.readFile);
-const readDir = promisify(fs.readdir);
 
 module.exports = {
     name: 'plugin-loader',
@@ -70,21 +66,35 @@ module.exports = {
                     server.logger.info(`[Plugin] ${name}@${version}`);
                     // symlink plugin views
                     const pluginViews = path.join(pluginRoot, name, 'src/frontend/views');
-                    if (fs.existsSync(pluginViews)) {
-                        const target = path.join(__dirname, `../views/_plugins/${name}`);
-                        if (fs.existsSync(target)) {
-                            await unlink(target);
+                    let exists = false;
+                    try {
+                        await fsPromises.access(pluginViews, fs.constants.F_OK);
+                        exists = true;
+                    } catch (ignored) {
+                        // ENOENT goes here
+                    }
+                    if (exists) {
+                        const link = path.join(__dirname, `../views/_plugins/${name}`);
+                        exists = false;
+                        try {
+                            const stats = await fsPromises.lstat(link);
+                            exists = stats.isSymbolicLink();
+                        } catch (ignore) {
+                            // ENOENT goes here
                         }
-                        await symlink(pluginViews, target);
+                        if (exists) {
+                            await fsPromises.unlink(link);
+                        }
+                        await fsPromises.symlink(pluginViews, link);
                         server.logger.info(
-                            `[Plugin] ${name}: created symlink from ${pluginViews} to ${target}`
+                            `[Plugin] ${name}: created symlink to ${pluginViews} from ${link}`
                         );
                     }
 
                     // @todo: try to load locales
                     try {
                         const localePath = path.join(pluginRoot, name, 'locale');
-                        const locales = await readDir(localePath);
+                        const locales = await fsPromises.readDir(localePath);
                         options.locales = {};
                         for (let i = 0; i < locales.length; i++) {
                             const file = locales[i];
@@ -92,7 +102,7 @@ module.exports = {
                                 // ignore chart translations
                             } else if (/[a-z]+_[a-z]+\.json/i.test(file)) {
                                 options.locales[file.split('.')[0]] = JSON.parse(
-                                    await readFile(path.join(localePath, file))
+                                    await fsPromises.readFile(path.join(localePath, file))
                                 );
                             }
                         }
