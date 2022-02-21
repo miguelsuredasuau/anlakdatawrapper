@@ -9,7 +9,7 @@ module.exports = {
             port: 3333,
             interval: 15000,
             reportQueuedJobs: 5,
-            reportFailedJobs: 1
+            reportFailuresPeriod: 2
         },
         flusher: {
             port: 3334,

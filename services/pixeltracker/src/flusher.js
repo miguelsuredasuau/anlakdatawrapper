@@ -280,6 +280,9 @@ class Flusher {
     }
 
     async getUserAndOrgForChartIds(db, chartIds) {
+        if (!chartIds.length) {
+            return [];
+        }
         const [rows] = await db.query(
             'SELECT id, author_id, organization_id FROM chart WHERE id in (?)',
             [chartIds]

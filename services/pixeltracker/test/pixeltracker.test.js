@@ -40,6 +40,7 @@ describe('Pixeltracker', () => {
             pixeltrackerApi = new Api(config.pixeltracker);
             await pixeltrackerApi.init();
             await pixeltrackerApi.start();
+            await pixeltrackerApi.queue.obliterate({ force: true });
 
             pixeltrackerFlusher = new Flusher(config.pixeltracker);
             await pixeltrackerFlusher.init();
@@ -256,6 +257,43 @@ describe('Pixeltracker', () => {
                 await pixeltrackerFlusher.stop();
             }
         });
+
+        it('should return OK again if last failed job is older than specified period', async () => {
+            let pixeltrackerFlusher;
+
+            try {
+                // Deactivating fake timers as I did not manage to do it with.
+                // Reporting OK again after a job failed is based on a
+                // certain amount of time having passed after the failed job has
+                // completed processing. Using fake time holds of any processing until
+                // restoring the clock. Hence the failure period is not counted correctly.
+                clock.restore();
+                pixeltrackerFlusher = new Flusher(config.pixeltracker);
+                await pixeltrackerFlusher.init();
+                await pixeltrackerFlusher.start();
+
+                // Add an invalid job.
+                const queue = new Queue(config.pixeltracker.queue.name, {
+                    connection: config.pixeltracker.redis
+                });
+                await queue.add('flush', 'invalid job data');
+                // Wait for failure reporting period to pass
+                await sleep(config.pixeltracker.api.reportFailuresPeriod * 1000);
+
+                await chai
+                    .request(pixeltrackerApi.app)
+                    .get('/health')
+                    .then(res => {
+                        expect(res).to.have.status(200);
+                        expect(res.body.text).to.equal(`Still counting chart hits`);
+                        expect(res.body.queue.name).to.equal(config.pixeltracker.queue.name);
+                        expect(res.body.queue.failed).to.equal(1);
+                    });
+            } finally {
+                await pixeltrackerFlusher.stop();
+            }
+            // use custom timeout as failure reporting period is configurable from the outside
+        }).timeout(Math.max(2000, (config.pixeltracker.api.reportFailuresPeriod + 2) * 1000));
     });
 
     after(async () => {

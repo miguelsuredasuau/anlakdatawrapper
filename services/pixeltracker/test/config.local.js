@@ -13,7 +13,7 @@ module.exports = {
         api: {
             port: 3333,
             interval: 15000,
-            reportFailedJobs: 1,
+            reportFailuresPeriod: 2,
             reportQueuedJobs: 5
         },
         flusher: {

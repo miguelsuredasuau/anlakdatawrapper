@@ -123,9 +123,7 @@ class Api {
                 ...counts
             }
         };
-        const raiseWarning =
-            counts.waiting >= this.config.api.reportQueuedJobs ||
-            counts.failed >= this.config.api.reportFailedJobs;
+        const raiseWarning = await shouldRaiseWarning(this.config, this.queue, counts);
         res.setHeader('Content-Type', 'application/json');
         res.status(raiseWarning ? 555 : 200).end(JSON.stringify(msg));
     }
@@ -154,6 +152,19 @@ class Api {
 
 function isEmpty(obj) {
     return Object.keys(obj).length === 0;
+}
+
+async function shouldRaiseWarning(config, queue, counts) {
+    if (counts.waiting >= config.api.reportQueuedJobs) {
+        return true;
+    }
+    const mostRecentFailedJob = (await queue.getFailed(0, 0))[0];
+    if (!mostRecentFailedJob) {
+        return false;
+    }
+    const reportingPeriodStart = new Date().getTime() - config.api.reportFailuresPeriod * 1000;
+    // raise warning if the most recent failed job happened in the last x seconds
+    return mostRecentFailedJob.finishedOn >= reportingPeriodStart;
 }
 
 module.exports = Api;
