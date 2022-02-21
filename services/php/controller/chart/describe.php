@@ -14,7 +14,12 @@ $app->get('/(chart|table)/:id/describe', function ($id) use ($app) {
             'title' => strip_tags($chart->getTitle()).' - '.$chart->getID() . ' - '.__('Check & Describe'),
             'chartData' => $chart->loadData(),
             'chart' => $chart,
-            'readonly' => !$chart->isDataWritable($user)
+            'readonly' => !$chart->isDataWritable($user),
+            // Define dayjs as dependency, so that core.twig loads localizedFormat,
+            // which we need to correctly format ISO8601 dates in the data table.
+            'dependencies' => [
+                'dayjs' => true
+            ]
         );
         add_header_vars($page, 'chart');
         add_editor_nav($page, 2, $chart);
