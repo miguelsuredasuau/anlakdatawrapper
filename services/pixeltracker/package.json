@@ -10,7 +10,7 @@
         "test:performance": "DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} mocha **/performance.test.js --exit"
     },
     "dependencies": {
-        "@datawrapper/schemas": "^1.18.0-1",
+        "@datawrapper/schemas": "^1.18.0",
         "@datawrapper/service-utils": "^1.4.0",
         "bullmq": "^1.68.2",
         "express": "3.11.0",
