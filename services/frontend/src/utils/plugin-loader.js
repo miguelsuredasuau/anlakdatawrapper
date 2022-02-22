@@ -94,7 +94,7 @@ module.exports = {
                     // @todo: try to load locales
                     try {
                         const localePath = path.join(pluginRoot, name, 'locale');
-                        const locales = await fsPromises.readDir(localePath);
+                        const locales = await fsPromises.readdir(localePath);
                         options.locales = {};
                         for (let i = 0; i < locales.length; i++) {
                             const file = locales[i];
