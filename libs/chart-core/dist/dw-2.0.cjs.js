@@ -3441,7 +3441,12 @@ function delimited(opts) {
     }
 
     return {
-        dataset: loadAndParseCsv,
+        dataset: function () {
+            return loadAndParseCsv().catch(e => {
+                console.error('could not fetch datasource, returning an empty dataset', e);
+                return Dataset([]);
+            });
+        },
         parse: function () {
             return new DelimitedParser(opts).parse(opts.csv);
         }
@@ -3684,7 +3689,12 @@ function json(opts) {
     }
 
     return {
-        dataset: loadAndParseJSON,
+        dataset: function () {
+            return loadAndParseJSON().catch(e => {
+                console.error('could not fetch datasource, returning an empty object', e);
+                return {};
+            });
+        },
         parse: function () {
             return JSON.parse(opts.csv);
         }
@@ -6945,16 +6955,11 @@ function chart (attributes) {
 
             const datasource = chart.get('metadata.data.json') ? json(dsopts) : delimited(dsopts);
 
-            return datasource
-                .dataset()
-                .then(ds => {
-                    this.dataset(ds);
-                    datasetChangeCallbacks.fire(chart, ds);
-                    return ds;
-                })
-                .catch(e => {
-                    console.error('could not fetch datasource', e);
-                });
+            return datasource.dataset().then(ds => {
+                this.dataset(ds);
+                datasetChangeCallbacks.fire(chart, ds);
+                return ds;
+            });
         },
 
         // returns the dataset

@@ -302,7 +302,7 @@ test('POST /charts/{id}/publish updates chart properties', async t => {
     t.is(new Date(res.result.publishedAt) >= prePublicationDate, true);
 });
 
-test('POST /charts/:id/publish updates keywords', async t => {
+test('POST /charts/{id}/publish updates keywords', async t => {
     let chart;
     const { userObj } = t.context;
     const { Chart, ChartPublic } = require('@datawrapper/orm/models');
@@ -403,6 +403,55 @@ test('POST /charts/{id}/publish publishes a chart with an empty dataset', async 
         });
         t.is(resAsset.statusCode, 200);
         t.is(resAsset.result, '');
+    } finally {
+        await destroy(chart);
+    }
+});
+
+test('POST /charts/{id}/publish publishes a chart with an invalid JSON dataset', async t => {
+    let chart;
+    try {
+        chart = await createChart({
+            metadata: {
+                axes: [],
+                describe: {},
+                visualize: {},
+                annotate: {},
+                data: {
+                    json: true
+                }
+            }
+        });
+
+        const { server } = t.context;
+        const { event, events } = server.app;
+        await events.emit(
+            event.PUT_CHART_ASSET,
+            {
+                chart: await server.methods.loadChart(chart.id),
+                data: 'invalid json',
+                filename: `${chart.id}.csv`
+            },
+            { filter: 'first' }
+        );
+
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/publish`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+        t.is(res.statusCode, 200);
+
+        // Check that the invalid JSON asset was really used.
+        const resAsset = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}/assets/${chart.id}.public.csv`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+        t.is(resAsset.statusCode, 200);
+        t.is(resAsset.result, 'invalid json');
     } finally {
         await destroy(chart);
     }
