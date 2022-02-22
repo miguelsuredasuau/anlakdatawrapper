@@ -67,5 +67,6 @@ module.exports = {
         });
 
         server.methods.prepareView('Error.svelte');
+        server.methods.prepareView('_partials/svelte2/Svelte2Wrapper.element.svelte');
     }
 };
