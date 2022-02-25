@@ -278,7 +278,7 @@ describe('Pixeltracker', () => {
                 });
                 await queue.add('flush', 'invalid job data');
                 // Wait for failure reporting period to pass
-                await sleep(config.pixeltracker.api.reportFailuresPeriod * 1000);
+                await sleep((config.pixeltracker.api.reportFailuresPeriod + 1) * 1000);
 
                 await chai
                     .request(pixeltrackerApi.app)
