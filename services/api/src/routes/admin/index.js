@@ -19,5 +19,21 @@ module.exports = {
                 prefix: '/themes'
             }
         });
+
+        /**
+         * this route is only being used to support our legacy PHP
+         * application, which needs access to the default feature flags
+         * in order to compute team settings
+         */
+        server.route({
+            method: 'GET',
+            path: '/default-features',
+            handler() {
+                return Array.from(server.app.featureFlags.values()).map(flag => ({
+                    id: flag.id,
+                    default: flag.default
+                }));
+            }
+        });
     }
 };

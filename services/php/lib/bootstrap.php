@@ -138,36 +138,3 @@ if (!defined('NO_PLUGINS')) {
     DatawrapperHooks::execute(DatawrapperHooks::ALL_PLUGINS_LOADED);
 
 }
-
-DatawrapperHooks::register(DatawrapperHooks::TEAM_FLAGS, function() {
-    return [
-        [
-            "id" => "byline",
-            "default" => true,
-            "type" => "switch",
-            "title" => __("visualize / annotate / byline"),
-            "group" => "annotate"
-        ],
-        [
-            "id" => "embed",
-            "default" => true,
-            "type" => "switch",
-            "title" => "Embed",
-            "group" => "footer"
-        ],
-        [
-            "id" => "get_the_data",
-            "default" => true,
-            "type" => "switch",
-            "title" => "Get the data",
-            "group" => "footer"
-        ],
-        [
-            "id" => "layout_selector",
-            "default" => true,
-            "type" => "switch",
-            "title" => "Layout selector",
-            "group" => "layout"
-        ]
-    ];
-});

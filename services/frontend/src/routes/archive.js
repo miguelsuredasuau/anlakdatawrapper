@@ -2,7 +2,6 @@ const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const { db } = require('@datawrapper/orm');
 const { formatQueryString } = require('../utils/url.cjs');
-const { getUserLanguage } = require('../utils/index');
 const { groupCharts } = require('../utils/charts.cjs');
 const keyBy = require('lodash/keyBy');
 const mapValues = require('lodash/mapValues');
@@ -92,9 +91,7 @@ module.exports = {
             const { groupBy, limit, offset, order, orderBy, search, minLastEditStep } = query;
             const user = auth.artifacts;
 
-            const language = getUserLanguage(auth);
-            const __ = key => server.methods.translate(key, { scope: 'core', language });
-
+            const __ = server.methods.getTranslate(request);
             const api = server.methods.createAPI(request);
 
             if (folderId) {

@@ -16,7 +16,6 @@ const registerVisualizations = require('@datawrapper/service-utils/registerVisua
 const config = requireConfig();
 const path = require('path');
 const { clearFileCache } = require('./utils/svelte-view/cache');
-const { getUserLanguage } = require('./utils');
 const headerLinks = require('./utils/header-links');
 const settingsPages = require('./utils/settings-pages');
 const viewComponents = require('./utils/view-components');
@@ -30,7 +29,12 @@ const {
 } = require('./utils/svelte-view');
 const { FrontendEventEmitter, eventList } = require('./utils/events');
 
-const { addScope, translate } = require('@datawrapper/service-utils/l10n');
+const {
+    addScope,
+    translate,
+    getTranslate,
+    getUserLanguage
+} = require('@datawrapper/service-utils/l10n');
 
 const PREPARE_VIEWS = process.argv.includes('--prepare-views');
 
@@ -183,10 +187,7 @@ const start = async () => {
     server.method('prepareView', prepareView);
     server.method('getUserLanguage', getUserLanguage);
     server.method('translate', translate);
-    server.method('getTranslate', request => {
-        const language = getUserLanguage(request.auth);
-        return (key, scope = 'core') => server.methods.translate(key, { scope, language });
-    });
+    server.method('getTranslate', getTranslate);
     server.method('getDB', () => ORM.db);
     server.method('getModel', name => ORM.db.models[name]);
 

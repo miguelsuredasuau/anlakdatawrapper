@@ -23,8 +23,10 @@ class Redis {
 		return self::$redis->get($key);
 	}
 
-	public static function set($key, $val) {
-		return self::$redis->set($key, $val);
+	public static function set($key, $val, $expireSeconds=0) {
+		return $expireSeconds > 0 ?
+			self::$redis->set($key, $val, 'ex', $expireSeconds) :
+			self::$redis->set($key, $val);
 	}
 
 	public static function del($key) {

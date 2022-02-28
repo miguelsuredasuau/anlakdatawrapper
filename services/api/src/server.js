@@ -17,8 +17,9 @@ const schemas = require('@datawrapper/schemas');
 const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
 const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
 const { generateToken, loadChart, copyChartAssets } = require('./utils');
-const { addScope, translate } = require('@datawrapper/service-utils/l10n');
+const { addScope, translate, getTranslate } = require('@datawrapper/service-utils/l10n');
 const { ApiEventEmitter, eventList } = require('./utils/events');
+const registerFeatureFlag = require('./utils/feature-flags');
 const { promisify } = require('util');
 const readFile = promisify(require('fs').readFile);
 
@@ -276,12 +277,14 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     server.method('logAction', require('@datawrapper/orm/utils/action').logAction);
     server.method('createChartWebsite', require('./publish/create-chart-website.js'));
     server.method('registerVisualization', registerVisualizations(server));
+    server.method('registerFeatureFlag', registerFeatureFlag(server));
     server.method('getScopes', (admin = false) => {
         return admin
             ? [...server.app.scopes, ...server.app.adminScopes]
             : Array.from(server.app.scopes);
     });
     server.method('translate', translate);
+    server.method('getTranslate', getTranslate);
 
     const { validateThemeData } = schemas.initialize({
         getSchema: config.api.schemaBaseUrl

@@ -1,4 +1,5 @@
-const { getUserLanguage, byOrder } = require('./index');
+const { byOrder } = require('./index');
+const { getUserLanguage } = require('@datawrapper/service-utils/l10n');
 
 module.exports = {
     name: 'header-links',
@@ -82,7 +83,8 @@ module.exports = {
             }
 
             const language = getUserLanguage(request.auth);
-            const __ = key => server.methods.translate(key, { scope: 'core', language });
+            const __ = server.methods.getTranslate(request);
+
             return [
                 ...(!isGuest
                     ? [

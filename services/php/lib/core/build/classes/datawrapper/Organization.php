@@ -1,6 +1,7 @@
 <?php
 
-
+require_once ROOT_PATH . 'lib/utils/call_v3_api.php';  
+define('REDIS_FEATURE_DEFAULTS', 'php:feature-flags:defaults');
 
 /**
  * Skeleton subclass for representing a row from the 'organization' table.
@@ -172,14 +173,24 @@ class Organization extends BaseOrganization
             ]
         ];
 
-        $flagGroups = Hooks::execute(Hooks::TEAM_FLAGS) ?? [];
-
-        if (is_array($flagGroups)) {
-            foreach ($flagGroups as $flagGroup) {
-                foreach ($flagGroup as $flag) {
-                    $default['flags'][$flag['id']] = $flag['default'];
-                }
+        // TODO: cache in redis
+        if (Redis::isInitialized()) {
+            $defaultFlags = Redis::get(REDIS_FEATURE_DEFAULTS);
+            if (!empty($defaultFlags)) {
+                $defaultFlags = json_decode($defaultFlags, true);
+            } else {
+                // read default flags from v3 API
+                [$status, $defaultFlags] = call_v3_api('GET', '/admin/default-features');
+                // and store in Redis for 60 seconds
+                Redis::set(REDIS_FEATURE_DEFAULTS, json_encode($defaultFlags), 60);
             }
+        } else {
+            // read default flags from v3 API
+            [$status, $defaultFlags] = call_v3_api('GET', '/admin/default-features');
+        }
+     
+        foreach ($defaultFlags as $flag) {
+            $default['flags'][$flag['id']] = $flag['default'];
         }
 
         return $default;

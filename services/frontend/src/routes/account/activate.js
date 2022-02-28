@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const { getUserLanguage } = require('../../utils/index');
 
 module.exports = {
     name: 'routes/account/activate',
@@ -26,8 +25,7 @@ module.exports = {
                         where: { activate_token: activationToken, deleted: false }
                     });
 
-                    const language = getUserLanguage(request.auth);
-                    const __ = key => server.methods.translate(key, { scope: 'core', language });
+                    const __ = server.methods.getTranslate(request);
 
                     let url = '';
                     if (user) {

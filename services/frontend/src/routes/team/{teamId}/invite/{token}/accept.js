@@ -1,6 +1,5 @@
 const { UserTeam, User } = require('@datawrapper/orm/models');
 const Joi = require('joi');
-const { getUserLanguage } = require('../../../../../utils/index');
 const Boom = require('@hapi/boom');
 const got = require('got');
 
@@ -22,8 +21,7 @@ module.exports = {
                     })
                 },
                 async handler(request, h) {
-                    const language = getUserLanguage(request.auth);
-                    const __ = key => server.methods.translate(key, { scope: 'core', language });
+                    const __ = server.methods.getTranslate(request);
 
                     const teamId = request.params.teamId;
                     const inviteToken = request.params.token;

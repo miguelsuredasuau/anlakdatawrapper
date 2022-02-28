@@ -1,5 +1,4 @@
 const Joi = require('joi');
-const { getUserLanguage } = require('../../utils/index');
 
 module.exports = {
     name: 'routes/account/invite',
@@ -33,8 +32,7 @@ module.exports = {
                     const user = await User.findOne({
                         where: { activate_token: activationToken, deleted: false }
                     });
-                    const language = getUserLanguage(request.auth);
-                    const __ = key => server.methods.translate(key, { scope: 'core', language });
+                    const __ = server.methods.getTranslate(request);
 
                     if (user) {
                         return h.view('account/Invite.svelte', {

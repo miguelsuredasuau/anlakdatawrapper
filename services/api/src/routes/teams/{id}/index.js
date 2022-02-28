@@ -152,6 +152,13 @@ async function getTeam(request) {
 
     const { users, settings, ...data } = team.dataValues;
 
+    // apply default feature flags
+    const defaultFlags = {};
+    for (const flag of server.app.featureFlags.values()) {
+        defaultFlags[flag.id] = flag.default;
+    }
+    settings.flags = assign(defaultFlags, settings.flags);
+
     const memberRole = hasTeam ? await getMemberRole(auth.artifacts.id, params.id) : undefined;
     const owner = users.find(u => u.user_team.team_role === ROLE_OWNER);
 

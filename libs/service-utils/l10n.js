@@ -1,3 +1,4 @@
+const get = require('lodash/get');
 const assign = require('assign-deep');
 const scopes = {};
 const defaultLanguage = 'en_US';
@@ -71,9 +72,22 @@ function allScopes(locale = defaultLanguage) {
     return out;
 }
 
+function getUserLanguage(auth) {
+    return auth.isAuthenticated && auth.artifacts && auth.artifacts.id
+        ? auth.artifacts.language
+        : get(auth.credentials, 'data.data.dw-lang') || 'en-US';
+}
+
+function getTranslate(request) {
+    const language = getUserLanguage(request.auth);
+    return (key, scope = 'core') => translate(key, { scope, language });
+}
+
 module.exports = {
     getScope,
     addScope,
     allScopes,
-    translate
+    translate,
+    getUserLanguage,
+    getTranslate
 };

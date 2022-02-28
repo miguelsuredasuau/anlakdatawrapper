@@ -37,6 +37,8 @@ Server methods are a way to provide common utilities throughout the API server. 
     Registers a new visualization type usually handled by plugins like `plugin-d3-lines`.
 -   `server.methods.validateThemeData`
     Validate a theme against a schema.
+-   `server.methods.registerFeatureFlag`
+    Registers a new feature flag
 
 ## Server Application Data
 

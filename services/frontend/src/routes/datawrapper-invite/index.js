@@ -1,6 +1,5 @@
 const { User, Team } = require('@datawrapper/orm/models');
 const Joi = require('joi');
-const { getUserLanguage } = require('../../utils/index');
 const Boom = require('@hapi/boom');
 
 module.exports = {
@@ -21,8 +20,7 @@ module.exports = {
                     })
                 },
                 async handler(request, h) {
-                    const language = getUserLanguage(request.auth);
-                    const __ = key => server.methods.translate(key, { scope: 'core', language });
+                    const __ = server.methods.getTranslate(request);
 
                     if (request.auth.artifacts.role !== 'guest') {
                         throw new Boom.conflict(__('settings / invite / logged-in / heading'), {

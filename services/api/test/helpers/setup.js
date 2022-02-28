@@ -120,6 +120,8 @@ async function createTeam(props = {}) {
                 locale: 'en-US'
             },
             flags: {
+                get_the_data: true,
+                layout_selector: true,
                 embed: true,
                 byline: true,
                 pdf: false
