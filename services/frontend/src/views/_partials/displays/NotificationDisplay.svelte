@@ -1,4 +1,9 @@
 <script>
+    /**
+     * @deprecated
+     * Please use `MessageDisplay` instead of this component.
+     * for background, see here https://datawrapper.slack.com/archives/CE41BUB24/p1639150483017600
+     */
     export let deletable = true;
     export let type = '';
     export let visible = true;

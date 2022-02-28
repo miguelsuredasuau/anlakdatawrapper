@@ -4,25 +4,17 @@
 
     import WelcomeSection from './WelcomeSection.svelte';
     import IconsSection from './IconsSection.svelte';
-    import ButtonsSection from './ButtonsSection.svelte';
     import ButtonGroupSection from './ButtonGroupSection.svelte';
-    import BreadcrumbsSection from './BreadcrumbsSection.svelte';
     import PaginationSection from './PaginationSection.svelte';
     import TabsSection from './TabsSection.svelte';
     import MenuSection from './MenuSection.svelte';
-    import NotificationSection from './NotificationSection.svelte';
     import MessageSection from './MessageSection.svelte';
     import ModalSection from './ModalSection.svelte';
 
     import CheckboxSection from './CheckboxSection.svelte';
     import MarkdownInputSection from './MarkdownInputSection.svelte';
     import SetPasswordSection from './SetPasswordSection.svelte';
-    import ProgressBarSection from './ProgressBarSection.svelte';
-    import TitlesSection from './TitlesSection.svelte';
-    import ContentSection from './ContentSection.svelte';
-    import TableSection from './TableSection.svelte';
     import FormFieldSection from './FormFieldSection.svelte';
-    import FormsSection from './FormsSection.svelte';
     import SignUpSection from './SignUpSection.svelte';
     import DropdownSection from './DropdownSection.svelte';
     import Svelte2Section from './Svelte2Section.svelte';
@@ -30,7 +22,6 @@
     import SearchInputSection from './SearchInputSection.svelte';
     import TagsInputSection from './TagsInputSection.svelte';
 
-    export let visualizations;
     export let magicNumber;
     export let __;
 
@@ -42,15 +33,12 @@
             title: 'Introduction',
             pages: [
                 { url: '#welcome', title: 'Welcome' },
-                { url: '#icons', title: 'Icons' },
-                { url: '#buttons', title: 'Buttons' },
-                { url: '#button-groups', title: 'Button groups' }
+                { url: '#icons', title: 'Icons' }
             ]
         },
         {
             title: 'Navigation',
             pages: [
-                { url: '#breadcrumbs', title: 'Breadcrumbs' },
                 { url: '#pagination', title: 'Pagination' },
                 { url: '#tabs', title: 'Tabs' },
                 { url: '#menu', title: 'Menu' }
@@ -59,15 +47,14 @@
         {
             title: 'Displays',
             pages: [
-                { url: '#notifications', title: 'Notifications' },
                 { url: '#message', title: 'Message' },
-                { url: '#modal', title: 'Modal' },
-                { url: '#progress', title: 'Progress' }
+                { url: '#modal', title: 'Modal' }
             ]
         },
         {
             title: 'Controls',
             pages: [
+                { url: '#button-groups', title: 'Button groups' },
                 { url: '#checkbox', title: 'Checkbox' },
                 { url: '#setpassword', title: 'Set Password' },
                 { url: '#search', title: 'Search Input' },
@@ -77,10 +64,6 @@
         {
             title: 'Content',
             pages: [
-                { url: '#titles', title: 'Titles' },
-                { url: '#content', title: 'Content' },
-                { url: '#table', title: 'Table' },
-                { url: '#forms', title: 'Forms' },
                 { url: '#form-field', title: 'Form Field' },
                 { url: '#markdown-input', title: 'Markdown Input' },
                 { url: '#signup', title: 'Sign Up' }
@@ -113,24 +96,20 @@
                 <div class="column" bind:this={contentRef}>
                     <WelcomeSection {magicNumber} {__} />
                     <IconsSection {icons} />
-                    <ButtonsSection />
-                    <ButtonGroupSection />
-                    <BreadcrumbsSection />
+
                     <PaginationSection />
                     <TabsSection />
+
                     <MenuSection />
-                    <NotificationSection />
                     <MessageSection />
                     <ModalSection />
-                    <ProgressBarSection />
+
+                    <ButtonGroupSection />
                     <CheckboxSection />
                     <SetPasswordSection {__} />
                     <SearchInputSection />
                     <TagsInputSection />
-                    <TitlesSection />
-                    <ContentSection />
-                    <TableSection {visualizations} />
-                    <FormsSection />
+
                     <FormFieldSection {__} />
                     <MarkdownInputSection {__} />
                     <SignUpSection {__} />

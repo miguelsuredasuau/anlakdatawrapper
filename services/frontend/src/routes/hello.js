@@ -24,10 +24,7 @@ module.exports = {
                         htmlClass: 'has-background-white',
                         props: {
                             icons,
-                            magicNumber: 42,
-                            visualizations: Array.from(server.app.visualizations.keys()).map(key =>
-                                server.app.visualizations.get(key)
-                            )
+                            magicNumber: 42
                         }
                     });
                 }
