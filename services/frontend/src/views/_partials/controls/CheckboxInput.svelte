@@ -33,29 +33,12 @@
 </script>
 
 <style lang="scss">
-    label.checkbox {
-        text-align: left;
-        width: 100%;
-        position: relative;
-        left: 0;
-
-        &.standalone {
-            line-height: 1;
-        }
+    @import '../../../styles/colors.scss';
+    label.faded {
+        color: $dw-grey-dark;
     }
 
-    label.checkbox.disabled,
-    label.checkbox.faded {
-        color: #999;
-    }
-
-    label.checkbox.disabled input,
-    label.checkbox.faded {
-        opacity: 0.5;
-    }
-
-    label.checkbox.disabled input,
-    label.checkbox.faded input {
+    label.faded .css-ui {
         opacity: 0.5;
     }
     input[type='checkbox'] {
@@ -68,14 +51,13 @@
     }
     input[type='checkbox'] + span.css-ui {
         display: inline-block;
-        width: 0.85em;
-        height: 0.85em;
+        width: 1em;
+        height: 1em;
         border-radius: 2px;
-        border: 1px solid #bbb;
+        border: 1px solid $dw-grey;
         vertical-align: baseline;
         position: relative;
         top: 2px;
-        margin-left: -16px;
 
         .standalone & {
             top: 0;
@@ -83,8 +65,8 @@
         }
     }
     input[type='checkbox']:checked + span.css-ui {
-        background: #18a1cd;
-        border-color: #18a1cd;
+        background: $dw-scooter-light;
+        border-color: $dw-scooter-light;
     }
     input[type='checkbox']:checked + span.css-ui:after {
         position: absolute;
@@ -99,26 +81,26 @@
         line-height: 0.8em;
     }
     input[type='checkbox']:focus + span.css-ui {
-        border-color: #18a1cd;
-        box-shadow: 0 0 1px 1px fade(#18a1cd, 55%);
+        border-color: $dw-scooter-light;
+        box-shadow: 0 0 1px 1px fade($dw-scooter-light, 55%);
     }
     input[type='checkbox']:disabled + span.css-ui {
-        background: #ddd;
-        border-color: #bbb;
+        background: $dw-grey-dark;
+        border-color: $dw-grey;
         cursor: default;
         opacity: 0.6;
     }
     input[type='checkbox']:disabled:checked + span.css-ui {
-        border-color: #bbb;
-        background: #bbb;
+        border-color: $dw-grey;
+        background: $dw-grey;
     }
 </style>
 
-<label class="checkbox" class:disabled class:faded class:standalone data-uid={uid}>
+<label class="checkbox" disabled={disabled || null} class:faded data-uid={uid}>
     <input
         type="checkbox"
-        aria-label={standalone ? label : null}
-        {disabled}
+        aria-label={label || null}
+        disabled={disabled || null}
         bind:checked={value}
         on:click
     />

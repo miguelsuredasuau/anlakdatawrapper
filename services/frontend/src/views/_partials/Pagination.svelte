@@ -1,9 +1,33 @@
 <script>
     import range from 'lodash/range';
+
+    /**
+     * @param {number} total
+     * total number of items to paginate
+     */
     export let total;
+
+    /**
+     * @param {number} limit
+     *
+     * numbers of items displayed per page
+     */
     export let limit;
+
+    /**
+     * @param {number} offset
+     * index of the first item displayed
+     */
     export let offset;
-    export let changeOffset;
+
+    /**
+     * @param {function} changeOffset
+     * allows implementing custom behavior when the offset
+     * changed, i.e. call an API
+     */
+    export let changeOffset = newOffset => {
+        offset = newOffset;
+    };
 
     $: curPage = Math.ceil(+offset / +limit) || 0;
     $: numPages = Math.ceil(total / limit) || 1;

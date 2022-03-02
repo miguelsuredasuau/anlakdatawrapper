@@ -6,8 +6,19 @@
 
 <div class="section pl-0 pt-0">
     <h3 id="checkbox" class="title is-3">Checkboxes</h3>
-    <CheckboxInput bind:value label="checkbox with label" />
-    <CheckboxInput bind:value disabled label="disabled checkbox" />
-    <CheckboxInput bind:value faded label="faded checkbox" />
-    standalone: <CheckboxInput bind:value standalone />
+    <div class="level">
+        <div class="level-left">
+            <div class="level-item">
+                <CheckboxInput bind:value label="checkbox with label" />
+            </div>
+            <div class="level-item">
+                <CheckboxInput bind:value disabled label="disabled checkbox" />
+            </div>
+            <div class="level-item"><CheckboxInput bind:value faded label="faded checkbox" /></div>
+        </div>
+    </div>
+    standalone: <CheckboxInput bind:value standalone /><CheckboxInput
+        bind:value
+        standalone
+    /><CheckboxInput bind:value standalone />
 </div>

@@ -12,6 +12,7 @@
     import ModalSection from './ModalSection.svelte';
 
     import CheckboxSection from './CheckboxSection.svelte';
+    import RadioInputSection from './RadioInputSection.svelte';
     import MarkdownInputSection from './MarkdownInputSection.svelte';
     import SetPasswordSection from './SetPasswordSection.svelte';
     import FormFieldSection from './FormFieldSection.svelte';
@@ -57,6 +58,7 @@
             pages: [
                 { url: '#button-groups', title: 'Button groups' },
                 { url: '#checkbox', title: 'Checkbox' },
+                { url: '#radio', title: 'Radio Input' },
                 { url: '#setpassword', title: 'Set Password' },
                 { url: '#search', title: 'Search Input' },
                 { url: '#tagsinput', title: 'Tags Input' },
@@ -113,6 +115,7 @@
 
                     <ButtonGroupSection />
                     <CheckboxSection />
+                    <RadioInputSection />
                     <SetPasswordSection {__} />
                     <SearchInputSection />
                     <TagsInputSection />
