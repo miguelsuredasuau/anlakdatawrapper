@@ -1125,5 +1125,9 @@
   "browser-warning / learn-more": "",
   "browser-warning / not-supported": "",
   "browser-warning / switch-browser": "",
-  "browser-warning / visualizations": ""
+  "browser-warning / visualizations": "",
+  "layout / dark-mode-invert / help": "",
+  "layout / dark-mode-invert / label": "",
+  "typeahead / no-results": "Aucun résultat trouvé",
+  "typeahead / searching": "Recherche..."
 }

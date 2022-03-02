@@ -21,6 +21,7 @@
     import ErrorsSection from './ErrorsSection.svelte';
     import SearchInputSection from './SearchInputSection.svelte';
     import TagsInputSection from './TagsInputSection.svelte';
+    import TypeaheadInputSection from './TypeaheadInputSection.svelte';
 
     export let magicNumber;
     export let __;
@@ -58,7 +59,8 @@
                 { url: '#checkbox', title: 'Checkbox' },
                 { url: '#setpassword', title: 'Set Password' },
                 { url: '#search', title: 'Search Input' },
-                { url: '#tagsinput', title: 'Tags Input' }
+                { url: '#tagsinput', title: 'Tags Input' },
+                { url: '#typeahead', title: 'Typeahead Input' }
             ]
         },
         {
@@ -97,6 +99,8 @@
                     <WelcomeSection {magicNumber} {__} />
                     <IconsSection {icons} />
 
+                    <h2 class="title is-2 mt-4 has-text-grey">Navigation</h2>
+                    <hr />
                     <PaginationSection />
                     <TabsSection />
 
@@ -104,11 +108,18 @@
                     <MessageSection />
                     <ModalSection />
 
+                    <h2 class="title is-2 mt-4 has-text-grey">Controls</h2>
+                    <hr />
+
                     <ButtonGroupSection />
                     <CheckboxSection />
                     <SetPasswordSection {__} />
                     <SearchInputSection />
                     <TagsInputSection />
+                    <TypeaheadInputSection />
+
+                    <h2 class="title is-2 mt-4 has-text-grey">Content</h2>
+                    <hr />
 
                     <FormFieldSection {__} />
                     <MarkdownInputSection {__} />

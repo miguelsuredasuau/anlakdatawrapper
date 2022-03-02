@@ -22,6 +22,21 @@ We use [Mocha](https://mochajs.org/api/mocha) for frontend unit tests. Execute t
 
 Take a look at [src/views/archive/Index.test.js](src/views/archive/Index.svelte) for an example test setup. The example uses [@testing-library/svelte](https://testing-library.com/docs/svelte-testing-library/api/) and [chai-dom](https://www.chaijs.com/plugins/chai-dom/) to create and test the [src/views/archive/Index.svelte](src/views/archive/Index.svelte) component.
 
+### Running `test:watch` in background:
+
+Since the test cases have to be built with rollup you need to run two separate processes in order to get a "watching" test runner. First you make sure the tests get build with `rollup --watch` using
+
+`npm run test:watch-rollup`
+
+Then, in a separate terminal you need to run `mocha` in watch mode as well:
+
+`npm run test:watch-mocha`
+
+If you only want to test a subset of components you can set the `TEST` environment var befre running `test:watch-rollup`, e.g.:
+
+`TEST="views/_partials/controls/*.mjs" npm run test:watch-rollup`
+
+
 ## Quick introduction of the new Svelte views
 
 In routes we can use Svelte-templates like this:

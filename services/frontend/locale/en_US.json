@@ -1125,5 +1125,9 @@
   "browser-warning / learn-more": "Learn more about Datawrapper",
   "browser-warning / not-supported": "You are using a browser (Internet Explorer) that is <strong>not supported by the Datawrapper editor</strong> at the moment.",
   "browser-warning / switch-browser": "Please switch to a different browser to continue using the site.<br/> Here are some browsers that are supported: <a href=\"https://www.mozilla.org/firefox/\">Mozilla Firefox</a>, <a href=\"https://www.google.com/chrome/\">Google Chrome</a>, <a href=\"https://www.microsoft.com/edge/\">Microsoft Edge</a>.",
-  "browser-warning / visualizations": "<strong>Please note that your Datwarapper visualizations can be viewed everywhere.</strong> All visualizations support any major browser, including <em>Internet Explorer</em>."
+  "browser-warning / visualizations": "<strong>Please note that your Datwarapper visualizations can be viewed everywhere.</strong> All visualizations support any major browser, including <em>Internet Explorer</em>.",
+  "layout / dark-mode-invert / help": "By default, visualization colors get adjusted in dark mode to make sure they are still legible and look good. In case you'd prefer to <b>keep the same colors in dark mode</b>, you can enable  this option. Check the preview under the visualization to make sure you're happy with how your colors look. Find out more <a href=\"https://academy.datawrapper.de/\">here.</a>",
+  "layout / dark-mode-invert / label": "Use the same colors in dark mode",
+  "typeahead / no-results": "No results found",
+  "typeahead / searching": "Searching..."
 }

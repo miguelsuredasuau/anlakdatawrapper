@@ -9,7 +9,7 @@ import sveltePreprocess from 'svelte-preprocess';
 
 export default {
     input: {
-        include: ['src/**/*.test.*js'],
+        include: [process.env.TEST ? `src/${process.env.TEST}` : 'src/**/*.test.*js'],
         exclude: ['src/views/_plugins/**']
     },
     output: {

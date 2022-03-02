@@ -35,6 +35,25 @@
     }
 }
 
+// Dropdown
+.dropdown {
+    .dropdown-divider {
+        margin: 0.25rem 0;
+    }
+    a.dropdown-item {
+        margin: 0 0.25rem;
+        width: auto;
+    }
+    a.dropdown-item:hover {
+        color: $dw-scooter;
+    }
+    a.dropdown-item .icon {
+        // font-size: 18px;
+        margin-right: 4px;
+        color: $dw-scooter;
+    }
+}
+
 // FORMS
 // Help
 

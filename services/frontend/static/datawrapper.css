@@ -10224,6 +10224,22 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   max-width: 1100px;
 }
 
+.dropdown .dropdown-divider {
+  margin: 0.25rem 0;
+}
+.dropdown .dropdown-item {
+  margin: 0 0.25rem;
+  width: auto;
+}
+.dropdown .dropdown-item:hover {
+  color: #1d81a2;
+}
+.dropdown .dropdown-item .icon {
+  font-size: 18px;
+  margin-right: 4px;
+  color: #1d81a2;
+}
+
 .help {
   line-height: 1.3;
 }

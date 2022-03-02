@@ -11,7 +11,8 @@
         "lint": "cd ../.. && scripts/lint services/frontend",
         "format": "cd ../.. && scripts/format services/frontend",
         "test": "npx rollup -c rollup.test.config.js && npx mocha",
-        "test:watch": "npm test -- --watch"
+        "test:watch-rollup": "npx rollup -wc rollup.test.config.js",
+        "test:watch-mocha": "npx mocha --watch"
     },
     "dependencies": {
         "@datawrapper/chart-core": "file:../../libs/chart-core",
