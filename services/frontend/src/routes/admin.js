@@ -5,6 +5,8 @@ module.exports = {
     name: 'routes/admin',
     version: '1.0.0',
     register: async server => {
+        server.methods.prepareView('admin/Index.svelte');
+
         server.route({
             method: 'GET',
             path: '/{page*}',
@@ -37,8 +39,6 @@ module.exports = {
                     ) {
                         return Boom.notFound();
                     }
-
-                    server.methods.prepareView('admin/Index.svelte');
 
                     return h.view('admin/Index.svelte', {
                         htmlClass: 'has-background-white-bis',
