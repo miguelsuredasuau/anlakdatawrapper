@@ -90,7 +90,7 @@ module.exports = {
                     if (payload[key] !== undefined) data[key] = payload[key];
                 });
 
-                if (data.less) await validateThemeLess(data.less, server, payload.id);
+                if (data.less) await validateThemeLess(data.less, server, theme.id);
                 if (data.data) await validateThemeData(data.data, server);
                 await theme.update(data);
 
