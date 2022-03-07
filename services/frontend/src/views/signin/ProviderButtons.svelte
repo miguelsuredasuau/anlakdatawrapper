@@ -37,7 +37,6 @@
             border-bottom-left-radius: var(--radius);
             background: fade-out(#333, 0.9);
             color: var(--color-dw-black-bis);
-            font-size: 24px;
             margin-left: 0;
         }
 
@@ -88,7 +87,7 @@
 
 <div class="provider-buttons">
     <button class="button provider-email mb-2 is-fullwidth" on:click={() => (emailOpen = true)}>
-        <IconDisplay icon="mail" size="28px" />
+        <IconDisplay icon="mail" />
         {__(signIn ? 'signin / sign-in-using' : 'signin / sign-up-using')}
         {__('email')}</button
     >

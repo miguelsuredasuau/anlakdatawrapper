@@ -204,7 +204,9 @@
             transition: transform 0.2s;
             transition-timing-function: ease-out;
             position: relative;
-            top: 1px;
+        }
+        :global(.icon svg) {
+            font-size: 1em;
         }
     }
     .open > .self .collapse-toggle :global(.icon) {
@@ -260,7 +262,7 @@
                 class="button is-ghost p-1 collapse-toggle"
                 on:click={() => (open = !open)}
             >
-                <IconDisplay icon="disclosure" valign="baseline" className="m-0" />
+                <IconDisplay icon="disclosure" valign="baseline" className="mx-0" />
             </button>
         {/if}
         <a

@@ -14,19 +14,39 @@
     &.is-text {
         box-shadow: none;
     }
+    .icon {
+        svg {
+            font-size: 1.429em; // = 20px in 14px buttons
+        }
+        &:first-child:last-child {
+            margin-left: calc(#{-0.5 * $button-padding-horizontal});
+            margin-right: calc(#{-0.5 * $button-padding-horizontal});
+        }
+        &:first-child:not(:last-child) {
+           margin-left: calc(#{-0.25 * $button-padding-horizontal} - #{$button-border-width});
+           margin-right: .35em;
+        }
+        &:last-child:not(:first-child) {
+            margin-left: .35em;
+            margin-right: calc(#{-0.25 * $button-padding-horizontal} - #{$button-border-width});
+        }
+    }
 }
 
 // COMPONENTS
 // Message
-.message.is-deletable {
-    .message-body {
-        position: relative;
-        & > .delete {
-            position: absolute;
-            right: 0.5rem;
-            top: 0.5rem;
+.message {
+    &.is-deletable {
+        .message-body {
+            position: relative;
+            & > .delete {
+                position: absolute;
+                right: 0.5rem;
+                top: 0.5rem;
+            }
         }
     }
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.05) inset;
 }
 
 .modal {
@@ -48,7 +68,7 @@
         color: $dw-scooter;
     }
     a.dropdown-item .icon {
-        // font-size: 18px;
+        font-size: 18px;
         margin-right: 4px;
         color: $dw-scooter;
     }

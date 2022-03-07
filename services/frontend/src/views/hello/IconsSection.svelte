@@ -29,11 +29,9 @@
                 <p class="is-size-4 has-text-danger">
                     Icons can be used <IconDisplay icon={iconPreview} /> inline in text, too!<br
                     />Or in buttons:
-                    <button class="button is-danger"
-                        ><IconDisplay className="ml-0" size="1.2em" icon={iconPreview} /><span
-                            >{iconPreview}</span
-                        ></button
-                    >
+                    <button class="button is-danger mr-3"
+                        ><IconDisplay icon={iconPreview} /><span>{iconPreview}</span></button
+                    ><button class="button"><IconDisplay icon={iconPreview} /></button>
                     <br /><span class="is-size-6 has-text-grey-dark"
                         >(but don't forget the span around the text)</span
                     >

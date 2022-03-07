@@ -33,6 +33,11 @@
             <FormField {__} error="My message">
                 <input type="text" class="input" />
             </FormField>
+
+            <h4 class="is-4 mb-3">Disabled input:</h4>
+            <FormField {__}>
+                <input type="text" disabled class="input" />
+            </FormField>
         </div>
     </div>
 </div>

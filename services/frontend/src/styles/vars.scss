@@ -139,6 +139,8 @@ $section-padding: 1.5rem;
 $input-color: $text-strong;
 $input-border-color: $dw-grey-light;
 $input-placeholder-color: rgba($input-color, 0.45);
+$input-disabled-background-color:  $dw-white-ter;
+$input-disabled-border-color:  $dw-grey-lighter;
 
 // Dropdown
 $dropdown-item-active-color: $dw-black;

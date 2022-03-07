@@ -69,7 +69,7 @@
             aria-controls="dropdown-menu"
             slot="trigger"
         >
-            <IconDisplay icon="add" size="20px" className="mr-2 ml-0" />
+            <IconDisplay icon="add" className="mr-2" />
             <span>
                 {__('archive / add-in-folder / new')}
             </span>
@@ -77,7 +77,7 @@
                 icon="expand-down-bold"
                 size="0.8em"
                 className:rotated-icon={isActive}
-                className="ml-2 mr-0"
+                className="ml-2"
             />
         </button>
         <div class="dropdown-content" slot="content">

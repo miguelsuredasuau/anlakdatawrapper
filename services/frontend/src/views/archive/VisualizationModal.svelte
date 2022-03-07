@@ -67,10 +67,6 @@
         font-size: 20px;
     }
 
-    .chart-actions :global(.icon) {
-        font-size: 24px;
-    }
-
     .preview {
         height: 100%;
         border-radius: var(--radius);
@@ -80,11 +76,6 @@
             border: 0;
             box-sizing: border-box;
         }
-    }
-
-    .button.edit-chart :global(.icon) {
-        font-size: 28px;
-        margin-left: -5px;
     }
 </style>
 

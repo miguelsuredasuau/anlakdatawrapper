@@ -2,7 +2,7 @@
     export let icon = 'api';
     export let size = false;
     export let color = 'currentColor';
-    export let valign = 'sub';
+    export let valign = '-0.15em';
     export let crisp = false;
 
     export let className = '';
@@ -31,7 +31,7 @@
     }
 
     .icon {
-        font-size: inherit;
+        /* font-size: inherit; */
         width: auto;
         height: auto;
     }

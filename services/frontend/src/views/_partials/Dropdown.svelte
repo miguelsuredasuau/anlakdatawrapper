@@ -14,12 +14,7 @@
 </script>
 
 <style lang="scss">
-    @import '../../styles/export.scss';
-    .dropdown {
-        :global(.dropdown-item .icon) {
-            font-size: 18px;
-        }
-    }
+    // @import '../../styles/export.scss';
 </style>
 
 <svelte:window on:click={windowClick} />
