@@ -23,6 +23,7 @@
         "url": "git+https://github.com/datawrapper/core.git"
     },
     "devDependencies": {
+        "@babel/eslint-parser": "^7.17.0",
         "@datawrapper/orm": "file:libs/orm",
         "@datawrapper/service-utils": "file:libs/service-utils",
         "@tivac/eslint-plugin-svelte": "^1.3.0",

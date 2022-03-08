@@ -1129,5 +1129,7 @@
   "layout / dark-mode-invert / help": "",
   "layout / dark-mode-invert / label": "",
   "typeahead / no-results": "Aucun résultat trouvé",
-  "typeahead / searching": "Recherche..."
+  "typeahead / searching": "Recherche...",
+  "fileinput / choose-file": "",
+  "fileinput / selected-n-files": ""
 }

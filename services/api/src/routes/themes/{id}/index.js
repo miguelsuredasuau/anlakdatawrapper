@@ -60,7 +60,7 @@ module.exports = {
                         extend: themeId(),
                         data: Joi.object(),
                         assets: Joi.object(),
-                        less: Joi.string()
+                        less: Joi.string().allow('')
                     })
                 }
             },

@@ -3,7 +3,7 @@
 import TypeaheadInput from './TypeaheadInput.svelte';
 import TypeaheadItemRenderer from '../../hello/TypeaheadItemRenderer.svelte';
 import { fireEvent } from '@testing-library/svelte';
-import { renderWithContext, setConfig } from '../../../test-utils';
+import { renderWithContext, setConfig, delay } from '../../../test-utils';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import sinon from 'sinon';
@@ -290,7 +290,3 @@ describe('TypeaheadInput', () => {
         });
     });
 });
-
-function delay(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
-}

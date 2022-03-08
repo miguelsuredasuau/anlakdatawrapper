@@ -48,6 +48,30 @@ module.exports = {
                 }
             },
             {
+                path: '/codemirror/{file*}',
+                method: 'GET',
+                config: {
+                    auth: false
+                },
+                handler: {
+                    directory: {
+                        path: path.dirname(require.resolve('codemirror/package.json'))
+                    }
+                }
+            },
+            {
+                path: '/jsonlint/{file*}',
+                method: 'GET',
+                config: {
+                    auth: false
+                },
+                handler: {
+                    directory: {
+                        path: path.dirname(require.resolve('jsonlint/web/jsonlint.js'))
+                    }
+                }
+            },
+            {
                 path: '/icons/{file*}',
                 method: 'GET',
                 config: {

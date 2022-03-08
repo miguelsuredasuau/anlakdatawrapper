@@ -24,6 +24,7 @@ module.exports = {
 
                     // check if any of the pages returned a Boom error...
                     const errorPage = flatPageList.find(page => Boom.isBoom(page));
+
                     // ...and return it to see the error page
                     if (errorPage) {
                         return errorPage;

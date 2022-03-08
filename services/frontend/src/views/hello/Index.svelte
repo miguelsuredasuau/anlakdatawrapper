@@ -23,6 +23,8 @@
     import SearchInputSection from './SearchInputSection.svelte';
     import TagsInputSection from './TagsInputSection.svelte';
     import TypeaheadInputSection from './TypeaheadInputSection.svelte';
+    import FileInputSection from './FileInputSection.svelte';
+    import SaveButtonSection from './SaveButtonSection.svelte';
 
     export let magicNumber;
     export let __;
@@ -50,7 +52,8 @@
             title: 'Displays',
             pages: [
                 { url: '#message', title: 'Message' },
-                { url: '#modal', title: 'Modal' }
+                { url: '#modal', title: 'Modal' },
+                { url: '#save', title: 'Save button' }
             ]
         },
         {
@@ -62,7 +65,8 @@
                 { url: '#setpassword', title: 'Set Password' },
                 { url: '#search', title: 'Search Input' },
                 { url: '#tagsinput', title: 'Tags Input' },
-                { url: '#typeahead', title: 'Typeahead Input' }
+                { url: '#typeahead', title: 'Typeahead Input' },
+                { url: '#file', title: 'File Input' }
             ]
         },
         {
@@ -109,6 +113,7 @@
                     <MenuSection />
                     <MessageSection />
                     <ModalSection />
+                    <SaveButtonSection />
 
                     <h2 class="title is-2 mt-4 has-text-grey">Controls</h2>
                     <hr />
@@ -120,6 +125,7 @@
                     <SearchInputSection />
                     <TagsInputSection />
                     <TypeaheadInputSection />
+                    <FileInputSection {__} />
 
                     <h2 class="title is-2 mt-4 has-text-grey">Content</h2>
                     <hr />

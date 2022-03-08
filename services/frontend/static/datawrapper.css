@@ -2455,7 +2455,7 @@ div.icon-text {
   }
 }
 .table {
-  background-color: #ffffff;
+  background-color: transparent;
   color: #111111;
 }
 .table td,
@@ -2612,7 +2612,7 @@ div.icon-text {
   padding: 0.25em 0.5em;
 }
 .table.is-striped tbody tr:not(.is-selected):nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: rgba(0, 0, 0, 0.035);
 }
 
 .table-container {

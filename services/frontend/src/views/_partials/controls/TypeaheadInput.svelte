@@ -19,6 +19,11 @@
     export let uid;
 
     /**
+     * allow setting id for accessiblity purposes
+     */
+    export let id = null;
+
+    /**
      * optional aria-label for input element
      */
     export let ariaLabel = null;
@@ -175,6 +180,7 @@
         searchQuery = '';
         searching = false;
         open = false;
+        dispatch('select', { value: null });
     }
 
     function handleFocus() {
@@ -271,7 +277,7 @@
         white-space: normal;
     }
     .reset-button :global(.icon) {
-        pointer-events: all;
+        pointer-events: all !important;
     }
     .dropdown-item :global(mark) {
         background: fade-out($dw-orange, 0.5);
@@ -295,6 +301,7 @@
             <input
                 class="input"
                 type="text"
+                {id}
                 bind:this={refSearchInput}
                 data-lpignore="true"
                 aria-label={ariaLabel}

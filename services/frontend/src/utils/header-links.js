@@ -73,11 +73,13 @@ module.exports = {
                         order
                     });
                     pages.sort(byOrder).forEach(page => {
-                        order++;
-                        adminPageLinks.push({
-                            ...page,
-                            order
-                        });
+                        if (page.url) {
+                            order++;
+                            adminPageLinks.push({
+                                ...page,
+                                order
+                            });
+                        }
                     });
                 });
             }

@@ -90,6 +90,15 @@ function buildOptions(page, ssr) {
     if (!server) throw new Error('need to initialize first');
     const viewComponents = server.methods.getViewComponents(page);
     return {
+        external: [
+            '/lib/codemirror/addon/edit/matchbrackets',
+            '/lib/codemirror/addon/fold/brace-fold',
+            '/lib/codemirror/addon/fold/brace-fold',
+            '/lib/codemirror/addon/fold/foldgutter',
+            '/lib/codemirror/lib/codemirror',
+            '/lib/codemirror/mode/css/css',
+            '/lib/codemirror/mode/javascript/javascript'
+        ],
         input: join('src/utils/svelte-view/View.svelte'), // join('src/views', page),
         plugins: [
             replace({

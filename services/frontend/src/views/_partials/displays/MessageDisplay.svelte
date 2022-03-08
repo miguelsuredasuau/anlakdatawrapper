@@ -5,7 +5,7 @@
     export { className as class };
     export let deletable = false;
 
-    let visible = true;
+    export let visible = true;
 </script>
 
 {#if visible}

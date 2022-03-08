@@ -1129,5 +1129,7 @@
   "layout / dark-mode-invert / help": "By default, visualization colors get adjusted in dark mode to make sure they are still legible and look good. In case you'd prefer to <b>keep the same colors in dark mode</b>, you can enable  this option. Check the preview under the visualization to make sure you're happy with how your colors look. Find out more <a href=\"https://academy.datawrapper.de/\">here.</a>",
   "layout / dark-mode-invert / label": "Use the same colors in dark mode",
   "typeahead / no-results": "No results found",
-  "typeahead / searching": "Searching..."
+  "typeahead / searching": "Searching...",
+  "fileinput / choose-file": "Choose a file…",
+  "fileinput / selected-n-files": "selected %n files"
 }

@@ -60,3 +60,7 @@ export async function renderWithContext(view, props = {}, stores = {}) {
 
     return { ...context, component: context.component.ref };
 }
+
+export function delay(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+}

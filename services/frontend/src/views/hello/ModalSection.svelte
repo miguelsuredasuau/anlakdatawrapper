@@ -2,10 +2,12 @@
     import ModalDisplay from '_partials/displays/ModalDisplay.svelte';
 
     let open = false;
+    let open2 = false;
     let msg = '';
 
     function confirmed() {
         open = false;
+        open2 = false;
         msg = 'You confirmed!';
         setTimeout(() => {
             msg = '';
@@ -14,6 +16,7 @@
 
     function cancel() {
         open = false;
+        open2 = false;
         msg = 'You cancelled';
         setTimeout(() => {
             msg = '';
@@ -38,9 +41,27 @@
     </div>
 </ModalDisplay>
 
+<ModalDisplay maxWidth="50em" closeable={true} bind:open={open2}>
+    <p class="modal-card-title" slot="header">Heads up!</p>
+
+    <p class="subtitle is-size-3 mb-5">This modal really needs your attention!</p>
+
+    <div slot="footer">
+        <div class="buttons">
+            <button on:click={confirmed} class="button is-primary"> Confirmed! </button>
+            <button on:click={cancel} class="button">Back to safety</button>
+        </div>
+    </div>
+</ModalDisplay>
+
 <div class="section pl-0 pt-0">
     <h3 id="modal" class="title is-3">Modals</h3>
-    <button on:click={() => (open = true)} class="button is-large is-primary"
-        >{msg || 'open modal!'}</button
-    >
+    <div class="buttons">
+        <button on:click={() => (open = true)} class="button is-large is-primary"
+            >{msg || 'open modal!'}</button
+        >
+        <button on:click={() => (open2 = true)} class="button is-large is-primary"
+            >{msg || 'open modal card!'}</button
+        >
+    </div>
 </div>
