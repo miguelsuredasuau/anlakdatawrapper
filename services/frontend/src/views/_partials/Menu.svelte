@@ -100,7 +100,7 @@
 <aside class="menu" class:sticky>
     {#each groups as g}
         <div class="block">
-            {#if g.title}
+            {#if g.title && g.title !== 'null'}
                 <h3 class="menu-label">
                     {@html g.title}
                 </h3>

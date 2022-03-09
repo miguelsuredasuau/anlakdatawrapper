@@ -13,7 +13,6 @@
     const request = getContext('request');
 
     export let __;
-    export let defaultTheme;
     export let folders;
     export let locales;
     export let settingsPages;

@@ -128,7 +128,7 @@ module.exports = {
                 id: 'delete',
                 url: `/team/${teamId}/delete`,
                 title: __('teams / tab / deleteTeam'),
-                group: __('teams / group / advanced'),
+                group: null,
                 svgIcon: 'close',
                 svelte2: {
                     id: 'svelte/team-settings/delete',
@@ -136,7 +136,7 @@ module.exports = {
                     css: '/static/css/svelte/team-settings/delete.css'
                 },
                 data: {},
-                order: 20
+                order: 999
             };
         });
 
