@@ -6,6 +6,26 @@ const {
     setup
 } = require('../../../../test/helpers/setup');
 
+async function inviteUser(context, teamObj, email) {
+    const { User } = require('@datawrapper/orm/models');
+    const res = await context.server.inject({
+        method: 'POST',
+        url: `/v3/teams/${teamObj.team.id}/invites`,
+        auth: {
+            strategy: 'session',
+            credentials: teamObj.session,
+            artifacts: teamObj.user
+        },
+        headers: context.headers,
+        payload: {
+            email,
+            role: 'member'
+        }
+    });
+    const user = await User.findOne({ where: { email } });
+    return { res, user };
+}
+
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
     t.context.teamObj = await createTeamWithUser(t.context.server);
@@ -29,7 +49,7 @@ test('owners can invite new members to a team', async t => {
     let userObj;
     try {
         userObj = await createUser(t.context.server);
-        const team = await t.context.server.inject({
+        const res = await t.context.server.inject({
             method: 'POST',
             url: `/v3/teams/${t.context.teamObj.team.id}/invites`,
             auth: t.context.auth,
@@ -40,7 +60,7 @@ test('owners can invite new members to a team', async t => {
             }
         });
 
-        t.is(team.statusCode, 201);
+        t.is(res.statusCode, 201);
     } finally {
         if (userObj) {
             await destroy(...Object.values(userObj));
@@ -49,32 +69,60 @@ test('owners can invite new members to a team', async t => {
 });
 
 test('owners can invite new users to a team', async t => {
-    let user;
+    const users = [];
     try {
-        const { User } = require('@datawrapper/orm/models');
-        const team = await t.context.server.inject({
-            method: 'POST',
-            url: `/v3/teams/${t.context.teamObj.team.id}/invites`,
-            auth: t.context.auth,
-            headers: t.context.headers,
-            payload: {
-                email: 'test-member@ava.de',
-                role: 'member'
-            }
-        });
-
-        t.is(team.statusCode, 201);
-
-        user = await User.findOne({
-            where: {
-                email: 'test-member@ava.de'
-            }
-        });
-
-        t.is(user.email, 'test-member@ava.de');
+        const { res, user } = await inviteUser(t.context, t.context.teamObj, 'user@example.com');
+        users.push(user);
+        t.is(res.statusCode, 201);
+        t.is(user.email, 'user@example.com');
         t.truthy(user.activate_token);
-        t.is(team.statusCode, 201);
     } finally {
-        await destroy(user);
+        await destroy(users);
+    }
+});
+
+test('owners can invite a maximum number of users equal to MAX_TEAM_INVITES', async t => {
+    const users = [];
+    let teamObj = {};
+    try {
+        const { events, event } = t.context.server.app;
+        teamObj = await createTeamWithUser(t.context.server);
+
+        events.on(event.MAX_TEAM_INVITES, async () => ({ maxInvites: 3 }));
+
+        const { res: res1, user: user1 } = await inviteUser(
+            t.context,
+            teamObj,
+            'user-1@example.com'
+        );
+        users.push(user1);
+        t.is(res1.statusCode, 201);
+
+        const { res: res2, user: user2 } = await inviteUser(
+            t.context,
+            teamObj,
+            'user-2@example.com'
+        );
+        users.push(user2);
+        t.is(res2.statusCode, 201);
+
+        const { res: res3, user: user3 } = await inviteUser(
+            t.context,
+            teamObj,
+            'user-3@example.com'
+        );
+        users.push(user3);
+        t.is(res3.statusCode, 201);
+
+        const { res: res4, user: user4 } = await inviteUser(
+            t.context,
+            teamObj,
+            'user-4@example.com'
+        );
+        users.push(user4);
+        t.is(res4.statusCode, 406);
+        t.is(user4, null);
+    } finally {
+        await destroy(users, ...Object.values(teamObj));
     }
 });
