@@ -1014,7 +1014,7 @@
   "dashboard / recent-drafts / title": "Editado recientemente",
   "dashboard / recently-published / empty": "Aún no has publicado ningún gráfico.",
   "dashboard / recently-published / title": "Publicado recientemente",
-  "dashboard / see-team-charts": "Ver tus [team charts]",
+  "dashboard / see-team-charts": "",
   "dashboard / team": "Equipo",
   "dashboard / team-upgrade": "¿Utilizas Datawrapper en una redacción? ¡Échale un vistazo a los <a href='/newsrooms' target='_blank'>equipos de Datawrapper</a>!",
   "dashboard / upgrade": "<a href='/single'>¡Mejora a Single!</a>",
@@ -1131,5 +1131,6 @@
   "typeahead / no-results": "No se han encontrado resultados",
   "typeahead / searching": "Buscando...",
   "fileinput / choose-file": "",
-  "fileinput / selected-n-files": ""
+  "fileinput / selected-n-files": "",
+  "dashboard / manage-team-settings": ""
 }

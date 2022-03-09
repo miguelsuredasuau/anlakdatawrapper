@@ -1014,7 +1014,7 @@
   "dashboard / recent-drafts / title": "最近编辑",
   "dashboard / recently-published / empty": "您尚未发布任何图表。",
   "dashboard / recently-published / title": "最近发布",
-  "dashboard / see-team-charts": "查看您的【团队图表】",
+  "dashboard / see-team-charts": "",
   "dashboard / team": "团队",
   "dashboard / team-upgrade": "您是否在新闻编辑室中使用Datawrapper？看看<a href='/newsrooms' target='_blank'>Datawrapper团队</a>吧！",
   "dashboard / upgrade": "<a href='/single'>升级至Single！</a>",
@@ -1131,5 +1131,6 @@
   "typeahead / no-results": "未找到结果",
   "typeahead / searching": "搜索...",
   "fileinput / choose-file": "",
-  "fileinput / selected-n-files": ""
+  "fileinput / selected-n-files": "",
+  "dashboard / manage-team-settings": ""
 }

@@ -1014,7 +1014,7 @@
   "dashboard / recent-drafts / title": "Zuletzt bearbeitet",
   "dashboard / recently-published / empty": "Du hast noch keine Diagramme veröffentlicht.",
   "dashboard / recently-published / title": "Zuletzt veröffentlicht",
-  "dashboard / see-team-charts": "Schau in die [Diagramme deines Teams]",
+  "dashboard / see-team-charts": "Schau dir eure <a href=\"/archive/team/%teamId%\">Team-Diagramme</a> an",
   "dashboard / team": "Team",
   "dashboard / team-upgrade": "Benutzt du Datawrapper in einer Redaktion? Schau dir <a href='/newsrooms' target='_blank'>Datawrapper Team</a> an!",
   "dashboard / upgrade": "<a href='/single'>upgrade auf Single!</a>",
@@ -1131,5 +1131,6 @@
   "typeahead / no-results": "Keine Ergebnisse gefunden",
   "typeahead / searching": "Suche läuft...",
   "fileinput / choose-file": "Wähle eine Datei…",
-  "fileinput / selected-n-files": "%n Dateien ausgewählt"
+  "fileinput / selected-n-files": "%n Dateien ausgewählt",
+  "dashboard / manage-team-settings": "oder verwalte <a href=\"/team/%teamId%/settings\">Team-Einstellungen</a>"
 }

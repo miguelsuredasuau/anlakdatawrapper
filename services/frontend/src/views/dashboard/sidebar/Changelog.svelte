@@ -6,7 +6,7 @@
     import purifyHtml from '@datawrapper/shared/purifyHtml';
 
     const allowedTags =
-        '<a><figure><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt><img>';
+        '<a><figure><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt><img><ul><li>';
     const { dayjs } = getContext('libraries');
 
     export let __;

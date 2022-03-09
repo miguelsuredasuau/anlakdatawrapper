@@ -52,7 +52,13 @@ module.exports = async function (request) {
                           isAdmin: auth.artifacts.isAdmin(),
                           isGuest: false,
                           teams: auth.artifacts.teams.filter(team => !team.user_team.invite_token),
-                          activeTeam: auth.artifacts.activeTeam,
+                          activeTeam: auth.artifacts.activeTeam
+                              ? {
+                                    id: auth.artifacts.activeTeam.id,
+                                    name: auth.artifacts.activeTeam.name,
+                                    user_team: auth.artifacts.activeTeam.user_team
+                                }
+                              : null,
                           isActivated: auth.artifacts.role !== 'pending'
                       }
                     : {
