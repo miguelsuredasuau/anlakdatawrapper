@@ -22,6 +22,7 @@
     import ErrorsSection from './ErrorsSection.svelte';
     import SearchInputSection from './SearchInputSection.svelte';
     import TagsInputSection from './TagsInputSection.svelte';
+    import BulmaComponentsSection from './BulmaComponentsSection.svelte';
     import TypeaheadInputSection from './TypeaheadInputSection.svelte';
     import FileInputSection from './FileInputSection.svelte';
     import SaveButtonSection from './SaveButtonSection.svelte';
@@ -74,7 +75,8 @@
             pages: [
                 { url: '#form-field', title: 'Form Field' },
                 { url: '#markdown-input', title: 'Markdown Input' },
-                { url: '#signup', title: 'Sign Up' }
+                { url: '#signup', title: 'Sign Up' },
+                { url: '#bulma', title: 'Bulma' }
             ]
         },
         {
@@ -133,6 +135,8 @@
                     <FormFieldSection {__} />
                     <MarkdownInputSection {__} />
                     <SignUpSection {__} />
+                    <BulmaComponentsSection />
+
                     <DropdownSection />
                     <Svelte2Section />
                     <ErrorsSection />
