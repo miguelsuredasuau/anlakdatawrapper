@@ -107,8 +107,11 @@
     {#if publishing && publishWait > 3000}
     <ul class="publish-progress unstyled">
         {#each progress as step,i}
+
+        <!-- Render progress item if value is set: -->
+        {#if (step && step !== '')}
         <li>
-            {#if i < progress.length-1}
+            {#if (i < progress.length-1)}
             <IconDisplay
                 {assetURL}
                 icon="check-circle"
@@ -130,7 +133,7 @@
             />
             {/if} {@html __('publish / status / '+step)}
         </li>
-        {/each}
+        {/if} {/each}
     </ul>
     {/if}
 </div>
