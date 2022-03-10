@@ -7,7 +7,8 @@ const routes = {
     themes: require('./src/api/routes/themes.js'),
     'plugin/login-tokens': require('./src/api/routes/plugins/login-tokens.js'),
     'plugin/oembed': require('./src/api/routes/plugins/oembed.js'),
-    plugin: require('./src/api/routes/plugins/publish-s3.js')
+    plugin: require('./src/api/routes/plugins/publish-s3.js'),
+    'plugin/basemaps': require('./src/api/routes/plugins/basemaps.js')
 };
 
 module.exports = {
