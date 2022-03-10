@@ -2,12 +2,19 @@
     import ModalDisplay from '_partials/displays/ModalDisplay.svelte';
     import Dropdown from '_partials/Dropdown.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
+    import ViewComponent from '_partials/ViewComponent.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
     import { beforeUpdate, getContext, tick } from 'svelte';
 
-    const { deleteChart, duplicateChart, openChart, closeChart } = getContext('page/archive');
+    const user = getContext('user');
+    const { deleteChart, duplicateChart, openChart, closeChart, teams, visModalMetadata } =
+        getContext('page/archive');
     const { dayjs } = getContext('libraries');
     const { themeBgColors } = getContext('page/archive');
+
+    $: teamSettings = $user.activeTeam
+        ? teams.find(t => t.id === $user.activeTeam.id).settings
+        : {};
 
     export let __;
     export let chart;
@@ -49,7 +56,7 @@
 
 <style lang="scss">
     @import '../../styles/colors.scss';
-    .kicker {
+    .block :global(.kicker) {
         font-size: 12px;
         text-transform: uppercase;
         font-weight: bold;
@@ -120,6 +127,15 @@
                             </div>
                         {/if}
                     </div>
+                    {#if visModalMetadata && visModalMetadata.length}
+                        {#each visModalMetadata as metadataItem}
+                            <ViewComponent
+                                {__}
+                                id={metadataItem.component}
+                                props={{ ...metadataItem.props, chart, teamSettings }}
+                            />
+                        {/each}
+                    {/if}
                     <div class="block columns">
                         <div class="column" title={dayjs(chart.createdAt).format('lll')}>
                             <div class="kicker">{__('archive / modal / created-at')}</div>

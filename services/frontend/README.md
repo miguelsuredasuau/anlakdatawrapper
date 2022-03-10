@@ -36,7 +36,6 @@ If you only want to test a subset of components you can set the `TEST` environme
 
 `TEST="views/_partials/controls/*.mjs" npm run test:watch-rollup`
 
-
 ## Quick introduction of the new Svelte views
 
 In routes we can use Svelte-templates like this:
@@ -466,7 +465,21 @@ Plugins may render additional view components (see above) as part of archive Vis
 
 ```js
 server.methods.registerArchiveVisualizationBoxSubline(async () => ({
-    component: 'team-custom-fields/archive-custom-field',
+    component: 'team-custom-fields/archive-subline-custom-field',
+    order: 10,
+    props: {
+        someData: 42
+    }
+}));
+```
+
+### `registerArchiveVisualizationModalMetadata` (archive)
+
+Plugins may also render additional view components (see above) as part of the metadata displayed in the archive's `VisualizationModal` component.
+
+```js
+server.methods.registerArchiveVisualizationModalMetadata(async () => ({
+    component: 'team-custom-fields/archive-modal-custom-field',
     order: 10,
     props: {
         someData: 42

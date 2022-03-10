@@ -202,6 +202,11 @@ async function getChart(request) {
 
     set(options, ['include'], [{ model: User, attributes: ['name', 'email'] }]);
 
+    await server.app.events.emit(server.app.event.EXTEND_LIST_CHART_OPTIONS, {
+        options,
+        request
+    });
+
     const chart = await Chart.findOne(options);
 
     if (!chart) {

@@ -41,6 +41,7 @@
     export let minLastEditStep = 2;
     export let foreignTeam;
     export let visBoxSublines;
+    export let visModalMetadata;
 
     setContext('page/archive', {
         addFolder,
@@ -66,7 +67,8 @@
         themeBgColors,
         foreignTeam,
         teams,
-        visBoxSublines
+        visBoxSublines,
+        visModalMetadata
     });
 
     $: userFolder = parseFolderTree(folders);

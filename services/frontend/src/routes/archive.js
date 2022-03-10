@@ -54,6 +54,13 @@ module.exports = {
             pluginVisualizationBoxSublineFunctions.push(func);
         });
 
+        // we allow plugins like team-custom-fields to display additional
+        // view components inside the VisualizationModal
+        const pluginVisualizationModalMetadataFunctions = [];
+        server.method('registerArchiveVisualizationModalMetadata', func => {
+            pluginVisualizationModalMetadataFunctions.push(func);
+        });
+
         server.route({
             method: 'GET',
             path: '/{folderId?}',
@@ -176,6 +183,11 @@ module.exports = {
                 visBoxSublines.push(await func(request));
             }
 
+            const visModalMetadata = [];
+            for (const func of pluginVisualizationModalMetadataFunctions) {
+                visModalMetadata.push(await func(request));
+            }
+
             return h.view('archive/Index.svelte', {
                 htmlClass: 'has-background-white-bis',
                 props: {
@@ -188,7 +200,8 @@ module.exports = {
                     foreignTeam: adminAccessingForeignTeam ? teamId : null,
                     minLastEditStep,
                     themeBgColors,
-                    visBoxSublines: visBoxSublines.sort(byOrder)
+                    visBoxSublines: visBoxSublines.sort(byOrder),
+                    visModalMetadata: visModalMetadata.sort(byOrder)
                 }
             });
         }
