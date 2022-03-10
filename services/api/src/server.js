@@ -1,5 +1,6 @@
 const Hapi = require('@hapi/hapi');
 const Boom = require('@hapi/boom');
+const CodedError = require('@datawrapper/service-utils/CodedError.js');
 const Crumb = require('@hapi/crumb');
 const Joi = require('joi');
 const HapiSwagger = require('hapi-swagger');
@@ -335,8 +336,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
             try {
                 await fs.access(filePath, fs.constants.R_OK);
             } catch (e) {
-                // file does not exist, return "empty" data
-                return filename.endsWith('.json') ? '{}' : ' ';
+                throw new CodedError('notFound', 'The local chart asset was not found');
             }
             return fs.createReadStream(filePath);
         });

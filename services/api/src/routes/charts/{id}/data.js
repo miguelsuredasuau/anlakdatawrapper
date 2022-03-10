@@ -104,34 +104,38 @@ module.exports = server => {
     });
 };
 
+function parseJSON(data) {
+    if (data) {
+        try {
+            return JSON.parse(data);
+        } catch (e) {
+            // Failed to parse JSON.
+        }
+    }
+    return null;
+}
+
 async function getChartData(request, h) {
     const { params, query } = request;
 
-    let filename = `${params.id}.${query.published ? 'public.' : ''}csv`;
-
+    const csvFilename = `${params.id}.${query.published ? 'public.' : ''}csv`;
     const res = await request.server.inject({
         method: 'GET',
-        url: `/v3/charts/${params.id}/assets/${filename}${query.ott ? `?ott=${query.ott}` : ''}`,
+        url: `/v3/charts/${params.id}/assets/${csvFilename}${query.ott ? `?ott=${query.ott}` : ''}`,
         auth: request.auth
     });
-
-    if (res.result.error) {
+    if (res.statusCode !== 404 && res.result.error) {
         return new Boom.Boom(res.result.message, res.result);
     }
 
-    let contentType = 'text/csv';
-
-    try {
-        const tmp = JSON.parse(res.result);
-        if (typeof tmp !== 'string') {
-            contentType = 'application/json';
-            filename = `${params.id}.json`;
-        }
-        // eslint-disable-next-line
-    } catch (error) {}
-
+    const data = res.statusCode === 404 ? null : res.result;
+    const json = parseJSON(data);
+    const isJSONObject = typeof json === 'object' && json !== null;
+    const contentType = isJSONObject ? 'application/json' : 'text/csv';
+    const filename = isJSONObject ? `${params.id}.json` : csvFilename;
     return h
-        .response(res.result)
+        .response(data)
+        .code(200)
         .header('Content-Type', contentType)
         .header('Content-Disposition', filename);
 }

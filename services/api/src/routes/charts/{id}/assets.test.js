@@ -23,7 +23,12 @@ async function putAsset(server, headers, chart, asset, data, contentType = 'text
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
-    t.context.userObj = await createUser(t.context.server, { role: 'admin' });
+    t.context.userObj = await createUser(t.context.server);
+    t.context.headers = {
+        cookie: `DW-SESSION=${t.context.userObj.session.id}; crumb=abc`,
+        'X-CSRF-Token': 'abc',
+        referer: 'http://localhost'
+    };
 });
 
 test.after.always(async t => {
@@ -31,23 +36,16 @@ test.after.always(async t => {
 });
 
 test('User can write chart asset with almost 2MB', async t => {
-    let userObj;
+    let chart;
     try {
-        userObj = await createUser(t.context.server);
-        const { session } = userObj;
-        const headers = {
-            cookie: `DW-SESSION=${session.id}; crumb=abc`,
-            'X-CSRF-Token': 'abc',
-            referer: 'http://localhost'
-        };
         // create a new chart
         let res = await t.context.server.inject({
             method: 'POST',
             url: '/v3/charts',
-            headers,
+            headers: t.context.headers,
             payload: {}
         });
-        const chart = res.result;
+        chart = res.result;
 
         const bytes = Math.floor(1.99 * 1024 * 1024);
         let big = '';
@@ -58,7 +56,7 @@ test('User can write chart asset with almost 2MB', async t => {
         // write some big JSON
         res = await putAsset(
             t.context.server,
-            headers,
+            t.context.headers,
             chart,
             `${chart.id}.map.json`,
             { data: big },
@@ -66,14 +64,16 @@ test('User can write chart asset with almost 2MB', async t => {
         );
         t.is(res.statusCode, 204);
         // see if that worked
-        res = await getAsset(t.context.server, headers, chart, `${chart.id}.map.json`);
+        res = await getAsset(t.context.server, t.context.headers, chart, `${chart.id}.map.json`);
         t.is(res.statusCode, 200);
         t.is(JSON.parse(res.result).data.length, bytes);
+        t.is(res.headers['content-type'], 'application/json; charset=utf-8');
+        t.is(res.headers['content-disposition'], `attachment; filename=${chart.id}.map.json`);
 
         // try writing some oversize JSON
         res = await putAsset(
             t.context.server,
-            headers,
+            t.context.headers,
             chart,
             `${chart.id}.map.json`,
             { data: big + big },
@@ -82,47 +82,43 @@ test('User can write chart asset with almost 2MB', async t => {
         // that should not work
         t.is(res.statusCode, 413);
     } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
+        if (chart) {
+            const { Chart } = require('@datawrapper/orm/models');
+            await Chart.destroy({ where: { id: chart.id } });
         }
     }
 });
 
 test('Public asset can be read', async t => {
-    let userObj;
+    let chartId;
     try {
-        userObj = await createUser(t.context.server);
-        const { session } = userObj;
-
-        const headers = {
-            cookie: `DW-SESSION=${session.id}; crumb=abc`,
-            'X-CSRF-Token': 'abc',
-            referer: 'http://localhost'
-        };
         // create a new chart
         let res = await t.context.server.inject({
             method: 'POST',
             url: '/v3/charts',
-            headers,
+            headers: t.context.headers,
             payload: {}
         });
         const chart = res.result;
+        chartId = chart.id;
 
         const asset = `X1,X2
 10,20`;
 
-        res = await putAsset(t.context.server, headers, chart, `${chart.id}.csv`, asset);
+        res = await putAsset(t.context.server, t.context.headers, chart, `${chart.id}.csv`, asset);
         t.is(res.statusCode, 204);
 
         // see if that worked
-        res = await getAsset(t.context.server, headers, chart, `${chart.id}.csv`);
+        res = await getAsset(t.context.server, t.context.headers, chart, `${chart.id}.csv`);
         t.is(res.statusCode, 200);
         t.is(res.result, asset);
+        t.is(res.headers['content-type'], 'text/csv; charset=utf-8');
+        t.is(res.headers['content-disposition'], `attachment; filename=${chart.id}.csv`);
 
         // publish chart
-        t.context.server.inject({
+        await t.context.server.inject({
             method: 'POST',
-            headers,
+            headers: t.context.headers,
             url: `/v3/charts/${chart.id}/publish`
         });
 
@@ -147,8 +143,62 @@ test('Public asset can be read', async t => {
         });
         t.is(nonPublicAsset.statusCode, 403);
     } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
+        if (chartId) {
+            const { Chart } = require('@datawrapper/orm/models');
+            const chart = await Chart.findByPk(chartId);
+            await destroy(chart);
+        }
+    }
+});
+
+test('GET /charts/{id}/assets/{assets} return error 400 when the asset is not in the whitelist', async t => {
+    let chartId;
+    try {
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: '/v3/charts',
+            headers: t.context.headers,
+            payload: {}
+        });
+        chartId = res.result.id;
+
+        const resAsset = await t.context.server.inject({
+            method: 'GET',
+            headers: t.context.headers,
+            url: `/v3/charts/${chartId}/assets/SPAM`
+        });
+        t.is(resAsset.statusCode, 400);
+    } finally {
+        if (chartId) {
+            const { Chart } = require('@datawrapper/orm/models');
+            const chart = await Chart.findByPk(chartId);
+            await destroy(chart);
+        }
+    }
+});
+
+test('GET /charts/{id}/assets/{assets} return error 404 when the asset was not found', async t => {
+    let chartId;
+    try {
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: '/v3/charts',
+            headers: t.context.headers,
+            payload: {}
+        });
+        chartId = res.result.id;
+
+        const resAsset = await t.context.server.inject({
+            method: 'GET',
+            headers: t.context.headers,
+            url: `/v3/charts/${chartId}/assets/${chartId}.metadata.json`
+        });
+        t.is(resAsset.statusCode, 404);
+    } finally {
+        if (chartId) {
+            const { Chart } = require('@datawrapper/orm/models');
+            const chart = await Chart.findByPk(chartId);
+            await destroy(chart);
         }
     }
 });

@@ -15,7 +15,7 @@ const {
 const fetch = require('node-fetch');
 
 test.before(async t => {
-    t.context.server = await setup({ usePlugins: true });
+    t.context.server = await setup();
     t.context.headers = {
         cookie: 'crumb=abc',
         'X-CSRF-Token': 'abc',

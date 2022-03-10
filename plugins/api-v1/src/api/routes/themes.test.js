@@ -11,7 +11,7 @@ const {
 } = require('../../../../../services/api/test/helpers/setup.js');
 
 test.before(async t => {
-    t.context.server = await setup({ usePlugins: true });
+    t.context.server = await setup();
     t.context.config = t.context.server.methods.config();
     t.context.headers = {
         cookie: 'crumb=abc',

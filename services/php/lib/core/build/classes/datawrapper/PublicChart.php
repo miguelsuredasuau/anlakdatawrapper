@@ -77,18 +77,12 @@ class PublicChart extends BasePublicChart {
             [$status, $body] = call_v3_api('GET',
             '/charts/' . $this->getId() . '/assets/' . $filename);
 
-            if (!in_array($status, [200, 201, 204, 404])) {
-                throw new RuntimeException('Could not read chart asset using v3 API.');
-            }
-
-            if ($status == "404") {
+            if ($status == 404) {
                 $this->assets[$filename] = "";
+            } elseif ($status >= 400) {
+                throw new RuntimeException('Could not read chart asset using v3 API.');
             } else {
-                $this->assets[$filename] = (
-                    gettype($body) == "string"
-                    ? (preg_match('/^\s+$/', $body) ? '' : $body)
-                    : json_encode_safe($body, 1)
-                );
+                $this->assets[$filename] = gettype($body) == "string" ? $body : json_encode_safe($body, 1);
             }
         }
 

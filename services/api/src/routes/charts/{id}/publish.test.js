@@ -76,7 +76,7 @@ test('GET /charts/{id}/publish/data returns the default dataset', async t => {
         {
             name: 'dataset.csv',
             shared: false,
-            value: ' '
+            value: null
         }
     ]);
 });
@@ -120,7 +120,7 @@ bar,2
     }
 });
 
-test('GET /charts/{id}/publish/data returns null value for an empty dataset', async t => {
+test('GET /charts/{id}/publish/data returns an empty dataset', async t => {
     let chart;
     try {
         chart = await createChart();
@@ -148,7 +148,7 @@ test('GET /charts/{id}/publish/data returns null value for an empty dataset', as
             {
                 name: 'dataset.csv',
                 shared: false,
-                value: null
+                value: ''
             }
         ]);
     } finally {

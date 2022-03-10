@@ -144,16 +144,25 @@ utils.copyChartAssets = function (server) {
         const assets = ['.csv', '.map.json', '.minimap.json', '.highlight.json'];
         for (const filename of assets) {
             try {
-                const stream = await events.emit(
-                    event.GET_CHART_ASSET,
-                    {
-                        chart: srcChart,
-                        filename:
-                            srcChart.id +
-                            (filename === '.csv' && copyPublic ? '.public.csv' : filename)
-                    },
-                    { filter: 'first' }
-                );
+                let stream;
+                try {
+                    stream = await events.emit(
+                        event.GET_CHART_ASSET,
+                        {
+                            chart: srcChart,
+                            filename:
+                                srcChart.id +
+                                (filename === '.csv' && copyPublic ? '.public.csv' : filename)
+                        },
+                        { filter: 'first' }
+                    );
+                } catch (error) {
+                    if (error.name === 'CodedError' && error.code === 'notFound') {
+                        // Do nothing when the chart asset was not found.
+                        continue;
+                    }
+                    throw error;
+                }
 
                 let data = '';
 
