@@ -508,9 +508,16 @@ Please make sure you called __(key) with a key of type "string".
             );
             if (isStyleDark) vis.darkMode(true);
         }
+
+        const browserSupportsPrefersColorScheme = CSS.supports('color-scheme', 'dark');
+
         if (!isPreview && isAutoDark) {
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                vis.darkMode(e.matches);
+            const matchMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            // for browsers that don't support prefers-color-scheme
+            if (!browserSupportsPrefersColorScheme) updateActiveCSS(matchMediaQuery.matches);
+
+            matchMediaQuery.addEventListener('change', e => {
+                updateDarkModeState(e.matches);
             });
         }
 
@@ -532,6 +539,19 @@ Please make sure you called __(key) with a key of type "string".
 
         isIframe && initResizeHandler(target);
 
+        function updateActiveCSS(isDark) {
+            // @todo: access these without using document
+            const cssLight = document.getElementById('css-light');
+            const cssDark = document.getElementById('css-dark');
+            (isDark ? cssLight : cssDark).setAttribute('media', '--disabled--');
+            (isDark ? cssDark : cssLight).removeAttribute('media');
+        }
+
+        function updateDarkModeState(isDark) {
+            if (!browserSupportsPrefersColorScheme) updateActiveCSS(isDark);
+            vis.darkMode(isDark);
+        }
+
         function onDarkModeChange(isDark) {
             /*
              * Preserve pre-existing theme object,
@@ -546,12 +566,8 @@ Please make sure you called __(key) with a key of type "string".
             });
 
             // swap active css
-            // @todo: access these without using document
-            const cssLight = document.getElementById('css-light');
-            const cssDark = document.getElementById('css-dark');
-            if (isPreview || !isAutoDark) {
-                (isDark ? cssLight : cssDark).setAttribute('media', '--disabled--');
-                (isDark ? cssDark : cssLight).removeAttribute('media');
+            if (isPreview || !isAutoDark || (isAutoDark && !browserSupportsPrefersColorScheme)) {
+                updateActiveCSS(isDark);
             }
 
             // revert dark palette to prevent double-mapping
