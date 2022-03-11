@@ -7,7 +7,7 @@ const { Theme, User, Team, Chart } = require('@datawrapper/orm/models');
 const { get, set } = require('lodash');
 const chroma = require('chroma-js');
 const invertColor = require('@datawrapper/shared/invertColor.cjs');
-const { findDarkModeOverrideKeys } = require('./utils');
+const { findDarkModeOverrideKeys, dropCache, getCaches } = require('./utils');
 
 module.exports = {
     name: 'routes/themes/{id}',
@@ -15,13 +15,7 @@ module.exports = {
     register: server => {
         const config = server.methods.config();
         const useThemeCache = get(config, 'general.cache.themes');
-        const styleCache = server.cache({ segment: 'vis-styles', shared: true });
-        const githeadCache = server.cache({ segment: 'vis-githead', shared: true });
-        const themeCache = server.cache({
-            segment: 'themes',
-            shared: true,
-            expiresIn: 30 * 864e5 /* 30 days */
-        });
+        const { styleCache, themeCache, githeadCache } = getCaches(server);
 
         // GET /v3/themes/{id}
         server.route({
@@ -94,42 +88,13 @@ module.exports = {
                 if (data.data) await validateThemeData(data.data, server);
                 await theme.update(data);
 
-                async function findDescendants(theme) {
-                    let checkNext = [theme];
-                    const descendants = [theme];
-
-                    while (checkNext.length) {
-                        // find all themes that extend from current
-                        const children = await Theme.findAll({
-                            where: { extend: checkNext.map(el => el.id) }
-                        });
-
-                        children.forEach(child => {
-                            descendants.push(child);
-                        });
-
-                        checkNext = children;
-                    }
-                    return descendants;
-                }
-
-                const descendants = await findDescendants(theme);
-
-                for (const t of descendants) {
-                    for (const visId of server.app.visualizations.keys()) {
-                        const vis = server.app.visualizations.get(visId);
-                        const githead = (await githeadCache.get(vis.id)) || vis.githead || 'head';
-
-                        await styleCache.drop(`${t.id}__${visId}__${githead}`);
-                        await styleCache.drop(`${t.id}__${visId}__dark__${githead}`);
-                        await styleCache.drop(`${t.id}__${visId}`);
-                    }
-
-                    await themeCache.drop(`${t.id}?dark=false&extend=false`);
-                    await themeCache.drop(`${t.id}?dark=false&extend=true`);
-                    await themeCache.drop(`${t.id}?dark=true&extend=false`);
-                    await themeCache.drop(`${t.id}?dark=true&extend=true`);
-                }
+                await dropCache({
+                    theme,
+                    themeCache,
+                    styleCache,
+                    visualizations: server.app.visualizations,
+                    githeadCache
+                });
 
                 return theme.toJSON();
             }

@@ -3,6 +3,7 @@ const Boom = require('@hapi/boom');
 const { Theme } = require('@datawrapper/orm/models');
 const stream = require('stream');
 const { themeId } = require('../utils');
+const { getCaches, dropCache } = require('./utils');
 
 module.exports = server => {
     const { general } = server.methods.config();
@@ -99,6 +100,15 @@ module.exports = server => {
 
             // register with theme
             await theme.addAssetFont(payload['font-name'], method, urls);
+
+            const { themeCache, githeadCache } = getCaches(server);
+
+            await dropCache({
+                theme,
+                themeCache,
+                githeadCache,
+                visualizations: server.app.visualizations
+            });
 
             return {
                 urls
