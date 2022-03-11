@@ -12,7 +12,7 @@ module.exports = {
 
         await server.register(require('./admin'), {
             routes: {
-                prefix: '/v2/admin'
+                prefix: '/admin'
             }
         });
 
