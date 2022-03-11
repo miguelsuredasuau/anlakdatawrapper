@@ -14,6 +14,7 @@
     import CheckboxSection from './CheckboxSection.svelte';
     import RadioInputSection from './RadioInputSection.svelte';
     import MarkdownInputSection from './MarkdownInputSection.svelte';
+    import CodeMirrorInputSection from './CodeMirrorInputSection.svelte';
     import SetPasswordSection from './SetPasswordSection.svelte';
     import FormFieldSection from './FormFieldSection.svelte';
     import SignUpSection from './SignUpSection.svelte';
@@ -67,7 +68,8 @@
                 { url: '#search', title: 'Search Input' },
                 { url: '#tagsinput', title: 'Tags Input' },
                 { url: '#typeahead', title: 'Typeahead Input' },
-                { url: '#file', title: 'File Input' }
+                { url: '#file', title: 'File Input' },
+                { url: '#codemirror', title: 'CodeMirror Input' }
             ]
         },
         {
@@ -128,6 +130,7 @@
                     <TagsInputSection />
                     <TypeaheadInputSection />
                     <FileInputSection {__} />
+                    <CodeMirrorInputSection />
 
                     <h2 class="title is-2 mt-4 has-text-grey">Content</h2>
                     <hr />

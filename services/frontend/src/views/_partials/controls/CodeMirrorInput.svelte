@@ -5,6 +5,9 @@
     export let value;
     let _value = value;
 
+    export let width = '100%';
+    export let height = '400px';
+
     export let mimeType = 'plain/text';
 
     const defaultOptions = {
@@ -77,6 +80,10 @@
             }
         });
 
+        if (width || height) {
+            codemirror.setSize(width, height);
+        }
+
         // keep value in sync with codemirror value changes
         codemirror.on('change', cm => (_value = value = cm.getValue()));
     });
@@ -94,7 +101,7 @@
         if (_readOnly !== readOnly) {
             if (codemirror) {
                 codemirror.setOption('readOnly', readOnly);
-                if (readOnly) {
+                if (!readOnly) {
                     codemirror.focus();
                 }
             }
@@ -111,7 +118,6 @@
     @import '/lib/codemirror/addon/lint/lint.css';
 
     .editor :global(.CodeMirror) {
-        height: 400px;
         font-size: $size-7;
         font-family: $family-monospace;
     }
@@ -119,10 +125,10 @@
     .editor {
         border: 1px solid $dw-grey-light;
         border-radius: $radius;
+        overflow: hidden;
     }
 
     .editor textarea {
-        height: 400px;
         opacity: 0;
     }
 
@@ -133,8 +139,13 @@
     }
 </style>
 
-<div class="editor" class:is-relative={$$slots.topRight} class:readonly={readOnly}>
-    <textarea bind:this={refTextArea}>{value}</textarea>
+<div
+    class="editor"
+    class:is-relative={$$slots.topRight}
+    class:readonly={readOnly}
+    style={width && `width:${width}`}
+>
+    <textarea bind:this={refTextArea} style={height && `height:${height}`}>{value}</textarea>
     {#if $$slots.topRight}
         <div class="top-right">
             <slot name="topRight" />
