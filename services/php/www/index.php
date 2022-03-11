@@ -35,7 +35,6 @@ require_once ROOT_PATH . 'controller/chart/data.php';
 require_once ROOT_PATH . 'controller/chart/preview.php';
 require_once ROOT_PATH . 'controller/chart/embed.php';
 require_once ROOT_PATH . 'controller/chart/publish.php';
-require_once ROOT_PATH . 'controller/admin.php';
 
 
 $app->notFound(function() {
