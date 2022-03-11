@@ -18,7 +18,11 @@
         readOnly: false,
         foldGutter: true,
         search: true,
-        lint: true
+        lint: true,
+        autoCloseBrackets: true,
+        indentUnit: 4,
+        tabSize: 4,
+        keyMap: 'sublime'
     };
 
     export let options = {};
@@ -41,8 +45,14 @@
         opts.gutters = [];
 
         if (opts.lineNumbers) opts.gutters.push('CodeMirror-linenumbers');
-        if (opts.foldGutter) opts.gutters.push('CodeMirror-foldgutter');
         if (opts.lint) opts.gutters.push('CodeMirror-lint-markers');
+        if (opts.foldGutter) {
+            opts.gutters.push('CodeMirror-foldgutter');
+            opts.extraKeys = {
+                ...(opts.extraKeys || {}),
+                'Ctrl-Q': cm => cm.foldCode(cm.getCursor())
+            };
+        }
 
         return opts;
     }
@@ -55,9 +65,14 @@
 
         await import('/lib/codemirror/mode/javascript/javascript');
         await import('/lib/codemirror/mode/css/css');
-        await import('/lib/codemirror/addon/edit/matchbrackets');
-        await import('/lib/codemirror/addon/fold/foldgutter');
-        await import('/lib/codemirror/addon/fold/brace-fold');
+        await import('/lib/codemirror/addon/search/searchcursor');
+        await import('/lib/codemirror/addon/comment/comment');
+        await import(`/lib/codemirror/keymap/sublime`);
+
+        if (opts.foldGutter) {
+            await import('/lib/codemirror/addon/fold/foldgutter');
+            await import('/lib/codemirror/addon/fold/brace-fold');
+        }
 
         if (opts.lint) {
             await import('/lib/jsonlint/jsonlint.js');
@@ -67,17 +82,23 @@
 
         if (opts.search) {
             await import('/lib/codemirror/addon/search/search');
-            await import('/lib/codemirror/addon/search/searchcursor');
             await import('/lib/codemirror/addon/search/jump-to-line');
+        }
+
+        if (opts.matchBrackets) {
+            await import('/lib/codemirror/addon/edit/matchbrackets');
+        }
+
+        if (opts.autoCloseBrackets) {
+            await import('/lib/codemirror/addon/edit/closebrackets');
         }
 
         // Initialize CodeMirror instance for each of the editors:
         codemirror = CodeMirror.fromTextArea(refTextArea, {
             mode: mimeType,
             ...omit(opts, ['search']),
-            ...{
-                readOnly
-            }
+            readOnly,
+            keyMap: 'sublime'
         });
 
         if (width || height) {

@@ -1,4 +1,5 @@
 <script>
+    import { createEventDispatcher } from 'svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
     export let label = 'Save changes';
@@ -11,6 +12,12 @@
     export let inProgress = false;
     export let result = null;
     export let icon = null;
+    export let resetTimeout = {
+        error: 5000,
+        success: 3000
+    };
+
+    const dispatch = createEventDispatcher();
 
     let _result = result;
     let _inProgress = inProgress;
@@ -20,12 +27,10 @@
         if (result !== _result) {
             if (result) {
                 // auto-reset result after 2 seconds
-                setTimeout(
-                    () => {
-                        result = null;
-                    },
-                    result === 'error' ? 5000 : 3000
-                );
+                setTimeout(() => {
+                    result = null;
+                    dispatch('reset');
+                }, resetTimeout[result] || 3000);
             }
             _result = result;
         }

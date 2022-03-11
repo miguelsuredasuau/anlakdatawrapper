@@ -91,13 +91,21 @@ function buildOptions(page, ssr) {
     const viewComponents = server.methods.getViewComponents(page);
     return {
         external: [
-            '/lib/codemirror/addon/edit/matchbrackets',
-            '/lib/codemirror/addon/fold/brace-fold',
-            '/lib/codemirror/addon/fold/brace-fold',
-            '/lib/codemirror/addon/fold/foldgutter',
+            '',
             '/lib/codemirror/lib/codemirror',
+            '/lib/codemirror/mode/javascript/javascript',
             '/lib/codemirror/mode/css/css',
-            '/lib/codemirror/mode/javascript/javascript'
+            '/lib/codemirror/addon/search/searchcursor',
+            '/lib/codemirror/addon/comment/comment',
+            '/lib/codemirror/addon/fold/foldgutter',
+            '/lib/codemirror/addon/fold/brace-fold',
+            '/lib/codemirror/addon/lint/json-lint',
+            '/lib/codemirror/addon/lint/lint',
+            '/lib/codemirror/addon/search/search',
+            '/lib/codemirror/addon/search/jump-to-line',
+            '/lib/codemirror/addon/edit/matchbrackets',
+            '/lib/codemirror/addon/edit/closebrackets',
+            '/lib/jsonlint/jsonlint.js'
         ],
         input: join('src/utils/svelte-view/View.svelte'), // join('src/views', page),
         plugins: [

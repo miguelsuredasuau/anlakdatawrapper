@@ -35,7 +35,7 @@
     }
 </script>
 
-<SettingsPageLayout {loadPage} {settingsPages} title="Admin Pages">
+<SettingsPageLayout {loadPage} {settingsPages} title={curPage ? curPage.title : 'Admin Pages'}>
     <h2 class="title is-2" slot="header">Admin Pages</h2>
     {#if curPage && curPage.svelte2}
         <h3 class="title is-3">{curPage.headline || curPage.title}</h3>
