@@ -141,7 +141,8 @@ const SvelteView = {
                         wrap: true
                     }),
                     DW_DOMAIN: config.api.domain,
-                    MATOMO: config.frontend.matomo || null
+                    MATOMO: config.frontend.matomo || null,
+                    FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico'
                 });
                 return output;
             } catch (err) {
