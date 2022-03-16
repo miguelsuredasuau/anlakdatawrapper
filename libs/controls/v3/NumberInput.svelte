@@ -11,6 +11,7 @@
     export let placeholder = null;
     export let slider = true;
     export let uid;
+    export let id = null;
 
     let className = '';
     export { className as class };
@@ -147,6 +148,7 @@
                 style="width: {width}"
                 type="number"
                 {disabled}
+                {id}
                 min={min * multiply}
                 max={max * multiply}
                 step={step * multiply}
