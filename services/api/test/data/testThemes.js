@@ -58,3 +58,22 @@ module.exports.darkModeTestTheme = {
         }
     }
 };
+
+module.exports.darkModeTestBgTheme = {
+    style: {
+        body: {
+            background: 'transparent'
+        }
+    },
+    colors: {
+        background: '#ffffff'
+    },
+    overrides: [
+        {
+            type: 'darkMode',
+            settings: {
+                'colors.background': '#191919'
+            }
+        }
+    ]
+};

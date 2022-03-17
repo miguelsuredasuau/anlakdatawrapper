@@ -1,7 +1,15 @@
 const test = require('ava');
 const { createUser, destroy, setup } = require('../../../../test/helpers/setup');
-const { darkModeTestTheme } = require('../../../../test/data/testThemes.js');
+const { darkModeTestTheme, darkModeTestBgTheme } = require('../../../../test/data/testThemes.js');
 const { findDarkModeOverrideKeys } = require('./utils');
+
+function getDarkTheme(t, themeId) {
+    return t.context.server.inject({
+        method: 'GET',
+        url: `/v3/themes/${themeId}?dark=true`,
+        auth: t.context.auth
+    });
+}
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
@@ -81,6 +89,16 @@ test.before(async t => {
                 extend: 'my-theme-1',
                 title: 'Test dark mode',
                 data: darkModeTestTheme,
+                less: '',
+                assets: {}
+            }
+        }),
+        await Theme.findOrCreate({
+            where: { id: 'test-dark-mode-2' },
+            defaults: {
+                extend: 'my-theme-1',
+                title: 'Test dark mode background',
+                data: darkModeTestBgTheme,
                 less: '',
                 assets: {}
             }
@@ -203,6 +221,33 @@ test('Should be possible to upload a font that includes woff2 only', async t => 
     });
 
     t.is(res.statusCode, 200);
+});
+
+test('style.body.background overwritten with colors.background color where apprioriate', async t => {
+    const res = await getDarkTheme(t, 'test-dark-mode-2');
+    const data = res.result.data;
+
+    // style.body.background does not get overwritten when transparent
+    t.is(data.colors.background, '#191919');
+    t.is(data.style.body.background, 'transparent');
+
+    darkModeTestBgTheme.style.body.background = 'rgb(255, 255, 255)';
+
+    const res2 = await t.context.server.inject({
+        method: 'PATCH',
+        url: '/v3/themes/test-dark-mode-2',
+        payload: { data: darkModeTestBgTheme },
+        auth: t.context.auth
+    });
+
+    t.is(res2.statusCode, 200);
+
+    const res3 = await getDarkTheme(t, 'test-dark-mode-2');
+    const data2 = res3.result.data;
+
+    // but it does when it's the same color as colors.background
+    t.is(data2.colors.background, '#191919');
+    t.is(data2.style.body.background, '#191919');
 });
 
 test('findDarkModeOverrideKeys identifies keys within schema items of type link', async t => {

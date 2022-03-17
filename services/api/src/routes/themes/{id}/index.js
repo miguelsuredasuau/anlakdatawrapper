@@ -287,7 +287,8 @@ async function convertToDarkMode({ theme, darkBg, origBg }) {
     });
 
     set(theme, 'data.colors.background', darkBg);
-    if (get(theme, 'data.style.body.background')) {
+    const bodyBackground = get(theme, 'data.style.body.background', 'transparent');
+    if (bodyBackground !== 'transparent' && chroma(bodyBackground).hex() === chroma(origBg).hex()) {
         set(theme, 'data.style.body.background', darkBg);
     }
 }
