@@ -14,7 +14,7 @@ module.exports = {
     register: (server, options) => {
         const { events, event } = server.app;
         const { models } = options;
-        const { Chart } = models;
+        const { Chart, ChartPublic } = models;
 
         // register new event types
         event.GET_PUBLISHED_URL_PATTERN = 'GET_PUBLISHED_URL_PATTERN';
@@ -119,7 +119,6 @@ module.exports = {
                 // use that. Otherwise, assume the id is in the first chapture
                 // group
                 const chartId = match.groups && match.groups.id ? match.groups.id : match[1];
-
                 if (!chartId) return Boom.notFound();
 
                 // Check that the chart exists and is public
@@ -128,15 +127,17 @@ module.exports = {
                         id: chartId,
                         last_edit_step: 5,
                         deleted: false
-                    }
+                    },
+                    include: ChartPublic
                 });
 
                 if (!chart) return Boom.notFound();
 
                 const publicURL = chart.public_url;
+                const chartPublic = get(chart, 'chart_public', {});
 
-                let width = get(chart, 'metadata.publish.embed-width');
-                let height = get(chart, 'metadata.publish.embed-height');
+                let width = get(chartPublic, 'metadata.publish.embed-width');
+                let height = get(chartPublic, 'metadata.publish.embed-height');
 
                 if (maxwidth || maxheight) {
                     // We have a bounding, so figure out how large we should return the chart
@@ -157,7 +158,7 @@ module.exports = {
                     }
                 }
 
-                const embedCodes = get(chart, 'metadata.publish.embed-codes', {});
+                const embedCodes = get(chartPublic, 'metadata.publish.embed-codes', {});
                 let html;
 
                 if (embedCodes['embed-method-responsive'] && !(iframe || iframe === '')) {
