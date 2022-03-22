@@ -205,7 +205,7 @@ test('admins can create teams', async t => {
         userObj = await createUser(t.context.server, { role: 'admin' });
         const { user: admin } = userObj;
         const auth = {
-            strategy: 'simple',
+            strategy: 'user',
             credentials: { session: '', scope: ['team:write'] },
             artifacts: admin
         };
@@ -242,7 +242,7 @@ test('admins cant create teams with id "null"', async t => {
         userObj = await createUser(t.context.server, { role: 'admin' });
         const { user: admin } = userObj;
         const auth = {
-            strategy: 'simple',
+            strategy: 'user',
             credentials: { session: '', scope: ['team:write'] },
             artifacts: admin
         };

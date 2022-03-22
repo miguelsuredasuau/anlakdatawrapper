@@ -2,11 +2,13 @@ const Boom = require('@hapi/boom');
 const get = require('lodash/get');
 const AuthBearer = require('hapi-auth-bearer-token');
 const {
-    createComparePassword,
-    createHashPassword,
-    createCookieAuthScheme,
+    adminValidation,
     bearerValidation,
-    adminValidation
+    cookieValidation,
+    createComparePassword,
+    createCookieAuthScheme,
+    createHashPassword,
+    userValidation
 } = require('@datawrapper/service-utils/auth')(require('@datawrapper/orm/models'));
 const cookieAuthScheme = createCookieAuthScheme(false);
 
@@ -34,11 +36,12 @@ const DWAuth = {
         server.auth.scheme('dw-auth', dwAuth);
 
         server.auth.strategy('bearer', 'bearer-access-token', { validate: bearerValidation });
-        server.auth.strategy('session', 'cookie-auth');
-        server.auth.strategy('simple', 'dw-auth');
+        server.auth.strategy('session', 'cookie-auth', { validate: cookieValidation });
         server.auth.strategy('admin', 'dw-auth', { validate: adminValidation });
+        server.auth.strategy('user', 'dw-auth', { validate: userValidation });
+        server.auth.strategy('guest', 'dw-auth');
 
-        server.auth.default('simple');
+        server.auth.default('user');
     }
 };
 

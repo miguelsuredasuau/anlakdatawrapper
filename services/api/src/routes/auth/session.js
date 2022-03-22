@@ -10,6 +10,7 @@ module.exports = async server => {
         options: {
             auth: {
                 mode: 'try',
+                strategy: 'guest',
                 access: { scope: ['auth:write'] }
             },
             plugins: {

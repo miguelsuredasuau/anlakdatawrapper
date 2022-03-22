@@ -24,6 +24,7 @@ module.exports = {
             options: {
                 tags: ['api'],
                 auth: {
+                    strategy: 'guest',
                     access: { scope: ['user:read'] }
                 },
                 description: 'Fetch your account information',

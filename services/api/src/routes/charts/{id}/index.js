@@ -31,6 +31,7 @@ module.exports = {
                 description: 'Fetch chart metadata',
                 notes: `Requires scope \`chart:read\` or \`chart:write\`.`,
                 auth: {
+                    strategy: 'guest',
                     access: { scope: ['chart:read', 'chart:write'] }
                 },
                 validate: {
@@ -116,6 +117,7 @@ module.exports = {
                 description:
                     'Update chart. Allows for partial metadata updates (JSON merge patch).  Requires scope `chart:write`.',
                 auth: {
+                    strategy: 'guest',
                     access: { scope: ['chart:write'] }
                 },
                 validate: {
@@ -141,6 +143,7 @@ module.exports = {
                 description:
                     'Update chart. Replaces the entire metadata object.  Requires scope `chart:write`.',
                 auth: {
+                    strategy: 'guest',
                     access: { scope: ['chart:write'] }
                 },
                 validate: {

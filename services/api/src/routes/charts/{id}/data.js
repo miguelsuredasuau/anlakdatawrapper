@@ -14,6 +14,7 @@ module.exports = server => {
             description: 'Fetch chart data',
             notes: `Request the data of a chart, which is usually a CSV. Requires scope \`chart:read\`.`,
             auth: {
+                strategy: 'guest',
                 access: { scope: ['chart:read'] }
             },
             plugins: {
@@ -39,6 +40,7 @@ module.exports = server => {
             description: 'Upload chart data',
             notes: `Upload data for a chart or map. Requires scope \`chart:write\`.`,
             auth: {
+                strategy: 'guest',
                 access: { scope: ['chart:write'] }
             },
             plugins: {
@@ -76,6 +78,7 @@ module.exports = server => {
             description: "Updates a chart's external data source.",
             notes: `If a chart has an external data source configured, this endpoint fetches the data and saves it to the chart. Requires scope \`chart:write\`.`,
             auth: {
+                strategy: 'guest',
                 access: { scope: ['chart:write'] }
             },
             validate: {

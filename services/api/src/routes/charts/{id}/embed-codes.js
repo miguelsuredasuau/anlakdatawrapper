@@ -15,9 +15,8 @@ module.exports = async server => {
             description: 'Get embed codes for a chart',
             notes: `Request the responsive and static embed code of a chart. Requires scope \`chart:read\`.`,
             auth: {
-                access: {
-                    scope: ['chart:read']
-                }
+                strategy: 'guest',
+                access: { scope: ['chart:read'] }
             },
             plugins: {
                 'hapi-swagger': {
@@ -70,9 +69,8 @@ module.exports = async server => {
             description: 'Get share URLs for a chart',
             notes: `Request the available URLs to directly share a chart.`,
             auth: {
-                access: {
-                    scope: ['chart:read']
-                }
+                strategy: 'guest',
+                access: { scope: ['chart:read'] }
             },
             plugins: {
                 'hapi-swagger': {

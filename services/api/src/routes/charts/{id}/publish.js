@@ -46,6 +46,7 @@ module.exports = server => {
         path: '/publish/data',
         options: {
             auth: {
+                strategy: 'guest',
                 access: { scope: ['chart:write', 'theme:read', 'visualization:read'] }
             },
             validate: {
@@ -66,6 +67,7 @@ module.exports = server => {
             description: 'Get publish status',
             notes: 'Check the publish status of a chart.  Requires scope `chart:read`.',
             auth: {
+                strategy: 'guest',
                 access: { scope: ['chart:read'] }
             },
             validate: {

@@ -14,7 +14,8 @@ module.exports = server => {
             tags: ['api'],
             description: 'Fetch chart asset',
             auth: {
-                mode: 'try'
+                mode: 'try',
+                strategy: 'guest'
             },
             notes: `Request an asset associated with a chart. Requires scope \`chart:read\`.`,
             plugins: {
@@ -42,6 +43,7 @@ module.exports = server => {
             notes: `Upload data for a chart, which is usually a CSV.
                         An example looks like this: \`/v3/charts/{id}/assets/{id}.csv\`. Requires scope \`chart:write\`.`,
             auth: {
+                strategy: 'guest',
                 access: { scope: ['chart:write'] }
             },
             plugins: {

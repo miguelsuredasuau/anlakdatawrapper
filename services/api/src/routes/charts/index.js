@@ -112,6 +112,7 @@ module.exports = {
                 description: 'Create new visualization',
                 notes: 'Requires scope `chart:write`.',
                 auth: {
+                    strategy: 'guest',
                     access: { scope: ['chart:write'] }
                 },
                 validate: {

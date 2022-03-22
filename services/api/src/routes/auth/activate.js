@@ -11,7 +11,8 @@ module.exports = async server => {
         path: '/activate/{token}',
         options: {
             auth: {
-                mode: 'try'
+                mode: 'try',
+                strategy: 'guest'
             },
             validate: {
                 params: Joi.object({

@@ -15,7 +15,7 @@ async function updateTeamSettings(server, headers, user, team, payload) {
         method: 'PUT',
         url: `/v3/teams/${team.id}`,
         auth: {
-            strategy: 'simple',
+            strategy: 'user',
             credentials: { session: '', scope: ['team:write'] },
             artifacts: user
         },
@@ -272,7 +272,7 @@ test('admin can edit team', async t => {
             method: 'PATCH',
             url: `/v3/teams/${t.context.teamObj.team.id}`,
             auth: {
-                strategy: 'simple',
+                strategy: 'user',
                 credentials: { session: '', scope: ['team:write'] },
                 artifacts: user
             },
@@ -302,7 +302,7 @@ test('member can not edit team', async t => {
             method: 'PATCH',
             url: `/v3/teams/${t.context.teamObj.team.id}`,
             auth: {
-                strategy: 'simple',
+                strategy: 'user',
                 credentials: { session: '', scope: ['team:write'] },
                 artifacts: user
             },
@@ -330,7 +330,7 @@ test('admin can edit team allowed settings', async t => {
             method: 'GET',
             url: `/v3/teams/${t.context.teamObj.team.id}`,
             auth: {
-                strategy: 'simple',
+                strategy: 'user',
                 credentials: { session: '', scope: ['team:write'] },
                 artifacts: user
             },
@@ -345,7 +345,7 @@ test('admin can edit team allowed settings', async t => {
             method: 'PATCH',
             url: `/v3/teams/${t.context.teamObj.team.id}`,
             auth: {
-                strategy: 'simple',
+                strategy: 'user',
                 credentials: { session: '', scope: ['team:write'] },
                 artifacts: user
             },
@@ -368,7 +368,7 @@ test('admin can edit team allowed settings', async t => {
             method: 'GET',
             url: `/v3/teams/${t.context.teamObj.team.id}`,
             auth: {
-                strategy: 'simple',
+                strategy: 'user',
                 credentials: { session: '', scope: ['team:write'] },
                 artifacts: user
             },
@@ -395,7 +395,7 @@ test("admins can't edit team restricted team settings", async t => {
             method: 'PATCH',
             url: `/v3/teams/${t.context.teamObj.team.id}`,
             auth: {
-                strategy: 'simple',
+                strategy: 'user',
                 credentials: { session: '', scope: ['team:write'] },
                 artifacts: user
             },
@@ -417,7 +417,7 @@ test("admins can't edit team restricted team settings", async t => {
             method: 'GET',
             url: `/v3/teams/${t.context.teamObj.team.id}`,
             auth: {
-                strategy: 'simple',
+                strategy: 'user',
                 credentials: { session: '', scope: ['team:write'] },
                 artifacts: user
             },
@@ -487,7 +487,7 @@ test('restricted team settings are preserved in PUT request', async t => {
             method: 'GET',
             url: `/v3/teams/${team.id}`,
             auth: {
-                strategy: 'simple',
+                strategy: 'user',
                 credentials: { session: '', scope: ['team:write'] },
                 artifacts: user
             },
