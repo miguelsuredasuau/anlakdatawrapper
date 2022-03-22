@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/controls",
-    "version": "3.13.1-alpha.1",
+    "version": "3.14.0",
     "type": "module",
     "scripts": {
         "format": "cd ../../.. && scripts/format libs/controls/v3",
