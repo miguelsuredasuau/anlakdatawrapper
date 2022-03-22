@@ -5,6 +5,7 @@
     export let label;
     export let value;
     export let allowUndefined = false;
+    export let decimals = null;
     export let disabled = false;
     export let help = null;
     export let labelWidth = '100px';
@@ -31,6 +32,7 @@
     <NumberInput
         bind:value
         {allowUndefined}
+        {decimals}
         {disabled}
         {max}
         {min}

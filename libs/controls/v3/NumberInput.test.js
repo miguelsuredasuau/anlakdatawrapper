@@ -61,6 +61,44 @@ test('Updating the value programatically', t => {
     t.is(t.context.querySelector('input[type=number]').value, '42');
 });
 
+test('NumberInput rounds value to a number of decimals calculated from the step size', async t => {
+    const app = new NumberInput({
+        target: t.context,
+        props: { value: 0, step: 0.1 }
+    });
+
+    app.value = 42.567;
+
+    t.is(t.context.querySelector('input[type=range]').value, '42.6');
+    t.is(t.context.querySelector('input[type=number]').value, '42.6');
+
+    // Update value via number input.
+    t.context.querySelector('input[type=number]').value = 23.456;
+    t.context.querySelector('input[type=number]').dispatchEvent(new Event('input'));
+    await tick();
+
+    t.is(app.value, 23.5);
+});
+
+test('NumberInput rounds value to a specified number of decimals', async t => {
+    const app = new NumberInput({
+        target: t.context,
+        props: { value: 0, step: 0.1, decimals: 2 }
+    });
+
+    app.value = 42.567;
+
+    t.is(t.context.querySelector('input[type=range]').value, '42.57');
+    t.is(t.context.querySelector('input[type=number]').value, '42.57');
+
+    // Update value via number input.
+    t.context.querySelector('input[type=number]').value = 23.456;
+    t.context.querySelector('input[type=number]').dispatchEvent(new Event('input'));
+    await tick();
+
+    t.is(app.value, 23.46);
+});
+
 test('Updating the value via the input controls', async t => {
     const app = new NumberInput({
         target: t.context,

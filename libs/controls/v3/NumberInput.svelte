@@ -7,6 +7,7 @@
     export let min = 0;
     export let max = 100;
     export let step = 1;
+    export let decimals = null;
     export let allowUndefined = false;
     export let placeholder = null;
     export let slider = true;
@@ -19,7 +20,10 @@
     let inputValue;
     const prevState = {};
 
-    $: decimals = Math.max(0, -Math.floor(Math.log(step * multiply) / Math.LN10));
+    $: finalDecimals =
+        decimals === null
+            ? Math.max(0, -Math.floor(Math.log(step * multiply) / Math.LN10))
+            : decimals;
 
     /**
      * Update the outside world value when the input value changes.
@@ -29,7 +33,7 @@
         if (allowUndefined && inputValue === undefined) {
             newValue = undefined;
         } else {
-            newValue = inputValue ? +inputValue.toFixed(decimals) / multiply : 0;
+            newValue = inputValue ? +inputValue.toFixed(finalDecimals) / multiply : 0;
         }
         prevState.value = newValue; // Prevent circular triggering of the statement that reacts on `value` change.
         value = newValue;
@@ -48,7 +52,7 @@
         if (allowUndefined && value === undefined) {
             newInputValue = undefined;
         } else {
-            newInputValue = +(value * multiply).toFixed(decimals);
+            newInputValue = +(value * multiply).toFixed(finalDecimals);
         }
         prevState.inputValue = newInputValue; // Prevent circular triggering of the statement that reacts on `inputValue` change.
         inputValue = newInputValue;
