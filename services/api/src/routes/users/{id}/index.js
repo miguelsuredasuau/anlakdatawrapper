@@ -115,6 +115,7 @@ module.exports = {
         require('./data')(server, options);
         require('./settings')(server, options);
         require('./setup')(server, options);
+        require('./recent-charts')(server, options);
     }
 };
 

@@ -52,6 +52,11 @@ describe('archive', () => {
         it('search input should exist', () => {
             renderResult.getByPlaceholderText('Search').should.exist;
         });
+
+        it('search folders should exist', () => {
+            const searchFolders = renderResult.container.querySelectorAll('.folder.is-search');
+            expect(searchFolders.length).to.equal(2);
+        });
     });
 
     describe('with folders', () => {
@@ -109,7 +114,7 @@ describe('archive', () => {
         });
 
         it('should open the folder tree correctly', async () => {
-            const rootFolder = renderResult.container.getElementsByClassName('folder')[0];
+            const rootFolder = renderResult.container.querySelector('.folder:not(.is-search)');
             const btn = rootFolder.getElementsByTagName('button')[0];
             btn.click();
             await tick();

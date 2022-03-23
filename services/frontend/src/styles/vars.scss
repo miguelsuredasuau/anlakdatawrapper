@@ -34,7 +34,7 @@ $background: $dw-white-bis;
 $body-background-color: white;
 $footer-background-color: transparent;
 
-// $border:
+$border: $grey-lighter; // bulma default
 // $border-hover
 // $border-light
 // $border-light-hover
@@ -90,7 +90,20 @@ $hr-background-color: $dw-shade;
 $button-color: $black-bis;
 $button-hover-color: $black;
 
+$button-text-color: inherit;
+$button-text-decoration: none;
+$button-text-hover-background-color: $dw-shade-light;
+$button-text-hover-color: $text-strong;
+
+// $button-ghost-background: $dw-shade-light;
+$button-ghost-color: inherit;
+$button-ghost-decoration: none;
+$button-ghost-hover-color: $link-hover;
+$button-ghost-hover-decoration: none;
+
+
 // Content
+
 $content-heading-weight: 500; // medium instead of semibold
 $content-heading-color: $dw-black-bis;
 

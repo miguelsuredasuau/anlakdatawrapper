@@ -2,7 +2,7 @@
     import Dropdown from '_partials/Dropdown.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { formatQueryString } from '../../utils/url.cjs';
-    import { query } from './stores';
+    import { query, currentFolder } from './stores';
     import { DEFAULT_SORT_ORDER } from './constants';
 
     export let __;
@@ -50,6 +50,9 @@
         }
     ];
     let arrangeDropdownActive = false;
+    $: forcedArrangeOption = $currentFolder.forceOrder
+        ? arrangeOptions.find(o => o.id === $currentFolder.forceOrder.orderBy)
+        : null;
     let selectedArrangeOption = arrangeOptions.find(
         o => o.query && o.query.groupBy === apiQuery.groupBy && o.query.orderBy === apiQuery.orderBy
     );
@@ -59,18 +62,27 @@
     }
 </script>
 
-<Dropdown bind:active={arrangeDropdownActive}>
+<Dropdown disabled={$currentFolder.forceOrder} bind:active={arrangeDropdownActive}>
     <button
         aria-haspopup="true"
         aria-controls="dropdown-menu"
-        class="button is-text has-text-grey-dark"
-        style="text-decoration:none"
+        class="button is-text"
         slot="trigger"
+        disabled={$currentFolder.forceOrder}
         >{__('archive / sorted-by')}&nbsp;
-        <b>{(selectedArrangeOption && selectedArrangeOption.title) || '...'}</b>
-        <span class="p-3" on:click|preventDefault|stopPropagation={reverseSortDirection}
-            ><IconDisplay size="20px" icon="arrow-{$query.order === 'ASC' ? 'down' : 'up'}" /></span
-        ></button
+        {#if forcedArrangeOption}<b>{forcedArrangeOption.title}</b><span class="pl-2"
+                ><IconDisplay
+                    size="20px"
+                    icon="arrow-{$currentFolder.forceOrder.order === 'ASC' ? 'down' : 'up'}"
+                /></span
+            >{:else}
+            <b>{(selectedArrangeOption && selectedArrangeOption.title) || '...'}</b>
+            <span class="pl-2" on:click|preventDefault|stopPropagation={reverseSortDirection}
+                ><IconDisplay
+                    size="20px"
+                    icon="arrow-{$query.order === 'ASC' ? 'down' : 'up'}"
+                /></span
+            >{/if}</button
     >
     <div class="dropdown-content" slot="content">
         {#each arrangeOptions as option (option.id)}

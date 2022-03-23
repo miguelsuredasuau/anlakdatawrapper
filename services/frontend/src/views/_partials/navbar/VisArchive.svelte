@@ -15,12 +15,12 @@
 
     onMount(async () => {
         // load recently edited visualizations
-        const { list: charts } = await httpReq.get('/v3/charts?orderBy=lastModifiedAt&limit=10');
+        const { list: charts } = await httpReq.get('/v3/me/recently-edited-charts?limit=10');
         items = charts;
     });
 
     $: title = __('archive');
-    $: url = $user.activeTeam ? `/archive/team/${$user.activeTeam.id}` : '/archive';
+    const url = '/archive/recently-edited';
 </script>
 
 <style lang="scss">

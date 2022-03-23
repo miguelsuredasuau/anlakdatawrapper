@@ -229,7 +229,7 @@ async function publishChart(request) {
             await setUserData(
                 user.id,
                 'recently_published',
-                JSON.stringify(uniq([chart.id, ...recentlyPublished]).slice(0, 100))
+                JSON.stringify(uniq([chart.id, ...recentlyPublished]).slice(0, 500))
             );
         }
     } catch (err) {

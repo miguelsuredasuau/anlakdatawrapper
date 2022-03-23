@@ -1,11 +1,14 @@
 <script>
     export let active = false;
+    export let disabled = false;
 
     let dropdown;
     export let align = 'left';
 
     function toggle() {
-        active = !active;
+        if (!disabled) {
+            active = !active;
+        }
     }
 
     function windowClick(event) {
@@ -15,6 +18,10 @@
 
 <style lang="scss">
     // @import '../../styles/export.scss';
+    .dropdown.is-disabled {
+        pointer-events: none;
+        cursor: default;
+    }
 </style>
 
 <svelte:window on:click={windowClick} />
@@ -22,6 +29,7 @@
     class="dropdown"
     bind:this={dropdown}
     class:is-active={active}
+    class:is-disabled={disabled}
     class:is-right={align === 'right'}
 >
     <div class="dropdown-trigger" on:click={toggle}>

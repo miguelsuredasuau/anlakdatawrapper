@@ -285,4 +285,24 @@ function isValidMySQLJSON(x) {
 
 utils.isValidMySQLJSON = isValidMySQLJSON;
 
+/**
+ * the attributes used in GET /v3/charts and
+ * GET /v3/users/:id/recently-edited-charts etc
+ */
+utils.GET_CHARTS_ATTRIBUTES = [
+    'id',
+    'title',
+    'type',
+    'createdAt',
+    'in_folder',
+    'author_id',
+    'organization_id',
+    'last_edit_step',
+    'last_modified_at',
+    'public_version',
+    'published_at',
+    'theme',
+    'language'
+];
+
 module.exports = utils;

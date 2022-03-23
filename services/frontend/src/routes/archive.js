@@ -68,7 +68,10 @@ module.exports = {
                 auth: 'user',
                 validate: {
                     params: Joi.object({
-                        folderId: Joi.number().integer().optional()
+                        folderId: Joi.alternatives(
+                            Joi.number().integer(),
+                            Joi.string().valid('recently-edited', 'recently-published')
+                        ).optional()
                     }),
                     query: validQueryParams
                 },
@@ -101,7 +104,7 @@ module.exports = {
             const __ = server.methods.getTranslate(request);
             const api = server.methods.createAPI(request);
 
-            if (folderId) {
+            if (typeof folderId === 'number') {
                 // check if folder exists
                 const cnt = await Folder.count({
                     where: {
@@ -140,20 +143,29 @@ module.exports = {
                 config.general?.defaultThemes || []
             );
 
-            const qs = formatQueryString({
-                minLastEditStep,
-                offset,
-                order,
-                orderBy,
-                limit,
-                ...(search && { search }),
-                ...(!search && { folderId: folderId || 'null' }),
-                ...(!search && (teamId ? { teamId } : { authorId: 'me', teamId: 'null' }))
-            });
+            const isRecentChartsQuery =
+                typeof folderId === 'string' && folderId.startsWith('recently-');
+
+            const qs = formatQueryString(
+                isRecentChartsQuery
+                    ? { offset, limit }
+                    : {
+                          minLastEditStep,
+                          offset,
+                          order,
+                          orderBy,
+                          limit,
+                          ...(search && { search }),
+                          ...(!search && { folderId: folderId || 'null' }),
+                          ...(!search && (teamId ? { teamId } : { authorId: 'me', teamId: 'null' }))
+                      }
+            );
 
             let charts;
             try {
-                charts = await api(`/charts?${qs}`);
+                charts = await api(
+                    isRecentChartsQuery ? `/me/${folderId}-charts?${qs}` : `/charts?${qs}`
+                );
             } catch {
                 // The team probably doesn't exist or the user doesn't have permissions to access
                 // it. We can't tell for sure, because the `api()` function doesn't give us access
@@ -161,7 +173,7 @@ module.exports = {
                 throw Boom.notFound();
             }
 
-            if (groupBy) {
+            if (!isRecentChartsQuery && groupBy) {
                 charts.list = groupCharts({ charts: charts.list, groupBy, __ });
             }
 

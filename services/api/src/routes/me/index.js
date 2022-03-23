@@ -76,6 +76,7 @@ module.exports = {
         });
 
         require('./settings')(server, options);
+        require('./recent-charts')(server, options);
         require('./data')(server, options);
         require('./otp')(server, options);
 

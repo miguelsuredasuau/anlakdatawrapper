@@ -5,7 +5,7 @@ const { Op, QueryTypes, literal } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');
 const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
 const { chartListResponse, chartResponse } = require('../../schemas/response');
-const { prepareChart } = require('../../utils/index.js');
+const { prepareChart, GET_CHARTS_ATTRIBUTES } = require('../../utils/index.js');
 const { runAndIgnoreParseErrors } = require('@datawrapper/orm/utils/run');
 const Boom = require('@hapi/boom');
 
@@ -266,21 +266,7 @@ async function getAllCharts(request) {
 
     const options = {
         order: [[decamelize(query.orderBy), query.order]],
-        attributes: [
-            'id',
-            'title',
-            'type',
-            'createdAt',
-            'in_folder',
-            'author_id',
-            'organization_id',
-            'last_edit_step',
-            'last_modified_at',
-            'public_version',
-            'published_at',
-            'theme',
-            'language'
-        ],
+        attributes: GET_CHARTS_ATTRIBUTES,
         where: {},
         limit: query.limit,
         offset: query.offset

@@ -382,7 +382,7 @@ async function editChart(request) {
                     await setUserData(
                         user.id,
                         'recently_edited',
-                        JSON.stringify(uniq([chart.id, ...recentlyEdited]).slice(0, 100))
+                        JSON.stringify(uniq([chart.id, ...recentlyEdited]).slice(0, 500))
                     );
                 }
             } catch (err) {

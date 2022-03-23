@@ -71,7 +71,6 @@
         position: absolute;
         top: 10px;
         right: 10px;
-        font-size: 20px;
     }
 
     .preview {
@@ -157,7 +156,7 @@
                     <div class="block">
                         <a
                             href="/chart/{chart.id}/edit"
-                            class="edit-chart button is-primary is-large"
+                            class="edit-chart button is-primary is-medium"
                             ><IconDisplay icon="edit" />
                             <span>{__('archive / edit')}</span></a
                         >
@@ -168,15 +167,13 @@
                             <li>
                                 <button
                                     on:click={() => duplicateChart(chart, true)}
-                                    class="button is-ghost is-medium"
+                                    class="button is-text is-medium"
                                     ><IconDisplay icon="duplicate" />
                                     <span>{__('archive / duplicate')}</span></button
                                 >
                             </li>
                             <li>
-                                <a
-                                    href="/chart/{chart.id}/publish"
-                                    class="button is-ghost is-medium"
+                                <a href="/chart/{chart.id}/publish" class="button is-text is-medium"
                                     ><IconDisplay icon="export-file" />
                                     <span>{__('archive / modal / re-publish')}</span></a
                                 >
@@ -187,7 +184,7 @@
                                         <button
                                             slot="trigger"
                                             href="/chart/{chart.id}/publish"
-                                            class="button is-ghost is-medium"
+                                            class="button is-text is-medium"
                                             ><IconDisplay icon="source-code" />
                                             <span>{__('archive / modal / copy-embed-code')}</span
                                             ><IconDisplay
@@ -231,7 +228,7 @@
                         <hr class="my-2" />
                         <button
                             on:click={handleDeleteButtonClick}
-                            class="button is-ghost is-medium has-text-danger"
+                            class="button is-text is-medium has-text-danger"
                             ><IconDisplay icon="trash" />
                             <span>{__('archive / delete')}</span></button
                         >

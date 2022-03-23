@@ -14,6 +14,9 @@
     &.is-text {
         box-shadow: none;
     }
+    &.is-text:disabled {
+        color: inherit;
+    }
     .icon {
         svg {
             font-size: 1.429em; // = 20px in 14px buttons
@@ -46,7 +49,7 @@
             }
         }
     }
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.05) inset;
+    box-shadow: 0 0 0 1px rgba(black,0.05) inset;
 }
 
 .modal {

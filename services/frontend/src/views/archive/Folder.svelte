@@ -222,7 +222,7 @@
 <div
     class="folder"
     class:open
-    class:is-search={!!folder.search}
+    class:is-search={!!folder.search || folder.virtual}
     class:is-shared={!!folder.teamId}
     class:is-drop-zone={isDropZone}
 >
@@ -231,13 +231,13 @@
         class:active={isCurrent}
         class:is-foreign={foreignTeam && foreignTeam === folder.teamId}
         style="padding-left: {22 + folder.level * indentation}px"
-        draggable={!folder.search && !!folder.id}
+        draggable={!folder.search && !folder.virtual && !!folder.id}
         on:dragstart|stopPropagation={() => {
             if (folder.search) return;
             handleDragStart('folder', folder);
         }}
         on:dragenter|stopPropagation={ev => {
-            if (folder.search) return;
+            if (folder.search || folder.virtual) return;
             $folderTreeDropZone = folder.key;
             handleDragEnter(ev, folder);
         }}
@@ -248,11 +248,11 @@
             handleDragLeave(ev);
         }}
         on:dragover|preventDefault={() => {
-            if (folder.search) return;
+            if (folder.search || folder.virtual) return;
             $folderTreeDropZone = folder.key;
         }}
         on:drop|preventDefault|stopPropagation={() => {
-            if (folder.search) return;
+            if (folder.search || folder.virtual) return;
             handleDrop(folder);
         }}
     >
@@ -275,6 +275,8 @@
             ><IconDisplay
                 icon="folder{folder.search
                     ? '-search-outline'
+                    : folder.virtual
+                    ? '-search'
                     : folder.id
                     ? ''
                     : isSharedFolder
@@ -295,7 +297,7 @@
                     {folder.name}
                 {/if}
                 {#if folder.chartCount}<span class="has-text-grey">({folder.chartCount})</span>{/if}
-                {#if !folder.id && !folder.search && (!$user.activeTeam ? !folder.teamId : $user.activeTeam.id === folder.teamId)}
+                {#if !folder.id && !folder.search && !folder.virtual && (!$user.activeTeam ? !folder.teamId : $user.activeTeam.id === folder.teamId)}
                     <IconDisplay icon="check-circle" className="ml-1" valign="sub" />
                 {/if}
             </span>

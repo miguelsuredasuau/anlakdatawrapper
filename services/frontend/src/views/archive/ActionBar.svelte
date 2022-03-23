@@ -23,34 +23,30 @@
     @import '../../styles/colors.scss';
 </style>
 
-<div class="level block has-text-grey">
+<div class="level block has-text-grey-dark">
     <div class="level-left">
         <div class="level-item">
             <AddInFolder {__} {folderId} {teamId} />
         </div>
         {#if $selectedCharts.size}
-            <div class="level-item ml-1 mr-0">
-                <strong class="has-text-grey mr-1">{$selectedCharts.size}</strong>
+            <div class="level-item ml-3 mr-1">
+                <strong class="mr-1 has-text-grey-dark">{$selectedCharts.size}</strong>
                 {__('archive / action-bar / selected')}
             </div>
             <div class="level-item">
                 <button
-                    class="button is-ghost"
+                    class="button is-text"
                     on:click={deselectAll}
                     title={__('archive / action-bar / deselect-all')}
                     aria-label={__('archive / action-bar / deselect-all')}
                 >
-                    <IconDisplay icon="close" className="has-text-grey" size="18px" />
+                    <IconDisplay icon="close" size="1em" />
                 </button>
             </div>
         {:else}
             <div class="level-item">
-                <button
-                    class="button is-text has-text-grey-dark"
-                    style="text-decoration:none"
-                    on:click={selectAll}
-                >
-                    <IconDisplay icon="check-all" className="has-text-grey" size="18px" />
+                <button class="button is-text" on:click={selectAll}>
+                    <IconDisplay icon="check-all" />
                     <span>{__('archive / action-bar / select-all')}</span>
                 </button>
             </div>

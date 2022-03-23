@@ -851,15 +851,15 @@ a.box:active {
 .button.is-text {
   background-color: transparent;
   border-color: transparent;
-  color: #333333;
-  text-decoration: underline;
+  color: inherit;
+  text-decoration: none;
 }
 .button.is-text:hover, .button.is-text.is-hovered, .button.is-text:focus, .button.is-text.is-focused {
-  background-color: #f9f9f9;
+  background-color: rgba(0, 0, 0, 0.035);
   color: #111111;
 }
 .button.is-text:active, .button.is-text.is-active {
-  background-color: #ececec;
+  background-color: rgba(0, 0, 0, 0.035);
   color: #111111;
 }
 .button.is-text[disabled], fieldset[disabled] .button.is-text {
@@ -870,12 +870,12 @@ a.box:active {
 .button.is-ghost {
   background: none;
   border-color: transparent;
-  color: #1d81a2;
+  color: inherit;
   text-decoration: none;
 }
 .button.is-ghost:hover, .button.is-ghost.is-hovered {
-  color: #1d81a2;
-  text-decoration: underline;
+  color: #15607a;
+  text-decoration: none;
 }
 .button.is-white {
   background-color: #ffffff;
@@ -10214,6 +10214,9 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 }
 .button.is-white, .button.is-light, .button.is-ghost, .button.is-text {
   box-shadow: none;
+}
+.button.is-text:disabled {
+  color: inherit;
 }
 .button .icon svg {
   font-size: 1.429em;

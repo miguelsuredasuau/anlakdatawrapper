@@ -71,6 +71,38 @@
         visModalMetadata
     });
 
+    const virtualFolder = {
+        id: null,
+        teamId: null,
+        children: [],
+        virtual: true,
+        level: 0
+    };
+    const virtualFolders = [
+        {
+            ...virtualFolder,
+            key: 'recently-edited',
+            path: '/archive/recently-edited',
+            name: __('dashboard / recent-drafts / title'),
+            apiURL: '/v3/me/recently-edited-charts',
+            forceOrder: {
+                orderBy: 'lastModifiedAt',
+                order: 'DESC'
+            }
+        },
+        {
+            ...virtualFolder,
+            key: 'recently-published',
+            path: '/archive/recently-published',
+            name: __('dashboard / recently-published / title'),
+            apiURL: '/v3/me/recently-published-charts',
+            forceOrder: {
+                orderBy: 'publishedAt',
+                order: 'DESC'
+            }
+        }
+    ];
+
     $: userFolder = parseFolderTree(folders);
     $: teamFolders = teams.map(t => parseFolderTree(folders, t.id));
 
@@ -104,6 +136,11 @@
         }
         _prevPath = $currentFolder.path;
         apiQuery = $query;
+        if ($currentFolder.forceOrder) {
+            // some virtual folders force a certain order
+            $query.orderBy = $currentFolder.forceOrder.orderBy;
+            $query.order = $currentFolder.forceOrder.order;
+        }
 
         const qs = formatQueryString({
             ...(limit && limit !== 96 && { limit }),
@@ -170,7 +207,7 @@
     }
 
     function findFolderByPath(folders, path) {
-        for (const f of Object.values(folders)) {
+        for (const f of [...Object.values(folders), ...virtualFolders]) {
             if (f.path === path) {
                 return f;
             }
@@ -213,19 +250,26 @@
 
     async function loadCharts() {
         const { groupBy, limit, offset, order, orderBy, search } = $query;
-        const qs = formatQueryString({
-            minLastEditStep,
-            offset,
-            order,
-            orderBy,
-            limit,
-            ...(search && { search }),
-            ...(!search && { folderId: folderId || 'null' }),
-            ...(!search && (teamId ? { teamId } : { authorId: 'me', teamId: 'null' }))
-        });
+        const qs = $currentFolder.apiURL
+            ? formatQueryString({
+                  limit,
+                  offset
+              })
+            : formatQueryString({
+                  minLastEditStep,
+                  offset,
+                  order,
+                  orderBy,
+                  limit,
+                  ...(search && { search }),
+                  ...(!search && { folderId: folderId || 'null' }),
+                  ...(!search && (teamId ? { teamId } : { authorId: 'me', teamId: 'null' }))
+              });
         try {
             $chartsLoading = true;
-            const newCharts = await httpReq.get(`/v3/charts?${qs}`);
+            const newCharts = await httpReq.get(
+                $currentFolder.apiURL ? `${$currentFolder.apiURL}?${qs}` : `/v3/charts?${qs}`
+            );
             if (groupBy) {
                 newCharts.list = groupCharts({ charts: newCharts.list, groupBy, __ });
             }
@@ -441,14 +485,16 @@
             <div class="columns is-variable is-8-fullhd">
                 <div class="column" style="position: relative; z-index: 20;">
                     <div bind:this={folderNavEl} style="position: sticky;">
-                        {#if $currentFolder.search}
-                            <CollapseGroup
-                                className="search"
-                                title={__('archive / section / search')}
-                            >
+                        <CollapseGroup className="search" title={__('archive / section / search')}
+                            >{#if $currentFolder.search && $currentFolder.search !== true}
                                 <Folder {__} folder={$currentFolder} />
-                            </CollapseGroup>
-                        {/if}
+                                <hr class="my-3" />
+                            {/if}
+                            {#each virtualFolders as folder}
+                                <Folder {__} {folder} />
+                            {/each}
+                        </CollapseGroup>
+
                         <CollapseGroup className="shared" title={__('archive / section / shared')}>
                             {#each sortedTeamFolders as teamFolder, i}
                                 {#if i}<hr class="my-3" />{/if}

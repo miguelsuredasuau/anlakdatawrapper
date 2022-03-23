@@ -4,6 +4,7 @@
 
     import httpReq from '@datawrapper/shared/httpReq';
     import { getContext } from 'svelte';
+    import { currentFolder } from './stores';
 
     export let __;
     export let folderId;
@@ -62,8 +63,9 @@
 </style>
 
 <div class="add-folder block">
-    <Dropdown bind:active={isActive}>
+    <Dropdown bind:active={isActive} disabled={$currentFolder.search || $currentFolder.virtual}>
         <button
+            disabled={$currentFolder.search || $currentFolder.virtual}
             class="button is-primary"
             aria-haspopup="true"
             aria-controls="dropdown-menu"
