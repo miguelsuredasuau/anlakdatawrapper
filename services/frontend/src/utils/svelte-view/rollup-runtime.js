@@ -129,6 +129,7 @@ function buildOptions(page, ssr) {
                 entries: {
                     _layout: join(__dirname, '../../views/_layout'),
                     _partials: join(__dirname, '../../views/_partials'),
+                    _plugins: join(__dirname, '../../views/_plugins'),
                     ...(ssr
                         ? {
                               '@datawrapper/shared/decodeHtml': '@datawrapper/shared/decodeHtml.ssr'

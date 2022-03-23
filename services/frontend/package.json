@@ -60,8 +60,8 @@
         "rss-parser": "^3.12.0",
         "sass": "^1.42.1",
         "snarkdown": "^2.0.0",
-        "svelte": "^3.39.0",
-        "svelte-preprocess": "^4.9.8",
+        "svelte": "^3.46.4",
+        "svelte-preprocess": "^4.10.4",
         "tempfile": "^3.0.0",
         "underscore": "^1.12.0"
     },
