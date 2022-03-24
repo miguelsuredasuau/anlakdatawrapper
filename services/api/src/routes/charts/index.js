@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const createChart = require('@datawrapper/service-utils/createChart');
 const set = require('lodash/set');
-const { Op, QueryTypes, literal } = require('@datawrapper/orm').db;
+const { Op } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');
 const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
 const { chartListResponse, chartResponse } = require('../../schemas/response');
@@ -368,12 +368,11 @@ async function getAllCharts(request) {
 
     if (query.search) {
         filters.push({
-            [Op.or]: literal('MATCH(title, keywords) AGAINST(:search_query IN BOOLEAN MODE)')
+            [Op.or]: {
+                title: { [Op.like]: `%${query.search}%` },
+                keywords: { [Op.like]: `%${query.search}%` }
+            }
         });
-        options.replacements = {
-            search_query: query.search,
-            type: QueryTypes.SELECT
-        };
     }
 
     if (query.folderId) {

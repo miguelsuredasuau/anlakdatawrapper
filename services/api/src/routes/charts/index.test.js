@@ -182,7 +182,7 @@ function getHelpers(t, userObj) {
     };
 }
 
-test('Should be possible to search in multiple fields', async t => {
+test('Search searches in multiple fields', async t => {
     const userObj = await createUser(t.context.server);
     const { createChart, auth } = getHelpers(t, userObj);
     let chart = await createChart({
@@ -214,6 +214,21 @@ test('Should be possible to search in multiple fields', async t => {
         t.is(chart.result.list.length, 1, query);
         t.is(chart.result.list[0].id, chartId, query);
     }
+});
+
+test('Search returns charts whose title matches (case-insensitive)', async t => {
+    const userObj = await createUser(t.context.server);
+    const { createChart, auth } = getHelpers(t, userObj);
+    await createChart({ title: 'one' });
+    await createChart({ title: 'two' });
+    const res = await t.context.server.inject({
+        method: 'GET',
+        url: `/v3/charts?search=W`,
+        auth
+    });
+    t.is(res.statusCode, 200);
+    t.is(res.result.list.length, 1);
+    t.is(res.result.list[0].title, 'two');
 });
 
 test('Search escapes the query parameter', async t => {
@@ -257,7 +272,8 @@ test('Search does not crash when passed an invalid relevance expression', async 
         auth
     });
     t.is(res.statusCode, 200);
-    t.is(res.result.list.length, 0);
+    t.is(res.result.list.length, 1);
+    t.is(res.result.list[0].title, title);
 });
 
 test('Should be possible to create chart in a folder', async t => {
