@@ -4,12 +4,21 @@ export function storeColor(color, palette, returnPaletteIndex) {
         color = color.hex();
     }
     if (returnPaletteIndex) {
-        const pi = palette.map(c => c.toLowerCase()).indexOf(color.toLowerCase());
-        if (pi > -1) return pi;
+        const paletteIndex = palette.map(c => c.toLowerCase()).indexOf(color.toLowerCase());
+        if (paletteIndex > -1) return paletteIndex;
     }
     return color;
 }
 
+/**
+ * @param {number|string} color - can be a string color (e.g. "#ff00cc") or a palette index
+ * @param {array} palette - the theme color palette to lookup color indexes
+ * @returns {string} hex representation
+ */
 export function getColor(color, palette) {
-    return typeof color === 'number' ? palette[color % palette.length] : color;
+    return typeof color === 'number'
+        ? palette[color % palette.length]
+        : typeof color === 'object' && typeof color.hex === 'function'
+        ? color.hex()
+        : color;
 }

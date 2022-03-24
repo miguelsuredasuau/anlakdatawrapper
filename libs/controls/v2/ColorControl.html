@@ -139,7 +139,8 @@
                     .filter(s => custom[s] !== undefined)
                     .map(s => getColor(custom[s], palette));
                 if (!realColors.length) return false; // return false to reset the current color
-                return chroma.average(realColors, 'lab'); // return a color value to set the current color
+                if (realColors.length === 1) return realColors[0];
+                return chroma.average(realColors, 'lab').hex(); // return a color value to set the current color
             }
         },
         helpers: { __ },
