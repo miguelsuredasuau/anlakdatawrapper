@@ -22,7 +22,7 @@
                     <Menu groups={settingsPages} {loadPage} />
                     <slot name="belowNav" />
                 </div>
-                <div class="column is-four-fifths">
+                <div class="column is-10">
                     <slot />
                 </div>
             </div>
