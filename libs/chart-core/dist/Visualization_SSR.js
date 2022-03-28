@@ -10417,8 +10417,9 @@ Please make sure you called __(key) with a key of type "string".
         key: `datawrapper-${chart.id}`,
         container: isIframe ? document.head : styleHolder
       });
-    } // we only apply dark mode if base theme is light
+    }
 
+    const browserSupportsPrefersColorScheme = CSS.supports("color-scheme", "dark"); // we only apply dark mode if base theme is light
 
     const lightBg = get(themeDataLight, "colors.background", "#ffffff");
 
@@ -10429,8 +10430,6 @@ Please make sure you called __(key) with a key of type "string".
       }));
       if (isStyleDark) vis.darkMode(true);
     }
-
-    const browserSupportsPrefersColorScheme = CSS.supports("color-scheme", "dark");
 
     if (!isPreview && isAutoDark) {
       const matchMediaQuery = window.matchMedia("(prefers-color-scheme: dark)"); // for browsers that don't support prefers-color-scheme

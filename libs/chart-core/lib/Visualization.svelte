@@ -499,6 +499,8 @@ Please make sure you called __(key) with a key of type "string".
             });
         }
 
+        const browserSupportsPrefersColorScheme = CSS.supports('color-scheme', 'dark');
+
         // we only apply dark mode if base theme is light
         const lightBg = get(themeDataLight, 'colors.background', '#ffffff');
         if (chroma(lightBg).luminance() >= 0.3) {
@@ -508,8 +510,6 @@ Please make sure you called __(key) with a key of type "string".
             );
             if (isStyleDark) vis.darkMode(true);
         }
-
-        const browserSupportsPrefersColorScheme = CSS.supports('color-scheme', 'dark');
 
         if (!isPreview && isAutoDark) {
             const matchMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
