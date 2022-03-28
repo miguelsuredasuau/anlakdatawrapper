@@ -22,6 +22,11 @@
             height: 75px;
         }
 
+        @media @viewport-large {
+            width: 104px;
+            height: 104px;
+        }
+
         svg {
             width: 30px; //55
             height: 40px; //60
@@ -45,6 +50,12 @@
                 margin-left: 23px;
                 margin-top: 10px;
             }
+
+            @media @viewport-large {
+                width: 46px;
+                height: 70px;
+            }
+
         }
 
         .title {
@@ -60,7 +71,13 @@
             text-shadow: 1px 1px 0px @light-grey, 0px 1px 0px @light-grey, -1px 1px 0px @light-grey,
                 1px -1px 0px @light-grey, 0px -1px 0px @light-grey, -1px -1px 0px @light-grey,
                 1px 0px 0px @light-grey, 0px 0px 0px @light-grey, -1px 0px 0px @light-grey;
-            color: #555;
+            color: rgb(29, 26, 26);
+
+            @media @viewport-large {
+                font-size: 12px;
+                font-weight: 400;
+            }
+
         }
 
         &:hover {

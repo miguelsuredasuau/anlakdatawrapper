@@ -22,6 +22,26 @@
 
 @viewport-mobile: ~'only screen and (max-width: 400px)';
 @viewport-medium: ~'only screen and (max-width: 1199px)';
+@viewport-large: ~'only screen and (min-width: 1400px)';
+
+@large_width: 1336px;
+@column_padding: 30px;
+
+@media @viewport-large {
+    .container,
+    .navbar-static-top .container,
+    .navbar-fixed-top .container,
+    .navbar-fixed-bottom .container {
+        width: @large_width;
+    }
+    each(range(12), {
+        .span@{value} {
+            width: floor(@large_width * (@value/12) - @column_padding);
+
+        }
+    });
+}
+
 
 body {
     background: @dw_background;
