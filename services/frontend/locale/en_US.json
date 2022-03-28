@@ -1132,5 +1132,6 @@
   "typeahead / searching": "Searching...",
   "fileinput / choose-file": "Choose a file…",
   "fileinput / selected-n-files": "selected %n files",
-  "dashboard / manage-team-settings": "or manage <a href=\"/team/%teamId%/settings\">team settings</a>"
+  "dashboard / manage-team-settings": "or manage <a href=\"/team/%teamId%/settings\">team settings</a>",
+  "archive / my-archive": "My archive"
 }

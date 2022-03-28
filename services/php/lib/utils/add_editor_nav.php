@@ -40,7 +40,7 @@ function add_editor_nav(&$page, $step, $chart) {
     $folders[] = [
         'icon' => empty($chartOrg) ? 'im im-user-male' : 'im im-users',
         'url' => $baseUrl,
-        'name' => empty($chartOrg) ? __('My Charts') : $chartOrg->getName()
+        'name' => empty($chartOrg) ? __('archive / my-archive') : $chartOrg->getName()
     ];
     $folders = array_reverse($folders);
     $page['folders'] = $folders;

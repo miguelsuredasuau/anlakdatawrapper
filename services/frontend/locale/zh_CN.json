@@ -1132,5 +1132,6 @@
   "typeahead / searching": "搜索...",
   "fileinput / choose-file": "",
   "fileinput / selected-n-files": "",
-  "dashboard / manage-team-settings": ""
+  "dashboard / manage-team-settings": "",
+  "archive / my-archive": ""
 }

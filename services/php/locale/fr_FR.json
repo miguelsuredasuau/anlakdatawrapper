@@ -1014,7 +1014,7 @@
   "dashboard / recent-drafts / title": "Édition récente",
   "dashboard / recently-published / empty": "Vous n’avez pas encore publié de graphique.",
   "dashboard / recently-published / title": "Publication récente",
-  "dashboard / see-team-charts": "Consultez les [graphiques de votre équipe]",
+  "dashboard / see-team-charts": "",
   "dashboard / team": "Équipe",
   "dashboard / team-upgrade": "Utilisez-vous Datawrapper dans une salle de presse ? Jetez un œil à <a href='/newsrooms' target='_blank'>l’équipe Datawrapper</a> !",
   "dashboard / upgrade": "<a href='/single'>Passez à Single !</a>",
@@ -1125,5 +1125,13 @@
   "browser-warning / learn-more": "",
   "browser-warning / not-supported": "",
   "browser-warning / switch-browser": "",
-  "browser-warning / visualizations": ""
+  "browser-warning / visualizations": "",
+  "layout / dark-mode-invert / help": "",
+  "layout / dark-mode-invert / label": "",
+  "typeahead / no-results": "Aucun résultat trouvé",
+  "typeahead / searching": "Recherche...",
+  "fileinput / choose-file": "",
+  "fileinput / selected-n-files": "",
+  "dashboard / manage-team-settings": "",
+  "archive / my-archive": "Mes archives"
 }

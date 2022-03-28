@@ -188,7 +188,7 @@ module.exports = {
                 }
             }
 
-            const folders = await getFolders(user, teams, minLastEditStep);
+            const folders = await getFolders(user, teams, minLastEditStep, __);
 
             const visBoxSublines = [];
             for (const func of pluginVisualizationBoxSublineFunctions) {
@@ -263,9 +263,9 @@ module.exports = {
         /*
          * queries user and team folders
          */
-        async function getFolders(user, teams, minLastEditStep) {
+        async function getFolders(user, teams, minLastEditStep, __) {
             const folders = [
-                clean({ id: null, teamId: null, name: 'My archive' }), // user root
+                clean({ id: null, teamId: null, name: __('archive / my-archive') }), // user root
                 ...(
                     await Folder.findAll({
                         where: {
