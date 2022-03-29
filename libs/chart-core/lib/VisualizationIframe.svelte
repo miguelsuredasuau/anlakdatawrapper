@@ -19,6 +19,8 @@
     export let themeDataDark = {};
     export let themeDataLight = {};
 
+    // transparent style means background is set on body
+    export let isStyleTransparent = false;
     // plain style means no header and footer
     export let isStylePlain = false;
     // static style means user can't interact (e.g. in a png version)
@@ -42,6 +44,7 @@
         document.body.classList.toggle('static', isStyleStatic);
         // the body class "png-export" kept for backwards compatibility
         document.body.classList.toggle('png-export', isStyleStatic);
+        document.body.classList.toggle('transparent', isStyleTransparent);
         if (isStyleStatic) {
             document.body.style['pointer-events'] = 'none';
         }
@@ -71,6 +74,7 @@
     {externalDataUrl}
     {isStylePlain}
     {isStyleStatic}
+    {isStyleTransparent}
     {isStyleDark}
     {isAutoDark}
     {forceLogo}

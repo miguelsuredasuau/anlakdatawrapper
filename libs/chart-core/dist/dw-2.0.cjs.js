@@ -6903,7 +6903,6 @@ function chart (attributes) {
     let _ds;
 
     const flagsBoolean = [
-        'svgonly',
         'plain',
         'static',
         'svgonly',
@@ -7095,7 +7094,9 @@ function chart (attributes) {
             const flags = { isIframe };
             const urlParams = new URLSearchParams(window.location.search);
             if (isIframe) {
-                flagsBoolean.forEach(key => (flags[key] = !!urlParams.get(key)));
+                flagsBoolean.forEach(
+                    key => (flags[key] = JSON.parse(urlParams.get(key) || 'false'))
+                );
                 flagsString.forEach(key => (flags[key] = urlParams.get(key)));
             }
 

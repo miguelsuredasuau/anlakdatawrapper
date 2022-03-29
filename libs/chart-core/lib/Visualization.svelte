@@ -27,7 +27,7 @@
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch.js';
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import invertColor from '@datawrapper/shared/invertColor.cjs';
-    import { clean } from './shared.mjs';
+    import { clean, isTransparentColor } from './shared.mjs';
     import { isObject } from 'underscore';
     import chroma from 'chroma-js';
 
@@ -49,6 +49,8 @@
     export let externalDataUrl;
     export let outerContainer;
 
+    // transparent style means no background is set on body
+    export let isStyleTransparent = false;
     // plain style means no header and footer
     export let isStylePlain = false;
     // static style means user can't interact (e.g. in a png version)
@@ -613,8 +615,15 @@ Please make sure you called __(key) with a key of type "string".
             document.body.classList.toggle('plain', isStylePlain);
             document.body.classList.toggle('static', isStyleStatic);
             document.body.classList.toggle('png-export', isStyleStatic);
+            document.body.classList.toggle('transparent', isStyleTransparent);
+
             if (isStyleStatic) {
                 document.body.style['pointer-events'] = 'none';
+                const bodyBackground = get(theme.data, 'style.body.background', 'transparent');
+                const previewBackground = get(theme.data, 'colors.background');
+                if (previewBackground && isTransparentColor(bodyBackground)) {
+                    document.body.style.background = previewBackground;
+                }
             }
 
             // fire events on hashchange
