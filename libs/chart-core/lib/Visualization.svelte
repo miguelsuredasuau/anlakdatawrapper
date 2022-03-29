@@ -619,6 +619,9 @@ Please make sure you called __(key) with a key of type "string".
 
             if (isStyleStatic) {
                 document.body.style['pointer-events'] = 'none';
+            }
+
+            if (isStyleStatic && !isStyleTransparent) {
                 const bodyBackground = get(theme.data, 'style.body.background', 'transparent');
                 const previewBackground = get(theme.data, 'colors.background');
                 if (previewBackground && isTransparentColor(bodyBackground)) {
