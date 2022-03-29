@@ -314,16 +314,25 @@
             labelsMode({ value }) {
                 return value ? value.labels : null;
             },
-            customLabels2({ mode, colorscale, customLabels }) {
-                return mode === 'discrete'
-                    ? range(colorscale.stopCount).map(i => customLabels[i] || '')
-                    : [];
+            customLabels2({ mode, customLabels, stopCount }) {
+                return mode === 'discrete' ? range(stopCount).map(i => customLabels[i] || '') : [];
             },
             colors({ colorscale }) {
                 return colorscale.colors || [];
             },
-            stopCount({ colorscale }) {
-                return colorscale.stopCount || 5;
+            stops({ colorScaleFunction }) {
+                if (!colorScaleFunction) return [];
+                return smartRound(
+                    colorScaleFunction._stops.map(d => +d).filter(d => d !== null),
+                    3
+                );
+            },
+            stopCount({ stops, colorscale }) {
+                return colorscale.stops === 'custom'
+                    ? colorscale.stopCount || 5
+                    : stops.length
+                    ? stops.length - 1
+                    : 0;
             },
             classColors({ colors, stopCount }) {
                 return chroma
@@ -332,12 +341,7 @@
                     .domain(colors.map(c => c.position))
                     .colors(stopCount);
             },
-            customLabelsItems({ customLabels2, hideItems, classColors, colorScaleFunction }) {
-                if (!colorScaleFunction) return [];
-                const stops = smartRound(
-                    colorScaleFunction._stops.map(d => +d).filter(d => d !== null),
-                    3
-                );
+            customLabelsItems({ customLabels2, stops, hideItems, classColors }) {
                 return customLabels2.map((s, i) => {
                     const note =
                         i === 0
@@ -459,10 +463,7 @@
                 }
 
                 // make sure new custom labels are added, when stops are added
-                if (
-                    current.colorscale &&
-                    current.colorscale.stopCount > current.value.customLabels.length
-                ) {
+                if (current.stopCount > current.value.customLabels.length) {
                     current.value.customLabels = current.customLabels2.slice(0);
                     this.set({ value: current.value });
                 }
