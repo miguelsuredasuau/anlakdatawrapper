@@ -41,6 +41,7 @@
     import RadioControl from '@datawrapper/controls/RadioControl.html';
     import SelectInput from '@datawrapper/controls/SelectInput.html';
     import SwitchControl from '@datawrapper/controls/SwitchControl.html';
+    import escapeHtml from '@datawrapper/shared/escapeHtml';
     import { __ } from '@datawrapper/shared/l10n';
 
     export default {
@@ -61,10 +62,10 @@
                 const customFieldsPageUrl = `/team/${team.id}/custom-fields`;
                 return __('teams / archive / custom-fields / p')
                     .replace('$1', customFieldsPageUrl)
-                    .replace('$2', team.name);
+                    .replace('$2', escapeHtml(team.name));
             },
             localeHelpText({ team }) {
-                return __('teams / archive / locale / p').replace('$1', team.name);
+                return __('teams / archive / locale / p').replace('$1', escapeHtml(team.name));
             }
         },
         data() {
