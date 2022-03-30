@@ -3,7 +3,9 @@ const has = require('lodash/has');
 const set = require('lodash/set');
 const test = require('ava');
 const {
+    addUserToTeam,
     createFolder,
+    createTeam,
     createTeamWithUser,
     createUser,
     destroy,
@@ -548,5 +550,31 @@ test('DELETE /teams/{id} deletes a team with nested folders', async t => {
         if (teamObj) {
             await destroy(Object.values(teamObj));
         }
+    }
+});
+
+test('GET /teams/{id} returns flags for team owner even if settings are null', async t => {
+    let team;
+    let userObj = {};
+    try {
+        team = await createTeam({ settings: null });
+        userObj = await createUser(t.context.server);
+        const { session, user } = userObj;
+        await addUserToTeam(user, team, 'owner');
+
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/teams/${team.id}`,
+            auth: {
+                strategy: 'session',
+                credentials: session,
+                artifacts: user
+            },
+            headers: t.context.headers
+        });
+        t.is(res.statusCode, 200);
+        t.is(typeof res.result.settings.flags.byline, 'boolean');
+    } finally {
+        await destroy(...Object.values(userObj), team);
     }
 });
