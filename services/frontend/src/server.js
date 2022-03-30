@@ -115,7 +115,7 @@ const start = async () => {
     }
 
     await ORM.init(config);
-    await ORM.registerPlugins();
+    await ORM.registerPlugins(server.logger);
     await server.register(Vision);
     await server.register(Inert);
 

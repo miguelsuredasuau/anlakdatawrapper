@@ -25,8 +25,11 @@ async function findPlugins(localPluginRoot, dwPlugins) {
 }
 
 function createRegisterPlugins(ORM, plugins) {
-    return async function registerPlugins() {
+    return async function registerPlugins(logger) {
         for (const [name, config] of Object.entries(plugins)) {
+            if (logger) {
+                logger.info(`Registering ORM plugin ${name}...`);
+            }
             const Plugin = require(plugins[name].requirePath);
             await Plugin.register(ORM, config);
         }

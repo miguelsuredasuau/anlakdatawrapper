@@ -11,8 +11,10 @@ const ORM = require('@datawrapper/orm');
 const config = require('./config');
 
 module.exports = async function () {
+    const logger = require('./logger');
+
     await ORM.init(config);
-    await ORM.registerPlugins();
+    await ORM.registerPlugins(logger);
 
     const models = require('@datawrapper/orm/models');
     const sequelize = require('@datawrapper/orm').db;
@@ -52,8 +54,6 @@ module.exports = async function () {
 
     // register api plugins with core db
     models.Plugin.register('datawrapper-crons', Object.keys(config.plugins));
-
-    const logger = require('./logger');
 
     logger.info('Initializing crons...');
 

@@ -256,7 +256,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     }
 
     await ORM.init(config);
-    await ORM.registerPlugins();
+    await ORM.registerPlugins(server.logger);
 
     /* register api plugins with core db */
     require('@datawrapper/orm/models/Plugin').register(
