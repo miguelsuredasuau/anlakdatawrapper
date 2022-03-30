@@ -33,7 +33,7 @@ require(['{{workflow.module}}'], function(mod) {
         mod.data || {},
         {{workflow.data|json|raw }} || {});
 
-    var chart = new mod.Chart({{chart.toStruct()|json|raw}});
+    var chart = new mod.Chart({{ rawChartJSON | ireplace({'<\/script>': "<\\\/script>"}) | raw }});
     var getJSON = mod.utils.getJSON;
 
     var themeCache = {};

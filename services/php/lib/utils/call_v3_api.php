@@ -5,7 +5,7 @@ require_once ROOT_PATH . 'lib/utils/json_encode_safe.php';
 /**
  * wrapper around our new v3 api
  */
-function call_v3_api($method, $route, $payload = null, $contentType = 'application/json') {
+function call_v3_api($method, $route, $payload = null, $contentType = 'application/json', $parseJSON=true) {
     $apiDomain = $GLOBALS['dw_config']['api_domain'] ?? 'api.datawrapper.de';
     $protocol = get_current_protocol();
     $ch = curl_init();
@@ -86,7 +86,7 @@ function call_v3_api($method, $route, $payload = null, $contentType = 'applicati
     $data = null;
     if (!empty($response)) {
         try {
-            $data = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+            $data = $parseJSON ? json_decode($response, true, 512, JSON_THROW_ON_ERROR) : $response;
         } catch (Exception $error) {
             $data = $response;
         }

@@ -1,5 +1,7 @@
 <?php
 
+require_once ROOT_PATH . 'lib/utils/call_v3_api.php';
+
 /*
  * DESCRIBE STEP
  */
@@ -10,10 +12,13 @@ $app->get('/(chart|table)/:id/describe', function ($id) use ($app) {
 
         $chart->refreshExternalData();
 
+        [$status, $rawChartJSON] = call_v3_api('GET', '/charts/'.$chart->getID(), null, 'application/json', false);
+
         $page = array(
             'title' => strip_tags($chart->getTitle()).' - '.$chart->getID() . ' - '.__('Check & Describe'),
             'chartData' => $chart->loadData(),
             'chart' => $chart,
+            'rawChartJSON' => $rawChartJSON,
             'readonly' => !$chart->isDataWritable($user),
             // Define dayjs as dependency, so that core.twig loads localizedFormat,
             // which we need to correctly format ISO8601 dates in the data table.

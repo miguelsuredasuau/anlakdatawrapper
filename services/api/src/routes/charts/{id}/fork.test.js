@@ -10,6 +10,9 @@ const {
 } = require('../../../../test/helpers/setup');
 const { decamelizeKeys } = require('humps');
 const fetch = require('node-fetch');
+const assignDeep = require('assign-deep');
+const cloneDeep = require('lodash/cloneDeep');
+const defaultMetadata = require('@datawrapper/service-utils/defaultChartMetadata');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
@@ -193,7 +196,7 @@ test('User can fork fork-protected chart, attributes match', async t => {
             language: 'en-US',
             isFork: true,
             forkable: undefined, // not returned from API,
-            metadata: {
+            metadata: assignDeep(cloneDeep(defaultMetadata), {
                 ...attributes.metadata,
                 describe: {
                     intro: '',
@@ -202,7 +205,7 @@ test('User can fork fork-protected chart, attributes match', async t => {
                     'aria-description': '',
                     byline: '' // byline gets cleared since it's a protected fork
                 }
-            }
+            })
         };
 
         // compare attributes
@@ -303,7 +306,7 @@ test('User can fork unprotected chart, attributes match', async t => {
             language: 'en-US',
             isFork: undefined,
             forkable: undefined, // not returned from API,
-            metadata: {
+            metadata: assignDeep(cloneDeep(defaultMetadata), {
                 ...attributes.metadata,
                 describe: {
                     intro: '',
@@ -312,7 +315,7 @@ test('User can fork unprotected chart, attributes match', async t => {
                     'aria-description': '',
                     byline: 'Lorem Ipsum' // byline remains
                 }
-            }
+            })
         };
 
         // compare attributes

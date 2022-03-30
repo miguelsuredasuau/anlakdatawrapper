@@ -142,5 +142,10 @@ function dwInitTwigEnvironment(Twig_Environment $twig) {
         $twig->addFilter('var_dump', new Twig_Filter_Function('var_dump'));
     }
 
+    $twig->addFilter(new Twig_SimpleFilter('ireplace', function($input, array $replace) {
+        return str_ireplace(array_keys($replace), array_values($replace), $input);
+    }));
+
+
     return $twig;
 }

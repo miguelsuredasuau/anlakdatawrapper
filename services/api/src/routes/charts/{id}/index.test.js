@@ -298,7 +298,7 @@ test('PUT request replace metadata', async t => {
         });
 
         t.is(chart.result.metadata.annotate.notes, 'note-2');
-        t.is(chart.result.metadata.visualize, undefined);
+        t.is(chart.result.metadata.visualize.foo, undefined);
     } finally {
         if (userObj) {
             await destroy(...Object.values(userObj));

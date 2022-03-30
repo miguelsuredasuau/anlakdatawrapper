@@ -1,5 +1,7 @@
 <?php
 
+require_once ROOT_PATH . 'lib/utils/call_v3_api.php';
+
 /*
  * UPLOAD STEP
  */
@@ -17,9 +19,12 @@ $app->get('/(chart|table)/:id/upload', function ($id) use ($app) {
             }
         }
 
+        [$status, $rawChartJSON] = call_v3_api('GET', '/charts/'.$chart->getID(), null, 'application/json', false);
+
         $page = array(
             'title' => strip_tags($chart->getTitle()).' - '.$chart->getID() . ' - '.__('Upload Data'),
             'chartData' => $chart->loadData(),
+            'rawChartJSON' => $rawChartJSON,
             'chart' => $chart,
             'datasets' => $groups,
             'readonly' => !$chart->isDataWritable($user)

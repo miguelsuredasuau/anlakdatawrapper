@@ -5,11 +5,12 @@ const path = require('path');
 const os = require('os');
 const utils = require('./index.js');
 const isEmpty = require('lodash/isEmpty');
+const { setup, createChart, destroy } = require('../../test/helpers/setup');
 
 test.before(async t => {
     const directory = path.join(os.tmpdir(), 'dw.api.test');
     await fs.mkdir(directory);
-
+    t.context.server = await setup({ usePlugins: false });
     Object.assign(t.context, { directory });
 });
 
@@ -140,4 +141,42 @@ test('isValidMySQLJSON returns false for a JSON with an invalid UTF-16 string', 
             array: ['\ud800b']
         })
     );
+});
+
+test('prepareChart extends from default metadata', async t => {
+    let chart;
+
+    try {
+        chart = await createChart();
+        t.true(typeof chart.metadata.annotate.notes === 'undefined');
+
+        const preparedChart = await utils.prepareChart(chart);
+
+        t.is(preparedChart?.metadata?.annotate?.notes, '');
+    } finally {
+        destroy(chart);
+    }
+});
+
+test('prepareChart does not overwrite existing metadata', async t => {
+    let chart, chart2;
+
+    try {
+        chart = await createChart({
+            metadata: {
+                annotate: {
+                    notes: 'This is a note'
+                }
+            }
+        });
+
+        const preparedChart = await utils.prepareChart(chart);
+        t.is(preparedChart.metadata.annotate.notes, 'This is a note');
+
+        chart2 = await createChart();
+        const preparedChart2 = await utils.prepareChart(chart2);
+        t.is(preparedChart2.metadata.annotate.notes, '');
+    } finally {
+        destroy(chart, chart2);
+    }
 });

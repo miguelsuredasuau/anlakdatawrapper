@@ -49,10 +49,9 @@
 {% if createstep != 3 %}
 
 <script type="text/javascript">
-
     dw.backend.__currentData = {{ chart.loadData | json | raw }};
     // initialize current chart
-    var chart = dw.backend.currentChart = dw.chart(JSON.parse("{{ chart.toJSON(false, mode) | raw }}"));
+    var chart = dw.backend.currentChart = dw.chart({{ rawChartJSON | ireplace({'<\/script>': "<\\\/script>"}) | raw }});
 
     chart
         .locale(dw.backend.currentChart.get('language') || '{{ chartLocale }}')
@@ -66,38 +65,37 @@
 
     chart.load(dw.backend.__currentData);
 
+    dw.backend.ready(function() {
 
-dw.backend.ready(function() {
+        dw.backend.syncChart(chart);
 
-    dw.backend.syncChart(chart);
+        _.templateSettings = {
+            interpolate : /\{\{(.+?)\}\}/g
+        };
+        $('.chart-editor').on('click', '.submit', function(e) {
+            var a = $(e.target);
+            if (e.target.nodeName.toLowerCase() != 'a') a = a.parents('a');
+            if (chart.hasUnsavedChanges()) {
+                e.preventDefault();
+                chart.onSave(function() {
+                    location.href = a.attr('href');
+                });
+            }
+        });
 
-    _.templateSettings = {
-        interpolate : /\{\{(.+?)\}\}/g
-    };
-    $('.chart-editor').on('click', '.submit', function(e) {
-        var a = $(e.target);
-        if (e.target.nodeName.toLowerCase() != 'a') a = a.parents('a');
-        if (chart.hasUnsavedChanges()) {
+        {% if user != chart.user and user.isAdmin() %}
+        $('a#duplicate-chart').on('click', function(e){
             e.preventDefault();
-            chart.onSave(function() {
-                location.href = a.attr('href');
-            });
+            $('i#copying-chart').addClass('fa-spinner fa-spin');
+            dw.backend.httpReq.post('/v3/charts/' + chart.get('id') + '/copy').then(openChart);
+        })
+
+        function openChart(res) {
+            $('i#copying-chart').removeClass('fa-spinner fa-spin');
+            window.open(window.location.href.replace(chart.get('id'), res.id));
         }
-    });
-
-    {% if user != chart.user and user.isAdmin() %}
-    $('a#duplicate-chart').on('click', function(e){
-        e.preventDefault();
-        $('i#copying-chart').addClass('fa-spinner fa-spin');
-        dw.backend.httpReq.post('/v3/charts/' + chart.get('id') + '/copy').then(openChart);
+        {% endif %}
     })
-
-    function openChart(res) {
-        $('i#copying-chart').removeClass('fa-spinner fa-spin');
-        window.open(window.location.href.replace(chart.get('id'), res.id));
-    }
-    {% endif %}
-})
 </script>
 
 {% endif %}

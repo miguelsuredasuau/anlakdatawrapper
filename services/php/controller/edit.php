@@ -125,6 +125,7 @@ require_once ROOT_PATH . 'lib/utils/call_v3_api.php';
                 $chart->writeData($data);
             }
 
+            [$status, $rawChartJSON] = call_v3_api('GET', '/charts/'.$chart->getID(), null, 'application/json', false);
             [$status, $embed_codes] = call_v3_api('GET', '/charts/'.$chart->getID().'/embed-codes');
             if ($status != 200) {
                 $embed_codes = [];
@@ -209,6 +210,7 @@ require_once ROOT_PATH . 'lib/utils/call_v3_api.php';
                 'pageClass' => 'editor',
                 'step' => $step,
                 'chart' => $chart,
+                'rawChartJSON' => $rawChartJSON,
                 'dataReadonly' => !$chart->isDataWritable($user),
                 'chartData' => $data,
                 'publishData' => $publishData,

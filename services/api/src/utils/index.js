@@ -7,7 +7,9 @@ const crypto = require('crypto');
 const fs = require('fs-extra');
 const get = require('lodash/get');
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
+const assignDeep = require('assign-deep');
+const cloneDeep = require('lodash/cloneDeep');
+const defaultChartMetadata = require('@datawrapper/service-utils/defaultChartMetadata');
 const utils = {};
 
 utils.camelizeTopLevelKeys = obj => {
@@ -22,6 +24,16 @@ utils.camelizeTopLevelKeys = obj => {
     return outputObj;
 };
 
+/**
+ * Prepares a chart before it gets returned as API response.
+ *
+ * This will extend the metadata from the defaultChartMetadata
+ * to make sure our editor functions properly.
+ *
+ * @param {object} chart
+ * @param {object} additionalData
+ * @returns {object}
+ */
 utils.prepareChart = async (chart, additionalData = {}) => {
     const { user, in_folder, ...dataValues } = chart.dataValues;
 
@@ -35,7 +47,7 @@ utils.prepareChart = async (chart, additionalData = {}) => {
         theme: 'datawrapper',
         ...utils.camelizeTopLevelKeys(dataValues),
         folderId: in_folder,
-        metadata: dataValues.metadata,
+        metadata: assignDeep(cloneDeep(defaultChartMetadata), dataValues.metadata),
         author: user ? { name: user.name, email: user.email } : undefined,
         guestSession: undefined
     };

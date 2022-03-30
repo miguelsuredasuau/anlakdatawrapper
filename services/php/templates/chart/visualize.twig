@@ -19,7 +19,7 @@
             target: document.querySelector('#svelte-visualize'),
 
             csv: {{chartData|json|raw}},
-            chartData: {{chart.toStruct()|json|raw}},
+            chartData: {{ rawChartJSON | ireplace({'<\/script>': "<\\\/script>"}) | raw }},
             externalMetadata: {{externalMetadata|json|raw}},
             namespace: {{chart.namespace|json|raw }},
             defaultVisType: '{{defaultVisType}}',

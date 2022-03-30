@@ -310,8 +310,8 @@ async function editChart(request) {
                 'User does not have access to the specified folder, or it does not exist.'
             );
         }
-        camelizedPayload.inFolder = camelizedPayload.folderId;
-        camelizedPayload.folderId = undefined;
+        camelizedPayload.inFolder = folderId;
+        delete camelizedPayload.folderId;
         camelizedPayload.organizationId = folder.org_id ? folder.org_id : null;
     }
 
@@ -353,7 +353,14 @@ async function editChart(request) {
         ...decamelizeKeys(newData),
         metadata: newData.metadata
     };
-    const ignoreKeys = new Set(['guest_session', 'public_id', 'created_at']);
+    const ignoreKeys = new Set([
+        'guest_session',
+        'public_id',
+        'created_at',
+        'last_modified_at',
+        'author',
+        'folder_id'
+    ]);
     const hasChanged = Object.keys(chartNew).find(
         key =>
             !ignoreKeys.has(key) &&

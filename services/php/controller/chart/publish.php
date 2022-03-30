@@ -64,10 +64,13 @@ $app->get('/(chart|map|table)/:id/publish(/:sub_page)?', function ($id) use ($ap
 
         $chartUrlLocal = '/preview/' . $chart->getID();
 
+        [$status, $rawChartJSON] = call_v3_api('GET', '/charts/'.$chart->getID(), null, 'application/json', false);
+        
         $page = array(
             'title' => strip_tags($chart->getTitle()).' - '.$chart->getID() . ' - '.__('Publish'),
             'chartData' => $chart->loadData(),
             'chart' => $chart,
+            'rawChartJSON' => $rawChartJSON,
             'visualizations' => DatawrapperVisualization::all(),
             'vis' => DatawrapperVisualization::get($chart->getType()),
             'chartUrl' => $chart->getPublicUrl(),

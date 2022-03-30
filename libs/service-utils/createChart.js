@@ -4,19 +4,7 @@ const get = require('lodash/get');
 const cloneDeep = require('lodash/cloneDeep');
 const assignDeep = require('assign-deep');
 const Boom = require('@hapi/boom');
-
-const defaultMetadata = {
-    data: {},
-    describe: {
-        'source-name': '',
-        'source-url': '',
-        intro: '',
-        byline: '',
-        'aria-description': ''
-    },
-    visualize: {},
-    publish: {}
-};
+const defaultMetadata = require('./defaultChartMetadata');
 
 const PAYLOAD_KEYS = new Set([
     'title',

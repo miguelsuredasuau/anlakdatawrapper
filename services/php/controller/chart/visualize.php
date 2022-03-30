@@ -110,10 +110,13 @@ $app->get('/(chart|map|table)/:id/:step', function ($id, $step) use ($app) {
             $teamSettingsPreviewWidths = $org->getSettings("previewWidths") ?? [];
         }
 
+        [$status, $rawChartJSON] = call_v3_api('GET', '/charts/'.$chart->getID(), null, 'application/json', false);
+
         $page = array(
             'title' => strip_tags($chart->getTitle()).' - '.$chart->getID() . ' - '.__('Visualize'),
 
             'chart' => $chart,
+            'rawChartJSON' =>  $rawChartJSON,
             'chartData' => $chart->loadData(),
             'step' => $step,
             'defaultVisType' => $GLOBALS['dw_config']['defaults']['vis'],
