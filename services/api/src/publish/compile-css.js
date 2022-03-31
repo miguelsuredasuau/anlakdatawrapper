@@ -139,7 +139,7 @@ function createFontEntries(fonts, themeData) {
             .map(prop => `font-${prop}: ${props[prop]};`);
 
         return `@font-face {
-    font-family: ${font};
+    font-family: '${font}';
     ${propsCSS.join('\n\t')}
     src: ${fontUrls.join(',\n\t\t ')};
 }`;
