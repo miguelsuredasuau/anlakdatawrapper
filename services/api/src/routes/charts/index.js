@@ -268,6 +268,7 @@ async function getAllCharts(request) {
         order: [[decamelize(query.orderBy), query.order]],
         attributes: GET_CHARTS_ATTRIBUTES,
         where: {},
+        include: [{ model: User, attributes: ['name', 'email'] }],
         limit: query.limit,
         offset: query.offset
     };
@@ -349,12 +350,7 @@ async function getAllCharts(request) {
     }
 
     if (query.expand) {
-        options.include = [{ model: User, attributes: ['name'] }];
         options.attributes.push('metadata');
-    }
-
-    if (isAdmin) {
-        set(options, ['include'], [{ model: User, attributes: ['name', 'email'] }]);
     }
 
     // Additional filters

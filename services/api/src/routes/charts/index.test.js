@@ -1654,6 +1654,40 @@ test('GET /charts?expand=true returns charts containing extra information', asyn
     }
 });
 
+test('GET /charts returns charts containing author info', async t => {
+    let userObj = {};
+    let charts = [];
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor' });
+        charts = await createCharts([
+            {
+                title: 'Chart 1',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.statusCode, 200);
+        const json = await res.result;
+        t.is(json.list.length, 1);
+        t.truthy(json.list[0].author);
+        t.truthy(json.list[0].authorId);
+        const author = json.list[0].author;
+        t.truthy(author.name);
+        t.truthy(author.email);
+    } finally {
+        await destroy(charts, Object.values(userObj));
+    }
+});
+
 test('PHP GET /charts returns charts of a user', async t => {
     let userObj = {};
     let charts = [];

@@ -183,9 +183,20 @@ test('PHP GET /charts/{id}/data returns chart data', async t => {
     let userObj = {};
     let chart;
     try {
-        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['chart:read'] });
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:read', 'chart:write']
+        });
         chart = await createChart({
             author_id: userObj.user.id
+        });
+        await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+            method: 'PUT',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            },
+            body: JSON.stringify('test data')
         });
         const res = await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
             headers: {
