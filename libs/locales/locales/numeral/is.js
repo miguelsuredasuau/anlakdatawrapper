@@ -6,16 +6,16 @@
             decimal: ','
         },
         abbreviations: {
-            thousand: 'þús',
-            million: 'millj.',
-            billion: 'bma.',
-            trillion: 'billj.'
+            thousand: ' þús.',
+            million: ' millj.',
+            billion: ' ma.',
+            trillion: ' billj.'
         },
         ordinal: function() {
             return '.';
         },
         currency: {
-            symbol: 'kr.'
+            symbol: ' kr.'
         }
     };
 })();
