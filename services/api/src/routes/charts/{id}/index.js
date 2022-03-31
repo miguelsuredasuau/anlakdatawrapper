@@ -176,6 +176,7 @@ async function getChart(request) {
 
     const options = {
         attributes: [
+            'guest_session',
             'author_id',
             'created_at',
             'createdAt',
