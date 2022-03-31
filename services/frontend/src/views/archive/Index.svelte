@@ -150,8 +150,7 @@
                 $query.order !== DEFAULT_SORT_ORDER[$query.orderBy] && { order: $query.order }),
             ...($query.orderBy &&
                 $query.orderBy !== 'lastModifiedAt' && { orderBy: $query.orderBy }),
-            ...($query.search && { search: $query.search }),
-            ...($currentFolder.search && { search: $currentFolder.search }) // override $query.search
+            ...($query.search && { search: $query.search })
         });
 
         if ($currentFolder.path) {
