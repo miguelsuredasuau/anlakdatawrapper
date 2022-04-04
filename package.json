@@ -37,6 +37,7 @@
         "got": "^11.8.2",
         "husky": "^6.0.0",
         "less": "^4.1.1",
+        "lint-staged": "^8.2.1",
         "lodash": "^4.17.21",
         "prettier": "^2.4.1",
         "prettier-plugin-svelte": "^2.4.0",
