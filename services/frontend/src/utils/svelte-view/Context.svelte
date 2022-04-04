@@ -1,9 +1,10 @@
 <script>
-    import { setContext, getContext } from 'svelte';
+    import { setContext, getContext, onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import debounce from 'lodash/debounce';
     import isEqual from 'lodash/isEqual';
     import { httpReq, clone } from '@datawrapper/shared';
+    import { loadScript } from '@datawrapper/shared/fetch';
 
     import dayjs from 'dayjs';
     import relativeTime from 'dayjs/plugin/relativeTime';
@@ -76,6 +77,14 @@
     function __(key, scope = 'core') {
         return translate(key, scope, $msg);
     }
+
+    const config = getContext('config');
+
+    onMount(async () => {
+        await loadScript(
+            `/lib/csr/_partials/svelte2/Svelte2Wrapper.element.svelte.js?sha=${$config.GITHEAD}`
+        );
+    });
 </script>
 
 <svelte:component this={view} bind:this={ref} {__} {...$$restProps} />

@@ -1,5 +1,4 @@
 const { customAlphabet } = require('nanoid');
-const { camelize } = require('humps');
 const Boom = require('@hapi/boom');
 const path = require('path');
 const jsesc = require('jsesc');
@@ -7,22 +6,8 @@ const crypto = require('crypto');
 const fs = require('fs-extra');
 const get = require('lodash/get');
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-const assignDeep = require('assign-deep');
-const cloneDeep = require('lodash/cloneDeep');
-const defaultChartMetadata = require('@datawrapper/service-utils/defaultChartMetadata');
+const prepareChart = require('@datawrapper/service-utils/prepareChart');
 const utils = {};
-
-utils.camelizeTopLevelKeys = obj => {
-    // Taken from humps library, see here:
-    // https://github.com/domchristie/humps/blob/d612998749922a76c68d4d9c8b5ae93f02595019/humps.js#L29-L34
-    const outputObj = {};
-    for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            outputObj[camelize(key)] = obj[key];
-        }
-    }
-    return outputObj;
-};
 
 /**
  * Prepares a chart before it gets returned as API response.
@@ -34,24 +19,7 @@ utils.camelizeTopLevelKeys = obj => {
  * @param {object} additionalData
  * @returns {object}
  */
-utils.prepareChart = async (chart, additionalData = {}) => {
-    const { user, in_folder, ...dataValues } = chart.dataValues;
-
-    const publicId =
-        typeof chart.getPublicId === 'function' ? await chart.getPublicId() : undefined;
-
-    return {
-        ...utils.camelizeTopLevelKeys(additionalData),
-        publicId,
-        language: 'en_US',
-        theme: 'datawrapper',
-        ...utils.camelizeTopLevelKeys(dataValues),
-        folderId: in_folder,
-        metadata: assignDeep(cloneDeep(defaultChartMetadata), dataValues.metadata),
-        author: user ? { name: user.name, email: user.email } : undefined,
-        guestSession: undefined
-    };
-};
+utils.prepareChart = prepareChart;
 
 utils.stringify = obj => {
     return jsesc(JSON.stringify(obj), {

@@ -42,6 +42,11 @@
     });
 }
 
+html {
+    // mimic Bulma font settings
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
 
 body {
     background: @dw_background;
@@ -50,7 +55,7 @@ body {
     font-family: @base-font;
 }
 
-body a {
+a {
     color: @dw_scooter;
     &:hover {
         color: @dw_scooter_dark;
@@ -59,7 +64,7 @@ body a {
 
 body.dw {
     h1 {
-        font-weight: 300;
+        font-weight: 400;
         font-size: 32px;
     }
 }
@@ -383,7 +388,7 @@ h1.title,
 .admin h1.title {
     font-size: 38px;
     margin: 0px 0 48px;
-    font-weight: 300;
+    font-weight: 400;
     letter-spacing: -1px;
 }
 
@@ -393,14 +398,14 @@ h1.title small {
 
 h2,
 h3 {
-    font-weight: 300;
+    font-weight: 400;
     font-size: 24px;
     margin: 0.5em 0 0.5em;
 }
 
 .admin h2,
 .admin h3 {
-    font-weight: 300;
+    font-weight: 400;
     font-size: 24px;
     margin-top: 0;
 }
@@ -575,7 +580,7 @@ form.well form {
 
 .arguments h2 {
     font-size: 30px;
-    font-weight: 300;
+    font-weight: 400;
     margin-bottom: 10px;
 }
 
@@ -586,7 +591,7 @@ form.well form {
 .home .big-head h1 {
     text-align: center;
     font-size: 40px;
-    font-weight: 300;
+    font-weight: 400;
     color: #222;
     line-height: 60px;
     margin-bottom: 0px;

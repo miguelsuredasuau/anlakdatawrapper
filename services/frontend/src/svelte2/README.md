@@ -1,0 +1,1 @@
+This folder contains a copy of some apps from `services/php/src` which we needed to adopt for use in the new frontend.

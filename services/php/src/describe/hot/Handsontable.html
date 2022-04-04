@@ -1,9 +1,10 @@
 <div id="data-preview" ref:hot />
 
 <script>
-    /* global dw,chart */
+    /* global chart */
     import HOT from 'Handsontable';
     import getCellRenderer from './getCellRenderer';
+    import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
     // import cellHeaderClick from './cellHeaderClick';
     import clone from '@datawrapper/shared/clone';
 
@@ -67,14 +68,12 @@
                 // pass dataset through chart to apply changes and computed columns
                 const ds = dw_chart
                     .dataset(
-                        dw.datasource
-                            .delimited({
-                                csv: data,
-                                transpose,
-                                firstRowIsHeader,
-                                skipRows
-                            })
-                            .parse()
+                        delimited({
+                            csv: data,
+                            transpose,
+                            firstRowIsHeader,
+                            skipRows
+                        }).parse()
                     )
                     .dataset();
 
@@ -109,7 +108,9 @@
                 });
 
                 this.set({ ds });
-                this.set({ has_changes: clone(chart.get('metadata.data.changes', [])).length > 0 });
+                this.set({
+                    has_changes: clone(dw_chart.get('metadata.data.changes', [])).length > 0
+                });
 
                 HOT.hooks.once('afterRender', () => this.initCustomEvents());
                 HOT.hooks.once('afterRender', () => this.fire('afterRender'));
@@ -177,7 +178,7 @@
                 this.update();
             },
             updateHeight() {
-                const h = document
+                const h = this.refs.hot
                     .querySelector('.ht_master.handsontable .wtHolder .wtHider')
                     .getBoundingClientRect().height;
                 this.refs.hot.style.height = Math.min(500, h + 10) + 'px';

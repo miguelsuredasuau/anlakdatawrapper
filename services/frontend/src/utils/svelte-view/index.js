@@ -128,6 +128,7 @@ const SvelteView = {
                     SSR_CSS: css.code,
                     NODE_ENV: process.env.NODE_ENV,
                     SSR_HTML: html,
+                    GITHEAD: server.app.GITHEAD.substr(0, 8),
                     PAGE: page,
                     PAGE_PROPS: jsesc(JSON.stringify(context.props), {
                         isScriptContext: true,

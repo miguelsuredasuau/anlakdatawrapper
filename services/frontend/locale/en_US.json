@@ -1133,5 +1133,9 @@
   "fileinput / choose-file": "Choose a file…",
   "fileinput / selected-n-files": "selected %n files",
   "dashboard / manage-team-settings": "or manage <a href=\"/team/%teamId%/settings\">team settings</a>",
-  "archive / my-archive": "My archive"
+  "archive / my-archive": "My archive",
+  "edit / unsaved-changed-warning": "Looks like there are unsaved changes. Do you really want to leave this page?",
+  "edit / storing-changes": "Storing changes",
+  "edit / upload / success-import": "We successfully imported your spreadsheet data.",
+  "edit / storing-changes / error": "<strong>We're having trouble saving the changes.</strong> Please check your internet connection or contact our <a href=\"mailto:support@datawrapper.de\">support</a>"
 }

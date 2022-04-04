@@ -13,10 +13,9 @@
     };
 
     export let id;
+    export let uid;
     export let js;
     export let css;
-    export let data;
-    export let storeData = {};
 
     function isComputedProp(app, prop) {
         try {
@@ -69,8 +68,9 @@
             loadCSS('/static/vendor/font-awesome/css/font-awesome.min.css'),
             loadCSS('/static/vendor/iconicfont/css/iconmonstr-iconic-font.min.css'),
             loadCSS('/static/css/datawrapper.css'),
+            loadCSS('/lib/static/css/bulma-polyfill.css'),
             loadScript(js),
-            loadCSS(css)
+            ...(Array.isArray(css) ? css.map(loadCSS) : [loadCSS(css)])
         ]);
 
         const style = document.createElement('style');
@@ -80,25 +80,30 @@
     }`;
         parent.appendChild(style);
 
-        require([id], ({ App, store }) => {
+        require([id], bundle => {
+            const { App, store } = bundle;
             try {
                 loading = false;
+                if (store && window.__svelte2wrapper[uid].store) {
+                    store.set(window.__svelte2wrapper[uid].store);
+                    _store = store;
+                }
                 _app = new App({
                     target: container,
                     store,
-                    data: JSON.parse(data)
+                    data: window.__svelte2wrapper[uid].data
                 });
-                if (store) {
-                    store.set(storeData);
-                    _store = store;
-                }
+
                 _app.on('state', ({ current }) => {
-                    data = current;
+                    window.__svelte2wrapper[uid].data = current;
                     dispatch('update', filterOutComputedProps(_app, current));
                 });
                 _app.on('change', event => {
                     dispatch('change', event);
                 });
+                // store app reference for client-side hooks
+                bundle.app = _app;
+                dispatch('init', _app);
             } catch (err) {
                 console.error(err);
             }

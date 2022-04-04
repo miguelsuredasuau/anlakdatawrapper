@@ -1133,5 +1133,9 @@
   "fileinput / choose-file": "",
   "fileinput / selected-n-files": "",
   "dashboard / manage-team-settings": "",
-  "archive / my-archive": "Mes archives"
+  "archive / my-archive": "Mes archives",
+  "edit / unsaved-changed-warning": "",
+  "edit / storing-changes": "",
+  "edit / upload / success-import": "",
+  "edit / storing-changes / error": ""
 }

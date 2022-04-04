@@ -194,7 +194,7 @@
 </div>
 
 <script>
-    /* global dw, chart */
+    /* global dw */
     import ComputedColumnEditor from './ComputedColumnEditor.html';
     import CustomColumnFormat from './CustomColumnFormat.html';
     import Histogram from './Histogram.html';
@@ -265,8 +265,8 @@
                     : d => d;
             },
             // eslint-disable-next-line
-            columns({ activeColumn }) {
-                const ds = chart.dataset();
+            columns({ activeColumn, $dw_chart }) {
+                const ds = $dw_chart.dataset();
                 return ds ? ds.columns() : [];
             },
             normalColumns({ columns }) {

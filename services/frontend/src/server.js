@@ -16,9 +16,6 @@ const registerVisualizations = require('@datawrapper/service-utils/registerVisua
 const config = requireConfig();
 const path = require('path');
 const { clearFileCache } = require('./utils/svelte-view/cache');
-const headerLinks = require('./utils/header-links');
-const settingsPages = require('./utils/settings-pages');
-const viewComponents = require('./utils/view-components');
 const { createAPI, waitForAPI } = require('./utils/create-api');
 const {
     SvelteView,
@@ -159,13 +156,20 @@ const start = async () => {
     server.method('registerVisualization', registerVisualizations(server));
     server.method('createAPI', createAPI(server));
 
-    await server.register(viewComponents);
-    await server.register(headerLinks);
-    await server.register(settingsPages);
+    await server.register(require('./utils/view-components'));
+    await server.register(require('./utils/header-links'));
+    await server.register(require('./utils/settings-pages'));
+    await server.register(require('./utils/demo-datasets'));
+    await server.register(require('./utils/custom-data'));
+    await server.register(require('./utils/custom-html'));
 
     // hooks
     server.app.event = eventList;
     server.app.events = new FrontendEventEmitter({ logger: server.logger, eventList });
+
+    server.app.GITHEAD = (
+        await fs.readFile(path.join(__dirname, '..', '.githead'), 'utf-8')
+    ).trim();
 
     SvelteView.init(server);
 
@@ -191,12 +195,10 @@ const start = async () => {
     server.method('getDB', () => ORM.db);
     server.method('getModel', name => ORM.db.models[name]);
 
-    const commit = (await fs.readFile(path.join(__dirname, '..', '.githead'), 'utf-8')).trim();
-
     if (config.frontend.sentry) {
         await server.register({
             plugin: require('./utils/sentry'),
-            options: { commit }
+            options: { commit: server.app.GITHEAD }
         });
     }
 

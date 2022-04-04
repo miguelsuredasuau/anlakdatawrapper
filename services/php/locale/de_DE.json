@@ -1133,5 +1133,8 @@
   "fileinput / choose-file": "Wähle eine Datei…",
   "fileinput / selected-n-files": "%n Dateien ausgewählt",
   "dashboard / manage-team-settings": "oder verwalte <a href=\"/team/%teamId%/settings\">Team-Einstellungen</a>",
-  "archive / my-archive": "Mein Archiv"
+  "archive / my-archive": "Mein Archiv",
+  "edit / unsaved-changed-warning": "Es gibt nicht gespeicherte Änderungen. Möchtest du diese Seite wirklich verlassen?",
+  "edit / storing-changes": "Änderungen werden gespeichert",
+  "edit / upload / success-import": "Deine Spreadsheet-Daten wurden erfolgreich importiert."
 }

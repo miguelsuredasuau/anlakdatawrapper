@@ -735,7 +735,7 @@ span {
 }
 
 strong {
-  color: #111111;
+  color: inherit;
   font-weight: 700;
 }
 
@@ -3969,7 +3969,7 @@ a.tag:hover {
   color: #1d81a2;
   display: flex;
   justify-content: center;
-  padding: 0 0.75em;
+  padding: 0 0.5em;
 }
 .breadcrumb a:hover {
   color: #15607a;

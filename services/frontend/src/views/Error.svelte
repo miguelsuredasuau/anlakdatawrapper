@@ -46,9 +46,10 @@
 
                     <div class="content mt-5 mb-4">
                         {#if statusCode === 404}
-                            <p>Here are some other places you may want to go to now</p>
+                            <p>Here are some other places you may want to go to now:</p>
                             <ul>
                                 <li><a href="/">Dashboard</a></li>
+                                <li><a href="/archive/recently-edited">Archive</a></li>
                                 <li><a href="/account">User settings</a></li>
                             </ul>
                         {/if}

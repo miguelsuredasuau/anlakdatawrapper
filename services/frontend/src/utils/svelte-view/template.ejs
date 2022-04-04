@@ -64,7 +64,9 @@
             requirejs.config({
                 paths: {
                     lib: '/lib/csr',
-                    dayjs: '/static/vendor/dayjs/dayjs.min'
+                    dayjs: '/static/vendor/dayjs/dayjs.min',
+                    cm: '/static/vendor/codemirror',
+                    Handsontable: '/static/vendor/hot/handsontable.full.min',
                 }
             });
         </script>
@@ -80,7 +82,7 @@
 
         <script>
             document.write(
-                '<script type="text/javascript" src="/lib/csr/<%= PAGE %>.js"></s' + 'cript>'
+                '<script type="text/javascript" src="/lib/csr/<%= PAGE %>.js?sha=<%- GITHEAD %>"></s' + 'cript>'
             );
         </script>
         <script async defer>

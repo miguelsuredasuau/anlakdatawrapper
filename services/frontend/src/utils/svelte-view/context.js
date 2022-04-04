@@ -29,7 +29,8 @@ module.exports = async function (request) {
                 footerLinks: frontendConfig.footerLinks || [],
                 languages: frontendConfig.languages || [],
                 headerLinks: await server.methods.getHeaderLinks(request),
-                stickyHeaderThreshold: 800
+                stickyHeaderThreshold: 800,
+                GITHEAD: server.app.GITHEAD.substr(0, 8)
             },
             browser: {
                 isIE: userAgent && (userAgent.includes('MSIE') || userAgent.includes('Trident'))

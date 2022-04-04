@@ -71,7 +71,7 @@ $link: $dw-scooter;
 $link-hover: $dw-scooter-dark;
 // $link-hover-border
 
-$stong-color: inherit;
+$strong-color: inherit;
 
 // SIZES
 
@@ -118,6 +118,11 @@ $subtitle-strong-weight: 500; // medium instead of semibold
 $box-radius: $radius;
 
 // COMPONENTS
+
+// Breadcrumb
+
+$breadcrumb-item-padding-horizontal: 0.5em;
+
 // Navbar
 
 $navbar-breakpoint: 1024px;

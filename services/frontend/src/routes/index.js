@@ -42,6 +42,8 @@ module.exports = {
             });
         }
 
+        await server.register(require('./edit'));
+
         await server.register(require('./datawrapper-invite/index.js'), {
             routes: {
                 prefix: '/datawrapper-invite'

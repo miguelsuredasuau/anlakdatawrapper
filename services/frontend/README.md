@@ -400,7 +400,7 @@ server.methods.registerViewComponent({
     // the page in which the component should be imported
     page: 'edit/Index.svelte',
     // the components Svelte source
-    view: 'plugins/export-pdf/ExportPDFUI.svelte'
+    view: '_plugins/export-pdf/ExportPDFUI.svelte'
 });
 ```
 
@@ -413,6 +413,68 @@ The core route can then dynamically import the view component during runtime usi
 Internally, the view component import statements are [injected](src/utils/svelte-view/rollup-runtime.js#L97-L102) into the core `View.svelte` before it's being compiled, and then stored in the `viewComponents` context from which it's being [loaded by `ViewComponent.svelte`](src/views/_partials/ViewComponent.svelte#L13).
 
 See [our dashboard](src/views/dashboard/Index.svelte) for a live example.
+
+### `registerCustomData(key, handler)`
+
+Plugins may "inject" custom data into routes that support this.
+
+```js
+server.methods.registerCustomData('hello/some-key', async (request) => {
+    // fetch some data and return it
+    return {
+        answer: 42
+    };
+})
+```
+
+In order for this to work, the route must call the `getCustomData` counter-part method to receive the data, and inject it in the correct place:
+
+```js
+// inside some core server route
+return h.view('hello/Index.svelte', {
+    props: {
+        answer: 'unknown',
+        ...(await server.methods.getCustomData('hello/some-key', { request }))
+    }
+});
+```
+
+Note that if multiple plugins register data for the same `key`, the results are "deep merged". 
+
+### `registerCustomHTML(key, handler)`
+
+In rare occasions (like integrating existing Svelte2 components), plugins may need to inject custom HTML into a core server view. This can be done by calling `registerCustomHTML` in the plugin:
+
+```js
+server.methods.registerCustomHTML('hello/some-key', async (request) => {
+    return '<script>alert("42 is the answer!")</script>';
+})
+```
+
+In order for this to work, the route must call the `getCustomHTML` counter-part method to receive the HTML,  and pass it to the view as prop:
+
+```js
+// inside some core server route
+return h.view('hello/Index.svelte', {
+    props: {
+        answer: 'unknown',
+        customHTML: await server.methods.getCustomHTML('hello/some-key', { request })
+    }
+});
+```
+
+Of course, the view needs to inject the html string, too:
+
+```svelte
+<!-- inside the view -->
+<script>
+    export let customHTML = '';
+</script>
+
+{@html customHTML}
+```
+
+Please be aware that this opens a door for possible XSS attacks! **User-defined content must always be purified** before injecting it as custom html.
 
 ## View-specific server methods
 
@@ -485,4 +547,23 @@ server.methods.registerArchiveVisualizationModalMetadata(async () => ({
         someData: 42
     }
 }));
+```
+
+### `registerDemoDatasets` (chart editor)
+
+Plugins may use this to register additional demo datasets.
+
+```js
+server.methods.registerDemoDatasets(({ request, chart }) => {
+    return [{
+        title: 'I am a demo dataset',
+        type: { key: 'd3-lines / title', scope: 'd3-lines' },
+        presets {
+            type: 'd3-lines'
+            "metadata.data.transpose": false
+        },
+        data: 'Label,Group,Value\nHello,World,1234'
+    }];
+});
+
 ```

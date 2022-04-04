@@ -6,6 +6,8 @@
     "author": "Datawrapper GmbH",
     "main": "index.js",
     "scripts": {
+        "lint": "(cd ../.. && scripts/lint libs/service-utils)",
+        "format": "(cd ../.. && scripts/format libs/service-utils)",
         "test": "ava --verbose",
         "test:watch": "ava --watch",
         "prepublishOnly": "npm test"
