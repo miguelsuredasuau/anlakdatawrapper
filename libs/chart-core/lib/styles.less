@@ -263,6 +263,9 @@ body {
             font-family: @style_chart_labels_legend_typeface;
             letter-spacing: @style_chart_labels_legend_letterSpacing;
             text-transform: @style_chart_labels_legend_textTransform;
+            & when not (@style_chart_labels_legend_lineHeight = __UNDEFINED__) {
+                line-height: @style_chart_labels_legend_lineHeight * 1px;
+            }
         }
     }
 
