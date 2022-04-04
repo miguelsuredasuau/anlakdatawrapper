@@ -75,6 +75,9 @@
         dw_chart
     };
 
+    $: chartTitle = $chart.title || rawChart.title;
+    $: chartId = $chart.id || rawChart.id;
+
     $: lastActiveStep = $chart.lastEditStep || 1;
 
     onMount(async () => {
@@ -141,7 +144,7 @@
     on:unload={onBeforeUnload}
 />
 
-<MainLayout title="{$chart.title} - [{$chart.id}] - {activeStep.title}">
+<MainLayout title="{chartTitle} - [{chartId}] - {activeStep.title}">
     <section class="section pt-5">
         <!-- step nav -->
         <Header
