@@ -126,6 +126,8 @@ module.exports = {
         server.methods.registerSettingsPage('account', request => {
             const __ = server.methods.getTranslate(request);
             const isAdmin = request.auth.artifacts.role === 'admin';
+            const user = request.auth.artifacts;
+
             return (
                 isAdmin && {
                     url: '/account/security',
@@ -137,7 +139,12 @@ module.exports = {
                         js: '/static/js/svelte/account/security.js',
                         css: '/static/css/svelte/account/security.css'
                     },
-                    data: {},
+                    data: {
+                        user: {
+                            email: user.email,
+                            name: user.name
+                        }
+                    },
                     order: 20
                 }
             );
