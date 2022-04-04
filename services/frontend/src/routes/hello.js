@@ -30,5 +30,16 @@ module.exports = {
                 }
             }
         });
+
+        server.route({
+            method: 'GET',
+            path: '/timeout-test',
+            options: {
+                auth: 'guest',
+                async handler(request, h) {
+                    return h.view('hello/timeout-test.pug', {});
+                }
+            }
+        });
     }
 };

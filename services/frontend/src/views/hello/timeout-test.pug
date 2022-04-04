@@ -1,0 +1,105 @@
+doctype html
+html(lang=CHART_LOCALE)
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    style.
+        body {
+            font-family: "Roboto", sans-serif;
+        }
+        .container {
+            max-width: 1000px; margin: 1em auto 1em auto;
+        }
+        section > div {
+            display:inline-block;
+            padding: 1em;
+            width: 4ex;
+            text-align: center;
+            border:1px solid gray;
+            margin:  0 1em 1em 0;
+            color: lightgrey;
+        }
+        .in-progress {
+            color: grey;
+        }
+        .ok {
+            color: #30c3ac;
+            font-weight: bold;
+        }
+        .slow {
+            color: #f9c973;
+            font-weight: bold;
+        }
+        .error {
+            color: #cf4870;
+            font-weight: bold;
+        }
+        section > div > span {
+            display: block;
+            font-weight: normal;
+            color: grey;
+            font-size: 12px;
+        }
+  body
+    div.container
+        h1 request timeout test page
+        p This website loads a whole bunch of API and Frontend requests to check which one time out
+
+        section.api
+            h2 API requests
+            - for (var x = 0; x < 40; x++)
+                div.request #{x}
+
+        section.frontend
+            h2 Frontend requests
+            - for (var x = 0; x < 40; x++)
+                div.request #{x}
+
+        section.php
+            h2 PHP requests
+            - for (var x = 0; x < 40; x++)
+                div.request #{x}
+
+    script.
+        (async function() {
+            const URLs = {
+                frontend: '/lib/chart-core/dw-2.0.min.js',
+                api: 'http://api.datawrapper.local/v3/visualizations',
+                php: '/static/js/dw-backend.js'
+            }
+            for (const section of ['frontend','api','php']) {
+                Promise.all(Array.from(document.querySelectorAll(`section.${section} .request`)).map(div => {
+                    console.log(div);
+                    return new Promise((resolve, reject) => {
+                        setTimeout(async () => {
+                            const rand = (Math.random() * 1e7).toFixed();
+                            const t0 = Date.now();
+                            try {
+                                div.innerHTML = '...';
+                                const timer = setInterval(() => {
+                                    const t1 = Date.now();
+                                    const timedout = t1 - t0 > 10000;
+                                    div.innerHTML = `${timedout ? 'ERR' : '...'}<span>${((t1-t0)/1000).toFixed(1)}s</span>`;
+                                    if (t1 - t0 > 10000) {
+                                        div.className = 'error';
+                                    }
+                                }, 100);
+                                div.className = 'in-progress';
+                                await fetch(URLs[section]+'?nocache='+rand);
+                                const t1 = Date.now();
+                                clearInterval(timer);
+                                div.className = t1 - t0 < 10000 ? 'ok' : 'error';
+                                div.innerHTML = `OK<span>${((t1-t0)/1000).toFixed(1)}s</span>`;
+                                resolve();
+                            } catch (err) {
+                                div.className = 'error';
+                                const t1 = Date.now();
+                                div.innerHTML = `ERR<span>${((t1-t0)/1000).toFixed(1)}s</span>`;
+                                reject(err);
+                            }
+                        }, Math.random()*1000)
+                        
+                    });
+                }));
+            }
+        })();
