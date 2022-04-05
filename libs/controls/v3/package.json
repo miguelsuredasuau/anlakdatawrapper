@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/controls",
-    "version": "3.14.0",
+    "version": "3.15.0",
     "type": "module",
     "scripts": {
         "format": "cd ../../.. && scripts/format libs/controls/v3",
@@ -23,8 +23,9 @@
         "utils/*.mjs"
     ],
     "dependencies": {
-        "@datawrapper/icons": "^1.6.0",
-        "@datawrapper/shared": "^0.34.4"
+        "@datawrapper/icons": "^1.17.1",
+        "@datawrapper/shared": "^0.34.4",
+        "lodash": "^4.17.21"
     },
     "devDependencies": {
         "@babel/core": "^7.4.0",
@@ -32,10 +33,13 @@
         "@storybook/addon-essentials": "^6.3.7",
         "@storybook/addon-links": "^6.3.7",
         "@storybook/svelte": "^6.3.7",
+        "@testing-library/svelte": "^3.1.0",
         "ava": "^3.15.0",
         "babel-loader": "^8.2.2",
         "copy-webpack-plugin": "^6.4.1",
         "jsdom": "^16.6.0",
+        "nanoid": "^3.3.2",
+        "sinon": "^13.0.1",
         "svelte": "^3.38.3",
         "svelte-loader": "^3.1.2",
         "svelte-preprocess": "^4.7.3"

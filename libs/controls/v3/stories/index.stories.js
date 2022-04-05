@@ -33,6 +33,9 @@ import TextControlDocs from '../TextControl.mdx';
 import TextControlView from './TextControlView.svelte';
 import TextInputDocs from '../TextInput.mdx';
 import TextInputView from './TextInputView.svelte';
+import TypeAheadInputDocs from '../TypeAheadInput.mdx';
+import TypeAheadInputView from './TypeAheadInputView.svelte';
+import countries from '../../v2/stories/static/data/countries.json';
 
 export default {
     title: 'controls (v3)'
@@ -101,6 +104,10 @@ export const TextControl = addStory('TextControl', TextControlView, TextControlD
 });
 export const TextInput = addStory('TextInput', TextInputView, TextInputDocs, {
     value: 'Hello world'
+});
+
+export const Typeahead = addStory('TypeAheadInput', TypeAheadInputView, TypeAheadInputDocs, {
+    options: countries.map(c => ({ label: c.name, value: c.name }))
 });
 
 function addStory(name, view, docs, args) {

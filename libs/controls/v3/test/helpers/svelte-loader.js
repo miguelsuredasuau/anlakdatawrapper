@@ -11,6 +11,7 @@ const baseURL = pathToFileURL(`${process.cwd()}/`).href;
 
 // Our components use .svelte as file extension:
 const extensionsRegex = /\.svelte$/;
+const lodashRegex = /^lodash\//;
 
 // Add sourcemap support for svelte files:
 const sourcemaps = {};
@@ -28,6 +29,10 @@ export function resolve(specifier, context, defaultResolve) {
     // specifiers ending in the Svelte file extension.
     if (extensionsRegex.test(specifier) && specifier.startsWith('.')) {
         return { url: new URL(specifier, parentURL).href };
+    }
+
+    if (lodashRegex.test(specifier)) {
+        return defaultResolve(specifier + '.js', context, defaultResolve);
     }
 
     // Let Node.js handle all other specifiers.
