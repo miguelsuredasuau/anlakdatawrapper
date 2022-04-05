@@ -220,7 +220,13 @@ module.exports = {
                 set(options, ['include'], [{ model: User, attributes: ['name', 'email'] }]);
             }
             const chart = await Chart.findOne(options);
-            if (!chart) {
+            const isEditable =
+                chart &&
+                (await chart.isEditableBy(
+                    request.auth.artifacts,
+                    request.auth.credentials.session
+                ));
+            if (!isEditable) {
                 throw Boom.notFound("Whoops! We couldn't find that visualization...", {
                     text: `Sorry, but it seems that there is no visualization with the id ${id} (anymore)`
                 });
