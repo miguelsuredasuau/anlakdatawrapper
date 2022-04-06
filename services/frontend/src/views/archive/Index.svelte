@@ -22,7 +22,6 @@
         chartsLoading
     } from './stores';
     import { headerProps } from '_layout/stores';
-    import { formatQueryString } from '../../utils/url.cjs';
     import { groupCharts } from '../../utils/charts.cjs';
     import { onMount, getContext, setContext } from 'svelte';
     import { parseFolderTree, getFolderUri } from './shared';
@@ -142,7 +141,7 @@
             $query.order = $currentFolder.forceOrder.order;
         }
 
-        const qs = formatQueryString({
+        const qs = new URLSearchParams({
             ...(limit && limit !== 96 && { limit }),
             ...($query.offset && { offset: $query.offset }),
             ...($query.groupBy && { groupBy: $query.groupBy }),
@@ -250,24 +249,35 @@
     async function loadCharts() {
         const { groupBy, limit, offset, order, orderBy, search } = $query;
         const qs = $currentFolder.apiURL
-            ? formatQueryString({
-                  limit,
-                  offset
-              })
-            : formatQueryString({
-                  minLastEditStep,
+            ? new URLSearchParams({
                   offset,
-                  order,
-                  orderBy,
+                  limit
+              })
+            : search
+            ? new URLSearchParams({
+                  offset,
                   limit,
-                  ...(search && { search }),
-                  ...(!search && { folderId: folderId || 'null' }),
-                  ...(!search && (teamId ? { teamId } : { authorId: 'me', teamId: 'null' }))
+                  orderBy,
+                  order,
+                  query: search
+              })
+            : new URLSearchParams({
+                  offset,
+                  limit,
+                  orderBy,
+                  order,
+                  minLastEditStep,
+                  folderId: folderId || 'null',
+                  ...(teamId ? { teamId } : { authorId: 'me', teamId: 'null' })
               });
         try {
             $chartsLoading = true;
             const newCharts = await httpReq.get(
-                $currentFolder.apiURL ? `${$currentFolder.apiURL}?${qs}` : `/v3/charts?${qs}`
+                $currentFolder.apiURL
+                    ? `${$currentFolder.apiURL}?${qs}`
+                    : search
+                    ? `/v3/search/charts?${qs}`
+                    : `/v3/charts?${qs}`
             );
             if (groupBy) {
                 newCharts.list = groupCharts({ charts: newCharts.list, groupBy, __ });

@@ -1,7 +1,6 @@
 <script>
     import Dropdown from '_partials/Dropdown.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
-    import { formatQueryString } from '../../utils/url.cjs';
     import { query, currentFolder } from './stores';
     import { DEFAULT_SORT_ORDER } from './constants';
 
@@ -90,7 +89,7 @@
                 <hr class="dropdown-divider" />
             {:else}
                 <a
-                    href={`/archive?${formatQueryString({
+                    href={`/archive?${new URLSearchParams({
                         ...$query,
                         ...option.query
                     })}`}

@@ -19,6 +19,12 @@ module.exports = {
         secretAuthSalt: 'MY_SECRET_AUTH_KEY',
         cors: ['*']
     },
+    opensearch: {
+        host: 'opensearch-node1',
+        protocol: 'http',
+        port: 9200,
+        index: 'chart_idx'
+    },
     plugins: {},
     orm: {
         chartIdSalt: 'TEST_SALT',

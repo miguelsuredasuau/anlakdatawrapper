@@ -8,17 +8,10 @@ const {
     setup,
     createTeamWithUser,
     createCharts,
+    createFolder,
     createFolders,
     createFoldersWithParent
 } = require('../../../test/helpers/setup');
-
-function createFolder(props) {
-    const { Folder } = require('@datawrapper/orm/models');
-    return Folder.create({
-        ...props,
-        name: String(randomInt(99999))
-    });
-}
 
 function findFolderByName(name) {
     const { Folder } = require('@datawrapper/orm/models');

@@ -66,7 +66,8 @@ test('User can write chart asset with almost 2MB', async t => {
         // see if that worked
         res = await getAsset(t.context.server, t.context.headers, chart, `${chart.id}.map.json`);
         t.is(res.statusCode, 200);
-        t.is(JSON.parse(res.result).data.length, bytes);
+        const dataLength = JSON.parse(res.result).data.length;
+        t.true(dataLength === bytes || dataLength === bytes + 1);
         t.is(res.headers['content-type'], 'application/json; charset=utf-8');
         t.is(res.headers['content-disposition'], `attachment; filename=${chart.id}.map.json`);
 

@@ -1,7 +1,6 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const { db } = require('@datawrapper/orm');
-const { formatQueryString } = require('../utils/url.cjs');
 const { groupCharts } = require('../utils/charts.cjs');
 const keyBy = require('lodash/keyBy');
 const mapValues = require('lodash/mapValues');
@@ -146,25 +145,37 @@ module.exports = {
             const isRecentChartsQuery =
                 typeof folderId === 'string' && folderId.startsWith('recently-');
 
-            const qs = formatQueryString(
-                isRecentChartsQuery
-                    ? { offset, limit }
-                    : {
-                          minLastEditStep,
-                          offset,
-                          order,
-                          orderBy,
-                          limit,
-                          ...(search && { search }),
-                          ...(!search && { folderId: folderId || 'null' }),
-                          ...(!search && (teamId ? { teamId } : { authorId: 'me', teamId: 'null' }))
-                      }
-            );
+            const qs = isRecentChartsQuery
+                ? new URLSearchParams({
+                      offset,
+                      limit
+                  })
+                : search
+                ? new URLSearchParams({
+                      offset,
+                      limit,
+                      orderBy,
+                      order,
+                      query: search
+                  })
+                : new URLSearchParams({
+                      offset,
+                      limit,
+                      orderBy,
+                      order,
+                      minLastEditStep,
+                      folderId: folderId || 'null',
+                      ...(teamId ? { teamId } : { authorId: 'me', teamId: 'null' })
+                  });
 
             let charts;
             try {
                 charts = await api(
-                    isRecentChartsQuery ? `/me/${folderId}-charts?${qs}` : `/charts?${qs}`
+                    isRecentChartsQuery
+                        ? `/me/${folderId}-charts?${qs}`
+                        : search
+                        ? `/search/charts?${qs}`
+                        : `/charts?${qs}`
                 );
             } catch {
                 // The team probably doesn't exist or the user doesn't have permissions to access

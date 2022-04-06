@@ -52,5 +52,10 @@ module.exports = {
                 prefix: '/visualizations'
             }
         });
+        server.register(require('./search'), {
+            routes: {
+                prefix: '/search'
+            }
+        });
     }
 };

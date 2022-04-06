@@ -425,6 +425,7 @@ async function destroy(...instances) {
 }
 
 module.exports = {
+    ALL_SCOPES,
     BASE_URL,
     V1_BASE_URL,
     addThemeToTeam,

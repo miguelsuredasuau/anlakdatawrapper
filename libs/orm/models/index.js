@@ -12,6 +12,7 @@ const models = {};
     'PluginData',
     'Product',
     'ProductPlugin',
+    'ReadonlyChart',
     'Schema',
     'Session',
     'Stats',
