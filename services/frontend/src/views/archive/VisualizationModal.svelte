@@ -167,13 +167,15 @@
                             <li>
                                 <button
                                     on:click={() => duplicateChart(chart, true)}
-                                    class="button is-text is-medium"
+                                    class="button is-ghost is-medium"
                                     ><IconDisplay icon="duplicate" />
                                     <span>{__('archive / duplicate')}</span></button
                                 >
                             </li>
                             <li>
-                                <a href="/chart/{chart.id}/publish" class="button is-text is-medium"
+                                <a
+                                    href="/chart/{chart.id}/publish"
+                                    class="button is-ghost is-medium"
                                     ><IconDisplay icon="export-file" />
                                     <span>{__('archive / modal / re-publish')}</span></a
                                 >
@@ -184,7 +186,7 @@
                                         <button
                                             slot="trigger"
                                             href="/chart/{chart.id}/publish"
-                                            class="button is-text is-medium"
+                                            class="button is-ghost is-medium"
                                             ><IconDisplay icon="source-code" />
                                             <span>{__('archive / modal / copy-embed-code')}</span
                                             ><IconDisplay
@@ -228,7 +230,7 @@
                         <hr class="my-2" />
                         <button
                             on:click={handleDeleteButtonClick}
-                            class="button is-text is-medium has-text-danger"
+                            class="button is-ghost is-medium has-text-danger"
                             ><IconDisplay icon="trash" />
                             <span>{__('archive / delete')}</span></button
                         >

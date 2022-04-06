@@ -17,6 +17,9 @@
     &.is-text:disabled {
         color: inherit;
     }
+    &.is-ghost:hover {
+        background-color: $dw-shade-light;
+    }
     .icon {
         svg {
             font-size: 1.429em; // = 20px in 14px buttons

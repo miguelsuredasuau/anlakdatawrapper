@@ -870,7 +870,7 @@ a.box:active {
 .button.is-ghost {
   background: none;
   border-color: transparent;
-  color: inherit;
+  color: #1d81a2;
   text-decoration: none;
 }
 .button.is-ghost:hover, .button.is-ghost.is-hovered {
@@ -10217,6 +10217,9 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 }
 .button.is-text:disabled {
   color: inherit;
+}
+.button.is-ghost:hover {
+  background-color: rgba(0, 0, 0, 0.035);
 }
 .button .icon svg {
   font-size: 1.429em;

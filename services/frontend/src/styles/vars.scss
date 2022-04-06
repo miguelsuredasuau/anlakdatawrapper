@@ -95,8 +95,7 @@ $button-text-decoration: none;
 $button-text-hover-background-color: $dw-shade-light;
 $button-text-hover-color: $text-strong;
 
-// $button-ghost-background: $dw-shade-light;
-$button-ghost-color: inherit;
+$button-ghost-color: $link;
 $button-ghost-decoration: none;
 $button-ghost-hover-color: $link-hover;
 $button-ghost-hover-decoration: none;
