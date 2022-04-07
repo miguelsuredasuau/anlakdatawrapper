@@ -23,8 +23,13 @@
     export let initUrlStep;
     export let urlPrefix;
 
+    /**
+     * custom view components to be rendered
+     */
+    export let customViews = [];
+
     const dw_chart = dwChart(rawChart);
-    dw_chart.saveSoon = () => {
+    dw_chart.save = dw_chart.saveSoon = () => {
         $chart = dw_chart.attributes();
     };
     dw_chart.dataset(
@@ -71,6 +76,7 @@
         chart,
         data,
         visualizations,
+        language: rawChart.language,
         chartData: rawData,
         dw_chart
     };
@@ -163,4 +169,10 @@
             {/if}
         </div>
     </section>
+
+    {#if customViews && customViews.belowEditor && customViews.belowEditor.length > 0}
+        {#each customViews.belowEditor as comp}
+            <ViewComponent id={comp.id} props={{ ...comp.props, chart, activeStep, workflow }} />
+        {/each}
+    {/if}
 </MainLayout>

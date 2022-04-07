@@ -48,6 +48,23 @@ Chart.prototype.isEditableBy = async function (user, session) {
     return false;
 };
 
+/**
+ * Checks whether or not the authenticated user may edit the data
+ * of the chart
+ *
+ * @param {User} user - instance of the User object
+ * @param {string} session - session id
+ * @returns {boolean}
+ */
+Chart.prototype.isDataEditableBy = async function (user, session) {
+    const isEditable = await this.isEditableBy(user, session);
+    if (!isEditable) return false;
+    if (this.is_fork || this.metadata?.custom?.webToPrint?.mode === 'print') {
+        return false;
+    }
+    return true;
+};
+
 Chart.prototype.isPublishableBy = async function (user) {
     if (user) {
         // guests and pending users are not allowed to publish

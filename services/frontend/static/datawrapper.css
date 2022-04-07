@@ -4425,7 +4425,7 @@ button.dropdown-item.is-active {
   justify-content: center;
   overflow: hidden;
   position: fixed;
-  z-index: 1100;
+  z-index: 1200;
 }
 .modal.is-active {
   display: flex;
@@ -4516,7 +4516,7 @@ button.dropdown-item.is-active {
   background-color: #ffffff;
   min-height: 3.25rem;
   position: relative;
-  z-index: 30;
+  z-index: 1000;
 }
 .navbar.is-white {
   background-color: #ffffff;
@@ -5424,7 +5424,7 @@ body.has-navbar-fixed-bottom-touch {
     min-width: 100%;
     position: absolute;
     top: 100%;
-    z-index: 20;
+    z-index: 1100;
   }
   .navbar-dropdown .navbar-item {
     padding: 0.375rem 1rem;

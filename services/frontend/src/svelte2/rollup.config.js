@@ -13,6 +13,7 @@ const production = !process.env.ROLLUP_WATCH;
 const targets = [];
 
 build('upload');
+build('describe');
 
 export default targets;
 
@@ -106,10 +107,10 @@ function build(appId, opts) {
 }
 
 function checkTarget(appId) {
-    if (!process.env.ROLLUP_TGT_APP) return true;
-    return process.env.ROLLUP_TGT_APP.endsWith('/')
-        ? appId.startsWith(process.env.ROLLUP_TGT_APP)
-        : process.env.ROLLUP_TGT_APP === appId;
+    if (!process.env.TARGET) return true;
+    return process.env.TARGET.endsWith('/')
+        ? appId.startsWith(process.env.TARGET)
+        : process.env.TARGET === appId;
 }
 
 function handleWarnings(warning) {

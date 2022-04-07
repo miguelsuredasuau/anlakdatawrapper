@@ -40,6 +40,15 @@ module.exports = function registerFeatureFlag(server) {
         },
         group: 'layout'
     });
+    registerFeatureFlag('output_locale', {
+        title: {
+            key: 'describe / locale-select / hed',
+            scope: 'core'
+        },
+        type: 'switch',
+        default: true,
+        group: 'layout'
+    });
 
     return registerFeatureFlag;
 };

@@ -42,7 +42,6 @@ module.exports = {
                             request
                         });
                         return {
-                            readonly: false,
                             datasets,
                             uploadAfterContent,
                             ...additionalData
@@ -53,7 +52,22 @@ module.exports = {
                     id: 'describe',
                     view: 'edit/chart/describe',
                     title: ['Check & Describe', 'core'],
-                    async data() {}
+                    async data({ request, chart }) {
+                        let showLocaleSelect = true;
+                        if (chart.organization_id) {
+                            const team = await chart.getTeam();
+                            if (team.settings?.flags?.output_locale === false) {
+                                showLocaleSelect = false;
+                            }
+                        }
+                        return {
+                            showLocaleSelect,
+                            readonly: !(await chart.isDataEditableBy(
+                                request.auth.artifacts,
+                                request.auth.credentials.session
+                            ))
+                        };
+                    }
                 },
                 {
                     id: 'visualize',
@@ -187,10 +201,14 @@ module.exports = {
                         folderId = folder.parentId;
                     }
 
+                    const customViews = await server.methods.getCustomData('edit/customViews', {
+                        request
+                    });
+
                     return h.view('edit/Index.svelte', {
                         htmlClass: 'has-background-white-ter',
                         props: {
-                            rawChart: chart,
+                            rawChart: await prepareChart(chart),
                             rawData: data,
                             initUrlStep: params.step,
                             urlPrefix: `/${params.prefix}`,
@@ -201,7 +219,8 @@ module.exports = {
                             },
                             visualizations: Array.from(server.app.visualizations.keys()).map(key =>
                                 server.app.visualizations.get(key)
-                            )
+                            ),
+                            customViews
                         }
                     });
                 }
@@ -231,7 +250,7 @@ module.exports = {
                     text: `Sorry, but it seems that there is no visualization with the id ${id} (anymore)`
                 });
             }
-            return prepareChart(chart);
+            return chart;
         }
 
         server.methods.prepareView('edit/App.svelte');

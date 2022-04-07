@@ -35,6 +35,7 @@ $body-background-color: white;
 $footer-background-color: transparent;
 
 $border: $grey-lighter; // bulma default
+
 // $border-hover
 // $border-light
 // $border-light-hover
@@ -131,11 +132,13 @@ $navbar-dropdown-item-active-background-color: $dw-scooter-lightest;
 $navbar-divider-height: 1px;
 $navbar-divider-background-color: $dw-grey-lighter;
 $navbar-dropdown-arrow: $dw-grey-darker;
+$navbar-z: 1000;
+$navbar-dropdown-z: 1100;
 
 // Modal
 $modal-content-width: calc(100vw - 40px);
-$modal-z: 1100;
 $modal-background-background-color: $dw-black;
+$modal-z: 1200;
 
 // Menu
 $menu-label-color: $grey-dark;
@@ -164,6 +167,7 @@ $dropdown-item-active-color: $dw-black;
 $dropdown-item-active-background-color: $dw-scooter-lightest;
 $dropdown-content-padding-top: 0.25rem;
 $dropdown-content-padding-bottom: 0.25rem;
+
 
 // Table
 $table-background-color: transparent;

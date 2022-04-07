@@ -1,17 +1,11 @@
-<SelectControl
-    label="{__('describe / locale-select / language')}"
-    options="{options}"
-    width="200px"
-    labelWidth="80px"
-    bind:value="$language"
-/>
+<SelectInput {options} width="200px" labelWidth="80px" bind:value="$language" />
 
 <script>
-    import SelectControl from '../SelectControl.html';
+    import SelectInput from '../SelectInput.html';
     import { __ } from '@datawrapper/shared/l10n';
 
     export default {
-        components: { SelectControl },
+        components: { SelectInput },
         computed: {
             options({ $locales }) {
                 return $locales.map(t => {

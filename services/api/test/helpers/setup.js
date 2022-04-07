@@ -123,6 +123,7 @@ async function createTeam(props = {}) {
             flags: {
                 get_the_data: true,
                 layout_selector: true,
+                output_locale: true,
                 embed: true,
                 byline: true,
                 pdf: false

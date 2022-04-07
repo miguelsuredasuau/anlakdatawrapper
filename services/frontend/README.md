@@ -419,7 +419,7 @@ See [our dashboard](src/views/dashboard/Index.svelte) for a live example.
 Plugins may "inject" custom data into routes that support this.
 
 ```js
-server.methods.registerCustomData('hello/some-key', async (request) => {
+server.methods.registerCustomData('hello/some-key', async ({ request }) => {
     // fetch some data and return it
     return {
         answer: 42
