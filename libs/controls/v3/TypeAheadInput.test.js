@@ -258,6 +258,9 @@ test('with custom search', async t => {
 
     // dropdown is not displayed yet
     await fireEvent.focus(input);
+    // no helper message after focus and before input
+    const helperMessageEl = outerDiv.querySelector('.helper-message');
+    t.falsy(helperMessageEl);
     await fireEvent.input(input, { target: { value: 'pap' } });
     await delay(200); // input is debounced
     t.falsy(queryByText('Papaya'));

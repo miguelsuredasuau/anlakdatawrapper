@@ -181,6 +181,9 @@
         if (value !== _value) {
             if (value) {
                 searchQuery = value.label;
+            } else {
+                searchQuery = '';
+                open = false;
             }
             _value = value;
         }
@@ -434,7 +437,7 @@
                     {@html searchingMsg}
                 </li>
             </ul>
-        {:else if open && !items.length}
+        {:else if open && searchQuery && !items.length}
             <ul bind:this={refDropdownMenu} class="dropdown-results">
                 <li class="helper-message">
                     {@html noResultsMsg || 'No results'}
