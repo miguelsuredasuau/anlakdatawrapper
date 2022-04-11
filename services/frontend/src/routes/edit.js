@@ -153,7 +153,7 @@ module.exports = {
                         .map(step => {
                             if (step.ref) {
                                 if (editWorkflowSteps.has(step.ref)) {
-                                    const workflowStep = editWorkflowSteps.get(step.ref);
+                                    const workflowStep = { ...editWorkflowSteps.get(step.ref) };
                                     if (step.hide) workflowStep.hide = step.hide;
                                     return workflowStep;
                                 }
