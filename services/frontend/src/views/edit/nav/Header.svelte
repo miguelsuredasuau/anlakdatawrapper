@@ -18,6 +18,9 @@
 
     let innerHeight = 0;
     let innerWidth = 0;
+
+    // d3-maps has some extra steps that it is hiding from the nav (for now)
+    $: visibleSteps = steps.filter(step => !step.hide);
 </script>
 
 <style lang="scss">
@@ -83,7 +86,7 @@
 
     <div class="editor-step-nav">
         <div class="columns step-nav">
-            {#each steps as step}
+            {#each visibleSteps as step}
                 <div class="column">
                     <Step
                         {step}

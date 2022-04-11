@@ -65,9 +65,15 @@
 
     const steps = workflow.steps.map((step, i) => ({
         ...step,
-        title: __(step.title[0], step.title[1]),
-        index: i + 1
+        title: __(step.title[0], step.title[1])
     }));
+
+    // d3-maps has some extra steps that it is hiding from the nav (for now)
+    steps
+        .filter(step => !step.hide)
+        .forEach((step, i) => {
+            step.index = i + 1;
+        });
 
     let activeStep = steps.find(s => s.id === initUrlStep) || steps[0];
 

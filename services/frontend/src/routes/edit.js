@@ -136,8 +136,12 @@ module.exports = {
                     if (!workflow) {
                         throw Boom.notImplemented('unknown workflow ' + vis.workflow);
                     }
-
-                    if (workflow.prefix && workflow.prefix !== params.prefix) {
+                    // allowPrefix is set to 'chart' for d3-maps, for which we (for now) still want to allow access to the chart
+                    // upload & describe steps
+                    if (
+                        workflow.prefix &&
+                        ![workflow.prefix, workflow.allowPrefix].includes(params.prefix)
+                    ) {
                         return h.redirect(`/${workflow.prefix}/${params.chartId}/${params.step}`);
                     }
 
@@ -149,7 +153,9 @@ module.exports = {
                         .map(step => {
                             if (step.ref) {
                                 if (editWorkflowSteps.has(step.ref)) {
-                                    return editWorkflowSteps.get(step.ref);
+                                    const workflowStep = editWorkflowSteps.get(step.ref);
+                                    if (step.hide) workflowStep.hide = step.hide;
+                                    return workflowStep;
                                 }
                                 throw Boom.notImplemented(
                                     'unknown workflow step reference: ' + step.ref
