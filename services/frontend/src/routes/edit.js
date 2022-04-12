@@ -180,6 +180,8 @@ module.exports = {
 
                     const api = server.methods.createAPI(request);
 
+                    // refresh external data
+                    await api(`/charts/${chart.id}/data/refresh`, { method: 'POST', json: false });
                     const data = await api(`/charts/${chart.id}/data`, { json: false });
 
                     const breadcrumbPath = [
