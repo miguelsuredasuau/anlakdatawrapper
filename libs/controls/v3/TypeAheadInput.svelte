@@ -431,7 +431,7 @@
                     </li>
                 {/each}
             </ul>
-        {:else if open && searching}
+        {:else if open && searching && searchingMsg}
             <ul bind:this={refDropdownMenu} class="dropdown-results">
                 <li class="helper-message">
                     {@html searchingMsg}

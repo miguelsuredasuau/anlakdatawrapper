@@ -59,14 +59,7 @@
 <hr />
 
 <label class="mb-2">With custom search</label>
-<TypeAheadInput
-    bind:value={valueC}
-    {search}
-    searchingMsg="Searching..."
-    placeholder="Placeholder"
-    {ariaLabel}
-    {assetURL}
-/>
+<TypeAheadInput bind:value={valueC} {search} placeholder="Placeholder" {ariaLabel} {assetURL} />
 <div>Selected value: <b>{valueC && valueC.label}</b></div>
 <hr />
 
