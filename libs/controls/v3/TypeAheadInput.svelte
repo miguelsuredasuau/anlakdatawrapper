@@ -181,9 +181,6 @@
         if (value !== _value) {
             if (value) {
                 searchQuery = value.label;
-            } else {
-                searchQuery = '';
-                open = false;
             }
             _value = value;
         }
@@ -334,6 +331,9 @@
         border-left: none;
     }
     .dropdown-results {
+        position: absolute;
+        top: 100%;
+        z-index: 1;
         max-height: 150px;
         overflow: auto;
         margin: 0px;
@@ -431,7 +431,7 @@
                     </li>
                 {/each}
             </ul>
-        {:else if open && searching && searchingMsg}
+        {:else if open && searching}
             <ul bind:this={refDropdownMenu} class="dropdown-results">
                 <li class="helper-message">
                     {@html searchingMsg}
