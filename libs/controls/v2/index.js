@@ -24,7 +24,7 @@ export { default as HelpDisplay } from './HelpDisplay.html';
 export { default as LegendEditor } from './LegendEditor.html';
 export { default as ListInput } from './ListInput.html';
 export { default as ListItem } from './ListItem.html';
-export { default as LocaleSelectControl } from './editor/LocaleSelectControl.html';
+export { default as LocaleSelectControl } from './editor/LocaleSelectInput.html';
 export { default as MoreOptionsGroup } from './MoreOptionsGroup.html';
 export { default as NumberControl } from './NumberControl.html';
 export { default as NumberInput } from './NumberInput.html';

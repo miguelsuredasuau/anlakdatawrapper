@@ -10,7 +10,9 @@
         "format": "(cd ../.. && scripts/format libs/service-utils)",
         "test": "ava --verbose",
         "test:watch": "ava --watch",
-        "prepublishOnly": "npm test"
+        "prepublishOnly": "npm test",
+        "lint":"cd ../.. && scripts/lint libs/service-utils",
+        "format":"cd ../.. && scripts/format libs/service-utils"
     },
     "repository": {
         "type": "git",
@@ -22,7 +24,9 @@
         "bcryptjs": "^2.4.3",
         "humps": "^2.0.1",
         "lodash": "^4.17.20",
-        "nanoid": "^3.1.22"
+        "nanoid": "^3.1.22",
+        "@datawrapper/locales":"file:../locales",
+        "fs-extra": "^10.0.0"
     },
     "devDependencies": {
         "ava": "^2.4.0",

@@ -2,6 +2,7 @@
     class="color-list-item"
     class:manual="item.manual"
     class:draggable="draggable"
+    class:dir-rtl="{rtl}"
     data-uid="{uid}"
 >
     <span
@@ -21,6 +22,11 @@
         margin: 3px 7px 3px 3px;
     }
 
+    .color-list-item.dir-rtl .color-label,
+    .color-list-item.dir-rtl .original-label {
+        direction: rtl;
+        unicode-bidi: embed;
+    }
     .manual.color-list-item {
         line-height: 1.2;
         margin: 0 3px 3px 0;
@@ -62,7 +68,8 @@
     export default {
         data() {
             return {
-                uid: ''
+                uid: '',
+                rtl: false
             };
         },
         helpers: { chroma }

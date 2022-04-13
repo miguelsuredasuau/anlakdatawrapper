@@ -181,7 +181,8 @@
                 namespace: 'chart',
                 notifications: [],
                 chartNotifications: [],
-                showUpgradeKeyOn: {}
+                showUpgradeKeyOn: {},
+                textDirection: 'ltr'
             };
         },
         computed: {
@@ -328,6 +329,11 @@
                 window.addEventListener('message', event => {
                     if (event.data === 'datawrapper:vis:rendered') {
                         this.refs.preview.getContext((iframeWindow, iframeDocument) => {
+                            this.store.set({
+                                darkMode: iframeWindow.__dw.vis.darkMode(),
+                                textDirection: iframeWindow.__dw.vis.textDirection
+                            });
+
                             const spans = iframeDocument.querySelectorAll(
                                 '.label[data-column][data-row] > span'
                             );
@@ -387,7 +393,6 @@
                                     }
                                 });
                             }
-                            this.store.set({ darkMode: iframeWindow.__dw.vis.darkMode() });
                         });
                     }
                 });

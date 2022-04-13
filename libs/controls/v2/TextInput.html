@@ -6,6 +6,7 @@
         bind:value
         on:input="resize(event.target)"
         style="height:{height}px"
+        dir="{textDirection}"
         rows="1"
         {id}
         {disabled}
@@ -13,7 +14,15 @@
         {autocomplete}
     />
     {:else}
-    <input type="text" bind:value {id} {disabled} {placeholder} {autocomplete} />
+    <input
+        type="text"
+        bind:value
+        {id}
+        {disabled}
+        {placeholder}
+        {autocomplete}
+        dir="{textDirection}"
+    />
     {/if}
 </div>
 
@@ -67,7 +76,8 @@
                 placeholder: '',
                 width: '100%',
                 height: 20,
-                rows: 5
+                rows: 5,
+                textDirection: 'ltr'
             };
         },
 

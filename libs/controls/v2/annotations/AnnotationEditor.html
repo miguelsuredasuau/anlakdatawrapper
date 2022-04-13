@@ -12,6 +12,7 @@
         bind:value="annotationData[selected].text"
         placeholder="{__('controls / annotations / text / placeholder')}"
         resize="vertical"
+        textDirection="{$textDirection}"
     />
 
     <div class:disable>
@@ -100,6 +101,7 @@
                 bind:dx="annotationData[selected].dx"
                 bind:dy="annotationData[selected].dy"
                 {editorState}
+                {mirrorX}
             />
 
             <div class="offset-group">
@@ -111,6 +113,7 @@
                     </svg>
                     <NumberInput
                         bind:value="annotationData[selected].dx"
+                        multiply="{xOffsetMultiply}"
                         unit="px"
                         min="-9999"
                         max="9999"
@@ -160,6 +163,7 @@
         {selected}
         {editorState}
         {isMap}
+        {mirrorX}
         disabled="{disable}"
     />
     <hr />
@@ -262,6 +266,7 @@
         },
         data() {
             return {
+                mirrorX: false,
                 labelWidth: '70px'
             };
         },
@@ -273,6 +278,9 @@
             },
             mobileFallbackHelpText({ isMap }) {
                 return __(`controls / annotations / mobile-key / help-${isMap ? 'map' : 'chart'}`);
+            },
+            xOffsetMultiply({ $textDirection, mirrorX }) {
+                return $textDirection === 'rtl' && !mirrorX ? -1 : 1;
             }
         },
         helpers: { __ },

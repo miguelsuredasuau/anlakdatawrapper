@@ -9,6 +9,7 @@
     export let teamPublicSettings = {};
     export let theme = {};
     export let locales = {};
+    export let textDirection = 'ltr';
     export let translations;
     export let blocks = {};
     export let chartAfterBodyHTML = '';
@@ -80,4 +81,5 @@
     {forceLogo}
     {logoId}
     {outerContainer}
+    {textDirection}
 />

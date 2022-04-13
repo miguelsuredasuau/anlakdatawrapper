@@ -46,6 +46,7 @@
                 type="text"
                 placeholder="{selection[0]}"
                 aria-label="{__('controls / color-category / text')}"
+                dir="{$textDirection}"
             />
             {/if}
 
@@ -116,6 +117,9 @@
             };
         },
         computed: {
+            rtl({ $textDirection }) {
+                return $textDirection === 'rtl';
+            },
             categoryOrder({ value }) {
                 return value.categoryOrder || [];
             },

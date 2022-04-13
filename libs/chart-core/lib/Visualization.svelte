@@ -38,6 +38,7 @@
     export let themeDataDark = {};
     export let themeDataLight = {};
     export let locales = {};
+    export let textDirection = 'ltr';
     export let translations;
     export let blocks = {};
     export let chartAfterBodyHTML = '';
@@ -481,6 +482,7 @@ Please make sure you called __(key) with a key of type "string".
         vis = dw.visualization(visualization.id, target);
         vis.meta = visualization;
         vis.lang = chart.language || 'en-US';
+        vis.textDirection = textDirection;
 
         // load chart data and assets
         await dwChart.load(
@@ -609,6 +611,8 @@ Please make sure you called __(key) with a key of type "string".
 
     onMount(async () => {
         await run();
+
+        outerContainer.classList.toggle('dir-rtl', textDirection === 'rtl');
 
         if (isIframe) {
             // set some classes - still needed?

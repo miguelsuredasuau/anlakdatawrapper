@@ -5,8 +5,8 @@
             <input
                 type="range"
                 disabled="{disabled}"
-                min="{min_*multiply_}"
-                max="{max_*multiply_}"
+                min="{range[0]}"
+                max="{range[1]}"
                 step="{step_*multiply_}"
                 on:input="update()"
                 bind:value="value2"
@@ -19,8 +19,8 @@
                 style="width:{width};"
                 type="number"
                 disabled="{disabled}"
-                min="{min_*multiply_}"
-                max="{max_*multiply_}"
+                min="{range[0]}"
+                max="{range[1]}"
                 step="{step_*multiply_}"
                 placeholder="{placeholder}"
                 on:input="update()"
@@ -125,11 +125,10 @@
             step_({ step }) {
                 return step || 1;
             },
-            min_({ min }) {
-                return min !== undefined ? min : 0;
-            },
-            max_({ max }) {
-                return max !== undefined ? max : 100;
+            range({ min, max, multiply_ }) {
+                if (min === undefined) min = 0;
+                if (max === undefined) max = 100;
+                return (multiply_ < 0 ? [max, min] : [min, max]).map(v => v * multiply_);
             },
             unit_({ unit }) {
                 return unit !== undefined ? unit : '';

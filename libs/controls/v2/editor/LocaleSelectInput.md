@@ -8,7 +8,7 @@ Change the locale/language
 <script>
     import { LocaleSelectControl } from '@datawrapper/controls';
     // or import directly via
-    // import LocaleSelectControl from '@datawrapper/controls/editor/LocaleSelectControl.html';
+    // import LocaleSelectControl from '@datawrapper/controls/editor/LocaleSelectInput.html';
 
     export default {
         components: { LocaleSelectControl }

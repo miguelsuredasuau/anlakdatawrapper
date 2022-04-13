@@ -1,50 +1,6 @@
-const path = require('path');
-const fs = require('fs-extra');
 const get = require('lodash/get');
 
 module.exports = {
-    async loadLocales() {
-        const VENDORS = ['dayjs', 'numeral'];
-        const locales = [];
-
-        for (const vendor of VENDORS) {
-            locales[vendor] = new Map();
-            const basePath = path.resolve(
-                __dirname,
-                '../../../node_modules/@datawrapper/locales/locales/',
-                vendor
-            );
-            const files = await fs.readdir(basePath);
-            for (let i = files.length - 1; i >= 0; i--) {
-                const file = files[i];
-                if (/.*\.js/.test(file)) {
-                    const content = await fs.readFile(path.join(basePath, file), 'utf-8');
-                    locales[vendor].set(path.basename(file, '.js'), content);
-                }
-            }
-        }
-        return locales;
-    },
-
-    loadVendorLocale(locales, vendor, locale, team) {
-        const culture = locale.replace('_', '-').toLowerCase();
-        const tryLocales = [culture];
-        if (culture.length > 2) {
-            // also try just language as fallback
-            tryLocales.push(culture.split('-')[0]);
-        }
-        for (let i = 0; i < tryLocales.length; i++) {
-            if (locales[vendor].has(tryLocales[i])) {
-                const localeBase = locales[vendor].get(tryLocales[i]);
-                return {
-                    base: localeBase,
-                    custom: get(team, `settings.locales.${vendor}.${locale.replace('_', '-')}`, {})
-                };
-            }
-        }
-        // no locale found at all
-        return 'null';
-    },
     initCaches(server) {
         const config = server.methods.config();
 

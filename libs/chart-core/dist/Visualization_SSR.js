@@ -10061,6 +10061,9 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     locales = {}
   } = $$props;
   let {
+    textDirection = "ltr"
+  } = $$props;
+  let {
     translations
   } = $$props;
   let {
@@ -10410,7 +10413,8 @@ Please make sure you called __(key) with a key of type "string".
 
     vis = dw.visualization(visualization.id, target);
     vis.meta = visualization;
-    vis.lang = chart.language || "en-US"; // load chart data and assets
+    vis.lang = chart.language || "en-US";
+    vis.textDirection = textDirection; // load chart data and assets
 
     await dwChart.load(dwChart.asset(datasetName) || "", isPreview ? undefined : chart.externalData);
     dwChart.locales = locales;
@@ -10528,6 +10532,7 @@ Please make sure you called __(key) with a key of type "string".
 
   onMount(async () => {
     await run();
+    outerContainer.classList.toggle("dir-rtl", textDirection === "rtl");
 
     if (isIframe) {
       // set some classes - still needed?
@@ -10667,6 +10672,7 @@ Please make sure you called __(key) with a key of type "string".
   if ($$props.themeDataDark === void 0 && $$bindings.themeDataDark && themeDataDark !== void 0) $$bindings.themeDataDark(themeDataDark);
   if ($$props.themeDataLight === void 0 && $$bindings.themeDataLight && themeDataLight !== void 0) $$bindings.themeDataLight(themeDataLight);
   if ($$props.locales === void 0 && $$bindings.locales && locales !== void 0) $$bindings.locales(locales);
+  if ($$props.textDirection === void 0 && $$bindings.textDirection && textDirection !== void 0) $$bindings.textDirection(textDirection);
   if ($$props.translations === void 0 && $$bindings.translations && translations !== void 0) $$bindings.translations(translations);
   if ($$props.blocks === void 0 && $$bindings.blocks && blocks !== void 0) $$bindings.blocks(blocks);
   if ($$props.chartAfterBodyHTML === void 0 && $$bindings.chartAfterBodyHTML && chartAfterBodyHTML !== void 0) $$bindings.chartAfterBodyHTML(chartAfterBodyHTML);

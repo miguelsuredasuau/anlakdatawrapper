@@ -1,7 +1,7 @@
 <div style="margin-top: 10px" class:disable-highlighting-on-focus="noSyntaxHighlighting">
     <div class="title">
         <div class="textarea single-line">
-            <div ref:coloredTitle class="inner">{@html titleColors.text}</div>
+            <div dir="{textDirection}" ref:coloredTitle class="inner">{@html titleColors.text}</div>
         </div>
         <input
             ref:textAreaTitle
@@ -14,12 +14,18 @@
             placeholder="{placeholderTitle}"
             type="text"
             bind:value="internalTitle"
+            dir="{textDirection}"
         />
     </div>
     {#if !disableBody}
     <div class="body mt-2">
         <div class="textarea">
-            <div ref:coloredBody style="right: {7+scrollbarSize}px" class="inner">
+            <div
+                dir="{textDirection}"
+                ref:coloredBody
+                style="right: {7+scrollbarSize}px"
+                class="inner"
+            >
                 {@html bodyColors.text}
             </div>
         </div>
@@ -34,6 +40,7 @@
             rows="8"
             placeholder="{placeholderBody}"
             bind:value="internalBody"
+            dir="{textDirection}"
         ></textarea>
     </div>
     {/if} {#if errors.length} {#each errors as err}
@@ -168,6 +175,7 @@
                 noSyntaxHighlighting: true,
                 help: __('controls / template-string-editor / help', 'core'),
                 uid: '',
+                textDirection: 'ltr',
                 validateTemplate() {}
             };
         },

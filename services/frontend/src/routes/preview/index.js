@@ -1,4 +1,5 @@
 const { fakeBoolean, id: logoId } = require('@datawrapper/schemas/themeData/shared');
+const { loadVendorLocale, loadLocaleConfig } = require('@datawrapper/service-utils/loadLocales');
 const { Team } = require('@datawrapper/orm/models');
 const chartCore = require('@datawrapper/chart-core');
 const Joi = require('joi');
@@ -10,8 +11,6 @@ module.exports = {
     name: 'routes/preview',
     version: '1.0.0',
     register: async server => {
-        const { loadLocales, loadVendorLocale } = require('./utils');
-        const locales = await loadLocales();
         const config = server.methods.config();
         const apiBase = `${config.api.https ? 'https' : 'http'}://${config.api.subdomain}.${
             config.api.domain
@@ -93,6 +92,9 @@ module.exports = {
                 const dependencies = ['dw-2.0.min.js'];
 
                 const team = await Team.findByPk(props.chart.organizationId);
+
+                const localeConfig = await loadLocaleConfig(chartLocale);
+
                 props = Object.assign(props, {
                     isIframe: true,
                     isPreview: true,
@@ -101,9 +103,10 @@ module.exports = {
                     themeDataLight: props.theme.data,
                     polyfillUri: '/lib/polyfills',
                     locales: {
-                        dayjs: loadVendorLocale(locales, 'dayjs', chartLocale, team),
-                        numeral: loadVendorLocale(locales, 'numeral', chartLocale, team)
+                        dayjs: await loadVendorLocale('dayjs', chartLocale, team),
+                        numeral: await loadVendorLocale('numeral', chartLocale, team)
                     },
+                    textDirection: localeConfig.textDirection || 'ltr',
                     teamPublicSettings: team ? team.getPublicSettings() : {},
                     ...(request.query.dark ? { theme: themeDark.json } : {})
                 });

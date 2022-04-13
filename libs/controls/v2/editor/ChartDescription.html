@@ -15,6 +15,7 @@
             autocomplete="off"
             id="text-title"
             expandable
+            {textDirection}
         />
 
         <label class="control-label" for="text-intro">{__('Description')}</label>
@@ -22,6 +23,7 @@
             disabled="{disabled.intro}"
             bind:value="$metadata.describe.intro"
             id="text-intro"
+            {textDirection}
         />
 
         <label class="control-label" for="text-notes">{__('Notes')}</label>
@@ -30,6 +32,7 @@
             bind:value="$metadata.annotate.notes"
             id="text-notes"
             expandable
+            {textDirection}
         />
     </div>
 
@@ -42,6 +45,7 @@
                 id="text-source"
                 expandable
                 placeholder="{__('name of the organisation')}"
+                {textDirection}
             />
         </div>
         <div class="ml-1">
@@ -51,6 +55,7 @@
                 bind:value="$metadata.describe['source-url']"
                 id="text-source-link"
                 placeholder="{__('URL of the dataset')}"
+                {textDirection}
             />
         </div>
     </div>
@@ -62,6 +67,7 @@
         id="text-byline"
         expandable
         placeholder="{__('visualize / annotate / byline / placeholder')}"
+        {textDirection}
     />
 
     <HelpDisplay><span>{__('visualize / annotate / aria-description / help')}</span></HelpDisplay>
@@ -74,6 +80,7 @@
         bind:value="$metadata.describe['aria-description']"
         placeholder="{__('visualize / annotate / aria-description / placeholder')}"
         id="aria-desc"
+        {textDirection}
     />
 </div>
 
@@ -88,6 +95,7 @@
         components: { TextInput, TextAreaInput, HelpDisplay },
         helpers: { __ },
         computed: {
+            textDirection: ({ $textDirection }) => $textDirection,
             disabled({ $externalMetadata }) {
                 return {
                     title: !!get($externalMetadata, 'title'),

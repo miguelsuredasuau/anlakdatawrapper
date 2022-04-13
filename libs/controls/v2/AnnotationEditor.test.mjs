@@ -222,3 +222,52 @@ test('Delete multiple annotations', t => {
     // third annotation is now the one that used to be fifth
     t.is(annotationData[2].text, fifthAnnotationText);
 });
+
+test('mirrorX option swaps position of right/left anchors', async t => {
+    const getAnchorName = node => node._svelte.ctx.name;
+
+    const getAnchor = name =>
+        Array.from(t.context.querySelectorAll('rect.point')).find(
+            node => getAnchorName(node) === name
+        );
+
+    const getXPosition = node => parseFloat(node.attributes.x.value);
+
+    async function getAnchorPositions(mirrorX) {
+        const AnnotationControls = new AnnotationEditor({
+            store: t.context.chart,
+            target: t.context
+        });
+
+        AnnotationControls.set({ editMode: true, mirrorX });
+
+        // click on first item to open controls
+        clickEvent(t.context.querySelector('.option-group-content > ul li:first-child'));
+        await sleep(100);
+
+        const rightAnchor = getAnchor('mr');
+        const leftAnchor = getAnchor('ml');
+
+        const anchorPositions = {
+            r: getXPosition(rightAnchor),
+            l: getXPosition(leftAnchor)
+        };
+
+        AnnotationControls.destroy();
+        return anchorPositions;
+    }
+
+    const anchorPositions = {
+        mirrored: await getAnchorPositions(true),
+        notMirrored: await getAnchorPositions(false)
+    };
+    // right and left anchors are swapped
+    t.is(anchorPositions.notMirrored.r, anchorPositions.mirrored.l);
+    t.is(anchorPositions.notMirrored.l, anchorPositions.mirrored.r);
+});
+
+function sleep(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+}

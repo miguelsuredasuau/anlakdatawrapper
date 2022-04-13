@@ -6,12 +6,12 @@
 >
     <svg width="90" height="66" fill="none">
         <path class="frame" d="M5.5 5.5h79v55h-79v-55z" />
-        {#if textAlign === 'c'}
+        {#if alignmentMap[textAlign] === 'c'}
         <path
             class="text-bar"
             d="M69 19a2 2 0 110 4H21a2 2 0 110-4h48zM63 27a2 2 0 110 4H53v-4h10zM37 27H27a2 2 0 100 4h10v-4zM37 35H23a2 2 0 100 4h14v-4zM53 39h14a2 2 0 100-4H53v4zM59 43a2 2 0 110 4H31a2 2 0 110-4h28z"
         />
-        {:elseif textAlign === 'r'}
+        {:elseif alignmentMap[textAlign] === 'r'}
         <path
             class="text-bar"
             d="M69 19a2 2 0 110 4H21a2 2 0 110-4h48zM69 27a2 2 0 110 4H53v-4h16zM37 27h-4a2 2 0 100 4h4v-4zM37 35H25a2 2 0 100 4h12v-4zM53 39h16a2 2 0 100-4H53v4zM69 43a2 2 0 110 4H41a2 2 0 110-4h28z"
@@ -65,6 +65,7 @@
         helpers: { __ },
         data() {
             return {
+                mirrorX: false,
                 anchorNames: ['tl', 'tc', 'tr', 'ml', 'mc', 'mr', 'bl', 'bc', 'br'],
                 pointSize: 11,
                 repositionFactors: {
@@ -89,10 +90,10 @@
             textAlign({ value }) {
                 return value.substring(1, 2);
             },
-            pointPositions({ anchorNames, pointsXY }) {
+            pointPositions({ anchorNames, pointsXY, alignmentMap }) {
                 const out = [];
                 anchorNames.forEach(name => {
-                    const hAlign = name.substring(1, 2);
+                    const hAlign = alignmentMap[name.substring(1, 2)];
                     const vAlign = name.substring(0, 1);
                     out.push([pointsXY[hAlign], pointsXY[vAlign]]);
                 });
@@ -100,14 +101,21 @@
             },
             isOffsetZero({ dx, dy }) {
                 return dx === 0 && dy === 0;
+            },
+            alignmentMap({ mirrorX }) {
+                return {
+                    l: mirrorX ? 'r' : 'l',
+                    r: mirrorX ? 'l' : 'r',
+                    c: 'c'
+                };
             }
         },
         methods: {
             getNewXY(newAnchor, oldAnchor, x, y, width, height) {
-                const { repositionFactors } = this.get();
+                const { repositionFactors, alignmentMap } = this.get();
 
-                const newAlignX = newAnchor.substring(1, 2);
-                const oldAlignX = oldAnchor.substring(1, 2);
+                const newAlignX = alignmentMap[newAnchor.substring(1, 2)];
+                const oldAlignX = alignmentMap[oldAnchor.substring(1, 2)];
                 const newAlignY = newAnchor.substring(0, 1);
                 const oldAlignY = oldAnchor.substring(0, 1);
 

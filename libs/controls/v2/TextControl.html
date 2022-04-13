@@ -20,6 +20,7 @@
             {autocomplete}
             {disabled}
             {placeholder}
+            {textDirection}
             {width}
             bind:value
         ></TextInput>
@@ -76,7 +77,8 @@
                 placeholder: '',
                 prepend: '',
                 append: '',
-                rows: 5
+                rows: 5,
+                textControl: 'ltr'
             };
         },
         transitions: { slide }

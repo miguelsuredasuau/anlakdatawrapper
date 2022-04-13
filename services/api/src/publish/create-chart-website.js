@@ -5,6 +5,7 @@ const os = require('os');
 const pug = require('pug');
 const { Team } = require('@datawrapper/orm/models');
 const chartCore = require('@datawrapper/chart-core');
+const { loadVendorLocale, loadLocaleConfig } = require('@datawrapper/service-utils/loadLocales');
 const dwChart = require('@datawrapper/chart-core/dist/dw-2.0.cjs.js').dw.chart;
 const get = require('lodash/get');
 const {
@@ -96,6 +97,7 @@ module.exports = async function createChartWebsite(
         dayjs: await loadVendorLocale('dayjs', chartLocale, team),
         numeral: await loadVendorLocale('numeral', chartLocale, team)
     };
+    const localeConfig = await loadLocaleConfig(chartLocale);
 
     // no need to await this...
     log('preparing');
@@ -107,7 +109,8 @@ module.exports = async function createChartWebsite(
         polyfillUri: `../../lib/vendor`,
         teamPublicSettings: team ? team.getPublicSettings() : {},
         themeDataDark: themeDark.data,
-        themeDataLight: publishData.theme.data
+        themeDataLight: publishData.theme.data,
+        textDirection: localeConfig.textDirection || 'ltr'
     });
 
     log('rendering');
@@ -310,31 +313,3 @@ module.exports = async function createChartWebsite(
 
     return { data: publishData, chartData, outDir, fileMap, cleanup };
 };
-
-async function loadVendorLocale(vendor, locale, team) {
-    const basePath = path.resolve(
-        __dirname,
-        '../../node_modules/@datawrapper/locales/locales/',
-        vendor
-    );
-    const culture = locale.replace('_', '-').toLowerCase();
-    const tryFiles = [`${culture}.js`];
-    if (culture.length > 2) {
-        // also try just language as fallback
-        tryFiles.push(`${culture.substr(0, 2)}.js`);
-    }
-    for (let i = 0; i < tryFiles.length; i++) {
-        const file = path.join(basePath, tryFiles[i]);
-        try {
-            const localeBase = await fs.readFile(file, 'utf-8');
-            return {
-                base: localeBase,
-                custom: get(team, `settings.locales.${vendor}.${locale.replace('_', '-')}`, {})
-            };
-        } catch (e) {
-            // file not found, so try next
-        }
-    }
-    // no locale found at all
-    return 'null';
-}

@@ -13,7 +13,7 @@
     <div class="connector-line">
         <SelectButtonsControl
             labelWidth="100px"
-            options="{typeOpts}"
+            options="{typeOpts(mirrorX)}"
             label="{__('controls / annotations / connector-line / type')}"
             bind:value="type"
         />
@@ -118,28 +118,35 @@
         },
         data() {
             return {
+                mirrorX: false,
                 disabled: true
             };
         },
         helpers: {
             __,
-            typeOpts: [
-                {
+            typeOpts: mirrorX => {
+                const curveRightPath = 'M 1,14 q 12 -12 23 0 M 18,14 L 23,14 L 23,9';
+                const curveLeftPath = 'M 1,10 q 12 12 23 0 M 18,10 L 23,10 L23,16';
+                const straight = {
                     value: 'straight',
                     svg: 'M 1,12 L 23,12 M 18,8 L 23,12 L 18,16',
                     stroke: 3
-                },
-                {
+                };
+
+                const curveRight = {
                     value: 'curveRight',
-                    svg: 'M 1,14 q 12 -12 23 0 M 18,14 L 23,14 L 23,9',
+                    svg: mirrorX ? curveLeftPath : curveRightPath,
                     stroke: 3
-                },
-                {
+                };
+                const curveLeft = {
                     value: 'curveLeft',
-                    svg: 'M 1,10 q 12 12 23 0 M 18,10 L 23,10 L23,16',
+                    svg: mirrorX ? curveRightPath : curveLeftPath,
                     stroke: 3
-                }
-            ],
+                };
+                return mirrorX
+                    ? [straight, curveLeft, curveRight]
+                    : [straight, curveRight, curveLeft];
+            },
             strokeOpts: [
                 {
                     value: 1,

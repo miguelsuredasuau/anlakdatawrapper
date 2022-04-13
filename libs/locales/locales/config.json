@@ -1,0 +1,191 @@
+{
+    "ar": {
+        "textDirection": "rtl"
+    },
+    "ar-ae": {
+        "textDirection": "rtl"
+    },
+    "ar-sa": {
+        "textDirection": "rtl"
+    },
+    "ar-dz": {
+        "textDirection": "rtl"
+    },
+    "fa-ir": {
+        "textDirection": "rtl"
+    },
+    "he-il": {
+        "textDirection": "rtl"
+    },
+    "az-az": {
+        "textDirection": "rtl"
+    },
+    "eu-es": {
+        "textDirection": "ltr"
+    },
+    "bg-bg": {
+        "textDirection": "ltr"
+    },
+    "ca-es": {
+        "textDirection": "ltr"
+    },
+    "cs-cz": {
+        "textDirection": "ltr"
+    },
+    "da-dk": {
+        "textDirection": "ltr"
+    },
+    "de-de": {
+        "textDirection": "ltr"
+    },
+    "de-ch": {
+        "textDirection": "ltr"
+    },
+    "et-ee": {
+        "textDirection": "ltr"
+    },
+    "el-gr": {
+        "textDirection": "ltr"
+    },
+    "en-us": {
+        "textDirection": "ltr"
+    },
+    "en-gb": {
+        "textDirection": "ltr"
+    },
+    "en-ie": {
+        "textDirection": "ltr"
+    },
+    "en-ap": {
+        "textDirection": "ltr"
+    },
+    "en-ch": {
+        "textDirection": "ltr"
+    },
+    "es-es": {
+        "textDirection": "ltr"
+    },
+    "es-ar": {
+        "textDirection": "ltr"
+    },
+    "fo-fo": {
+        "textDirection": "ltr"
+    },
+    "fr-fr": {
+        "textDirection": "ltr"
+    },
+    "fr-ch": {
+        "textDirection": "ltr"
+    },
+    "fr-ca": {
+        "textDirection": "ltr"
+    },
+    "ga-ie": {
+        "textDirection": "ltr"
+    },
+    "gl-es": {
+        "textDirection": "ltr"
+    },
+    "hr-hr": {
+        "textDirection": "ltr"
+    },
+    "is-is": {
+        "textDirection": "ltr"
+    },
+    "it-it": {
+        "textDirection": "ltr"
+    },
+    "it-ch": {
+        "textDirection": "ltr"
+    },
+    "ko-kr": {
+        "textDirection": "ltr"
+    },
+    "ky-kg": {
+        "textDirection": "ltr"
+    },
+    "lv-lv": {
+        "textDirection": "ltr"
+    },
+    "lt-lt": {
+        "textDirection": "ltr"
+    },
+    "hu-hu": {
+        "textDirection": "ltr"
+    },
+    "mk-mk": {
+        "textDirection": "ltr"
+    },
+    "mt-mt": {
+        "textDirection": "ltr"
+    },
+    "nl-nl": {
+        "textDirection": "ltr"
+    },
+    "nl-be": {
+        "textDirection": "ltr"
+    },
+    "nb-no": {
+        "textDirection": "ltr"
+    },
+    "nn-no": {
+        "textDirection": "ltr"
+    },
+    "pt-pt": {
+        "textDirection": "ltr"
+    },
+    "pt-br": {
+        "textDirection": "ltr"
+    },
+    "pl-pl": {
+        "textDirection": "ltr"
+    },
+    "ro-ro": {
+        "textDirection": "ltr"
+    },
+    "be-by": {
+        "textDirection": "ltr"
+    },
+    "ru-ru": {
+        "textDirection": "ltr"
+    },
+    "uk-ua": {
+        "textDirection": "ltr"
+    },
+    "sk-sk": {
+        "textDirection": "ltr"
+    },
+    "sl-si": {
+        "textDirection": "ltr"
+    },
+    "sq-al": {
+        "textDirection": "ltr"
+    },
+    "fi-fi": {
+        "textDirection": "ltr"
+    },
+    "sv-se": {
+        "textDirection": "ltr"
+    },
+    "tg-tj": {
+        "textDirection": "ltr"
+    },
+    "tk-tm": {
+        "textDirection": "ltr"
+    },
+    "tr-tr": {
+        "textDirection": "ltr"
+    },
+    "hy-am": {
+        "textDirection": "ltr"
+    },
+    "ka-ge": {
+        "textDirection": "ltr"
+    },
+    "ja-jp": {
+        "textDirection": "ltr"
+    },
+    "zh-cn": {
+        "textDirection": "ltr"
+    }
+}

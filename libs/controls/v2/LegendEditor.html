@@ -5,6 +5,7 @@
         placeholder="Your title here"
         bind:value="value.title"
         label="{__('controls / legend / caption')}"
+        textDirection="{$textDirection}"
     />
     <!-- label settings are different for number and text columns -->
     {#if valueAxisColumnType === 'number'}

@@ -68,8 +68,8 @@ function init({
     dw.theme.register(theme, themeData);
 
     dw.backend.currentChart = chart;
-
-    chart.locale(chart.get().language || 'en-US');
+    const locale = chart.get().language || 'en-US';
+    chart.locale(locale);
 
     chart.set({
         writable: true,
