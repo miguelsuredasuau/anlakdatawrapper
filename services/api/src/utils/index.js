@@ -240,7 +240,12 @@ function isValidUTF16(s) {
  * @see isValidUTF16()
  * @see isValidMySQLJSONKey()
  */
-function isValidMySQLJSON(x) {
+function isValidMySQLJSON(x, nestedLevel = 0) {
+    if (nestedLevel >= 100) {
+        // MySQL only allows JSON objects to be at most 100 levels deep:
+        // https://stackoverflow.com/questions/58697562/why-does-mysql-hardcode-the-max-depth-of-a-json-document
+        return false;
+    }
     if (!x) {
         return true;
     }
@@ -251,11 +256,11 @@ function isValidMySQLJSON(x) {
         return isValidUTF16(x);
     }
     if (Array.isArray(x)) {
-        return x.every(isValidMySQLJSON);
+        return x.every(el => isValidMySQLJSON(el, nestedLevel + 1));
     }
     if (typeof x === 'object' && x.constructor === Object) {
         for (const [k, v] of Object.entries(x)) {
-            if (!isValidMySQLJSONObjectKey(k) || !utils.isValidMySQLJSON(v)) {
+            if (!isValidMySQLJSONObjectKey(k) || !isValidMySQLJSON(v, nestedLevel + 1)) {
                 return false;
             }
         }

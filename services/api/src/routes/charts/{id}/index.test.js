@@ -149,7 +149,7 @@ test('Users can not change the author ID of a chart', async t => {
     }
 });
 
-test('Users can edit chart medatata', async t => {
+test('Users can edit chart metadata', async t => {
     let userObj;
     try {
         userObj = await createUser(t.context.server);
@@ -519,6 +519,39 @@ test('PATCH returns error 400 when the metadata contains an invalid UTF-16', asy
                     // See https://mnaoumov.wordpress.com/2014/06/14/stripping-invalid-characters-from-utf-16-strings/
                     a: '\ud800b'
                 }
+            }
+        });
+        t.is(res.statusCode, 400);
+        t.true(res.result.message.includes('Invalid JSON'));
+    } finally {
+        if (chart) {
+            await destroy(...Object.values(chart));
+        }
+    }
+});
+
+test('PATCH returns error 400 when the metadata is nested too deeply', async t => {
+    const createNestedMetadata = (levels, obj) => {
+        const metadata = {
+            metadata: { ...obj }
+        };
+        if (!levels) {
+            return metadata;
+        }
+        return createNestedMetadata(levels - 1, metadata);
+    };
+    let chart;
+    try {
+        const { user } = t.context.userObj;
+        chart = await createChart({ author_id: user.id });
+        const metadata = createNestedMetadata(99, {});
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.id}`,
+            auth: t.context.auth,
+            headers: t.context.headers,
+            payload: {
+                metadata
             }
         });
         t.is(res.statusCode, 400);
