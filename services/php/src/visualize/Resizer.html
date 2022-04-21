@@ -277,32 +277,26 @@
                 }, 100);
             },
             activate(mode) {
-                if (mode === 'web') {
-                    if (this.store.getMetadata('custom.webToPrint.webChartId')) {
-                        window.location =
-                            window.location.protocol +
-                            '//' +
-                            window.location.host +
-                            '/chart/' +
-                            this.store.getMetadata('custom.webToPrint.webChartId') +
-                            '/visualize';
-                    }
+                const { webChartId, printChartId } = this.store.getMetadata(
+                    'custom.webToPrint',
+                    {}
+                );
+                const { protocol, host } = window.location;
+
+                const getVisualizeUrl = id => `${protocol}//${host}/chart/${id}/visualize`;
+                const switchToChartId = mode === 'web' ? webChartId : printChartId;
+                if (switchToChartId) {
+                    window.location = getVisualizeUrl(switchToChartId);
                 } else if (mode === 'print') {
-                    if (this.store.getMetadata('custom.webToPrint.printChartId')) {
-                        window.location =
-                            window.location.protocol +
-                            '//' +
-                            window.location.host +
-                            '/chart/' +
-                            this.store.getMetadata('custom.webToPrint.printChartId') +
-                            '/visualize';
-                    } else {
-                        httpReq
-                            .post(`/v3/charts/${dw.backend.currentChart.get().id}/print`)
-                            .then(data => {
-                                window.location = `${window.location.protocol}//${window.location.host}/chart/${data.id}/visualize`;
+                    httpReq
+                        .post(`/v3/charts/${dw.backend.currentChart.get().id}/print`)
+                        .then(data => {
+                            this.store.setMetadata('custom.webToPrint', {
+                                mode: 'web',
+                                printChartId: data.id
                             });
-                    }
+                            this.store.store(() => (window.location = getVisualizeUrl(data.id)));
+                        });
                 }
             },
             setWidth(w) {
