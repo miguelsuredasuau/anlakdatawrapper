@@ -295,7 +295,7 @@
                                 mode: 'web',
                                 printChartId: data.id
                             });
-                            this.store.store(() => (window.location = getVisualizeUrl(data.id)));
+                            window.location = getVisualizeUrl(data.id);
                         });
                 }
             },
