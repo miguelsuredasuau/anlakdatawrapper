@@ -82,9 +82,11 @@
 
     /**
      * items contains the list of options showing in the dropdown
+     * if items is empty, we show the noResultsMsg
+     * we don't show the noResultsMsg if items is falsy (e.g. null)
      * (e.g. matched by the search query)
      */
-    let items = options || [];
+    let items = options || null;
 
     /**
      * selectedIndex is the index of the currently
@@ -213,7 +215,7 @@
         searching = false;
     }, 200);
     $: updateItemsDebounced(searchQuery);
-    $: selectedItem = items[selectedIndex];
+    $: selectedItem = items ? items[selectedIndex] : null;
 
     // track changes of selectedIndex;
     let _selectedIndex;
@@ -281,6 +283,7 @@
         border-left-color: #ccc;
         align-items: center;
         background-color: white;
+        border-radius: 3px 0 0 3px;
     }
 
     .dropdown-trigger.focus {
@@ -291,10 +294,14 @@
         border: 0;
     }
     .dropdown .icon {
-        margin: 0 4px;
+        margin-left: 6px;
         color: #ccc;
         font-size: 17px;
-        line-height: 1;
+        line-height: 0;
+    }
+
+    .dropdown .search-icon {
+        margin-right: 8px;
     }
     .dropdown.selection input::-webkit-input-placeholder {
         color: #222;
@@ -332,17 +339,18 @@
     }
     .dropdown-results {
         position: absolute;
+        left: 1px;
+        right: 1px;
         top: 100%;
         z-index: 1;
         max-height: 150px;
         overflow: auto;
-        margin: 0px;
-        width: calc(100%);
+        margin: 0;
         background-color: white;
         border: 1px solid #cccccc;
-        margin-top: 0px;
         border-top: 0;
-        box-shadow: 2px 2px 2px #000 1;
+        border-radius: 0 0 3px 3px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
     }
     .dropdown-results li {
         color: black;
@@ -394,7 +402,7 @@
                 on:keydown={handleKeydown}
             />
             {#if searching}
-                <div class="icon">
+                <div class="icon search-icon">
                     <IconDisplay
                         {assetURL}
                         size="16px"
@@ -410,7 +418,7 @@
             <span class="caret" />
         </button>
 
-        {#if open && items.length}
+        {#if open && items && items.length}
             <ul bind:this={refDropdownMenu} class="dropdown-results">
                 {#each items as item, i}
                     <li
@@ -431,13 +439,13 @@
                     </li>
                 {/each}
             </ul>
-        {:else if open && searching}
+        {:else if searchingMsg && open && searching}
             <ul bind:this={refDropdownMenu} class="dropdown-results">
                 <li class="helper-message">
                     {@html searchingMsg}
                 </li>
             </ul>
-        {:else if open && searchQuery && !items.length}
+        {:else if open && searchQuery && items && !items.length}
             <ul bind:this={refDropdownMenu} class="dropdown-results">
                 <li class="helper-message">
                     {@html noResultsMsg || 'No results'}
