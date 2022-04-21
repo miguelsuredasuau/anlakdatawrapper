@@ -6636,6 +6636,17 @@ function columnNameToVariable(name) {
         .replace(/^(and|or|in|true|false)$/, '$1_'); // avoid reserved keywords
 }
 
+function toISOStringSafe(date) {
+    try {
+        return date.toISOString();
+    } catch (e) {
+        if (e instanceof RangeError) {
+            return date.toString();
+        }
+        throw e;
+    }
+}
+
 function addComputedColumns(chart, dataset) {
     let virtualColumns = get(chart.get(), 'metadata.describe.computed-columns', {});
     if (!Array.isArray(virtualColumns)) {
@@ -6853,7 +6864,7 @@ function addComputedColumns(chart, dataset) {
             name,
             values.map(function (v) {
                 if (isBoolean(v)) return v ? 'yes' : 'no';
-                if (isDate(v)) return v.toISOString();
+                if (isDate(v)) return toISOStringSafe(v);
                 if (isNumber(v)) return String(v);
                 if (isNull(v)) return null;
                 return String(v);
