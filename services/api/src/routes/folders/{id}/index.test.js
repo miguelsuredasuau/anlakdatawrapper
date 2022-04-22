@@ -2502,3 +2502,125 @@ test('PATCH /folders/{id} moves a folder between teams', async t => {
         await destroy(charts, grandchild, child, folder, Object.values(teamObj));
     }
 });
+
+test('PATCH on team folder with { userId } payload moves folder to user, setting org_id to null', async t => {
+    let folder;
+    try {
+        folder = await createFolder({
+            name: 'folder1',
+            org_id: t.context.teamObj.team.id,
+            user_id: null
+        });
+
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/folders/${folder.id}`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${t.context.teamObj.token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: { userId: t.context.teamObj.user.id }
+        });
+
+        t.is(res.statusCode, 200);
+
+        t.is(res.result.teamId, null);
+        t.is(res.result.userId, t.context.teamObj.user.id);
+        folder = await findFolderById(folder.id);
+        t.is(folder.org_id, null);
+        t.is(folder.user_id, t.context.teamObj.user.id);
+    } finally {
+        await destroy(folder);
+    }
+});
+
+test('PATCH on user folder with { teamId } payload moves folder to user, setting user_id to null', async t => {
+    let folder;
+    try {
+        folder = await createFolder({
+            name: 'folder2',
+            org_id: null,
+            user_id: t.context.teamObj.user.id
+        });
+
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/folders/${folder.id}`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${t.context.teamObj.token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: { teamId: t.context.teamObj.team.id }
+        });
+
+        t.is(res.statusCode, 200);
+
+        t.is(res.result.teamId, t.context.teamObj.team.id);
+        t.is(res.result.userId, null);
+        folder = await findFolderById(folder.id);
+        t.is(folder.org_id, t.context.teamObj.team.id);
+        t.is(folder.user_id, null);
+    } finally {
+        await destroy(folder);
+    }
+});
+
+test('PATCH on team folder with { teamId: null } payload moves folder to user, setting org_id to null', async t => {
+    let folder;
+    try {
+        folder = await createFolder({
+            name: 'folder3',
+            org_id: t.context.teamObj.team.id,
+            user_id: null
+        });
+
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/folders/${folder.id}`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${t.context.teamObj.token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: { teamId: null }
+        });
+
+        t.is(res.statusCode, 200);
+
+        t.is(res.result.teamId, null);
+        t.is(res.result.userId, t.context.teamObj.user.id);
+        folder = await findFolderById(folder.id);
+        t.is(folder.org_id, null);
+        t.is(folder.user_id, t.context.teamObj.user.id);
+    } finally {
+        await destroy(folder);
+    }
+});
+
+test('PATCH on user folder with { userId: null } payload is not allowed', async t => {
+    let folder;
+    try {
+        folder = await createFolder({
+            name: 'folder4',
+            org_id: null,
+            user_id: t.context.teamObj.user.id
+        });
+
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/folders/${folder.id}`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${t.context.teamObj.token}`,
+                'Content-Type': 'application/json'
+            },
+            payload: { userId: null }
+        });
+
+        t.is(res.statusCode, 400);
+    } finally {
+        await destroy(folder);
+    }
+});

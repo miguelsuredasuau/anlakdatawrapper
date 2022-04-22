@@ -149,11 +149,12 @@ const routes = [
         payload: Joi.object({
             name: Joi.string().optional().description('Folder name.'),
             parentId: Joi.number().allow(null).optional().description('Parent folder.'),
-            userId: Joi.when('teamId', {
-                is: Joi.string(),
-                then: Joi.valid(null),
-                otherwise: Joi.number()
-            })
+            userId: Joi.any()
+                .when('teamId', {
+                    not: Joi.exist(),
+                    then: Joi.number(),
+                    otherwise: Joi.when('teamId', { is: Joi.string(), then: Joi.valid(null) })
+                })
                 .optional()
                 .description('The user this folder belongs to.'),
             teamId: Joi.string()
@@ -200,6 +201,9 @@ async function updateFolder(request) {
     if (request.payload.teamId === null && !request.payload.userId) {
         update.userId = user.id;
     }
+
+    update.userId = request.payload.teamId ? null : update.userId;
+    update.teamId = request.payload.userId ? null : update.teamId;
 
     const possibleDuplicate = await Folder.findOne({
         where: {
