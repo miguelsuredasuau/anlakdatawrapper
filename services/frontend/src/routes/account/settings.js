@@ -52,8 +52,8 @@ module.exports = {
                 svgIcon: 'user-menu',
                 svelte2: {
                     id: 'svelte/account/profile',
-                    js: '/static/js/svelte/account/profile.js',
-                    css: '/static/css/svelte/account/profile.css'
+                    js: '/lib/static/js/svelte2/account/profile.js',
+                    css: '/lib/static/css/svelte2/account/profile.css'
                 },
                 data: {
                     email: request.auth.artifacts.email,
@@ -108,8 +108,8 @@ module.exports = {
                 svgIcon: 'team',
                 svelte2: {
                     id: 'svelte/account/myteams',
-                    js: '/static/js/svelte/account/myteams.js',
-                    css: '/static/css/svelte/account/myteams.css'
+                    js: '/lib/static/js/svelte2/account/myteams.js',
+                    css: '/lib/static/css/svelte2/account/myteams.css'
                 },
                 data: {
                     currentTeam,
@@ -136,8 +136,8 @@ module.exports = {
                     svgIcon: 'lock',
                     svelte2: {
                         id: 'svelte/account/security',
-                        js: '/static/js/svelte/account/security.js',
-                        css: '/static/css/svelte/account/security.css'
+                        js: '/lib/static/js/svelte2/account/security.js',
+                        css: '/lib/static/css/svelte2/account/security.css'
                     },
                     data: {
                         user: {

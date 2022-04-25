@@ -63,8 +63,8 @@ module.exports = {
                 svgIcon: 'settings',
                 svelte2: {
                     id: 'svelte/team-settings/settings',
-                    js: '/static/js/svelte/team-settings/settings.js',
-                    css: '/static/css/svelte/team-settings/settings.css'
+                    js: '/lib/static/js/svelte2/team-settings/settings.js',
+                    css: '/lib/static/css/svelte2/team-settings/settings.css'
                 },
                 data: {},
                 order: 2
@@ -83,8 +83,8 @@ module.exports = {
                 svgIcon: 'team',
                 svelte2: {
                     id: 'svelte/team-settings/members',
-                    js: '/static/js/svelte/team-settings/members.js',
-                    css: '/static/css/svelte/team-settings/members.css'
+                    js: '/lib/static/js/svelte2/team-settings/members.js',
+                    css: '/lib/static/css/svelte2/team-settings/members.css'
                 },
                 data: {
                     isAdmin: request.auth.artifacts.role === 'admin'
@@ -111,8 +111,8 @@ module.exports = {
                 svgIcon: 'cabinet',
                 svelte2: {
                     id: 'svelte/team-settings/archive',
-                    js: '/static/js/svelte/team-settings/archive.js',
-                    css: '/static/css/svelte/team-settings/archive.css'
+                    js: '/lib/static/js/svelte2/team-settings/archive.js',
+                    css: '/lib/static/css/svelte2/team-settings/archive.css'
                 },
                 data: {
                     customFieldsEnabled
@@ -132,8 +132,8 @@ module.exports = {
                 svgIcon: 'close',
                 svelte2: {
                     id: 'svelte/team-settings/delete',
-                    js: '/static/js/svelte/team-settings/delete.js',
-                    css: '/static/css/svelte/team-settings/delete.css'
+                    js: '/lib/static/js/svelte2/team-settings/delete.js',
+                    css: '/lib/static/css/svelte2/team-settings/delete.css'
                 },
                 data: {},
                 order: 999
@@ -153,8 +153,8 @@ module.exports = {
                     svgIcon: 'product-management',
                     svelte2: {
                         id: 'svelte/team-settings/products',
-                        js: '/static/js/svelte/team-settings/products.js',
-                        css: '/static/css/svelte/team-settings/products.css'
+                        js: '/lib/static/js/svelte2/team-settings/products.js',
+                        css: '/lib/static/css/svelte2/team-settings/products.css'
                     },
                     data: {
                         isAdmin
@@ -176,8 +176,8 @@ module.exports = {
                 svgIcon: 'file-download',
                 svelte2: {
                     id: 'svelte/team-settings/download',
-                    js: '/static/js/svelte/team-settings/download.js',
-                    css: '/static/css/svelte/team-settings/download.css'
+                    js: '/lib/static/js/svelte2/team-settings/download.js',
+                    css: '/lib/static/css/svelte2/team-settings/download.css'
                 },
                 data: {},
                 order: 25
