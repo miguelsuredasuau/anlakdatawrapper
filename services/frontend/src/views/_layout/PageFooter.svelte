@@ -13,7 +13,7 @@
     footer li a.highlight {
         background: #4688d7;
         color: white;
-        padding: 4px 9px;
+        padding: 3px 6px;
         font-weight: bold;
     }
     nav ul {
