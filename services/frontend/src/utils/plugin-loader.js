@@ -1,8 +1,9 @@
 const fs = require('fs');
 const fsPromises = require('fs/promises');
-const path = require('path');
-const models = require('@datawrapper/orm/models');
+const fsUtils = require('@datawrapper/service-utils/fsUtils');
 const get = require('lodash/get');
+const models = require('@datawrapper/orm/models');
+const path = require('path');
 const { addScope } = require('@datawrapper/service-utils/l10n');
 
 module.exports = {
@@ -66,24 +67,10 @@ module.exports = {
                     server.logger.info(`[Plugin] ${name}@${version}`);
                     // symlink plugin views
                     const pluginViews = path.join(pluginRoot, name, 'src/frontend/views');
-                    let exists = false;
-                    try {
-                        await fsPromises.access(pluginViews, fs.constants.F_OK);
-                        exists = true;
-                    } catch (ignored) {
-                        // ENOENT goes here
-                    }
-                    if (exists) {
+                    if (await fsUtils.hasAccess(pluginViews, fs.constants.F_OK)) {
                         const link = path.join(__dirname, `../views/_plugins/${name}`);
-                        exists = false;
-                        try {
-                            const stats = await fsPromises.lstat(link);
-                            exists = stats.isSymbolicLink();
-                        } catch (ignore) {
-                            // ENOENT goes here
-                        }
-                        if (exists) {
-                            await fsPromises.unlink(link);
+                        if (await fsUtils.isSymbolicLink(link)) {
+                            await fsUtils.safeUnlink(link);
                         }
                         await fsPromises.symlink(pluginViews, link);
                         server.logger.info(

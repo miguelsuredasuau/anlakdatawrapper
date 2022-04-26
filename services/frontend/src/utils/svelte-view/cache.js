@@ -1,8 +1,9 @@
 'use strict';
 
+const fsUtils = require('@datawrapper/service-utils/fsUtils');
 const path = require('path');
 const { existsSync } = require('fs');
-const { mkdir, readFile, rm, unlink, writeFile } = require('fs/promises');
+const { mkdir, readFile, rm, writeFile } = require('fs/promises');
 
 const CACHE_DIR = path.join(__dirname, '../../../.viewcache');
 
@@ -28,11 +29,7 @@ async function withFileCache(key, func, writeFileCache = false) {
             return JSON.parse(await readFile(filePath, 'utf-8'));
         } catch (e) {
             console.error('Error: deleting corrupt cache file ' + filePath);
-            try {
-                await unlink(filePath);
-            } catch (e) {
-                console.error('Error: failed to delete corrupt cache file ' + filePath);
-            }
+            await fsUtils.safeUnlink(filePath);
         }
     }
     const value = await func(key);
