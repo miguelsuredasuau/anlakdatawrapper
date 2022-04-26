@@ -111,7 +111,7 @@
             }
         },
         methods: {
-            getNewXY(newAnchor, oldAnchor, x, y, width, height) {
+            getNewXY(newAnchor, oldAnchor, x, y, width, height, invertX) {
                 const { repositionFactors, alignmentMap } = this.get();
 
                 const newAlignX = alignmentMap[newAnchor.substring(1, 2)];
@@ -122,7 +122,7 @@
                 // need to shift horizontally
                 if (newAlignX !== oldAlignX) {
                     const shiftX = repositionFactors[newAlignX] - repositionFactors[oldAlignX];
-                    x += shiftX * width;
+                    x += shiftX * width * (invertX ? -1 : 1);
                 }
 
                 // need to shift vertically
@@ -134,7 +134,7 @@
                 return [x, y];
             },
             setNewAnchor(anchor) {
-                const { editorState, value, isOffsetZero } = this.get();
+                const { editorState, value, isOffsetZero, mirrorX } = this.get();
                 if (anchor === value) return;
 
                 const { selectedAnnotationProps, pxToData } = editorState;
@@ -149,7 +149,15 @@
                     this.set({ x: dataX, y: dataY });
                 } else {
                     const { dx, dy } = this.get();
-                    const [newDx, newDy] = this.getNewXY(anchor, value, dx, dy, width, height);
+                    const [newDx, newDy] = this.getNewXY(
+                        anchor,
+                        value,
+                        dx,
+                        dy,
+                        width,
+                        height,
+                        mirrorX
+                    );
                     this.set({ dx: newDx, dy: newDy });
                 }
 
