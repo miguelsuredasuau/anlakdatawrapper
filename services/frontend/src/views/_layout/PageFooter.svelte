@@ -10,7 +10,11 @@
 </script>
 
 <style>
-    footer {
+    footer li a.highlight {
+        background: #4688d7;
+        color: white;
+        padding: 4px 9px;
+        font-weight: bold;
     }
     nav ul {
         color: silver;
@@ -38,7 +42,11 @@
                 <nav>
                     <ul>
                         {#each $config.footerLinks as link}
-                            <li><a href={link.url}>{link.title.en}</a></li>
+                            <li>
+                                <a class:highlight={link.highlight} href={link.url}>
+                                    {link.title.en}
+                                </a>
+                            </li>
                         {/each}
                     </ul>
                 </nav>
