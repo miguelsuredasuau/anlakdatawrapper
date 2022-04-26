@@ -126,38 +126,27 @@ module.exports = async function createChartWebsite(
     const assets = {};
     const assetsFiles = [];
     let chartData = null;
-    for (const asset of publishData.assets) {
-        const { name, prefix, shared, value } = asset;
 
+    for (const { name, prefix = '', shared, value, load = true } of publishData.assets) {
         if (name === `dataset.${get(chart, 'metadata.data.json') ? 'json' : 'csv'}`) {
-            chartData = asset.value;
+            chartData = value;
         }
 
-        if (zipExport) {
-            // in ZIP export, bake assets directly into HTML
-            assets[name] = {
-                value
-            };
-        } else if (shared) {
-            const hashed = await writeFileHashed(name, value, outDir);
-            const assetPath = (prefix ? prefix + '/' : '') + hashed;
+        assets[name] = { load };
 
-            assets[name] = {
-                url: getAssetLink(`../../lib/${assetPath}`)
-            };
-            assetsFiles.push(`lib/${assetPath}`);
+        if (zipExport && load) {
+            // in ZIP export, bake assets directly into HTML, unless asset specifies otherwise via false load option
+            assets[name].value = value;
         } else {
-            // Make sure the file content is not null, which would make fs.writeFile() crash.
-            const data = value ?? '';
-
-            await fs.writeFile(path.join(outDir, name), data, { encoding: 'utf-8' });
-
-            assets[name] = {
-                url: name
-            };
-            assetsFiles.push(name);
+            const filename = path.join(
+                shared ? prefix : '',
+                await writeAsset(name, value ?? '', outDir, shared)
+            );
+            assets[name].url = getAssetLink((shared ? '../../lib/' : '') + filename);
+            assetsFiles.push((shared ? 'lib/' : '') + filename);
         }
     }
+
     publishData.assets = assets;
 
     /* Copy dependencies into temporary directory and hash them on the way */
@@ -188,6 +177,14 @@ module.exports = async function createChartWebsite(
 
     function getAssetLink(asset) {
         return zipExport ? path.basename(asset) : asset;
+    }
+
+    async function writeAsset(name, value, outDir, hashFileName) {
+        const fileName = hashFileName ? await writeFileHashed(name, value, outDir) : name;
+        if (hashFileName) return fileName;
+        // write file with unmodified filename
+        await fs.writeFile(path.join(outDir, name), value, { encoding: 'utf-8' });
+        return fileName;
     }
 
     const config = server.methods.config('general');

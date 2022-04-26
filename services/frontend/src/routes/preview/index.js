@@ -117,9 +117,10 @@ module.exports = {
                 delete props.theme.fontsCSS;
 
                 const assets = {};
-                props.assets.forEach(({ name, value }) => {
+                props.assets.forEach(({ name, value, url, load = true }) => {
                     assets[name] = {
-                        value
+                        load,
+                        ...(url ? { url } : { value })
                     };
                 });
                 props.assets = assets;
