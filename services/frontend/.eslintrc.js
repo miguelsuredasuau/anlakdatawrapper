@@ -20,6 +20,14 @@ module.exports = {
             globals: {
                 expect: true
             }
+        },
+        {
+            files: ['src/views/_partials/controls/CodeMirrorInput.svelte'],
+            parserOptions: {
+                // CodeMirrorInput uses dynamic import(), which is a ES 2020 feature.
+                // It is save to use here because this is not customer-facing code.
+                ecmaVersion: 2020
+            }
         }
     ]
 };

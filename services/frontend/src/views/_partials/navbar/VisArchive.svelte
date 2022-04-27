@@ -7,7 +7,6 @@
     import NavBarIcon from './NavBarIcon.svelte';
 
     const request = getContext('request');
-    const user = getContext('user');
 
     let items = undefined;
     export let link;

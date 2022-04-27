@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    import { onMount, tick } from 'svelte';
+    import { onMount } from 'svelte';
     import truncate from '@datawrapper/shared/truncate';
     import MainLayout from '_layout/MainLayout.svelte';
     import ViewComponent from '_partials/ViewComponent.svelte';
@@ -63,7 +63,7 @@
         dw_chart.attributes($chart);
     });
 
-    const steps = workflow.steps.map((step, i) => ({
+    const steps = workflow.steps.map(step => ({
         ...step,
         title: __(step.title[0], step.title[1])
     }));
@@ -109,7 +109,7 @@
             : [...breadcrumbPath.slice(0, 3), { title: '...' }, ...breadcrumbPath.slice(-1)]
     ).map(folder => ({ ...folder, title: truncate(folder.title) }));
 
-    async function navigateTo(step, pushState = true) {
+    async function navigateTo(step) {
         const stepUrl = `${urlPrefix}/${$chart.id}/${step.id}`;
         if ($chart.lastEditStep < step.index) {
             // update lastEditStep!

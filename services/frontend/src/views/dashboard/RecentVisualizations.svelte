@@ -1,7 +1,5 @@
 <script>
     import DashboardVisualizationBox from './DashboardVisualizationBox.svelte';
-    import { getContext } from 'svelte';
-    const user = getContext('user');
 
     export let __;
     export let recentlyEdited;

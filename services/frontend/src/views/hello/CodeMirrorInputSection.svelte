@@ -1,7 +1,7 @@
 <script>
     import CodeMirrorInput from '_partials/controls/CodeMirrorInput.svelte';
 
-    let json = { someJSON: ['foo', 'bar', 'baz'] };
+    const json = { someJSON: ['foo', 'bar', 'baz'] };
     let jsonValue = JSON.stringify(json, null, 4);
     let lessValue = '.some-less-code {\n\tcolor: red\n}';
     let readOnly = true;
