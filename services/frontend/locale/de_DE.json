@@ -1137,5 +1137,6 @@
   "edit / unsaved-changed-warning": "Es gibt nicht gespeicherte Änderungen. Möchtest du diese Seite wirklich verlassen?",
   "edit / storing-changes": "Änderungen werden gespeichert",
   "edit / upload / success-import": "Deine Spreadsheet-Daten wurden erfolgreich importiert.",
-  "edit / storing-changes / error": "<strong>Wir haben Probleme, die Änderungen zu speichern.</strong> Bitte überprüfen deine Internetverbindung oder kontaktiere unseren <a href=\"mailto:support@datawrapper.de\">Support</a>"
+  "edit / storing-changes / error": "<strong>Wir haben Probleme, die Änderungen zu speichern.</strong> Bitte überprüfen deine Internetverbindung oder kontaktiere unseren <a href=\"mailto:support@datawrapper.de\">Support</a>",
+  "account / activate / success / no-email": "Dein Account wurde erfolgreich aktiviert!"
 }

@@ -1137,5 +1137,6 @@
   "edit / unsaved-changed-warning": "",
   "edit / storing-changes": "",
   "edit / upload / success-import": "",
-  "edit / storing-changes / error": ""
+  "edit / storing-changes / error": "",
+  "account / activate / success / no-email": ""
 }

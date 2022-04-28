@@ -1137,5 +1137,6 @@
   "edit / unsaved-changed-warning": "Looks like there are unsaved changes. Do you really want to leave this page?",
   "edit / storing-changes": "Storing changes",
   "edit / upload / success-import": "We successfully imported your spreadsheet data.",
-  "edit / storing-changes / error": "<strong>We're having trouble saving the changes.</strong> Please check your internet connection or contact our <a href=\"mailto:support@datawrapper.de\">support</a>"
+  "edit / storing-changes / error": "<strong>We're having trouble saving the changes.</strong> Please check your internet connection or contact our <a href=\"mailto:support@datawrapper.de\">support</a>",
+  "account / activate / success / no-email": "Your account has been successfully activated!"
 }

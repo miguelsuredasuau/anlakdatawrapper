@@ -31,15 +31,15 @@ module.exports = {
                     if (user) {
                         user.role = 'editor';
                         user.activate_token = '';
+                        const email = user.email;
+                        const translationKey = `account / activate / success${
+                            !email ? ' / no-email' : ''
+                        }`;
+                        const successText = email
+                            ? __(translationKey).replace('%s', email)
+                            : __(translationKey);
                         await user.save();
-                        url =
-                            `/?t=s&m=` +
-                            encodeURIComponent(
-                                __('account / activate / success').replace(
-                                    '%s',
-                                    request.params.email
-                                )
-                            );
+                        url = `/?t=s&m=` + encodeURIComponent(successText);
                     } else {
                         url = `/?t=e&m=` + encodeURIComponent(__('account / activate / invalid'));
                     }
