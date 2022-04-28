@@ -7,7 +7,7 @@
         "build:css": "sass --no-source-map src/styles/index.scss static/datawrapper.css",
         "build:css-bulma-polyfill": "sass --no-source-map src/styles/index-bulma-polyfill.scss static/css/bulma-polyfill.css",
         "watch:css": "npm run build:css -- --watch",
-        "prepare-views": "node src/server.js --prepare-views",
+        "prepare-views": "node --max-old-space-size=4096 src/server.js --prepare-views ",
         "clear-view-cache": "rm .viewcache/*.json",
         "lint": "cd ../.. && scripts/lint services/frontend",
         "format": "cd ../.. && scripts/format services/frontend",
