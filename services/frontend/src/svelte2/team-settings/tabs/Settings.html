@@ -100,6 +100,16 @@
         >
             <PreviewWidths bind:inputWidths="settings.previewWidths" />
         </FormBlock>
+
+        {#if isAdmin}
+        <FormBlock label="{__('teams / editor / cms-mode')}">
+            <SwitchControl
+                bind:value="settings.showEditorNavInCmsMode"
+                label="{__('teams / editor / cms-mode / show-editor-nav')}"
+                help="{__('teams / editor / cms-mode / show-editor-nav / help')}"
+            />
+        </FormBlock>
+        {/if}
     </div>
 </div>
 {/if}
@@ -107,6 +117,7 @@
 <script>
     import FormBlock from '@datawrapper/controls/FormBlock.html';
     import PreviewWidths from './PreviewWidths.html';
+    import SwitchControl from '@datawrapper/controls/SwitchControl.html';
     import RadioControl from '@datawrapper/controls/RadioControl.html';
     import SelectInput from '@datawrapper/controls/SelectInput.html';
     import { __ } from '@datawrapper/shared/l10n';
@@ -119,7 +130,8 @@
             FormBlock,
             PreviewWidths,
             RadioControl,
-            SelectInput
+            SelectInput,
+            SwitchControl
         },
         data() {
             return {
@@ -133,7 +145,8 @@
                 folders: [],
                 locales: [],
                 settings: {},
-                team: {}
+                team: {},
+                isAdmin: false
             };
         },
         computed: {

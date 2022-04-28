@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import truncate from '@datawrapper/shared/truncate';
     import MainLayout from '_layout/MainLayout.svelte';
+    import { openedInsideIframe } from '_layout/stores';
     import ViewComponent from '_partials/ViewComponent.svelte';
     import Header from './nav/Header.svelte';
     import {
@@ -22,6 +23,13 @@
     export let visualizations;
     export let initUrlStep;
     export let urlPrefix;
+
+    /*
+     * if set to true, the editor nav is shown even if the app is opened
+     * inside an iframe as part of a CMS integration. This setting comes
+     * from the current users active team.
+     */
+    export let showEditorNavInCmsMode = false;
 
     /**
      * custom view components to be rendered
@@ -158,16 +166,18 @@
 
 <MainLayout title="{chartTitle} - [{chartId}] - {activeStep.title}">
     <section class="section pt-5">
-        <!-- step nav -->
-        <Header
-            {__}
-            prefix={workflow.prefix}
-            {steps}
-            breadcrumbPath={truncatedBreadcrumbPath}
-            bind:activeStep
-            bind:lastActiveStep
-            on:navigate={evt => navigateTo(evt.detail)}
-        />
+        {#if !$openedInsideIframe || showEditorNavInCmsMode}
+            <!-- step nav -->
+            <Header
+                {__}
+                prefix={workflow.prefix}
+                {steps}
+                breadcrumbPath={truncatedBreadcrumbPath}
+                bind:activeStep
+                bind:lastActiveStep
+                on:navigate={evt => navigateTo(evt.detail)}
+            />
+        {/if}
         <!-- step content -->
         <div class="block">
             {#if activeStep && activeStep.view}

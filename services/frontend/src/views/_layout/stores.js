@@ -5,4 +5,6 @@ const headerProps = new writable({
     height: 0
 });
 
-export { headerProps };
+const openedInsideIframe = new writable(false);
+
+export { headerProps, openedInsideIframe };

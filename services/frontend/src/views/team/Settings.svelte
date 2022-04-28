@@ -11,6 +11,7 @@
     import isEqual from 'lodash/isEqual';
 
     const request = getContext('request');
+    const user = getContext('user');
 
     export let __;
     export let folders;
@@ -83,7 +84,8 @@
                 locales,
                 team,
                 themes,
-                settings: team.settings
+                settings: team.settings,
+                isAdmin: $user.isAdmin
             }}
         />
         {#each curPage.sections as section}
@@ -97,7 +99,8 @@
                     locales,
                     team,
                     themes,
-                    settings: team.settings
+                    settings: team.settings,
+                    isAdmin: $user.isAdmin
                 }}
             />
         {/each}

@@ -1138,5 +1138,8 @@
   "edit / storing-changes": "Storing changes",
   "edit / upload / success-import": "We successfully imported your spreadsheet data.",
   "edit / storing-changes / error": "<strong>We're having trouble saving the changes.</strong> Please check your internet connection or contact our <a href=\"mailto:support@datawrapper.de\">support</a>",
-  "account / activate / success / no-email": "Your account has been successfully activated!"
+  "account / activate / success / no-email": "Your account has been successfully activated!",
+  "teams / editor / cms-mode": "CMS Integration",
+  "teams / editor / cms-mode / show-editor-nav": "Show editor nav in CMS mode",
+  "teams / editor / cms-mode / show-editor-nav / help": "The editor step and folder navigation is hidden when Datawrapper is opened inside an iframe, unless this setting is activated."
 }

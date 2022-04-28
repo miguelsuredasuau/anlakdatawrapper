@@ -1138,5 +1138,8 @@
   "edit / storing-changes": "Änderungen werden gespeichert",
   "edit / upload / success-import": "Deine Spreadsheet-Daten wurden erfolgreich importiert.",
   "edit / storing-changes / error": "<strong>Wir haben Probleme, die Änderungen zu speichern.</strong> Bitte überprüfen deine Internetverbindung oder kontaktiere unseren <a href=\"mailto:support@datawrapper.de\">Support</a>",
-  "account / activate / success / no-email": "Dein Account wurde erfolgreich aktiviert!"
+  "account / activate / success / no-email": "Dein Account wurde erfolgreich aktiviert!",
+  "teams / editor / cms-mode": "",
+  "teams / editor / cms-mode / show-editor-nav": "",
+  "teams / editor / cms-mode / show-editor-nav / help": ""
 }

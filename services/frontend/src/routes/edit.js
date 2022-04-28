@@ -1,5 +1,6 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
+const get = require('lodash/get');
 const set = require('lodash/set');
 const { Op } = require('@datawrapper/orm').db;
 const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
@@ -228,7 +229,12 @@ module.exports = {
                             visualizations: Array.from(server.app.visualizations.keys()).map(key =>
                                 server.app.visualizations.get(key)
                             ),
-                            customViews
+                            customViews,
+                            showEditorNavInCmsMode: get(
+                                request.auth.artifacts.activeTeam,
+                                'settings.showEditorNavInCmsMode',
+                                false
+                            )
                         }
                     });
                 }

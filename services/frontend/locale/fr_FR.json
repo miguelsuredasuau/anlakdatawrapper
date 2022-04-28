@@ -1138,5 +1138,8 @@
   "edit / storing-changes": "",
   "edit / upload / success-import": "",
   "edit / storing-changes / error": "",
-  "account / activate / success / no-email": "Votre compte a été activé avec succès !"
+  "account / activate / success / no-email": "Votre compte a été activé avec succès !",
+  "teams / editor / cms-mode": "",
+  "teams / editor / cms-mode / show-editor-nav": "",
+  "teams / editor / cms-mode / show-editor-nav / help": ""
 }
