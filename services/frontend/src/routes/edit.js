@@ -267,6 +267,6 @@ module.exports = {
             return chart;
         }
 
-        server.methods.prepareView('edit/App.svelte');
+        server.methods.prepareView('edit/Index.svelte');
     }
 };
