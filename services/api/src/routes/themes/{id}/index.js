@@ -52,7 +52,7 @@ module.exports = {
                     payload: Joi.object({
                         title: Joi.string(),
                         extend: themeId(),
-                        data: Joi.object(),
+                        data: require('@datawrapper/schemas/themeData'),
                         assets: Joi.object(),
                         less: Joi.string().allow('')
                     })
@@ -66,7 +66,7 @@ module.exports = {
                 const data = {};
 
                 // save colors.groups as flat array to colors.palette
-                if (payload.data && payload.data.colors && payload.data.colors.groups) {
+                if (payload.data?.colors?.groups) {
                     payload.data.colors.palette = payload.data.colors.groups.reduce(
                         (acc, group) => {
                             if (!group.colors) return acc;

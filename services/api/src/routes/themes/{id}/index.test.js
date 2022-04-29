@@ -357,3 +357,46 @@ test("Shouldn't be possible to update theme with invalid less", async t => {
 
     t.is(res.statusCode, 400);
 });
+
+test('Should be possible to update theme with valid color groups', async t => {
+    const payload = {
+        data: {
+            colors: {
+                groups: [{ colors: [['#ffffff', '#000000']] }]
+            }
+        }
+    };
+
+    const res = await t.context.server.inject({
+        method: 'PATCH',
+        url: '/v3/themes/my-theme-5',
+        auth: t.context.auth,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        payload
+    });
+    t.is(res.statusCode, 200);
+});
+
+test("Shouldn't be possible to update theme with invalid color groups", async t => {
+    const payload = {
+        data: {
+            colors: {
+                groups: '#ffffff'
+            }
+        }
+    };
+
+    const res = await t.context.server.inject({
+        method: 'PATCH',
+        url: '/v3/themes/my-theme-5',
+        auth: t.context.auth,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        payload
+    });
+
+    t.is(res.statusCode, 400);
+});
