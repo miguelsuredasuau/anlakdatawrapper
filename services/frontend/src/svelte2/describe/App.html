@@ -239,6 +239,7 @@
             };
         },
         computed: {
+            locale: ({ $language }) => $language,
             searchIndexSafe({ searchIndex, searchResults }) {
                 if (searchIndex < 0) searchIndex += searchResults.length;
                 searchIndex = searchIndex % searchResults.length;
