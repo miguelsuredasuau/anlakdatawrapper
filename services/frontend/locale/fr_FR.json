@@ -1141,5 +1141,7 @@
   "account / activate / success / no-email": "Votre compte a été activé avec succès !",
   "teams / editor / cms-mode": "",
   "teams / editor / cms-mode / show-editor-nav": "",
-  "teams / editor / cms-mode / show-editor-nav / help": ""
+  "teams / editor / cms-mode / show-editor-nav / help": "",
+  "dashboard / hiring / title": "",
+  "dashboard / hiring / intro": ""
 }

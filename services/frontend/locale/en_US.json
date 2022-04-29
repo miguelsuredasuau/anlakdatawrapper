@@ -1141,5 +1141,7 @@
   "account / activate / success / no-email": "Your account has been successfully activated!",
   "teams / editor / cms-mode": "CMS Integration",
   "teams / editor / cms-mode / show-editor-nav": "Show editor nav in CMS mode",
-  "teams / editor / cms-mode / show-editor-nav / help": "The editor step and folder navigation is hidden when Datawrapper is opened inside an iframe, unless this setting is activated."
+  "teams / editor / cms-mode / show-editor-nav / help": "The editor step and folder navigation is hidden when Datawrapper is opened inside an iframe, unless this setting is activated.",
+  "dashboard / hiring / title": "We're Hiring!",
+  "dashboard / hiring / intro": "Join our team remotely or in Berlin for one of the following positions:"
 }

@@ -2,6 +2,7 @@
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     export let icon;
     export let iconColor = 'grey-light';
+    export let borderColor = 'var(--color-dw-grey-lighter)';
 </script>
 
 <style lang="scss">
@@ -16,7 +17,7 @@
     }
 </style>
 
-<div class="box">
+<div class="box" style="border-color: {borderColor}">
     <div class="has-text-{iconColor} is-size-2 is-pulled-right">
         <IconDisplay {icon} />
     </div>
