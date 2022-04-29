@@ -119,10 +119,6 @@
 
     async function navigateTo(step) {
         const stepUrl = `${urlPrefix}/${$chart.id}/${step.id}`;
-        if ($chart.lastEditStep < step.index) {
-            // update lastEditStep!
-            $chart.lastEditStep = step.index;
-        }
         if (stepUrl !== window.location.pathname && `/v2${stepUrl}` !== window.location.pathname) {
             if (step.event && (step.event.ctrlKey || step.event.metaKey || step.event.shiftKey)) {
                 // open in new tab
@@ -131,7 +127,7 @@
                 window.location.href = stepUrl;
             }
         }
-        // TODO: bring back single-page navigation
+        // TODO: bring back single-page navigation (and remove lastEditStep incrementation logic from edit route)
         // activeStep = { title: activeStep.title || '', view: null };
         // await tick();
         // activeStep = step;

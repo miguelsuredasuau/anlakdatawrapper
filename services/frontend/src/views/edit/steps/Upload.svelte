@@ -19,6 +19,7 @@
     };
 
     function onChange(event) {
+        chartData = event.detail;
         $data = event.detail;
     }
 </script>

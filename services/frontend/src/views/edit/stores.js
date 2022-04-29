@@ -37,19 +37,32 @@ export function initChartStore(rawChart) {
     let prevState;
 
     const patchChartSoon = debounce(async function (id) {
-        if (Object.keys(unsavedChanges).length > 0) {
+        const changesToSave = cloneDeep(unsavedChanges);
+
+        /*
+         * even though changes haven't been saved yet, clear
+         * now instead of after request, so that we don't
+         * end up deleting any new changes that come in while
+         * the request is running on request completion
+         */
+        unsavedChanges = {};
+
+        if (Object.keys(changesToSave).length > 0) {
             try {
                 await httpReq.patch(`/v3/charts/${id}`, {
-                    payload: cloneDeep(unsavedChanges)
+                    payload: changesToSave
                 });
                 saveError.set(false);
-                unsavedChanges = {};
-                hasUnsavedChanges.set(false);
+                if (!Object.keys(unsavedChanges).length) {
+                    hasUnsavedChanges.set(false);
+                }
                 for (const method of onNextSave) {
                     method();
                     onNextSave.delete(method);
                 }
             } catch (err) {
+                // restore unsaved changes that failed to save
+                unsavedChanges = assign(changesToSave, unsavedChanges);
                 console.error(err);
                 saveError.set(err);
             }

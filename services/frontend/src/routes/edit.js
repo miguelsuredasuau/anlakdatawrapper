@@ -214,6 +214,15 @@ module.exports = {
                         request
                     });
 
+                    const stepIndex =
+                        workflowSteps
+                            .filter(d => !d.hide)
+                            .findIndex(step => step.id === params.step) + 1;
+
+                    if (stepIndex > 0 && stepIndex > chart.last_edit_step) {
+                        chart.update({ last_edit_step: stepIndex });
+                    }
+
                     return h.view('edit/Index.svelte', {
                         htmlClass: 'has-background-white-ter',
                         props: {
