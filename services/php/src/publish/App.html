@@ -21,8 +21,8 @@
     {pluginShareurls}
     {embedTemplates}
     pending="{publishing || unpublishing}"
-    {shareurlType}
-    {embedType}
+    bind:shareurlType
+    bind:embedType
     metadata="{chart.metadata}"
     id="{chart.id}"
     publicUrl="{chart.publicUrl}"
@@ -223,13 +223,14 @@
         },
         onstate({ changed, current }) {
             const userDataReady = window.dw && window.dw.backend && window.dw.backend.setUserData;
+
             if (changed.embedType && userDataReady) {
                 const data = window.dw.backend.__userData;
                 if (!current.embedType || !data) return;
                 data.embed_type = current.embedType;
                 window.dw.backend.setUserData(data);
             }
-            if (changed.shareurl_type && userDataReady) {
+            if (changed.shareurlType && userDataReady) {
                 const data = window.dw.backend.__userData;
                 if (!current.shareurlType || !data) return;
                 data.shareurl_type = current.shareurlType;

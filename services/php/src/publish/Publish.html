@@ -382,13 +382,13 @@
             if (changed.embedType && userDataReady) {
                 const data = window.dw.backend.__userData;
                 if (!current.embedType || !data) return;
-                data.embedType = current.embedType;
+                data.embed_type = current.embedType;
                 window.dw.backend.setUserData(data);
             }
             if (changed.shareurlType && userDataReady) {
                 const data = window.dw.backend.__userData;
                 if (!current.shareurlType || !data) return;
-                data.shareurlType = current.shareurlType;
+                data.shareurl_type = current.shareurlType;
                 window.dw.backend.setUserData(data);
             }
             if (changed.published) {
