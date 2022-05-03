@@ -98,11 +98,23 @@ module.exports = {
                             'edit/publish/guestBelowInvite',
                             { request }
                         );
+                        const api = server.methods.createAPI(request);
+                        // fetch embed types from API
+                        const embedTemplates = await api(`/charts/${chart.id}/embed-codes`);
+                        const embedType = (
+                            embedTemplates.find(tpl => tpl.preferred) || { id: 'responsive ' }
+                        ).id;
+                        // fetch display urls from API
+                        const displayURLs = await api(`/charts/${chart.id}/display-urls`);
+
                         return {
                             theme: theme.toJSON(),
                             afterEmbed,
                             guestAboveInvite,
-                            guestBelowInvite
+                            guestBelowInvite,
+                            embedTemplates,
+                            embedType,
+                            displayURLs
                         };
                     }
                 }

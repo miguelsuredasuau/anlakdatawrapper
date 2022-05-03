@@ -6,6 +6,7 @@
     import { chart } from '../stores';
 
     const user = getContext('user');
+    const userData = getContext('userData');
     const config = getContext('config');
 
     export let dw_chart;
@@ -14,6 +15,9 @@
     export let afterEmbed;
     export let guestAboveInvite;
     export let guestBelowInvite;
+    export let embedTemplates;
+    export let embedType;
+    export let displayURLs;
 
     let afterEmbedComponents = [];
 
@@ -21,7 +25,11 @@
         published: !!$chart.publishedAt,
         afterEmbed: afterEmbedComponents,
         guestAboveInvite,
-        guestBelowInvite
+        guestBelowInvite,
+        embedTemplates,
+        embedType,
+        pluginShareurls: displayURLs,
+        shareurlType: $userData.shareurl_type || 'default'
     };
 
     $: embedWidth = 500;
@@ -69,7 +77,9 @@
                         isGuest: $user.isGuest
                     },
                     id: $chart.id,
-                    lastEditStep: $chart.lastEditStep
+                    lastEditStep: $chart.lastEditStep,
+                    metadata: $chart.metadata,
+                    publicUrl: $chart.publicUrl
                 }}
             />
         </div>
