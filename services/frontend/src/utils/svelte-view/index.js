@@ -143,7 +143,11 @@ const SvelteView = {
                     }),
                     DW_DOMAIN: config.api.domain,
                     MATOMO: config.frontend.matomo || null,
-                    FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico'
+                    FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico',
+                    CORE_BEFORE_HEAD: await server.methods.getCustomHTML('core/beforeHead', {}),
+                    CORE_AFTER_HEAD: await server.methods.getCustomHTML('core/afterHead', {}),
+                    CORE_BEFORE_BODY: await server.methods.getCustomHTML('core/beforeBody', {}),
+                    CORE_AFTER_BODY: await server.methods.getCustomHTML('core/afterBody', {})
                 });
                 return output;
             } catch (err) {

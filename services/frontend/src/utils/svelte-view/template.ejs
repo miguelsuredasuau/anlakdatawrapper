@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="<%- HTML_CLASS %>">
     <head>
+        <%- CORE_BEFORE_HEAD %>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1.0" />
         <meta name="theme-color" content="#333333" />
@@ -74,8 +75,10 @@
         <!-- This contains the contents of the <svelte:head> component, if
          the current page has one -->
         <%- SSR_HEAD %>
+        <%- CORE_AFTER_HEAD %>
     </head>
     <body>
+        <%- CORE_BEFORE_BODY %>
         <!-- The application will be rendered inside this element,
          because `src/client.js` references it -->
         <%- SSR_HTML %>
@@ -148,6 +151,7 @@
                 <% } %>
             });
         </script>
+        <%- CORE_AFTER_BODY %>
         <% if (MATOMO) { %>
         <!-- Matomo -->
         <script>
