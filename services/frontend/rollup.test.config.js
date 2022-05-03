@@ -10,7 +10,7 @@ import sveltePreprocess from 'svelte-preprocess';
 export default {
     input: {
         include: [process.env.TEST ? `src/${process.env.TEST}` : 'src/**/*.test.*js'],
-        exclude: ['src/views/_plugins/**']
+        exclude: ['src/views/_plugins/**', 'src/svelte2/node_modules/**']
     },
     output: {
         sourcemap: true,
