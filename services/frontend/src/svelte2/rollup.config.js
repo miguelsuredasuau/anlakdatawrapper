@@ -14,6 +14,10 @@ const targets = [];
 
 build('upload');
 build('describe');
+build('publish');
+build('publish/sidebar', { noAMD: true });
+build('publish/guest');
+build('publish/pending-activation');
 build('account/profile', { view: 'EditProfile' });
 build('account/myteams', { view: 'MyTeams' });
 build('account/security', { view: 'Security' });

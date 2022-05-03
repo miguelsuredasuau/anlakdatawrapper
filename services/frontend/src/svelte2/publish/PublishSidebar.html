@@ -1,0 +1,40 @@
+<!-- assuming we're already inside a <div class="span5"> -->
+<div class="dw-create-publish">
+    <div class="publish-step is-published">
+        {#if $user.isGuest}
+        <Guest fromSvelte="true" {guestAboveInvite} {guestBelowInvite} />
+        {:elseif !$user.isActivated}
+        <PendingActivation />
+        {:else}
+        <Publish
+            {afterEmbed}
+            {redirectDisabled}
+            {embedTemplates}
+            {embedType}
+            {pluginShareurls}
+            {shareurlType}
+        />
+        {/if}
+    </div>
+</div>
+<script>
+    import Publish from './Publish.html';
+    import Guest from './guest/Guest.html';
+    import PendingActivation from './pending-activation/PendingActivation.html';
+
+    export default {
+        components: { Publish, Guest, PendingActivation },
+        data() {
+            return {
+                embedTemplates: [],
+                embedType: 'responsive',
+                pluginShareurls: [],
+                shareurlType: 'default',
+                afterEmbed: [],
+                guestAboveInvite: '',
+                guestBelowInvite: '',
+                redirectDisabled: false
+            };
+        }
+    };
+</script>

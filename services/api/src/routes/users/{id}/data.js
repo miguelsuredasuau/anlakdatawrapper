@@ -49,7 +49,7 @@ module.exports = async server => {
                         }
                     } else {
                         return Boom.badRequest(
-                            'user data keys must only contain letters, numbers, _ and -'
+                            'user data keys must only contain lowercase letters, numbers, _ and -'
                         );
                     }
                 }

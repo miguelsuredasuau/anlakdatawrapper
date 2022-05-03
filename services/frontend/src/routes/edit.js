@@ -3,7 +3,7 @@ const Joi = require('joi');
 const get = require('lodash/get');
 const set = require('lodash/set');
 const { Op } = require('@datawrapper/orm').db;
-const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
+const { Chart, User, Folder, Team, Theme } = require('@datawrapper/orm/models');
 const prepareChart = require('@datawrapper/service-utils/prepareChart');
 
 module.exports = {
@@ -80,7 +80,31 @@ module.exports = {
                     id: 'publish',
                     view: 'edit/chart/publish',
                     title: ['Publish & Embed', 'core'],
-                    async data() {}
+                    async data({ request, chart }) {
+                        // load theme
+                        const theme = await Theme.findByPk(chart.theme);
+                        const { svelte2: afterEmbed } = await server.methods.getCustomData(
+                            'edit/publish/afterEmbed',
+                            {
+                                request,
+                                chart
+                            }
+                        );
+                        const guestAboveInvite = await server.methods.getCustomHTML(
+                            'edit/publish/guestAboveInvite',
+                            { request }
+                        );
+                        const guestBelowInvite = await server.methods.getCustomHTML(
+                            'edit/publish/guestBelowInvite',
+                            { request }
+                        );
+                        return {
+                            theme: theme.toJSON(),
+                            afterEmbed,
+                            guestAboveInvite,
+                            guestBelowInvite
+                        };
+                    }
                 }
             ]
         });

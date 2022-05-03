@@ -4,6 +4,7 @@
     import { onMount, onDestroy, createEventDispatcher } from 'svelte';
     import { get_current_component as getCurrentComponent } from 'svelte/internal';
     import { loadScript } from '@datawrapper/shared/fetch';
+    import { waitFor } from './shared';
 
     const svelteDispatch = createEventDispatcher();
     const component = getCurrentComponent();
@@ -33,9 +34,10 @@
     }
 
     export function update(data, storeData) {
-        if (_app) {
-            _app.set(data);
-        }
+        waitFor(
+            () => _app,
+            () => _app.set(data)
+        );
         if (_store && storeData) {
             _store.set(storeData);
         }

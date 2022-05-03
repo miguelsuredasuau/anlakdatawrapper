@@ -23,6 +23,7 @@
     export let visualizations;
     export let initUrlStep;
     export let urlPrefix;
+    export let theme;
 
     /*
      * if set to true, the editor nav is shown even if the app is opened
@@ -35,6 +36,8 @@
      * custom view components to be rendered
      */
     export let customViews = [];
+
+    $chart = rawChart;
 
     const dw_chart = dwChart(rawChart);
     dw_chart.save = dw_chart.saveSoon = () => {
@@ -54,12 +57,17 @@
      */
     dw_chart.onNextSave = method => {
         if (typeof method === 'function') {
-            onNextSave.add(method);
-            // in case we didn't save (e.g. nothing has changed)
-            // we remove this handler after 3 seconds
-            setTimeout(() => {
-                onNextSave.delete(method);
-            }, 3000);
+            if ($hasUnsavedChanges) {
+                onNextSave.add(method);
+                // in case we didn't save (e.g. nothing has changed)
+                // we remove this handler after 3 seconds
+                setTimeout(() => {
+                    onNextSave.delete(method);
+                }, 3000);
+            } else {
+                // call immediately
+                method();
+            }
         }
     };
 
@@ -184,7 +192,10 @@
 
     {#if customViews && customViews.belowEditor && customViews.belowEditor.length > 0}
         {#each customViews.belowEditor as comp}
-            <ViewComponent id={comp.id} props={{ ...comp.props, chart, activeStep, workflow }} />
+            <ViewComponent
+                id={comp.id}
+                props={{ ...comp.props, chart, activeStep, workflow, theme }}
+            />
         {/each}
     {/if}
 </MainLayout>

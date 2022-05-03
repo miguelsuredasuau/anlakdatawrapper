@@ -1,7 +1,8 @@
 <script>
-    import { onMount, getContext, beforeUpdate } from 'svelte';
-    import clone from '@datawrapper/shared/clone';
+    import { onMount, getContext, beforeUpdate, createEventDispatcher } from 'svelte';
+    import clone from 'lodash/cloneDeep';
     import isEqual from 'underscore/modules/isEqual.js';
+    import { waitFor } from './shared';
 
     export let id;
     export let js;
@@ -17,6 +18,12 @@
     let ready = false;
     let _data = clone(data);
 
+    /*
+     * event dispatcher to be used by the Svelte2 component
+     * to communicate with the Svelte3 component using it
+     */
+    const eventDispatch = createEventDispatcher();
+
     const uid = Math.ceil(Math.random() * 1e5).toString(36);
 
     onMount(async () => {
@@ -31,15 +38,22 @@
         window.__svelte2wrapper = window.__svelte2wrapper || {};
         window.__svelte2wrapper[uid] = {
             data: _data,
-            store: storeData
+            store: {
+                ...(storeData || {}),
+                eventDispatch,
+                getUserData() {
+                    return $userData;
+                },
+                setUserData(data) {
+                    $userData = data;
+                }
+            }
         };
-        wait();
+        waitFor(
+            () => !!customElements.get('svelte2-wrapper'),
+            () => (ready = true)
+        );
     });
-
-    function wait() {
-        if (!customElements.get('svelte2-wrapper')) return setTimeout(wait, 100);
-        ready = true;
-    }
 
     beforeUpdate(() => {
         // notify svelte2 wrapper about data changes from parent component
@@ -53,9 +67,12 @@
         });
         if (!isEqual(_data, clonedData)) {
             _data = clonedData;
-            if (component && component.update) {
-                component.update(_data);
-            }
+            waitFor(
+                () => component && component.update,
+                () => {
+                    component.update(_data);
+                }
+            );
         }
     });
 

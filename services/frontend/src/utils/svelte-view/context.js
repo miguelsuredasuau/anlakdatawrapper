@@ -66,6 +66,7 @@ module.exports = async function (request) {
                     : {
                           id: -1,
                           isGuest: true,
+                          isActivated: false,
                           isAdmin: false,
                           language: userLang
                       },

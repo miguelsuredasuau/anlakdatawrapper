@@ -38,6 +38,7 @@ export function initChartStore(rawChart) {
 
     const patchChartSoon = debounce(async function (id) {
         const changesToSave = cloneDeep(unsavedChanges);
+        let savingFailed = false;
 
         /*
          * even though changes haven't been saved yet, clear
@@ -53,9 +54,6 @@ export function initChartStore(rawChart) {
                     payload: changesToSave
                 });
                 saveError.set(false);
-                if (!Object.keys(unsavedChanges).length) {
-                    hasUnsavedChanges.set(false);
-                }
                 for (const method of onNextSave) {
                     method();
                     onNextSave.delete(method);
@@ -63,8 +61,20 @@ export function initChartStore(rawChart) {
             } catch (err) {
                 // restore unsaved changes that failed to save
                 unsavedChanges = assign(changesToSave, unsavedChanges);
+                savingFailed = true;
                 console.error(err);
                 saveError.set(err);
+            }
+        }
+        if (!savingFailed) {
+            /*
+             * invoke onNextSave handlers regardless
+             * of whether or not there where changes
+             * to be saved, unless saving failed
+             */
+            for (const method of onNextSave) {
+                method();
+                onNextSave.delete(method);
             }
         }
     }, 1000);

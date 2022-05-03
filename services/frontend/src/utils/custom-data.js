@@ -18,11 +18,11 @@ module.exports = {
         /**
          * return registered custom data for specific key
          */
-        server.method('getCustomData', async (key, { request }) => {
+        server.method('getCustomData', async (key, args) => {
             if (!customDataHandlers.has(key)) return {};
             const customData = [];
             for (const handler of customDataHandlers.get(key)) {
-                customData.push(await handler({ request }));
+                customData.push(await handler(args));
             }
             return mergeDeep({}, ...customData);
         });
