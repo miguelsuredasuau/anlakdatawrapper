@@ -12,6 +12,7 @@
     import VisualizationGrid from './VisualizationGrid.svelte';
     import VisualizationModal from './VisualizationModal.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
+    import decodeHtml from '@datawrapper/shared/decodeHtml';
     import isEqual from 'underscore/modules/isEqual.js';
     import {
         currentFolder,
@@ -414,7 +415,7 @@
             return;
         }
         dragTarget = event.target;
-        const teamName = () => teams.find(t => t.id === destinationFolder.teamId).name;
+        const teamName = () => decodeHtml(teams.find(t => t.id === destinationFolder.teamId).name);
 
         if (draggedObject.type === 'folder') {
             if (draggedObject.object.teamId !== destinationFolder.teamId) {
