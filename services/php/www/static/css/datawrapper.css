@@ -682,7 +682,7 @@ ul.footer-links li + li:before {
   content: ' – ';
 }
 ul.footer-links a.highlight {
-  background: #4688d7;
+  background: #1d81a2;
   color: white;
   padding: 4px 9px;
   font-weight: bold;

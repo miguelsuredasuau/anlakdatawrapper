@@ -11,10 +11,13 @@
 
 <style>
     footer li a.highlight {
-        background: #4688d7;
+        background: var(--color-dw-scooter);
         color: white;
         padding: 3px 6px;
         font-weight: bold;
+    }
+    footer li a.highlight:hover {
+        text-decoration: underline;
     }
     nav ul {
         color: silver;
