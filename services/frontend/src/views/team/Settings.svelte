@@ -6,6 +6,7 @@
     import SettingsPageLayout from '_layout/SettingsPageLayout.svelte';
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
+    import ViewComponent from '_partials/ViewComponent.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
     import debounce from 'lodash/debounce';
     import isEqual from 'lodash/isEqual';
@@ -104,6 +105,19 @@
                 }}
             />
         {/each}
+    {/if}
+    {#if curPage && curPage.view}
+        <h3 class="title is-3">{curPage.headline || curPage.title}</h3>
+        <ViewComponent
+            id={curPage.view}
+            {__}
+            on:change={storeTeamSettings}
+            props={{
+                ...curPage.data,
+                team,
+                settings: team.settings
+            }}
+        />
     {/if}
     <div slot="belowNav">
         <hr />

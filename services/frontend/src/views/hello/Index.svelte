@@ -27,6 +27,7 @@
     import TypeaheadInputSection from './TypeaheadInputSection.svelte';
     import FileInputSection from './FileInputSection.svelte';
     import SaveButtonSection from './SaveButtonSection.svelte';
+    import SwitchControlSection from './SwitchControlSection.svelte';
 
     export let magicNumber;
     export let __;
@@ -69,7 +70,8 @@
                 { url: '#tagsinput', title: 'Tags Input' },
                 { url: '#typeahead', title: 'Typeahead Input' },
                 { url: '#file', title: 'File Input' },
-                { url: '#codemirror', title: 'CodeMirror Input' }
+                { url: '#codemirror', title: 'CodeMirror Input' },
+                { url: '#switch', title: 'Switch Input' }
             ]
         },
         {
@@ -131,6 +133,7 @@
                     <TypeaheadInputSection />
                     <FileInputSection {__} />
                     <CodeMirrorInputSection />
+                    <SwitchControlSection />
 
                     <h2 class="title is-2 mt-4 has-text-grey">Content</h2>
                     <hr />
