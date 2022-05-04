@@ -9,9 +9,9 @@
         class="color-swatch"
         style="background: {item.color}; border: 1px solid {chroma(item.color).darker().hex()}"
     ></span>
-    <span class="color-label">{@html item.label}</span>
-    {#if item.label !== item.id}
-    <span class="original-label">({@html item.id})</span>
+    <span class="color-label">{ purifyHtml(item.label, '')}</span>
+    {#if item.label !== item.originalLabel}
+    <span class="original-label">({ purifyHtml(item.originalLabel, '') })</span>
     {/if}
 </div>
 
@@ -65,6 +65,7 @@
 
 <script>
     import chroma from 'chroma-js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     export default {
         data() {
             return {
@@ -72,6 +73,6 @@
                 rtl: false
             };
         },
-        helpers: { chroma }
+        helpers: { chroma, purifyHtml }
     };
 </script>

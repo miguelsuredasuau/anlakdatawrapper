@@ -44,7 +44,7 @@
                 class="label-input mt-2 mb-0"
                 bind:value="selectionLabel"
                 type="text"
-                placeholder="{selection[0]}"
+                placeholder="{purifyHtml(valueLabelMap[selection[0]] || selection[0], '')}"
                 aria-label="{__('controls / color-category / text')}"
                 dir="{$textDirection}"
             />
@@ -86,6 +86,7 @@
     import CheckboxControl from './CheckboxControl.html';
     import IconDisplay from './IconDisplay.html';
     import { __ } from '@datawrapper/shared/l10n';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
 
     export default {
         components: {
@@ -104,6 +105,7 @@
                 baseColor: '#cccccc',
                 activeColor: false,
                 values: [],
+                valueLabelMap: {},
                 selection: [],
                 selectionLabel: '',
                 selectionIncludeInKey: '',
@@ -136,7 +138,8 @@
                 categoryOrder,
                 palette,
                 uniqueValues,
-                value
+                value,
+                valueLabelMap
             }) {
                 let paletteUsed = 0;
                 // sort by categoryOrder
@@ -150,8 +153,11 @@
                         return oa - ob;
                     })
                     .map(label => ({
-                        label: allowLabeling ? categoryLabels[label] || label : label,
+                        label: allowLabeling
+                            ? categoryLabels[label] || valueLabelMap[label] || label
+                            : valueLabelMap[label] || label,
                         id: label,
+                        originalLabel: valueLabelMap[label] || label,
                         manual: value.map[label],
                         color:
                             value.map[label] ||
@@ -159,7 +165,7 @@
                     }));
             }
         },
-        helpers: { __, ColorListItem },
+        helpers: { __, ColorListItem, purifyHtml },
         methods: {
             handleSelectAllClick() {
                 const { swatches } = this.get();
