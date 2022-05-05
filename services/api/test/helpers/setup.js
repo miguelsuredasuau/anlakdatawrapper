@@ -110,6 +110,11 @@ async function createUser(
     };
 }
 
+async function setUserData(user, key, value) {
+    const { setUserData } = require('@datawrapper/orm/utils/userData.js');
+    await setUserData(user.id, key, value);
+}
+
 async function createTeam(props = {}) {
     const { Team } = require('@datawrapper/orm/models');
 
@@ -127,6 +132,9 @@ async function createTeam(props = {}) {
                 embed: true,
                 byline: true,
                 pdf: false
+            },
+            privateBasemaps: {
+                eu: false
             },
             css: 'body {background:red;}',
             embed: {
@@ -456,5 +464,6 @@ module.exports = {
     getProductPlugin,
     getPublicChart,
     getTheme,
-    setup
+    setup,
+    setUserData
 };

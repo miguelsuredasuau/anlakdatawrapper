@@ -213,16 +213,16 @@ async function editTeam(request) {
     if (!team) return Boom.notFound();
 
     // allow plugins to filter team settings
-    const readOnlySettings = await events.emit(
-        event.TEAM_SETTINGS_FILTER,
-        {
+    const readOnlySettings = (
+        await events.emit(event.TEAM_SETTINGS_FILTER, {
             payload: data,
             team,
             user: auth.artifacts,
             isAdmin
-        },
-        { filter: 'first' }
-    );
+        })
+    )
+        .filter(d => d.status === 'success')
+        .map(d => d.data);
 
     if (typeof data.settings === 'string') {
         data.settings = JSON.parse(data.settings);
@@ -235,7 +235,9 @@ async function editTeam(request) {
 
     if (method === 'put') {
         // retain any data not editable by user
-        data.settings = assign(readOnlySettings.settings, data.settings);
+        readOnlySettings.forEach(result => {
+            data.settings = assign(result.settings, data.settings);
+        });
     }
 
     await Team.update(convertKeys(data, decamelize), {

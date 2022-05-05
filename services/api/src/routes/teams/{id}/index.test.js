@@ -42,6 +42,9 @@ function testTeamSettings(t, team, settings) {
     // protected settings.flags preserved
     t.deepEqual(team.result.settings.flags, settings.flags);
 
+    // protected settings.privateBasemaps preserved
+    t.deepEqual(team.result.settings.privateBasemaps, settings.privateBasemaps);
+
     // metadata.publish saved, metadata.visualize dropped
     t.deepEqual(team.result.settings.default.metadata, {
         publish: {
@@ -67,25 +70,33 @@ test.before(async t => {
 
     // emulate team settings filter
     const { events, event } = t.context.server.app;
-    events.on(event.TEAM_SETTINGS_FILTER, async ({ team, payload }) => {
-        // check if the team supports certain settings
-        const prohibitedKeys = [
+    // emulate another plugin
+    events.on(
+        event.TEAM_SETTINGS_FILTER,
+        teamSettingsFilter([
             'settings.flags',
             'settings.css',
             'settings.default.metadata.visualize'
-        ];
-        const readOnlySettings = {};
-        prohibitedKeys.forEach(key => {
-            if (has(payload, key)) {
-                const keys = key.split('.');
-                const last = keys.pop();
-                const readOnlySetting = get(team.dataValues, key);
-                set(readOnlySettings, key, readOnlySetting);
-                delete get(payload, keys.join('.'))[last];
-            }
-        });
-        return readOnlySettings;
-    });
+        ])
+    );
+    events.on(event.TEAM_SETTINGS_FILTER, teamSettingsFilter(['settings.privateBasemaps']));
+
+    function teamSettingsFilter(prohibitedKeys) {
+        return async ({ team, payload }) => {
+            // check if the team supports certain settings
+            const readOnlySettings = {};
+            prohibitedKeys.forEach(key => {
+                if (has(payload, key)) {
+                    const keys = key.split('.');
+                    const last = keys.pop();
+                    const readOnlySetting = get(team.dataValues, key);
+                    set(readOnlySettings, key, readOnlySetting);
+                    delete get(payload, keys.join('.'))[last];
+                }
+            });
+            return readOnlySettings;
+        };
+    }
 });
 
 test.after.always(async t => {
@@ -406,6 +417,9 @@ test("admins can't edit team restricted team settings", async t => {
                 settings: {
                     flags: {
                         pdf: true
+                    },
+                    privateBasemaps: {
+                        eu: true
                     }
                 }
             }
@@ -428,6 +442,7 @@ test("admins can't edit team restricted team settings", async t => {
 
         t.is(team2.statusCode, 200);
         t.is(team2.result.settings.flags.pdf, false);
+        t.is(team2.result.settings.privateBasemaps.eu, false);
     } finally {
         if (userObj) {
             await destroy(...Object.values(userObj));
@@ -460,6 +475,9 @@ test('restricted team settings are preserved in PUT request', async t => {
                 flags: {
                     pdf: true,
                     nonexistentflag: true
+                },
+                privateBasemaps: {
+                    eu: false
                 },
                 css: '',
                 embed: {
