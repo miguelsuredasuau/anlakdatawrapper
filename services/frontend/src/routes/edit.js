@@ -107,6 +107,12 @@ module.exports = {
                         // fetch display urls from API
                         const displayURLs = await api(`/charts/${chart.id}/display-urls`);
 
+                        const chartActions = await server.methods.getChartActions({
+                            request,
+                            chart,
+                            theme
+                        });
+
                         return {
                             theme: theme.toJSON(),
                             afterEmbed,
@@ -114,7 +120,11 @@ module.exports = {
                             guestBelowInvite,
                             embedTemplates,
                             embedType,
-                            displayURLs
+                            displayURLs,
+                            chartActions,
+                            needsRepublish:
+                                chart.last_edit_step > 4 &&
+                                chart.last_modified_at - chart.published_at > 20000
                         };
                     }
                 }

@@ -3,7 +3,7 @@
     import chroma from 'chroma-js';
 
     /*
-     * writable store
+     * writable chart store
      */
     export let chart;
 
@@ -12,11 +12,39 @@
      */
     export let theme;
 
-    $: previewURL = `/preview/${$chart.id}`;
-    $: embedWidth = get($chart, 'metadata.publish.embed-width', 550);
-    $: embedHeight = get($chart, 'metadata.publish.embed-height', 450);
+    $: width = customWidth || get($chart, 'metadata.publish.embed-width', 550);
+    $: height = customHeight || get($chart, 'metadata.publish.embed-height', 450);
     $: background = get(theme, 'data.colors.background', 'white');
     $: borderColor = chroma(background).darken(0.7);
+    $: border = customBorder === null ? 10 : customBorder;
+
+    $: url = customSrc || `/preview/${$chart.id}`;
+
+    let customWidth;
+    let customHeight;
+    let customSrc;
+    let customBorder = null;
+
+    /**
+     * this method can be used by chart actions to change the
+     * preview iframe shown in the publish step
+     */
+    export function set({ src, width, height, border }) {
+        if (width) customWidth = width;
+        if (height) customHeight = height;
+        if (border !== undefined) customBorder = border;
+        if (src) customSrc = src;
+    }
+
+    /**
+     * resets the preview iframe
+     */
+    export function reset() {
+        customWidth = null;
+        customHeight = null;
+        customSrc = null;
+        customBorder = null;
+    }
 </script>
 
 <style>
@@ -38,8 +66,8 @@
 <div class="iframe-wrapper">
     <div
         class="iframe-border"
-        style="background:{background};width:{embedWidth}px; height:{embedHeight}px;border-color:{borderColor}"
+        style="background:{background};width:{width}px; height:{height}px;border-color:{borderColor}; padding:{border}px"
     >
-        <iframe title={$chart.title} src={previewURL} scrolling="no" />
+        <iframe title={$chart.title} src={url} scrolling="no" />
     </div>
 </div>

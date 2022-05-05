@@ -9,7 +9,7 @@
     {unpublished}
     {unpublishing}
     {redirectDisabled}
-    needsRepublish="{needs_republish}"
+    {needsRepublish}
     publishError="{publish_error}"
     publicVersion="{$publicVersion}"
     on:publish="publish()"
@@ -35,7 +35,7 @@
 {/each}
 
 <!-- EXPORT -->
-<div class="export-and-duplicate">
+<div class="export-and-duplicate" ref:exportAndDuplicate>
     <div>
         <h2 class="pt-1">{@html exportHed}</h2>
         {#if exportIntro}
@@ -122,7 +122,7 @@
                 publishStarted: 0,
                 unpublished: false,
                 unpublishing: false,
-                needs_republish: false,
+                needsRepublish: false,
                 publish_error: false,
                 auto_publish: false,
                 progress: [],
@@ -319,7 +319,10 @@
                         this.set({ Action });
                         this.refs.action.set({ loading: true });
                         if (action.mod.css) {
-                            loadStylesheet(action.mod.css);
+                            loadStylesheet({
+                                src: action.mod.css,
+                                parentElement: this.refs.exportAndDuplicate
+                            });
                         }
                         loadScript(action.mod.src, () => {
                             setTimeout(() => {

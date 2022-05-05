@@ -1,4 +1,5 @@
 <script type="text/javascript">
+    import { readable } from 'svelte/store';
     import MainLayout from '_layout/MainLayout.svelte';
     import Menu from '_partials/Menu.svelte';
 
@@ -28,9 +29,14 @@
     import FileInputSection from './FileInputSection.svelte';
     import SaveButtonSection from './SaveButtonSection.svelte';
     import SwitchControlSection from './SwitchControlSection.svelte';
+    import ChartPreviewIframeSection from './ChartPreviewIframeSection.svelte';
 
     export let magicNumber;
+    export let chart;
+    export let theme;
     export let __;
+
+    const chartStore = readable(chart);
 
     export let icons;
     let contentRef;
@@ -38,57 +44,79 @@
     const menuGroups = [
         {
             title: 'Introduction',
+            hideTitle: true,
             pages: [
-                { url: '#welcome', title: 'Welcome' },
-                { url: '#icons', title: 'Icons' }
+                {
+                    url: '#welcome',
+                    title: 'Welcome',
+                    view: WelcomeSection,
+                    props: { magicNumber, __ }
+                },
+                { url: '#icons', title: 'Icons', view: IconsSection, props: { icons, __ } }
             ]
         },
         {
             title: 'Navigation',
             pages: [
-                { url: '#pagination', title: 'Pagination' },
-                { url: '#tabs', title: 'Tabs' },
-                { url: '#menu', title: 'Menu' }
+                { url: '#pagination', title: 'Pagination', view: PaginationSection },
+                { url: '#tabs', title: 'Tabs', view: TabsSection },
+                { url: '#menu', title: 'Menu', view: MenuSection }
             ]
         },
         {
             title: 'Displays',
             pages: [
-                { url: '#message', title: 'Message' },
-                { url: '#modal', title: 'Modal' },
-                { url: '#save', title: 'Save button' }
+                { url: '#message', title: 'Message', view: MessageSection },
+                { url: '#modal', title: 'Modal', view: ModalSection },
+                { url: '#save', title: 'Save button', view: SaveButtonSection },
+                {
+                    url: '#preview',
+                    title: 'ChartIframePreview',
+                    view: ChartPreviewIframeSection,
+                    props: { chart: chartStore, theme, __ }
+                }
             ]
         },
         {
             title: 'Controls',
             pages: [
-                { url: '#button-groups', title: 'Button groups' },
-                { url: '#checkbox', title: 'Checkbox' },
-                { url: '#radio', title: 'Radio Input' },
-                { url: '#setpassword', title: 'Set Password' },
-                { url: '#search', title: 'Search Input' },
-                { url: '#tagsinput', title: 'Tags Input' },
-                { url: '#typeahead', title: 'Typeahead Input' },
-                { url: '#file', title: 'File Input' },
-                { url: '#codemirror', title: 'CodeMirror Input' },
-                { url: '#switch', title: 'Switch Input' }
+                { url: '#button-groups', title: 'Button groups', view: ButtonGroupSection },
+                { url: '#checkbox', title: 'Checkbox', view: CheckboxSection },
+                { url: '#radio', title: 'Radio Input', view: RadioInputSection },
+                {
+                    url: '#setpassword',
+                    title: 'Set Password',
+                    view: SetPasswordSection,
+                    props: { __ }
+                },
+                { url: '#search', title: 'Search Input', view: SearchInputSection },
+                { url: '#tagsinput', title: 'Tags Input', view: TagsInputSection },
+                { url: '#typeahead', title: 'Typeahead Input', view: TypeaheadInputSection },
+                { url: '#file', title: 'File Input', view: FileInputSection, props: { __ } },
+                { url: '#codemirror', title: 'CodeMirror Input', view: CodeMirrorInputSection },
+                { url: '#switch', title: 'Switch Input', view: SwitchControlSection }
             ]
         },
         {
             title: 'Content',
             pages: [
-                { url: '#form-field', title: 'Form Field' },
-                { url: '#markdown-input', title: 'Markdown Input' },
-                { url: '#signup', title: 'Sign Up' },
-                { url: '#bulma', title: 'Bulma' }
+                { url: '#form-field', title: 'Form Field', view: FormFieldSection, props: { __ } },
+                {
+                    url: '#markdown-input',
+                    title: 'Markdown Input',
+                    view: MarkdownInputSection,
+                    props: { __ }
+                },
+                { url: '#signup', title: 'Sign Up', view: SignUpSection, props: { __ } },
+                { url: '#bulma', title: 'Bulma', view: BulmaComponentsSection }
             ]
         },
         {
             title: 'Misc.',
             pages: [
-                { url: '#dropdown', title: 'Dropdown' },
-                { url: '#svelte2', title: 'Svelte2' },
-                { url: '#errors', title: 'Errors' }
+                { url: '#dropdown', title: 'Dropdown', view: DropdownSection },
+                { url: '#svelte2', title: 'Svelte2', view: Svelte2Section },
+                { url: '#errors', title: 'Errors', view: ErrorsSection }
             ]
         }
     ];
@@ -107,45 +135,16 @@
                 <div class="column is-one-fifth">
                     <Menu content={contentRef} sticky groups={menuGroups} />
                 </div>
-                <div class="column" bind:this={contentRef}>
-                    <WelcomeSection {magicNumber} {__} />
-                    <IconsSection {icons} />
-
-                    <h2 class="title is-2 mt-4 has-text-grey">Navigation</h2>
-                    <hr />
-                    <PaginationSection />
-                    <TabsSection />
-
-                    <MenuSection />
-                    <MessageSection />
-                    <ModalSection />
-                    <SaveButtonSection />
-
-                    <h2 class="title is-2 mt-4 has-text-grey">Controls</h2>
-                    <hr />
-
-                    <ButtonGroupSection />
-                    <CheckboxSection />
-                    <RadioInputSection />
-                    <SetPasswordSection {__} />
-                    <SearchInputSection />
-                    <TagsInputSection />
-                    <TypeaheadInputSection />
-                    <FileInputSection {__} />
-                    <CodeMirrorInputSection />
-                    <SwitchControlSection />
-
-                    <h2 class="title is-2 mt-4 has-text-grey">Content</h2>
-                    <hr />
-
-                    <FormFieldSection {__} />
-                    <MarkdownInputSection {__} />
-                    <SignUpSection {__} />
-                    <BulmaComponentsSection />
-
-                    <DropdownSection />
-                    <Svelte2Section />
-                    <ErrorsSection />
+                <div class="column is-four-fifths" bind:this={contentRef}>
+                    {#each menuGroups as group}
+                        {#if !group.hideTitle}
+                            <h2 class="title is-2 mt-4 has-text-grey">{group.title}</h2>
+                            <hr />
+                        {/if}
+                        {#each group.pages as page}
+                            <svelte:component this={page.view} {...page.props || {}} />
+                        {/each}
+                    {/each}
                 </div>
             </div>
         </div>

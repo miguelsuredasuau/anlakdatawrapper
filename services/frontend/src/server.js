@@ -162,6 +162,7 @@ const start = async () => {
     await server.register(require('./utils/header-links'));
     await server.register(require('./utils/settings-pages'));
     await server.register(require('./utils/demo-datasets'));
+    await server.register(require('./utils/chart-actions'));
     await server.register(require('./utils/custom-data'));
     await server.register(require('./utils/custom-html'));
 

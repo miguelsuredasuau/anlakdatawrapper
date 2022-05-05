@@ -567,3 +567,27 @@ server.methods.registerDemoDatasets(({ request, chart }) => {
 });
 
 ```
+
+### `registerChartAction` (chart editor)
+
+Plugins may register additional chart actions to be shown in publish step
+
+```js
+server.methods.registerChartAction(async ({ request, chart, theme }) => {
+    return {
+        id: `export-zip`,
+        title: 'ZIP',
+        icon: 'file-archive-o',
+        order: 400,
+        mod: {
+            id: 'svelte/export-zip',
+            src: '/static/plugins/export-zip/export-zip.js',
+            css: '/static/plugins/export-zip/export-zip.css',
+            data: {
+                answer: 42
+            }
+        }
+    }
+});
+
+```

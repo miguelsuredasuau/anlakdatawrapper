@@ -147,10 +147,12 @@
     }
 
     function onPopState(event) {
-        navigateTo(
-            steps.find(s => s.id === event.state.id),
-            false
-        );
+        if (event.state && event.state.id) {
+            navigateTo(
+                steps.find(s => s.id === event.state.id),
+                false
+            );
+        }
     }
 
     function onBeforeUnload(event) {

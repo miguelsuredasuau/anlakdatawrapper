@@ -18,8 +18,15 @@
     export let embedTemplates;
     export let embedType;
     export let displayURLs;
+    export let needsRepublish;
+
+    /**
+     * chart actions can be added by plugins
+     */
+    export let chartActions;
 
     let afterEmbedComponents = [];
+    let iframePreview;
 
     $: data = {
         published: !!$chart.publishedAt,
@@ -29,7 +36,8 @@
         embedTemplates,
         embedType,
         pluginShareurls: displayURLs,
-        shareurlType: $userData.shareurl_type || 'default'
+        shareurlType: $userData.shareurl_type || 'default',
+        needsRepublish
     };
 
     $: embedWidth = 500;
@@ -65,12 +73,22 @@
                 bind:data
                 storeData={{
                     dw_chart,
-                    actions: [],
+                    actions: chartActions,
                     language,
                     locales: $config.chartLocales.map(({ id, title }) => ({
                         value: id,
                         label: title
                     })),
+                    theme,
+                    /*
+                     * we're passing this getter function instead of the iframePreview
+                     * reference itself because at the time of setting this storeData
+                     * props the bind:this={iframePreview} statement from below has
+                     * not been evaluated yet
+                     */
+                    getIframePreview() {
+                        return iframePreview;
+                    },
                     // mimic old store values
                     user: {
                         isActivated: $user.isActivated,
@@ -84,7 +102,7 @@
             />
         </div>
         <div class="column is-7">
-            <ChartPreviewIframeDisplay {chart} {theme} />
+            <ChartPreviewIframeDisplay bind:this={iframePreview} {chart} {theme} />
         </div>
     </div>
 </div>
