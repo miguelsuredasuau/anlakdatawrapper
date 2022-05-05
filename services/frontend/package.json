@@ -77,9 +77,6 @@
         "jsdom": "^18.1.0",
         "mocha": "^9.1.3"
     },
-    "peerDependencies": {
-        "joi": "17.x"
-    },
     "mocha": {
         "spec": "build/bundle-tests.js",
         "require": [

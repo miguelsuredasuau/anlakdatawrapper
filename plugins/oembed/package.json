@@ -18,8 +18,5 @@
     "dependencies": {
         "@hapi/boom": "^9.1.0",
         "lodash": "^4.17.21"
-    },
-    "peerDependencies": {
-        "joi": "17.x"
     }
 }
