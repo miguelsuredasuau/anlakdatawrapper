@@ -9,7 +9,8 @@ const {
     validateAPI,
     validateORM,
     validateFrontend,
-    validateRedis
+    validateRedis,
+    validatePlugins
 } = require('@datawrapper/schemas/config');
 const { requireConfig } = require('@datawrapper/service-utils/findConfig');
 const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
@@ -39,6 +40,7 @@ const start = async () => {
     validateAPI(config.api);
     validateORM(config.orm);
     validateFrontend(config.frontend);
+    validatePlugins(config.plugins);
 
     let useRedis = !!config.redis;
 

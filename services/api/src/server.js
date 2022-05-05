@@ -12,7 +12,8 @@ const {
     validateAPI,
     validateORM,
     validateFrontend,
-    validateRedis
+    validateRedis,
+    validatePlugins
 } = require('@datawrapper/schemas/config');
 const schemas = require('@datawrapper/schemas');
 const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
@@ -41,6 +42,7 @@ const CSRF_COOKIE_OPTIONS = {
 validateAPI(config.api);
 validateORM(config.orm);
 validateFrontend(config.frontend);
+validatePlugins(config.plugins);
 
 let useRedis = !!config.redis;
 
