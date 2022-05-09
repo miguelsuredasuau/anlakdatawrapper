@@ -3,7 +3,8 @@
     import { writable } from 'svelte/store';
     import debounce from 'lodash/debounce';
     import isEqual from 'lodash/isEqual';
-    import { httpReq, clone } from '@datawrapper/shared';
+    import cloneDeep from 'lodash/cloneDeep';
+    import httpReq from '@datawrapper/shared/httpReq';
     import { loadScript } from '@datawrapper/shared/fetch';
 
     import dayjs from 'dayjs';
@@ -44,7 +45,7 @@
     export let ref;
 
     Object.keys(stores).forEach(key => {
-        const store = writable(clone(stores[key]));
+        const store = writable(cloneDeep(stores[key]));
         if (key === 'messages') store.translate = translate;
         if (key === 'userData' && typeof window !== 'undefined') {
             store.subscribe(
@@ -53,7 +54,7 @@
                         await httpReq.patch(`/v3/me/data`, {
                             payload: value
                         });
-                        stores[key] = value;
+                        stores[key] = cloneDeep(value);
                     }
                 }, 1000)
             );
