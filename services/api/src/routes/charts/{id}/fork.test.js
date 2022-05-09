@@ -1,25 +1,29 @@
-const test = require('ava');
-const {
-    createUser,
-    destroy,
-    setup,
-    BASE_URL,
-    getChart,
-    createChart,
-    createPublicChart
-} = require('../../../../test/helpers/setup');
-const { decamelizeKeys } = require('humps');
-const fetch = require('node-fetch');
 const assignDeep = require('assign-deep');
 const cloneDeep = require('lodash/cloneDeep');
 const defaultMetadata = require('@datawrapper/service-utils/defaultChartMetadata');
+const fetch = require('node-fetch');
+const test = require('ava');
+const {
+    BASE_URL,
+    createChart,
+    createGuestSession,
+    createPublicChart,
+    createUser,
+    destroy,
+    getChart,
+    setup
+} = require('../../../../test/helpers/setup');
+const { decamelizeKeys } = require('humps');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
 });
 
-test("User can't fork an unforkable visualization", async t => {
-    let userObj;
+test('POST /charts/{id}/fork returns 401 when the original chart is not forkable', async t => {
+    const { Chart } = require('@datawrapper/orm/models');
+
+    let userObj = {};
+    let chart;
     try {
         userObj = await createUser(t.context.server);
         const { session } = userObj;
@@ -51,23 +55,29 @@ test("User can't fork an unforkable visualization", async t => {
 
         t.is(createResponse.statusCode, 201);
 
+        chart = createResponse.result;
+
         // fork new chart
         const forkResponse = await t.context.server.inject({
             method: 'POST',
-            url: `/v3/charts/${createResponse.result.id}/fork`,
+            url: `/v3/charts/${chart.id}/fork`,
             headers
         });
 
         t.is(forkResponse.statusCode, 401);
     } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
+        if (chart) {
+            await Chart.destroy({ where: { id: chart.id } });
         }
+        await destroy(Object.values(userObj));
     }
 });
 
-test("User can't fork an unpublished visualization", async t => {
-    let userObj;
+test('POST /charts/{id}/fork returns 404 when the original chart is not published', async t => {
+    const { Chart } = require('@datawrapper/orm/models');
+
+    let userObj = {};
+    let chart;
     try {
         userObj = await createUser(t.context.server);
         const { session } = userObj;
@@ -98,23 +108,31 @@ test("User can't fork an unpublished visualization", async t => {
             payload: attributes
         });
 
+        chart = createResponse.result;
+
         // fork new chart
         const forkResponse = await t.context.server.inject({
             method: 'POST',
-            url: `/v3/charts/${createResponse.result.id}/fork`,
+            url: `/v3/charts/${chart.id}/fork`,
             headers
         });
 
         t.is(forkResponse.statusCode, 404);
     } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
+        if (chart) {
+            await Chart.destroy({ where: { id: chart.id } });
         }
+        await destroy(Object.values(userObj));
     }
 });
 
-test('User can fork fork-protected chart, attributes match', async t => {
-    let userObj;
+test('POST /charts/{id}/fork forks a fork-protected chart and the attributes match', async t => {
+    const { Chart, ChartPublic } = require('@datawrapper/orm/models');
+
+    let userObj = {};
+    let chart;
+    let publicChart;
+    let forkedChart;
     try {
         userObj = await createUser(t.context.server);
         const { user, session } = userObj;
@@ -153,12 +171,14 @@ test('User can fork fork-protected chart, attributes match', async t => {
             payload: attributes
         });
 
-        t.true(createResponse.result.forkable);
+        chart = createResponse.result;
+
+        t.true(chart.forkable);
 
         // upload some data
         const dataResponse = await server.inject({
             method: 'PUT',
-            url: `/v3/charts/${createResponse.result.id}/data`,
+            url: `/v3/charts/${chart.id}/data`,
             headers,
             payload: 'foo,bar\n12,23'
         });
@@ -166,19 +186,18 @@ test('User can fork fork-protected chart, attributes match', async t => {
         t.is(dataResponse.statusCode, 204);
 
         // create ChartPublic manually since /publish isn't working from tests yes
-        const { ChartPublic } = require('@datawrapper/orm/models');
-        await ChartPublic.create(decamelizeKeys(createResponse.result));
+        publicChart = await ChartPublic.create(decamelizeKeys(createResponse.result));
 
         // fork new chart
         const forkResponse = await server.inject({
             method: 'POST',
-            url: `/v3/charts/${createResponse.result.id}/fork`,
+            url: `/v3/charts/${chart.id}/fork`,
             headers
         });
 
         t.is(forkResponse.statusCode, 201);
 
-        const forkedChart = forkResponse.result;
+        forkedChart = forkResponse.result;
 
         const allMetadata = await server.inject({
             method: 'GET',
@@ -187,7 +206,7 @@ test('User can fork fork-protected chart, attributes match', async t => {
         });
 
         t.is(forkedChart.authorId, user.id);
-        t.is(forkedChart.forkedFrom, createResponse.result.id);
+        t.is(forkedChart.forkedFrom, chart.id);
         t.is(allMetadata.result.externalData, attributes.externalData);
 
         const expectedAttributes = {
@@ -218,14 +237,24 @@ test('User can fork fork-protected chart, attributes match', async t => {
             }
         }
     } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
+        if (forkedChart) {
+            await Chart.destroy({ where: { id: forkedChart.id } });
         }
+        await destroy(publicChart);
+        if (chart) {
+            await Chart.destroy({ where: { id: chart.id } });
+        }
+        await destroy(userObj);
     }
 });
 
-test('User can fork unprotected chart, attributes match', async t => {
-    let userObj;
+test('POST /charts/{id}/fork forks an unprotected chart and the attributes match', async t => {
+    const { Chart, ChartPublic } = require('@datawrapper/orm/models');
+
+    let userObj = {};
+    let chart;
+    let publicChart;
+    let forkedChart;
     try {
         userObj = await createUser(t.context.server);
         const { user, session } = userObj;
@@ -263,32 +292,33 @@ test('User can fork unprotected chart, attributes match', async t => {
             payload: attributes
         });
 
-        t.true(createResponse.result.forkable);
+        chart = createResponse.result;
+
+        t.true(chart.forkable);
 
         // upload some data
         const dataResponse = await server.inject({
             method: 'PUT',
-            url: `/v3/charts/${createResponse.result.id}/data`,
+            url: `/v3/charts/${chart.id}/data`,
             headers,
             payload: 'foo,bar\n12,23'
         });
 
         t.is(dataResponse.statusCode, 204);
 
-        // create ChartPublic manually since /publish isn't working from tests yes
-        const { ChartPublic } = require('@datawrapper/orm/models');
-        await ChartPublic.create(decamelizeKeys(createResponse.result));
+        // create ChartPublic manually since /publish isn't working from tests yet
+        publicChart = await ChartPublic.create(decamelizeKeys(chart));
 
         // fork new chart
         const forkResponse = await server.inject({
             method: 'POST',
-            url: `/v3/charts/${createResponse.result.id}/fork`,
+            url: `/v3/charts/${chart.id}/fork`,
             headers
         });
 
         t.is(forkResponse.statusCode, 201);
 
-        const forkedChart = forkResponse.result;
+        forkedChart = forkResponse.result;
 
         const allMetadata = await server.inject({
             method: 'GET',
@@ -297,7 +327,7 @@ test('User can fork unprotected chart, attributes match', async t => {
         });
 
         t.is(forkedChart.authorId, user.id);
-        t.is(forkedChart.forkedFrom, createResponse.result.id);
+        t.is(forkedChart.forkedFrom, chart.id);
         t.is(allMetadata.result.externalData, attributes.externalData);
 
         const expectedAttributes = {
@@ -328,14 +358,24 @@ test('User can fork unprotected chart, attributes match', async t => {
             }
         }
     } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
+        if (forkedChart) {
+            await Chart.destroy({ where: { id: forkedChart.id } });
         }
+        await destroy(publicChart);
+        if (chart) {
+            await Chart.destroy({ where: { id: chart.id } });
+        }
+        await destroy(Object.values(userObj));
     }
 });
 
-test('User can fork chart, assets match', async t => {
-    let userObj;
+test('POST /charts/{id}/fork forks a chart and the assets match', async t => {
+    const { ChartPublic, Chart } = require('@datawrapper/orm/models');
+
+    let userObj = {};
+    let chart;
+    let publicChart;
+    let forkedChartId;
     try {
         userObj = await createUser(t.context.server);
         const { session } = userObj;
@@ -361,6 +401,8 @@ test('User can fork chart, assets match', async t => {
             }
         });
 
+        chart = await Chart.findByPk(createResponse.result.id);
+
         // write chart data
         const writeData = await server.inject({
             method: 'PUT',
@@ -370,7 +412,7 @@ test('User can fork chart, assets match', async t => {
                 referer: 'http://localhost',
                 'Content-Type': 'text/csv'
             },
-            url: `/v3/charts/${createResponse.result.id}/data`,
+            url: `/v3/charts/${chart.id}/data`,
             payload: csv
         });
 
@@ -385,34 +427,34 @@ test('User can fork chart, assets match', async t => {
                 referer: 'http://localhost',
                 'Content-Type': 'application/json'
             },
-            url: `/v3/charts/${createResponse.result.id}/assets/${createResponse.result.id}.map.json`,
+            url: `/v3/charts/${chart.id}/assets/${chart.id}.map.json`,
             payload: basemap
         });
 
         t.is(writeBasemap.statusCode, 204);
 
-        // create ChartPublic manually since /publish isn't working from tests yes
-        const { ChartPublic, Chart } = require('@datawrapper/orm/models');
-        await ChartPublic.create(decamelizeKeys(createResponse.result));
+        // create ChartPublic manually since /publish isn't working from tests yet
+        publicChart = await ChartPublic.create(decamelizeKeys(createResponse.result));
 
         // also create "public" dataset
         const { events, event } = server.app;
         await events.emit(event.PUT_CHART_ASSET, {
-            chart: await Chart.findByPk(createResponse.result.id),
+            chart,
             data: csv,
-            filename: `${createResponse.result.id}.public.csv`
+            filename: `${chart.id}.public.csv`
         });
 
         // fork new chart
         const forkedChart = await t.context.server.inject({
             method: 'POST',
-            url: `/v3/charts/${createResponse.result.id}/fork`,
+            url: `/v3/charts/${chart.id}/fork`,
             headers: {
                 cookie: `DW-SESSION=${session.id}; crumb=abc`,
                 'X-CSRF-Token': 'abc',
                 referer: 'http://localhost'
             }
         });
+        forkedChartId = forkedChart.result.id;
 
         // compare data
         const forkedData = await t.context.server.inject({
@@ -436,17 +478,87 @@ test('User can fork chart, assets match', async t => {
 
         t.is(forkedBasemap.result, JSON.stringify(basemap));
     } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
+        if (forkedChartId) {
+            await Chart.destroy({ where: { id: forkedChartId } });
         }
+        await destroy(publicChart, chart, Object.values(userObj));
+    }
+});
+
+test('POST /charts/{id}/fork creates a fork when the user is a guest', async t => {
+    let userObj = {};
+    let chart;
+    let fork;
+    try {
+        userObj = await createUser(t.context.server);
+        const session = await createGuestSession(t.context.server);
+        const headers = {
+            cookie: `DW-SESSION=${session}; crumb=abc`,
+            'X-CSRF-Token': 'abc',
+            referer: 'http://localhost'
+        };
+
+        chart = await createPublicChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            forkable: true,
+            is_fork: false
+        });
+
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/fork`,
+            headers
+        });
+
+        t.is(res.statusCode, 201);
+
+        fork = await getChart(res.result.id);
+        t.truthy(fork);
+        t.is(fork.title, 'Chart 1');
+        t.is(fork.is_fork, true);
+        t.is(fork.forked_from, chart.id);
+        t.is(fork.author_id, null);
+        t.is(fork.guest_session, session);
+    } finally {
+        await destroy(fork, chart, Object.values(userObj));
+    }
+});
+
+test('POST /charts/{id}/fork returns 401 for unathorized requests', async t => {
+    let userObj = {};
+    let chart;
+    let fork;
+    try {
+        userObj = await createUser(t.context.server);
+
+        chart = await createPublicChart({
+            title: 'Chart 1',
+            organization_id: null,
+            author_id: userObj.user.id,
+            forkable: true,
+            is_fork: false
+        });
+
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/fork`
+        });
+
+        t.is(res.statusCode, 401);
+    } finally {
+        await destroy(fork, chart, Object.values(userObj));
     }
 });
 
 test('PHP POST /charts/{id}/fork creates a fork', async t => {
     let userObj = {};
+    let chart;
+    let fork;
     try {
         userObj = await createUser(t.context.server, { role: 'editor' });
-        const chart = await createPublicChart({
+        chart = await createPublicChart({
             title: 'Chart 1',
             organization_id: null,
             author_id: userObj.user.id,
@@ -472,21 +584,22 @@ test('PHP POST /charts/{id}/fork creates a fork', async t => {
         t.truthy(json.data);
         t.truthy(json.data.id);
 
-        const fork = await getChart(json.data.id);
+        fork = await getChart(json.data.id);
         t.truthy(fork);
         t.is(fork.title, 'Chart 1');
         t.is(fork.is_fork, true);
         t.is(fork.forked_from, chart.id);
     } finally {
-        await destroy(Object.values(userObj));
+        await destroy(fork, chart, Object.values(userObj));
     }
 });
 
 test('PHP POST /charts/{id}/fork refuses to create a fork when not forkable', async t => {
     let userObj = {};
+    let chart;
     try {
         userObj = await createUser(t.context.server, { role: 'editor' });
-        const chart = await createChart({
+        chart = await createChart({
             title: 'Chart 1',
             organization_id: null,
             author_id: userObj.user.id,
@@ -512,15 +625,16 @@ test('PHP POST /charts/{id}/fork refuses to create a fork when not forkable', as
         t.is(json.code, 'not-allowed');
         t.is(json.message, 'You can not re-fork a forked chart.');
     } finally {
-        await destroy(Object.values(userObj));
+        await destroy(chart, Object.values(userObj));
     }
 });
 
 test('PHP POST /charts/{id}/fork refuses to create a fork of forks', async t => {
     let userObj = {};
+    let chart;
     try {
         userObj = await createUser(t.context.server, { role: 'editor' });
-        const chart = await createChart({
+        chart = await createChart({
             title: 'Chart 1',
             organization_id: null,
             author_id: userObj.user.id,
@@ -546,15 +660,16 @@ test('PHP POST /charts/{id}/fork refuses to create a fork of forks', async t => 
         t.is(json.code, 'not-allowed');
         t.is(json.message, 'You can not re-fork a forked chart.');
     } finally {
-        await destroy(Object.values(userObj));
+        await destroy(chart, Object.values(userObj));
     }
 });
 
 test('PHP POST /charts/{id}/fork refuses to create a fork of unpublished charts', async t => {
     let userObj = {};
+    let chart;
     try {
         userObj = await createUser(t.context.server, { role: 'editor' });
-        const chart = await createChart({
+        chart = await createChart({
             title: 'Chart 1',
             organization_id: null,
             author_id: userObj.user.id,
@@ -580,6 +695,6 @@ test('PHP POST /charts/{id}/fork refuses to create a fork of unpublished charts'
         t.is(json.code, 'not-allowed');
         t.is(json.message, 'You can not re-fork a forked chart.');
     } finally {
-        await destroy(Object.values(userObj));
+        await destroy(chart, Object.values(userObj));
     }
 });

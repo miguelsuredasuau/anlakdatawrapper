@@ -68,6 +68,17 @@ async function setup(options) {
     return server;
 }
 
+async function createGuestSession(server) {
+    const res = await server.inject({
+        method: 'POST',
+        url: '/v3/auth/session'
+    });
+    if (res.statusCode !== 200) {
+        throw new Error('Failed to create guest session');
+    }
+    return res.result['DW-SESSION'];
+}
+
 async function createUser(
     server,
     { role = 'editor', pwd = PASSWORD_HASH, scopes = ALL_SCOPES, language = 'en-US' } = {}
@@ -446,6 +457,7 @@ module.exports = {
     createFolder,
     createFolders,
     createFoldersWithParent,
+    createGuestSession,
     createPlugin,
     createProduct,
     createPublicChart,

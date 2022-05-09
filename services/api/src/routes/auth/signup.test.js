@@ -1,5 +1,11 @@
 const test = require('ava');
-const { createUser, destroy, getCredentials, setup } = require('../../../test/helpers/setup');
+const {
+    createGuestSession,
+    createUser,
+    destroy,
+    getCredentials,
+    setup
+} = require('../../../test/helpers/setup');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
@@ -16,18 +22,10 @@ test.after.always(async t => {
 test('Guest charts are associated after signup', async t => {
     const { Chart, User } = require('@datawrapper/orm/models');
 
-    /* Get guest session */
-    let res = await t.context.server.inject({
-        method: 'POST',
-        url: '/v3/auth/session'
-    });
-
-    t.is(res.statusCode, 200);
-
-    const session = res.result['DW-SESSION'];
+    const session = await createGuestSession(t.context.server);
 
     /* Create chart as guest */
-    res = await t.context.server.inject({
+    const res = await t.context.server.inject({
         method: 'POST',
         url: '/v3/charts',
         headers: {
@@ -47,7 +45,7 @@ test('Guest charts are associated after signup', async t => {
 
     let authorId;
     try {
-        res = await t.context.server.inject({
+        const res = await t.context.server.inject({
             method: 'POST',
             url: '/v3/auth/signup',
             headers: {

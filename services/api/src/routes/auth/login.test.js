@@ -1,5 +1,5 @@
 const test = require('ava');
-const { createUser, destroy, setup } = require('../../../test/helpers/setup');
+const { createGuestSession, createUser, destroy, setup } = require('../../../test/helpers/setup');
 
 function parseSetCookie(string) {
     const cookie = {};
@@ -182,17 +182,10 @@ test('Logout errors with token', async t => {
 test('Guest charts are associated after login', async t => {
     const { Chart } = require('@datawrapper/orm/models');
 
-    /* Get guest session */
-    let res = await t.context.server.inject({
-        method: 'POST',
-        url: '/v3/auth/session'
-    });
-
-    t.is(res.statusCode, 200);
-    const session = res.result['DW-SESSION'];
+    const session = await createGuestSession(t.context.server);
 
     /* Create chart as guest */
-    res = await t.context.server.inject({
+    const res = await t.context.server.inject({
         method: 'POST',
         url: '/v3/charts',
         headers: {
@@ -215,7 +208,7 @@ test('Guest charts are associated after login', async t => {
         userObj = await createUser(t.context.server);
         const { user } = userObj;
 
-        res = await t.context.server.inject({
+        await t.context.server.inject({
             method: 'POST',
             url: '/v3/auth/login',
             headers: {

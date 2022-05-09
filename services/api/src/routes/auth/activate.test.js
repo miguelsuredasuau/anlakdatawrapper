@@ -1,5 +1,6 @@
 const test = require('ava');
 const {
+    createGuestSession,
     createTeamWithUser,
     createUser,
     destroy,
@@ -47,14 +48,7 @@ test('user activation after team invite', async t => {
 
         invitee = await User.findOne({ where: { email: credentials.email } });
 
-        // get guest session
-        res = await t.context.server.inject({
-            method: 'POST',
-            url: '/v3/auth/session'
-        });
-
-        t.is(res.statusCode, 200);
-        const guestSession = res.result['DW-SESSION'];
+        const guestSession = await createGuestSession(t.context.server);
 
         // activate new user using guest session
         res = await t.context.server.inject({
