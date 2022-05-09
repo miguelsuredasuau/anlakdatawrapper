@@ -54,6 +54,9 @@ export function initChartStore(rawChart) {
                     payload: changesToSave
                 });
                 saveError.set(false);
+                if (!Object.keys(unsavedChanges).length) {
+                    hasUnsavedChanges.set(false);
+                }
                 for (const method of onNextSave) {
                     method();
                     onNextSave.delete(method);
