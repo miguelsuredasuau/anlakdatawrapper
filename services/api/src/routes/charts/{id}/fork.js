@@ -17,7 +17,7 @@ module.exports = server => {
         options: {
             tags: ['api'],
             description: 'Fork a chart',
-            notes: 'Requires scope `chart:write`.',
+            notes: 'This creates an editable copy of a reusable visualization from the [Datawrapper River](https://river.datawrapper.de/). Requires scope `chart:write`.',
             auth: {
                 access: { scope: ['chart:write'] }
             },

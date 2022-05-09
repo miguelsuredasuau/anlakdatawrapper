@@ -194,7 +194,8 @@ module.exports = async server => {
         path: '/token-scopes',
         options: {
             tags: ['api'],
-            description: 'Get list of valid token scopes.  Requires scope `auth:read`.',
+            description: 'Get list of valid token scopes.',
+            notes: 'Requires scope `auth:read`.',
             auth: {
                 access: { scope: ['auth:read'] }
             }

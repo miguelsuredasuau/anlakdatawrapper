@@ -114,8 +114,8 @@ module.exports = {
             path: '/',
             options: {
                 tags: ['api'],
-                description:
-                    'Update chart. Allows for partial metadata updates (JSON merge patch).  Requires scope `chart:write`.',
+                description: 'Update specific chart properties.',
+                notes: 'Allows for partial metadata updates (via JSON merge patch). Requires scope `chart:write`.',
                 auth: {
                     strategy: 'guest',
                     access: { scope: ['chart:write'] }
@@ -140,8 +140,8 @@ module.exports = {
             path: '/',
             options: {
                 tags: ['api'],
-                description:
-                    'Update chart. Replaces the entire metadata object.  Requires scope `chart:write`.',
+                description: 'Update all chart properties',
+                notes: 'Replaces the entire metadata object. Requires scope `chart:write`.',
                 auth: {
                     strategy: 'guest',
                     access: { scope: ['chart:write'] }

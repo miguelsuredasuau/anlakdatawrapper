@@ -9,9 +9,8 @@ module.exports = server => {
         path: '/unpublish',
         options: {
             tags: ['api'],
-            description:
-                'Unpublish a previously published visualization. Will remove all public files, including the embeds and published images.',
-            notes: 'Requires scope `chart:write`.',
+            description: 'Unpublish a published visualization',
+            notes: 'This will remove all public files, including the embeds and published images. Requires scope `chart:write`.',
             auth: {
                 access: { scope: ['chart:write'] }
             },
