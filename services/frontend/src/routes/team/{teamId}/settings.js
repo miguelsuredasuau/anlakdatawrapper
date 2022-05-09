@@ -201,7 +201,8 @@ module.exports = {
                     const { teamId } = params;
                     const isAdmin = auth.artifacts.role === 'admin';
 
-                    if (!isAdmin && !auth.artifacts.teams.find(t => t.id === params.teamId)) {
+                    let team = auth.artifacts.teams.find(t => t.id === params.teamId);
+                    if (!isAdmin && (!team || team.user_team.team_role === 'member')) {
                         throw Boom.notFound();
                     }
 
@@ -210,9 +211,9 @@ module.exports = {
                     const config = server.methods.config();
                     const db = server.methods.getDB();
 
-                    const team = await Team.findByPk(teamId);
-
-                    if (!team) throw Boom.notFound();
+                    // fetch team from DB as auth.artifacts.teams[]
+                    // doesn't include team.settings
+                    team = await Team.findByPk(params.teamId);
 
                     if (!team.default_theme) team.default_theme = getSystemDefaultTheme(config);
 
