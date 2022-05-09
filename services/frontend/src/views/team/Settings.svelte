@@ -8,6 +8,7 @@
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import ViewComponent from '_partials/ViewComponent.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
+    import cloneDeep from 'lodash/cloneDeep';
     import debounce from 'lodash/debounce';
     import isEqual from 'lodash/isEqual';
 
@@ -59,7 +60,7 @@
             team.name = _team.name;
         }
         if (changed.settings) {
-            team.settings = settings;
+            team.settings = cloneDeep(settings);
         }
         if (changed.defaultTheme) {
             team.default_theme = _team.default_theme;
