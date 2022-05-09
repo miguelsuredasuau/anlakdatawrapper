@@ -60,7 +60,7 @@
     });
 </script>
 
-<div class="container">
+<div class="container edit-publish-step">
     <div class="columns">
         <div class="column is-5 pt-0">
             <Svelte2Wrapper

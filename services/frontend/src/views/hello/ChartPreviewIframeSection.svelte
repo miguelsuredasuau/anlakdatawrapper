@@ -11,6 +11,7 @@
     let width = 400;
     let height = 450;
     let padding = 10;
+    let scale = 1;
     let header = 'full';
 
     const headerOptions = [
@@ -29,6 +30,7 @@
             border: padding,
             width,
             height,
+            scale,
             src: `/preview/${$chart.id}?${header === 'plain' ? 'plain=1' : ''}`
         });
     }
@@ -41,7 +43,7 @@
     <h3 id="preview" class="title is-3">ChartIframePreviewDisplay</h3>
     <div class="columns">
         <div class="column is-two-thirds">
-            <ChartPreviewIframeDisplay bind:this={preview} {chart} {theme} />
+            <ChartPreviewIframeDisplay sticky={false} bind:this={preview} {chart} {theme} />
         </div>
 
         <div class="column">
@@ -69,6 +71,10 @@
             <FormField {__} label="Padding">
                 <input type="range" min="0" max="40" bind:value={padding} />
                 {padding}
+            </FormField>
+            <FormField {__} label="Scale">
+                <input type="range" min="1" max="4" step="0.1" bind:value={scale} />
+                {scale}x
             </FormField>
             <FormField {__} label="Header">
                 <RadioInput bind:value={header} options={headerOptions} />

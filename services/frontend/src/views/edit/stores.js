@@ -61,6 +61,9 @@ export function initChartStore(rawChart) {
                     method();
                     onNextSave.delete(method);
                 }
+                if (!Object.keys(unsavedChanges).length) {
+                    hasUnsavedChanges.set(false);
+                }
             } catch (err) {
                 // restore unsaved changes that failed to save
                 unsavedChanges = assign(changesToSave, unsavedChanges);
