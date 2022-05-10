@@ -83,6 +83,12 @@ module.exports = {
                     async data({ request, chart }) {
                         // load theme
                         const theme = await Theme.findByPk(chart.theme);
+
+                        const extendedTheme = {
+                            ...theme.toJSON(),
+                            data: await theme.getMergedData()
+                        };
+
                         const { svelte2: afterEmbed } = await server.methods.getCustomData(
                             'edit/publish/afterEmbed',
                             {
@@ -110,11 +116,11 @@ module.exports = {
                         const chartActions = await server.methods.getChartActions({
                             request,
                             chart,
-                            theme
+                            theme: extendedTheme
                         });
 
                         return {
-                            theme: theme.toJSON(),
+                            theme: extendedTheme,
                             afterEmbed,
                             guestAboveInvite,
                             guestBelowInvite,
