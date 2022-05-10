@@ -2,6 +2,7 @@ const ApiEventEmitter = require('@datawrapper/service-utils/eventEmitter');
 
 const eventList = {
     CHART_EXPORT: 'CHART_EXPORT',
+    CHART_EXPORT_STREAM: 'CHART_EXPORT_STREAM',
     GET_CHART_ASSET: 'GET_CHART_ASSET',
     PUT_CHART_ASSET: 'PUT_CHART_ASSET',
     CHART_COPY: 'CHART_COPY',
