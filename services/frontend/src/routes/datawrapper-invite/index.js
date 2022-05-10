@@ -1,6 +1,7 @@
-const { User, Team } = require('@datawrapper/orm/models');
-const Joi = require('joi');
 const Boom = require('@hapi/boom');
+const Joi = require('joi');
+const escapeHtml = require('@datawrapper/shared/escapeHtml.cjs');
+const { User, Team } = require('@datawrapper/orm/models');
 
 module.exports = {
     name: 'datawrapper-invite',
@@ -59,7 +60,10 @@ module.exports = {
                             token: inviteToken,
                             team: inviteTeam ? inviteTeam.organization_id : false,
                             headlineText: inviteTeam
-                                ? __('team / invite / headline').replace('%s', inviteTeam.name)
+                                ? __('team / invite / headline').replace(
+                                      '%s',
+                                      escapeHtml(inviteTeam.name)
+                                  )
                                 : __('team / invite / headline-no-team'),
                             introText: __(`team / invite / intro${!inviteTeam ? '-no-team' : ''}`),
                             buttonText: __(

@@ -15,6 +15,7 @@
     } from './stores';
     import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
     import dwChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
+    import escapeHtml from '@datawrapper/shared/escapeHtml.cjs';
 
     export let workflow;
     export let __;
@@ -123,7 +124,7 @@
         breadcrumbPath.length < 6
             ? breadcrumbPath
             : [...breadcrumbPath.slice(0, 3), { title: '...' }, ...breadcrumbPath.slice(-1)]
-    ).map(folder => ({ ...folder, title: truncate(folder.title) }));
+    ).map(folder => ({ ...folder, title: truncate(escapeHtml(folder.title)) }));
 
     async function navigateTo(step) {
         const stepUrl = `${urlPrefix}/${$chart.id}/${step.id}`;
