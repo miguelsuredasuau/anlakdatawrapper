@@ -203,8 +203,15 @@
 
     import { __ } from '@datawrapper/shared/l10n';
     import clone from '@datawrapper/shared/clone';
+    import get from '@datawrapper/shared/get';
     import { getComputedColumns } from './shared';
     import { columnFormatter } from '@datawrapper/shared/columnFormatter';
+
+    const syncKeys = {
+        transpose: 'metadata.data.transpose',
+        firstRowIsHeader: 'metadata.data.horizontal-header',
+        $language: 'language'
+    };
 
     export default {
         components: {
@@ -377,6 +384,20 @@
         },
         oncreate() {
             const { dw_chart } = this.store.get();
+
+            // initialize app data from existing metadata
+            const initialState = Object.entries(syncKeys).reduce(
+                (toSet, [svelteKey, metadataKey]) => {
+                    const metadataValue = get(dw_chart.get(), metadataKey);
+                    if (metadataValue !== null) toSet[svelteKey] = metadataValue;
+                    return toSet;
+                },
+                {}
+            );
+
+            this.set(initialState);
+            this.refs.hot.update();
+
             if (dw_chart.get('metadata.data.changes', []).length > 1) {
                 this.set({ hasChanges: true });
             }
@@ -398,15 +419,9 @@
             if (changed.activeColumn && !current.activeColumn) {
                 this.set({ forceColumnFormat: false });
             }
-            const sync = {
-                transpose: 'metadata.data.transpose',
-                firstRowIsHeader: 'metadata.data.horizontal-header',
-                $language: 'language'
-            };
-            Object.keys(sync).forEach(svelteKey => {
+            Object.entries(syncKeys).forEach(([svelteKey, metadataKey]) => {
                 if (changed[svelteKey]) {
                     const svelteValue = current[svelteKey];
-                    const metadataKey = sync[svelteKey];
                     const { dw_chart } = this.store.get();
                     if (svelteKey === '$language') {
                         if (!svelteValue) return;
@@ -415,7 +430,7 @@
                             this.refs.hot.render();
                         });
                     } else {
-                        dw_chart.set(`${metadataKey}`, svelteValue);
+                        dw_chart.set(metadataKey, svelteValue);
                     }
                 }
             });
