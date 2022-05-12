@@ -578,7 +578,7 @@
   "Select annotation type": "Anmerkungstyp wählen",
   "annotate / chart description": "Titel / Beschreibung / Quelle",
   "visualize / annotate / byline": "Verfasserzeile",
-  "visualize / annotate / byline / placeholder": "Wer hat das Diagramm erstellt?",
+  "visualize / annotate / byline / placeholder": "Wer hat das Diagramm erstellt?‎",
   "colorblind / caption": "Farbblind-test",
   "colorblind / info / deut": "<b>Deuteranopie</b> oder <i>Grünblindheit</i> ist eine Form von Farbfehlsichtigkeit (betrifft etwa 1% von Männern)",
   "colorblind / info / prot": "<b>Protanopie</b> oder <i>Rotblindheit</i> ist eine Form von Farbfehlsichtigkeit (betrifft etwa 1% von Männern)",
@@ -600,7 +600,7 @@
   "Description": "Beschreibung",
   "Notes": "Hinweise",
   "Source name": "Datenquelle",
-  "name of the organisation": "Woher sind die Daten?",
+  "name of the organisation": "Woher sind die Daten?‎",
   "Source URL": "Link zur Datenquelle",
   "URL of the dataset": "https://...",
   "Refine the chart": "Refine the chart",
@@ -1143,5 +1143,7 @@
   "teams / editor / cms-mode / show-editor-nav": "",
   "teams / editor / cms-mode / show-editor-nav / help": "",
   "dashboard / hiring / title": "",
-  "dashboard / hiring / intro": ""
+  "dashboard / hiring / intro": "",
+  "describe / table / warning": "%num% Warnung",
+  "describe / table / warnings": "%num% Warnungen"
 }

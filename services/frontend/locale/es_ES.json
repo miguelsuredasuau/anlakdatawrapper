@@ -578,7 +578,7 @@
   "Select annotation type": "Seleccionar tipo de anotación",
   "annotate / chart description": "Título / Descripción / Fuente",
   "visualize / annotate / byline": "Línea de autor",
-  "visualize / annotate / byline / placeholder": "¿Quién creó el gráfico?",
+  "visualize / annotate / byline / placeholder": "‎¿Quién creó el gráfico?‎",
   "colorblind / caption": "Revisión para daltónicos",
   "colorblind / info / deut": "<b>Deuteranopia</b>: una forma de ceguera a los colores rojo y verde (1 % de los hombres).",
   "colorblind / info / prot": "<b>Protanopia</b>: una forma de ceguera a los colores rojo y verde (1 % de los hombres).",
@@ -600,7 +600,7 @@
   "Description": "Descripción",
   "Notes": "Notas",
   "Source name": "Fuente de datos",
-  "name of the organisation": "¿Quién publicó los datos?",
+  "name of the organisation": "‎¿Quién publicó los datos?‎",
   "Source URL": "Vincular a fuente de datos",
   "URL of the dataset": "https://...",
   "Refine the chart": "Mejorar el gráfico",
@@ -1143,5 +1143,7 @@
   "teams / editor / cms-mode / show-editor-nav": "",
   "teams / editor / cms-mode / show-editor-nav / help": "",
   "dashboard / hiring / title": "",
-  "dashboard / hiring / intro": ""
+  "dashboard / hiring / intro": "",
+  "describe / table / warning": "",
+  "describe / table / warnings": ""
 }

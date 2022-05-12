@@ -578,7 +578,7 @@
   "Select annotation type": "Sélectionnez un type d’annotation",
   "annotate / chart description": "Titre / Description / Source",
   "visualize / annotate / byline": "Signature",
-  "visualize / annotate / byline / placeholder": "Qui a créé le graphique ?",
+  "visualize / annotate / byline / placeholder": "Qui a créé le graphique ?‎",
   "colorblind / caption": "Test pour personnes daltoniennes",
   "colorblind / info / deut": "La <b>deutéranopie</b> est une forme de daltonisme rouge/vert (1 % des hommes).",
   "colorblind / info / prot": "La <b>protanopie</b> est une forme de daltonisme rouge/vert (1 % des hommes).",
@@ -1143,5 +1143,7 @@
   "teams / editor / cms-mode / show-editor-nav": "",
   "teams / editor / cms-mode / show-editor-nav / help": "",
   "dashboard / hiring / title": "",
-  "dashboard / hiring / intro": ""
+  "dashboard / hiring / intro": "",
+  "describe / table / warning": "",
+  "describe / table / warnings": ""
 }

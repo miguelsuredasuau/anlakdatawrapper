@@ -578,7 +578,7 @@
   "Select annotation type": "选择注释类型",
   "annotate / chart description": "标题/说明/源",
   "visualize / annotate / byline": "署名行",
-  "visualize / annotate / byline / placeholder": "谁创建了图表？",
+  "visualize / annotate / byline / placeholder": "谁创建了图表？‎",
   "colorblind / caption": "色盲检查",
   "colorblind / info / deut": "<b>绿色盲</b>是红绿色盲的一种形式（占男性的1%）。",
   "colorblind / info / prot": "<b>红色盲</b>是红绿色盲的一种形式（占男性的1%）。",
@@ -600,7 +600,7 @@
   "Description": "说明",
   "Notes": "备注",
   "Source name": "数据源",
-  "name of the organisation": "谁发布了数据？",
+  "name of the organisation": "谁发布了数据？‎",
   "Source URL": "链接到数据源",
   "URL of the dataset": "https://……",
   "Refine the chart": "优化图表",
@@ -1136,5 +1136,14 @@
   "archive / my-archive": "",
   "edit / unsaved-changed-warning": "",
   "edit / storing-changes": "",
-  "edit / upload / success-import": ""
+  "edit / upload / success-import": "",
+  "edit / storing-changes / error": "",
+  "account / activate / success / no-email": "",
+  "teams / editor / cms-mode": "",
+  "teams / editor / cms-mode / show-editor-nav": "",
+  "teams / editor / cms-mode / show-editor-nav / help": "",
+  "dashboard / hiring / title": "",
+  "dashboard / hiring / intro": "",
+  "describe / table / warning": "",
+  "describe / table / warnings": ""
 }

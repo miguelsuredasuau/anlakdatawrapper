@@ -578,7 +578,7 @@
   "Select annotation type": "Select annotation type",
   "annotate / chart description": "Title / Description / Source",
   "visualize / annotate / byline": "Byline",
-  "visualize / annotate / byline / placeholder": "Who created the chart?",
+  "visualize / annotate / byline / placeholder": "Who created the chart?‎",
   "colorblind / caption": "Colorblind check",
   "colorblind / info / deut": "<b>Deuteranopia</b> is a form of red-green blindness (1% of males).",
   "colorblind / info / prot": "<b>Protanopia</b> is a form of red-green blindness (1% of males).",
@@ -600,7 +600,7 @@
   "Description": "Description",
   "Notes": "Notes",
   "Source name": "Data source",
-  "name of the organisation": "Who published the data?",
+  "name of the organisation": "Who published the data?‎",
   "Source URL": "Link to data source",
   "URL of the dataset": "https://...",
   "Refine the chart": "Refine the chart",
@@ -1143,5 +1143,7 @@
   "teams / editor / cms-mode / show-editor-nav": "Show editor nav in CMS mode",
   "teams / editor / cms-mode / show-editor-nav / help": "The editor step and folder navigation is hidden when Datawrapper is opened inside an iframe, unless this setting is activated.",
   "dashboard / hiring / title": "We're Hiring!",
-  "dashboard / hiring / intro": "Join our team remotely or in Berlin for one of the following positions:"
+  "dashboard / hiring / intro": "Join our team remotely or in Berlin for one of the following positions:",
+  "describe / table / warning": "%num% warning",
+  "describe / table / warnings": "%num% warnings"
 }

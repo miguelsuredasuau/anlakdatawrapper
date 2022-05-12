@@ -578,7 +578,7 @@
   "Select annotation type": "Seleziona tipo di annotazione",
   "annotate / chart description": "Titolo/Descrizione/Fonte",
   "visualize / annotate / byline": "Intestazione con il nome dell’autore",
-  "visualize / annotate / byline / placeholder": "Chi ha creato il grafico?",
+  "visualize / annotate / byline / placeholder": "Chi ha creato il grafico?‎",
   "colorblind / caption": "Test daltonismo",
   "colorblind / info / deut": "La <b>deuteranopia</b> è una forma di cecità al colore verde (colpisce l’1% degli uomini).",
   "colorblind / info / prot": "La <b>protanopia</b> è una forma di cecità al colore rosso (colpisce l’1% degli uomini).",
@@ -600,7 +600,7 @@
   "Description": "Descrizione",
   "Notes": "Note",
   "Source name": "Fonte dei dati",
-  "name of the organisation": "Chi ha pubblicato i dati?",
+  "name of the organisation": "Chi ha pubblicato i dati?‎",
   "Source URL": "Link alla fonte dei dati",
   "URL of the dataset": "https://...",
   "Refine the chart": "Perfeziona il grafico",
@@ -1143,5 +1143,7 @@
   "teams / editor / cms-mode / show-editor-nav": "",
   "teams / editor / cms-mode / show-editor-nav / help": "",
   "dashboard / hiring / title": "",
-  "dashboard / hiring / intro": ""
+  "dashboard / hiring / intro": "",
+  "describe / table / warning": "",
+  "describe / table / warnings": ""
 }
