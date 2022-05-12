@@ -49,6 +49,7 @@
         "hapi-pino": "^8.3.0",
         "hapi-plugin-websocket": "^2.3.5",
         "hapi-sentry": "^3.2.0",
+        "ioredis": "^5.0.4",
         "jsesc": "^3.0.1",
         "jsonlint": "^1.6.3",
         "less": "^3.13.1",

@@ -5,6 +5,7 @@ const Pino = require('hapi-pino');
 const ORM = require('@datawrapper/orm');
 const fs = require('fs-extra');
 const Pug = require('pug');
+const Redis = require('ioredis');
 const {
     validateAPI,
     validateORM,
@@ -42,13 +43,12 @@ const start = async () => {
     validateFrontend(config.frontend);
     validatePlugins(config.plugins);
 
-    let useRedis = !!config.redis;
-
-    if (useRedis) {
+    let redis;
+    if (config.redis) {
         try {
             validateRedis(config.redis);
+            redis = new Redis(config.redis);
         } catch (error) {
-            useRedis = false;
             console.warn('[Cache] Invalid Redis configuration, falling back to in memory cache.');
         }
     }
@@ -59,11 +59,11 @@ const start = async () => {
         address: '0.0.0.0',
         tls: false,
         cache: {
-            provider: useRedis
+            provider: redis
                 ? {
                       constructor: require('@hapi/catbox-redis'),
                       options: {
-                          ...config.redis,
+                          client: redis,
                           partition: 'api'
                       }
                   }
@@ -157,6 +157,7 @@ const start = async () => {
     server.method('isDevMode', () => process.env.DW_DEV_MODE);
     server.method('registerVisualization', registerVisualizations(server));
     server.method('createAPI', createAPI(server));
+    server.method('getRedis', () => redis);
 
     await server.register(require('./utils/view-components'));
     await server.register(require('./utils/header-links'));

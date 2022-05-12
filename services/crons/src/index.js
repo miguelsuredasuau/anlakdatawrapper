@@ -6,6 +6,7 @@ const Catbox = require('@hapi/catbox');
 const CatboxRedis = require('@hapi/catbox-redis');
 const CatboxMemory = require('@hapi/catbox-memory');
 const ORM = require('@datawrapper/orm');
+const Redis = require('ioredis');
 
 // initialize database
 const config = require('./config');
@@ -16,24 +17,26 @@ module.exports = async function () {
     await ORM.init(config);
     await ORM.registerPlugins(logger);
 
-    const models = require('@datawrapper/orm/models');
-    const sequelize = require('@datawrapper/orm').db;
+    // register api plugins with core db
+    require('@datawrapper/orm/models/Plugin').register(
+        'datawrapper-api',
+        Object.keys(config.plugins)
+    );
 
-    let useRedis = !!config.redis;
-    let cacheConnection = null;
-
-    if (useRedis) {
+    let redis;
+    if (config.redis) {
         try {
             validateRedis(config.redis);
+            redis = new Redis(config.redis);
         } catch (error) {
-            useRedis = false;
             console.warn('[Cache] Invalid Redis configuration, falling back to in memory cache.');
         }
     }
 
-    if (useRedis) {
+    let cacheConnection = null;
+    if (redis) {
         cacheConnection = new Catbox.Client(CatboxRedis, {
-            ...config.redis,
+            client: redis,
             partition: 'api'
         });
     } else {
@@ -43,17 +46,6 @@ module.exports = async function () {
     }
 
     await cacheConnection.start();
-
-    const cache = new Catbox.Policy(
-        {
-            expiresIn: 86400000 * 365 /* 1 year */
-        },
-        cacheConnection,
-        'external-data'
-    );
-
-    // register api plugins with core db
-    models.Plugin.register('datawrapper-crons', Object.keys(config.plugins));
 
     logger.info('Initializing crons...');
 
@@ -137,7 +129,13 @@ module.exports = async function () {
 
     function registerPlugin({ name, pluginPath }) {
         // load the plugin
-        const plugin = require(pluginPath);
+        let plugin;
+        try {
+            plugin = require(pluginPath);
+        } catch (e) {
+            logger.error(`error while importing cron plugin ${name}: ${e}`);
+            return;
+        }
 
         // call the hook
         if (typeof plugin.register === 'function') {
@@ -146,7 +144,7 @@ module.exports = async function () {
                 // load plugin default config
                 pluginConfig = require(`${pluginRoot}/${name}/config`);
             } catch (e) {
-                // logger.('no default config');
+                // no default config, do nothing
             }
 
             // extend default plugin cfg with our custom config
@@ -155,10 +153,12 @@ module.exports = async function () {
             logger.info(`hooked in plugin ${name}...`);
             plugin.register({
                 cron,
-                models,
-                sequelize,
                 logger,
-                cache,
+                db: ORM.db,
+                createCache(options, segment) {
+                    return new Catbox.Policy(options, cacheConnection, segment);
+                },
+                redis,
                 config: {
                     global: config,
                     plugin: pluginConfig

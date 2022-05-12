@@ -30,6 +30,7 @@
         "@hapi/catbox-redis": "^6.0.2",
         "chalk": "^4.1.2",
         "d3-array": "^2.0.3",
+        "ioredis": "^5.0.4",
         "lodash": "^4.17.21",
         "lodash.shuffle": "^4.2.0",
         "mysql2": "^2.3.0",
