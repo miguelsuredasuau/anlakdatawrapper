@@ -39,6 +39,7 @@
                         {visArchive}
                         {namespace}
                         on:change="loadVis(event)"
+                        on:transpose="transpose()"
                     />
                 </div>
                 {/if}
@@ -241,6 +242,11 @@
                     stickyTop: useSticky && top < 0 && bottom >= canvasHeight,
                     stickyBottom: useSticky && bottom < canvasHeight
                 });
+            },
+            transpose() {
+                const { metadata, type } = this.store.get();
+                this.store.setMetadata('data.transpose', !metadata.data.transpose);
+                this.loadControls(type); // reload controls to make sure that axes etc. are properly initialized
             },
             loadVis(type) {
                 this.set({ visLoading: true });
