@@ -35,11 +35,9 @@ html(lang=CHART_LANGUAGE)
           if (isDark) {
             document.getElementById('css-light').setAttribute('media', '--disabled--');
             document.getElementById('css-dark').removeAttribute('media');
-            document.head.querySelector('meta[name="color-scheme"]').content = 'dark';
           } else {
             document.getElementById('css-dark').setAttribute('media', '--disabled--');
             document.getElementById('css-light').removeAttribute('media');
-            document.head.querySelector('meta[name="color-scheme"]').content = 'light';
           }
           removeHideStyles();
         }
