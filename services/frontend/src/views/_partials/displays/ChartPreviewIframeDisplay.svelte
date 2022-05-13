@@ -131,6 +131,7 @@
         top: 85px;
     }
     .iframe-border {
+        box-sizing: content-box;
         padding: 10px;
         margin: 0 auto;
         border: 1px solid #ddd;
