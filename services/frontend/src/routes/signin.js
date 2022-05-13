@@ -4,6 +4,9 @@ const { User, Team, UserTeam } = require('@datawrapper/orm/models');
 const { Issuer } = require('openid-client');
 const { generators } = require('openid-client');
 const get = require('lodash/get');
+const Joi = require('joi');
+const { db } = require('@datawrapper/orm');
+const { Op } = db;
 
 const { login, getStateOpts } = require('@datawrapper/service-utils/auth')(
     require('@datawrapper/orm/models')
@@ -241,6 +244,10 @@ module.exports = {
                         throw Boom.badRequest('Could not parse provided state JSON');
                     }
 
+                    if (state.token && typeof state.token !== 'string') {
+                        throw Boom.badRequest('state token must be a string');
+                    }
+
                     if (state.token) {
                         user = await User.findOne({ where: { activate_token: state.token } });
                         if (!user) throw Boom.badRequest('Could not find provided token');
@@ -266,7 +273,28 @@ module.exports = {
                     const profile = res.claims();
                     const oAuthSignin = `sso::${state.team}/${profile.sub}`;
 
+                    if (profile.email) {
+                        if (Joi.string().email().validate(profile.email).error) {
+                            throw Boom.badRequest('Invalid email provided by identity provider.');
+                        }
+                    }
+
                     if (state.token) {
+                        const existingUser = await User.findOne({
+                            where: {
+                                activate_token: {
+                                    [Op.ne]: state.token
+                                },
+                                email: profile.email
+                            }
+                        });
+
+                        if (existingUser) {
+                            throw Boom.badRequest(
+                                'A user with the email address provided by the identity provider already exists.'
+                            );
+                        }
+
                         user.oauth_signin = oAuthSignin;
                         user.email = profile.email || '';
                         user.role = 'editor';
