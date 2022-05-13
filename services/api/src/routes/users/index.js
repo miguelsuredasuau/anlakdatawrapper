@@ -139,7 +139,6 @@ async function getAllUsers(request) {
     const users = await User.findAll(options);
     const keyedUsers = keyBy(users, 'id');
 
-    userList.total = count;
     userList.list = rows
         .filter(row => !!keyedUsers[row.id])
         .map(row => {
@@ -158,8 +157,9 @@ async function getAllUsers(request) {
                 url: `${url.pathname}/${data.id}`
             });
         });
+    userList.total = isAdmin ? count : userList.list.length;
 
-    if (query.limit + query.offset < count) {
+    if (query.limit + query.offset < userList.total) {
         const nextParams = new URLSearchParams({
             ...query,
             offset: query.limit + query.offset,

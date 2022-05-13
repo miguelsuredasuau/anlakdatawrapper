@@ -364,3 +364,33 @@ test('It should be possible to resend the activation link up to two times', asyn
         }
     }
 });
+
+test('Users endpoint returns user count for admins', async t => {
+    const { session } = t.context.adminObj;
+
+    const res = await t.context.server.inject({
+        method: 'GET',
+        url: `/v3/users`,
+        headers: {
+            cookie: `DW-SESSION=${session.id}`
+        }
+    });
+
+    t.is(res.statusCode, 200);
+    t.true(res.result.total > 1);
+});
+
+test('Users endpoint does not return user count for non-admins', async t => {
+    const { session } = t.context.userObj;
+
+    const res = await t.context.server.inject({
+        method: 'GET',
+        url: `/v3/users`,
+        headers: {
+            cookie: `DW-SESSION=${session.id}`
+        }
+    });
+
+    t.is(res.statusCode, 200);
+    t.true(res.result.total <= 1);
+});
