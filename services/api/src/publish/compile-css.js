@@ -124,6 +124,7 @@ function createFontEntries(fonts, themeData) {
     }
 
     function createFontCSS(font, fileFormats, props = {}) {
+        const sanitizedFont = font.replace(/'/g, "\\'");
         props = { display: 'auto', ...props };
         const fmtMap = { ttf: 'truetype', otf: 'opentype' };
 
@@ -131,7 +132,9 @@ function createFontEntries(fonts, themeData) {
             .filter(([format]) => !['eot', 'woff2'].includes(format))
             .map(([f, v]) => {
                 const fmt = fmtMap[f] || f;
-                return `url('${processUrl(v)}${f === 'svg' ? `#${font}` : ''}') format('${fmt}')`;
+                return `url('${processUrl(v)}${
+                    f === 'svg' ? `#${sanitizedFont}` : ''
+                }') format('${fmt}')`;
             });
 
         const propsCSS = ['weight', 'style', 'display']
@@ -139,7 +142,7 @@ function createFontEntries(fonts, themeData) {
             .map(prop => `font-${prop}: ${props[prop]};`);
 
         return `@font-face {
-    font-family: '${font}';
+    font-family: '${sanitizedFont}';
     ${propsCSS.join('\n\t')}
     src: ${fontUrls.join(',\n\t\t ')};
 }`;
