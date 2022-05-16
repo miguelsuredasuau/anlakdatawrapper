@@ -12,7 +12,7 @@ module.exports = {
     register: async server => {
         const config = server.methods.config();
 
-        server.methods.prepareView('archive/Index.svelte');
+        server.methods.registerView('archive/Index.svelte');
 
         const Folder = server.methods.getModel('folder');
         const Team = server.methods.getModel('team');

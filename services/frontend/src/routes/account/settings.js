@@ -150,7 +150,7 @@ module.exports = {
             );
         });
 
-        server.methods.prepareView('account/Settings.svelte');
+        server.methods.registerView('account/Settings.svelte');
 
         server.route({
             method: 'GET',

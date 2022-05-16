@@ -143,14 +143,15 @@ module.exports = {
                     if (relPath.startsWith('..')) {
                         return Boom.forbidden();
                     }
-                    const view = await server.methods.getView(page);
-                    const { csr, csrMap, error } = view;
-                    if (error) {
-                        return Boom.notImplemented(error.message);
+                    let view;
+                    try {
+                        view = await server.methods.getView(page);
+                    } catch (e) {
+                        return Boom.notFound();
                     }
                     const code = isJSMap
-                        ? csrMap
-                        : csr.replace(
+                        ? view.csrMap
+                        : view.csr.replace(
                               /\/\/# sourceMappingURL=.*\.js\.map/,
                               `//# sourceMappingURL=/lib/csr/${page}.js.map`
                           );

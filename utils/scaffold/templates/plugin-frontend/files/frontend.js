@@ -15,6 +15,6 @@ module.exports = {
         });
 
         // pre-compile Svelte view on frontend server statup
-        server.methods.prepareView('plugins/my-new-plugin/HelloWorld.svelte');
+        server.methods.registerView('plugins/my-new-plugin/HelloWorld.svelte');
     }
 };

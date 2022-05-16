@@ -11,7 +11,7 @@ module.exports = {
     name: 'routes/dashboard',
     version: '1.0.0',
     register: async server => {
-        server.methods.prepareView('dashboard/Index.svelte');
+        server.methods.registerView('dashboard/Index.svelte');
         const config = server.methods.config('frontend');
 
         const sidebarBoxFunctions = [];

@@ -17,15 +17,7 @@ const { requireConfig } = require('@datawrapper/service-utils/findConfig');
 const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
 const config = requireConfig();
 const path = require('path');
-const { clearFileCache } = require('./utils/svelte-view/cache');
 const { createAPI, waitForAPI } = require('./utils/create-api');
-const {
-    SvelteView,
-    getView,
-    prepareView,
-    prepareAllViews,
-    wsClients
-} = require('./utils/svelte-view');
 const { FrontendEventEmitter, eventList } = require('./utils/events');
 
 const {
@@ -34,8 +26,6 @@ const {
     getTranslate,
     getUserLanguage
 } = require('@datawrapper/service-utils/l10n');
-
-const PREPARE_VIEWS = process.argv.includes('--prepare-views');
 
 const start = async () => {
     validateAPI(config.api);
@@ -78,33 +68,6 @@ const start = async () => {
     });
 
     if (process.env.DW_DEV_MODE) {
-        const HAPIWebSocket = require('hapi-plugin-websocket');
-        await server.register(HAPIWebSocket);
-
-        server.route({
-            method: 'POST',
-            path: '/ws',
-            config: {
-                plugins: {
-                    websocket: {
-                        initially: true,
-                        only: true,
-                        connect({ ws }) {
-                            server.logger.info('new websocket client connected\n');
-                            wsClients.add(ws);
-                        },
-                        disconnect({ ws }) {
-                            server.logger.info('websocket client disconnected\n');
-                            wsClients.delete(ws);
-                        }
-                    }
-                }
-            },
-            handler: () => {
-                return {};
-            }
-        });
-
         await server.register({
             plugin: require('hapi-dev-errors'),
             options: {
@@ -159,7 +122,6 @@ const start = async () => {
     server.method('createAPI', createAPI(server));
     server.method('getRedis', () => redis);
 
-    await server.register(require('./utils/view-components'));
     await server.register(require('./utils/header-links'));
     await server.register(require('./utils/settings-pages'));
     await server.register(require('./utils/demo-datasets'));
@@ -175,24 +137,22 @@ const start = async () => {
         await fs.readFile(path.join(__dirname, '..', '.githead'), 'utf-8')
     ).trim();
 
-    SvelteView.init(server);
+    await server.register(require('./utils/svelte-view/index'));
 
     server.views({
         engines: {
             pug: Pug,
-            svelte: SvelteView
+            svelte: server.app.SvelteView
         },
         relativeTo: __dirname,
         compileOptions: {
             basedir: path.join(__dirname, 'views')
         },
         path: 'views',
-        context: SvelteView.context,
+        context: server.app.SvelteView.context,
         isCached: !process.env.DW_DEV_MODE
     });
 
-    server.method('getView', getView);
-    server.method('prepareView', prepareView);
     server.method('getUserLanguage', getUserLanguage);
     server.method('translate', translate);
     server.method('getTranslate', getTranslate);
@@ -232,33 +192,21 @@ const start = async () => {
         return h.continue;
     });
 
-    if (process.env.DW_DEV_MODE || PREPARE_VIEWS) {
-        await clearFileCache();
-    }
-    if (!process.env.DW_DEV_MODE || PREPARE_VIEWS) {
-        // wait for all prepared views
-        server.logger.info('preparing Svelte views...');
-        await prepareAllViews(PREPARE_VIEWS);
-    }
-    if (!PREPARE_VIEWS) {
-        await server.start();
+    await server.start();
 
-        setTimeout(() => {
-            if (process.send) {
-                server.logger.info('sending READY signal to pm2');
-                process.send('ready');
-            }
-        }, 100);
+    setTimeout(() => {
+        if (process.send) {
+            server.logger.info('sending READY signal to pm2');
+            process.send('ready');
+        }
+    }, 100);
 
-        process.on('SIGINT', async function () {
-            server.logger.info('received SIGINT signal, closing all connections...');
-            await server.stop();
-            server.logger.info('server has stopped');
-            process.exit(0);
-        });
-    } else {
+    process.on('SIGINT', async function () {
+        server.logger.info('received SIGINT signal, closing all connections...');
+        await server.stop();
+        server.logger.info('server has stopped');
         process.exit(0);
-    }
+    });
 };
 
 start();

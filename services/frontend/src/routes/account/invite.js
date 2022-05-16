@@ -6,7 +6,7 @@ module.exports = {
     async register(server) {
         const User = server.methods.getModel('user');
 
-        server.methods.prepareView('account/Invite.svelte');
+        server.methods.registerView('account/Invite.svelte');
 
         server.route({
             method: 'GET',

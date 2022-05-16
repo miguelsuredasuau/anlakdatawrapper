@@ -68,11 +68,13 @@ module.exports = {
                     // symlink plugin views
                     const pluginViews = path.join(pluginRoot, name, 'src/frontend/views');
                     if (await fsUtils.hasAccess(pluginViews, fs.constants.F_OK)) {
-                        const link = path.join(__dirname, `../views/_plugins/${name}`);
+                        const linkDir = path.join(__dirname, '../views/_plugins');
+                        const link = path.join(linkDir, name);
                         if (await fsUtils.isSymbolicLink(link)) {
                             await fsUtils.safeUnlink(link);
                         }
-                        await fsPromises.symlink(pluginViews, link);
+                        const pluginViewsRel = path.relative(linkDir, pluginViews);
+                        await fsPromises.symlink(pluginViewsRel, link);
                         server.logger.info(
                             `[Plugin] ${name}: created symlink to ${pluginViews} from ${link}`
                         );

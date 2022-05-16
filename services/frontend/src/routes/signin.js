@@ -49,7 +49,7 @@ module.exports = {
             }
         });
 
-        server.methods.prepareView('signin/Index.svelte');
+        server.methods.registerView('signin/Index.svelte');
 
         for (var provider in oauth) {
             if (!Object.keys(Bell.providers).includes(provider)) continue;

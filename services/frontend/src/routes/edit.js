@@ -10,7 +10,7 @@ module.exports = {
     name: 'routes/edit',
     version: '1.0.0',
     register: async server => {
-        server.methods.prepareView('edit/Index.svelte');
+        server.methods.registerView('edit/Index.svelte');
 
         //
         // allow plugins to register additional workflows
@@ -327,7 +327,5 @@ module.exports = {
             }
             return chart;
         }
-
-        server.methods.prepareView('edit/Index.svelte');
     }
 };

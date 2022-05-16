@@ -2,6 +2,25 @@
 
 This repository contains the `frontend` service for Datawrapper. It is intended to be run together with other Datawrapper components.
 
+## Usage
+
+We use rollup to compile our Svelte views. The compiled files are stored in `build/view`, from where
+they are loaded by the frontend routes (see the [Svelte view adapter](src/utils/svelte-view)).
+
+Therefore, before you start the frontend service, you must run either
+
+```shell
+npm run build
+```
+
+or
+
+```shell
+npm run watch
+```
+
+if you want to automatically recompile the views when they change.
+
 ## Development
 
 Repository overview:
@@ -16,31 +35,37 @@ Repository overview:
 
 ## Testing
 
-We use [Mocha](https://mochajs.org/api/mocha) for frontend unit tests. Execute tests with `npm test` or `npm run test`. You can pass any [Mocha command line parameters](https://mochajs.org/#command-line-usage) to the test command. For example, to only run the tests for an specific component, you could use the `fgrep` option:
+We use [Mocha](https://mochajs.org/api/mocha) for frontend unit tests. Execute tests with `npm test` or `npm run test`. You can pass any [Mocha command line parameters](https://mochajs.org/#command-line-usage) to the test command. For example, to only run the tests for a specific component, you could use the `fgrep` option:
 
 `npm test -- --fgrep 'YourComponent'`
 
-Take a look at [src/views/archive/Index.test.js](src/views/archive/Index.svelte) for an example test setup. The example uses [@testing-library/svelte](https://testing-library.com/docs/svelte-testing-library/api/) and [chai-dom](https://www.chaijs.com/plugins/chai-dom/) to create and test the [src/views/archive/Index.svelte](src/views/archive/Index.svelte) component.
+Take a look at [src/views/archive/Index.test.mjs](src/views/archive/Index.test.mjs) for an example test setup. The example uses [@testing-library/svelte](https://testing-library.com/docs/svelte-testing-library/api/) and [chai-dom](https://www.chaijs.com/plugins/chai-dom/) to create and test the [src/views/archive/Index.svelte](src/views/archive/Index.svelte) component.
 
 ### Running `test:watch` in background:
 
-Since the test cases have to be built with rollup you need to run two separate processes in order to get a "watching" test runner. First you make sure the tests get build with `rollup --watch` using
+Since the test cases have to be built with rollup you need to run two separate processes in order to get a "watching" test runner. First you make sure the tests get build with `rollup --watch` using:
 
-`npm run test:watch-rollup`
+```shell
+npm run test:watch-rollup
+```
 
 Then, in a separate terminal you need to run `mocha` in watch mode as well:
 
-`npm run test:watch-mocha`
+```shell
+npm run test:watch-mocha
+```
 
-If you only want to test a subset of components you can set the `TEST` environment var befre running `test:watch-rollup`, e.g.:
+If you only want to test a subset of components you can set the `TEST` environment var before running `test:watch-rollup`, e.g.:
 
-`TEST="views/_partials/controls/*.mjs" npm run test:watch-rollup`
+```shell
+TEST="views/_partials/controls/*.mjs" npm run test:watch-rollup
+```
 
 ## Quick introduction of the new Svelte views
 
 In routes we can use Svelte-templates like this:
 
-```jsx
+```js
 // e.g., src/routes/hello-world.js
 server.route({
     path: '/',
@@ -54,7 +79,7 @@ server.route({
 
 The views are simple Svelte3 components that live inside `src/views`
 
-```html
+```svelte
 <!-- src/views/HelloWorld.svelte -->
 <script>
     export let name = 'world';
@@ -69,10 +94,10 @@ The views are simple Svelte3 components that live inside `src/views`
 
 You can use the following authentication strategies to specify who can access the route:
 
--   `'user'` - require signed in user, otherwise redirect to signin
--   `'admin'` - admin only route, throw error if accessed by non-admins
--   `'session'` - a valid session is needed (including guest sessions)
--   `false` - no restrictions
+- `'user'` - require signed in user, otherwise redirect to signin
+- `'admin'` - admin-only route, throw error if accessed by non-admins
+- `'guest'` - a valid session is needed (including guest sessions)
+- `false` - no restrictions
 
 ```jsx
 server.route({
@@ -85,35 +110,16 @@ server.route({
 });
 ```
 
-### Server-side rendering + client-side hydration + IE transpiling
+### Server-side rendering + client-side hydration
 
-Each view is compiled twice, so we can render it server-side and then „hydrate“ it client-side.
+Each view is compiled twice, so we can render it server-side and then „hydrate“ it client-side. The client-side code is served via `/lib/csr/{file}.svelte.js`.
 
-The client-side code is served via `/lib/csr/HelloWorld.svelte.js`. This way we can serve a transpiled bundle to IE11 users, who will instead load the bundle from `/lib/csr/HelloWorld.svelte.ie.js`.
+### View registration
 
-For now I used a simple IE11 detection using `window.document.documentMode`, but later we can re-purpose our existing `getBrowser` method from polyfills.
-
-### Caching
-
-I implemented a simple cache so we don't compile the Svelte code every time someone hits the route. The cache is using a standard JS Map for now.
-
-see [here](https://github.com/datawrapper/frontend/blob/feature/edit-in-datawrapper/src/utils/svelte-view/cache.js#L54-L69)
-
-We could potentially also use our shared Redis cache to reduce load and cache overhead in a multi-thread scenario.
-
-### Prepared views
-
-Now, if we'd leave it like this, the Svelte code would be compiled whenever the route is first hit by a request. But if we want we can mark it for pre-compilation via `server.methods.prepareView`, for instance in the file where we define the route. This way the view template will be compiled upon server start. The idea is that we can decide which views to prepare based on anticipated usage. Core views like signin, preview etc should be prepared, but less commonly hit routes can be compiled on-demand.
-
-```jsx
-// src/routes/hello-world.js
-server.route({
-    // ...
-});
-server.methods.prepareView('HelloWorld.svelte');
-```
-
-In order to maximize the restart smoothness the server waits for all prepared views to be compiled before starting. Otherwise a server restart would cause a slight performance bump if suddenly a lot of templates had to be compiled at once.
+Rollup needs to know which Svelte views exist in the whole frontend and plugins, so that it knows
+which files it should compile. We use `server.methods.registerView()` and
+`server.methods.registerViewComponent()` to register a view or view component with rollup and
+therefore have it compiled when `npm run build` or `npm run watch` runs.
 
 ### Layouts
 
@@ -439,7 +445,7 @@ return h.view('hello/Index.svelte', {
 });
 ```
 
-Note that if multiple plugins register data for the same `key`, the results are "deep merged". 
+Note that if multiple plugins register data for the same `key`, the results are "deep merged".
 
 ### `registerCustomHTML(key, handler)`
 

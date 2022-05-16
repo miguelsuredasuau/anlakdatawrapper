@@ -1,117 +1,125 @@
 'use strict';
 
-const EventEmmiter = require('events');
-const { join, relative } = require('path');
-const { readFile } = require('fs').promises;
-const parallelLimit = require('async/parallelLimit');
-const { setCache, withCache } = require('./cache');
-const { build, watch, init } = require('./rollup-runtime');
 const ejs = require('ejs');
 const jsesc = require('jsesc');
+const { join, relative } = require('path');
+const { readFile } = require('fs').promises;
+const { readFileSync } = require('fs');
+const { withCache, clearCache } = require('./cache');
+const context = require('./context');
 
-let template;
-let server;
+const baseViewDir = join(__dirname, '../../views');
+const buildViewDir = join(__dirname, '../../../build/views');
 
-const templateQueue = [];
-const watchers = new Set();
-const wsClients = new Set();
+const templateCache = new Map();
+const views = new Set();
+const viewComponents = new Map();
 
-function prepareView(page) {
-    templateQueue.push(page);
+/**
+ * Registers a view with rollup.
+ */
+function registerView(page) {
+    views.add(page);
 }
 
-function prepareAllViews(writeFileCache = false) {
-    return parallelLimit(
-        templateQueue.map(page => {
-            return async () => {
-                await getView(page, writeFileCache);
-            };
-        }),
-        4
-    );
+/**
+ * Registers a view component with rollup.
+ */
+function registerViewComponent({ id, page, view }) {
+    viewComponents.set(id, { id, page, view });
 }
 
-function getView(page, writeFileCache = false) {
-    return withCache(page, () => compilePage(page), writeFileCache);
-}
-
-async function compilePage(page) {
-    try {
-        process.stdout.write(`Compiling ${page}\n`);
-        const ssr = await build(page, true);
-        const csr = await build(page, false);
-        return {
-            ssr: ssr.code,
-            csr: csr.code,
-            csrMap: csr.map,
-            error: null
-        };
-    } catch (err) {
-        console.error(`Error: Svelte compile error in ${page}`);
-        return { error: err };
+async function getTemplate(file) {
+    if (!process.env.DW_DEV_MODE && templateCache.get(file)) {
+        return templateCache.get(file);
     }
-}
-
-function watchPage(page) {
-    const eventEmmiter = new EventEmmiter();
-    if (!watchers.has(page)) {
-        // watch
-        watchers.add(page);
-        process.stdout.write(`Starting rollup watch for ${page}\n`);
-        watch(page, (error, result) => {
-            if (error) {
-                console.error(error);
-                return;
-            }
-            process.stdout.write(`Updated csr/ssr cache for ${page}\n`);
-            // update cache
-            eventEmmiter.emit('change', result);
-            // notify page
-            if (wsClients) {
-                wsClients.forEach(ws =>
-                    ws.send(
-                        JSON.stringify({
-                            page
-                        })
-                    )
-                );
-            }
-        });
+    const data = await readFile(join(baseViewDir, file), 'utf-8');
+    if (!process.env.DW_DEV_MODE) {
+        templateCache.set(file, data);
     }
-    return eventEmmiter;
+    return data;
 }
 
-const SvelteView = {
+/**
+ * Reads view files compiled by rollup.
+ *
+ * Used also by the '/libs' route to serve compiled views.
+ */
+function getView(page) {
+    return withCache(page, () => {
+        try {
+            const build = join(buildViewDir, page);
+            const ssr = readFileSync(build + '.ssr.js', 'utf-8');
+            const csr = readFileSync(build + '.csr.js', 'utf-8');
+            const csrMap = readFileSync(build + '.csr.js.map', 'utf-8');
+            return { ssr, csr, csrMap };
+        } catch (e) {
+            if (e.code === 'ENOENT') {
+                let message = `Compiled view files for \`${page}\` were not found`;
+                if (views.has(page)) {
+                    message += ', but the view has been registered. ';
+                    message += 'Have you run `npm run build` in `services/frontend`?';
+                } else {
+                    message += ' and the view has not been registered. ';
+                    message += `Have you called \`server.methods.registerView('${page}')\` in your code?`;
+                }
+                throw new Error(message);
+            }
+            throw e;
+        }
+    });
+}
+
+function watchViews(wsClients) {
+    const chokidar = require('chokidar');
+    // watch build/views directory for changes
+    chokidar.watch(buildViewDir).on('all', (event, filename) => {
+        if (event === 'change' && filename.endsWith('.svelte.csr.js')) {
+            const page = relative(buildViewDir, filename).replace('.csr.js', '');
+            // Wait a bit more to make sure both csr/ssr have been compiled. Perhaps this isn't
+            // necessary (if rollup always builds csr after ssr has been built).
+            setTimeout(() => {
+                // invalidate the view cache
+                clearCache(page);
+                process.stdout.write(`Invalidated csr/ssr cache for ${page}\n`);
+                // notify page
+                wsClients.forEach(ws => ws.send(JSON.stringify({ page })));
+            }, 300);
+        }
+    });
+}
+
+class SvelteView {
+    constructor(server) {
+        this.server = server;
+    }
     compile(t, compileOpts) {
-        const baseViewDir = join(__dirname, '../../views');
         const page = relative(baseViewDir, compileOpts.filename);
 
-        return async function runtime(context) {
-            if (!template || process.env.DW_DEV_MODE) {
-                template = await readFile(join(__dirname, 'template.ejs'), 'utf8');
-            }
+        return async context => {
+            const config = this.server.methods.config();
 
-            const config = server.methods.config();
-
-            if (process.env.DW_DEV_MODE) {
-                watchPage(page).on('change', result => setCache(page, result));
+            let view;
+            try {
+                view = await getView(page);
+            } catch (e) {
+                const template = await getTemplate('error.ejs');
+                const output = ejs.render(template, {
+                    FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico',
+                    TITLE: 'Template error',
+                    HEADING: 'Template error',
+                    BODY: process.env.DW_DEV_MODE ? `<p>${e.message}</p>` : ''
+                });
+                return output;
             }
-            const { ssr, error } = await getView(page);
+            const { ssr } = view;
 
-            if (error) {
-                // @todo: show a nicer error message on production
-                return `
-            <h1>Error in template ${error.filename}:${error.start ? error.start.line : ''}</h1>
-            <big>${error.message}</big>
-            <pre>${error.frame}</pre>`;
-            }
-            for (var key in context.stores) {
+            for (const key in context.stores) {
                 // resolve store values in case they are async
                 context.stores[key] = await Promise.resolve(context.stores[key]);
             }
             context.props.stores = context.stores;
 
-            // eslint-disable-next-line
             try {
                 const ssrFunc = new Function(ssr + ';return App');
 
@@ -122,13 +130,14 @@ const SvelteView = {
                     context.props.stores[key] = {};
                 });
 
+                const template = await getTemplate('base.ejs');
                 const output = ejs.render(template, {
                     HTML_CLASS: context.htmlClass || '',
                     SSR_HEAD: head,
                     SSR_CSS: css.code,
                     NODE_ENV: process.env.NODE_ENV,
                     SSR_HTML: html,
-                    GITHEAD: server.app.GITHEAD.substr(0, 8),
+                    GITHEAD: this.server.app.GITHEAD.substr(0, 8),
                     PAGE: page,
                     PAGE_PROPS: jsesc(JSON.stringify(context.props), {
                         isScriptContext: true,
@@ -144,10 +153,16 @@ const SvelteView = {
                     DW_DOMAIN: config.api.domain,
                     MATOMO: config.frontend.matomo || null,
                     FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico',
-                    CORE_BEFORE_HEAD: await server.methods.getCustomHTML('core/beforeHead', {}),
-                    CORE_AFTER_HEAD: await server.methods.getCustomHTML('core/afterHead', {}),
-                    CORE_BEFORE_BODY: await server.methods.getCustomHTML('core/beforeBody', {}),
-                    CORE_AFTER_BODY: await server.methods.getCustomHTML('core/afterBody', {})
+                    CORE_BEFORE_HEAD: await this.server.methods.getCustomHTML(
+                        'core/beforeHead',
+                        {}
+                    ),
+                    CORE_AFTER_HEAD: await this.server.methods.getCustomHTML('core/afterHead', {}),
+                    CORE_BEFORE_BODY: await this.server.methods.getCustomHTML(
+                        'core/beforeBody',
+                        {}
+                    ),
+                    CORE_AFTER_BODY: await this.server.methods.getCustomHTML('core/afterBody', {})
                 });
                 return output;
             } catch (err) {
@@ -163,24 +178,53 @@ const SvelteView = {
                 throw err;
             }
         };
-    },
-    context: require('./context'),
-    init(_server) {
-        server = _server;
-        // also initialize rollup-runtime
-        init(_server);
     }
-};
+    context(request) {
+        return context(request);
+    }
+}
 
 module.exports = {
-    getView,
-    prepareView,
-    prepareAllViews,
-    SvelteView,
-    wsClients,
-    watchPage(page) {
+    name: 'utils/svelte-view/index',
+    version: '1.0.0',
+    async register(server) {
+        server.app.SvelteView = new SvelteView(server);
+
+        server.method('getView', getView);
+        server.method('registerView', registerView);
+        server.method('registerViewComponent', registerViewComponent);
+
         if (process.env.DW_DEV_MODE) {
-            watchPage(page).on('change', result => setCache(page, result));
+            const wsClients = new Set();
+
+            watchViews(wsClients);
+
+            const HAPIWebSocket = require('hapi-plugin-websocket');
+            await server.register(HAPIWebSocket);
+
+            server.route({
+                method: 'POST',
+                path: '/ws',
+                config: {
+                    plugins: {
+                        websocket: {
+                            initially: true,
+                            only: true,
+                            connect({ ws }) {
+                                server.logger.info('new websocket client connected\n');
+                                wsClients.add(ws);
+                            },
+                            disconnect({ ws }) {
+                                server.logger.info('websocket client disconnected\n');
+                                wsClients.delete(ws);
+                            }
+                        }
+                    }
+                },
+                handler: () => {
+                    return {};
+                }
+            });
         }
     }
 };

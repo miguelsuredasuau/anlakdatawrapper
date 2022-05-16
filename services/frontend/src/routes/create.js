@@ -99,7 +99,7 @@ module.exports = {
             }
         });
 
-        server.methods.prepareView('Create.svelte');
+        server.methods.registerView('Create.svelte');
 
         const additionalFields = {
             description: 'metadata.describe.intro',

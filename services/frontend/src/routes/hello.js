@@ -7,7 +7,7 @@ module.exports = {
     name: 'routes/hello',
     version: '1.0.0',
     register: async server => {
-        server.methods.prepareView('hello/Index.svelte');
+        server.methods.registerView('hello/Index.svelte');
 
         server.route({
             method: 'GET',
