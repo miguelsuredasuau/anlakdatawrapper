@@ -10,6 +10,7 @@
         "watch": "npm run watch:js",
         "watch:js": "npm run build:js -- --watch",
         "watch:css": "npm run build:css -- --watch",
+        "dev": "npm run watch",
         "clear-view-cache": "rm .viewcache/*.json",
         "lint": "cd ../.. && scripts/lint services/frontend",
         "format": "cd ../.. && scripts/format services/frontend",
