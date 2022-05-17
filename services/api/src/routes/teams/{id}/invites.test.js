@@ -126,3 +126,36 @@ test('owners can invite a maximum number of users equal to MAX_TEAM_INVITES', as
         await destroy(users, ...Object.values(teamObj));
     }
 });
+test('owners cannot invite more than MAX_TEAM_INVITES by deleting invite', async t => {
+    const users = [];
+    let teamObj = {};
+
+    try {
+        const { events, event } = t.context.server.app;
+        teamObj = await createTeamWithUser(t.context.server);
+
+        const maxInvites = 3;
+        events.on(event.MAX_TEAM_INVITES, async () => ({ maxInvites }));
+
+        for (var i = 0; i < 10; i++) {
+            const { res, user } = await inviteUser(t.context, teamObj, 'user-1@example.com');
+            users.push(user);
+            t.is(res.statusCode, i >= maxInvites * 2 ? 406 : 201);
+
+            if (res.statusCode === 201) {
+                await t.context.server.inject({
+                    method: 'DELETE',
+                    url: `/v3/teams/${teamObj.team.id}/members/${user.id}`,
+                    auth: {
+                        strategy: 'session',
+                        credentials: teamObj.session,
+                        artifacts: teamObj.user
+                    },
+                    headers: t.context.headers
+                });
+            }
+        }
+    } finally {
+        await destroy(users, ...Object.values(teamObj));
+    }
+});

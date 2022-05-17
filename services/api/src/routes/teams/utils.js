@@ -1,5 +1,6 @@
-const { UserTeam, UserPluginCache } = require('@datawrapper/orm/models');
-const { Op } = require('@datawrapper/orm').db;
+const { Action, UserTeam, UserPluginCache } = require('@datawrapper/orm/models');
+const { db } = require('@datawrapper/orm');
+const { Op } = db;
 const Boom = require('@hapi/boom');
 
 const ROLE_OWNER = 'owner';
@@ -19,6 +20,7 @@ module.exports = {
     canChangeMemberStatus,
     convertKeys,
     serializeTeam,
+    countPastInviteActions,
     ROLE_OWNER,
     ROLE_ADMIN,
     ROLE_MEMBER,
@@ -85,6 +87,20 @@ async function getPendingTeamInvites({ user }) {
             invited_by: user.id,
             invite_token: {
                 [Op.not]: ''
+            }
+        }
+    });
+}
+
+async function countPastInviteActions({ user, days }) {
+    const since = new Date(new Date().getTime() - days * 86400000);
+
+    return Action.count({
+        where: {
+            user_id: user.id,
+            key: 'team/invite',
+            action_time: {
+                [Op.gt]: since
             }
         }
     });

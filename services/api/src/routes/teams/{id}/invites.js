@@ -16,7 +16,8 @@ const {
     getMemberRole,
     canInviteUsers,
     getMaxTeamInvites,
-    getPendingTeamInvites
+    getPendingTeamInvites,
+    countPastInviteActions
 } = require('../utils');
 
 module.exports = async server => {
@@ -230,7 +231,8 @@ async function inviteTeamMember(request, h) {
 
     if (maxTeamInvites !== false) {
         const pendingInvites = await getPendingTeamInvites({ user });
-        if (pendingInvites >= maxTeamInvites) {
+        const past24HourInvites = await countPastInviteActions({ user, days: 1 });
+        if (pendingInvites >= maxTeamInvites || past24HourInvites >= 2 * maxTeamInvites) {
             const error = Boom.notAcceptable(
                 `You already invited ${maxTeamInvites} user into teams. You can invite more users when invitations have been accepted.`
             );
