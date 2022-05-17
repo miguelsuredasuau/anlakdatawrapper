@@ -1,6 +1,8 @@
 const path = require('path');
+const fs = require('fs-extra');
 const chartCore = require('@datawrapper/chart-core');
 const Boom = require('@hapi/boom');
+const Joi = require('joi');
 const { allScopes } = require('@datawrapper/service-utils/l10n');
 
 module.exports = {
@@ -96,6 +98,48 @@ module.exports = {
                     directory: {
                         path: 'static'
                     }
+                }
+            },
+            {
+                path: '/plugins/{plugin}/static/{file*}',
+                method: 'GET',
+                config: {
+                    auth: false,
+                    validate: {
+                        params: Joi.object({
+                            plugin: Joi.string()
+                                .required()
+                                // only allow access to configured plugins
+                                .valid(...Object.keys(server.methods.config('plugins'))),
+                            file: Joi.string().required()
+                        })
+                    }
+                },
+                async handler(request, h) {
+                    const pluginPath = path.join('../../plugins');
+                    const { plugin, file } = request.params;
+                    const filename = path.join(pluginPath, plugin, 'static', file);
+                    if (
+                        path
+                            .relative(path.join(pluginPath, plugin, 'static'), filename)
+                            .startsWith('../')
+                    ) {
+                        // we're disabling the confine option below to be able
+                        // to serve files outside 'services/frontend', so we manually
+                        // need to confine filenames to the plugins static/ folder
+                        throw Boom.forbidden();
+                    }
+                    try {
+                        // check if file exists and if file is file
+                        // we need to do this since h.file() throws an
+                        // error when trying to access a folder "inside" an
+                        // existing file, e.g. plugins/foo/exists.txt/xxx
+                        const stats = await fs.stat(filename);
+                        if (!stats.isFile()) throw Boom.notFound();
+                    } catch (error) {
+                        throw Boom.notFound();
+                    }
+                    return h.file(filename, { confine: false });
                 }
             },
             {
