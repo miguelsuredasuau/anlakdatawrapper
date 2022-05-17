@@ -17,7 +17,7 @@ const renderWithProps = props => {
     });
 };
 
-describe.only('SwitchControl', function () {
+describe('SwitchControl', function () {
     beforeEach(() => {});
 
     it('with value true renders a checked input, label and content', () => {

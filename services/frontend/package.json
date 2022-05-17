@@ -80,7 +80,8 @@
         "chai": "^4.3.4",
         "chai-dom": "^1.10.0",
         "jsdom": "^18.1.0",
-        "mocha": "^9.1.3"
+        "mocha": "^9.1.3",
+        "nock": "^13.2.4"
     },
     "mocha": {
         "spec": "build/bundle-tests.js",
