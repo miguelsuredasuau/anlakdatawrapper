@@ -263,7 +263,8 @@ module.exports = {
                     }
 
                     const customViews = await server.methods.getCustomData('edit/customViews', {
-                        request
+                        request,
+                        chart
                     });
 
                     const stepIndex =

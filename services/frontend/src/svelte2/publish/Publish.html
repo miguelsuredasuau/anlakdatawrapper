@@ -282,15 +282,10 @@
                     lastEditStep: 5
                 });
 
-                window.parent.postMessage(
-                    {
-                        source: 'datawrapper',
-                        type: 'chart-publish',
-                        chartId: chartInfo.id
-                    },
-                    '*'
-                );
                 this.store.set(chartInfo);
+
+                const { eventDispatch } = this.store.get();
+                eventDispatch('publish', { chart: chartInfo });
             },
 
             select(action) {

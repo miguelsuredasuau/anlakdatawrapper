@@ -156,9 +156,9 @@ Svelte views can now use these stores like regular Svelte stores:
 <p>{__('team / invite / intro')}</p>
 ```
 
-### Plugins!
+## Plugins!
 
-Plugins can now hook into the frontend service and add their own views. To do so a plugin needs to do two things: provide a `frontend.cjs` that acts as hapi plugin interface (similar to our api plugins), and store Svelte views into `src/frontend/views/`.
+Plugins can hook into the frontend service and add their own views or view components. To do so a plugin needs to do two things: provide a `frontend.js` (or `frontend.cjs`, the plugin `package.json` has `type` set to `module`) that acts as hapi plugin interface (similar to our api plugins), and store Svelte views into `src/frontend/views/`.
 
 Example plugin `frontend.cjs`
 
@@ -175,7 +175,7 @@ module.exports = {
             path: '/example',
             async handler(request, h) {
                 const props = { test: 'it works' };
-                return h.view('plugins/example/ExampleView.svelte', { props });
+                return h.view('_plugins/example/ExampleView.svelte', { props });
             }
         });
     }
@@ -208,11 +208,11 @@ Example plugin `ExampleView.svelte`:
 This works because of two changes:
 
 1. when the plugins are loaded during `frontend` server start, the plugins `src/frontend/views` folder is sym-linked to the frontend `src/views/_plugins/{plugin}` path.
-2. to alllow plugins to use core layouts we added an alias from `layout/*` to the corresponding path in the frontend. Otherwise plugins would have to resolve a long `../../../` path to find the layout folder
+2. to allow plugins to use core layouts we added an alias from `layout/*` to the corresponding path in the frontend. Otherwise plugins would have to resolve a long `../../../` path to find the layout folder
 
 ![https://user-images.githubusercontent.com/617518/105217547-e9e97c80-5b4b-11eb-859d-a1357958c5c0.gif](https://user-images.githubusercontent.com/617518/105217547-e9e97c80-5b4b-11eb-859d-a1357958c5c0.gif)
 
-### Event hooks
+### Server-side event hooks
 
 Frontend plugins can not only define routes but also use our event hook system to modify the frontend server. Here's an example of a plugin using a hook to add an entry to the admin pages navigation:
 
@@ -240,7 +240,7 @@ module.exports = {
 ```
 
 This is the exact system we’re using in our API server, but I’m open to adjustments.
-
+Frontend plugins
 ### Translations
 
 To use (dynamic) translations in Svelte views you need to load the `messages` context. Unfortunately Svelte won't trigger DOM updates unless we define our own reactive `__()` method in each view, or pass it around.
@@ -304,7 +304,7 @@ To avoid having to rewrite all our Svelte2 code at once the new frontend include
 </MainLayout>
 ```
 
-## Plugin Development
+## Plugin server methods
 
 Server methods are a way for plugins to hook new functionality into existing `frontend` components.
 
@@ -596,4 +596,40 @@ server.methods.registerChartAction(async ({ request, chart, theme }) => {
     }
 });
 
+```
+
+## Client-side event hooks
+
+Sometimes a view component provided by a plugin needs to react to client-side events, e.g. to perform an action once the user publishes a chart. To achieve this, two things need to happen:
+
+1. the view index to which the view component is registered to needs to dispatch the event:
+
+```svelte
+<-- in src/views/edit/Index.svelte -->
+<script>
+import { getContext } from 'svelte';
+const { initEvents } = getContext('events');
+
+async function onPublish(event) {
+    const { dispatch } = await initEvents();
+    dispatch('custom-event', event.detail);
+}
+</script>
+
+<PublishStep on:publish={onPublish} />
+```
+
+The view component can then listen to these events, no matter where it's being loaded:
+
+```jsx
+// in plugins/foo/src/frontend/views/Custom.svelte 
+import { onMount, getContext } from 'svelte';
+const { initEvents } = getContext('events');
+
+onMount(async () => {
+    const { target } = await initEvents();
+    targets.addEventListener('custom-event', event => {
+        console.log('custom event happened', event.detail);
+    });
+});
 ```

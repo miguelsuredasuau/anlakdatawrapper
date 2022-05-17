@@ -55,7 +55,7 @@
         </div>
 
         <div class="column">
-            <pre class="mb-2">{JSON.stringify({value, indeterminate, disabled},null,2)}</pre>
+            <pre class="mb-2">{JSON.stringify({ value, indeterminate, disabled }, null, 2)}</pre>
             <button class="button" on:click={reset}>reset</button>
         </div>
     </div>

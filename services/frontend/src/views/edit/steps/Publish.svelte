@@ -8,6 +8,7 @@
     const user = getContext('user');
     const userData = getContext('userData');
     const config = getContext('config');
+    const { initEvents } = getContext('events');
 
     export let dw_chart;
     export let language;
@@ -58,6 +59,11 @@
             })
         );
     });
+
+    async function onPublish(event) {
+        const { dispatch } = await initEvents();
+        dispatch('chart-publish', event.detail);
+    }
 </script>
 
 <div class="container edit-publish-step">
@@ -71,6 +77,7 @@
                     ...afterEmbed.map(p => p.css)
                 ]}
                 bind:data
+                on:publish={onPublish}
                 storeData={{
                     dw_chart,
                     actions: chartActions,

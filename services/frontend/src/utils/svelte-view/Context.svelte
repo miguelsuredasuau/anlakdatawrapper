@@ -80,12 +80,35 @@
     }
 
     const config = getContext('config');
+    const events = {
+        async initEvents() {
+            await waitFor(() => events.target);
+            return events;
+        }
+    };
+    setContext('events', events);
 
     onMount(async () => {
         await loadScript(
             `/lib/csr/_partials/svelte2/Svelte2Wrapper.element.svelte.js?sha=${$config.GITHEAD}`
         );
+        events.dispatch = (type, detail) => {
+            events.target.dispatchEvent(new CustomEvent(type, { detail }));
+        };
+        events.target = new EventTarget();
     });
+
+    /**
+     * wait for test() to return true
+     *
+     * @param test test method
+     * @param interval number of ms to wait between tests
+     */
+    async function waitFor(test, interval = 100) {
+        while (!test()) {
+            await new Promise(resolve => setTimeout(resolve, interval));
+        }
+    }
 </script>
 
 <svelte:component this={view} bind:this={ref} {__} {...$$restProps} />
