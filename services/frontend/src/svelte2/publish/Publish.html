@@ -360,7 +360,6 @@
             this.set({ published: dw_chart.get('lastEditStep') > 4 });
             // pass reference to publish step
             eventDispatch('create', this);
-            // window.dw.backend.fire('edit.publish.oncreate', this);
 
             // Immediately select an action, when location hash is already set.
             const activeActionId = window.location.hash.slice(1);

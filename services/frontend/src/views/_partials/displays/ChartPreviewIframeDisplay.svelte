@@ -20,13 +20,13 @@
 
     $: width = customWidth || get($chart, 'metadata.publish.embed-width', 550);
     $: height = customHeight || fixedHeight || get($chart, 'metadata.publish.embed-height', 450);
-    $: background = get(theme, 'data.colors.background', 'white');
-    $: borderColor = chroma(background).darken(0.7);
+    $: background = customBackground || get(theme, 'data.colors.background', 'white');
+    $: borderColor = chroma.valid(background) ? chroma(background).darken(0.7) : background;
     $: border = customBorder === null ? 10 : customBorder;
     $: scale = customScale || 1;
 
     $: src = customSrc || `/preview/${$chart.id}`;
-    let _src;
+    let prevSrc;
 
     let customWidth;
     let customHeight;
@@ -34,6 +34,7 @@
     let customSrc;
     let customBorder = null;
     let customScale;
+    let customBackground;
 
     let iframe;
     export let loading = false;
@@ -41,23 +42,26 @@
     let contentWindow;
     let contentDocument;
 
-    $: {
-        if (src !== _src) {
-            loading = true;
-            _src = src;
-        }
+    $: if (iframe && src !== prevSrc) {
+        // Use setAttribute instead of Svelte to set the `src` HTML attribute, otherwise the iframe
+        // `contentWindow.location` is sometimes not updated. For example when setting `logoId`
+        // and then reloading the page, the previous logo is shown in the preview.
+        iframe.setAttribute('src', src);
+        loading = true;
+        prevSrc = src;
     }
 
     /**
      * this method can be used by chart actions to change the
      * preview iframe shown in the publish step
      */
-    export function set({ src, width, height, border, scale }) {
+    export function set({ src, width, height, border, scale, transparent }) {
         if (width) customWidth = width;
         if (height) customHeight = height;
         if (border !== undefined) customBorder = border;
         if (src) customSrc = src;
         if (scale) customScale = scale;
+        if (transparent !== undefined) customBackground = transparent ? 'transparent' : null;
     }
 
     /**
@@ -154,6 +158,6 @@
         class="iframe-border"
         style="background:{background};width:{width}px; height:{height}px;border-color:{borderColor}; padding:{border}px"
     >
-        <iframe title={$chart.title} {src} scrolling="no" bind:this={iframe} on:load={onLoad} />
+        <iframe title={$chart.title} scrolling="no" bind:this={iframe} on:load={onLoad} />
     </div>
 </div>
