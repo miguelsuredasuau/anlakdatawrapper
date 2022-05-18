@@ -31,7 +31,8 @@ module.exports = {
                         return event;
                     }
                 },
-                scope: config.sentry.scope
+                scope: config.sentry.scope,
+                catchLogErrors: ['sentry']
             }
         });
     }

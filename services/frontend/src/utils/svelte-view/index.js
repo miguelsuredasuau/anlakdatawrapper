@@ -103,6 +103,7 @@ class SvelteView {
             try {
                 view = await getView(page);
             } catch (e) {
+                this.server.log(['sentry'], e);
                 const template = await getTemplate('error.ejs');
                 const output = ejs.render(template, {
                     FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico',
