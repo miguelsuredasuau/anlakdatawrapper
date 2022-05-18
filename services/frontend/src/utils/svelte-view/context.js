@@ -101,10 +101,12 @@ async function getUserData(server, userId) {
                 user_id: userId
             }
         })
-    ).reduce((settings, row) => {
-        const value = row.get('value');
-        return { ...settings, [row.key]: value };
-    }, {});
+    )
+        .filter(row => !row.key.startsWith('.'))
+        .reduce((settings, row) => {
+            const value = row.get('value');
+            return { ...settings, [row.key]: value };
+        }, {});
 }
 
 function md5(string) {
