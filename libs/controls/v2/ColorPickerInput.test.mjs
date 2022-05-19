@@ -139,7 +139,7 @@ test('Update color through text input field', t => {
     t.is(color, '#ff0000');
 });
 
-test('Normalize to hex code through text input field', t => {
+test('Normalize short hex (#RGB) to full hex notation (#RRGGBB)', t => {
     const picker = new ColorPickerInput({
         store: t.context.chart,
         target: t.context
@@ -147,25 +147,76 @@ test('Normalize to hex code through text input field', t => {
 
     // set input to `#f00`
     t.context.querySelector('.base-drop-btn').click();
-
     $(t.context).find('.footer input').val('#f00').trigger('input');
-
     t.context.querySelector('button.ok').click();
 
-    const { color: colorResult1, inputColor: inputColorResult1 } = picker.get();
-    t.is(colorResult1, '#ff0000');
-    t.is(inputColorResult1, '#ff0000');
+    const { color, inputColor } = picker.get();
+    t.is(color, '#ff0000');
+    t.is(inputColor, '#ff0000');
+});
+
+test('Normalize CSS color name to full hex notation (#RRGGBB)', t => {
+    const picker = new ColorPickerInput({
+        store: t.context.chart,
+        target: t.context
+    });
 
     // set input to `red`
     t.context.querySelector('.base-drop-btn').click();
-
     $(t.context).find('.footer input').val('red').trigger('input');
-
     t.context.querySelector('button.ok').click();
 
     const { color: colorResult2, inputColor: inputColorResult2 } = picker.get();
     t.is(colorResult2, '#ff0000');
     t.is(inputColorResult2, '#ff0000');
+});
+
+test('Parse hex with missing "#" prefix (RRGGBB) to full hex notation (#RRGGBB)', t => {
+    const picker = new ColorPickerInput({
+        store: t.context.chart,
+        target: t.context
+    });
+
+    // set input to `664a32` (missing the # prefix)
+    t.context.querySelector('.base-drop-btn').click();
+    $(t.context).find('.footer input').val('664a32').trigger('input');
+    t.context.querySelector('button.ok').click();
+
+    const { color, inputColor } = picker.get();
+    t.is(color, '#664a32');
+    t.is(inputColor, '#664a32');
+});
+
+test('Parse short hex with missing "#" prefix (RGB) to full hex notation (#RRGGBB)', t => {
+    const picker = new ColorPickerInput({
+        store: t.context.chart,
+        target: t.context
+    });
+
+    // set input to `007` (treat as hex, missing the # prefix)
+    t.context.querySelector('.base-drop-btn').click();
+    $(t.context).find('.footer input').val('007').trigger('input');
+    t.context.querySelector('button.ok').click();
+
+    const { color, inputColor } = picker.get();
+    t.is(color, '#000077');
+    t.is(inputColor, '#000077');
+});
+
+test('Pick color from palette if it is a decimal number (and not hex)', t => {
+    const picker = new ColorPickerInput({
+        store: t.context.chart,
+        target: t.context
+    });
+
+    // set input to `10` (treat as index, 10th element of the theme palette)
+    t.context.querySelector('.base-drop-btn').click();
+    $(t.context).find('.footer input').val('10').trigger('input');
+    t.context.querySelector('button.ok').click();
+
+    const { color: colorResult2, inputColor: inputColorResult2 } = picker.get();
+    t.is(colorResult2, '#ffe59c');
+    t.is(inputColorResult2, '#ffe59c');
 });
 
 test('Entering invalid value does not set color', t => {

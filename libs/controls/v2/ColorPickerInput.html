@@ -386,9 +386,10 @@
     // check if entered value is a number;
     // use it to check if it exists in palette
     function convertInputToHex(inputColor, palette) {
-        const parsedInput = parseInt(inputColor, 10);
-        const isNum = !isNaN(parsedInput);
-        if (isNum) inputColor = parsedInput;
+        const parsedInput = Number(inputColor);
+        // treat as index if it's a number and not a short hex (e.g. #777)
+        const isIndex = !isNaN(parsedInput) && String(inputColor).length < 3;
+        if (isIndex) inputColor = parsedInput;
         return getColor(inputColor, palette);
     }
 

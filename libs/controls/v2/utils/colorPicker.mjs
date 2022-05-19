@@ -16,8 +16,8 @@ export function storeColor(color, palette, returnPaletteIndex) {
  * @returns {string} hex representation
  */
 export function getColor(color, palette) {
-    return typeof color === 'number'
-        ? palette[color % palette.length]
+    return typeof color === 'number' && color < palette.length
+        ? palette[color]
         : typeof color === 'object' && typeof color.hex === 'function'
         ? color.hex()
         : color;
