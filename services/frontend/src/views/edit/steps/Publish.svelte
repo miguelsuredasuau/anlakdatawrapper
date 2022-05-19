@@ -10,7 +10,7 @@
     const config = getContext('config');
     const { initEvents } = getContext('events');
 
-    export let dw_chart;
+    export let dwChart;
     export let language;
     export let theme;
     export let afterEmbed;
@@ -79,7 +79,7 @@
                 bind:data
                 on:publish={onPublish}
                 storeData={{
-                    dw_chart,
+                    dw_chart: dwChart,
                     actions: chartActions,
                     language,
                     locales: $config.chartLocales.map(({ id, title }) => ({

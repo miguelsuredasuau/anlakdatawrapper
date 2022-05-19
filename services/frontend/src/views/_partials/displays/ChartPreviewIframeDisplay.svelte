@@ -1,8 +1,11 @@
 <script>
     import { createEventDispatcher } from 'svelte';
+    import { fade } from 'svelte/transition';
     import get from '@datawrapper/shared/get';
     import chroma from 'chroma-js';
     import { headerProps } from '_layout/stores';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
+    import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -18,8 +21,20 @@
 
     export let sticky = true;
 
+    /*
+     * make preview resizable. resizing will
+     * dispatch `resize` event with new size
+     */
+    export let resizable = false;
+
+    /*
+     * set to true if visualization is fixed height
+     */
+    export let fixedHeight = false;
+
     $: width = customWidth || get($chart, 'metadata.publish.embed-width', 550);
-    $: height = customHeight || fixedHeight || get($chart, 'metadata.publish.embed-height', 450);
+    $: height =
+        customHeight || reportedIframeSize || get($chart, 'metadata.publish.embed-height', 450);
     $: background = customBackground || get(theme, 'data.colors.background', 'white');
     $: borderColor = chroma.valid(background) ? chroma(background).darken(0.7) : background;
     $: border = customBorder === null ? 10 : customBorder;
@@ -30,11 +45,14 @@
 
     let customWidth;
     let customHeight;
-    let fixedHeight;
+    let reportedIframeSize;
     let customSrc;
     let customBorder = null;
     let customScale;
     let customBackground;
+
+    let resizeWidth;
+    let resizeHeight;
 
     let iframe;
     export let loading = false;
@@ -56,8 +74,8 @@
      * preview iframe shown in the publish step
      */
     export function set({ src, width, height, border, scale, transparent }) {
-        if (width) customWidth = width;
-        if (height) customHeight = height;
+        if (width !== undefined) customWidth = width;
+        if (height !== undefined) customHeight = height;
         if (border !== undefined) customBorder = border;
         if (src) customSrc = src;
         if (scale) customScale = scale;
@@ -95,6 +113,13 @@
         );
     }
 
+    export function reload() {
+        getContext(window => {
+            loading = true;
+            window.location.reload();
+        });
+    }
+
     function onLoad() {
         contentWindow = iframe.contentWindow;
         contentDocument = iframe.contentDocument;
@@ -112,13 +137,55 @@
 
     function onMessage(e) {
         const message = e.data;
-        // TODO: ignore during resizing
-        // const { resizing } = this.get();
-        // if (resizing) return;
-        if (typeof message['datawrapper-height'] !== 'undefined') {
+        if (resizing) return;
+        if (typeof message['datawrapper-height'] !== 'undefined' && fixedHeight) {
             if (message['datawrapper-height'][$chart.id]) {
-                fixedHeight = message['datawrapper-height'][$chart.id];
+                reportedIframeSize = message['datawrapper-height'][$chart.id];
             }
+        }
+    }
+
+    $: {
+        if (!fixedHeight) {
+            reportedIframeSize = undefined;
+        }
+    }
+
+    let resizing = false;
+    let resizeOrigMousePos;
+
+    function startResize(event) {
+        resizing = true;
+        resizeOrigMousePos = [event.pageX, event.pageY];
+    }
+
+    function resize(event) {
+        if (resizing) {
+            const diffX = event.pageX - resizeOrigMousePos[0];
+            resizeWidth = width + diffX * 2; // x2 because the preview is horizontically centered
+            if (!fixedHeight) {
+                const diffY = event.pageY - resizeOrigMousePos[1];
+                resizeHeight = height + diffY;
+            }
+        }
+    }
+
+    function stopResize() {
+        if (resizing) {
+            customWidth = resizeWidth;
+            resizeWidth = undefined;
+            resizeOrigMousePos = undefined;
+
+            if (!fixedHeight) {
+                customHeight = resizeHeight;
+                resizeHeight = undefined;
+            }
+
+            dispatch('resize', {
+                width: customWidth,
+                height: fixedHeight ? reportedIframeSize : customHeight
+            });
+            resizing = false;
         }
     }
 </script>
@@ -139,14 +206,50 @@
         padding: 10px;
         margin: 0 auto;
         border: 1px solid #ddd;
+        position: relative;
     }
+    .iframe-border.resizing * {
+        pointer-events: none;
+    }
+
     iframe {
         width: 100%;
         height: 100%;
     }
+    .resizer {
+        position: absolute;
+        right: 0;
+        bottom: -5px;
+        cursor: se-resize;
+        font-size: 18px;
+    }
+    .fixed-height .resizer {
+        cursor: ew-resize;
+    }
+    .is-loading {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #f3f3f3;
+        opacity: 0.95;
+    }
+    .is-loading > div {
+        display: block;
+        color: #999;
+        position: absolute;
+        top: 50%;
+        right: 0;
+        bottom: 0;
+        font-size: 20px;
+        left: 0;
+        text-align: center;
+        line-height: 0;
+    }
 </style>
 
-<svelte:window on:message={onMessage} />
+<svelte:window on:message={onMessage} on:mousemove={resize} on:mouseup={stopResize} />
 
 <div
     class="iframe-wrapper"
@@ -154,10 +257,25 @@
     class:sticky-header={$headerProps.isSticky}
     style="transform: scale({scale || 1})"
 >
+    <slot name="abovePreview" />
     <div
         class="iframe-border"
-        style="background:{background};width:{width}px; height:{height}px;border-color:{borderColor}; padding:{border}px"
+        class:resizing
+        class:fixed-height={fixedHeight}
+        style="background:{background};width:{resizeWidth || width}px; height:{resizeHeight ||
+            height}px;border-color:{borderColor}; padding:{border}px"
     >
-        <iframe title={$chart.title} scrolling="no" bind:this={iframe} on:load={onLoad} />
+        <iframe title={$chart.title} {src} scrolling="no" bind:this={iframe} on:load={onLoad} />
+        {#if resizable}
+            <div class="resizer" on:mousedown={startResize}>
+                <IconDisplay icon="new" />
+            </div>
+        {/if}
+        {#if loading}
+            <div class="is-loading" transition:fade={{ duration: 150 }}>
+                <div><span>loading</span> <LoadingSpinnerDisplay /></div>
+            </div>
+        {/if}
     </div>
+    <slot name="belowPreview" />
 </div>

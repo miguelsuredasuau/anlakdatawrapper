@@ -3,7 +3,7 @@ const Joi = require('joi');
 const get = require('lodash/get');
 const set = require('lodash/set');
 const { Op } = require('@datawrapper/orm').db;
-const { Chart, User, Folder, Team, Theme } = require('@datawrapper/orm/models');
+const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
 const prepareChart = require('@datawrapper/service-utils/prepareChart');
 
 module.exports = {
@@ -74,21 +74,15 @@ module.exports = {
                     id: 'visualize',
                     view: 'edit/chart/visualize',
                     title: ['Visualize', 'core'],
-                    async data() {}
+                    async data() {
+                        return {};
+                    }
                 },
                 {
                     id: 'publish',
                     view: 'edit/chart/publish',
                     title: ['Publish & Embed', 'core'],
-                    async data({ request, chart }) {
-                        // load theme
-                        const theme = await Theme.findByPk(chart.theme);
-
-                        const extendedTheme = {
-                            ...theme.toJSON(),
-                            data: await theme.getMergedData()
-                        };
-
+                    async data({ request, chart, theme }) {
                         const { svelte2: afterEmbed } = await server.methods.getCustomData(
                             'edit/publish/afterEmbed',
                             {
@@ -116,11 +110,10 @@ module.exports = {
                         const chartActions = await server.methods.getChartActions({
                             request,
                             chart,
-                            theme: extendedTheme
+                            theme
                         });
 
                         return {
-                            theme: extendedTheme,
                             afterEmbed,
                             guestAboveInvite,
                             guestBelowInvite,
@@ -222,16 +215,19 @@ module.exports = {
                         params.step = workflow.steps[0];
                     }
 
+                    const api = server.methods.createAPI(request);
+
+                    // load theme from API
+                    const theme = await api(`/themes/${chart.theme}?extend=true`);
+
                     // evaluate data function for each step
                     for (const step of workflowSteps) {
                         // @todo: remove `step.id === params.step` check to pre-load
                         // data for all steps in single-page editor
                         if (step.id === params.step && typeof step.data === 'function') {
-                            step.data = await step.data({ request, chart });
+                            step.data = await step.data({ request, chart, theme });
                         }
                     }
-
-                    const api = server.methods.createAPI(request);
 
                     // refresh external data
                     await api(`/charts/${chart.id}/data/refresh`, { method: 'POST', json: false });
@@ -288,9 +284,8 @@ module.exports = {
                                 ...workflow,
                                 steps: workflowSteps
                             },
-                            visualizations: Array.from(server.app.visualizations.keys()).map(key =>
-                                server.app.visualizations.get(key)
-                            ),
+                            theme,
+                            visualizations: Array.from(server.app.visualizations.values()),
                             customViews,
                             showEditorNavInCmsMode: get(
                                 request.auth.artifacts.activeTeam,

@@ -4,7 +4,7 @@
 
     const config = getContext('config');
 
-    export let dw_chart;
+    export let dwChart;
     export let chartData;
     export let showLocaleSelect;
     export let language;
@@ -29,7 +29,7 @@
         ]}
         bind:data
         storeData={{
-            dw_chart,
+            dw_chart: dwChart,
             language,
             locales: $config.chartLocales.map(({ id, title }) => ({ value: id, label: title }))
         }}

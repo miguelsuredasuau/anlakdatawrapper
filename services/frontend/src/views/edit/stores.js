@@ -16,6 +16,11 @@ export const chart = new writable({});
  */
 export const data = new writable('');
 
+/**
+ * visualization store
+ */
+export const visualization = new writable({});
+
 export const onNextSave = new Set();
 export const hasUnsavedChanges = new writable(false);
 export const saveError = new writable(false);
@@ -32,7 +37,7 @@ const ALLOWED_CHART_KEYS = [
     'lastEditStep'
 ];
 
-export function initChartStore(rawChart) {
+export function initChartStore(rawChart, visualizations) {
     chart.set(rawChart);
     let prevState;
 
@@ -85,6 +90,8 @@ export function initChartStore(rawChart) {
         }
     }, 1000);
 
+    visualization.set(visualizations.find(vis => vis.id === rawChart.type) || visualizations[0]);
+
     chart.subscribe(value => {
         if (!prevState && value.id) {
             // initial set
@@ -100,6 +107,11 @@ export function initChartStore(rawChart) {
             if (newUnsaved) {
                 hasUnsavedChanges.set(true);
                 patchChartSoon(value.id);
+            }
+
+            if (unsavedChanges.type) {
+                // chart type has changed, update visualization store
+                visualization.set(visualizations.find(vis => vis.id === unsavedChanges.type));
             }
         }
     });

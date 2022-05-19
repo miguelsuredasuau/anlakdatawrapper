@@ -14,7 +14,7 @@
         onNextSave
     } from './stores';
     import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
-    import dwChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
+    import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
     import escapeHtml from '@datawrapper/shared/escapeHtml.cjs';
 
     export let workflow;
@@ -40,23 +40,23 @@
 
     $chart = rawChart;
 
-    const dw_chart = dwChart(rawChart);
-    dw_chart.save = dw_chart.saveSoon = () => {
-        $chart = dw_chart.attributes();
+    const dwChart = ChartCoreChart(rawChart);
+    dwChart.save = dwChart.saveSoon = () => {
+        $chart = dwChart.attributes();
     };
-    dw_chart.dataset(
+    dwChart.dataset(
         delimited({
             csv: rawData
         }).parse()
     );
-    dw_chart.onChange(() => {
-        $chart = dw_chart.attributes();
+    dwChart.onChange(() => {
+        $chart = dwChart.attributes();
     });
     /**
      * calls onNextSave
      * @param {function} method - pass
      */
-    dw_chart.onNextSave = method => {
+    dwChart.onNextSave = method => {
         if (typeof method === 'function') {
             if ($hasUnsavedChanges) {
                 onNextSave.add(method);
@@ -72,12 +72,12 @@
         }
     };
 
-    // update dw_chart when our chart store changes
+    // update dwChart when our chart store changes
     chart.subscribe(() => {
-        // we can update dw_chart here, but since the old UI
-        // is not reactive to dw_chart changes, this won't
+        // we can update dwChart here, but since the old UI
+        // is not reactive to dwChart changes, this won't
         // have any effect
-        dw_chart.attributes($chart);
+        dwChart.attributes($chart);
     });
 
     const steps = workflow.steps.map(step => ({
@@ -98,10 +98,11 @@
         ...activeStep.data,
         chart,
         data,
+        theme,
         visualizations,
         language: rawChart.language,
         chartData: rawData,
-        dw_chart
+        dwChart
     };
 
     $: chartTitle = $chart.title || rawChart.title;
@@ -110,8 +111,9 @@
     $: lastActiveStep = $chart.lastEditStep || 1;
 
     onMount(async () => {
-        initChartStore(rawChart);
+        initChartStore(rawChart, visualizations);
         initDataStore(rawChart.id, rawData);
+
         if (!initUrlStep && rawChart.lastEditStep) {
             activeStep = steps[Math.max(1, Math.min(steps.length - 1, rawChart.lastEditStep - 1))];
         }
