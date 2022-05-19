@@ -24,7 +24,9 @@ export default {
         alias({
             entries: {
                 _layout: join(__dirname, 'src/views/_layout'),
-                _partials: join(__dirname, 'src/views/_partials')
+                _partials: join(__dirname, 'src/views/_partials'),
+                '@datawrapper/shared/decodeHtml': '@datawrapper/shared/decodeHtml.ssr',
+                '@datawrapper/shared/httpReq': '@datawrapper/shared/httpReq.ssr'
             }
         }),
         svelte({

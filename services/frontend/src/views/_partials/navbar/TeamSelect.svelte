@@ -27,13 +27,6 @@
     }
     .team-select.is-active-team :global(.icon) {
         background: var(--color-dw-scooter-lightest);
-        /* padding: 2px;
-        border: 2px solid var(--color-dw-scooter-lightest);
-        box-sizing: content-box;
-        border-radius: 2px;
-        position: relative;
-        top: -2px;
-        left: -2px; */
     }
 </style>
 
