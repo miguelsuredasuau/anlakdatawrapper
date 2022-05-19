@@ -155,8 +155,7 @@ function createInput(view, viewComponents, ssr) {
                     _partials: join(__dirname, 'src/views/_partials'),
                     _plugins: join(__dirname, 'src/views/_plugins'),
                     ...(ssr && {
-                        '@datawrapper/shared/decodeHtml': '@datawrapper/shared/decodeHtml.ssr',
-                        '@datawrapper/shared/httpReq': '@datawrapper/shared/httpReq.ssr'
+                        '@datawrapper/shared/decodeHtml': '@datawrapper/shared/decodeHtml.ssr'
                     })
                 }
             }),
