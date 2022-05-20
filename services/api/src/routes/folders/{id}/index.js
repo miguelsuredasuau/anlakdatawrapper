@@ -1,9 +1,11 @@
 const { folderResponse, noContentResponse } = require('../../../schemas/response');
 const { Folder, User, Chart } = require('@datawrapper/orm/models');
+const omit = require('lodash/omit');
 const { db } = require('@datawrapper/orm');
 const { Op } = require('@datawrapper/orm').db;
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
+const { updateChartsAndMoveToNewTeam } = require('../../../utils/index.js');
 
 function serializeWithCharts(folder, charts) {
     return {
@@ -238,24 +240,28 @@ async function updateFolder(request) {
         }
     }
 
-    return await db.transaction(async t => {
-        // ownership has changed
-        if (folder.org_id !== update.teamId || folder.user_id !== update.userId) {
-            await propagateOwnershipChange(folder, update.teamId, update.userId, t);
-        }
-
-        folder.name = update.name;
-        folder.parent_id = update.parentId;
-        folder.org_id = update.teamId;
-        folder.user_id = update.userId;
-        await folder.save({
-            transaction: t
+    return await db
+        .transaction(async t => {
+            // ownership has changed
+            if (folder.org_id !== update.teamId || folder.user_id !== update.userId) {
+                await propagateOwnershipChange(folder, update.teamId, update.userId, user, t);
+            }
+            folder.name = update.name;
+            folder.parent_id = update.parentId;
+            folder.org_id = update.teamId;
+            folder.user_id = update.userId;
+            await folder.save({
+                transaction: t
+            });
+        })
+        .then(() => serialize(folder))
+        .catch(err => {
+            if (err.isBoom) return err;
+            return Boom.badImplementation();
         });
-        return serialize(folder);
-    });
 }
 
-async function propagateOwnershipChange(folder, newTeamId, newUserId, transaction) {
+async function propagateOwnershipChange(folder, newTeamId, newUserId, user, transaction) {
     const folderIds = [];
     const queue = [folder];
     while (queue.length > 0) {
@@ -278,17 +284,30 @@ async function propagateOwnershipChange(folder, newTeamId, newUserId, transactio
             transaction
         }
     );
+
     const chartUpdate = { organization_id: newTeamId, author_id: newUserId };
+
+    // team change
     if (newTeamId !== null) {
-        // don't update author ID if team changes
-        delete chartUpdate.author_id;
+        const charts = await Chart.findAll({
+            attributes: ['id'],
+            where: { in_folder: folderIds },
+            include: [User]
+        });
+        await updateChartsAndMoveToNewTeam({
+            charts,
+            user,
+            chartUpdate: omit(chartUpdate, ['author_id']),
+            transaction
+        });
+    } else {
+        await Chart.update(chartUpdate, {
+            where: {
+                in_folder: folderIds
+            },
+            transaction
+        });
     }
-    await Chart.update(chartUpdate, {
-        where: {
-            in_folder: folderIds
-        },
-        transaction
-    });
 }
 
 module.exports = {

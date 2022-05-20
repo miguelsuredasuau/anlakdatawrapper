@@ -744,7 +744,7 @@ test('POST /charts returns an error when an unknown chart type is set', async t 
     t.is(res.statusCode, 400);
 });
 
-test('PATCH /charts moves multiple charts into a folder of a user', async t => {
+test('PATCH /charts moves multiple charts to different folder of same user', async t => {
     let charts;
     let folder;
     try {
@@ -805,7 +805,7 @@ test('PATCH /charts moves multiple charts into a folder of a user', async t => {
     }
 });
 
-test('PATCH /charts moves multiple charts into root folder of a team', async t => {
+test('PATCH /charts moves multiple charts from a user into root folder of a team', async t => {
     let charts;
     let userFolders;
     let userObj = {};
@@ -879,7 +879,7 @@ test('PATCH /charts moves multiple charts into root folder of a team', async t =
     }
 });
 
-test('PATCH /charts moves multiple charts into folder of a team', async t => {
+test('PATCH /charts moves multiple charts from a user into folder of a team', async t => {
     let charts;
     let teamFolder;
     let team;
@@ -1087,6 +1087,107 @@ test('PATCH /charts overwrites chart team with folder team', async t => {
         t.is(chart1.author_id, user.id);
     } finally {
         await destroy(charts, teamFolder, folderTeam, Object.values(otherUserObj));
+    }
+});
+
+test('PATCH /charts moves multiple charts to a folder of a team', async t => {
+    let charts;
+    let teamObj1 = {};
+    let teamObj2 = {};
+    let userObj = {};
+    let team1Folder;
+    let team2Folder;
+    try {
+        teamObj1 = await createTeamWithUser(t.context.server);
+        teamObj2 = await createTeamWithUser(t.context.server);
+        userObj = await createUser(t.context.server);
+        // user1 is only in team1
+        const { user: user1, team: team1 } = teamObj1;
+        // user2 is in team1 and team2
+        const { user: user2, team: team2, token: token2 } = teamObj2;
+        // user3 is in team1 and team2
+        const { user: user3 } = userObj;
+
+        await addUserToTeam(user2, team1);
+        await addUserToTeam(user3, team1);
+        await addUserToTeam(user3, team2);
+
+        team1Folder = await createFolder({ org_id: team1.id });
+        team2Folder = await createFolder({ org_id: team2.id });
+
+        charts = await createCharts([
+            {
+                author_id: user1.id,
+                organization_id: team1.id,
+                folder_id: team1Folder.folder_id
+            },
+            {
+                author_id: user2.id,
+                organization_id: null
+            },
+            {
+                author_id: user3.id,
+                organization_id: team1.id
+            }
+        ]);
+        // user2 moves charts to team2
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${token2}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: {
+                    folderId: team2Folder.id
+                }
+            }
+        });
+        t.is(res.statusCode, 200);
+        const result = res.result;
+        t.is(result.length, 3);
+        const result0 = result.find(el => el.id === charts[0].id);
+        const result1 = result.find(el => el.id === charts[1].id);
+        const result2 = result.find(el => el.id === charts[2].id);
+        t.truthy(result0);
+        t.truthy(result1);
+        t.truthy(result2);
+
+        // this chart previously belonged to user1, but since user1 is not in team2
+        // it now belongs to user2
+        t.is(result0.authorId, user2.id);
+        // user2 still owns this chart
+        t.is(result1.authorId, user2.id);
+        // user3 still owns this chart
+        t.is(result2.authorId, user3.id);
+
+        // all charts now in team2
+        t.is(result0.organizationId, team2.id);
+        t.is(result1.organizationId, team2.id);
+        t.is(result2.organizationId, team2.id);
+
+        for (const chart of charts) {
+            const updatedChart = await findChartById(chart.id);
+            t.is(updatedChart.in_folder, team2Folder.id);
+            t.is(updatedChart.organization_id, team2.id);
+            if (chart.author_id === user3.id) {
+                t.is(updatedChart.author_id, user3.id);
+            } else {
+                t.is(updatedChart.author_id, user2.id);
+            }
+        }
+    } finally {
+        await destroy(
+            charts,
+            team1Folder,
+            team2Folder,
+            ...Object.values(teamObj1),
+            ...Object.values(teamObj2),
+            ...Object.values(userObj)
+        );
     }
 });
 
@@ -1334,6 +1435,69 @@ test('PATCH /charts returns an error if the user does not have access to a folde
     }
 });
 
+test('PATCH /charts returns an error if admin tries to move chart to team which author does not have access to, and the target team has no owner', async t => {
+    let charts;
+    let teamObj1 = {};
+    let teamObj2 = {};
+    let adminUserObj = {};
+    let team1Folder;
+    try {
+        teamObj1 = await createTeamWithUser(t.context.server, { role: 'member' });
+        teamObj2 = await createTeamWithUser(t.context.server);
+        adminUserObj = await createUser(t.context.server, { role: 'admin' });
+        const { user: user1, team: team1 } = teamObj1;
+        const { user: user2, team: team2 } = teamObj2;
+        const { token: adminToken } = adminUserObj;
+
+        team1Folder = await createFolder({ org_id: team1.id });
+
+        charts = await createCharts([
+            {
+                author_id: user1.id,
+                organization_id: team1.id,
+                in_folder: null
+            },
+            {
+                author_id: user2.id,
+                organization_id: team2.id,
+                in_folder: null
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/charts',
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${adminToken}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                ids: charts.map(c => c.id),
+                patch: {
+                    folderId: team1Folder.folder_id
+                }
+            }
+        });
+        // request fails
+        t.is(res.statusCode, 400);
+        // charts remain unchanged
+        for (const originalChart of charts) {
+            const chart = await findChartById(originalChart.id);
+            t.is(chart.in_folder, originalChart.in_folder);
+            t.is(chart.author_id, originalChart.author_id);
+            t.is(chart.organization_id, originalChart.organization_id);
+        }
+    } finally {
+        await destroy(
+            charts,
+            team1Folder,
+            ...Object.values(teamObj1),
+            ...Object.values(teamObj2),
+            ...Object.values(adminUserObj)
+        );
+    }
+});
+
 test('PATCH /charts returns an error if the user does not have access to a team', async t => {
     let anotherTeam;
     let charts = [];
@@ -1456,82 +1620,125 @@ test('PATCH /charts returns an error if trying to update any other chart propert
     }
 });
 
-test('PATCH /charts moves charts correctly between teams', async t => {
+test('PATCH /charts moves charts to a team correctly', async t => {
     let charts;
-    let userObjA;
-    let userObjB;
-    let otherTeam;
-
+    let teamObj1 = {};
+    let teamObj2 = {};
+    let teamFolder = {};
+    let userObj = {};
     try {
-        userObjA = await createUser(t.context.server, { role: 'editor' });
-        const { user: userA } = userObjA;
-        userObjB = await createUser(t.context.server, { role: 'editor' });
-        const { user: userB } = userObjB;
-        const { token, user, team } = t.context.teamObj;
-        otherTeam = await createTeam();
-        await addUserToTeam(user, otherTeam);
-        await addUserToTeam(userA, otherTeam);
+        teamObj1 = await createTeamWithUser(t.context.server);
+        teamObj2 = await createTeamWithUser(t.context.server);
+        userObj = await createUser(t.context.server);
+
+        const { user: user1, team: team1 } = teamObj1;
+        const { user: user2, team: team2, token: token2 } = teamObj2;
+        const { user: user3 } = userObj;
+
+        // user2 is in both teams
+        await addUserToTeam(user2, team1);
+        // user3 is in both teams
+        await addUserToTeam(user3, team1);
+        await addUserToTeam(user3, team2);
+
+        teamFolder = await createFolder({
+            user_id: null,
+            org_id: team1.id
+        });
+
         charts = await createCharts([
             {
-                title: 'Chart 1',
-                theme: 'theme1',
-                type: 'bar',
-                metadata: {},
-                author_id: userA.id,
-                organization_id: team.id
+                author_id: user1.id,
+                organization_id: team1.id
             },
             {
-                title: 'Chart 2',
-                theme: 'theme1',
-                type: 'bar',
-                metadata: {},
-                author_id: userB.id,
-                organization_id: team.id
+                author_id: user2.id,
+                folder_id: teamFolder.folder_id,
+                organization_id: team1.id
+            },
+            {
+                author_id: user2.id,
+                organization_id: null
+            },
+            {
+                author_id: user3.id,
+                organization_id: team1.id
             }
         ]);
+
+        // user2 moves charts to team2
         const res = await t.context.server.inject({
             method: 'PATCH',
             url: '/v3/charts',
             headers: {
                 ...t.context.headers,
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token2}`,
                 'Content-Type': 'application/json'
             },
             payload: {
                 ids: charts.map(c => c.id),
                 patch: {
-                    folderId: null,
-                    teamId: otherTeam.id
+                    teamId: team2.id,
+                    folderId: null
                 }
             }
         });
+
         t.is(res.statusCode, 200);
-        const result = await res.result;
-        t.is(result.length, 2);
+        const result = res.result;
+        t.is(result.length, 4);
+
         const result0 = result.find(el => el.id === charts[0].id);
         const result1 = result.find(el => el.id === charts[1].id);
+        const result2 = result.find(el => el.id === charts[2].id);
+        const result3 = result.find(el => el.id === charts[3].id);
+
         t.truthy(result0);
         t.truthy(result1);
+        t.truthy(result2);
+        t.truthy(result3);
+
         t.is(result0.folderId, null);
-        t.is(result0.authorId, userA.id); // authorship remains unchanged
-        t.is(result0.organizationId, otherTeam.id);
         t.is(result1.folderId, null);
-        t.is(result1.authorId, userB.id); // authorship remains unchanged
-        t.is(result1.organizationId, otherTeam.id);
-        const chart1 = await findChartById(charts[0].id);
-        t.is(chart1.in_folder, null);
-        t.is(chart1.organization_id, otherTeam.id);
-        t.is(chart1.author_id, userA.id);
-        const chart2 = await findChartById(charts[1].id);
-        t.is(chart2.in_folder, null);
-        t.is(chart2.organization_id, otherTeam.id);
-        t.is(chart2.author_id, userB.id);
+        t.is(result2.folderId, null);
+        t.is(result3.folderId, null);
+
+        // all charts now in team2
+        t.is(result0.organizationId, team2.id);
+        t.is(result1.organizationId, team2.id);
+        t.is(result2.organizationId, team2.id);
+        t.is(result3.organizationId, team2.id);
+
+        // charts originally belonging to user2 still do
+        t.is(result0.authorId, user2.id);
+        t.is(result1.authorId, user2.id);
+        // chart belonging to user1, who cannot access team2, now belongs to user2, since user2 made the request
+        t.is(result2.authorId, user2.id);
+        // chart belonging to user3, who can access team2, still belongs to user3
+        t.is(result3.authorId, user3.id);
+
+        for (const chart of charts) {
+            const updated = await findChartById(chart.id);
+            t.is(updated.in_folder, null);
+            t.is(updated.organization_id, team2.id);
+            if (chart.author_id === user3.id) {
+                t.is(updated.author_id, user3.id);
+            } else {
+                t.is(updated.author_id, user2.id);
+            }
+        }
     } finally {
-        await destroy(charts, otherTeam, Object.values(userObjA), Object.values(userObjB));
+        await destroy(
+            charts,
+            teamFolder,
+            ...Object.values(userObj),
+            ...Object.values(teamObj1),
+            ...Object.values(teamObj2)
+        );
     }
 });
 
-test('PATCH /charts moves multiple charts into a different folder of the same team', async t => {
+test('PATCH /charts moves multiple charts to a different folder of the same team', async t => {
     let charts;
     let team;
     let teamFolders;
@@ -1544,6 +1751,7 @@ test('PATCH /charts moves multiple charts into a different folder of the same te
         const { user: otherUser } = otherUserObj;
         team = await createTeam();
         await addUserToTeam(user, team);
+        await addUserToTeam(otherUser, team);
         teamFolders = await createFolders([
             {
                 user_id: null,
@@ -1600,13 +1808,16 @@ test('PATCH /charts moves multiple charts into a different folder of the same te
         t.is(result0.folderId, teamFolders[1].id);
         t.is(result0.organizationId, team.id);
         t.is(result0.authorId, otherUser.id);
+
         t.is(result1.folderId, teamFolders[1].id);
         t.is(result1.organizationId, team.id);
         t.is(result1.authorId, user.id);
+
         const chart1 = await findChartById(charts[0].id);
         t.is(chart1.in_folder, teamFolders[1].id);
         t.is(chart1.organization_id, team.id);
         t.is(chart1.author_id, otherUser.id);
+
         const chart2 = await findChartById(charts[1].id);
         t.is(chart2.in_folder, teamFolders[1].id);
         t.is(chart2.organization_id, team.id);

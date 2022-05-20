@@ -3,15 +3,23 @@ const {
     BASE_URL,
     createChart,
     createUser,
+    createTeamWithUser,
     destroy,
     genNonExistentFolderId,
-    setup
+    setup,
+    addUserToTeam,
+    createFolder
 } = require('../../../../test/helpers/setup');
 const fetch = require('node-fetch');
 const get = require('lodash/get');
 
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function findChartById(id) {
+    const { Chart } = require('@datawrapper/orm/models');
+    return Chart.findByPk(id);
 }
 
 test.before(async t => {
@@ -560,6 +568,310 @@ test('PATCH returns error 400 when the metadata is nested too deeply', async t =
         if (chart) {
             await destroy(...Object.values(chart));
         }
+    }
+});
+
+test('PATCH with organizationId payload reassigns chart to requesting user when original author not in target team', async t => {
+    let teamObj1, teamObj2, chart;
+    try {
+        teamObj1 = await createTeamWithUser(t.context.server);
+        teamObj2 = await createTeamWithUser(t.context.server);
+
+        const { user: user1, team: team1, session: session1 } = teamObj1;
+        const { user: user2, team: team2, session: session2 } = teamObj2;
+
+        // add user2 to team1
+        await addUserToTeam(user2, team1);
+
+        // create user1 chart in team1
+        chart = await createChart({ organization_id: team1.id, author_id: user1.id });
+
+        // user1 can access chart
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                cookie: `DW-SESSION=${session1.id}`
+            }
+        });
+
+        t.is(res.statusCode, 200);
+
+        // user2 moves user1's chart to team2
+        const res2 = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                cookie: `DW-SESSION=${session2.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {
+                organizationId: team2.id
+            }
+        });
+
+        // author_id has been updated
+        t.is(res2.statusCode, 200);
+        t.is(res2.result.authorId, user2.id);
+
+        // user1 can no longer access chart
+        const res3 = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                cookie: `DW-SESSION=${session1.id}`
+            }
+        });
+
+        t.is(res3.statusCode, 401);
+    } finally {
+        destroy(chart, ...Object.values(teamObj1), ...Object.values(teamObj2));
+    }
+});
+
+test("PATCH with folderId payload reassigns chart to requesting user when original author not in target folder's team", async t => {
+    let teamObj1, teamObj2, chart, folder;
+    try {
+        teamObj1 = await createTeamWithUser(t.context.server);
+        teamObj2 = await createTeamWithUser(t.context.server);
+
+        const { user: user1, team: team1, token: token1 } = teamObj1;
+        const { user: user2, team: team2, token: token2 } = teamObj2;
+
+        // add user2 is in team1 and team2
+        await addUserToTeam(user2, team1);
+        // create user1 chart in team1
+        chart = await createChart({
+            organization_id: team1.id,
+            author_id: user1.id,
+            in_folder: null
+        });
+
+        // create folder in team2
+        folder = await createFolder({ org_id: team2.id, user_id: null });
+
+        // user1 can access chart
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                authorization: `Bearer ${token1}`
+            }
+        });
+
+        t.is(res.statusCode, 200);
+
+        // user2 moves user1's chart to folder in team2
+        const res1 = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                authorization: `Bearer ${token2}`
+            },
+            payload: {
+                folderId: folder.id
+            }
+        });
+
+        t.is(res1.statusCode, 200);
+        // author_id has been updated
+        t.is(res1.result.authorId, user2.id);
+        t.is(res1.result.folderId, folder.id);
+        t.is(res1.result.organizationId, team2.id);
+
+        const res3 = await findChartById(chart.id);
+        t.is(res3.author_id, user2.id);
+        t.is(res3.in_folder, folder.id);
+        t.is(res3.organization_id, team2.id);
+    } finally {
+        destroy(chart, folder, ...Object.values(teamObj1), ...Object.values(teamObj2));
+    }
+});
+
+test("PATCH from admin with organizationId payload reassigns chart to target team's owner when original author not in target team", async t => {
+    let adminUserObj, userTeamObj, userTeamObj2, chart;
+    try {
+        adminUserObj = await createUser(t.context.server, { role: 'admin' });
+        userTeamObj = await createTeamWithUser(t.context.server);
+        userTeamObj2 = await createTeamWithUser(t.context.server);
+
+        const { user: user1, team: team1, session: session1 } = userTeamObj;
+        const { user: user2, team: team2 } = userTeamObj2;
+        const { session: adminSession } = adminUserObj;
+
+        // user1 creates chart in user team1
+        chart = await createChart({ organization_id: team1.id, author_id: user1.id });
+
+        // user1 can access chart
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                cookie: `DW-SESSION=${session1.id}`
+            }
+        });
+
+        t.is(res.statusCode, 200);
+        t.is(res.result.organizationId, team1.id);
+        t.is(res.result.authorId, user1.id);
+
+        // adminUser moves user1's chart to different team
+        const res2 = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                cookie: `DW-SESSION=${adminSession.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {
+                organizationId: team2.id
+            }
+        });
+
+        // author_id has been updated to team2's owner
+        t.is(res2.statusCode, 200);
+        t.is(res2.result.authorId, user2.id);
+
+        // original chart author can no longer access chart
+        const res3 = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                cookie: `DW-SESSION=${user1.id}`
+            }
+        });
+
+        t.is(res3.statusCode, 401);
+    } finally {
+        destroy(
+            chart,
+            ...Object.values(adminUserObj),
+            ...Object.values(userTeamObj),
+            ...Object.values(userTeamObj2)
+        );
+    }
+});
+
+test('PATCH from admin with organizationId payload returns error when original chart author does not have access to target team, and target team has no owner', async t => {
+    let adminUserObj, userTeamObj, userTeamObj2, chart;
+    try {
+        adminUserObj = await createUser(t.context.server, { role: 'admin' });
+        userTeamObj = await createTeamWithUser(t.context.server);
+        userTeamObj2 = await createTeamWithUser(t.context.server, { role: 'member' });
+
+        const { user: user1, team: team1 } = userTeamObj;
+        const { team: team2 } = userTeamObj2;
+        const { token: adminToken } = adminUserObj;
+
+        // user1 creates chart in user team1
+        chart = await createChart({ organization_id: team1.id, author_id: user1.id });
+
+        // adminUser tries to move user1's chart to different team
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            },
+            payload: {
+                organizationId: team2.id
+            }
+        });
+
+        t.is(res.statusCode, 400);
+    } finally {
+        destroy(
+            chart,
+            ...Object.values(adminUserObj),
+            ...Object.values(userTeamObj),
+            ...Object.values(userTeamObj2)
+        );
+    }
+});
+
+test('PATCH from admin with authorId payload returns error when specified user does not have access to the chart team', async t => {
+    let adminUserObj, userTeamObj, userObj, chart;
+    try {
+        adminUserObj = await createUser(t.context.server, { role: 'admin' });
+        userTeamObj = await createTeamWithUser(t.context.server);
+        userObj = await createUser(t.context.server);
+
+        const { user } = userObj;
+        const { team } = userTeamObj;
+        const { token: adminToken } = adminUserObj;
+        const chart = await createChart({ author_id: user.id, organization_id: team.id });
+
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            },
+            payload: {
+                authorId: user.id
+            }
+        });
+
+        t.is(res.statusCode, 400);
+        const chartAfterRequest = await findChartById(chart.id);
+        t.is(chartAfterRequest.author_id, chart.author_id);
+        t.is(chartAfterRequest.organization_id, chart.organization_id);
+    } finally {
+        destroy(
+            chart,
+            ...Object.values(adminUserObj),
+            ...Object.values(userTeamObj),
+            ...Object.values(userObj)
+        );
+    }
+});
+
+test('PATCH from admin with authorId and organizationId payload returns error when specified user does not have access to specified team', async t => {
+    let adminUserObj, userTeamObj, userObj, userTeamObj2, chart;
+    try {
+        adminUserObj = await createUser(t.context.server, { role: 'admin' });
+        userTeamObj = await createTeamWithUser(t.context.server);
+        userTeamObj2 = await createTeamWithUser(t.context.server);
+        userObj = await createUser(t.context.server);
+
+        const { user } = userObj;
+        const { team } = userTeamObj;
+        const { user: user2, team: team2 } = userTeamObj2;
+        const { token: adminToken } = adminUserObj;
+
+        const chart = await createChart({
+            author_id: user2.id,
+            organization_id: team2.id
+        });
+
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            },
+            payload: {
+                authorId: user.id,
+                organization_id: team.id
+            }
+        });
+
+        t.is(res.statusCode, 400);
+
+        const chartAfterRequest = await findChartById(chart.id);
+
+        t.is(chartAfterRequest.author_id, chart.author_id);
+        t.is(chartAfterRequest.organization_id, chart.organization_id);
+    } finally {
+        destroy(
+            chart,
+            ...Object.values(adminUserObj),
+            ...Object.values(userTeamObj),
+            ...Object.values(userTeamObj2),
+            ...Object.values(userObj)
+        );
     }
 });
 

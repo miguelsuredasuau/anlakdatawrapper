@@ -5,6 +5,7 @@ const jsesc = require('jsesc');
 const crypto = require('crypto');
 const fs = require('fs-extra');
 const get = require('lodash/get');
+const partition = require('lodash/partition');
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 const prepareChart = require('@datawrapper/service-utils/prepareChart');
 const utils = {};
@@ -207,6 +208,84 @@ utils.getAdditionalMetadata = async (chart, { server }) => {
     }
 
     return data;
+};
+
+/**
+ * Takes array of Chart model items with User model included,
+ * and sets updated properties defined in chartUpdate, including new organization_id,
+ * as well as setting new author_id for charts where original author doesn't have access to new team
+ */
+utils.updateChartsAndMoveToNewTeam = async function ({
+    charts,
+    user: requestingUser,
+    chartUpdate,
+    transaction
+}) {
+    const { Chart } = require('@datawrapper/orm/models');
+
+    const [mayAccess, mayNotAccess] = await utils.checkChartAuthorsMayAccessTeam(
+        charts,
+        chartUpdate.organization_id
+    );
+    if (mayNotAccess.length) {
+        const newAuthorId = await utils.getNewChartAuthor(
+            requestingUser,
+            chartUpdate.organization_id
+        );
+        await Chart.update(
+            { ...chartUpdate, author_id: newAuthorId },
+            {
+                where: {
+                    id: mayNotAccess
+                },
+                ...(transaction ? { transaction } : false)
+            }
+        );
+    }
+    if (mayAccess.length) {
+        await Chart.update(chartUpdate, {
+            where: {
+                id: mayAccess
+            },
+            ...(transaction ? { transaction } : false)
+        });
+    }
+};
+
+/**
+ * Checks array of chart model items (with user model included) and returns ids
+ * of charts for which respective authors may, and may not access the passed team
+ */
+utils.checkChartAuthorsMayAccessTeam = async function (charts, teamId) {
+    const res = await Promise.all(
+        charts.map(({ user: author, id }) =>
+            author.getTeams().then(teams => ({
+                id,
+                mayAccess: teams.map(t => t.id).includes(teamId)
+            }))
+        )
+    );
+    return partition(res, ['mayAccess', true]).map(group => group.map(({ id }) => id));
+};
+/**
+ * Returns author_id to set on chart when user updates chart organization_id
+ * and the original author does not have access to the new team
+ */
+utils.getNewChartAuthor = async function (requestingUser, targetTeamId) {
+    // for non-admins, directly assign chart to requesting user
+    if (!requestingUser.isAdmin()) return requestingUser.id;
+
+    // for admins, assign chart to target team's owner
+    const { UserTeam } = require('@datawrapper/orm/models');
+    const owner = await UserTeam.findOne({
+        where: {
+            organization_id: targetTeamId,
+            team_role: 'owner'
+        }
+    });
+    // target team has no owner, so there is no appropriate user to re-assign chart to
+    if (!owner) throw Boom.badRequest();
+    return owner.user_id;
 };
 
 /**

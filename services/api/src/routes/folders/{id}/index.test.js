@@ -676,22 +676,34 @@ test('PUT /folders/{id} moves a folder from a team to a user', async t => {
 });
 
 test('PUT /folders/{id} moves a folder between teams', async t => {
-    let folder, child, grandchild, charts, teamObj;
+    let folder, child, grandchild, charts, teamObj1, teamObj2, userObj;
     try {
-        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
-        await addUserToTeam(teamObj.user, t.context.teamObj.team);
+        teamObj1 = await createTeamWithUser(t.context.server, { role: 'member' });
+        teamObj2 = await createTeamWithUser(t.context.server, { role: 'member' });
+        userObj = await createUser(t.context.server);
+
+        // user1 is in team1 & team2
+        const { user: user1, team: team1, token: token1 } = teamObj1;
+        // user2 is only in team2
+        const { user: user2, team: team2 } = teamObj2;
+        // user3 is in team1 & team2
+        const { user: user3 } = userObj;
+
+        await addUserToTeam(user1, team2);
+        await addUserToTeam(user3, team2);
+        await addUserToTeam(user3, team1);
         folder = await createFolder({
             name: 'folder',
-            org_id: t.context.teamObj.team.id
+            org_id: team2.id
         });
         child = await createFolder({
             name: 'child',
-            org_id: t.context.teamObj.team.id,
+            org_id: team2.id,
             parent_id: folder.id
         });
         grandchild = await createFolder({
             name: 'grandchild',
-            org_id: t.context.teamObj.team.id,
+            org_id: team2.id,
             parent_id: child.id
         });
         charts = await createCharts([
@@ -702,8 +714,8 @@ test('PUT /folders/{id} moves a folder between teams', async t => {
                 type: 'bar',
                 metadata: {},
                 in_folder: folder.id,
-                author_id: teamObj.user.id,
-                organization_id: t.context.teamObj.team.id
+                author_id: user1.id,
+                organization_id: team2.id
             },
             {
                 id: randomId(),
@@ -712,8 +724,8 @@ test('PUT /folders/{id} moves a folder between teams', async t => {
                 type: 'bar',
                 metadata: {},
                 in_folder: child.id,
-                author_id: teamObj.user.id,
-                organization_id: t.context.teamObj.team.id
+                author_id: user1.id,
+                organization_id: team2.id
             },
             {
                 id: randomId(),
@@ -722,8 +734,34 @@ test('PUT /folders/{id} moves a folder between teams', async t => {
                 type: 'bar',
                 metadata: {},
                 in_folder: grandchild.id,
-                author_id: teamObj.user.id,
-                organization_id: t.context.teamObj.team.id
+                author_id: user1.id,
+                organization_id: team2.id
+            },
+            // the next chart belongs to user3
+            // and we expect it to still belong to user3
+            // after folder is moved to team1
+            {
+                id: randomId(),
+                title: 'Chart 4',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                in_folder: folder.id,
+                author_id: user3.id,
+                organization_id: team2.id
+            },
+            // the next chart belongs to user2
+            // and we expect this chart to be re-assigned to user1
+            // when folder is moved to team1
+            {
+                id: randomId(),
+                title: 'Chart 5',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                in_folder: folder.id,
+                author_id: user2.id,
+                organization_id: team2.id
             }
         ]);
         const res = await t.context.server.inject({
@@ -731,36 +769,177 @@ test('PUT /folders/{id} moves a folder between teams', async t => {
             url: `/v3/folders/${folder.id}`,
             headers: {
                 ...t.context.headers,
-                Authorization: `Bearer ${teamObj.token}`,
+                Authorization: `Bearer ${token1}`,
                 'Content-Type': 'application/json'
             },
             payload: {
                 name: folder.name,
                 userId: null,
                 parentId: null,
-                teamId: teamObj.team.id
+                teamId: team1.id
             }
         });
+
         t.is(res.statusCode, 200);
+
         const result = await res.result;
-        t.is(result.teamId, teamObj.team.id);
+
+        t.is(result.teamId, team1.id);
         t.is(result.userId, null);
         folder = await findFolderById(folder.id);
-        t.is(folder.org_id, teamObj.team.id);
+        t.is(folder.org_id, team1.id);
         t.is(folder.user_id, null);
         child = await findFolderById(child.id);
-        t.is(child.org_id, teamObj.team.id);
+        t.is(child.org_id, team1.id);
         t.is(child.user_id, null);
         grandchild = await findFolderById(grandchild.id);
-        t.is(grandchild.org_id, teamObj.team.id);
+        t.is(grandchild.org_id, team1.id);
+        t.is(grandchild.user_id, null);
+
+        for (const chart of charts) {
+            const updated = await findChartById(chart.id);
+            const originalChart = charts.find(({ id }) => id === chart.id);
+            // user3 was in both teams, so ownership is retained
+            if (originalChart.author_id === user3.id) {
+                t.is(updated.author_id, user3.id);
+            } else {
+                // remaining charts either already belonged to, or got transferred to user1
+                t.is(updated.author_id, user1.id);
+            }
+            // all charts now in target team
+            t.is(updated.organization_id, team1.id);
+        }
+    } finally {
+        await destroy(
+            charts,
+            grandchild,
+            child,
+            folder,
+            ...Object.values(userObj),
+            ...Object.values(teamObj1),
+            ...Object.values(teamObj2)
+        );
+    }
+});
+
+test('PUT /folders/{id} returns an error when one of child charts cannot be moved', async t => {
+    let folder, child, grandchild, charts, teamObj1, teamObj2, adminUserObj;
+    try {
+        adminUserObj = await createUser(t.context.server, { role: 'admin' });
+        teamObj1 = await createTeamWithUser(t.context.server, { role: 'member' });
+        teamObj2 = await createTeamWithUser(t.context.server, { role: 'member' });
+
+        // user1 is in team1 & team2
+        // user2 is only in team2
+        const { user: user1, team: team1 } = teamObj1;
+        const { user: user2, team: team2 } = teamObj2;
+        const { user: adminUser, token: adminToken } = adminUserObj;
+
+        await addUserToTeam(user1, team2);
+        await addUserToTeam(adminUser, team2);
+        await addUserToTeam(adminUser, team1);
+
+        folder = await createFolder({
+            name: 'folder',
+            org_id: team2.id
+        });
+        child = await createFolder({
+            name: 'child',
+            org_id: team2.id,
+            parent_id: folder.id
+        });
+        grandchild = await createFolder({
+            name: 'grandchild',
+            org_id: team2.id,
+            parent_id: child.id
+        });
+        charts = await createCharts([
+            {
+                id: randomId(),
+                title: 'Chart 1',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                in_folder: folder.id,
+                author_id: user1.id,
+                organization_id: team2.id
+            },
+            {
+                id: randomId(),
+                title: 'Chart 2',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                in_folder: child.id,
+                author_id: user1.id,
+                organization_id: team2.id
+            },
+            {
+                id: randomId(),
+                title: 'Chart 3',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                in_folder: grandchild.id,
+                author_id: user1.id,
+                organization_id: team2.id
+            },
+            // the next chart belongs to user2
+            // this chart should be re-assigned when
+            // when folder is moved to team1
+            {
+                id: randomId(),
+                title: 'Chart 4',
+                theme: 'theme1',
+                type: 'bar',
+                metadata: {},
+                in_folder: folder.id,
+                author_id: user2.id,
+                organization_id: team2.id
+            }
+        ]);
+        const res = await t.context.server.inject({
+            method: 'PUT',
+            url: `/v3/folders/${folder.id}`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${adminToken}`,
+                'Content-Type': 'application/json'
+            },
+            payload: {
+                name: folder.name,
+                userId: null,
+                parentId: null,
+                teamId: team1.id
+            }
+        });
+        // request fails, as target team has no owner
+        t.is(res.statusCode, 400);
+        // folders and charts remain unchanged
+        folder = await findFolderById(folder.id);
+        t.is(folder.org_id, team2.id);
+        t.is(folder.user_id, null);
+        child = await findFolderById(child.id);
+        t.is(child.org_id, team2.id);
+        t.is(child.user_id, null);
+        grandchild = await findFolderById(grandchild.id);
+        t.is(grandchild.org_id, team2.id);
         t.is(grandchild.user_id, null);
         for (const chart of charts) {
             const updated = await findChartById(chart.id);
-            t.is(updated.author_id, teamObj.user.id);
-            t.is(updated.organization_id, teamObj.team.id);
+            t.is(updated.author_id, chart.author_id);
+            t.is(updated.organization_id, chart.organization_id);
         }
     } finally {
-        await destroy(charts, grandchild, child, folder, Object.values(teamObj));
+        await destroy(
+            charts,
+            grandchild,
+            child,
+            folder,
+            ...Object.values(teamObj1),
+            ...Object.values(teamObj2),
+            ...Object.values(adminUserObj)
+        );
     }
 });
 

@@ -5,7 +5,11 @@ const { Op } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');
 const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
 const { chartListResponse, chartResponse } = require('../../schemas/response');
-const { prepareChart, GET_CHARTS_ATTRIBUTES } = require('../../utils/index.js');
+const {
+    prepareChart,
+    GET_CHARTS_ATTRIBUTES,
+    updateChartsAndMoveToNewTeam
+} = require('../../utils/index.js');
 const { runAndIgnoreParseErrors } = require('@datawrapper/orm/utils/run');
 const Boom = require('@hapi/boom');
 
@@ -497,27 +501,14 @@ async function patchChartsHandler(request) {
     const { auth, payload } = request;
     const user = auth.artifacts;
     const { ids, patch } = payload;
-
     const activatedTeams = (await user.getAcceptedTeams()).map(t => t.id);
-    const charts = await Chart.findAll({
-        where: {
-            id: payload.ids,
-            deleted: { [Op.not]: true },
-            [Op.or]: [
-                { organization_id: null, author_id: user.id },
-                ...(activatedTeams.length ? [{ organization_id: activatedTeams }] : [])
-            ]
-        }
-    });
-    if (charts.length !== payload.ids.length) {
-        throw Boom.notFound();
-    }
+
     let folder;
     const chartUpdate = {
         in_folder: patch.folderId,
-        organization_id: null,
-        author_id: user.id
+        organization_id: null
     };
+
     if (patch.folderId) {
         folder = await Folder.findByPk(patch.folderId);
         if (!folder) {
@@ -536,17 +527,36 @@ async function patchChartsHandler(request) {
             return Boom.forbidden("You don't have access to this team.");
         }
         chartUpdate.organization_id = patch.teamId;
-        delete chartUpdate.author_id;
     }
 
-    await Chart.update(chartUpdate, {
+    const charts = await Chart.findAll({
         where: {
-            id: ids
-        }
+            id: ids,
+            deleted: { [Op.not]: true },
+            [Op.or]: [
+                { organization_id: null, author_id: user.id },
+                ...(activatedTeams.length ? [{ organization_id: activatedTeams }] : [])
+            ]
+        },
+        ...(chartUpdate.organization_id ? { include: [User] } : {})
     });
+
+    if (charts.length !== ids.length) {
+        throw Boom.notFound();
+    }
+    if (chartUpdate.organization_id) {
+        await updateChartsAndMoveToNewTeam({ charts, user, chartUpdate });
+    } else {
+        await Chart.update(
+            { ...chartUpdate, author_id: user.id },
+            {
+                where: { id: ids }
+            }
+        );
+    }
     const updated = await Chart.findAll({
         where: {
-            id: payload.ids,
+            id: ids,
             deleted: { [Op.not]: true }
         }
     });

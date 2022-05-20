@@ -14,7 +14,8 @@ const { camelizeKeys, decamelizeKeys } = require('humps');
 const {
     getAdditionalMetadata,
     isValidMySQLJSON,
-    prepareChart
+    prepareChart,
+    getNewChartAuthor
 } = require('../../../utils/index.js');
 const { noContentResponse, chartResponse } = require('../../../schemas/response');
 
@@ -264,31 +265,6 @@ async function editChart(request) {
     const user = auth.artifacts;
     const isAdmin = server.methods.isAdmin(request);
 
-    const chart = await Chart.findOne({
-        where: {
-            id: params.id,
-            deleted: { [Op.not]: true }
-        }
-    });
-
-    if (!chart) {
-        return Boom.notFound();
-    }
-
-    const isEditable = await chart.isEditableBy(auth.artifacts, auth.credentials.session);
-
-    if (!isEditable) {
-        return Boom.unauthorized();
-    }
-
-    if (
-        camelizedPayload.organizationId &&
-        !isAdmin &&
-        !(await user.hasActivatedTeam(payload.organizationId))
-    ) {
-        return Boom.unauthorized('User does not have access to the specified team.');
-    }
-
     if (camelizedPayload && camelizedPayload.type) {
         // validate chart type
         if (!server.app.visualizations.has(camelizedPayload.type)) {
@@ -316,12 +292,60 @@ async function editChart(request) {
         camelizedPayload.organizationId = folder.org_id ? folder.org_id : null;
     }
 
-    if ('authorId' in camelizedPayload && !isAdmin) {
-        delete camelizedPayload.authorId;
+    const chart = await Chart.findOne({
+        where: {
+            id: params.id,
+            deleted: { [Op.not]: true }
+        },
+        ...(camelizedPayload.organizationId ? { include: [User] } : {})
+    });
+
+    if (!chart) {
+        return Boom.notFound();
+    }
+
+    const isEditable = await chart.isEditableBy(auth.artifacts, auth.credentials.session);
+
+    if (!isEditable) {
+        return Boom.unauthorized();
     }
 
     if ('isFork' in camelizedPayload && !isAdmin) {
         delete camelizedPayload.isFork;
+    }
+
+    if ('authorId' in camelizedPayload && !isAdmin) {
+        delete camelizedPayload.authorId;
+    }
+
+    let newAuthor;
+    if (camelizedPayload.authorId) {
+        newAuthor = await User.findByPk(camelizedPayload.authorId);
+        if (!newAuthor) return Boom.badRequest('Specified user does not exist');
+
+        const newAuthorTeams = (await newAuthor.getTeams()).map(t => t.id);
+        const chartTeam = camelizedPayload.organizationId || chart.organization_id;
+
+        if (chartTeam && !newAuthorTeams.includes(chartTeam)) {
+            return Boom.badRequest(`Specified user may not access team`);
+        }
+    }
+
+    if (camelizedPayload.organizationId) {
+        // user does not have access to team
+        if (!isAdmin && !(await user.hasActivatedTeam(camelizedPayload.organizationId))) {
+            return Boom.unauthorized('User does not have access to the specified team.');
+        }
+        // check if chart author has access to new team
+        // (in case admin set new author, and there was a conflict, the request would have already returned 400)
+        if (!newAuthor) {
+            const chartAuthorTeamIds = (await chart.user.getTeams()).map(t => t.id);
+            // chart author does not have access to new team
+            if (!chartAuthorTeamIds.includes(camelizedPayload.organizationId)) {
+                const newAuthorId = await getNewChartAuthor(user, camelizedPayload.organizationId);
+                camelizedPayload.authorId = newAuthorId;
+            }
+        }
     }
 
     // prevent information about earlier publish from being reverted
