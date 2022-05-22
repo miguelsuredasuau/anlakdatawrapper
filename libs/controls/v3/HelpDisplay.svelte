@@ -61,7 +61,7 @@
         background: #18a1cd;
         color: #fff;
         width: 240px;
-        border-radius: 2px;
+        border-radius: 3px;
         box-shadow: 3px 2px 2px rgba(0, 0, 0, 0.1);
     }
     .content :global(img) {

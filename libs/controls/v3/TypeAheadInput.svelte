@@ -154,14 +154,6 @@
         }
     }
 
-    function handleReset() {
-        value = null;
-        searchQuery = '';
-        searching = false;
-        open = false;
-        dispatch('select', { value: null });
-    }
-
     function handleFocus() {
         open = true;
         inFocus = true;
@@ -194,7 +186,7 @@
      * value
      */
     let lastRunSig = null;
-    let updateItemsDebounced = debounce(async query => {
+    const updateItemsDebounced = debounce(async query => {
         const sig = (lastRunSig = Math.round(Math.random() * 1e8));
         if (value && query !== value.label) {
             // user changed the query, so we remove the value and open the options
@@ -262,7 +254,7 @@
         return matchLabel;
     }
 
-    function onClick(event) {
+    function onClick() {
         refSearchInput.focus();
         open = true;
     }

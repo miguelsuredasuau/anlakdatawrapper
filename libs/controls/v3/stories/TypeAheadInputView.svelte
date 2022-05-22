@@ -1,4 +1,5 @@
 <script>
+    /* globals process */
     import TypeAheadInput from '../TypeAheadInput.svelte';
     import TypeAheadCustomItem from '../TypeAheadCustomItem.svelte';
 
@@ -16,10 +17,10 @@
     let valueC;
     let valueD;
 
-    let ariaLabel = 'aria label';
-    let icon = 'search';
+    const ariaLabel = 'aria label';
+    const icon = 'search';
 
-    let search = async query => {
+    const search = async query => {
         if (!query) {
             return [];
         }
