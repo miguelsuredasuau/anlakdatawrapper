@@ -193,7 +193,8 @@
                         .then(() => {
                             this.set({
                                 published: true,
-                                progress: ['done']
+                                progress: ['done'],
+                                needsRepublish: false
                             });
                             httpReq.get(`/v3/charts/${chartId}`).then(res => {
                                 trackEvent('Chart Editor', 'publish-success');
