@@ -84,44 +84,23 @@ test('owners can invite new users to a team', async t => {
 test('owners can invite a maximum number of users equal to MAX_TEAM_INVITES', async t => {
     const users = [];
     let teamObj = {};
+    const maxInvites = 3;
     try {
         const { events, event } = t.context.server.app;
         teamObj = await createTeamWithUser(t.context.server);
 
-        events.on(event.MAX_TEAM_INVITES, async () => ({ maxInvites: 3 }));
+        events.on(event.MAX_TEAM_INVITES, async () => ({ maxInvites }));
 
-        const { res: res1, user: user1 } = await inviteUser(
-            t.context,
-            teamObj,
-            'user-1@example.com'
-        );
-        users.push(user1);
-        t.is(res1.statusCode, 201);
-
-        const { res: res2, user: user2 } = await inviteUser(
-            t.context,
-            teamObj,
-            'user-2@example.com'
-        );
-        users.push(user2);
-        t.is(res2.statusCode, 201);
-
-        const { res: res3, user: user3 } = await inviteUser(
-            t.context,
-            teamObj,
-            'user-3@example.com'
-        );
-        users.push(user3);
-        t.is(res3.statusCode, 201);
-
-        const { res: res4, user: user4 } = await inviteUser(
-            t.context,
-            teamObj,
-            'user-4@example.com'
-        );
-        users.push(user4);
-        t.is(res4.statusCode, 406);
-        t.is(user4, null);
+        for (let i = 1; i <= maxInvites + 1; i++) {
+            const { res, user } = await inviteUser(t.context, teamObj, `user-${i}@test1.com`);
+            t.is(res.statusCode, i > maxInvites ? 406 : 201);
+            if (user) users.push(user);
+            if (i > maxInvites) {
+                t.is(user, null);
+            } else {
+                t.not(user, null);
+            }
+        }
     } finally {
         await destroy(users, ...Object.values(teamObj));
     }
@@ -138,7 +117,7 @@ test('owners cannot invite more than MAX_TEAM_INVITES by deleting invite', async
         events.on(event.MAX_TEAM_INVITES, async () => ({ maxInvites }));
 
         for (var i = 0; i < 10; i++) {
-            const { res, user } = await inviteUser(t.context, teamObj, `user-${i}@example.com`);
+            const { res, user } = await inviteUser(t.context, teamObj, `user-${i}@test2.com`);
             users.push(user);
             t.is(res.statusCode, i >= maxInvites * 2 ? 406 : 201);
 
