@@ -138,7 +138,7 @@ test('owners cannot invite more than MAX_TEAM_INVITES by deleting invite', async
         events.on(event.MAX_TEAM_INVITES, async () => ({ maxInvites }));
 
         for (var i = 0; i < 10; i++) {
-            const { res, user } = await inviteUser(t.context, teamObj, 'user-1@example.com');
+            const { res, user } = await inviteUser(t.context, teamObj, `user-${i}@example.com`);
             users.push(user);
             t.is(res.statusCode, i >= maxInvites * 2 ? 406 : 201);
 
