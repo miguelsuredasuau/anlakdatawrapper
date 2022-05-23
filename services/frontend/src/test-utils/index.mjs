@@ -1,6 +1,8 @@
 import { configure, render } from '@testing-library/svelte';
 import Context from '../utils/svelte-view/Context.svelte';
 import { getLocale } from './setup-locales.mjs';
+import cloneDeep from 'lodash/cloneDeep';
+import objectDiff from '@datawrapper/shared/objectDiff';
 
 export function setConfig(config) {
     configure(config);
@@ -63,4 +65,30 @@ export async function renderWithContext(view, props = {}, stores = {}) {
 
 export function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
+}
+
+/**
+ * Tracks changes to the provided store and
+ * calles the handler function if something has
+ * changed. The handler function receives the
+ * object diff of the change as argument.
+ *
+ * @param {svelte/store} store
+ * @param {function} handler
+ */
+export function trackStoreChanges(store, handler) {
+    let current;
+    store.subscribe(val => {
+        if (!current) {
+            // initial set
+            current = cloneDeep(val);
+        } else {
+            val = cloneDeep(val);
+            const diff = objectDiff(current, val);
+            if (Object.keys(diff).length > 0) {
+                handler(diff);
+            }
+            current = val;
+        }
+    });
 }

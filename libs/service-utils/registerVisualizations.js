@@ -18,12 +18,17 @@ module.exports = function registerVisualization(server) {
             vis.__plugin = plugin;
             vis.libraries = vis.libraries || [];
             vis['svelte-workflow'] = vis['svelte-workflow'] || 'chart';
+            vis.workflow = vis.workflow || 'chart';
 
             // load githead from plugin
             const pluginRoot = server.methods.config('general').localPluginRoot;
             if (!pluginRoot) {
                 throw new Error('localPluginRoot must be defined to register visualization');
             }
+            vis.icon = fs.readFileSync(
+                path.join(pluginRoot, plugin, 'static', `${vis.id}.svg`),
+                'utf-8'
+            );
             const pluginGitHead = path.join(pluginRoot, plugin, '.githead');
             if (fs.existsSync(pluginGitHead)) {
                 vis.githead = fs.readFileSync(pluginGitHead, 'utf-8');

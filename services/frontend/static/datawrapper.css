@@ -10236,6 +10236,15 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   margin-left: 0.35em;
   margin-right: calc(-0.25em - 1px);
 }
+.button.is-inline {
+  padding: 0;
+  margin: 0;
+  height: auto;
+  border: 0;
+}
+.button.is-inline:hover {
+  background-color: transparent;
+}
 
 .message {
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05) inset;

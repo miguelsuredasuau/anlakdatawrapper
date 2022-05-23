@@ -17,7 +17,19 @@ module.exports = {
         //
         const editWorkflows = [];
         const editWorkflowSteps = new Map();
+        const defaultWorkflowOptions = {
+            /**
+             * set to true to hide chart type selector in visualize step
+             */
+            hideChartTypeSelector: false,
+            /**
+             * list other workflow ids to include more visualizations
+             * in the chart type selector
+             */
+            includeInChartTypeSelector: []
+        };
         server.method('registerEditWorkflow', workflow => {
+            workflow.options = { ...defaultWorkflowOptions, ...(workflow.options || {}) };
             editWorkflows.push(workflow);
             workflow.steps.forEach(step => {
                 editWorkflowSteps.set(`${workflow.id}.${step.id}`, step);

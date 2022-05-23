@@ -99,10 +99,12 @@
         chart,
         data,
         theme,
+        workflow,
         visualizations,
         language: rawChart.language,
         chartData: rawData,
-        dwChart
+        dwChart,
+        __
     };
 
     $: chartTitle = $chart.title || rawChart.title;
@@ -190,7 +192,7 @@
         <!-- step content -->
         <div class="block">
             {#if activeStep && activeStep.view}
-                <ViewComponent id={activeStep.view} props={stepProps} />
+                <ViewComponent id={activeStep.view} props={stepProps} {__} />
             {/if}
         </div>
     </section>

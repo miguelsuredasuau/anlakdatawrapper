@@ -6,12 +6,14 @@
     import DesignTab from './visualize/DesignTab.svelte';
     import RefineTab from './visualize/RefineTab.svelte';
     import { getContext, onMount } from 'svelte';
-    import { chart, visualization } from '../stores';
+    import { chart, visualization, subscribeChart } from '../stores';
 
+    export let __;
     export let dwChart;
     export let theme;
     export let data;
     export let visualizations;
+    export let workflow;
 
     let iframePreview;
 
@@ -19,10 +21,12 @@
     $: stickyHeaderThreshold = $config.stickyHeaderThreshold;
 
     const tabs = [
-        { id: 'vis', title: 'Chart type', ui: ChartTypeTab },
-        { id: 'refine', title: 'Refine', ui: RefineTab },
-        { id: 'annotate', title: 'Annotate', ui: AnnotateTab },
-        { id: 'design', title: 'Design', ui: DesignTab }
+        ...(workflow.options.hideChartTypeSelector
+            ? []
+            : [{ id: 'vis', title: __('Chart type'), ui: ChartTypeTab }]),
+        { id: 'refine', title: __('Refine'), ui: RefineTab },
+        { id: 'annotate', title: __('Annotate'), ui: AnnotateTab },
+        { id: 'design', title: __('Layout'), ui: DesignTab }
     ];
 
     let active = 'refine';
@@ -51,12 +55,20 @@
                 firstVisChange = false;
             }
         });
+        subscribeChart('metadata.data.transpose', () => {
+            dwChart.onNextSave(() => {
+                iframePreview.reset();
+                iframePreview.reload();
+                // todo: reload controls
+            });
+        });
     });
 
     function visualizationHasChanged() {
         dwChart.onNextSave(() => {
             iframePreview.reset();
             iframePreview.reload();
+            // todo: reload controls
         });
     }
 </script>
@@ -103,7 +115,15 @@
                 <Tabs items={tabs} bind:active />
             </div>
             <div class="block">
-                <svelte:component this={activeTab.ui} {data} {chart} {visualizations} />
+                <svelte:component
+                    this={activeTab.ui}
+                    {__}
+                    {data}
+                    {chart}
+                    {workflow}
+                    {visualization}
+                    {visualizations}
+                />
             </div>
         </div>
         <div class="column">

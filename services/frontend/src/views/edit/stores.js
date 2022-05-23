@@ -5,6 +5,7 @@ import assign from 'assign-deep';
 import debounce from 'lodash/debounce';
 import httpReq from '@datawrapper/shared/httpReq';
 import objectDiff from '@datawrapper/shared/objectDiff';
+import get from '@datawrapper/shared/get';
 
 /**
  * chart object store
@@ -26,6 +27,7 @@ export const hasUnsavedChanges = new writable(false);
 export const saveError = new writable(false);
 
 let unsavedChanges = {};
+const watchers = new Set();
 
 const ALLOWED_CHART_KEYS = [
     'title',
@@ -103,10 +105,21 @@ export function initChartStore(rawChart, visualizations) {
             // and store the patch
             assign(unsavedChanges, patch);
 
+            if (unsavedChanges.type) {
+                // chart type has changed, update visualization store
+                visualization.set(visualizations.find(vis => vis.id === unsavedChanges.type));
+            }
+
             prevState = cloneDeep(value);
             if (newUnsaved) {
                 hasUnsavedChanges.set(true);
                 patchChartSoon(value.id);
+                for (const { key, handler } of watchers) {
+                    const value = get(patch, key);
+                    if (value !== undefined) {
+                        handler(value);
+                    }
+                }
             }
 
             if (unsavedChanges.type) {
@@ -157,4 +170,8 @@ export function initDataStore(chartId, rawData) {
             storeDataSoon();
         }
     });
+}
+
+export function subscribeChart(key, handler) {
+    watchers.add({ key, handler: debounce(handler, 100) });
 }

@@ -7,6 +7,10 @@
     export let __;
     export let apiQuery;
 
+    function makeQuery(params) {
+        return new URLSearchParams(params);
+    }
+
     const arrangeOptions = [
         {
             id: 'lastModifiedAt',
@@ -89,7 +93,7 @@
                 <hr class="dropdown-divider" />
             {:else}
                 <a
-                    href={`/archive?${new URLSearchParams({
+                    href={`/archive?${makeQuery({
                         ...$query,
                         ...option.query
                     })}`}

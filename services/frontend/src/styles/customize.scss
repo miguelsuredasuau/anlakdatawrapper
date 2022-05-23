@@ -37,6 +37,15 @@
             margin-right: calc(#{-0.25 * $button-padding-horizontal} - #{$button-border-width});
         }
     }
+    &.is-inline {
+        padding: 0;
+        margin: 0;
+        height: auto;
+        border: 0;
+        &:hover {
+            background-color: transparent;
+        }
+    }
 }
 
 // COMPONENTS
