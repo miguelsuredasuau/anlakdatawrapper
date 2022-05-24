@@ -30,15 +30,18 @@
     }
 </script>
 
-<style>
+<style lang="scss">
+    @import '../../../../styles/export.scss';
     .vis-thumb {
         width: 100%;
         padding-bottom: 100%;
-        background: #fff;
+        background: white;
         position: relative;
         display: inline-block;
         margin: 0;
         border: 0;
+        box-shadow: $shadow-small;
+        border-radius: $radius-small;
         cursor: pointer;
     }
     .vis-thumb > div {
@@ -61,15 +64,15 @@
     .vis-thumb :global(svg ellipse),
     .vis-thumb :global(svg polyline),
     .vis-thumb :global(svg polygon) {
-        fill: #1d81a2;
+        fill: $dw-scooter;
     }
 
     .vis-thumb:hover {
-        background: rgba(29, 129, 162, 0.2);
+        background: rgba($dw-scooter, 0.2);
     }
 
     .vis-thumb.active {
-        background: #1d81a2;
+        background: $dw-scooter;
     }
 
     .vis-thumb.active :global(svg path),
@@ -88,7 +91,7 @@
         left: 5px;
         right: 5px;
         font-size: 11px;
-        font-family: 'Roboto', Helvetica, sans-serif;
+        color: $text;
         font-weight: 500;
         line-height: 14px;
         text-align: center;
@@ -98,7 +101,7 @@
         color: white;
     }
     .column {
-        line-height: 0rem;
+        line-height: 0;
     }
 </style>
 
