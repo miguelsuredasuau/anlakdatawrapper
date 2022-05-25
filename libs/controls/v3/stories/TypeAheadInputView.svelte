@@ -75,3 +75,15 @@
 />
 <div>Selected value: <b>{valueD && valueD.label}</b></div>
 <hr />
+
+<label class="mb-2">Disabled</label>
+<TypeAheadInput
+    bind:value={valueA}
+    {options}
+    customItemRenderer={TypeAheadCustomItem}
+    placeholder="Placeholder"
+    {ariaLabel}
+    {assetURL}
+    {icon}
+    disabled
+/>

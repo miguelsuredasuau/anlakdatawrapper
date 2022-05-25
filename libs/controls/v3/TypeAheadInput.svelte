@@ -81,6 +81,11 @@
     export let assetURL = '/lib/icons/symbol/svg/sprite.symbol.svg';
 
     /**
+     * allow disabling the whole control
+     */
+    export let disabled = false;
+
+    /**
      * items contains the list of options showing in the dropdown
      * if items is empty, we show the noResultsMsg
      * we don't show the noResultsMsg if items is falsy (e.g. null)
@@ -266,7 +271,6 @@
         flex-wrap: wrap;
         position: relative;
     }
-
     .dropdown-trigger {
         flex-grow: 1;
         display: flex;
@@ -277,11 +281,9 @@
         background-color: white;
         border-radius: 3px 0 0 3px;
     }
-
     .dropdown-trigger.focus {
         border-color: #0a86ae;
     }
-
     .dropdown-trigger input {
         border: 0;
     }
@@ -291,7 +293,6 @@
         font-size: 17px;
         line-height: 0;
     }
-
     .dropdown .search-icon {
         margin-right: 8px;
     }
@@ -329,6 +330,16 @@
         margin-left: -4px;
         border-left: none;
     }
+    .dropdown.disabled {
+        pointer-events: none;
+    }
+    .dropdown.disabled .dropdown-trigger {
+        background-color: #eeeeee;
+    }
+    .dropdown.disabled .btn-small {
+        background-color: #a7a7a7 !important;
+        opacity: 1;
+    }
     .dropdown-results {
         position: absolute;
         left: 1px;
@@ -354,7 +365,6 @@
         background-color: #18a1cd33;
         cursor: pointer;
     }
-
     .dropdown-results li.helper-message {
         background-color: white;
         color: #858585;
@@ -373,6 +383,7 @@
         bind:this={refDropdown}
         class:selection={!open && value}
         class:icon
+        class:disabled
         class="dropdown"
         on:click={onClick}
     >
@@ -392,6 +403,7 @@
                 on:focus={handleFocus}
                 on:blur={handleBlur}
                 on:keydown={handleKeydown}
+                {disabled}
             />
             {#if searching}
                 <div class="icon search-icon">
