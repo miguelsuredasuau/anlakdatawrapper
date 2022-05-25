@@ -21,7 +21,7 @@ module.exports = {
         const api = server.methods.config('api');
         const { preventGuestAccess } = frontend;
         const providers = (frontend.signinProviders || []).filter(
-            provider => oauth && oauth.providers[provider.url.substring(8)]
+            provider => oauth && oauth.providers && oauth.providers[provider.url.substring(8)]
         );
 
         server.route({
@@ -59,7 +59,7 @@ module.exports = {
 
         server.methods.registerView('signin/Index.svelte');
 
-        for (var provider in oauth.providers) {
+        for (var provider in oauth?.providers) {
             if (!Object.keys(Bell.providers).includes(provider)) continue;
             server.route({
                 method: ['GET', 'POST'],
