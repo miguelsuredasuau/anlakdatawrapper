@@ -151,7 +151,7 @@ module.exports = {
                 case 'twitter':
                     return `https://twitter.com/${profile.username}`;
                 case 'github':
-                    return `https://github.com/${profile.displayName}`;
+                    return `https://github.com/${profile.username}`;
                 default:
                     return null;
             }
