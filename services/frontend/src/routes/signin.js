@@ -21,7 +21,7 @@ module.exports = {
         const api = server.methods.config('api');
         const { preventGuestAccess } = frontend;
         const providers = (frontend.signinProviders || []).filter(
-            provider => oauth && oauth[provider.url.substr(8)]
+            provider => oauth && oauth.providers[provider.url.substring(8)]
         );
 
         server.route({
@@ -51,7 +51,7 @@ module.exports = {
 
         server.methods.registerView('signin/Index.svelte');
 
-        for (var provider in oauth) {
+        for (var provider in oauth.providers) {
             if (!Object.keys(Bell.providers).includes(provider)) continue;
             server.route({
                 method: ['GET', 'POST'],
@@ -73,11 +73,13 @@ module.exports = {
                         const email = profile.email;
 
                         // check if we already have this user id in our database
-                        let user = await User.findOne({ where: { oauth_signin: oAuthSignin } });
+                        let user = await User.findOne({
+                            where: { deleted: false, oauth_signin: oAuthSignin }
+                        });
 
                         if (!user && email) {
                             // if not, check if that email is already registered
-                            user = await User.findOne({ where: { email } });
+                            user = await User.findOne({ where: { deleted: false, email } });
 
                             if (user) {
                                 // that email already exists, but it is activated?
@@ -94,10 +96,18 @@ module.exports = {
                                     user.pwd = '';
                                 }
                             }
-                        } else if (user) {
-                            if (user.deleted || user.email === 'DELETED') {
-                                user.email = email;
-                                user.deleted = false;
+                        } else if (!user) {
+                            // try to find user by the "alternative" signin id
+                            // starting with password:: instead of the provider name
+                            const altOAuthSignin = `password::${profile.id}`;
+                            user = await User.findOne({
+                                deleted: false,
+                                where: { deleted: false, oauth_signin: altOAuthSignin }
+                            });
+                            if (user) {
+                                // we need to repair the oauth_signin to no longer
+                                // use the password:: prefix
+                                user.oauth_signin = oAuthSignin;
                             }
                         }
 
@@ -108,7 +118,6 @@ module.exports = {
                                 throw Boom.unauthorized();
                             }
                             // create new user
-
                             user = await User.create({
                                 role: 'editor',
                                 name,

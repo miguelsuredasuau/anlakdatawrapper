@@ -36,7 +36,7 @@ const DWAuth = {
 
         server.auth.default('user');
 
-        for (var provider in oauth) {
+        for (var provider in oauth.providers) {
             if (!Object.keys(Bell.providers).includes(provider)) {
                 server.logger.warn(
                     `Could not configure oAuth provider ${provider}, as it's not supported by @hapi/bell.`
@@ -44,7 +44,7 @@ const DWAuth = {
                 continue;
             }
 
-            const p = oauth[provider];
+            const p = oauth.providers[provider];
 
             server.auth.strategy(provider, 'bell', {
                 provider: provider,
