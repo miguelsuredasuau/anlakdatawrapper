@@ -1,8 +1,8 @@
 <script>
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
-    export let color;
-    export let className;
+    export let color = null;
+    export let className = null;
 </script>
 
 <IconDisplay

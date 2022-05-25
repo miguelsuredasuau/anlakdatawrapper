@@ -266,12 +266,23 @@
         },
         methods: {
             windowClick(event) {
+                /*
+                 * when the control is inside of a svelte2 wrapper web component,
+                 * the event.target is the wrapper, and not what was actually clicked,
+                 * so we need to check for this
+                 */
+                const isSvelte2Wrapper = event.target.tagName === 'SVELTE2-WRAPPER';
+                if (isSvelte2Wrapper && !event.composedPath().length) return;
+                const eventTarget = isSvelte2Wrapper ? event.composedPath()[0] : event.target;
+
                 // user clicked somewhere inside picker - don't do anything
-                if (this.refs.picker.contains(event.target)) return;
+                if (!eventTarget || this.refs.picker.contains(eventTarget)) {
+                    return;
+                }
 
                 // user clicked on a reset button from parent ColorControl component - don't do anything
                 // (parent component will take care of resetting)
-                if (event.target.classList.contains('btn-color-reset')) return;
+                if (eventTarget.classList.contains('btn-color-reset')) return;
 
                 const { open, color } = this.get();
                 if (open) this.setColor(color, true, true);

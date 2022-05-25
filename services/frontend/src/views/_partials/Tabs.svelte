@@ -4,6 +4,7 @@
 
     export let items = []; // { id, title }
     export let active;
+    export let className = null;
 
     function setActive(item) {
         active = item.id;
@@ -11,11 +12,11 @@
     }
 </script>
 
-<div class="tabs is-boxed">
+<div class="tabs is-boxed {className || ''}">
     <ul>
         {#each items as item}
             <li class:is-active={active === item.id}>
-                <a on:click|preventDefault={() => setActive(item)} href="#/{item.id}"
+                <a on:click|preventDefault={() => setActive(item)} href="#{item.id}"
                     >{@html item.title}</a
                 >
             </li>

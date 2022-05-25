@@ -3,7 +3,7 @@
     import { fade } from 'svelte/transition';
     import get from '@datawrapper/shared/get';
     import chroma from 'chroma-js';
-    import { headerProps } from '_layout/stores';
+
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
 
@@ -18,8 +18,6 @@
      * theme object
      */
     export let theme;
-
-    export let sticky = true;
 
     /*
      * make preview resizable. resizing will
@@ -194,13 +192,7 @@
     .iframe-wrapper {
         transform-origin: top center;
     }
-    .iframe-wrapper.sticky {
-        position: sticky;
-        top: 20px;
-    }
-    .iframe-wrapper.sticky.sticky-header {
-        top: 85px;
-    }
+
     .iframe-border {
         box-sizing: content-box;
         padding: 10px;
@@ -218,10 +210,10 @@
     }
     .resizer {
         position: absolute;
-        right: 0;
-        bottom: -5px;
+        right: 3px;
+        bottom: -2px;
         cursor: se-resize;
-        font-size: 18px;
+        font-size: 17px;
     }
     .fixed-height .resizer {
         cursor: ew-resize;
@@ -251,13 +243,7 @@
 
 <svelte:window on:message={onMessage} on:mousemove={resize} on:mouseup={stopResize} />
 
-<div
-    class="iframe-wrapper"
-    class:sticky
-    class:sticky-header={$headerProps.isSticky}
-    style="transform: scale({scale || 1})"
->
-    <slot name="abovePreview" />
+<div class="iframe-wrapper" style="transform: scale({scale || 1})">
     <div
         class="iframe-border"
         class:resizing
@@ -268,7 +254,7 @@
         <iframe title={$chart.title} {src} scrolling="no" bind:this={iframe} on:load={onLoad} />
         {#if resizable}
             <div class="resizer" on:mousedown={startResize}>
-                <IconDisplay icon="new" />
+                <IconDisplay icon="resize-{fixedHeight ? 'horizontal' : 'diagonal'}" />
             </div>
         {/if}
         {#if loading}
@@ -277,5 +263,4 @@
             </div>
         {/if}
     </div>
-    <slot name="belowPreview" />
 </div>

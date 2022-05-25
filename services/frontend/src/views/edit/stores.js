@@ -6,6 +6,7 @@ import debounce from 'lodash/debounce';
 import httpReq from '@datawrapper/shared/httpReq';
 import objectDiff from '@datawrapper/shared/objectDiff';
 import get from '@datawrapper/shared/get';
+import { filterNestedObjectKeys } from '../../utils';
 
 /**
  * chart object store
@@ -39,7 +40,7 @@ const ALLOWED_CHART_KEYS = [
     'lastEditStep'
 ];
 
-export function initChartStore(rawChart, visualizations) {
+export function initChartStore(rawChart, visualizations, disabledFields = []) {
     chart.set(rawChart);
     let prevState;
 
@@ -100,7 +101,12 @@ export function initChartStore(rawChart, visualizations) {
             prevState = cloneDeep(value);
         } else if (prevState && !isEqual(prevState, value)) {
             // find out what has been changed
-            const patch = objectDiff(prevState, value, ALLOWED_CHART_KEYS);
+            // but ignore changes to disabled fields
+            const patch = filterNestedObjectKeys(
+                objectDiff(prevState, value, ALLOWED_CHART_KEYS),
+                disabledFields
+            );
+
             const newUnsaved = Object.keys(patch).length > 0;
             // and store the patch
             assign(unsavedChanges, patch);
@@ -114,9 +120,10 @@ export function initChartStore(rawChart, visualizations) {
             if (newUnsaved) {
                 hasUnsavedChanges.set(true);
                 patchChartSoon(value.id);
+
                 for (const { key, handler } of watchers) {
                     const value = get(patch, key);
-                    if (value !== undefined) {
+                    if (value !== undefined && value !== null) {
                         handler(value);
                     }
                 }

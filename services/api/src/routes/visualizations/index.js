@@ -1,5 +1,6 @@
 const get = require('lodash/get');
 const { translate } = require('@datawrapper/service-utils/l10n');
+const clone = require('lodash/cloneDeep');
 
 module.exports = {
     name: 'routes/visualizations',
@@ -23,11 +24,13 @@ module.exports = {
 
             return Array.from(server.app.visualizations.keys())
                 .map(key => {
-                    const vis = server.app.visualizations.get(key);
+                    const vis = clone(server.app.visualizations.get(key));
                     vis.__title = translate(vis.title, {
                         scope: vis.__plugin,
                         language: get(auth.artifacts, 'language') || 'en-US'
                     });
+                    delete vis.defaultMetadata;
+                    delete vis.icon;
                     return vis;
                 })
                 .filter(vis => !vis.hidden);

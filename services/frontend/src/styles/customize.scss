@@ -89,6 +89,56 @@
     }
 }
 
+
+// Tabs
+
+.tabs {
+    &.is-boxed {
+       > ul {
+            border-bottom: none;
+            > li > a {
+                margin-bottom: unset;
+                border-bottom: 1px solid $dw-grey-light;
+            }
+            > li:not(.is-active) a {
+                border-left: 0;
+                border-right: 0;
+                padding-left: calc(1em + 1px);
+                padding-right: calc(1em + 1px);
+            }
+            &:after {
+                content: '';
+                flex-grow: 1;
+                align-self: flex-end;
+                border-bottom: 1px solid $dw-grey-light;
+            }
+        }
+        &.is-centered > ul {
+            &:before, &:after {
+                content: '';
+                flex-grow: 1;
+                align-self: flex-end;
+                border-bottom: 1px solid $dw-grey-light;
+            }
+        }
+        &.is-right > ul {
+            &:before {
+                content: '';
+                flex-grow: 1;
+                align-self: flex-end;
+                border-bottom: 1px solid $dw-grey-light;
+            }
+            &:after {
+                display: none;
+            }
+        }
+    }
+    
+    > ul > li > a {
+        font-weight: 500;
+    }
+}
+
 // FORMS
 // Help
 
@@ -128,3 +178,4 @@
         }
     }
 }
+

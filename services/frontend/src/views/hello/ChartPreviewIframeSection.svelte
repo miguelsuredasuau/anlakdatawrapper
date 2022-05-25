@@ -43,7 +43,7 @@
     <h3 id="preview" class="title is-3">ChartIframePreviewDisplay</h3>
     <div class="columns">
         <div class="column is-two-thirds">
-            <ChartPreviewIframeDisplay sticky={false} bind:this={preview} {chart} {theme} />
+            <ChartPreviewIframeDisplay bind:this={preview} {chart} {theme} />
         </div>
 
         <div class="column">

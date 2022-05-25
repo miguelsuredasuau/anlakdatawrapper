@@ -2,9 +2,11 @@ const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const get = require('lodash/get');
 const set = require('lodash/set');
+const { getNestedObjectKeys } = require('../utils');
 const { Op } = require('@datawrapper/orm').db;
 const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
 const prepareChart = require('@datawrapper/service-utils/prepareChart');
+const assign = require('assign-deep');
 
 module.exports = {
     name: 'routes/edit',
@@ -65,13 +67,10 @@ module.exports = {
                     id: 'describe',
                     view: 'edit/chart/describe',
                     title: ['Check & Describe', 'core'],
-                    async data({ request, chart }) {
+                    async data({ request, chart, team }) {
                         let showLocaleSelect = true;
-                        if (chart.organization_id) {
-                            const team = await chart.getTeam();
-                            if (team.settings?.flags?.output_locale === false) {
-                                showLocaleSelect = false;
-                            }
+                        if (team && team.settings?.flags?.output_locale === false) {
+                            showLocaleSelect = false;
                         }
                         return {
                             showLocaleSelect,
@@ -86,8 +85,11 @@ module.exports = {
                     id: 'visualize',
                     view: 'edit/chart/visualize',
                     title: ['Visualize', 'core'],
-                    async data() {
-                        return {};
+                    async data({ team }) {
+                        return {
+                            teamSettingsControls: team?.settings?.controls || {},
+                            teamSettingsPreviewWidths: team?.settings?.previewWidths || []
+                        };
                     }
                 },
                 {
@@ -191,6 +193,11 @@ module.exports = {
                     const workflow = editWorkflows.find(w => w.id === (vis.workflow || 'chart'));
                     const __ = server.methods.getTranslate(request);
 
+                    let team = null;
+                    if (chart.organization_id) {
+                        team = await chart.getTeam();
+                    }
+
                     if (!workflow) {
                         throw Boom.notImplemented('unknown workflow ' + vis.workflow);
                     }
@@ -229,21 +236,34 @@ module.exports = {
 
                     const api = server.methods.createAPI(request);
 
-                    // load theme from API
-                    const theme = await api(`/themes/${chart.theme}?extend=true`);
+                    // refresh external data...
+                    if (
+                        // ...if the upload method isn't copy-paste or file upload
+                        get(chart, 'metadata.data.upload-method') !== 'copy' ||
+                        // ...if the chart is in "print mode", which means we want to
+                        // synchronize the dataset from the "web mode" chart
+                        get(chart, 'metadata.custom.webToPrint.mode') === 'print'
+                    ) {
+                        await api(`/charts/${chart.id}/data/refresh`, {
+                            method: 'POST',
+                            json: false
+                        });
+                    }
+
+                    // load things from API
+                    const [theme, data] = await Promise.all([
+                        await api(`/themes/${chart.theme}?extend=true`),
+                        await api(`/charts/${chart.id}/data`, { json: false })
+                    ]);
 
                     // evaluate data function for each step
                     for (const step of workflowSteps) {
                         // @todo: remove `step.id === params.step` check to pre-load
                         // data for all steps in single-page editor
                         if (step.id === params.step && typeof step.data === 'function') {
-                            step.data = await step.data({ request, chart, theme });
+                            step.data = await step.data({ request, chart, theme, team });
                         }
                     }
-
-                    // refresh external data
-                    await api(`/charts/${chart.id}/data/refresh`, { method: 'POST', json: false });
-                    const data = await api(`/charts/${chart.id}/data`, { json: false });
 
                     const breadcrumbPath = [
                         chart.organization_id
@@ -284,10 +304,14 @@ module.exports = {
                         chart.update({ last_edit_step: stepIndex });
                     }
 
+                    const rawChart = await prepareChart(chart);
+
+                    const disabledFields = await applyExternalMetadata(api, rawChart);
+
                     return h.view('edit/Index.svelte', {
                         htmlClass: 'has-background-white-ter',
                         props: {
-                            rawChart: await prepareChart(chart),
+                            rawChart,
                             rawData: data,
                             initUrlStep: params.step,
                             urlPrefix: `/${params.prefix}`,
@@ -303,7 +327,8 @@ module.exports = {
                                 request.auth.artifacts.activeTeam,
                                 'settings.showEditorNavInCmsMode',
                                 false
-                            )
+                            ),
+                            disabledFields
                         }
                     });
                 }
@@ -337,3 +362,35 @@ module.exports = {
         }
     }
 };
+
+/**
+ * loads external metadata, applies the changes to rawChart and returns
+ * a list of keys that should be readonly because they are now controlled
+ * via external metadata
+ *
+ * @param {object} api  - api instance created with server.methods.createApi()
+ * @param {*} rawChart
+ * @returns {string[]} - list of readonly chart keys (e.g. "metadata.annotate.notes")
+ */
+async function applyExternalMetadata(api, rawChart) {
+    // load external metadata if defined
+    let externalMetadata = {};
+    const readonlyFields = []; // fields controlled by external metadata
+    if (
+        get(rawChart, 'metadata.data.upload-method') === 'external-data' &&
+        get(rawChart, 'metadata.data.external-metadata')
+    ) {
+        externalMetadata = await api(`/charts/${rawChart.id}/assets/${rawChart.id}.metadata.json`);
+    }
+    // special treatment for title since it's not part of metadata
+    // but very useful to set externally in a live context
+    if (externalMetadata.title !== undefined) {
+        rawChart.title = externalMetadata.title;
+        readonlyFields.push('title');
+        delete externalMetadata.title;
+    }
+    readonlyFields.push(...getNestedObjectKeys(externalMetadata).map(key => `metadata.${key}`));
+    // assign remaining metadata
+    assign(rawChart.metadata, externalMetadata);
+    return readonlyFields;
+}

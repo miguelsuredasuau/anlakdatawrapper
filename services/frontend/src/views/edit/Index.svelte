@@ -38,6 +38,13 @@
      */
     export let customViews = [];
 
+    /**
+     * charts can define an external source for
+     * overwriting metadata. the corresponding ui elements
+     * will be shown as disabled in the editor
+     */
+    export let disabledFields = [];
+
     $chart = rawChart;
 
     const dwChart = ChartCoreChart(rawChart);
@@ -113,7 +120,7 @@
     $: lastActiveStep = $chart.lastEditStep || 1;
 
     onMount(async () => {
-        initChartStore(rawChart, visualizations);
+        initChartStore(rawChart, visualizations, disabledFields);
         initDataStore(rawChart.id, rawData);
 
         if (!initUrlStep && rawChart.lastEditStep) {

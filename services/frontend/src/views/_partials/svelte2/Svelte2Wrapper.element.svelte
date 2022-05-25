@@ -17,6 +17,7 @@
     export let uid;
     export let js;
     export let css;
+    export let module;
 
     function isComputedProp(app, prop) {
         try {
@@ -83,22 +84,42 @@
         parent.appendChild(style);
 
         require([id], bundle => {
-            const { App, store } = bundle;
+            const { store } = bundle;
             try {
                 loading = false;
                 if (store && window.__svelte2wrapper[uid].store) {
                     store.set(window.__svelte2wrapper[uid].store);
                     _store = store;
                 }
-                _app = new App({
+                if (store && window.__svelte2wrapper[uid].storeMethods) {
+                    Object.assign(store, window.__svelte2wrapper[uid].storeMethods);
+                }
+                if (!bundle[module]) {
+                    loading = false;
+                    return;
+                }
+
+                dispatch('beforeInit', bundle);
+                _app = new bundle[module]({
                     target: container,
                     store,
                     data: window.__svelte2wrapper[uid].data
                 });
 
+                if (store) {
+                    store.on('state', () => {
+                        dispatch('update', {
+                            data: filterOutComputedProps(_app, window.__svelte2wrapper[uid].data),
+                            store: store.get()
+                        });
+                    });
+                }
                 _app.on('state', ({ current }) => {
                     window.__svelte2wrapper[uid].data = current;
-                    dispatch('update', filterOutComputedProps(_app, current));
+                    dispatch('update', {
+                        data: filterOutComputedProps(_app, current),
+                        store: store.get()
+                    });
                 });
                 _app.on('change', event => {
                     dispatch('change', event);
@@ -128,7 +149,9 @@
 </style>
 
 <div class="visconfig dw-create-visualize chart-editor" bind:this={parent}>
-    <div class="svelte-2" bind:this={container}>
-        {#if loading}<span class="loading">loading...</span>{/if}
+    <div class="vis-options">
+        <div class="svelte-2" bind:this={container}>
+            {#if loading}<span class="loading">loading...</span>{/if}
+        </div>
     </div>
 </div>

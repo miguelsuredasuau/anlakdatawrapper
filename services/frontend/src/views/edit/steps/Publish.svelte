@@ -3,6 +3,7 @@
     import ChartPreviewIframeDisplay from '_partials/displays/ChartPreviewIframeDisplay.svelte';
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import { getContext, onMount } from 'svelte';
+    import { headerProps } from '_layout/stores';
     import { chart } from '../stores';
 
     const user = getContext('user');
@@ -45,6 +46,11 @@
     $: embedHeight = 300;
     $: chartUrlLocal = '';
 
+    let innerHeight = 0;
+    let innerWidth = 0;
+
+    $: isSticky = innerHeight > 600 && innerWidth > 1200;
+
     onMount(async () => {
         // load afterEmbed components
         afterEmbedComponents = await Promise.all(
@@ -65,6 +71,18 @@
         dispatch('chart-publish', event.detail);
     }
 </script>
+
+<style>
+    .preview.sticky {
+        position: sticky;
+        top: 20px;
+    }
+    .preview.sticky.sticky-header {
+        top: 85px;
+    }
+</style>
+
+<svelte:window bind:innerHeight bind:innerWidth />
 
 <div class="container edit-publish-step">
     <div class="columns">
@@ -109,7 +127,13 @@
             />
         </div>
         <div class="column is-7">
-            <ChartPreviewIframeDisplay bind:this={iframePreview} {chart} {theme} />
+            <div
+                class="preview"
+                class:sticky={isSticky}
+                class:sticky-header={$headerProps.isSticky}
+            >
+                <ChartPreviewIframeDisplay bind:this={iframePreview} {chart} {theme} />
+            </div>
         </div>
     </div>
 </div>

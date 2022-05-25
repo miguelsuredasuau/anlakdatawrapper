@@ -5,8 +5,10 @@
     import ChartTypeTab from './visualize/ChartTypeTab.svelte';
     import DesignTab from './visualize/DesignTab.svelte';
     import RefineTab from './visualize/RefineTab.svelte';
-    import { getContext, onMount } from 'svelte';
+    import clone from 'lodash/cloneDeep';
+    import { onMount } from 'svelte';
     import { chart, visualization, subscribeChart } from '../stores';
+    import { headerProps } from '_layout/stores';
 
     export let __;
     export let dwChart;
@@ -14,30 +16,32 @@
     export let data;
     export let visualizations;
     export let workflow;
+    export let teamSettingsControls;
+    export let teamSettingsPreviewWidths;
 
     let iframePreview;
-
-    const config = getContext('config');
-    $: stickyHeaderThreshold = $config.stickyHeaderThreshold;
 
     const tabs = [
         ...(workflow.options.hideChartTypeSelector
             ? []
-            : [{ id: 'vis', title: __('Chart type'), ui: ChartTypeTab }]),
+            : [{ id: 'select-vis', title: __('Chart type'), ui: ChartTypeTab }]),
         { id: 'refine', title: __('Refine'), ui: RefineTab },
         { id: 'annotate', title: __('Annotate'), ui: AnnotateTab },
-        { id: 'design', title: __('Layout'), ui: DesignTab }
+        { id: 'layout', title: __('Layout'), ui: DesignTab }
     ];
 
+    // id of the initially active tab
     let active = 'refine';
+    let prevActive;
     $: activeTab = tabs.find(d => d.id === active) || tabs[0];
+
     let scrollY = 0;
     let innerHeight = 0;
     let innerWidth = 0;
 
-    $: isSticky = false && innerHeight > stickyHeaderThreshold && innerWidth > 1200;
+    $: isSticky = innerHeight > 600 && innerWidth > 1200;
 
-    function storeNewSize(event) {
+    function onPreviewResize(event) {
         // todo: store size elsewhere in print mode
         dwChart.set('metadata.publish.embed-width', event.detail.width);
         if (event.detail.height) {
@@ -45,61 +49,80 @@
         }
     }
 
-    onMount(() => {
-        let firstVisChange = true;
-        visualization.subscribe(vis => {
-            if (vis.id) {
-                if (!firstVisChange) {
-                    visualizationHasChanged();
-                }
-                firstVisChange = false;
-            }
-        });
-        subscribeChart('metadata.data.transpose', () => {
-            dwChart.onNextSave(() => {
-                iframePreview.reset();
-                iframePreview.reload();
-                // todo: reload controls
-            });
-        });
-    });
-
-    function visualizationHasChanged() {
+    /*
+     * some changes require a full reload of the iframe
+     */
+    const RELOAD = ['type', 'theme', 'language', 'metadata.data.transpose', 'metadata.axes'];
+    function reloadPreview() {
         dwChart.onNextSave(() => {
             iframePreview.reset();
             iframePreview.reload();
-            // todo: reload controls
         });
+    }
+
+    /*
+     * some changes require updating the state of the chart-core
+     * Visualization.svelte component inside the preview iframe
+     */
+    const UPDATE = [
+        'title',
+        'metadata.describe',
+        'metadata.annotate.notes',
+        'metadata.custom',
+        'metadata.publish.blocks',
+        'metadata.publish.force-attribution',
+        'metadata.visualize.sharing'
+    ];
+    function updatePreview() {
+        iframePreview.getContext(win => {
+            win.__dwUpdate({ chart: clone($chart) });
+        });
+    }
+
+    /*
+     * some changes require a re-rendering of the visualization
+     * since we don't want to wait for the server roundtrip
+     * we inject the new metadata before re-rendering
+     */
+    function rerenderPreview() {
+        iframePreview.getContext(win => {
+            // Re-render chart with new attributes:
+            win.__dw.vis.chart().set('metadata', clone($chart.metadata));
+            win.__dw.vis.chart().load(win.__dw.params.data);
+            win.__dw.render();
+        });
+    }
+
+    onMount(() => {
+        RELOAD.forEach(key => subscribeChart(key, reloadPreview));
+        UPDATE.forEach(key => subscribeChart(key, updatePreview));
+        subscribeChart('metadata.visualize', rerenderPreview);
+        // read current tab from url hash
+        if (tabs.find(t => `#${t.id}` === window.location.hash)) {
+            active = prevActive = window.location.hash.substring(1);
+        } else {
+            window.location.hash = `#${active}`;
+            prevActive = active;
+        }
+    });
+
+    $: {
+        // store current tab in url hash
+        if (prevActive && active !== prevActive) {
+            window.location.hash = `#${active}`;
+            prevActive = active;
+        }
     }
 </script>
 
 <style>
-    .preview {
+    .preview.sticky {
         position: sticky;
         top: 20px;
     }
-    .preview.sticky-nav {
-        top: 200px;
+    .preview.sticky.sticky-header {
+        top: 85px;
     }
-    .vis-controls.is-sticky {
-        position: sticky;
-        top: 170px;
-        z-index: 880;
-    }
-    .vis-controls.is-sticky.sticking {
-        background: var(--color-dw-white-ter);
-        padding-top: 20px;
-        padding-bottom: 10px;
-    }
-    /* .vis-controls.is-sticky:before {
-        content: " ";
-        display: block;
-        background: red;
-        width: 100%;
-        height: 30px;
-        position: absolute;
-        bottom: 0;
-    } */
 </style>
 
 <svelte:window bind:innerHeight bind:innerWidth bind:scrollY />
@@ -107,11 +130,7 @@
 <div class="container">
     <div class="columns">
         <div class="column is-one-third">
-            <div
-                class="vis-controls block"
-                class:sticking={scrollY >= 50}
-                class:is-sticky={isSticky}
-            >
+            <div class="vis-controls block">
                 <Tabs items={tabs} bind:active />
             </div>
             <div class="block">
@@ -120,26 +139,34 @@
                     {__}
                     {data}
                     {chart}
+                    {theme}
+                    {dwChart}
+                    {subscribeChart}
                     {workflow}
                     {visualization}
                     {visualizations}
+                    {teamSettingsControls}
+                    {teamSettingsPreviewWidths}
                 />
             </div>
         </div>
         <div class="column">
-            <div class="preview" class:sticky-nav={isSticky}>
+            <div
+                class="preview"
+                class:sticky={isSticky}
+                class:sticky-header={$headerProps.isSticky}
+            >
                 <ChartPreviewIframeDisplay
                     resizable
                     fixedHeight={$visualization.height === 'fixed'}
-                    on:resize={storeNewSize}
+                    on:resize={onPreviewResize}
                     bind:this={iframePreview}
                     {chart}
                     {theme}
-                >
-                    <div slot="belowPreview" class="block mt-4" style="text-align: center;">
-                        - - - - - Some more controls - - - - -<br />x x x x x x
-                    </div>
-                </ChartPreviewIframeDisplay>
+                />
+                <div class="block mt-4" style="text-align: center;">
+                    - - - - - Some more controls - - - - -<br />x x x x x x
+                </div>
             </div>
         </div>
     </div>

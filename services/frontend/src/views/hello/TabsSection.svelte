@@ -13,5 +13,6 @@
             { id: 'design', title: 'Design' }
         ]}
         active="refine"
+        className=""
     />
 </div>

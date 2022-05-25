@@ -9,6 +9,8 @@
     export let css;
     export let data;
     export let storeData;
+    export let storeMethods;
+    export let module = 'App';
 
     const messages = getContext('messages');
     const config = getContext('config');
@@ -16,7 +18,8 @@
 
     let component;
     let ready = false;
-    let _data = clone(data);
+    let prevData = clone(data);
+    let prevStoreData = clone(storeData);
 
     /*
      * event dispatcher to be used by the Svelte2 component
@@ -37,7 +40,7 @@
         };
         window.__svelte2wrapper = window.__svelte2wrapper || {};
         window.__svelte2wrapper[uid] = {
-            data: _data,
+            data: prevData,
             store: {
                 ...(storeData || {}),
                 eventDispatch,
@@ -47,7 +50,8 @@
                 setUserData(data) {
                     $userData = data;
                 }
-            }
+            },
+            storeMethods: storeMethods || {}
         };
         waitFor(
             () => !!customElements.get('svelte2-wrapper'),
@@ -57,29 +61,43 @@
 
     beforeUpdate(() => {
         // notify svelte2 wrapper about data changes from parent component
-        // @todo: also update if storeData changes
         const clonedData = clone(data);
         Object.keys(clonedData).forEach(key => {
-            if (key.startsWith('$') || _data[key] === undefined) {
+            if (key.startsWith('$') || prevData[key] === undefined) {
                 // ignore stores and all new props
                 delete clonedData[key];
             }
         });
-        if (!isEqual(_data, clonedData)) {
-            _data = clonedData;
+        if (!isEqual(prevData, clonedData)) {
+            prevData = clonedData;
             waitFor(
                 () => component && component.update,
                 () => {
-                    component.update(_data);
+                    component.update(prevData);
+                }
+            );
+        }
+        // also update if storeData changes
+        if (!isEqual(prevStoreData, storeData)) {
+            prevStoreData = clone(storeData);
+            waitFor(
+                () => component && component.update,
+                () => {
+                    component.update(prevData, prevStoreData);
                 }
             );
         }
     });
 
     function update(event) {
-        // TODO Notice that this is called all the time. Probably because data and event.detail differ, e.g. in data.settings.defaultTheme vs data.settings.default_theme.
+        // TODO: Notice that this is called all the time. Probably because
+        // data and event.detail differ, e.g. in data.settings.defaultTheme
+        // vs data.settings.default_theme.
         // notify parent component about data changes from svelte2 wrapper
-        data = clone(event.detail);
+        const cloned = clone(event.detail);
+        data = cloned.data;
+        storeData = cloned.store;
+        eventDispatch('update', cloned);
     }
 </script>
 
@@ -96,8 +114,10 @@
         {id}
         {js}
         {css}
+        {module}
         on:update={update}
         on:change
+        on:beforeInit
         on:init
     />
 {/if}
