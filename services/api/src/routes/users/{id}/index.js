@@ -322,7 +322,14 @@ async function deleteUser(request, h) {
     }
 
     await User.update(
-        { email: 'DELETED', name: 'DELETED', pwd: 'DELETED', website: 'DELETED', deleted: true },
+        {
+            email: 'DELETED',
+            name: 'DELETED',
+            pwd: 'DELETED',
+            website: 'DELETED',
+            deleted: true,
+            oauth_signin: null
+        },
         { where: { id } }
     );
 

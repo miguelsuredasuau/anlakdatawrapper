@@ -69,7 +69,7 @@ module.exports = {
                         const { profile } = request.auth.credentials;
 
                         const oAuthSignin = `${provider}::${profile.id}`;
-                        const name = profile.displayName;
+                        const name = profile.displayName || profile.username;
                         const email = profile.email;
 
                         // check if we already have this user id in our database
@@ -87,6 +87,7 @@ module.exports = {
                                     // yes, user exists and was activated
                                     user.name = name;
                                     user.oauth_signin = oAuthSignin;
+                                    user.sm_profile = getSocialMediaProfileUrl(provider, profile);
                                 } else {
                                     // this was never activated, so ANYONE could have created
                                     // the account. since we now know the real owner, let's
@@ -108,6 +109,7 @@ module.exports = {
                                 // we need to repair the oauth_signin to no longer
                                 // use the password:: prefix
                                 user.oauth_signin = oAuthSignin;
+                                user.sm_profile = getSocialMediaProfileUrl(provider, profile);
                             }
                         }
 
@@ -123,7 +125,8 @@ module.exports = {
                                 name,
                                 email: email || '',
                                 pwd: '',
-                                oauth_signin: oAuthSignin
+                                oauth_signin: oAuthSignin,
+                                sm_profile: getSocialMediaProfileUrl(provider, profile)
                             });
                         }
 
@@ -141,6 +144,17 @@ module.exports = {
                     }
                 }
             });
+        }
+
+        function getSocialMediaProfileUrl(provider, profile) {
+            switch (provider) {
+                case 'twitter':
+                    return `https://twitter.com/${profile.username}`;
+                case 'github':
+                    return `https://github.com/${profile.displayName}`;
+                default:
+                    return null;
+            }
         }
 
         async function getOpenIdClient(teamId) {
