@@ -20,9 +20,9 @@ module.exports = server => {
         options: {
             tags: ['api'],
             description: 'Publish a chart',
-            notes: 'Requires scopes `chart:write`, `theme:read` and `visualization:read`.',
+            notes: 'Requires scopes `chart:read`, `chart:write`, `theme:read` and `visualization:read`.',
             auth: {
-                access: { scope: ['chart:write', 'theme:read', 'visualization:read'] }
+                access: { scope: ['chart:read', 'chart:write', 'theme:read', 'visualization:read'] }
             },
             validate: {
                 params: Joi.object({
