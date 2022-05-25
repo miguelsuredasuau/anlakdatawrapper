@@ -118,7 +118,7 @@
                     window.__svelte2wrapper[uid].data = current;
                     dispatch('update', {
                         data: filterOutComputedProps(_app, current),
-                        store: store.get()
+                        ...(store ? { store: store.get() } : {})
                     });
                 });
                 _app.on('change', event => {
