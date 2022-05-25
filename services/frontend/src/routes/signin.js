@@ -59,8 +59,8 @@ module.exports = {
 
         server.methods.registerView('signin/Index.svelte');
 
-        for (var provider in oauth?.providers) {
-            if (!Object.keys(Bell.providers).includes(provider)) continue;
+        Object.keys(oauth?.providers || {}).forEach(provider => {
+            if (!Object.keys(Bell.providers).includes(provider)) return;
             server.route({
                 method: ['GET', 'POST'],
                 path: `/${provider}`,
@@ -152,7 +152,7 @@ module.exports = {
                     }
                 }
             });
-        }
+        });
 
         function getSocialMediaProfileUrl(provider, profile) {
             switch (provider) {
