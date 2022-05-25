@@ -28,7 +28,15 @@ module.exports = {
             method: 'GET',
             path: '/',
             options: {
-                auth: 'session'
+                auth: 'session',
+                validate: {
+                    query: Joi.object({
+                        ref: Joi.string()
+                            .optional()
+                            .uri({ relativeOnly: true })
+                            .pattern(/^(\/$|\/[^/])/) // prevent domains without implicit protocol
+                    })
+                }
             },
             async handler(request, h) {
                 const { ref } = request.query;
