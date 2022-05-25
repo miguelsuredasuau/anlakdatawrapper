@@ -1,6 +1,7 @@
 <script>
     import { getContext } from 'svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
+    import truncate from '@datawrapper/shared/truncate';
 
     const request = getContext('request');
 
@@ -117,7 +118,9 @@
                                         className="mr-3"
                                         icon={page.svgIcon}
                                     />{/if}<span
-                                    >{#if page.escape}{page.title}{:else}{@html page.title}{/if}</span
+                                    >{#if page.escape}{truncate(page.title)}{:else}{@html truncate(
+                                            page.title
+                                        )}{/if}</span
                                 ></a
                             >
                         </li>

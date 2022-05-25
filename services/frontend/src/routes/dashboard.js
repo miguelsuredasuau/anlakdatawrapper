@@ -215,20 +215,36 @@ module.exports = {
                         model: User,
                         where: { id: userId },
                         through: {
-                            attributes: ['invite_token'],
+                            attributes: ['invite_token', 'invited_by'],
                             where: {
                                 invite_token: { [User.sequelize.Op.ne]: '' }
                             }
                         }
                     }
-                ]
+                ],
+                limit: 10
             });
 
-            return userTeams.map(({ id, name, users: [user] }) => ({
-                id,
-                name,
-                token: user.user_team.invite_token
-            }));
+            return Promise.all(
+                userTeams.map(async ({ id, name, users: [user] }) => {
+                    // const invitedBy = await User.findByPk(user.user_team.invited_by);
+                    const invitedBy = await User.findOne({
+                        where: {
+                            id: user.user_team.invited_by,
+                            deleted: false
+                        }
+                    });
+                    return {
+                        id,
+                        name,
+                        token: user.user_team.invite_token,
+                        invitedBy: {
+                            name: invitedBy.email || invitedBy.name,
+                            url: invitedBy.sm_profile
+                        }
+                    };
+                })
+            );
         }
 
         async function needsEmailSetup(userId) {

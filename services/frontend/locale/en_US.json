@@ -1002,7 +1002,7 @@
   "dashboard / checks / email-setup / setup": "Help us getting in touch with you by [[setting up an email address]] for your account.",
   "dashboard / checks / email-setup / title": "Complete your profile",
   "dashboard / checks / pending-team-invites / accept": "Accept invitation",
-  "dashboard / checks / pending-team-invites / invite": "You have been invited to join the Datawrapper Team <b>%team_name%</b>!",
+  "dashboard / checks / pending-team-invites / invite": "The user <tt>%user%</tt> has invited you to join the team <b>\"%team_name%\"</b>! ",
   "dashboard / checks / pending-team-invites / reject": "reject it",
   "dashboard / checks / pending-team-invites / title": "Pending invitation",
   "dashboard / expired-at": "Single expired at",

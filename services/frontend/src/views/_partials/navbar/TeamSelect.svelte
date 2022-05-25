@@ -2,6 +2,7 @@
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { getContext } from 'svelte';
     import { patch } from '@datawrapper/shared/httpReq';
+    import truncate from '@datawrapper/shared/truncate';
 
     export let __;
 
@@ -43,7 +44,7 @@
                 icon="team{team.active ? '-check' : ''}"
                 size="20px"
             />
-            <span class="navbar-title">{team.name}</span>
+            <span class="navbar-title">{truncate(team.name)}</span>
         </a>
     {/each}
     <a

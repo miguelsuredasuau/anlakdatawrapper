@@ -168,12 +168,13 @@ module.exports = {
                     const user = request.auth.artifacts;
                     const settingsPages = await server.methods.getSettingsPages('account', request);
                     const __ = server.methods.getTranslate(request);
+                    const userTeams = await user.getAcceptedTeams();
 
-                    if (user.teams.length > 0) {
+                    if (userTeams.length > 0) {
                         // add group with links to team settings pages
                         settingsPages.push({
                             title: __('account / settings / team'),
-                            pages: user.teams.map(team => ({
+                            pages: userTeams.map(team => ({
                                 url: `/team/${team.id}/settings`,
                                 title: team.name,
                                 escape: true,

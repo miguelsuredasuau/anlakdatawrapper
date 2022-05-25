@@ -1002,7 +1002,7 @@
   "dashboard / checks / email-setup / setup": "通过为您的帐户【【设置电子邮件地址】】来帮助我们与您取得联系。",
   "dashboard / checks / email-setup / title": "完成您的个人资料",
   "dashboard / checks / pending-team-invites / accept": "接受邀请",
-  "dashboard / checks / pending-team-invites / invite": "您已受邀加入Datawrapper团队<b>%team_name%</b>！",
+  "dashboard / checks / pending-team-invites / invite": "用户 <tt>%user%</tt> 已邀请您加入<b>团队 “%team_name%”</b>！",
   "dashboard / checks / pending-team-invites / reject": "拒绝邀请",
   "dashboard / checks / pending-team-invites / title": "等待邀请",
   "dashboard / expired-at": "Single过期时间：",
