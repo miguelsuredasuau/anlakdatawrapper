@@ -183,6 +183,9 @@ class SvelteView {
     context(request) {
         return context(request);
     }
+    cacheAllViews() {
+        views.forEach(getView);
+    }
 }
 
 module.exports = {
@@ -194,6 +197,16 @@ module.exports = {
         server.method('getView', getView);
         server.method('registerView', registerView);
         server.method('registerViewComponent', registerViewComponent);
+
+        // Cache all views in memory right after the server starts to prevent a situation that:
+        // 1. We start the frontend server.
+        // 2. Then sometime later we run `npm run build`.
+        // 3. And then a user requests a view that has not been cached yet at the very moment that
+        //    rollup is compiling that view. In this case the reading of the compiled view file
+        //    could fail, because maybe the file is temporarily deleted or only partially written.
+        server.events.on('start', () => {
+            server.app.SvelteView.cacheAllViews();
+        });
 
         if (process.env.DW_DEV_MODE) {
             const wsClients = new Set();
