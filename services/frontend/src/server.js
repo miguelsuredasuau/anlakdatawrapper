@@ -166,7 +166,7 @@ const start = async () => {
         });
     }
 
-    await server.register(require('./auth/dw-auth'));
+    await server.register(require('./utils/dw-auth'));
     await server.register(require('./utils/features'));
 
     await waitForAPI(server);
