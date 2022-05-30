@@ -380,7 +380,14 @@ async function applyExternalMetadata(api, rawChart) {
         get(rawChart, 'metadata.data.upload-method') === 'external-data' &&
         get(rawChart, 'metadata.data.external-metadata')
     ) {
-        externalMetadata = await api(`/charts/${rawChart.id}/assets/${rawChart.id}.metadata.json`);
+        try {
+            externalMetadata = await api(
+                `/charts/${rawChart.id}/assets/${rawChart.id}.metadata.json`
+            );
+        } catch {
+            // external metadata defined, but presumably doesn't point to a valid json
+            // so there's no corresponding asset
+        }
     }
     // special treatment for title since it's not part of metadata
     // but very useful to set externally in a live context
