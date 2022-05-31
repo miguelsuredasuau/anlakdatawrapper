@@ -1,9 +1,9 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const { translate } = require('@datawrapper/service-utils/l10n');
-const { getEmbedCodes } = require('./utils');
+const getEmbedCodes = require('../../../utils/getEmbedCodes');
 
-const { createResponseConfig } = require('../../../schemas/response');
+const { createResponseConfig } = require('../../../utils/schemas');
 
 module.exports = async server => {
     // GET /v3/charts/{id}/embed-codes

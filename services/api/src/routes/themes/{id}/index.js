@@ -1,13 +1,20 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const assign = require('assign-deep');
-const { compileFontCSS } = require('../../../publish/compile-css.js');
-const { themeId, validateThemeData, validateThemeLess } = require('../utils');
+const { compileFontCSS } = require('../../../utils/publish/compile-css.js');
+
 const { Theme, User, Team, Chart } = require('@datawrapper/orm/models');
 const { get, set } = require('lodash');
 const chroma = require('chroma-js');
 const invertColor = require('@datawrapper/shared/invertColor.cjs');
-const { findDarkModeOverrideKeys, dropCache, getCaches } = require('./utils');
+const {
+    findDarkModeOverrideKeys,
+    dropCache,
+    getCaches,
+    themeId,
+    validateThemeData,
+    validateThemeLess
+} = require('../../../utils/themes');
 
 module.exports = {
     name: 'routes/themes/{id}',

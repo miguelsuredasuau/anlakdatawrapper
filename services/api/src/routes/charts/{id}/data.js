@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { noContentResponse } = require('../../../schemas/response');
+const { noContentResponse } = require('../../../utils/schemas');
 
 module.exports = server => {
     const { events, event } = server.app;

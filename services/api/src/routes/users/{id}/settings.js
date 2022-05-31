@@ -3,7 +3,7 @@ const { setUserData } = require('@datawrapper/orm/utils/userData');
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
 
-const { createResponseConfig } = require('../../../schemas/response');
+const { createResponseConfig } = require('../../../utils/schemas');
 
 module.exports = async server => {
     // PATCH /v3/users/:id/settings

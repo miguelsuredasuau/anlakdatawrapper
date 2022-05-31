@@ -3,7 +3,7 @@ const Boom = require('@hapi/boom');
 const orm = require('@datawrapper/orm');
 const { Chart, User, Folder } = require('@datawrapper/orm/models');
 
-const { listResponse } = require('../../schemas/response');
+const { listResponse } = require('../../utils/schemas');
 
 const routes = [
     {

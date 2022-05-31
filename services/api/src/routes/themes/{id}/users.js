@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { Theme, User, Team } = require('@datawrapper/orm/models');
-const { themeId } = require('../utils');
+const { themeId } = require('../../../utils/themes');
 
 module.exports = server => {
     // Grant theme access users

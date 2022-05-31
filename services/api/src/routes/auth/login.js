@@ -6,7 +6,7 @@ const { Op } = db;
 const { login, createSession, getStateOpts } = require('@datawrapper/service-utils/auth')(
     require('@datawrapper/orm/models')
 );
-const otpProviders = require('../../auth/otp');
+const otpProviders = require('../../utils/auth/otp');
 
 module.exports = async server => {
     // POST /v3/auth/login

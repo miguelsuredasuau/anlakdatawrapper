@@ -278,7 +278,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     server.method('getModel', name => ORM.db.models[name]);
     server.method('generateToken', generateToken);
     server.method('logAction', require('@datawrapper/orm/utils/action').logAction);
-    server.method('createChartWebsite', require('./publish/create-chart-website.js'));
+    server.method('createChartWebsite', require('./utils/publish/create-chart-website.js'));
     server.method('registerVisualization', registerVisualizations(server));
     server.method('registerFeatureFlag', registerFeatureFlag(server));
     server.method('getScopes', (admin = false) => {
@@ -302,7 +302,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
         server.register([require('@hapi/inert'), require('@hapi/vision')]);
     }
 
-    await server.register(require('./auth/dw-auth'));
+    await server.register(require('./utils/auth/dw-auth'));
 
     const routeOptions = {
         routes: { prefix: '/v3' }

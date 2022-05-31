@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const { Product } = require('@datawrapper/orm/models');
-const { listResponse } = require('../../schemas/response');
+const { listResponse } = require('../../utils/schemas');
 const { serializeProduct } = require('./utils.js');
 
 module.exports = {

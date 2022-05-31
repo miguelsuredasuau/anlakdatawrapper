@@ -1,7 +1,7 @@
 const test = require('ava');
 const { createUser, destroy, setup } = require('../../../../test/helpers/setup');
 const { darkModeTestTheme, darkModeTestBgTheme } = require('../../../../test/data/testThemes.js');
-const { findDarkModeOverrideKeys } = require('./utils');
+const { findDarkModeOverrideKeys } = require('../../../utils/themes');
 
 function getDarkTheme(t, themeId) {
     return t.context.server.inject({

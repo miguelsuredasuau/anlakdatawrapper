@@ -1,4 +1,4 @@
-const { folderResponse, noContentResponse } = require('../../../schemas/response');
+const { folderResponse, noContentResponse } = require('../../../utils/schemas');
 const { Folder, User, Chart } = require('@datawrapper/orm/models');
 const omit = require('lodash/omit');
 const { db } = require('@datawrapper/orm');

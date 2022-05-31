@@ -1,7 +1,7 @@
 const { Chart } = require('@datawrapper/orm/models');
 const Joi = require('joi');
 const { getUserData } = require('@datawrapper/orm/utils/userData');
-const { chartListResponse } = require('../../../schemas/response');
+const { chartListResponse } = require('../../../utils/schemas');
 const { Op } = require('@datawrapper/orm').db;
 const { prepareChart, GET_CHARTS_ATTRIBUTES } = require('../../../utils/index.js');
 

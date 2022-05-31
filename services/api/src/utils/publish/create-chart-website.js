@@ -14,7 +14,7 @@ const {
     copyFileHashed,
     writeFileHashed,
     noop
-} = require('../utils/index.js');
+} = require('../index.js');
 const renderHTML = pug.compileFile(path.resolve(__dirname, './index.pug'));
 
 /**

@@ -1,8 +1,8 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const otpProviders = require('../../auth/otp');
+const otpProviders = require('../../utils/auth/otp');
 
-const { noContentResponse } = require('../../schemas/response');
+const { noContentResponse } = require('../../utils/schemas');
 
 module.exports = async server => {
     server.route({

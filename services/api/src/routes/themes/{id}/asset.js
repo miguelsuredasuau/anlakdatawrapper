@@ -2,8 +2,7 @@ const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { Theme } = require('@datawrapper/orm/models');
 const stream = require('stream');
-const { themeId } = require('../utils');
-const { getCaches, dropCache } = require('./utils');
+const { getCaches, dropCache, themeId } = require('../../../utils/themes');
 
 module.exports = server => {
     const config = server.methods.config();

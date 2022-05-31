@@ -13,7 +13,7 @@ const {
 } = require('@datawrapper/orm/models');
 const { db } = require('@datawrapper/orm');
 
-const { noContentResponse, teamResponse } = require('../../../schemas/response.js');
+const { noContentResponse, teamResponse } = require('../../../utils/schemas.js');
 
 const { ROLE_MEMBER, ROLE_OWNER, convertKeys, getMemberRole } = require('../utils');
 

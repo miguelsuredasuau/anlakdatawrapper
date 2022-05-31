@@ -4,7 +4,7 @@ const OpenSearchClient = require('../../utils/openSearchClient.js');
 const set = require('lodash/set');
 const { Chart, Folder, ReadonlyChart, Team, User } = require('@datawrapper/orm/models');
 const { Op } = require('@datawrapper/orm').db;
-const { chartListResponse } = require('../../schemas/response');
+const { chartListResponse } = require('../../utils/schemas');
 const { prepareChart } = require('../../utils/index.js');
 
 const authorIdFormats = [

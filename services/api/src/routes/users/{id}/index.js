@@ -5,7 +5,7 @@ const { logAction } = require('@datawrapper/orm/utils/action');
 const { User, Chart, UserTeam, Session } = require('@datawrapper/orm/models');
 const { serializeTeam } = require('../../teams/utils');
 const { getUserData } = require('@datawrapper/orm/utils/userData');
-const { noContentResponse, userResponse } = require('../../../schemas/response');
+const { noContentResponse, userResponse } = require('../../../utils/schemas');
 
 const attributes = ['id', 'email', 'name', 'role', 'language'];
 

@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { chartListResponse } = require('../../schemas/response');
+const { chartListResponse } = require('../../utils/schemas');
 
 module.exports = async server => {
     // GET /v3/me/recently-edited-charts

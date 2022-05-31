@@ -17,7 +17,7 @@ const {
     prepareChart,
     getNewChartAuthor
 } = require('../../../utils/index.js');
-const { noContentResponse, chartResponse } = require('../../../schemas/response');
+const { noContentResponse, chartResponse } = require('../../../utils/schemas');
 
 module.exports = {
     name: 'routes/charts/{id}',

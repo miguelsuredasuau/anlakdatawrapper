@@ -1,10 +1,6 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const {
-    listResponse,
-    noContentResponse,
-    createResponseConfig
-} = require('../../schemas/response.js');
+const { listResponse, noContentResponse, createResponseConfig } = require('../../utils/schemas');
 const { camelizeKeys } = require('humps');
 const { AccessToken } = require('@datawrapper/orm/models');
 const set = require('lodash/set');

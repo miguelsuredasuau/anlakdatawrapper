@@ -4,7 +4,7 @@ const set = require('lodash/set');
 const { Op } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');
 const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
-const { chartListResponse, chartResponse } = require('../../schemas/response');
+const { chartListResponse, chartResponse } = require('../../utils/schemas');
 const {
     prepareChart,
     GET_CHARTS_ATTRIBUTES,

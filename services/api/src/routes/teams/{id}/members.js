@@ -19,7 +19,7 @@ const {
     createResponseConfig,
     noContentResponse,
     listResponse
-} = require('../../../schemas/response.js');
+} = require('../../../utils/schemas.js');
 
 module.exports = async server => {
     // GET /v3/teams/{id}/members

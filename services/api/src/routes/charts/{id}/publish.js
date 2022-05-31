@@ -7,9 +7,9 @@ const set = require('lodash/set');
 const uniq = require('lodash/uniq');
 const { Action, Chart, ChartAccessToken, ChartPublic, User } = require('@datawrapper/orm/models');
 const { Op } = require('@datawrapper/orm').db;
-const { createResponseConfig } = require('../../../schemas/response');
+const { createResponseConfig } = require('../../../utils/schemas');
 const { getAdditionalMetadata, prepareChart } = require('../../../utils/index.js');
-const { getEmbedCodes } = require('./utils');
+const getEmbedCodes = require('../../../utils/getEmbedCodes');
 const { getScope } = require('@datawrapper/service-utils/l10n');
 const { getUserData, setUserData } = require('@datawrapper/orm/utils/userData');
 

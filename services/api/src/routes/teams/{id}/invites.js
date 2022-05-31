@@ -5,7 +5,7 @@ const { User, Team, UserTeam } = require('@datawrapper/orm/models');
 const crypto = require('crypto');
 const get = require('lodash/get');
 
-const { createResponseConfig } = require('../../../schemas/response.js');
+const { createResponseConfig } = require('../../../utils/schemas.js');
 const { logAction } = require('@datawrapper/orm/utils/action');
 
 const {

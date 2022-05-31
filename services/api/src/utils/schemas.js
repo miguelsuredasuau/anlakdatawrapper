@@ -17,8 +17,6 @@ function createListResponse(items) {
     });
 }
 
-const schemas = { createResponseConfig };
-
 const chartListItem = Joi.object({
     id: Joi.string().description('ID of the visualization'),
     title: Joi.string().description('Title of the visualization'),
@@ -74,15 +72,43 @@ const chartListItem = Joi.object({
     )
 });
 
-schemas.listResponse = createListResponse();
+const createUserPayload = [
+    // normal sign-up
+    Joi.object({
+        name: Joi.string()
+            .allow(null)
+            .example('Carol Danvers')
+            .description('Name of the user that should get created. This can be omitted.'),
+        email: Joi.string()
+            .email()
+            .required()
+            .example('cpt-marvel@shield.com')
+            .description('User email address'),
+        role: Joi.string().valid('editor', 'admin').description('User role. This can be omitted.'),
+        language: Joi.string()
+            .example('en_US')
+            .description('User language preference. This can be omitted.'),
+        password: Joi.string()
+            .example('13-binary-1968')
+            .min(8)
+            .required()
+            .description('Strong user password.'),
+        invitation: Joi.boolean().valid(false).allow(null)
+    }),
+    // for invitation sign-ups
+    Joi.object({
+        email: Joi.string()
+            .email()
+            .required()
+            .example('cpt-marvel@shield.com')
+            .description('User email address'),
+        invitation: Joi.boolean().valid(true).required(),
+        chartId: Joi.string().optional(),
+        role: Joi.string().valid('editor', 'admin').description('User role. This can be omitted.')
+    })
+];
 
-schemas.chartListResponse = createListResponse(chartListItem);
-
-schemas.noContentResponse = createResponseConfig({
-    status: { 204: Joi.any().empty() }
-});
-
-schemas.chartResponse = createResponseConfig({
+const chartResponse = createResponseConfig({
     schema: chartListItem.keys({
         publicUrl: Joi.string().description('URL of published visualization.'),
         deleted: Joi.boolean(),
@@ -103,21 +129,21 @@ schemas.chartResponse = createResponseConfig({
     })
 });
 
-schemas.teamResponse = createResponseConfig({
+const teamResponse = createResponseConfig({
     schema: Joi.object({
         id: Joi.string(),
         name: Joi.string()
     }).unknown()
 });
 
-schemas.userResponse = createResponseConfig({
+const userResponse = createResponseConfig({
     schema: Joi.object({
         id: Joi.number().integer(),
         email: Joi.string()
     }).unknown()
 });
 
-schemas.folderResponse = createResponseConfig({
+const folderResponse = createResponseConfig({
     schema: Joi.object({
         id: Joi.number().integer(),
         name: Joi.string().description('User-defined folder name'),
@@ -157,4 +183,16 @@ schemas.folderResponse = createResponseConfig({
     })
 });
 
-module.exports = schemas;
+module.exports = {
+    createResponseConfig,
+    listResponse: createListResponse(),
+    chartResponse,
+    chartListResponse: createListResponse(chartListItem),
+    noContentResponse: createResponseConfig({
+        status: { 204: Joi.any().empty() }
+    }),
+    teamResponse,
+    userResponse,
+    createUserPayload,
+    folderResponse
+};

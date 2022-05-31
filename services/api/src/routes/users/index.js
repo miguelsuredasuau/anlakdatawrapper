@@ -6,12 +6,12 @@ const keyBy = require('lodash/keyBy');
 const { User, Chart, Team } = require('@datawrapper/orm/models');
 const { queryUsers } = require('../../utils/raw-queries');
 const { serializeTeam } = require('../teams/utils');
-const { listResponse } = require('../../schemas/response.js');
+const { listResponse } = require('../../utils/schemas.js');
 
 const { Op } = require('@datawrapper/orm').db;
 const attributes = ['id', 'email', 'name', 'role', 'language'];
 
-const { createUserPayload } = require('../../schemas/payload');
+const { createUserPayload } = require('../../utils/schemas');
 
 module.exports = {
     name: 'routes/users',

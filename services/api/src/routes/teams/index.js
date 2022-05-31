@@ -3,7 +3,7 @@ const Boom = require('@hapi/boom');
 const { nanoid } = require('nanoid');
 const { Team, UserTeam } = require('@datawrapper/orm/models');
 
-const { listResponse, teamResponse } = require('../../schemas/response.js');
+const { listResponse, teamResponse } = require('../../utils/schemas.js');
 const { getUserData } = require('@datawrapper/orm/utils/userData');
 
 module.exports = {

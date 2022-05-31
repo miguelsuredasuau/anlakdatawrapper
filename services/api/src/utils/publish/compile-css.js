@@ -5,7 +5,7 @@ const postcssLess = require('postcss-less');
 const pCSS = require('postcss');
 
 /* needed for variable parsing, otherwise postcss logs annoying messages we don't care about */
-const { noop } = require('../utils/index.js');
+const { noop } = require('../index.js');
 const CSS_ELIMINATION_KEYWORD = '__UNDEFINED__';
 
 const postcss = pCSS([

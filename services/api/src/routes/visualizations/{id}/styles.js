@@ -2,7 +2,7 @@ const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const get = require('lodash/get');
 const chartCore = require('@datawrapper/chart-core');
-const { compileCSS } = require('../../../publish/compile-css.js');
+const { compileCSS } = require('../../../utils/publish/compile-css.js');
 const set = require('lodash/set');
 
 module.exports = server => {

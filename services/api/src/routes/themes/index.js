@@ -2,9 +2,9 @@ const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const S3 = require('aws-sdk/clients/s3');
 const stream = require('stream');
-const { themeId, validateThemeData, validateThemeLess } = require('./utils');
+const { themeId, validateThemeData, validateThemeLess } = require('../../utils/themes');
 const { Theme, TeamTheme } = require('@datawrapper/orm/models');
-const { listResponse } = require('../../schemas/response');
+const { listResponse } = require('../../utils/schemas');
 
 module.exports = {
     name: 'routes/themes',

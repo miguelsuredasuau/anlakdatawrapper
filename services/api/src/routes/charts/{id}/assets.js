@@ -2,7 +2,7 @@ const path = require('path');
 const mime = require('mime');
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { noContentResponse } = require('../../../schemas/response');
+const { noContentResponse } = require('../../../utils/schemas');
 const { ChartAccessToken } = require('@datawrapper/orm/models');
 
 module.exports = server => {

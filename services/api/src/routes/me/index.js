@@ -2,7 +2,7 @@ const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const get = require('lodash/get');
 
-const { createResponseConfig, noContentResponse } = require('../../schemas/response.js');
+const { createResponseConfig, noContentResponse } = require('../../utils/schemas.js');
 
 const meResponse = createResponseConfig({
     schema: Joi.object({
