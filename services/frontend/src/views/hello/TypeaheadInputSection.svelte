@@ -36,7 +36,7 @@
     let geocodingValue = null;
     async function geocoding(query) {
         const { results } = await httpReq.get(
-            `/plugin/simple-maps/geocode?q=${encodeURIComponent(query)}&language=en-US`
+            `/v3/utils/geocode?q=${encodeURIComponent(query)}&language=en-US`
         );
         return results.map(res => ({
             label: res.formatted,
