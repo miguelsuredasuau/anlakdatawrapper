@@ -1,7 +1,7 @@
 <script>
     export let props;
     const { get, __, purifyHtml } = props;
-    $: ({ chart, dwChart, data, teamPublicSettings, theme } = props);
+    $: ({ chart, dwChart, teamPublicSettings, theme, postEvent } = props);
 
     $: externalData = get(chart, 'externalData');
     $: caption = get(theme, 'data.options.blocks.get-the-data.data.caption', __('Get the data'));
@@ -36,6 +36,7 @@
     }
 
     function handleClick(event) {
+        postEvent('download', { type: 'csv' });
         if (!externalData && dwChart && dwChart.dataset) {
             const csv = createCSV();
             const filename = getFilename();

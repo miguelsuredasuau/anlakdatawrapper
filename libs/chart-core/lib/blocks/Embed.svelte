@@ -2,7 +2,7 @@
     // external props
     export let props;
     const { get, __ } = props;
-    $: ({ chart, theme } = props);
+    $: ({ chart, theme, postEvent } = props);
 
     // internal props
     $: embed = get(theme, 'data.options.blocks.embed.data', {});
@@ -17,11 +17,13 @@
     function handleClick(e) {
         e.preventDefault();
         modalIsHidden = !modalIsHidden;
+        postEvent(`embed.modal.${modalIsHidden ? 'close' : 'open'}`);
     }
 
     let inputRef;
 
     function copy() {
+        postEvent('embed.copy');
         inputRef.focus();
         inputRef.select();
         document.execCommand('copy');

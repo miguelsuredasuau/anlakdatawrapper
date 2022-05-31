@@ -67,6 +67,7 @@
 
     // .dw-chart-body
     let target, dwChart, vis;
+    let postEvent = () => {};
 
     const datasetName = `dataset.${get(chart.metadata, 'data.json') ? 'json' : 'csv'}`;
 
@@ -221,6 +222,7 @@
         __,
         purifyHtml: clean,
         get,
+        postEvent,
         teamPublicSettings,
         theme,
         chart,
@@ -640,7 +642,7 @@ Please make sure you called __(key) with a key of type "string".
 
             // fire events on hashchange
             domReady(() => {
-                const postEvent = PostEvent(chart.id);
+                postEvent = PostEvent(chart.id);
                 window.addEventListener('hashchange', () => {
                     postEvent('hash.change', { hash: window.location.hash });
                 });
