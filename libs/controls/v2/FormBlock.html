@@ -1,6 +1,13 @@
-<div class="form-block" class:success class:error style="width:{width}" data-uid="{uid}">
+<div
+    class="form-block {class}"
+    class:compact
+    class:success
+    class:error
+    style="width:{width}"
+    data-uid="{uid}"
+>
     {#if label}
-    <label class="control-label">{@html label}</label>
+    <label class="control-label">{@html label}<slot name="labelExtra" /></label>
     {/if}
     <div class="form-controls">
         <slot />
@@ -20,6 +27,8 @@
             return {
                 label: '',
                 help: '',
+                compact: false,
+                class: '',
                 error: false,
                 success: false,
                 width: 'auto',
@@ -32,6 +41,9 @@
 <style>
     .form-block {
         margin-bottom: 20px;
+    }
+    .compact {
+        margin-bottom: 5px;
     }
     .form-block .help.success {
         color: #09bb9f;
@@ -55,14 +67,23 @@
     }
     label {
         padding-left: 1px;
-        font-weight: bold !important;
+        font-weight: bold;
+    }
+    .compact label {
+        font-weight: normal;
     }
     .help {
         padding-left: 2px;
         font-weight: 400;
         color: #888;
     }
+    .compact .help {
+        font-size: 12px;
+    }
     .form-controls {
         margin: 5px 0;
+    }
+    .compact .form-controls {
+        margin: 0;
     }
 </style>

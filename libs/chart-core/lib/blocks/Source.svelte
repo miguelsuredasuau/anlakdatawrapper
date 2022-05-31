@@ -1,4 +1,6 @@
 <script>
+    import { isAllowedSourceUrl } from '@datawrapper/shared/validation.js';
+
     // external props
     export let props;
     const { __, get, purifyHtml } = props;
@@ -8,16 +10,17 @@
     $: caption = get(theme, 'data.options.blocks.source.data.caption', __('Source'));
     $: sourceName = purifyHtml(get(chart, 'metadata.describe.source-name'));
     $: sourceUrl = get(chart, 'metadata.describe.source-url');
+    $: allowedSourceUrl = isAllowedSourceUrl(sourceUrl);
 </script>
 
 {#if sourceName}
     <span class="source-caption">{caption}:</span>
-    {#if sourceUrl}
+    {#if sourceUrl && allowedSourceUrl}
         <a class="source" target="_blank" rel="noopener noreferrer" href={sourceUrl}>
             {@html sourceName}
         </a>
     {:else}
-        <span class="source">
+        <span class="source" title={sourceUrl && !allowedSourceUrl ? sourceUrl : null}>
             {@html sourceName}
         </span>
     {/if}

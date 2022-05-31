@@ -1,4 +1,4 @@
-<div class="story-title">
+<div class="story-title pt-1">
     <div style="position: relative">
         <label class="hide-title">
             <input
@@ -8,91 +8,103 @@
             />&nbsp;{ __('annotate / hide-title')}
         </label>
 
-        <label class="control-label" for="text-title">{__('Title')}</label>
-        <TextInput
-            disabled="{disabled.title}"
-            bind:value="$title"
-            autocomplete="off"
-            id="text-title"
-            expandable
-            {textDirection}
-        />
-
-        <label class="control-label" for="text-intro">{__('Description')}</label>
-        <TextAreaInput
-            disabled="{disabled.intro}"
-            bind:value="$metadata.describe.intro"
-            id="text-intro"
-            {textDirection}
-        />
-
-        <label class="control-label" for="text-notes">{__('Notes')}</label>
-        <TextInput
-            disabled="{disabled.notes}"
-            bind:value="$metadata.annotate.notes"
-            id="text-notes"
-            expandable
-            {textDirection}
-        />
-    </div>
-
-    <div class="control-split">
-        <div class="mr-1">
-            <label class="control-label" for="text-source">{__('Source name')}</label>
+        <FormBlock label="{__('Title')}" compact>
             <TextInput
-                disabled="{disabled.sourceName}"
-                bind:value="$metadata.describe['source-name']"
-                id="text-source"
+                disabled="{disabled.title}"
+                bind:value="$title"
+                autocomplete="off"
+                id="text-title"
                 expandable
-                placeholder="{__('name of the organisation')}"
                 {textDirection}
             />
-        </div>
-        <div class="ml-1">
-            <label class="control-label" for="text-source-link">{__('Source URL')}</label>
+        </FormBlock>
+
+        <FormBlock label="{__('Description')}" compact>
+            <TextAreaInput
+                disabled="{disabled.intro}"
+                bind:value="$metadata.describe.intro"
+                id="text-intro"
+                {textDirection}
+            />
+        </FormBlock>
+
+        <FormBlock label="{__('Notes')}" compact>
             <TextInput
-                disabled="{disabled.sourceUrl}"
-                bind:value="$metadata.describe['source-url']"
-                id="text-source-link"
-                placeholder="{__('URL of the dataset')}"
+                disabled="{disabled.notes}"
+                bind:value="$metadata.annotate.notes"
+                id="text-notes"
+                expandable
                 {textDirection}
             />
+        </FormBlock>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span6">
+            <FormBlock label="{__('Source name')}" class="mr-2" compact>
+                <TextInput
+                    disabled="{disabled.sourceName}"
+                    bind:value="$metadata.describe['source-name']"
+                    id="text-source"
+                    expandable
+                    placeholder="{__('name of the organisation')}"
+                    {textDirection}
+                />
+            </FormBlock>
+        </div>
+        <div class="span6">
+            <FormBlock label="{__('Source URL')}" error="{sourceUrlError}" class="ml-2" compact>
+                <TextInput
+                    disabled="{disabled.sourceUrl}"
+                    bind:value="$metadata.describe['source-url']"
+                    placeholder="{__('URL of the dataset')}"
+                    {textDirection}
+                />
+            </FormBlock>
         </div>
     </div>
 
-    <label class="control-label" for="text-byline">{__('visualize / annotate / byline')}</label>
-    <TextInput
-        disabled="{disabled.byline}"
-        bind:value="$metadata.describe.byline"
-        id="text-byline"
-        expandable
-        placeholder="{__('visualize / annotate / byline / placeholder')}"
-        {textDirection}
-    />
+    <FormBlock label="{__('visualize / annotate / byline')}" compact>
+        <TextInput
+            disabled="{disabled.byline}"
+            bind:value="$metadata.describe.byline"
+            id="text-byline"
+            expandable
+            placeholder="{__('visualize / annotate / byline / placeholder')}"
+            {textDirection}
+        />
+    </FormBlock>
 
-    <HelpDisplay><span>{__('visualize / annotate / aria-description / help')}</span></HelpDisplay>
-    <label class="control-label" for="aria-desc"
-        >{__('visualize / annotate / aria-description')}
-        <i class="im im-accessibility" style="font-size: 12px; color: #999"></i>
-    </label>
-    <TextAreaInput
-        disabled="{disabled.ariaDescription}"
-        bind:value="$metadata.describe['aria-description']"
-        placeholder="{__('visualize / annotate / aria-description / placeholder')}"
-        id="aria-desc"
-        {textDirection}
-    />
+    <HelpDisplay compact
+        ><span>{__('visualize / annotate / aria-description / help')}</span></HelpDisplay
+    >
+    <FormBlock label="{__('visualize / annotate / aria-description')}" compact>
+        <TextAreaInput
+            disabled="{disabled.ariaDescription}"
+            bind:value="$metadata.describe['aria-description']"
+            placeholder="{__('visualize / annotate / aria-description / placeholder')}"
+            id="aria-desc"
+            {textDirection}
+        />
+        <i
+            slot="labelExtra"
+            class="im im-accessibility"
+            style="font-size: 12px; color: #999; padding-left: 0.3em"
+        ></i>
+    </FormBlock>
 </div>
 
 <script>
-    import { __ } from '@datawrapper/shared/l10n';
-    import TextInput from '../TextInput.html';
-    import TextAreaInput from '../TextAreaInput.html';
+    import FormBlock from '../FormBlock.html';
     import HelpDisplay from '../HelpDisplay.html';
+    import TextAreaInput from '../TextAreaInput.html';
+    import TextInput from '../TextInput.html';
     import get from 'lodash/get';
+    import { __ } from '@datawrapper/shared/l10n';
+    import { isAllowedSourceUrl } from '@datawrapper/shared/validation.js';
 
     export default {
-        components: { TextInput, TextAreaInput, HelpDisplay },
+        components: { FormBlock, HelpDisplay, TextAreaInput, TextInput },
         helpers: { __ },
         computed: {
             textDirection: ({ $textDirection }) => $textDirection,
@@ -106,35 +118,31 @@
                     byline: !!get($externalMetadata, 'describe.byline'),
                     ariaDescription: !!get($externalMetadata, 'describe.aria-description')
                 };
+            },
+            sourceUrlError({ $metadata }) {
+                const sourceUrl = get($metadata, 'describe.source-url');
+                if (sourceUrl && !isAllowedSourceUrl(sourceUrl)) {
+                    return __('visualize / annotate / source-url / not-allowed');
+                }
+                return null;
             }
         }
     };
 </script>
 
 <style>
-    .control-split {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .control-label {
-        padding-top: 10px;
-    }
-
     .hide-title {
         opacity: 0.5;
         display: block;
         position: absolute;
         right: 0;
-        top: 5px;
+        top: 0;
         font-size: 12px !important;
         color: #777;
     }
-
     .hide-title:hover {
         opacity: 1;
     }
-
     .hide-title input {
         position: relative;
         top: -2px;

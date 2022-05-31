@@ -7,7 +7,7 @@
     success="This block has successful status"
     help="This text is supposed to help you"
 >
-    <input type="text" name="" placeholder="Here go the form controls" />
+    <input type="text" name="" placeholder="Here go the form controls" style="width: 356px" />
 </FormBlock>
 
 <FormBlock
@@ -15,13 +15,41 @@
     error="This block has some problems"
     help="This text is supposed to help you"
 >
-    <input type="text" name="" placeholder="Here go the form controls" />
+    <input type="text" name="" placeholder="Here go the form controls" style="width: 356px" />
+</FormBlock>
+
+<HelpDisplay><span>This text is supposed to help you</span></HelpDisplay>
+<FormBlock label="Label goes here" help="This block has a hint">
+    <input type="text" name="" placeholder="Here go the form controls" style="width: 356px" />
+</FormBlock>
+
+<FormBlock label="Label goes here" help="This block has a label icon">
+    <input type="text" name="" placeholder="Here go the form controls" style="width: 356px" />
+    <i
+        slot="labelExtra"
+        class="im im-accessibility"
+        style="font-size: 12px; color: #999; padding-left: 4px"
+    ></i>
+</FormBlock>
+
+<FormBlock label="Label goes here" help="This block is compact" compact>
+    <input type="text" name="" placeholder="Here go the form controls" style="width: 356px" />
+</FormBlock>
+
+<HelpDisplay compact><span>This text is supposed to help you</span></HelpDisplay>
+<FormBlock label="Label goes here" help="This block is compact and has a hint" compact>
+    <input type="text" name="" placeholder="Here go the form controls" style="width: 356px" />
+</FormBlock>
+
+<FormBlock label="Label goes here" error="This block is compact and has some problems" compact>
+    <input type="text" name="" placeholder="Here go the form controls" style="width: 356px" />
 </FormBlock>
 
 <script>
     import FormBlock from '../FormBlock.html';
+    import HelpDisplay from '../HelpDisplay.html';
 
     export default {
-        components: { FormBlock }
+        components: { FormBlock, HelpDisplay }
     };
 </script>

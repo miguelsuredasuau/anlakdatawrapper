@@ -3,6 +3,8 @@
     on:mouseenter="show()"
     on:mouseleave="hide()"
     class="help {class} {type}"
+    class:compact="{compact}"
+    {style}
     data-uid="{uid}"
 >
     <span class="help-icon {type}" class:visible="visible"> {@html helpIcon} </span>
@@ -23,6 +25,9 @@
         float: right;
         position: relative;
         top: 4px;
+    }
+    .compact {
+        top: -1px;
     }
     .help-icon {
         display: inline-flex;
@@ -115,6 +120,8 @@
             return {
                 visible: false,
                 class: '',
+                compact: false,
+                style: null,
                 type: 'help',
                 uid: ''
             };
