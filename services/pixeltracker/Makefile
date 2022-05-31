@@ -15,7 +15,7 @@ test-performance: | test-setup  ## Run performance tests
 .PHONY: test-setup
 test-setup:  ## Create the testing database if it isn't running
 	[[ -n $$($(docker_compose) ps --services --filter status=running mysql) ]] || \
-		$(MAKE) test-run cmd="sh -c '/app/services/api/scripts/wait-for-db.sh && /app/scripts/sync-db.js'"
+		$(MAKE) test-run cmd="sh -c '/app/scripts/wait-for-db.sh && /app/scripts/sync-db.js'"
 
 .PHONY: test-teardown
 test-teardown:  ## Stop and remove the testing database
