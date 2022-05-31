@@ -875,6 +875,54 @@ test('PATCH from admin with authorId and organizationId payload returns error wh
     }
 });
 
+test('PATCH with null value removes key from metadata', async t => {
+    let userObj = {},
+        chart;
+    try {
+        userObj = await createUser(t.context.server);
+
+        // user creates chart
+        chart = await createChart({
+            author_id: userObj.user.id,
+            metadata: {
+                axes: [],
+                describe: {},
+                visualize: {
+                    'keep-me': 'foo',
+                    'remove-me': 42
+                },
+                annotate: {}
+            }
+        });
+
+        // user tries to remove the `remove-me` key
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                authorization: `Bearer ${userObj.token}`
+            },
+            payload: {
+                metadata: {
+                    visualize: {
+                        'remove-me': null
+                    }
+                }
+            }
+        });
+
+        t.is(res.statusCode, 200);
+        t.is(res.result.metadata.visualize['keep-me'], 'foo');
+        t.is(res.result.metadata.visualize['remove-me'], undefined);
+
+        await chart.reload();
+        t.is(chart.metadata.visualize['keep-me'], 'foo');
+        t.is(chart.metadata.visualize['remove-me'], undefined);
+    } finally {
+        destroy(chart, ...Object.values(userObj));
+    }
+});
+
 test('PHP GET /charts/{id} returns chart', async t => {
     let userObj = {};
     let chart = {};

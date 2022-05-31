@@ -27,7 +27,11 @@ const assignWithEmptyObjects = (target, ...args) => {
                     if (isObject(target[key]) && isObject(args[i][key]) && !isEmpty(args[i][key])) {
                         assignWithEmptyObjects(target[key], args[i][key]);
                     } else {
-                        target[key] = args[i][key];
+                        if (args[i][key] === null) {
+                            delete target[key];
+                        } else {
+                            target[key] = args[i][key];
+                        }
                     }
                 }
             }
