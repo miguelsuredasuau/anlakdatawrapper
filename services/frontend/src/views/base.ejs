@@ -13,11 +13,7 @@
             href="/static/vendor/iconicfont/css/iconmonstr-iconic-font.min.css"
         />
         <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
-        <link
-            rel="icon"
-            type="image/png"
-            href="<%- FAVICON %>"
-        />
+        <link rel="icon" type="image/png" href="<%- FAVICON %>" />
 
         <style type="text/css">
             <%- SSR_CSS %>
@@ -68,7 +64,7 @@
                     dayjs: '/static/vendor/dayjs/dayjs.min',
                     jquery: '/static/vendor/jquery/jquery.min',
                     cm: '/static/vendor/codemirror',
-                    Handsontable: '/lib/static/js/hot/handsontable.full.min',
+                    Handsontable: '/lib/static/js/hot/handsontable.full.min'
                 }
             });
         </script>
@@ -104,7 +100,7 @@
                         if (!hasNewValue && !oldValue) {
                             // problem: local storage might have been cleared but the
                             // cookie  is still set, let's unset the cookie and reload
-                            document.cookie = 'DW-HASH-'+key.toUpperCase()+'=';
+                            document.cookie = 'DW-HASH-'+key.toUpperCase()+'=;path=/';
                             window.location.reload();
                             return;
                         }
@@ -113,7 +109,7 @@
                             window.localStorage.setItem('dw_hash_'+key, storeHashes[key]);
                             window.localStorage.setItem('dw_value_'+key, JSON.stringify(props.stores[key]));
                             // also set cookie so server knows we have stored this version
-                            window.document.cookie = 'DW-HASH-'+key.toUpperCase()+'='+storeHashes[key];
+                            window.document.cookie = 'DW-HASH-'+key.toUpperCase()+'='+storeHashes[key]+';path=/';
                         } else if (oldHash && !hasNewValue) {
                             // restore value from cache
                             props.stores[key] = JSON.parse(oldValue);

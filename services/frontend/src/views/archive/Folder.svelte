@@ -4,6 +4,7 @@
     import { onMount, getContext, beforeUpdate, tick } from 'svelte';
     import { currentFolder, folderTreeDropZone } from './stores';
     import { byName, selectAll } from './shared';
+    import truncate from '@datawrapper/shared/truncate';
 
     const user = getContext('user');
     const { deleteFolder, patchFolder, foreignTeam } = getContext('page/archive');
@@ -294,7 +295,7 @@
                         on:keyup|stopPropagation={folderNameKeyUp}>{folder.name}</span
                     >
                 {:else}
-                    {folder.name}
+                    {truncate(folder.name, 25, 10)}
                 {/if}
                 {#if folder.chartCount}<span class="has-text-grey">({folder.chartCount})</span>{/if}
                 {#if !folder.id && !folder.search && !folder.virtual && (!$user.activeTeam ? !folder.teamId : $user.activeTeam.id === folder.teamId)}

@@ -6,8 +6,8 @@
     $: visited = step.index <= lastActiveStep;
     export let step = { index: 0, title: 'foo' };
     // internals
-    let height = 30;
-    let width = 250;
+    let height = 48;
+    let width = 294;
 
     const tipWidthRatio = 0.75;
     const tipBorderRadius1 = 2;
