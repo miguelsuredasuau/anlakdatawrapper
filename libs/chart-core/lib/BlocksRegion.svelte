@@ -9,10 +9,10 @@
 {#if blocks.length}
     <div {id} class={name}>
         {#each blocks as block}
-            {#if block.tag === 'h1'}
-                <h1 class="block {block.id}-block">
+            {#if block.tag === 'h3'}
+                <h3 class="block {block.id}-block">
                     <Block {block} />
-                </h1>
+                </h3>
             {:else if block.tag === 'p'}
                 <p class="block {block.id}-block">
                     <Block {block} />

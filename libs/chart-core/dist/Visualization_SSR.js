@@ -3466,10 +3466,10 @@ const BlocksRegion = create_ssr_component(($$result, $$props, $$bindings, $$slot
   if ($$props.id === void 0 && $$bindings.id && id !== void 0) $$bindings.id(id);
   if ($$props.name === void 0 && $$bindings.name && name !== void 0) $$bindings.name(name);
   if ($$props.blocks === void 0 && $$bindings.blocks && blocks !== void 0) $$bindings.blocks(blocks);
-  return `${blocks.length ? `<div${add_attribute("id", id, 0)}${add_attribute("class", name, 0)}>${each$1(blocks, block => `${block.tag === "h1" ? `<h1 class="${"block " + escape$1(block.id) + "-block"}">${validate_component(Block, "Block").$$render($$result, {
+  return `${blocks.length ? `<div${add_attribute("id", id, 0)}${add_attribute("class", name, 0)}>${each$1(blocks, block => `${block.tag === "h3" ? `<h3 class="${"block " + escape$1(block.id) + "-block"}">${validate_component(Block, "Block").$$render($$result, {
     block
   }, {}, {})}
-                </h1>` : `${block.tag === "p" ? `<p class="${"block " + escape$1(block.id) + "-block"}">${validate_component(Block, "Block").$$render($$result, {
+                </h3>` : `${block.tag === "p" ? `<p class="${"block " + escape$1(block.id) + "-block"}">${validate_component(Block, "Block").$$render($$result, {
     block
   }, {}, {})}
                 </p>` : `<div class="${"block " + escape$1(block.id) + "-block"}"${add_attribute("style", block.id.includes("svg-rule") ? "font-size:0px;" : "", 0)}>${validate_component(Block, "Block").$$render($$result, {
@@ -10122,7 +10122,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
   const datasetName = `dataset.${get(chart.metadata, "data.json") ? "json" : "csv"}`;
   const coreBlocks = [{
     id: "headline",
-    tag: "h1",
+    tag: "h3",
     region: "header",
     priority: 10,
     test: ({

@@ -98,9 +98,8 @@ body {
             border-bottom: @style_header_title_border_bottom;
             border-left: @style_header_title_border_left;
             border-right: @style_header_title_border_right;
-        }
+            background: @style_header_title_background;
 
-        h1 {
             font-family: @typography_headline_typeface;
             font-weight: @typography_headline_fontWeight;
             font-size: @typography_headline_fontSize;
@@ -113,23 +112,6 @@ body {
             text-decoration: if(@typography_headline_underlined = 0, none, underline);
             color: @typography_headline_color;
             text-align: @style_header_title_textAlign;
-
-            margin: 0px;
-        }
-
-        p {
-            font-family: @typography_description_typeface;
-            font-weight: @typography_description_fontWeight;
-            font-size: @typography_description_fontSize;
-            text-transform: @typography_description_textTransform;
-            & when not (@typography_description_lineHeight = __UNDEFINED__) {
-                line-height: @typography_description_lineHeight * 1px;
-            }
-            letter-spacing: @typography_description_letterSpacing;
-            font-style: if(@typography_description_cursive = 0, normal, italic);
-            text-decoration: if(@typography_description_underlined = 0, none, underline);
-            color: @typography_description_color;
-            margin: 0px;
         }
 
         .description-block {
@@ -141,6 +123,19 @@ body {
             border-left: @style_header_description_border_left;
             border-right: @style_header_description_border_right;
             border-bottom: @style_header_description_border_bottom;
+            background: @style_header_description_background;
+
+            font-family: @typography_description_typeface;
+            font-weight: @typography_description_fontWeight;
+            font-size: @typography_description_fontSize;
+            text-transform: @typography_description_textTransform;
+            & when not (@typography_description_lineHeight = __UNDEFINED__) {
+                line-height: @typography_description_lineHeight * 1px;
+            }
+            letter-spacing: @typography_description_letterSpacing;
+            font-style: if(@typography_description_cursive = 0, normal, italic);
+            text-decoration: if(@typography_description_underlined = 0, none, underline);
+            color: @typography_description_color;
         }
     }
 

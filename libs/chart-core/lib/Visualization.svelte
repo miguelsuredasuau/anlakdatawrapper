@@ -87,7 +87,7 @@
     const coreBlocks = [
         {
             id: 'headline',
-            tag: 'h1',
+            tag: 'h3',
             region: 'header',
             priority: 10,
             test: ({ chart }) => chart.title && !get(chart, 'metadata.describe.hide-title'),
