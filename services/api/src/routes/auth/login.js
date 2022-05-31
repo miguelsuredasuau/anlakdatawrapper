@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { User, AccessToken } = require('@datawrapper/orm/models');
+const { User, AccessToken, Action } = require('@datawrapper/orm/models');
 const { db } = require('@datawrapper/orm');
 const { Op } = db;
 const { login, createSession, getStateOpts } = require('@datawrapper/service-utils/auth')(
@@ -120,7 +120,23 @@ async function loginUser(request, h) {
         await user.update({ reset_password_token: null });
     }
 
+    // count invalid login attempts in last 5 minutes
+    const invalidLogins = await Action.count({
+        where: {
+            key: 'login/invalid',
+            user_id: user.id,
+            action_time: {
+                [Op.gt]: db.fn('DATE_SUB', db.fn('NOW'), db.literal('INTERVAL 5 MINUTE'))
+            }
+        }
+    });
+
+    if (invalidLogins >= 10) {
+        return Boom.unauthorized('Too many invalid login attempts. Please try again later.');
+    }
+
     if (!isValid) {
+        await request.server.methods.logAction(user.id, 'login/invalid');
         return Boom.unauthorized('Invalid credentials');
     }
 

@@ -12,6 +12,8 @@ function parseSetCookie(string) {
     return cookie;
 }
 
+const correctPassword = 'test-password';
+
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
     t.context.userObj = await createUser(t.context.server);
@@ -30,7 +32,7 @@ test('Login and logout work with correct credentials', async t => {
         url: '/v3/auth/login',
         payload: {
             email: t.context.user.email,
-            password: 'test-password'
+            password: correctPassword
         }
     });
 
@@ -66,6 +68,43 @@ test('Login fails with incorrect credentials', async t => {
     t.is(res.statusCode, 401);
 });
 
+test('Login attempt blocked after too many incorrect credentials', async t => {
+    let userObj;
+
+    try {
+        userObj = await createUser(t.context.server);
+
+        // repeat 10 invalid login attempts
+        for (let i = 0; i < 10; i++) {
+            const res = await login('wrong');
+            t.is(res.statusCode, 401);
+            t.is(res.result.message, 'Invalid credentials');
+        }
+        // another failed login gets blocked
+        const res = await login('wrong');
+        t.is(res.statusCode, 401);
+        t.is(res.result.message, 'Too many invalid login attempts. Please try again later.');
+        // now even a correct login fails
+        const res2 = await login(correctPassword);
+        t.is(res2.statusCode, 401);
+        t.is(res2.result.message, 'Too many invalid login attempts. Please try again later.');
+    } finally {
+        if (userObj) {
+            await destroy(...Object.values(userObj));
+        }
+    }
+    function login(pwd) {
+        return t.context.server.inject({
+            method: 'POST',
+            url: '/v3/auth/login',
+            payload: {
+                email: userObj.user.email,
+                password: pwd
+            }
+        });
+    }
+});
+
 test('Login sets correct cookie', async t => {
     let sessionId;
     try {
@@ -74,7 +113,7 @@ test('Login sets correct cookie', async t => {
             url: '/v3/auth/login',
             payload: {
                 email: t.context.user.email,
-                password: 'test-password'
+                password: correctPassword
             }
         });
 
@@ -92,7 +131,7 @@ test('Login sets correct cookie', async t => {
             url: '/v3/auth/login',
             payload: {
                 email: t.context.user.email,
-                password: 'test-password',
+                password: correctPassword,
                 keepSession: false
             }
         });
@@ -119,7 +158,7 @@ test('Login sets crumb cookie with SameSite: Lax', async t => {
             url: '/v3/auth/login',
             payload: {
                 email: t.context.user.email,
-                password: 'test-password'
+                password: correctPassword
             }
         });
 
@@ -218,7 +257,7 @@ test('Guest charts are associated after login', async t => {
             },
             payload: {
                 email: user.email,
-                password: 'test-password'
+                password: correctPassword
             }
         });
 
@@ -246,7 +285,7 @@ test('Login and logout updates session fields', async t => {
             url: '/v3/auth/login',
             payload: {
                 email: t.context.user.email,
-                password: 'test-password',
+                password: correctPassword,
                 keepSession: false
             }
         });
