@@ -39,6 +39,7 @@ async function geoCode(request, h) {
     query.key = openCage;
 
     const res = await got({
+        throwHttpErrors: false,
         url: 'https://api.opencagedata.com/geocode/v1/json',
         searchParams: query
     });
