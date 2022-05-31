@@ -21,7 +21,8 @@ module.exports = {
                         [
                             'request.cookies.DW-SESSION',
                             'request.headers.cookie',
-                            'user.session'
+                            'user.session',
+                            'user.token'
                         ].forEach(field => {
                             const value = get(event, field);
                             if (value) {
