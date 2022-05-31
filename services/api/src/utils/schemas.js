@@ -17,6 +17,12 @@ function createListResponse(items) {
     });
 }
 
+const createUserNameSchema = () =>
+    Joi.string()
+        .allow(null)
+        .example('Carol Danvers')
+        .pattern(/^[\p{Alpha}\p{N}\p{Emoji}\p{Pd}\s.]+$/u, { name: 'alphanum' });
+
 const chartListItem = Joi.object({
     id: Joi.string().description('ID of the visualization'),
     title: Joi.string().description('Title of the visualization'),
@@ -75,10 +81,9 @@ const chartListItem = Joi.object({
 const createUserPayload = [
     // normal sign-up
     Joi.object({
-        name: Joi.string()
-            .allow(null)
-            .example('Carol Danvers')
-            .description('Name of the user that should get created. This can be omitted.'),
+        name: createUserNameSchema().description(
+            'Name of the user that should get created. This can be omitted.'
+        ),
         email: Joi.string()
             .email()
             .required()
@@ -194,5 +199,6 @@ module.exports = {
     teamResponse,
     userResponse,
     createUserPayload,
-    folderResponse
+    folderResponse,
+    createUserNameSchema
 };

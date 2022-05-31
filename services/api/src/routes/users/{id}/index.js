@@ -5,7 +5,7 @@ const { logAction } = require('@datawrapper/orm/utils/action');
 const { User, Chart, UserTeam, Session } = require('@datawrapper/orm/models');
 const { serializeTeam } = require('../../teams/utils');
 const { getUserData } = require('@datawrapper/orm/utils/userData');
-const { noContentResponse, userResponse } = require('../../../utils/schemas');
+const { noContentResponse, userResponse, createUserNameSchema } = require('../../../utils/schemas');
 
 const attributes = ['id', 'email', 'name', 'role', 'language'];
 
@@ -50,10 +50,7 @@ module.exports = {
                         id: Joi.number().required().description('User ID')
                     }),
                     payload: Joi.object({
-                        name: Joi.string()
-                            .allow(null)
-                            .example('Rocket Raccoon')
-                            .description('New user name'),
+                        name: createUserNameSchema().description('New user name'),
                         email: Joi.string()
                             .email()
                             .example('89P13@half.world')

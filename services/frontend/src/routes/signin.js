@@ -77,7 +77,14 @@ module.exports = {
                         const { profile } = request.auth.credentials;
 
                         const oAuthSignin = `${provider}::${profile.id}`;
-                        const name = profile.displayName || profile.username;
+
+                        // replace unsafe characters in user names to prevent XSS or
+                        // misleading user names (e.g. those that look like email addresses)
+                        const unsafeCharacters = /[^\p{Alpha}\p{N}\p{Emoji}\p{Pd}\s.]+/u;
+                        const name = (profile.displayName || profile.username).replaceAll(
+                            unsafeCharacters,
+                            ' '
+                        );
                         const email = profile.email;
 
                         // check if we already have this user id in our database

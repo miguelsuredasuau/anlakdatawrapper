@@ -2,7 +2,11 @@ const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const get = require('lodash/get');
 
-const { createResponseConfig, noContentResponse } = require('../../utils/schemas.js');
+const {
+    createResponseConfig,
+    noContentResponse,
+    createUserNameSchema
+} = require('../../utils/schemas.js');
 
 const meResponse = createResponseConfig({
     schema: Joi.object({
@@ -47,10 +51,7 @@ module.exports = {
                 notes: `Requires scope \`user:write\`.`,
                 validate: {
                     payload: Joi.object({
-                        name: Joi.string()
-                            .allow(null)
-                            .example('Ronin')
-                            .description('Your new user name.'),
+                        name: createUserNameSchema().description('Your new user name.'),
                         email: Joi.string()
                             .email()
                             .example('ronin@avengers.com')

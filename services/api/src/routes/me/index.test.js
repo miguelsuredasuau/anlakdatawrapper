@@ -192,3 +192,63 @@ test('User can delete their account if only admin of a team', async t => {
         }
     }
 });
+
+test('User can set their name to valid characters', async t => {
+    let userObj;
+    try {
+        userObj = await createUser(t.context.server);
+        const { user, session } = userObj;
+        const name = 'François T. 张伟 Ἁγνή-Æðelwine 🥶';
+
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/me',
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {
+                name
+            }
+        });
+
+        t.is(res.statusCode, 200);
+        await user.reload();
+        t.is(user.name, name);
+    } finally {
+        if (userObj) {
+            await destroy(...Object.values(userObj));
+        }
+    }
+});
+
+test('User cannot set their name to invalid characters', async t => {
+    let userObj;
+    try {
+        userObj = await createUser(t.context.server);
+        const { user, session } = userObj;
+        const oldUserName = user.name;
+
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/me',
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {
+                name: 'admin@datawrapper.de'
+            }
+        });
+
+        t.is(res.statusCode, 400);
+        await user.reload();
+        t.is(user.name, oldUserName);
+    } finally {
+        if (userObj) {
+            await destroy(...Object.values(userObj));
+        }
+    }
+});

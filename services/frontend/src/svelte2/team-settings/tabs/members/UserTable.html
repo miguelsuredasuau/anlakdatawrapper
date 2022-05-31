@@ -75,6 +75,7 @@
     import AlertDisplay from '@datawrapper/controls/AlertDisplay.html';
     import { __ } from '@datawrapper/shared/l10n';
     import httpReq from '@datawrapper/shared/httpReq';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
 
     const teamRoleOptions = [
         { value: 'owner', label: __('teams / role / owner').replace('&shy;', '') },
@@ -168,14 +169,14 @@
                 const userEmail = user ? user.name || user.email || user.id : 'non-existent';
                 const ownerEmail = owner ? owner.name || owner.email || owner.id : 'non-existent';
                 return __('teams / change-owner-confirmation / message')
-                    .replace('%member%', `<b>${userEmail}</b>`)
+                    .replace('%member%', `<b>${purifyHtml(userEmail, '')}</b>`)
                     .replace(
                         '%message%',
                         isTeamOwner
                             ? __('teams / change-owner-confirmation / owner-message')
                             : __('teams / change-owner-confirmation / non-owner-message').replace(
                                   '%member%',
-                                  `<b>${ownerEmail}</b>`
+                                  `<b>${purifyHtml(ownerEmail, '')}</b>`
                               )
                     )
                     .replace('%team%', `<b>${team.name}</b>`);
@@ -185,7 +186,7 @@
                 const userEmail = user ? user.name || user.email || user.id : 'non-existent';
                 return __('teams / change-owner-confirmation / title').replace(
                     '%member%',
-                    userEmail
+                    purifyHtml(userEmail, '')
                 );
             }
         },

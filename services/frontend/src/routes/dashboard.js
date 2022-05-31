@@ -239,7 +239,7 @@ module.exports = {
                         name,
                         token: user.user_team.invite_token,
                         invitedBy: {
-                            name: invitedBy.email || invitedBy.name,
+                            name: invitedBy.email || `"${invitedBy.name}"`,
                             url: invitedBy.sm_profile
                         }
                     };
