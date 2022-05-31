@@ -96,6 +96,206 @@ test('User can copy chart, attributes match', async t => {
     }
 });
 
+test("User cannot copy charts they can't access", async t => {
+    let userObj, userObj2;
+    try {
+        userObj = await createUser(t.context.server);
+        userObj2 = await createUser(t.context.server);
+        const { session } = userObj;
+        const headers = {
+            cookie: `DW-SESSION=${session.id}; crumb=abc`,
+            'X-CSRF-Token': 'abc',
+            referer: 'http://localhost'
+        };
+        const headers2 = {
+            cookie: `DW-SESSION=${userObj2.session.id}; crumb=abc`,
+            'X-CSRF-Token': 'abc',
+            referer: 'http://localhost'
+        };
+
+        const attributes = {
+            title: 'This is my chart',
+            theme: 'default',
+            language: 'en-IE',
+            externalData: 'https://static.dwcdn.net/data/12345.csv',
+            metadata: {
+                visualize: {
+                    basemap: 'us-counties'
+                }
+            }
+        };
+
+        // create a new chart
+        const srcChart = await t.context.server.inject({
+            method: 'POST',
+            url: '/v3/charts',
+            headers,
+            payload: attributes
+        });
+        t.is(srcChart.statusCode, 201);
+
+        // copy new chart
+        const copiedChart = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${srcChart.result.id}/copy`,
+            headers: headers2
+        });
+        t.is(copiedChart.statusCode, 401);
+    } finally {
+        if (userObj) {
+            await destroy(...Object.values(userObj));
+        }
+        if (userObj2) {
+            await destroy(...Object.values(userObj2));
+        }
+    }
+});
+
+test("User can't copy unpublished charts they can't access, even if team allows it", async t => {
+    let userObj, teamObj;
+    try {
+        teamObj = await createTeamWithUser(t.context.server);
+        const { team, session } = teamObj;
+        // make sure team allows copying
+        await team.update({
+            settings: {
+                ...team.settings,
+                chartTemplates: true
+            }
+        });
+
+        const headers = {
+            cookie: `DW-SESSION=${session.id}; crumb=abc`,
+            'X-CSRF-Token': 'abc',
+            referer: 'http://localhost'
+        };
+
+        const attributes = {
+            title: 'This is my chart',
+            theme: 'default',
+            language: 'en-IE',
+            externalData: 'https://static.dwcdn.net/data/12345.csv',
+            organizationId: team.id,
+            metadata: {
+                visualize: {
+                    basemap: 'us-counties'
+                }
+            }
+        };
+
+        // create a new chart
+        const srcChart = await t.context.server.inject({
+            method: 'POST',
+            url: '/v3/charts',
+            headers,
+            payload: attributes
+        });
+        t.is(srcChart.statusCode, 201);
+
+        // create different user
+        userObj = await createUser(t.context.server);
+        const headers2 = {
+            cookie: `DW-SESSION=${userObj.session.id}; crumb=abc`,
+            'X-CSRF-Token': 'abc',
+            referer: 'http://localhost'
+        };
+
+        // copy new chart
+        const copiedChart = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${srcChart.result.id}/copy`,
+            headers: headers2
+        });
+
+        t.is(copiedChart.statusCode, 404);
+    } finally {
+        if (userObj) {
+            await destroy(...Object.values(userObj));
+        }
+        if (teamObj) {
+            await destroy(...Object.values(teamObj));
+        }
+    }
+});
+
+test("If team allows it, user can copy published charts they can't access (edit in Datawrapper)", async t => {
+    let userObj, teamObj;
+    try {
+        teamObj = await createTeamWithUser(t.context.server);
+        const { team, session } = teamObj;
+        // make sure team allows copying
+        await team.update({
+            settings: {
+                ...team.settings,
+                chartTemplates: true
+            }
+        });
+
+        const headers = {
+            cookie: `DW-SESSION=${session.id}; crumb=abc`,
+            'X-CSRF-Token': 'abc',
+            referer: 'http://localhost'
+        };
+
+        const attributes = {
+            title: 'This is my chart',
+            theme: 'default',
+            language: 'en-IE',
+            externalData: 'https://static.dwcdn.net/data/12345.csv',
+            organizationId: team.id,
+            metadata: {
+                visualize: {
+                    basemap: 'us-counties'
+                }
+            }
+        };
+
+        // create a new chart
+        const srcChart = await t.context.server.inject({
+            method: 'POST',
+            url: '/v3/charts',
+            headers,
+            payload: attributes
+        });
+        t.is(srcChart.statusCode, 201);
+
+        // publish src chart
+        const publishChart = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${srcChart.result.id}/publish`,
+            headers
+        });
+        t.is(publishChart.statusCode, 200);
+
+        // create different user
+        userObj = await createUser(t.context.server);
+        const headers2 = {
+            cookie: `DW-SESSION=${userObj.session.id}; crumb=abc`,
+            'X-CSRF-Token': 'abc',
+            referer: 'http://localhost'
+        };
+
+        // copy new chart
+        const copiedChart = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${srcChart.result.id}/copy`,
+            headers: headers2
+        });
+
+        t.is(copiedChart.statusCode, 201);
+        t.is(copiedChart.result.forkedFrom, srcChart.result.id);
+        // title is identical
+        t.is(copiedChart.result.title, srcChart.result.title);
+    } finally {
+        if (userObj) {
+            await destroy(...Object.values(userObj));
+        }
+        if (teamObj) {
+            await destroy(...Object.values(teamObj));
+        }
+    }
+});
+
 test('User can copy chart, assets match', async t => {
     let userObj;
     try {

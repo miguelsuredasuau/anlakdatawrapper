@@ -12,7 +12,7 @@ function createAPI(server) {
             session = auth.credentials?.data?.id || '';
         }
         const csrfToken = 'frontend';
-        return async function api(path, { json = true, method = 'GET' } = {}) {
+        return async function api(path, { json = true, method = 'GET', body = undefined } = {}) {
             if (!session) {
                 // create guest session
                 const res = JSON.parse((await got.post(`${apiBase}/auth/session`)).body);
@@ -26,7 +26,8 @@ function createAPI(server) {
                       }
                     : undefined,
 
-                method: method
+                method: method,
+                body
             });
 
             return json ? JSON.parse(response.body) : response.body;

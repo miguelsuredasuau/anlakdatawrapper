@@ -3,7 +3,8 @@ const Boom = require('@hapi/boom');
 const get = require('lodash/get');
 const set = require('lodash/set');
 const createChart = require('@datawrapper/service-utils/createChart');
-const { Chart } = require('@datawrapper/orm/models');
+const { Op } = require('@datawrapper/orm').db;
+const { Chart, ChartPublic, Team } = require('@datawrapper/orm/models');
 
 module.exports = {
     name: 'routes/create',
@@ -114,7 +115,7 @@ module.exports = {
             path: '/',
             method: 'POST',
             options: {
-                auth: false,
+                auth: 'guest',
                 validate: {
                     payload: Joi.alternatives().try(
                         Joi.object({
@@ -153,15 +154,44 @@ module.exports = {
                 const { payload } = request;
                 if (!payload) throw Boom.badRequest('you need to send form-encoded data');
                 if (payload.template) {
-                    // check if chart is forkable
-                    const chart = await Chart.findByPk(payload.template);
+                    // create new chart from existing chart (template)
+                    const api = server.methods.createAPI(request);
 
-                    if (!chart || !chart.published_at || !chart.forkable) {
-                        throw Boom.notFound('visualization not found');
+                    const chartPublic = await ChartPublic.findByPk(payload.template);
+                    // check if chart has been published
+                    if (!chartPublic) throw Boom.notFound();
+                    // check if original chart has not been deleted
+                    const chart = await Chart.findOne({
+                        where: {
+                            id: payload.template,
+                            deleted: { [Op.not]: true }
+                        }
+                    });
+                    if (!chart) throw Boom.notFound();
+
+                    const team = await Team.findByPk(chart.organization_id);
+
+                    if (team && team.settings.chartTemplates) {
+                        // team supports one-click "edit this chart"
+                        const newChart = await api(`/charts/${chart.id}/copy`, { method: 'post' });
+
+                        return h.redirect(
+                            newChart.type === 'locator-map'
+                                ? `/edit/${newChart.id}`
+                                : `/chart/${newChart.id}/edit`
+                        );
+                    } else {
+                        // if settings.chartTemplates is false charts need to be
+                        // made forkable in order to be used as templates
+                        if (!chart.forkable) {
+                            throw Boom.notFound('visualization not found');
+                        }
+                        // ask user to confirm the forking
+                        const props = { template: chart };
+                        return h.view('Create.svelte', { props });
                     }
-                    const props = { template: chart };
-                    return h.view('Create.svelte', { props });
                 } else {
+                    // create new chart from payload metadata
                     if (!payload.data && !payload.external_data)
                         throw Boom.badRequest(
                             'you need to provide either data or an external_data url'

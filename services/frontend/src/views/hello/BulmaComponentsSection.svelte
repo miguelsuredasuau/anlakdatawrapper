@@ -67,4 +67,18 @@
     <progress class="progress is-success" value="60" max="100">60%</progress>
     <progress class="progress is-warning" value="75" max="100">75%</progress>
     <progress class="progress is-danger" max="100">90%</progress>
+
+    <form action="/create" method="post" target="_blank">
+        <div class="field">
+            <label for="template" class="label">Chart ID</label>
+            <div class="control">
+                <input class="input" name="template" type="text" placeholder="ABCDE" />
+            </div>
+        </div>
+        <div class="field is-grouped">
+            <div class="control">
+                <input type="submit" class="button is-link" value="Edit this chart" />
+            </div>
+        </div>
+    </form>
 </div>
