@@ -5,7 +5,11 @@
 </script>
 
 {#if logo.imgSrc}
-    <img height={logo.height} src={logo.imgSrc} alt={theme.title} />
+    <img
+        height={logo.height}
+        src={logo.imgSrc}
+        alt={'altText' in logo ? logo.altText : theme.title}
+    />
 {/if}
 {#if logo.text}
     <span class="logo-text">
