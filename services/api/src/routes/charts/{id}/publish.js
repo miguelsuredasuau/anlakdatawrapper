@@ -1,16 +1,17 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const ReadonlyChart = require('@datawrapper/orm/models/ReadonlyChart');
-const { getUserData, setUserData } = require('@datawrapper/orm/utils/userData');
-const uniq = require('lodash/uniq');
-const set = require('lodash/set');
 const get = require('lodash/get');
+const injectSafe = require('../../../utils/inject.js');
+const set = require('lodash/set');
+const uniq = require('lodash/uniq');
 const { Action, Chart, ChartAccessToken, ChartPublic, User } = require('@datawrapper/orm/models');
 const { Op } = require('@datawrapper/orm').db;
 const { createResponseConfig } = require('../../../schemas/response');
 const { getAdditionalMetadata, prepareChart } = require('../../../utils/index.js');
 const { getEmbedCodes } = require('./utils');
 const { getScope } = require('@datawrapper/service-utils/l10n');
+const { getUserData, setUserData } = require('@datawrapper/orm/utils/userData');
 
 module.exports = server => {
     // POST /v3/charts/{id}/publish
@@ -327,7 +328,7 @@ async function publishData(request) {
     }
 
     // the csv dataset
-    const res = await request.server.inject({
+    const res = await injectSafe(request, {
         url: `/v3/charts/${params.id}/data${
             query.published ? '?published=1' : query.ott ? `?ott=${query.ott}` : ''
         }`,
