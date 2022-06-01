@@ -203,6 +203,7 @@ module.exports = {
                     }
                     // allowPrefix is set to 'chart' for d3-maps, for which we (for now) still want to allow access to the chart
                     // upload & describe steps
+                    // TODO: remove this hack once new symbol map upload is live
                     if (
                         workflow.prefix &&
                         ![workflow.prefix, workflow.allowPrefix].includes(params.prefix)
@@ -308,6 +309,13 @@ module.exports = {
 
                     const disabledFields = await applyExternalMetadata(api, rawChart);
 
+                    // check if this is an admin accessing a chart by someone else
+                    const user = request.auth.artifacts;
+                    const showAdminWarning =
+                        user.isAdmin() &&
+                        user.id !== chart.author_id &&
+                        !(await user.hasActivatedTeam(chart.organization_id));
+
                     return h.view('edit/Index.svelte', {
                         htmlClass: 'has-background-white-ter',
                         props: {
@@ -328,7 +336,8 @@ module.exports = {
                                 'settings.showEditorNavInCmsMode',
                                 false
                             ),
-                            disabledFields
+                            disabledFields,
+                            showAdminWarning
                         }
                     });
                 }
@@ -344,7 +353,7 @@ module.exports = {
                 }
             };
             if (isAdmin) {
-                set(options, ['include'], [{ model: User, attributes: ['name', 'email'] }]);
+                set(options, ['include'], [{ model: User, attributes: ['id', 'name', 'email'] }]);
             }
             const chart = await Chart.findOne(options);
             const isEditable =

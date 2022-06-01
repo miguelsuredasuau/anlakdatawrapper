@@ -4,6 +4,7 @@
     import MainLayout from '_layout/MainLayout.svelte';
     import { openedInsideIframe } from '_layout/stores';
     import ViewComponent from '_partials/ViewComponent.svelte';
+    import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import Header from './nav/Header.svelte';
     import {
         data,
@@ -16,6 +17,7 @@
     import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
     import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
     import escapeHtml from '@datawrapper/shared/escapeHtml.cjs';
+    import httpReq from '@datawrapper/shared/httpReq';
 
     export let workflow;
     export let __;
@@ -44,6 +46,12 @@
      * will be shown as disabled in the editor
      */
     export let disabledFields = [];
+
+    /**
+     * admins may edit charts they otherwise don't have access
+     * to, but we'll show them a warning
+     */
+    export let showAdminWarning = false;
 
     $chart = rawChart;
 
@@ -119,6 +127,10 @@
 
     $: lastActiveStep = $chart.lastEditStep || 1;
 
+    $: author = $chart.author
+        ? $chart.author.email || `"${$chart.author.name}" (#${$chart.authorId})`
+        : null;
+
     onMount(async () => {
         initChartStore(rawChart, visualizations, disabledFields);
         initDataStore(rawChart.id, rawData);
@@ -173,6 +185,12 @@
             return (event.returnValue = __('edit / unsaved-changed-warning'));
         }
     }
+
+    async function duplicateChart() {
+        const res = await httpReq.post(`/v3/charts/${$chart.id}/copy`);
+        // redirect to copied chart
+        window.location.href = `/chart/${res.id}/edit`;
+    }
 </script>
 
 <svelte:window
@@ -196,6 +214,24 @@
                 on:navigate={evt => navigateTo(evt.detail)}
             />
         {/if}
+        {#if showAdminWarning}<div class="block container">
+                <MessageDisplay type="warning"
+                    >This chart belongs to <b
+                        ><a href="/admin/chart/by/user/{$chart.authorId}">{author}</a></b
+                    >. With great power comes with great responsibility, so be careful with what
+                    you're doing! Also consider these options before editing this chart:
+                    <div class="buttons are-small mt-2">
+                        <button class="button" on:click={duplicateChart}
+                            >Copy to your account</button
+                        >
+                        <a
+                            class="button"
+                            href="http://app.datawrapper.local/admin/copy-to-local?chartIds={$chart.id}"
+                            >Copy to your local instance</a
+                        >
+                    </div>
+                </MessageDisplay>
+            </div>{/if}
         <!-- step content -->
         <div class="block">
             {#if activeStep && activeStep.view}
