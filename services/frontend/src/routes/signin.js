@@ -81,7 +81,7 @@ module.exports = {
                         // replace unsafe characters in user names to prevent XSS or
                         // misleading user names (e.g. those that look like email addresses)
                         const unsafeCharacters = /[^\p{Alpha}\p{N}\p{Emoji}\p{Pd}\s.]+/u;
-                        const name = (profile.displayName || profile.username).replaceAll(
+                        const name = (profile.displayName || profile.username || '').replaceAll(
                             unsafeCharacters,
                             ' '
                         );
