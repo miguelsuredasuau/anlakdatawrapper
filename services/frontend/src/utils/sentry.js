@@ -36,5 +36,15 @@ module.exports = {
                 catchLogErrors: ['sentry']
             }
         });
+
+        // Explicitly send 5xx errors to Sentry. Without this code, uncaught exceptions in routes
+        // just show Svelte's error page (locally) or our custom error page (on prod) and no message
+        // is logged or sent to Sentry. It is probably because hapi-sentry has a constraint for
+        // channel 'error' but the uncaught exceptions arrive on channel 'internal' for some reason.
+        server.events.on({ name: 'request', channels: 'internal' }, (request, event, tags) => {
+            if (tags.error && event.error.isServer) {
+                request.log(['sentry'], event.error);
+            }
+        });
     }
 };
