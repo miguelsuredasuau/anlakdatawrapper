@@ -42,7 +42,7 @@ module.exports = {
         // is logged or sent to Sentry. It is probably because hapi-sentry has a constraint for
         // channel 'error' but the uncaught exceptions arrive on channel 'internal' for some reason.
         server.events.on({ name: 'request', channels: 'internal' }, (request, event, tags) => {
-            if (tags.error && event.error.isServer) {
+            if (tags.error && event.error && event.error.isServer) {
                 request.log(['sentry'], event.error);
             }
         });
