@@ -6,7 +6,8 @@ const {
     setup,
     BASE_URL,
     createChart,
-    getChart
+    getChart,
+    createGuestSession
 } = require('../../../../test/helpers/setup');
 const fetch = require('node-fetch');
 
@@ -218,7 +219,7 @@ test("User can't copy unpublished charts they can't access, even if team allows 
     }
 });
 
-test("If team allows it, user can copy published charts they can't access (edit in Datawrapper)", async t => {
+test("If team allows it, users and guests can copy published charts they can't access (edit in Datawrapper)", async t => {
     let userObj, teamObj;
     try {
         teamObj = await createTeamWithUser(t.context.server);
@@ -286,6 +287,22 @@ test("If team allows it, user can copy published charts they can't access (edit 
         t.is(copiedChart.result.forkedFrom, srcChart.result.id);
         // title is identical
         t.is(copiedChart.result.title, srcChart.result.title);
+
+        // try again as guests
+        const guestSession = await createGuestSession(t.context.server);
+        const copiedChart2 = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${srcChart.result.id}/copy`,
+            headers: {
+                cookie: `DW-SESSION=${guestSession}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            }
+        });
+        t.is(copiedChart2.statusCode, 201);
+        t.is(copiedChart2.result.forkedFrom, srcChart.result.id);
+        // title is identical
+        t.is(copiedChart2.result.title, srcChart.result.title);
     } finally {
         if (userObj) {
             await destroy(...Object.values(userObj));

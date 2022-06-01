@@ -3,7 +3,7 @@ const Boom = require('@hapi/boom');
 const { prepareChart } = require('../../../utils/index.js');
 const { translate } = require('@datawrapper/service-utils/l10n');
 const findChartId = require('@datawrapper/service-utils/findChartId');
-const { User, Team, ChartPublic, ReadonlyChart } = require('@datawrapper/orm/models');
+const { Team, ChartPublic, ReadonlyChart } = require('@datawrapper/orm/models');
 const clone = require('lodash/clone');
 const createChart = require('@datawrapper/service-utils/createChart');
 
@@ -19,6 +19,7 @@ module.exports = server => {
             description: 'Copies a chart',
             notes: 'Requires scope `chart:write`.',
             auth: {
+                strategy: 'guest',
                 access: { scope: ['chart:write'] }
             },
             validate: {
@@ -32,7 +33,7 @@ module.exports = server => {
             const { session } = auth.credentials;
             let srcChart = await ReadonlyChart.fromChart(await server.methods.loadChart(params.id));
             const isAdmin = server.methods.isAdmin(request);
-            const user = await User.findByPk(auth.artifacts.id);
+            const user = auth.artifacts;
             const isEditable = await srcChart.isEditableBy(user, auth.credentials.session);
             let editInDatawrapper = false;
 
