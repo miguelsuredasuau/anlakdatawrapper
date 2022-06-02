@@ -22,5 +22,6 @@ module.exports = {
     publish: { 'embed-width': 600, 'embed-height': 400 },
     annotate: {
         notes: ''
-    }
+    },
+    custom: {}
 };

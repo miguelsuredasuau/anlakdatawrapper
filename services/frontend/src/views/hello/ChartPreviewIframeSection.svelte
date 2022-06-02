@@ -1,6 +1,6 @@
 <script type="text/javascript">
     import ChartPreviewIframeDisplay from '_partials/displays/ChartPreviewIframeDisplay.svelte';
-    import FormField from '_partials/controls/FormField.svelte';
+    import FormFieldDisplay from '_partials/displays/FormFieldDisplay.svelte';
     import RadioInput from '_partials/controls/RadioInput.svelte';
 
     export let chart;
@@ -47,7 +47,7 @@
         </div>
 
         <div class="column">
-            <FormField {__} label="Size">
+            <FormFieldDisplay {__} label="Size">
                 <div class="level">
                     width: <input
                         type="number"
@@ -67,18 +67,18 @@
                         bind:value={height}
                     />
                 </div>
-            </FormField>
-            <FormField {__} label="Padding">
+            </FormFieldDisplay>
+            <FormFieldDisplay {__} label="Padding">
                 <input type="range" min="0" max="40" bind:value={padding} />
                 {padding}
-            </FormField>
-            <FormField {__} label="Scale">
+            </FormFieldDisplay>
+            <FormFieldDisplay {__} label="Scale">
                 <input type="range" min="1" max="4" step="0.1" bind:value={scale} />
                 {scale}x
-            </FormField>
-            <FormField {__} label="Header">
+            </FormFieldDisplay>
+            <FormFieldDisplay {__} label="Header">
                 <RadioInput bind:value={header} options={headerOptions} />
-            </FormField>
+            </FormFieldDisplay>
 
             <button class="button" on:click={onChange}>set</button>
             <button class="button" on:click={onReset}>reset</button>

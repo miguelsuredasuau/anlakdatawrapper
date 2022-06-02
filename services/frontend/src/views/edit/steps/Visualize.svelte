@@ -1,5 +1,6 @@
 <script>
     import ChartPreviewIframeDisplay from '_partials/displays/ChartPreviewIframeDisplay.svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import Tabs from '_partials/Tabs.svelte';
     import AnnotateTab from './visualize/AnnotateTab.svelte';
     import ChartTypeTab from './visualize/ChartTypeTab.svelte';
@@ -16,8 +17,8 @@
     export let data;
     export let visualizations;
     export let workflow;
-    export let teamSettingsControls;
-    export let teamSettingsPreviewWidths;
+    export let teamSettings;
+    export let disabledFields;
 
     let iframePreview;
 
@@ -113,6 +114,26 @@
             prevActive = active;
         }
     }
+
+    function changeTab(offset) {
+        const curTabIndex = tabs.indexOf(activeTab);
+        if (curTabIndex > -1) {
+            if (tabs[curTabIndex + offset]) {
+                // switch active tab
+                active = tabs[curTabIndex + offset].id;
+            } else {
+                // redirect to prev/next workflow step
+                const curStep = window.location.pathname.split('/').at(-1);
+                const curStepIndex = workflow.steps.findIndex(step => step.id === curStep);
+                if (
+                    (offset < 0 && curStepIndex > 0) ||
+                    (offset > 0 && curStepIndex < workflow.steps.length - 1)
+                ) {
+                    window.location.href = workflow.steps[curStepIndex + Math.sign(offset)].id;
+                }
+            }
+        }
+    }
 </script>
 
 <style>
@@ -145,9 +166,18 @@
                     {workflow}
                     {visualization}
                     {visualizations}
-                    {teamSettingsControls}
-                    {teamSettingsPreviewWidths}
+                    {teamSettings}
+                    {disabledFields}
                 />
+            </div>
+            <div class="buttons are-small">
+                <button class="button" on:click={() => changeTab(-1)}
+                    ><IconDisplay icon="arrow-left" /><span>Back</span></button
+                >
+                <button class="button is-primary" on:click={() => changeTab(+1)}>
+                    <span>Proceed</span>
+                    <IconDisplay icon="arrow-right" />
+                </button>
             </div>
         </div>
         <div class="column">

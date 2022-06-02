@@ -29,13 +29,39 @@
 
     const uid = Math.ceil(Math.random() * 1e5).toString(36);
 
+    function initHooks() {
+        const hooks = new Map();
+        return {
+            register(key, method) {
+                if (!hooks.has(key)) hooks.set(key, new Set());
+                hooks.get(key).add(method);
+            },
+            unregister(key) {
+                hooks.delete(key);
+            },
+            call(key) {
+                const results = [];
+                if (hooks.has(key)) {
+                    for (const method of hooks.get(key)) {
+                        results.push(method());
+                    }
+                }
+                return { results };
+            }
+        };
+    }
+
     onMount(async () => {
         // mimic old dw setup
         window.dw = {
             backend: {
                 __messages: $messages,
                 __api_domain: $config.apiDomain,
-                __userData: $userData
+                __userData: $userData,
+                hooks:
+                    window && window.dw && window.dw.backend && window.dw.backend.hooks
+                        ? window.dw.backend.hooks
+                        : initHooks()
             }
         };
         window.__svelte2wrapper = window.__svelte2wrapper || {};

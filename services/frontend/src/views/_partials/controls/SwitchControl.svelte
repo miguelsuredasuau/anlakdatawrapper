@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher } from 'svelte';
     import { slide } from 'svelte/transition';
-    import HelpDisplay from './HelpDisplay.svelte';
+    import HelpDisplay from '../displays/HelpDisplay.svelte';
 
     const dispatch = createEventDispatcher();
 

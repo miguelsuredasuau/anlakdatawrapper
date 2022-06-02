@@ -1,43 +1,40 @@
 <script>
-    import FormField from '_partials/controls/FormField.svelte';
+    import FormFieldDisplay from '_partials/displays/FormFieldDisplay.svelte';
 
     export let __;
 </script>
 
 <div class="section pl-0 pt-0">
-    <h3 id="form-field" class="title is-3">Form Field</h3>
+    <h3 class="title is-3">FormFieldDisplay</h3>
 
     <div class="columns">
-        <div class="column is-half">
-            <h4 class="is-4 mb-3">Without label:</h4>
-            <FormField {__}>
-                <input type="text" class="input" />
-            </FormField>
+        {#each [false, true] as compact}
+            <div class="column is-two-fifths">
+                <h4 class="title is-4">{compact ? 'compact' : 'normal'}</h4>
+                <FormFieldDisplay {__} {compact}>
+                    <input type="text" value="without label" class="input" />
+                </FormFieldDisplay>
 
-            <h4 class="is-4 mb-3">With label:</h4>
-            <FormField {__} label="My label" id="my-form-field" let:id>
-                <input type="text" class="input" {id} />
-            </FormField>
+                <FormFieldDisplay {__} label="With label" id="my-form-field" let:id {compact}>
+                    <input type="text" class="input" {id} />
+                </FormFieldDisplay>
 
-            <h4 class="is-4 mb-3">In checked state:</h4>
-            <FormField {__} checked={true}>
-                <input type="text" class="input" />
-            </FormField>
+                <FormFieldDisplay {__} label="In checked state" checked {compact}>
+                    <input type="text" class="input" />
+                </FormFieldDisplay>
 
-            <h4 class="is-4 mb-3">In loading state:</h4>
-            <FormField {__} loading={true}>
-                <input type="text" class="input" />
-            </FormField>
+                <FormFieldDisplay {__} label="Loading state" loading {compact}>
+                    <input type="text" class="input" />
+                </FormFieldDisplay>
 
-            <h4 class="is-4 mb-3">With error:</h4>
-            <FormField {__} error="My message">
-                <input type="text" class="input" />
-            </FormField>
+                <FormFieldDisplay {__} error="My message" label="Error message" {compact}>
+                    <input type="text" class="input is-danger" />
+                </FormFieldDisplay>
 
-            <h4 class="is-4 mb-3">Disabled input:</h4>
-            <FormField {__}>
-                <input type="text" disabled class="input" />
-            </FormField>
-        </div>
+                <FormFieldDisplay {__} label="disabled" {compact}>
+                    <input type="text" class="input" disabled />
+                </FormFieldDisplay>
+            </div>
+        {/each}
     </div>
 </div>

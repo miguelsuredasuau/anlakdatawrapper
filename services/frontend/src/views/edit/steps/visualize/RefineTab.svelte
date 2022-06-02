@@ -7,7 +7,7 @@
     export let visualization;
     export let visualizations;
     export let subscribeChart;
-    export let teamSettingsControls;
+    export let teamSettings;
 </script>
 
 <Svelte2ChartControls
@@ -18,5 +18,5 @@
     {visualization}
     {visualizations}
     {subscribeChart}
-    {teamSettingsControls}
+    {teamSettings}
 />

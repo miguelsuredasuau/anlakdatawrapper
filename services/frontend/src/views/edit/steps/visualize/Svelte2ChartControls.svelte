@@ -12,7 +12,7 @@
     export let visualization;
     export let visualizations;
     export let subscribeChart;
-    export let teamSettingsControls;
+    export let teamSettings;
     export let controlsModule = 'Refine';
 
     onMount(() => {
@@ -35,10 +35,7 @@
             visualization: visualizations.find(v => v.id === $chart.type),
             themeData: theme.data,
             computedThemeData: theme._computed,
-            teamSettings: {
-                controls: teamSettingsControls,
-                previewWidths: [] // not needed by refine step
-            }
+            teamSettings
         };
     }
 

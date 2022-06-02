@@ -1,6 +1,8 @@
 <script>
     export let helpClass = '';
     export let uid;
+    export let inline = false;
+    export let compact = false;
 
     let visible = false;
     let t = null;
@@ -20,9 +22,18 @@
 
 <style>
     .help {
-        float: right;
         position: relative;
+    }
+    .help:not(.inline) {
+        float: right;
         top: 4px;
+    }
+
+    .help.compact {
+        top: 0px;
+    }
+    .help.inline {
+        margin-top: 0;
     }
     .help-icon {
         display: inline-flex;
@@ -51,7 +62,8 @@
         left: -15px;
         top: 12px;
     }
-    .content {
+    .help-content {
+        text-align: left;
         position: absolute;
         z-index: 1000;
         top: -8px;
@@ -64,10 +76,10 @@
         border-radius: 2px;
         box-shadow: 3px 2px 2px rgba(0, 0, 0, 0.1);
     }
-    .content :global(img) {
+    .help-content :global(img) {
         max-width: none;
     }
-    .content :global(a) {
+    .help-content :global(a) {
         color: white;
         text-decoration: underline;
     }
@@ -75,13 +87,15 @@
 
 <div
     class="help {helpClass}"
+    class:compact
+    class:inline
     on:mouseenter={handleHelpMouseenter}
     on:mouseleave={handleHelpMouseleave}
     data-uid={uid}
 >
     <span class="help-icon">?</span>
     {#if visible}
-        <div class="content">
+        <div class="help-content">
             <i class="hat-icon im im-graduation-hat" />
             <slot />
         </div>

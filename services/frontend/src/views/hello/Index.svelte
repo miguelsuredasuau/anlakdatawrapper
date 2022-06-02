@@ -1,7 +1,8 @@
 <script type="text/javascript">
+    import { onMount } from 'svelte';
     import { readable } from 'svelte/store';
     import MainLayout from '_layout/MainLayout.svelte';
-    import Menu from '_partials/Menu.svelte';
+    import TreeMenu from './TreeMenu.svelte';
 
     import WelcomeSection from './WelcomeSection.svelte';
     import IconsSection from './IconsSection.svelte';
@@ -18,11 +19,13 @@
     import CodeMirrorInputSection from './CodeMirrorInputSection.svelte';
     import SetPasswordSection from './SetPasswordSection.svelte';
     import FormFieldSection from './FormFieldSection.svelte';
+    import HorizontalFormFieldSection from './HorizontalFormFieldSection.svelte';
     import SignUpSection from './SignUpSection.svelte';
     import DropdownSection from './DropdownSection.svelte';
     import Svelte2Section from './Svelte2Section.svelte';
     import ErrorsSection from './ErrorsSection.svelte';
     import SearchInputSection from './SearchInputSection.svelte';
+    import TextInputSection from './TextInputSection.svelte';
     import TagsInputSection from './TagsInputSection.svelte';
     import BulmaComponentsSection from './BulmaComponentsSection.svelte';
     import TypeaheadInputSection from './TypeaheadInputSection.svelte';
@@ -30,6 +33,7 @@
     import SaveButtonSection from './SaveButtonSection.svelte';
     import SwitchControlSection from './SwitchControlSection.svelte';
     import ChartPreviewIframeSection from './ChartPreviewIframeSection.svelte';
+    import RadioInput from '_partials/controls/RadioInput.svelte';
 
     export let magicNumber;
     export let chart;
@@ -41,10 +45,17 @@
     export let icons;
     let contentRef;
 
+    let whiteBg = true;
+
+    function loadPage(page) {
+        activePage = page;
+        window.scrollTo(0, 0);
+        window.location.hash = page.url;
+    }
+
     const menuGroups = [
         {
-            title: 'Introduction',
-            hideTitle: true,
+            title: 'Displays',
             pages: [
                 {
                     url: '#welcome',
@@ -52,7 +63,45 @@
                     view: WelcomeSection,
                     props: { magicNumber, __ }
                 },
-                { url: '#icons', title: 'Icons', view: IconsSection, props: { icons, __ } }
+                { url: '#icons', title: 'Icons', view: IconsSection, props: { icons, __ } },
+                { url: '#message', title: 'Message', view: MessageSection },
+                { url: '#modal', title: 'Modal', view: ModalSection },
+                { url: '#save', title: 'Save button', view: SaveButtonSection },
+                { url: '#form-field', title: 'FormField', view: FormFieldSection, props: { __ } },
+                {
+                    url: '#form-field-h',
+                    title: 'FormField (horiz.)',
+                    view: HorizontalFormFieldSection,
+                    props: { __ }
+                },
+                {
+                    url: '#preview',
+                    title: 'ChartIframePreview',
+                    view: ChartPreviewIframeSection,
+                    props: { chart: chartStore, theme, __ }
+                }
+            ]
+        },
+
+        {
+            title: 'Controls',
+            pages: [
+                { url: '#button-groups', title: 'Button groups', view: ButtonGroupSection },
+                { url: '#checkbox', title: 'Checkbox', view: CheckboxSection },
+                { url: '#radio', title: 'Radio Input', view: RadioInputSection },
+                { url: '#switch', title: 'Switch Input', view: SwitchControlSection },
+                { url: '#textinput', title: 'Text Input', view: TextInputSection },
+                { url: '#tagsinput', title: 'Tags Input', view: TagsInputSection },
+                { url: '#typeahead', title: 'Typeahead Input', view: TypeaheadInputSection },
+                { url: '#search', title: 'Search Input', view: SearchInputSection },
+                {
+                    url: '#setpassword',
+                    title: 'Set Password',
+                    view: SetPasswordSection,
+                    props: { __ }
+                },
+                { url: '#file', title: 'File Input', view: FileInputSection, props: { __ } },
+                { url: '#codemirror', title: 'CodeMirror Input', view: CodeMirrorInputSection }
             ]
         },
         {
@@ -64,43 +113,8 @@
             ]
         },
         {
-            title: 'Displays',
-            pages: [
-                { url: '#message', title: 'Message', view: MessageSection },
-                { url: '#modal', title: 'Modal', view: ModalSection },
-                { url: '#save', title: 'Save button', view: SaveButtonSection },
-                {
-                    url: '#preview',
-                    title: 'ChartIframePreview',
-                    view: ChartPreviewIframeSection,
-                    props: { chart: chartStore, theme, __ }
-                }
-            ]
-        },
-        {
-            title: 'Controls',
-            pages: [
-                { url: '#button-groups', title: 'Button groups', view: ButtonGroupSection },
-                { url: '#checkbox', title: 'Checkbox', view: CheckboxSection },
-                { url: '#radio', title: 'Radio Input', view: RadioInputSection },
-                {
-                    url: '#setpassword',
-                    title: 'Set Password',
-                    view: SetPasswordSection,
-                    props: { __ }
-                },
-                { url: '#search', title: 'Search Input', view: SearchInputSection },
-                { url: '#tagsinput', title: 'Tags Input', view: TagsInputSection },
-                { url: '#typeahead', title: 'Typeahead Input', view: TypeaheadInputSection },
-                { url: '#file', title: 'File Input', view: FileInputSection, props: { __ } },
-                { url: '#codemirror', title: 'CodeMirror Input', view: CodeMirrorInputSection },
-                { url: '#switch', title: 'Switch Input', view: SwitchControlSection }
-            ]
-        },
-        {
             title: 'Content',
             pages: [
-                { url: '#form-field', title: 'Form Field', view: FormFieldSection, props: { __ } },
                 {
                     url: '#markdown-input',
                     title: 'Markdown Input',
@@ -120,6 +134,19 @@
             ]
         }
     ];
+
+    let activePage = menuGroups[0].pages[0];
+    onMount(() => {
+        if (window.location.hash) {
+            for (const group of menuGroups) {
+                const match = group.pages.find(p => p.url === window.location.hash);
+                if (match) {
+                    activePage = match;
+                    break;
+                }
+            }
+        }
+    });
 </script>
 
 <style type="text/css">
@@ -129,22 +156,25 @@
 </style>
 
 <MainLayout title="Hello world">
-    <section class="section">
+    <section class="section" class:has-background-white-bis={!whiteBg}>
         <div class="container">
-            <div class="columns">
+            <div class="is-pulled-right has-text-grey">
+                <RadioInput
+                    options={[
+                        { value: true, label: 'white bg' },
+                        { value: false, label: 'gray bg' }
+                    ]}
+                    bind:value={whiteBg}
+                />
+            </div>
+            <h1 class="title is-2">Hello world!</h1>
+
+            <div class="columns is-clearfix">
                 <div class="column is-one-fifth">
-                    <Menu content={contentRef} sticky groups={menuGroups} />
+                    <TreeMenu {loadPage} content={contentRef} groups={menuGroups} />
                 </div>
                 <div class="column is-four-fifths" bind:this={contentRef}>
-                    {#each menuGroups as group}
-                        {#if !group.hideTitle}
-                            <h2 class="title is-2 mt-4 has-text-grey">{group.title}</h2>
-                            <hr />
-                        {/if}
-                        {#each group.pages as page}
-                            <svelte:component this={page.view} {...page.props || {}} />
-                        {/each}
-                    {/each}
+                    <svelte:component this={activePage.view} {...activePage.props || {}} />
                 </div>
             </div>
         </div>

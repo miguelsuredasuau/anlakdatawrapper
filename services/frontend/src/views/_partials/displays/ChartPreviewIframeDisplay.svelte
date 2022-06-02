@@ -251,7 +251,14 @@
         style="background:{background};width:{resizeWidth || width}px; height:{resizeHeight ||
             height}px;border-color:{borderColor}; padding:{border}px"
     >
-        <iframe title={$chart.title} {src} scrolling="no" bind:this={iframe} on:load={onLoad} />
+        <iframe
+            id="iframe-vis"
+            title={$chart.title}
+            {src}
+            scrolling="no"
+            bind:this={iframe}
+            on:load={onLoad}
+        />
         {#if resizable}
             <div class="resizer" on:mousedown={startResize}>
                 <IconDisplay icon="resize-{fixedHeight ? 'horizontal' : 'diagonal'}" />

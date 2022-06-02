@@ -44,6 +44,8 @@
     export let view;
     export let ref;
 
+    let request;
+
     Object.keys(stores).forEach(key => {
         const store = writable(cloneDeep(stores[key]));
         if (key === 'messages') store.translate = translate;
@@ -58,6 +60,11 @@
                     }
                 }, 1000)
             );
+        }
+        if (key === 'request') {
+            // save reference to request store to be able
+            // to update the hash on hashchange events
+            request = store;
         }
         setContext(key, store);
     });
@@ -96,7 +103,14 @@
             events.target.dispatchEvent(new CustomEvent(type, { detail }));
         };
         events.target = new EventTarget();
+        if (window.location.hash) {
+            $request.hash = window.location.hash;
+        }
     });
+
+    function onHashChange() {
+        $request.hash = window.location.hash;
+    }
 
     /**
      * wait for test() to return true
@@ -111,4 +125,5 @@
     }
 </script>
 
+<svelte:window on:hashchange={onHashChange} />
 <svelte:component this={view} bind:this={ref} {__} {...$$restProps} />

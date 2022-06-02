@@ -119,6 +119,7 @@
         language: rawChart.language,
         chartData: rawData,
         dwChart,
+        disabledFields: new Set(disabledFields),
         __
     };
 

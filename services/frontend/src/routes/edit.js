@@ -86,9 +86,18 @@ module.exports = {
                     view: 'edit/chart/visualize',
                     title: ['Visualize', 'core'],
                     async data({ team }) {
+                        const { controls, previewWidths, customFields } = {
+                            controls: {},
+                            previewWidths: [],
+                            customFields: [],
+                            ...team.settings
+                        };
                         return {
-                            teamSettingsControls: team?.settings?.controls || {},
-                            teamSettingsPreviewWidths: team?.settings?.previewWidths || []
+                            teamSettings: {
+                                controls,
+                                previewWidths,
+                                customFields
+                            }
                         };
                     }
                 },
@@ -317,7 +326,7 @@ module.exports = {
                         !(await user.hasActivatedTeam(chart.organization_id));
 
                     return h.view('edit/Index.svelte', {
-                        htmlClass: 'has-background-white-ter',
+                        htmlClass: 'has-background-white-bis',
                         props: {
                             rawChart,
                             rawData: data,

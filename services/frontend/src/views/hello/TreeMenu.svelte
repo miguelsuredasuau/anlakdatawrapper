@@ -7,6 +7,7 @@
 
     export let groups = [];
     export let sticky = false;
+    export let compact = false;
     export let content = null;
     export let loadPage;
 
@@ -64,38 +65,39 @@
 
 <style lang="scss">
     @import '../../styles/export.scss';
-    .menu.sticky {
-        position: sticky;
-        top: 20px;
-    }
 
     .menu-label {
-        font-weight: 700;
+        margin-bottom: 0.5em;
+        color: $dw-grey-darker;
+
+        :global(.icon) {
+            transform-origin: center;
+            font-size: 12px;
+            transition: transform 0.2s;
+            transition-timing-function: ease-out;
+            position: relative;
+        }
+        :global(.icon svg) {
+            font-size: 0.85em;
+        }
+
+        &.open :global(.icon) {
+            transform: rotate(90deg);
+        }
     }
+
     .menu-list {
-        border: 1px solid $dw-grey-lighter;
-        border-radius: $radius;
+        li {
+            a {
+                padding: 0.3em 0.5em;
 
-        li:not(:last-of-type) {
-            border-bottom: 1px solid $dw-grey-lighter;
-        }
-        li:first-of-type a {
-            border-radius: $radius $radius 0 0;
-        }
-        li:last-of-type a {
-            border-radius: 0 0 $radius $radius;
-        }
+                color: $dw-grey-darker;
 
-        a {
-            &.is-active {
-                font-weight: bold;
-                :global(.icon) {
-                    color: white;
+                &.is-active {
+                    background: transparent;
+                    font-weight: bold;
+                    color: $dw-black-bis;
                 }
-            }
-            :global(.icon) {
-                font-size: 20px;
-                color: $dw-scooter;
             }
         }
     }
@@ -103,35 +105,48 @@
 
 <svelte:window bind:scrollY bind:innerHeight />
 
-<aside class="menu" class:sticky>
+<aside class="menu">
     {#each groups as g}
         <div class="block">
             {#if g.title && g.title !== 'null'}
-                <h3 class="menu-label">
+                <h3
+                    class="menu-label"
+                    class:open={!g.collapsed}
+                    on:click={() => (g.collapsed = !g.collapsed)}
+                >
+                    <IconDisplay icon="disclosure" valign="baseline" />
                     {@html g.title}
                 </h3>
             {/if}
-            <ul role="navigation" class="menu-list">
-                {#each g.pages as page}
-                    {#if page.url}
-                        <li>
-                            <a
-                                class:is-active={isActive(page, scrollY, groups, content, $request)}
-                                on:click|preventDefault={() => pageClick(page)}
-                                href={page.url}
-                                >{#if page.svgIcon}<IconDisplay
+            {#if !g.collapsed}
+                <ul role="navigation" class="menu-list">
+                    {#each g.pages as page}
+                        {#if page.url}
+                            <li>
+                                <a
+                                    class:is-active={isActive(
+                                        page,
+                                        scrollY,
+                                        groups,
+                                        content,
+                                        $request
+                                    )}
+                                    on:click|preventDefault={() => pageClick(page)}
+                                    href={page.url}
+                                    ><IconDisplay
                                         className="mr-3"
-                                        icon={page.svgIcon}
-                                    />{/if}<span
-                                    >{#if page.escape}{truncate(page.title)}{:else}{@html truncate(
-                                            page.title
-                                        )}{/if}</span
-                                ></a
-                            >
-                        </li>
-                    {/if}
-                {/each}
-            </ul>
+                                        icon={page.svgIcon || 'workflow'}
+                                    /><span
+                                        >{#if page.escape}{truncate(
+                                                page.title
+                                            )}{:else}{@html truncate(page.title)}{/if}</span
+                                    ></a
+                                >
+                            </li>
+                        {/if}
+                    {/each}
+                </ul>
+            {/if}
         </div>
     {/each}
 </aside>
