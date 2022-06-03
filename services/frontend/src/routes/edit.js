@@ -90,7 +90,7 @@ module.exports = {
                             controls: {},
                             previewWidths: [],
                             customFields: [],
-                            ...team.settings
+                            ...team?.settings
                         };
                         return {
                             teamSettings: {
