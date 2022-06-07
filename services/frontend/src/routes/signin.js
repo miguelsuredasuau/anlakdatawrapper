@@ -321,19 +321,21 @@ module.exports = {
                     }
 
                     if (state.token) {
-                        const existingUser = await User.findOne({
-                            where: {
-                                activate_token: {
-                                    [Op.ne]: state.token
-                                },
-                                email: profile.email
-                            }
-                        });
+                        if (profile.email) {
+                            const existingUser = await User.findOne({
+                                where: {
+                                    activate_token: {
+                                        [Op.ne]: state.token
+                                    },
+                                    email: profile.email
+                                }
+                            });
 
-                        if (existingUser) {
-                            throw Boom.badRequest(
-                                'A user with the email address provided by the identity provider already exists.'
-                            );
+                            if (existingUser) {
+                                throw Boom.badRequest(
+                                    'A user with the email address provided by the identity provider already exists.'
+                                );
+                            }
                         }
 
                         user.oauth_signin = oAuthSignin;
