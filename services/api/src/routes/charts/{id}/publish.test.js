@@ -488,3 +488,55 @@ test('POST /charts/{id}/publish returns an error 400 when trying to publish char
         await destroy(chart);
     }
 });
+
+test('POST /charts/{id}/publish returns an error 502 when the GET_PUBLIC_URL event fails', async t => {
+    const { server } = t.context;
+
+    let chart;
+    try {
+        chart = await createChart();
+
+        server.app.events.on(server.app.event.GET_PUBLIC_URL, arg => {
+            if (arg.chart.id == chart.id) {
+                throw new Error('Test GET_PUBLIC_URL error');
+            }
+        });
+
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/publish`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+
+        t.is(res.statusCode, 502);
+    } finally {
+        await destroy(chart);
+    }
+});
+
+test('POST /charts/{id}/publish returns an error 502 when the PUBLISH_CHART event fails', async t => {
+    const { server } = t.context;
+
+    let chart;
+    try {
+        chart = await createChart();
+
+        server.app.events.on(server.app.event.PUBLISH_CHART, arg => {
+            if (arg.chart.id == chart.id) {
+                throw new Error('Test PUBLISH_CHART error');
+            }
+        });
+
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/publish`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+
+        t.is(res.statusCode, 502);
+    } finally {
+        await destroy(chart);
+    }
+});

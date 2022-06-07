@@ -137,7 +137,8 @@ async function publishChart(request) {
     const newPublicVersion = chart.public_version + 1;
 
     /* move assets to publish location */
-    let destination, eventError;
+    let destination;
+    let eventFailed = false;
 
     try {
         destination = await events.emit(
@@ -149,11 +150,11 @@ async function publishChart(request) {
             { filter: 'first' }
         );
     } catch (error) {
-        server.logger.error(error);
-        eventError = error;
+        request.log(['sentry'], error);
+        eventFailed = true;
     }
 
-    await events.emit(event.PUBLISH_CHART, {
+    const publishChartEventResults = await events.emit(event.PUBLISH_CHART, {
         outDir,
         fileMap,
         chart,
@@ -161,13 +162,18 @@ async function publishChart(request) {
         newPublicVersion,
         log: logPublishStatus
     });
+    const publishChartFailedEvents = publishChartEventResults.filter(r => r.status === 'error');
+    if (publishChartFailedEvents.length) {
+        publishChartFailedEvents.forEach(r => request.log(['sentry'], r.error));
+        eventFailed = true;
+    }
 
     /**
      * All files were moved and the temporary directory is not needed anymore.
      */
     await cleanup();
 
-    if (eventError) {
+    if (eventFailed) {
         throw Boom.badGateway();
     }
 
