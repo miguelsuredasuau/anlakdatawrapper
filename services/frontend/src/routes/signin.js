@@ -347,7 +347,7 @@ module.exports = {
                         // check if we already have this user id in our database
                         user = await User.findOne({ where: { oauth_signin: oAuthSignin } });
 
-                        if (!user) {
+                        if (!user && profile.email) {
                             // check if we already have a user in this team with the same email
                             user = await User.findOne({ where: { email: profile.email } });
 
@@ -357,15 +357,17 @@ module.exports = {
                                 user.role = 'editor';
                                 user.pwd = '';
                                 await user.save();
-                            } else {
-                                // else, create new user
-                                user = await User.create({
-                                    role: 'editor',
-                                    email: profile.email || '',
-                                    pwd: '',
-                                    oauth_signin: oAuthSignin
-                                });
                             }
+                        }
+
+                        if (!user) {
+                            // else, create new user
+                            user = await User.create({
+                                role: 'editor',
+                                email: profile.email || '',
+                                pwd: '',
+                                oauth_signin: oAuthSignin
+                            });
                         }
                     }
 
