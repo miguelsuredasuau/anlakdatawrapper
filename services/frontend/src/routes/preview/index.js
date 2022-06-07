@@ -76,6 +76,10 @@ module.exports = {
                 const themeDark = {};
                 const themeId = props.chart.theme;
 
+                if (!server.app.visualizations.has(props.chart.type)) {
+                    return Boom.badRequest('Invalid visualization type');
+                }
+
                 const darkThemePromises = [
                     `/themes/${themeId}?extend=true&dark=true`,
                     `/visualizations/${props.chart.type}/styles.css?theme=${themeId}&dark=true`
