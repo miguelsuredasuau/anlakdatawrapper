@@ -5,14 +5,14 @@ const get = require('lodash/get');
 module.exports = {
     name: 'utils/sentry',
     version: '1.0.0',
-    register: async (server, { commit }) => {
+    register: async (server, { release }) => {
         const config = server.methods.config('api');
 
         await server.register({
             plugin: require('hapi-sentry'),
             options: {
                 client: {
-                    release: commit,
+                    release,
                     serverName: 'api',
                     ...config.sentry.client,
                     beforeSend(event) {

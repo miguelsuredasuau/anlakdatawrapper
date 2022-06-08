@@ -1,13 +1,21 @@
-const Hapi = require('@hapi/hapi');
 const Boom = require('@hapi/boom');
 const CodedError = require('@datawrapper/service-utils/CodedError.js');
 const Crumb = require('@hapi/crumb');
-const Joi = require('joi');
+const Hapi = require('@hapi/hapi');
 const HapiSwagger = require('hapi-swagger');
-const get = require('lodash/get');
+const Joi = require('joi');
 const ORM = require('@datawrapper/orm');
 const fs = require('fs-extra');
+const get = require('lodash/get');
 const path = require('path');
+const registerFeatureFlag = require('./utils/feature-flags');
+const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
+const schemas = require('@datawrapper/schemas');
+const { ApiEventEmitter, eventList } = require('./utils/events');
+const { addScope, translate, getTranslate } = require('@datawrapper/service-utils/l10n');
+const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
+const { generateToken, loadChart, copyChartAssets } = require('./utils');
+const { promisify } = require('util');
 const {
     validateAPI,
     validateORM,
@@ -15,15 +23,8 @@ const {
     validateRedis,
     validatePlugins
 } = require('@datawrapper/schemas/config');
-const schemas = require('@datawrapper/schemas');
-const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
-const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
-const { generateToken, loadChart, copyChartAssets } = require('./utils');
-const { addScope, translate, getTranslate } = require('@datawrapper/service-utils/l10n');
-const { ApiEventEmitter, eventList } = require('./utils/events');
-const registerFeatureFlag = require('./utils/feature-flags');
-const { promisify } = require('util');
-const readFile = promisify(require('fs').readFile);
+
+const exec = promisify(require('child_process').exec);
 
 const pkg = require('../package.json');
 const configPath = findConfigPath();
@@ -156,15 +157,19 @@ function getLogLevel() {
     }
 }
 
-async function getVersionInfo() {
-    const { version } = pkg;
-    const { COMMIT } = process.env;
-    if (COMMIT) {
-        return { commit: COMMIT, version: `${version} (${COMMIT.substr(0, 8)})` };
+async function getGitRevision() {
+    if (process.env.COMMIT) {
+        return process.env.COMMIT;
     }
-
-    const commit = (await readFile(path.join(__dirname, '..', '.githead'), 'utf-8')).trim();
-    return { commit, version: `${version} (${commit.substr(0, 8)})` };
+    try {
+        return (await exec('git rev-parse HEAD', { timeout: 1000 })).stdout;
+    } catch (e) {
+        process.stderr.write(
+            'Failed to get Git revision, because the app is probably not checked out from Git. ' +
+                'No Sentry release or log VERSION will be set.'
+        );
+        return undefined;
+    }
 }
 
 function usesCookieAuth(request) {
@@ -172,7 +177,8 @@ function usesCookieAuth(request) {
 }
 
 async function configure(options = { usePlugins: true, useOpenAPI: true }) {
-    const { commit, version } = await getVersionInfo();
+    const rev = await getGitRevision();
+    const revShort = rev && rev.slice(0, 8);
     await server.register([
         {
             plugin: require('hapi-pino'), // logger plugin
@@ -181,7 +187,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
                 timestamp: () => `,"time":"${new Date().toISOString()}"`,
                 logEvents: ['request', 'log', 'onPostStart', 'onPostStop', 'request-error'],
                 level: getLogLevel(),
-                base: { name: commit ? commit.substr(0, 8) : version },
+                base: { name: revShort },
                 redact: [
                     'req.headers.authorization',
                     'req.headers.cookie',
@@ -210,7 +216,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     if (config.api.sentry) {
         await server.register({
             plugin: require('./utils/sentry'),
-            options: { commit }
+            options: { release: rev }
         });
     }
 
@@ -230,7 +236,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
 
     server.logger.info(
         {
-            VERSION: version,
+            VERSION: revShort,
             CONFIG_FILE: configPath,
             NODE_ENV: process.env.NODE_ENV,
             NODE_VERSION: process.version,
