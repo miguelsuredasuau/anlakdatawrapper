@@ -27,7 +27,7 @@
     import EmbedControl from './EmbedControl.html';
     import ThemeSelectControl from './ThemeSelectControl.html';
     import LogoControl from './LogoControl.html';
-    import AutoDarkModeControl from './AutoDarkModeControl.html';
+    import DarkModeControls from './DarkModeControls.html';
 
     function getBlocks(allBlocks, group) {
         return allBlocks
@@ -97,14 +97,14 @@
                         visible: themeHasLogo || !$customLayouts,
                         requireUpgrade: !$customLayouts,
                         group: 'layout',
-                        priority: 2
+                        priority: 1
                     },
                     {
                         name: 'dark-mode',
-                        ui: AutoDarkModeControl,
+                        ui: DarkModeControls,
                         visible: true,
                         group: 'layout',
-                        priority: 1
+                        priority: 2
                     },
                     {
                         name: 'theme-select',

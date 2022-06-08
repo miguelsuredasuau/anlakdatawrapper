@@ -1,0 +1,80 @@
+{#if showIntroduction}
+<AlertDisplay
+    type="intro"
+    visible="{showIntroduction}"
+    class="alert-new"
+    title="{title}"
+    on:close="closeIntroduction()"
+>
+    <slot name="introduction"></slot>
+    <div class="controls-section">
+        <slot name="controls"></slot>
+    </div>
+</AlertDisplay>
+{:else}
+<slot name="controls"></slot>
+{/if}
+<style>
+    :global(.alert-new) {
+        margin: 20px 0px 0px -10px;
+        width: calc(100% - 7px);
+        padding-bottom: 6px !important;
+    }
+
+    .controls-section {
+        margin-top: 20px;
+        background: #f9f9f9;
+        border-radius: 4px;
+        padding: 0px 4px;
+        width: calc(100% + 7px);
+        margin-left: -8px;
+    }
+
+    .controls-section :global(.vis-option-type-switch) {
+        padding: 0px;
+    }
+
+    .alert-controls-section + :global(.vis-option-type-switch) {
+        border-top: 1px solid #ddd;
+    }
+    :global(.vis-option-type-switch)
+        + .alert-controls-section
+        > .vis-option-type-switch:first-child {
+        border-top: 1px solid #ddd;
+    }
+</style>
+
+<script>
+    import AlertDisplay from './AlertDisplay.html';
+    import get from '@datawrapper/shared/get';
+
+    export default {
+        data() {
+            return {
+                userDataKey: '',
+                showIntroduction: null,
+                title: ''
+            };
+        },
+        components: {
+            AlertDisplay
+        },
+        methods: {
+            closeIntroduction() {
+                const { userDataKey } = this.get();
+                if (window.dw && window.dw.backend && window.dw.backend.setUserData) {
+                    window.dw.backend.setUserData({
+                        [userDataKey]: JSON.stringify(false)
+                    });
+                }
+                this.set({ showIntroduction: false });
+            }
+        },
+        oncreate() {
+            const showIntroduction = JSON.parse(
+                get(window.dw, `backend.__userData.${this.get().userDataKey}`, 'true')
+            );
+            this.set({ showIntroduction });
+        }
+    };
+</script>

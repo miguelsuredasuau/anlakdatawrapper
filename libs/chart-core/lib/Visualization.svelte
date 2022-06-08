@@ -510,6 +510,9 @@ Please make sure you called __(key) with a key of type "string".
             });
         }
 
+        // add theme._computed to theme.data for better dark mode support
+        theme.data._computed = theme._computed;
+
         const browserSupportsPrefersColorScheme = CSS.supports('color-scheme', 'dark');
 
         // we only apply dark mode if base theme is light
@@ -531,9 +534,6 @@ Please make sure you called __(key) with a key of type "string".
                 updateDarkModeState(e.matches);
             });
         }
-
-        // add theme._computed to theme.data for better dark mode support
-        theme.data._computed = theme._computed;
 
         // render chart
         dwChart.render(isIframe, outerContainer);
@@ -684,7 +684,10 @@ Please make sure you called __(key) with a key of type "string".
             lightPalette.map((light, i) => [light, darkPalette[i]])
         );
 
-        return function (color) {
+        return function (color, { forceInvert, noInvert } = {}) {
+            const darkModeNoInvert = !vis.get('dark-mode-invert', true);
+            if (noInvert || (darkModeNoInvert && !forceInvert)) return color;
+
             if (!chroma.valid(color)) return color;
 
             if (themeColorMap[color]) {
@@ -697,63 +700,10 @@ Please make sure you called __(key) with a key of type "string".
                 return colorCache.get(color);
             }
 
-            let alpha = chroma(color).alpha();
-            const opaqueColor = chroma(color).alpha(1);
+            colorCache.set(color, invertColor(color, darkBg, lightBg, 0.85));
 
-            // compute color with similar bg-ratio
-            const newOpaqueColHex = invertColor(opaqueColor, darkBg, lightBg, 0.85);
-            if (alpha < 1) {
-                // adjust opacity
-                const perceivedColor = chroma.mix(darkBg, newOpaqueColHex, alpha, 'rgb');
-                const perceivedContrast = chroma.contrast(darkBg, perceivedColor);
-                const boostedContrast =
-                    perceivedContrast * getContrastBoost(perceivedContrast, 1.05);
-                alpha = correctOpacity(newOpaqueColHex, darkBg, alpha, boostedContrast);
-            }
-            const newAlphaColHex = chroma(newOpaqueColHex).alpha(alpha).hex();
-            colorCache.set(color, newAlphaColHex);
-            return newAlphaColHex;
+            return colorCache.get(color);
         };
-
-        function getContrastBoost(contrast, maxBoost) {
-            const cMin = 1.5;
-            const cMax = 3;
-            return (
-                1 +
-                (contrast < cMin
-                    ? 1
-                    : contrast > cMax
-                    ? 0
-                    : 1 - (contrast - cMin) / (cMax - cMin)) *
-                    (maxBoost - 1)
-            );
-        }
-
-        function correctOpacity(color, background, opacity, targetContrast) {
-            const MAX_ITER = 10;
-            const EPS = 0.01;
-            const fgOpaque = chroma.mix(background, color, opacity, 'rgb');
-            const contrast = chroma.contrast(fgOpaque, background);
-
-            if (contrast - targetContrast > -EPS || !opacity) {
-                // we do have enough contrast, keep opacity
-                return opacity;
-            }
-
-            return test(opacity, 1, MAX_ITER);
-
-            function test(low, high, i) {
-                const mid = (low + high) / 2;
-                const fgOpaque = chroma.mix(background, color, mid, 'rgb');
-                const contrast = chroma.contrast(fgOpaque, background);
-
-                if (Math.abs(contrast - targetContrast) < EPS || !i) {
-                    // close enough
-                    return mid;
-                }
-                return contrast < targetContrast ? test(mid, high, i - 1) : test(low, mid, i - 1);
-            }
-        }
     }
 
     let contentBelowChart;

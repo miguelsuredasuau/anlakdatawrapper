@@ -71,7 +71,7 @@ async function findDescendants(theme) {
 
 module.exports.findDarkModeOverrideKeys = async function (theme = {}) {
     const themeSchema = await getSchemaJSON('themeData');
-    const keepUnits = new Set(['hexColor', 'cssColor', 'cssBorder']);
+    const keepUnits = new Set(['hexColor', 'cssColor', 'cssBorder', 'hexColorAndOpacity']);
     const out = [];
     const refs = [];
 
@@ -92,8 +92,9 @@ module.exports.findDarkModeOverrideKeys = async function (theme = {}) {
                 obj = ref;
             }
         }
+        const isHexColorAndOpacity = obj?.flags?.unit === 'hexColorAndOpacity';
 
-        if (obj?.type === 'object') {
+        if (obj?.type === 'object' && !isHexColorAndOpacity) {
             for (const key of Object.keys(obj.keys || {})) {
                 walk(obj.keys[key], `${path}${path === '' ? '' : '.'}${key}`);
             }
@@ -112,10 +113,11 @@ module.exports.findDarkModeOverrideKeys = async function (theme = {}) {
 
             if ((keepUnits.has(unit) || overrideInclude) && !overrideExclude) {
                 const noInvert = !!metas.find(d => d.noDarkModeInvert);
+                const props = { path, noInvert, isHexColorAndOpacity };
                 if (path.includes('[i]')) {
-                    getArrayKeys(path, noInvert);
+                    getArrayKeys(props);
                 } else {
-                    out.push({ path, noInvert });
+                    out.push(props);
                 }
             }
 
@@ -125,14 +127,14 @@ module.exports.findDarkModeOverrideKeys = async function (theme = {}) {
         }
     }
 
-    function getArrayKeys(path, noInvert) {
-        const match = path.match(/\[i\]/);
+    function getArrayKeys(props) {
+        const match = props.path.match(/\[i\]/);
         if (match) {
-            for (const i in get(theme.data, path.slice(0, match.index), [])) {
-                getArrayKeys(path.replace(/(\[i\])/, `.${i}`), noInvert);
+            for (const i in get(theme.data, props.path.slice(0, match.index), [])) {
+                getArrayKeys({ ...props, path: props.path.replace(/(\[i\])/, `.${i}`) });
             }
         } else {
-            out.push({ path, noInvert });
+            out.push(props);
         }
     }
 

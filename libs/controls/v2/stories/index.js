@@ -41,6 +41,8 @@ import DropdownInputView from './DropdownInputView.html';
 import DropdownInputDocs from '../DropdownInput.md';
 import DropdownListInputView from './DropdownListInputView.html';
 import DropdownListInputDocs from '../DropdownListInput.md';
+import FeatureIntroductionDisplayDocs from '../FeatureIntroductionDisplay.md';
+import FeatureIntroductionDisplayView from './FeatureIntroductionDisplayView.html';
 import FormBlockView from './FormBlockView.html';
 import FormBlockDocs from '../FormBlock.md';
 import FontStyleControlView from './FontStyleControlView.html';
@@ -202,6 +204,10 @@ addStory('DropdownInput', DropdownInputDocs, () => ({
 addStory('DropdownListInput', DropdownListInputDocs, () => ({
     Component: DropdownListInputView,
     data: { options }
+}));
+
+addStory('FeatureIntroductionDisplay', FeatureIntroductionDisplayDocs, () => ({
+    Component: FeatureIntroductionDisplayView
 }));
 
 addStory('FormBlock', FormBlockDocs, () => ({

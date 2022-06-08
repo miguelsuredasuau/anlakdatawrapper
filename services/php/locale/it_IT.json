@@ -1126,7 +1126,7 @@
   "browser-warning / not-supported": "Stai usando un browser (Internet Explorer) che al momento <strong>non è supportato dall'editor di Datawrapper</strong>.",
   "browser-warning / switch-browser": "Per continuare a usare il sito, passa a un browser diverso.<br/> Ecco alcuni browser supportati: <a href=\"https://www.mozilla.org/firefox/\">Mozilla Firefox</a>, <a href=\"https://www.google.com/chrome/\">Google Chrome</a> e <a href=\"https://www.microsoft.com/edge/\">Microsoft Edge</a>.",
   "browser-warning / visualizations": "<strong>Ricorda che le visualizzazioni Datawrapper sono visibili ovunque.</strong> Le visualizzazioni supportano i tutti i browser più importanti, compreso <em>Internet Explorer</em>.",
-  "layout / dark-mode-invert / help": "Di default, i colori della visualizzazione si adattano alla modalità scura per motivi estetici e di leggibilità. Qualora tu preferisca <b>mantenere gli stessi colori nella modalità scura</b>, puoi abilitare questa opzione. Guarda l'anteprima sotto la visualizzazione per vedere se ti piace l'effetto. Scopri altro <a href=\"https://academy.datawrapper.de/\">qui.</a>",
+  "layout / dark-mode-invert / help": "Di default, i colori della visualizzazione si adattano alla modalità scura per motivi estetici e di leggibilità. Qualora tu preferisca <b>mantenere gli stessi colori nella modalità scura</b>, puoi abilitare questa opzione. Guarda l'anteprima sotto la visualizzazione per vedere se ti piace l'effetto. Scopri altro <a href=\"https://academy.datawrapper.de/article/357-dark-mode-in-embedded-datawrapper-visualizations#disable-color-inversion\">qui.</a>",
   "layout / dark-mode-invert / label": "Usa gli stessi colori in modalità scura",
   "typeahead / no-results": "nessun risultato trovato",
   "typeahead / searching": "Ricerca...",
@@ -1146,5 +1146,7 @@
   "dashboard / hiring / intro": "Entra a far parte del nostro team da remoto o nella nostra sede di Berlino per una delle posizioni seguenti:",
   "describe / table / warning": "%num% avviso",
   "describe / table / warnings": "%num% avvisi",
-  "visualize / annotate / source-url / not-allowed": ""
+  "visualize / annotate / source-url / not-allowed": "",
+  "visualize / layout / locale-select / explainer": "Definisce i separatori dei decimali e delle migliaia e la traduzione dei nomi dei mesi e dei giorni della settimana.",
+  "visualize / layout / locale-select / hed": "Posizione output"
 }

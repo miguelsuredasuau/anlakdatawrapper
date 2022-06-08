@@ -1126,7 +1126,7 @@
   "browser-warning / not-supported": "目前，<strong>Datawrapper编辑器不支持</strong>您正在使用的浏览器(Internet Explorer)。",
   "browser-warning / switch-browser": "请切换到其他浏览器来继续使用该网站。<br/>支持的浏览器包括：<a href=\"https://www.mozilla.org/firefox/\">Mozilla Firefox</a>、<a href=\"https://www.google.com/chrome/\">Google Chrome</a>、<a href=\"https://www.microsoft.com/edge/\">Microsoft Edge</a>。",
   "browser-warning / visualizations": "<strong>请注意，您的Datwarapper可视化可以在任何地方查看。</strong>所有可视化都支持主要浏览器，包括<em>Internet Explorer</em>。",
-  "layout / dark-mode-invert / help": "默认情况下，可视化颜色在深色模式下会进行调整，确保仍然清晰可读，效果良好。如果您更偏好<b>在深色模式下使用相同颜色</b>，您可以启用此选项。在可视化下查看预览，确保您对颜色的效果满意。详情请参见<a href=\"https://academy.datawrapper.de/\">此处</a>。",
+  "layout / dark-mode-invert / help": "默认情况下，可视化颜色在深色模式下会进行调整，确保仍然清晰可读，效果良好。如果您更偏好<b>在深色模式下使用相同颜色</b>，您可以启用此选项。在可视化下查看预览，确保您对颜色的效果满意。详情请参见<a href=\"https://academy.datawrapper.de/article/357-dark-mode-in-embedded-datawrapper-visualizations#disable-color-inversion\">此处</a>。",
   "layout / dark-mode-invert / label": "在深色模式下使用相同颜色",
   "typeahead / no-results": "未找到结果",
   "typeahead / searching": "搜索...",
@@ -1146,5 +1146,7 @@
   "dashboard / hiring / intro": "我们设有在柏林工作或远程工作的下列职位：",
   "describe / table / warning": "%num%个警告",
   "describe / table / warnings": "%num%个警告",
-  "visualize / annotate / source-url / not-allowed": ""
+  "visualize / annotate / source-url / not-allowed": "",
+  "visualize / layout / locale-select / explainer": "定义小数和千位分隔符，以及月份和工作日名称的翻译。",
+  "visualize / layout / locale-select / hed": "输出语言环境"
 }

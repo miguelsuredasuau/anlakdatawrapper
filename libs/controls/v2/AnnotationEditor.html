@@ -459,17 +459,18 @@
                     this.set({ visType: type });
 
                     const { defaultProps, editorState } = this.get();
-                    const { themeData } = this.store.get();
+
+                    const { themeData, computedThemeData } = this.store.get();
 
                     // set defaults for the render app to use when creating new annotations
                     editorState.defaults.text = clone(
-                        mergeWithTheme(defaultProps.text, themeData, 'text')
+                        mergeWithTheme(defaultProps.text, themeData, computedThemeData, 'text')
                     );
                     editorState.defaults.range = clone(
-                        mergeWithTheme(defaultProps.range, themeData, 'range')
+                        mergeWithTheme(defaultProps.range, themeData, computedThemeData, 'range')
                     );
                     editorState.defaults.line = clone(
-                        mergeWithTheme(defaultProps.line, themeData, 'line')
+                        mergeWithTheme(defaultProps.line, themeData, computedThemeData, 'line')
                     );
 
                     this.set({ editorState });

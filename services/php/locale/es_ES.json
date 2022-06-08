@@ -1126,7 +1126,7 @@
   "browser-warning / not-supported": "Estás utilizando un navegador (Internet Explorer) que <strong>no es compatible con el editor de Datawrapper</strong> en este momento.",
   "browser-warning / switch-browser": "Cambia a un navegador distinto para seguir utilizando el sitio.<br/> Estos son algunos de los navegadores compatibles: <a href=\"https://www.mozilla.org/firefox/\">Mozilla Firefox</a>, <a href=\"https://www.google.com/chrome/\">Google Chrome</a> y <a href=\"https://www.microsoft.com/edge/\">Microsoft Edge</a>.",
   "browser-warning / visualizations": "<strong>Ten en cuenta que las visualizaciones de tu Datawrapper se pueden ver en cualquier sitio.</strong> Todas las visualizaciones son compatibles con los principales navegadores, <em>Internet Explorer</em> incluido.",
-  "layout / dark-mode-invert / help": "Los colores de la visualización se ajustan por defecto en el modo oscuro para asegurarse de que siguen siendo legibles y se ven bien. En el caso de que prefieras <b>mantener los mismos colores en el modo oscuro</b>, puedes activar esta opción. Consulta la vista previa bajo la visualización para asegurarte de que te gusta cómo quedan los colores. Obtén más información <a href=\"https://academy.datawrapper.de/\">aquí.</a>",
+  "layout / dark-mode-invert / help": "Los colores de la visualización se ajustan por defecto en el modo oscuro para asegurarse de que siguen siendo legibles y se ven bien. En el caso de que prefieras <b>mantener los mismos colores en el modo oscuro</b>, puedes activar esta opción. Consulta la vista previa bajo la visualización para asegurarte de que te gusta cómo quedan los colores. Obtén más información <a href=\"https://academy.datawrapper.de/article/357-dark-mode-in-embedded-datawrapper-visualizations#disable-color-inversion\">aquí.</a>",
   "layout / dark-mode-invert / label": "Utilizar los mismos colores en el modo oscuro",
   "typeahead / no-results": "No se han encontrado resultados",
   "typeahead / searching": "Buscando...",
@@ -1146,5 +1146,7 @@
   "dashboard / hiring / intro": "Únete a nuestro equipo de forma remota o en Berlín para uno de los siguientes puestos:",
   "describe / table / warning": "%num% aviso",
   "describe / table / warnings": "%num% avisos",
-  "visualize / annotate / source-url / not-allowed": ""
+  "visualize / annotate / source-url / not-allowed": "",
+  "visualize / layout / locale-select / explainer": "Define separadores decimales y de miles, así como la traducción de los nombres de los meses y los días de la semana.",
+  "visualize / layout / locale-select / hed": "Configuración regional del resultado"
 }

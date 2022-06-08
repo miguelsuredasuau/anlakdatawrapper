@@ -3027,7 +3027,14 @@ function purifyHTML(input, allowed) {
     // remove all event attributes
     if (typeof document === 'undefined') return input;
     var d = document.createElement('div');
+
     d.innerHTML = `<span>${input}</span>`;
+    // strip tags again, because `document.createElement()` closes unclosed tags and therefore
+    // creates new elements that might not be allowed
+    d.innerHTML = stripTags(
+        d.innerHTML,
+        allowed && !allowed.includes('<span>') ? allowed + '<span>' : undefined
+    );
     var sel = d.childNodes[0].querySelectorAll('*');
     for (var i = 0; i < sel.length; i++) {
         if (sel[i].nodeName.toLowerCase() === 'a') {
@@ -7665,14 +7672,15 @@ extend(base, {
 
     colorMap(cm) {
         if (!arguments.length) {
-            return color => {
+            return (...args) => {
+                let color = args[0];
                 const applyDarkModeMap = this.__darkMode && this.__darkModeColorMap;
                 this.__colors[color] = 1;
                 if (this.__colorMap) {
-                    if (applyDarkModeMap) color = this.__darkModeColorMap(color);
+                    if (applyDarkModeMap) color = this.__darkModeColorMap(...args);
                     return this.__colorMap(color);
                 } else if (applyDarkModeMap) {
-                    color = this.__darkModeColorMap(color);
+                    color = this.__darkModeColorMap(...args);
                 }
                 return color;
             };

@@ -1,12 +1,14 @@
 import get from '@datawrapper/shared/get';
 import * as d3 from 'd3-color';
 
-export function mergeWithTheme(defaultProps, themeData, key) {
+export function mergeWithTheme(defaultProps, themeData, computedThemeData, key) {
     const themeProps = get(themeData, `style.chart.${key}Annotations`, {});
-    if (key !== 'text' && typeof themeProps.opacity !== 'undefined') {
-        themeProps.opacity = Math.round(themeProps.opacity * 100);
+    const computedThemeProps = get(computedThemeData, `original.${key}Annotations`, {});
+    const defaultThemeProps = { ...themeProps, ...computedThemeProps };
+    if (key !== 'text' && typeof defaultThemeProps.opacity !== 'undefined') {
+        defaultThemeProps.opacity = Math.round(defaultThemeProps.opacity * 100);
     }
-    const propsWithTheme = { ...defaultProps, ...themeProps };
+    const propsWithTheme = { ...defaultProps, ...defaultThemeProps };
     if (key === 'text') {
         propsWithTheme.color = false;
     }

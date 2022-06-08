@@ -294,6 +294,13 @@ test('findDarkModeOverrideKeys finds keys nested in arrays', async t => {
     });
 });
 
+test('findDarkModeOverride keys identifies keys for items with unit hexColorAndOpacity', async t => {
+    const colorKeys = (await findDarkModeOverrideKeys()).map(d => d.path);
+    ['style.chart.rangeAnnotations', 'style.chart.lineAnnotations'].forEach(path => {
+        t.is(colorKeys.includes(path), true);
+    });
+});
+
 test('Dark mode overrides work as expected', async t => {
     const res = await t.context.server.inject({
         method: 'GET',
@@ -320,6 +327,10 @@ test('Dark mode overrides work as expected', async t => {
 
     // gradient has been overwritten
     t.deepEqual(data.colors.gradients[0], ['#ffffff', '#ffff00', '#ff0000']);
+
+    // 'hexColorAndOpacity' has been overwritten
+    const expectedRangeAnnotations = { color: '#727272', opacity: 0.16 };
+    t.deepEqual(data.style.chart.rangeAnnotations, expectedRangeAnnotations);
 });
 
 test('Should be possible to update theme with valid less', async t => {

@@ -1,14 +1,10 @@
-{#if initialized}
-<AlertDisplay
-    type="intro"
-    visible="{showIntroduction}"
-    class="alert-new"
+<FeatureIntroductionDisplay
+    userDataKey="dark-mode-introduction"
     title="{__('layout / auto-dark / intro / title')}"
-    on:close="closeIntroduction()"
 >
-    <div class="alert-content">
+    <div class="alert-content" slot="introduction">
         <div class="alert-content-section">
-            <div class="icon">
+            <div class="icon" style="margin-right: 20px">
                 <svg width="30" height="30" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M9.984.986A1 1 0 0 0 9 2v1a1 1 0 1 0 2 0V2A1.001 1.001 0 0 0 9.984.986zM4.332 3.332a1 1 0 0 0-.695 1.719l.707.707a1 1 0 1 0 1.414-1.414l-.707-.707a1 1 0 0 0-.719-.305zm11.305.002a1 1 0 0 0-.688.303l-.707.707a1 1 0 1 0 1.414 1.414l.707-.707a1 1 0 0 0-.726-1.717zm9.343.656a1 1 0 0 0-.687.303l-20 20a1 1 0 1 0 1.414 1.414l20-20a1 1 0 0 0-.727-1.717zM10 6a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM2 9a1 1 0 1 0 0 2h1a1 1 0 1 0 0-2H2zm22 3a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM5.031 13.94a1 1 0 0 0-.687.302l-.707.707a1 1 0 1 0 1.414 1.414l.707-.707a1 1 0 0 0-.727-1.716zM26 16a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-5.83.17A5.497 5.497 0 0 0 21.5 27a5.497 5.497 0 0 0 5.33-4.17c-.427.106-.87.17-1.33.17a5.5 5.5 0 0 1-5.5-5.5c0-.46.064-.903.17-1.33z"
@@ -18,14 +14,20 @@
             </div>
             <div>{@html purifyHtml(__('layout / auto-dark / intro / body'))}</div>
         </div>
-        <div class="alert-content-section hint">
-            <div class="hint-text">
+        <div class="alert-content-section hint" style="margin-top: 1em; align-items: center">
+            <div class="hint-text" style="margin-left: 50px; opacity: 0.7">
                 {@html purifyHtml(__('layout / auto-dark / intro / preview'))}
             </div>
-            <img src="/static/img/darkmodepreviewbtns.png" alt="dark mode preview buttons" />
+            <img
+                width="50"
+                style="margin: 10px"
+                src="/static/img/darkmodepreviewbtns.png"
+                alt="dark mode preview buttons"
+            />
         </div>
     </div>
-    <div class="alert-controls-section">
+
+    <div class="alert-controls-section" slot="controls">
         <SwitchControl
             bind:value="$metadata.publish.autoDarkMode"
             disabled="{themeAutoDark !== 'user'}"
@@ -33,66 +35,26 @@
             disabledState="{disabledState}"
             label="{__('layout / auto-dark / label')}"
             help="{__('layout / auto-dark / help')}"
+        >
+        </SwitchControl>
+        <SwitchControl
+            bind:value="$metadata.visualize['dark-mode-invert']"
+            label="{__('layout / dark-mode-invert / label')}"
+            help="{__('layout / dark-mode-invert / help')}"
+            inverted="{true}"
         />
     </div>
-</AlertDisplay>
-{#if !showIntroduction}
-<SwitchControl
-    bind:value="$metadata.publish.autoDarkMode"
-    disabled="{themeAutoDark !== 'user'}"
-    disabledMessage="{ disabledMessage }"
-    disabledState="{disabledState}"
-    label="{__('layout / auto-dark / label')}"
-    help="{__('layout / auto-dark / help')}"
-/>
-{/if} {/if}
+</FeatureIntroductionDisplay>
 <style>
-    :global(.alert-new) {
-        margin: 20px 0px 0px -10px;
-        width: calc(100% - 7px);
-        padding-bottom: 6px !important;
-    }
-
     .alert-content-section {
         display: flex;
         align-items: flex-start;
-    }
-    .alert-content-section.hint {
-        align-items: center;
-    }
-    .alert-content-section + .alert-content-section {
-        margin-top: 1em;
-    }
-
-    .alert-content-section .icon {
-        margin-right: 20px;
-    }
-    .alert-content-section img {
-        width: 50px;
-        margin: 10px;
-    }
-
-    .alert-content-section .hint-text {
-        margin-left: 50px;
-        opacity: 0.7;
-    }
-
-    .alert-controls-section {
-        margin-top: 20px;
-        background: #f9f9f9;
-        border-radius: 4px;
-        padding: 0px 4px;
-        width: calc(100% + 7px);
-        margin-left: -8px;
-    }
-    .alert-controls-section :global(.vis-option-type-switch) {
-        padding: 0px;
     }
 </style>
 
 <script>
     import SwitchControl from '../SwitchControl.html';
-    import AlertDisplay from '../AlertDisplay.html';
+    import FeatureIntroductionDisplay from '../FeatureIntroductionDisplay.html';
     import { __ } from '@datawrapper/shared/l10n';
     import get from '@datawrapper/shared/get';
     import purifyHtml from '@datawrapper/shared/purifyHtml';
@@ -106,7 +68,7 @@
         },
         components: {
             SwitchControl,
-            AlertDisplay
+            FeatureIntroductionDisplay
         },
         computed: {
             themeAutoDark({ $themeData }) {
@@ -120,25 +82,14 @@
                 return themeAutoDark ? 'on' : 'off';
             }
         },
-        methods: {
-            closeIntroduction() {
-                if (window.dw && window.dw.backend && window.dw.backend.setUserData) {
-                    window.dw.backend.setUserData({
-                        'dark-mode-introduction': JSON.stringify(false)
-                    });
-                }
-                this.set({ showIntroduction: false });
-            }
+        oncreate() {
+            // initialize as true if unset
+            const darkModeInvert = this.store.getMetadata('visualize.dark-mode-invert', true);
+            this.store.setMetadata('visualize.dark-mode-invert', darkModeInvert);
         },
         helpers: {
             __,
             purifyHtml
-        },
-        oncreate() {
-            const showIntroduction = JSON.parse(
-                get(window.dw, 'backend.__userData.dark-mode-introduction', 'true')
-            );
-            this.set({ showIntroduction, initialized: true });
         }
     };
 </script>

@@ -1146,5 +1146,7 @@
   "dashboard / hiring / intro": "Join our team remotely or in Berlin for one of the following positions:",
   "describe / table / warning": "%num% warning",
   "describe / table / warnings": "%num% warnings",
-  "visualize / annotate / source-url / not-allowed": "Invalid URL"
+  "visualize / annotate / source-url / not-allowed": "Invalid URL",
+  "visualize / layout / locale-select / explainer": "Defines decimal and thousand separators as well as translation of month and weekday names.",
+  "visualize / layout / locale-select / hed": "Output locale"
 }

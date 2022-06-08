@@ -56,6 +56,14 @@ module.exports.darkModeTestTheme = {
                 }
             ]
         }
+    },
+    style: {
+        chart: {
+            rangeAnnotations: {
+                color: '#888',
+                opacity: 0.1
+            }
+        }
     }
 };
 

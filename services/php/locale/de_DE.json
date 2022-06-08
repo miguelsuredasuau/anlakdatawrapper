@@ -1126,8 +1126,8 @@
   "browser-warning / not-supported": "Du verwendest einen Browser (Internet Explorer), der derzeit <strong>nicht vom Datawrapper-Editor unterstützt wird</strong>.",
   "browser-warning / switch-browser": "Bitte verwende einen anderen Browser, um diese Website weiterhin nutzen zu können.<br/> Hier sind einige Browser, die unterstützt werden: <a href=\"https://www.mozilla.org/firefox/\">Mozilla Firefox</a>, <a href=\"https://www.google.com/chrome/\">Google Chrome</a>, <a href=\"https://www.microsoft.com/edge/\">Microsoft Edge</a>.",
   "browser-warning / visualizations": "<strong>Bitte beachte, dass deine Datwarapper-Visualisierungen überall angezeigt werden können.</strong> Alle Visualisierungen unterstützen alle gängigen Browser, einschließlich <em>Internet Explorer</em>.",
-  "layout / dark-mode-invert / help": "Standardmäßig werden Visualisierungsfarben im dunklen Modus angepasst, um sicherzustellen, dass diese noch lesbar sind und gut aussehen. Falls du es vorziehst, <b>dieselben Farben im dunklen Modus beizubehalten</b>, kannst du diese Option aktivieren. Prüfe die Vorschau unter Visualisierung, um sicherzustellen, dass dir das Aussehen deiner Farben gefällt. Erfahre <a href=\"https://academy.datawrapper.de/\">hier</a> mehr.",
-  "layout / dark-mode-invert / label": "Dieselben Farben im dunklen Modus verwenden",
+  "layout / dark-mode-invert / help": "Standardmäßig werden Visualisierungsfarben im dunklen Modus angepasst, um sicherzustellen, dass diese noch lesbar sind und gut aussehen. Falls du es vorziehst, <b>dieselben Farben im Dunkelmodus beizubehalten</b>, kannst du diese Option aktivieren. Prüfe die Vorschau unter Visualisierung, um sicherzustellen, dass dir das Aussehen deiner Farben gefällt. Erfahre <a href=\"https://academy.datawrapper.de/article/357-dark-mode-in-embedded-datawrapper-visualizations#disable-color-inversion\">hier</a> mehr.",
+  "layout / dark-mode-invert / label": "Dieselben Farben im Dunkelmodus verwenden",
   "typeahead / no-results": "Keine Ergebnisse gefunden",
   "typeahead / searching": "Suche läuft...",
   "fileinput / choose-file": "Wähle eine Datei…",
@@ -1146,5 +1146,7 @@
   "dashboard / hiring / intro": "Werde Teil unseres Teams (remote oder in Berlin) in einer der folgenden Stellen:",
   "describe / table / warning": "%num% Warnung",
   "describe / table / warnings": "%num% Warnungen",
-  "visualize / annotate / source-url / not-allowed": ""
+  "visualize / annotate / source-url / not-allowed": "",
+  "visualize / layout / locale-select / explainer": "Bestimmt Dezimal- und Tausendertrennzeichen sowie die Übersetzung von Monatsnamen und Wochentagen.",
+  "visualize / layout / locale-select / hed": "Ausgabe-Sprachraum"
 }

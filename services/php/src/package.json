@@ -11,7 +11,7 @@
     "license": "ISC",
     "devDependencies": {
         "@datawrapper/chart-core": "file:../../../libs/chart-core",
-        "@datawrapper/controls": "^2.53.2",
+        "@datawrapper/controls": "^2.54.0",
         "@datawrapper/locales": "file:../../../libs/locales",
         "@datawrapper/shared": "^0.47.0",
         "@rollup/plugin-commonjs": "^20.0.0",

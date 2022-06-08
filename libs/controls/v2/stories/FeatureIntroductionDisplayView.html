@@ -1,0 +1,29 @@
+<h3>Feature introduction display with embedded controls</h3>
+
+<FeatureIntroductionDisplay title="New: 3D pie charts!">
+    <div slot="introduction">Enable 3D mode and enter a new dimension of data visualization.</div>
+    <div slot="controls">
+        <SwitchControl label="3D mode" help="This will make your pie chart look really cool">
+            <NumberControl label="3D depth" value="5" />
+        </SwitchControl>
+    </div>
+</FeatureIntroductionDisplay>
+
+<script>
+    import FeatureIntroductionDisplay from '../FeatureIntroductionDisplay.html';
+    import SwitchControl from '../SwitchControl.html';
+    import NumberControl from '../NumberControl.html';
+
+    export default {
+        components: {
+            FeatureIntroductionDisplay,
+            SwitchControl,
+            NumberControl
+        },
+        data() {
+            return {
+                v1: true
+            };
+        }
+    };
+</script>

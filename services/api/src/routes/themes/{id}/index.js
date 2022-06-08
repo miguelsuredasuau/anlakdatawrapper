@@ -4,7 +4,7 @@ const assign = require('assign-deep');
 const { compileFontCSS } = require('../../../utils/publish/compile-css.js');
 
 const { Theme, User, Team, Chart } = require('@datawrapper/orm/models');
-const { get, set } = require('lodash');
+const { get, set, cloneDeep } = require('lodash');
 const chroma = require('chroma-js');
 const invertColor = require('@datawrapper/shared/invertColor.cjs');
 const {
@@ -184,9 +184,7 @@ module.exports = {
                 }
 
                 if (extendedTheme.less !== dataValues.less) {
-                    dataValues.less = `${extendedTheme.less || ''}
-${dataValues.less || ''}
-`;
+                    dataValues.less = [extendedTheme.less || '', dataValues.less || ''].join('\n');
                 }
 
                 dataValues.data = assign(extendedTheme.data, dataValues.data);
@@ -219,6 +217,10 @@ ${dataValues.less || ''}
 
             const { darkBg, origBg, origBgLum: bgColorLum } = getBackgroundColors(theme);
             const origGradients = get(theme, 'data.colors.gradients', []);
+
+            await server.app.events.emit(server.app.event.COMPUTED_THEME_DATA, { theme });
+
+            setOrigAnnotations(theme);
 
             if (bgColorLum >= 0.3) {
                 if (query.dark) {
@@ -253,9 +255,12 @@ async function convertToDarkMode({ theme, darkBg, origBg }) {
 
     const themeColorKeys = await findDarkModeOverrideKeys(theme);
 
-    themeColorKeys.forEach(({ path: key, noInvert }) => {
+    themeColorKeys.forEach(({ path: key, noInvert, isHexColorAndOpacity }) => {
         const darkThemeVal = get(darkMode, key);
-        if (darkThemeVal) {
+        if (isHexColorAndOpacity) {
+            const oldVal = get(theme.data, key);
+            set(theme.data, key, invertHexColorAndOpacity(oldVal));
+        } else if (darkThemeVal) {
             set(theme.data, key, darkThemeVal);
         } else {
             const oldVal = get(theme.data, key);
@@ -291,6 +296,27 @@ async function convertToDarkMode({ theme, darkBg, origBg }) {
                         : 0)
             );
         }
+
+        function invertHexColorAndOpacity(lightVal = {}) {
+            const { color, opacity } = lightVal;
+            let darkModeVal = get(darkMode, key);
+            if (!darkModeVal && color && typeof opacity !== 'undefined') {
+                const alphaColor = chroma(color).alpha(opacity).hex();
+                const inverted = chroma(invertColor(alphaColor, darkBg, origBg, 0.85));
+                darkModeVal = {
+                    color: inverted.alpha(1).hex(),
+                    opacity: inverted.alpha()
+                };
+            } else {
+                if (!darkModeVal) darkModeVal = {};
+                if (!('opacity' in darkModeVal) && typeof opacity !== 'undefined') {
+                    darkModeVal.opacity = opacity;
+                } else if (!darkModeVal.color && color) {
+                    darkModeVal.color = invertColor(color, darkBg, origBg, 0.85);
+                }
+            }
+            return darkModeVal;
+        }
     });
 
     set(theme, 'data.colors.background', darkBg);
@@ -298,6 +324,13 @@ async function convertToDarkMode({ theme, darkBg, origBg }) {
     if (bodyBackground !== 'transparent' && chroma(bodyBackground).hex() === chroma(origBg).hex()) {
         set(theme, 'data.style.body.background', darkBg);
     }
+}
+
+function setOrigAnnotations(theme) {
+    ['line', 'range'].forEach(type => {
+        const settings = cloneDeep(get(theme.data, `style.chart.${type}Annotations`, {}));
+        set(theme, `_computed.original.${type}Annotations`, settings);
+    });
 }
 
 function getBackgroundColors(theme) {
