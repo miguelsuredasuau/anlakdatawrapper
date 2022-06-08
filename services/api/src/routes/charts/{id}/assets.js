@@ -77,11 +77,11 @@ module.exports = server => {
 async function getChartAsset(request, h) {
     const { params, auth, query, server } = request;
     const { events, event } = server.app;
-    const chart = await server.methods.loadChart(request.params.id);
+    const chart = await server.methods.loadChart(params.id);
 
     const filename = params.asset;
 
-    if (filename !== `${chart.id}.public.csv`) {
+    if (filename !== `${params.id}.public.csv`) {
         // unauthenticated users can never access non-public assets
         if (!auth.isAuthenticated) {
             return Boom.forbidden();

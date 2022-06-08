@@ -1,5 +1,11 @@
 const test = require('ava');
-const { createUser, destroy, setup } = require('../../../../test/helpers/setup');
+const {
+    createPublicChart,
+    createUser,
+    destroy,
+    genRandomChartId,
+    setup
+} = require('../../../../test/helpers/setup');
 
 async function getAsset(server, headers, chart, asset) {
     return server.inject({
@@ -152,7 +158,7 @@ test('Public asset can be read', async t => {
     }
 });
 
-test('GET /charts/{id}/assets/{assets} return error 400 when the asset is not in the whitelist', async t => {
+test('GET /charts/{id}/assets/{asset} returns error 400 when the asset is not in the whitelist', async t => {
     let chartId;
     try {
         const res = await t.context.server.inject({
@@ -178,7 +184,7 @@ test('GET /charts/{id}/assets/{assets} return error 400 when the asset is not in
     }
 });
 
-test('GET /charts/{id}/assets/{assets} return error 404 when the asset was not found', async t => {
+test('GET /charts/{id}/assets/{asset} returns error 404 when the asset was not found', async t => {
     let chartId;
     try {
         const res = await t.context.server.inject({
@@ -201,5 +207,40 @@ test('GET /charts/{id}/assets/{assets} return error 404 when the asset was not f
             const chart = await Chart.findByPk(chartId);
             await destroy(chart);
         }
+    }
+});
+
+test('GET /charts/{id}/assets/{asset} returns error 404 when trying to get a public asset using chart id that has wrong case', async t => {
+    let chart;
+    try {
+        const chartIdPrefix = genRandomChartId().slice(0, 4);
+        const chartId = chartIdPrefix + 'a';
+        const chartIdDifferentCase = chartIdPrefix + 'A';
+        chart = await createPublicChart({
+            id: chartId,
+            author_id: t.context.userObj.user.id
+        });
+        await putAsset(
+            t.context.server,
+            t.context.headers,
+            chart,
+            `${chart.id}.public.csv`,
+            'FOO\nBAR'
+        );
+
+        const resAsset = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chartId}/assets/${chartId}.public.csv`
+        });
+        t.is(resAsset.statusCode, 200);
+        t.is(resAsset.result, 'FOO\nBAR');
+
+        const resAssetDifferentCase = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chartIdDifferentCase}/assets/${chartIdDifferentCase}.public.csv`
+        });
+        t.is(resAssetDifferentCase.statusCode, 404);
+    } finally {
+        await destroy(chart);
     }
 });
