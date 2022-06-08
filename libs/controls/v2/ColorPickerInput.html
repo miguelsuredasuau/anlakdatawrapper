@@ -17,7 +17,11 @@
         </span>
         <span slot="content">
             {#if color_}
-            <div class="color-selector" on:click="event.stopPropagation()">
+            <div
+                class="color-selector"
+                style="width: {colorSelectorWidth}px"
+                on:click="event.stopPropagation()"
+            >
                 <div class="palette">
                     {#each paletteGroups as group}
                     <div class="color-group">
@@ -34,8 +38,8 @@
                                 data-color="{c}"
                                 style="     background: {c};
                                                 border-color: {borderColor2(c)};
-                                                width:{swatchDims}px;
-                                                height:{swatchDims}px;"
+                                                width:{swatchSize}px;
+                                                height:{swatchSize}px;"
                             >
                                 <div class="transparency" style="opacity: {1-alpha(c)}"></div>
                             </div>
@@ -115,6 +119,9 @@
     import DropdownInput from './DropdownInput.html';
     import { storeColor, getColor } from './utils/colorPicker.mjs';
 
+    const SWATCH_GAP = 2;
+    const TARGET_PALETTE_WIDTH = 157;
+
     const noColor = '#00000000';
 
     export default {
@@ -170,9 +177,16 @@
             palette({ $themeData }) {
                 return get($themeData, 'colors.palette', []);
             },
-            swatchDims({ $themeData }) {
-                const rowCount = get($themeData, 'colors.picker.rowCount', 6);
-                return (157 - 2 * rowCount) / rowCount;
+            swatchesPerRow({ $themeData }) {
+                return get($themeData, 'colors.picker.rowCount', 6);
+            },
+            colorSelectorWidth({ swatchSize, swatchesPerRow }) {
+                return (swatchSize + SWATCH_GAP) * swatchesPerRow;
+            },
+            swatchSize({ swatchesPerRow }) {
+                return Math.round(
+                    (TARGET_PALETTE_WIDTH - SWATCH_GAP * swatchesPerRow) / swatchesPerRow
+                );
             },
             colorAxesConfig({ $themeData }) {
                 const lightness = get($themeData, 'colors.picker.controls.lightness', true);
@@ -435,7 +449,6 @@
     .color-selector {
         position: static;
         background: transparent;
-        width: 157px;
         padding: 5px 10px;
         padding-right: 8px;
         box-shadow: none;
