@@ -137,7 +137,7 @@ function createFontEntries(fonts, themeData) {
                 }') format('${fmt}')`;
             });
 
-        const propsCSS = ['weight', 'style', 'display']
+        const propsCSS = ['weight', 'style', 'display', 'stretch']
             .filter(prop => props[prop])
             .map(prop => `font-${prop}: ${props[prop]};`);
 
