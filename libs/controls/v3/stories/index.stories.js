@@ -6,6 +6,8 @@ import './static/vendor/iconicfont/css/iconmonstr-iconic-font.min.css';
 
 import AlertDisplayDocs from '../AlertDisplay.mdx';
 import AlertDisplayView from './AlertDisplayView.svelte';
+import ConfirmationModalDocs from '../ConfirmationModal.mdx';
+import ConfirmationModalView from './ConfirmationModalView.svelte';
 import DropdownControlDocs from '../DropdownControl.mdx';
 import DropdownControlView from './DropdownControlView.svelte';
 import DropdownInputDocs from '../DropdownInput.mdx';
@@ -62,6 +64,12 @@ const moreOptions = [
 });
 
 export const AlertDisplay = addStory('AlertDisplay', AlertDisplayView, AlertDisplayDocs, {});
+export const ConfirmationModal = addStory(
+    'ConfirmationModal',
+    ConfirmationModalView,
+    ConfirmationModalDocs,
+    {}
+);
 export const DropdownControl = addStory(
     'DropdownControl',
     DropdownControlView,

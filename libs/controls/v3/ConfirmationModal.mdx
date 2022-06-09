@@ -1,0 +1,39 @@
+# ConfirmationModal
+
+ConfirmationModal is useful for asking the user for confirmation before taking some (possibly destructive) action.
+Per default ConfirmationModal is not visible and has a close button.
+
+ConfirmationModal uses the Bootstrap Modal CSS.
+
+```html
+<script>
+    import { ConfirmationModal } from '@datawrapper/controls';
+    // or import directly via
+    // import ConfirmationModal from '@datawrapper/controls/ConfirmationModal.svelte;
+
+    let refConfirmationModal;
+
+    function confirm() {
+        console.log('confirmed!');
+    }
+
+    function dismiss() {
+        console.log('dismissed!');
+    }
+</script>
+
+<button on:click="{refConfirmationModal.open()}">Request Confirmation</button>
+
+<ConfirmationModal
+    bind:this="{refConfirmationModal}"
+    confirmButtonText="Confirm"
+    confirmButtonIcon="checkmark-bold"
+    backButtonText="Cancel"
+    title="Are you sure?"
+    on:confirm="{confirm}"
+    on:dismiss="{dismiss}"
+>
+    <p>Are you sure you want to confirm this change?</p>
+    <ConfirmationModal
+/></ConfirmationModal>
+```
