@@ -2,14 +2,15 @@ const path = require('path');
 const fs = require('fs');
 
 /**
- * Function to find a Datawrapper config file (`config.js`).
- * It looks in the current working directory and in `/etc/datawrapper/`.
- * If no config is found, the process will exit with a non zero exit code.
+ * Finds a path to the Datawrapper config file (`config.js`).
  *
- * It is possible to overwrite the config path with the env variable `DW_CONFIG_PATH`.
- * Useful for tests!
+ * The first existing path in this list will be used:
+ * - the path read from the environment variable `DW_CONFIG_PATH`
+ * - `/etc/datawrapper/config.js`
+ * - `../../config.js`
+ * - `./config.js`
  *
- * **This is a Node module, that will probably not work in a browser environment.**
+ * If no config is found, the process will exit with a non-zero exit code.
  *
  * @example
  * const { findConfigPath } = require('@datawrapper/service-utils/findConfig')
@@ -20,24 +21,18 @@ const fs = require('fs');
  * @returns {String}
  */
 function findConfigPath() {
-    const customPath = process.env.DW_CONFIG_PATH
-        ? path.resolve(process.env.DW_CONFIG_PATH)
-        : undefined;
-
+    const cwd = process.cwd();
     const paths = [
         '/etc/datawrapper/config.js',
-        path.join(process.cwd(), '../../', 'config.js'),
-        path.join(process.cwd(), 'config.js')
+        path.join(cwd, '../../', 'config.js'),
+        path.join(cwd, 'config.js')
     ];
-
-    if (customPath) {
-        paths.unshift(customPath);
+    if (process.env.DW_CONFIG_PATH) {
+        paths.unshift(path.resolve(process.env.DW_CONFIG_PATH));
     }
-
     for (const path of paths) {
         if (fs.existsSync(path)) return path;
     }
-
     process.stderr.write(`
 ❌ No config.js found!
 

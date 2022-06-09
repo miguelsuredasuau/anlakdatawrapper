@@ -59,8 +59,8 @@ async function inspectApp() {
         method() {},
         methods: new Proxy(
             {
-                config() {
-                    return config;
+                config(key) {
+                    return key ? config[key] : config;
                 },
                 isDevMode() {
                     return true;
