@@ -148,7 +148,7 @@ function purifyHTML(input, allowed) {
   d.innerHTML = `<span>${input}</span>`; // strip tags again, because `document.createElement()` closes unclosed tags and therefore
   // creates new elements that might not be allowed
 
-  d.innerHTML = stripTags(d.innerHTML, allowed && !allowed.includes('<span>') ? allowed + '<span>' : undefined);
+  d.innerHTML = stripTags(d.innerHTML, allowed && !allowed.includes('<span>') ? allowed + '<span>' : allowed || undefined);
   var sel = d.childNodes[0].querySelectorAll('*');
 
   for (var i = 0; i < sel.length; i++) {
