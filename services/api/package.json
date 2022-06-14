@@ -39,7 +39,7 @@
         "@datawrapper/orm": "file:../../libs/orm",
         "@datawrapper/schemas": "file:../../libs/schemas",
         "@datawrapper/service-utils": "file:../../libs/service-utils",
-        "@datawrapper/shared": "^0.48.0",
+        "@datawrapper/shared": "^0.48.1",
         "@hapi/boom": "^9.1.2",
         "@hapi/catbox-memory": "^5.0.1",
         "@hapi/catbox-redis": "^6.0.2",
