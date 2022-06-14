@@ -7,9 +7,9 @@
     <h3 id="dropdown" class="title is-3">Dropdown</h3>
 
     <Dropdown>
-        <button aria-haspopup="true" aria-controls="dropdown-menu" class="button" slot="trigger"
-            >Click me</button
-        >
+        <button aria-haspopup="true" aria-controls="dropdown-menu" class="button" slot="trigger">
+            Open drop-down menu
+        </button>
         <div class="dropdown-content" slot="content">
             <div class="dropdown-item">
                 <p>
@@ -24,6 +24,19 @@
             </div>
             <hr class="dropdown-divider" />
             <a href="#/link" class="dropdown-item"> This is a link </a>
+        </div>
+    </Dropdown>
+
+    <Dropdown up>
+        <button aria-haspopup="true" aria-controls="dropdown-menu" class="button" slot="trigger">
+            Open drop-up menu
+        </button>
+        <div class="dropdown-content" slot="content">
+            <div class="dropdown-item">
+                <p>
+                    You can insert <strong>any type of content</strong> within the dropdown menu.
+                </p>
+            </div>
         </div>
     </Dropdown>
 

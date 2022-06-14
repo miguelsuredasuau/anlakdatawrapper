@@ -1,6 +1,7 @@
 <script>
     export let active = false;
     export let disabled = false;
+    export let up = false;
 
     let dropdown;
     export let align = 'left';
@@ -30,6 +31,7 @@
     bind:this={dropdown}
     class:is-active={active}
     class:is-disabled={disabled}
+    class:is-up={up}
     class:is-right={align === 'right'}
 >
     <div class="dropdown-trigger" on:click={toggle}>

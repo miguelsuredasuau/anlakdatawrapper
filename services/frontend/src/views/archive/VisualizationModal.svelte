@@ -182,18 +182,16 @@
                             </li>
                             {#if chart.publishedAt}
                                 <li>
-                                    <Dropdown>
+                                    <Dropdown up>
                                         <button
                                             slot="trigger"
                                             href="/chart/{chart.id}/publish"
                                             class="button is-ghost is-medium"
-                                            ><IconDisplay icon="source-code" />
-                                            <span>{__('archive / modal / copy-embed-code')}</span
-                                            ><IconDisplay
-                                                size="12px"
-                                                icon="expand-down-bold"
-                                            /></button
                                         >
+                                            <IconDisplay icon="source-code" />
+                                            <span>{__('archive / modal / copy-embed-code')}</span>
+                                            <IconDisplay size="12px" icon="expand-down-bold" />
+                                        </button>
                                         <div class="dropdown-content" slot="content">
                                             {#await loadEmbedCodes()}
                                                 ...
