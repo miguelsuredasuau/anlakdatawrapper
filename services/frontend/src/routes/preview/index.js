@@ -43,7 +43,7 @@ module.exports = {
                         transparent: fakeBoolean(),
                         logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto'),
                         logoId: logoId().optional(),
-                        dark: Joi.boolean().default(false)
+                        dark: Joi.boolean().default(false).allow('auto')
                     })
                 }
             },

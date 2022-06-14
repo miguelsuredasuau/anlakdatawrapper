@@ -20,10 +20,8 @@ html(lang=CHART_LANGUAGE)
 
     script.
       (function() {
-        var autoDark = !/[?&]dark=(1|true|0|false)/.test(window.location.search) && !{AUTO_DARK};
-        var isDark = /[?&]dark=(1|true)/.test(window.location.search)
-          || (!/[?&]dark=(0|false)/.test(window.location.search)
-            && !{AUTO_DARK} && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var autoDark = /[?&]dark=auto/.test(window.location.search) || (!/[?&]dark=(1|true|0|false)/.test(window.location.search) && !{AUTO_DARK});
+        var isDark = /[?&]dark=(1|true)/.test(window.location.search) || (autoDark && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
         if (isDark) document.getElementById('__svelte-dw').className += ' is-dark-mode';
         function removeHideStyles() {
           var st = document.getElementById('hide-all');
