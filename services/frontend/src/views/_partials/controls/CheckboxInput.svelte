@@ -94,6 +94,9 @@
         border-color: $dw-grey;
         background: $dw-grey;
     }
+    label.checkbox + :global(label.checkbox) {
+        margin-left: 1em;
+    }
 </style>
 
 <label class="checkbox" disabled={disabled || null} class:faded data-uid={uid}>
@@ -102,6 +105,7 @@
         aria-label={label || null}
         disabled={disabled || null}
         bind:checked={value}
+        on:change
         on:click
     />
     <span class="css-ui" />

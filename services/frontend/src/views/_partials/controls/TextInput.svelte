@@ -1,18 +1,45 @@
 <script>
     import { onMount } from 'svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
     export let value = '';
     export let id = '';
     export let uid = '';
+    export let ariaLabel = null;
     export let autocomplete = 'off';
     export let disabled = false;
+    export let readonly = false;
+
+    /**
+     * expandable TextInput fields turn are using an automatically
+     * resizing <textarea> which looks like a <input type="text" />
+     */
     export let expandable = false;
+
     export let placeholder = '';
     export let width = '100%';
     export let height = 20;
     export let textDirection = 'ltr';
     export let error = false;
     export let rows = 5;
+
+    /**
+     * optional icon to be displayed on the left side
+     * input
+     */
+    export let icon = null;
+
+    /**
+     * optional checked state, e.g. to indicate that a change
+     * has been saved
+     */
+    export let checked = false;
+
+    /**
+     * to indicate that the text input is waiting for some
+     * server response etc.
+     */
+    export let loading = false;
 
     let scroll = false;
 
@@ -71,34 +98,53 @@
     }
 </style>
 
-<div class="text-container" style="width:{width}" data-uid={uid}>
-    {#if expandable}
-        <textarea
-            bind:this={textarea}
-            class="input"
-            class:scroll
-            class:is-danger={error}
-            bind:value
-            on:input={resize}
-            style="height:{height}px"
-            dir={textDirection}
-            rows="1"
-            {id}
-            {disabled}
-            {placeholder}
-            {autocomplete}
-        />
-    {:else}
-        <input
-            type="text"
-            class="input"
-            class:is-danger={error}
-            bind:value
-            {id}
-            {disabled}
-            {placeholder}
-            {autocomplete}
-            dir={textDirection}
-        />
-    {/if}
+<div
+    class="control"
+    class:is-loading={loading}
+    class:has-icons-left={!!icon}
+    class:has-icons-right={loading || checked}
+>
+    <div class="text-container" style="width:{width}" data-uid={uid}>
+        {#if expandable}
+            <textarea
+                bind:this={textarea}
+                class="input"
+                class:scroll
+                class:is-danger={error}
+                aria-label={ariaLabel}
+                bind:value
+                on:input
+                on:input={resize}
+                style="height:{height}px"
+                dir={textDirection}
+                rows="1"
+                {id}
+                {readonly}
+                {disabled}
+                {placeholder}
+                {autocomplete}
+            />
+        {:else}
+            <input
+                type="text"
+                class="input"
+                class:is-danger={error}
+                aria-label={ariaLabel}
+                bind:value
+                on:input
+                {id}
+                {readonly}
+                {disabled}
+                {placeholder}
+                {autocomplete}
+                dir={textDirection}
+            />
+        {/if}
+        {#if icon}
+            <IconDisplay {icon} className="is-left" size="20px" />
+        {/if}
+        {#if !loading && checked}
+            <IconDisplay icon="checkmark-bold" className="is-right" />
+        {/if}
+    </div>
 </div>

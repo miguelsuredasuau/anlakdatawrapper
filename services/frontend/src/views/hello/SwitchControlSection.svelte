@@ -18,7 +18,15 @@
     <div class="columns">
         <div class="column">
             <SwitchControl bind:value label="switch with label" />
-            <SwitchControl bind:value label="switch with content">
+            <SwitchControl
+                bind:value
+                label="switch with content"
+                tooltip="This happens if you have both tooltip attribute and tooltip slot"
+                tooltipType="upgrade"
+            >
+                <svelte:fragment slot="tooltip">
+                    <h2 class="title is-5">I'm in the slot</h2>
+                </svelte:fragment>
                 <div class="content">
                     <h3>Hello world!</h3>
                     <p>This content is shown if the Switch is enabled</p>
@@ -29,7 +37,7 @@
             <SwitchControl
                 bind:value
                 label="switch with help"
-                help="This is a little help text explaining this switch"
+                tooltip="This is a little help text explaining this switch"
             />
         </div>
         <div class="column">

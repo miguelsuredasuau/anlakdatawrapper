@@ -1145,5 +1145,8 @@
   "dashboard / hiring / title": "Wir stellen ein!",
   "dashboard / hiring / intro": "Werde Teil unseres Teams (remote oder in Berlin) in einer der folgenden Stellen:",
   "describe / table / warning": "%num% Warnung",
-  "describe / table / warnings": "%num% Warnungen"
+  "describe / table / warnings": "%num% Warnungen",
+  "visualize / annotate / source-url / not-allowed": "",
+  "visualize / layout / locale-select / explainer": "Bestimmt Dezimal- und Tausendertrennzeichen sowie die Übersetzung von Monatsnamen und Wochentagen.",
+  "visualize / layout / locale-select / hed": "Ausgabe-Sprachraum"
 }

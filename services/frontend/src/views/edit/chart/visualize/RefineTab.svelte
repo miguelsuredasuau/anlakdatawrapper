@@ -14,7 +14,7 @@
     controlsModule="Refine"
     {chart}
     {dwChart}
-    {theme}
+    theme={$theme}
     {visualization}
     {visualizations}
     {subscribeChart}

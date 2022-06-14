@@ -8,7 +8,7 @@ const ORM = require('@datawrapper/orm');
 const fs = require('fs-extra');
 const get = require('lodash/get');
 const path = require('path');
-const registerFeatureFlag = require('./utils/feature-flags');
+const registerFeatureFlag = require('@datawrapper/service-utils/registerFeatureFlag');
 const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
 const schemas = require('@datawrapper/schemas');
 const { ApiEventEmitter, eventList } = require('./utils/events');
@@ -23,7 +23,6 @@ const {
     validateRedis,
     validatePlugins
 } = require('@datawrapper/schemas/config');
-
 const exec = promisify(require('child_process').exec);
 
 const pkg = require('../package.json');

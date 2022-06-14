@@ -29,7 +29,7 @@ module.exports = {
             method: 'GET',
             path: '/default-features',
             handler() {
-                return Array.from(server.app.featureFlags.values()).map(flag => ({
+                return server.methods.getFeatureFlags().map(flag => ({
                     id: flag.id,
                     default: flag.default
                 }));

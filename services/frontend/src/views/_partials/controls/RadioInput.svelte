@@ -16,6 +16,12 @@
      * disabled state
      */
     export let disabled = false;
+
+    /**
+     * set to false to display radio options
+     * as block items
+     */
+    export let inline = true;
 </script>
 
 <style lang="scss">
@@ -78,9 +84,16 @@
         border-color: $dw-grey-dark;
         background: $dw-grey-dark;
     }
+
+    .control:not(.inline) label.radio {
+        display: block;
+    }
+    .control:not(.inline) .radio + .radio {
+        margin-left: 0;
+    }
 </style>
 
-<div class="control">
+<div class="control" class:inline>
     {#each options as opt}
         <label class="radio" disabled={disabled || null}>
             <input

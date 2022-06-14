@@ -1,5 +1,6 @@
 <script>
     import { onMount, getContext, beforeUpdate, createEventDispatcher } from 'svelte';
+    import dw from '@datawrapper/chart-core/dist/dw-2.0.cjs';
     import clone from 'lodash/cloneDeep';
     import isEqual from 'underscore/modules/isEqual.js';
     import { waitFor } from './shared';
@@ -54,6 +55,7 @@
     onMount(async () => {
         // mimic old dw setup
         window.dw = {
+            ...dw,
             backend: {
                 __messages: $messages,
                 __api_domain: $config.apiDomain,

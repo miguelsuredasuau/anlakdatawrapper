@@ -1,5 +1,6 @@
 <script>
     import { createEventDispatcher, onMount, tick } from 'svelte';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import clone from '@datawrapper/shared/clone';
     import isEqual from 'lodash/isEqual';
     import uniq from 'lodash/uniq';
@@ -8,6 +9,9 @@
     export let uid;
     export let tags = [];
     export let ariaLabel = null;
+
+    export let checked = false;
+    export let loading = false;
 
     function serialize(tags) {
         return uniq(tags.map(s => s.trim().toLowerCase()).filter(t => t !== '')).join(', ');
@@ -52,7 +56,12 @@
     }
 </script>
 
-<div class="tags-input" data-uid={uid}>
+<div
+    class="control"
+    class:is-loading={loading}
+    class:has-icons-right={loading || checked}
+    data-uid={uid}
+>
     <input
         class="input"
         type="text"
@@ -73,5 +82,8 @@
                 </span>
             {/each}
         </div>
+    {/if}
+    {#if !loading && checked}
+        <IconDisplay icon="checkmark-bold" className="is-right" />
     {/if}
 </div>

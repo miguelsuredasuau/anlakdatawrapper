@@ -8,6 +8,7 @@ import sinon from 'sinon';
 
 setConfig({ testIdAttribute: 'data-uid' });
 
+const uid = 'search-input';
 chai.use(chaiDom);
 
 describe('SearchInput', () => {
@@ -31,13 +32,13 @@ describe('SearchInput', () => {
         let result;
 
         before(async () => {
-            result = await renderWithContext(SearchInput, { onInput });
+            result = await renderWithContext(SearchInput, { uid, onInput });
             const input = result.getByPlaceholderText('Search');
             fireEvent.input(input);
         });
 
         it('applies an "is-loading" style', () => {
-            expect(result.getByTestId('search-input')).to.have.class('is-loading');
+            expect(result.getByTestId('search-input').parentNode).to.have.class('is-loading');
         });
 
         it('does not trigger "onInput" event immediately (debounced execution)', () => {

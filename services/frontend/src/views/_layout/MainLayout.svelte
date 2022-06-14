@@ -2,9 +2,11 @@
     import PageHeader from './PageHeader.svelte';
     import PageFooter from './PageFooter.svelte';
     import OutdatedBrowserDisplay from '_partials/displays/OutdatedBrowserDisplay.svelte';
-    import { onMount } from 'svelte';
+    import { onMount, getContext } from 'svelte';
     import { openedInsideIframe } from './stores';
     export let title;
+
+    const userData = getContext('userData');
 
     /*
      * when Datawrapper is opened inside an iframe we're hiding
@@ -12,6 +14,10 @@
      */
     onMount(() => {
         $openedInsideIframe = window.top !== window.self;
+        // expose convenience method for changing the userData store
+        window.__setUserData = (key, value) => {
+            $userData[key] = value;
+        };
     });
 </script>
 

@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    import { onMount } from 'svelte';
+    import { onMount, setContext } from 'svelte';
     import truncate from '@datawrapper/shared/truncate';
     import MainLayout from '_layout/MainLayout.svelte';
     import { openedInsideIframe } from '_layout/stores';
@@ -9,10 +9,12 @@
     import {
         data,
         chart,
+        theme,
         hasUnsavedChanges,
         initChartStore,
         initDataStore,
-        onNextSave
+        onNextSave,
+        subscribeChart
     } from './stores';
     import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
     import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
@@ -26,7 +28,11 @@
     export let visualizations;
     export let initUrlStep;
     export let urlPrefix;
-    export let theme;
+    export let rawTheme;
+
+    setContext('page/edit', {
+        subscribeChart
+    });
 
     /*
      * if set to true, the editor nav is shown even if the app is opened
@@ -135,6 +141,7 @@
     onMount(async () => {
         initChartStore(rawChart, visualizations, disabledFields);
         initDataStore(rawChart.id, rawData);
+        theme.set(rawTheme);
 
         if (!initUrlStep && rawChart.lastEditStep) {
             activeStep = steps[Math.max(1, Math.min(steps.length - 1, rawChart.lastEditStep - 1))];

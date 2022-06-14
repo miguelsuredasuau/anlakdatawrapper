@@ -1,11 +1,20 @@
 <script>
+    import { createEventDispatcher } from 'svelte';
+
     export let title = '';
     export let type = 'info';
+    export let deletable = false;
+    export let visible = true;
+
     let className = '';
     export { className as class };
-    export let deletable = false;
 
-    export let visible = true;
+    const dispatch = createEventDispatcher();
+
+    function deleteMessage() {
+        visible = false;
+        dispatch('delete');
+    }
 </script>
 
 {#if visible}
@@ -16,13 +25,13 @@
             <div class="message-header">
                 <p>{@html title}</p>
                 {#if deletable}
-                    <button class="delete" on:click={() => (visible = false)} aria-label="delete" />
+                    <button class="delete" on:click={deleteMessage} aria-label="delete" />
                 {/if}
             </div>
         {/if}
         <div class="message-body">
             {#if !title && deletable}
-                <button class="delete" on:click={() => (visible = false)} aria-label="delete" />
+                <button class="delete" on:click={deleteMessage} aria-label="delete" />
             {/if}
             <slot />
         </div>

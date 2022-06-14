@@ -136,13 +136,12 @@ describe('SwitchControl', function () {
     });
 
     it('with help message renders the help message', () => {
-        const { getByText } = renderWithProps({
+        const { container } = renderWithProps({
             label: 'My label',
             value: true,
-            help: 'My help'
+            tooltip: 'My help'
         });
-
-        expect(getByText('?')).to.exist;
+        expect(container.querySelector('.sidehelp')).to.exist;
     });
 
     it('enabled and unchecked shows content when clicked and emits an event', async () => {

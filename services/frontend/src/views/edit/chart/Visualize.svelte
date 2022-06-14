@@ -4,7 +4,7 @@
     import Tabs from '_partials/Tabs.svelte';
     import AnnotateTab from './visualize/AnnotateTab.svelte';
     import ChartTypeTab from './visualize/ChartTypeTab.svelte';
-    import DesignTab from './visualize/DesignTab.svelte';
+    import LayoutTab from './visualize/LayoutTab.svelte';
     import RefineTab from './visualize/RefineTab.svelte';
     import clone from 'lodash/cloneDeep';
     import { onMount } from 'svelte';
@@ -19,6 +19,15 @@
     export let workflow;
     export let teamSettings;
     export let disabledFields;
+    export let layoutControlsGroups;
+    /**
+     * config.general.locales
+     */
+    export let chartLocales;
+    /**
+     * all themes available to authenticated user
+     */
+    export let themes;
 
     let iframePreview;
 
@@ -28,7 +37,7 @@
             : [{ id: 'select-vis', title: __('Chart type'), ui: ChartTypeTab }]),
         { id: 'refine', title: __('Refine'), ui: RefineTab },
         { id: 'annotate', title: __('Annotate'), ui: AnnotateTab },
-        { id: 'layout', title: __('Layout'), ui: DesignTab }
+        { id: 'layout', title: __('Layout'), ui: LayoutTab }
     ];
 
     // id of the initially active tab
@@ -161,6 +170,8 @@
                     {data}
                     {chart}
                     {theme}
+                    {themes}
+                    {chartLocales}
                     {dwChart}
                     {subscribeChart}
                     {workflow}
@@ -168,9 +179,11 @@
                     {visualizations}
                     {teamSettings}
                     {disabledFields}
+                    {layoutControlsGroups}
                 />
             </div>
-            <div class="buttons are-small">
+
+            <div class="buttons">
                 <button class="button" on:click={() => changeTab(-1)}
                     ><IconDisplay icon="arrow-left" /><span>Back</span></button
                 >
@@ -192,7 +205,7 @@
                     on:resize={onPreviewResize}
                     bind:this={iframePreview}
                     {chart}
-                    {theme}
+                    theme={$theme}
                 />
                 <div class="block mt-4" style="text-align: center;">
                     - - - - - Some more controls - - - - -<br />x x x x x x

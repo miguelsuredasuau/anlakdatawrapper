@@ -28,6 +28,9 @@
         <div class="column is-narrow">
             <div class="block">Normal: <RadioInput bind:value {options} /></div>
             <div class="block">Disabled: <RadioInput bind:value {options} disabled /></div>
+            <div class="block">
+                inline=false: <RadioInput bind:value {options} inline={false} />
+            </div>
         </div>
         <div class="column">
             <span class="tag is-info" style="background:{value}">{value}</span>

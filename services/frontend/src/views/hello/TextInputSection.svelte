@@ -14,6 +14,10 @@
                 <TextInput bind:value />
             </HorizontalFormFieldDisplay>
 
+            <HorizontalFormFieldDisplay label="with icon" compact>
+                <TextInput bind:value icon="search" />
+            </HorizontalFormFieldDisplay>
+
             <HorizontalFormFieldDisplay label="disabled" compact>
                 <TextInput bind:value disabled />
             </HorizontalFormFieldDisplay>
@@ -22,8 +26,20 @@
                 <TextInput bind:value expandable />
             </HorizontalFormFieldDisplay>
 
-            <HorizontalFormFieldDisplay label="placeholder" compact>
-                <TextInput placeholder="Please enter text" />
+            <HorizontalFormFieldDisplay label="expandable with icon" compact>
+                <TextInput bind:value expandable icon="business-report" />
+            </HorizontalFormFieldDisplay>
+
+            <HorizontalFormFieldDisplay label="checked" compact>
+                <TextInput placeholder="Please enter text" checked />
+            </HorizontalFormFieldDisplay>
+
+            <HorizontalFormFieldDisplay label="readonly" compact>
+                <TextInput placeholder="Please enter text" value="You cannot edit me" readonly />
+            </HorizontalFormFieldDisplay>
+
+            <HorizontalFormFieldDisplay label="loading" compact>
+                <TextInput icon="search" placeholder="Waiting for results..." loading />
             </HorizontalFormFieldDisplay>
 
             <HorizontalFormFieldDisplay label="right-to-left" compact>
@@ -47,6 +63,18 @@
 
             <HorizontalFormFieldDisplay label="placeholder" compact>
                 <TextAreaInput placeholder="Please enter text" />
+            </HorizontalFormFieldDisplay>
+
+            <HorizontalFormFieldDisplay label="loading" compact>
+                <TextAreaInput placeholder="Please enter text" loading />
+            </HorizontalFormFieldDisplay>
+
+            <HorizontalFormFieldDisplay label="checked" compact>
+                <TextAreaInput placeholder="Please enter text" checked />
+            </HorizontalFormFieldDisplay>
+
+            <HorizontalFormFieldDisplay label="readonly" compact>
+                <TextAreaInput value="You cannot edit me" readonly />
             </HorizontalFormFieldDisplay>
 
             <HorizontalFormFieldDisplay label="right-to-left" compact>

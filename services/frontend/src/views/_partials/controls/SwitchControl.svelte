@@ -7,13 +7,14 @@
 
     export let label;
     export let value = false;
-    export let help = '';
+    export let tooltip = '';
+    export let tooltipType = null;
     export let disabledMessage = '';
     export let disabledState = 'auto';
     export let disabled = false;
     export let inverted = false;
     export let indeterminate = false;
-    export let uid;
+    export let uid = null;
 
     $: effectiveValue = inverted ? !value : value;
 
@@ -33,20 +34,18 @@
 </script>
 
 <style>
-    .vis-option-type-switch {
-        padding: 4px 0;
-        transition: height 0.2s ease-in-out;
-        background: #ffffff00;
+    .switch {
+        padding: 3px 0;
+        transition: height 0.2s ease-out;
     }
 
-    :global(.vis-option-type-switch + .vis-option-type-switch) {
+    :global(.switch + .switch) {
         border-top: 1px solid var(--color-dw-grey-lighter);
+        margin-top: -0.75rem;
     }
 
     .switch-content {
-        position: relative;
-        top: 3px;
-        padding-left: 40px;
+        padding: 4px 0 4px 40px;
     }
 
     /* Prevents display issues with floated content & makes transition smoother: */
@@ -66,7 +65,7 @@
     }
 
     /* The switch - the box around the slider */
-    .switch {
+    .switch-btn {
         position: absolute;
         display: inline-block;
         width: 30px;
@@ -78,21 +77,17 @@
         background: none;
     }
 
-    .switch:focus {
-        outline: 1px dotted var(--color-dw-black-bis);
-    }
-
     /* Hide default HTML checkbox */
-    .switch input {
+    .switch-btn input {
         display: none;
     }
 
     .switch-outer {
-        display: inline-block;
+        display: block;
         position: relative;
         padding: 4px 0 4px 40px;
-        max-width: calc(100% - 60px);
         cursor: pointer;
+        max-width: calc(100% - 60px);
     }
 
     .switch-outer.disabled,
@@ -155,15 +150,18 @@
     }
 </style>
 
-<div class="vis-option-type-switch" data-uid={uid}>
-    {#if help}
-        <HelpDisplay>
-            <div>{@html help}</div>
+<div class="field switch" data-uid={uid}>
+    {#if tooltip || $$slots.tooltip}
+        <HelpDisplay float type="{tooltipType}f">
+            {#if tooltip}
+                <div>{@html tooltip}</div>
+            {/if}
+            <slot name="tooltip" />
         </HelpDisplay>
     {/if}
 
     <label class="switch-outer" class:disabled>
-        <button on:click={toggle} class="switch">
+        <button on:click={toggle} class="switch-btn">
             <input
                 class:disabled-force-checked={disabled && disabledState === 'on'}
                 class:disabled-force-unchecked={disabled && disabledState === 'off'}

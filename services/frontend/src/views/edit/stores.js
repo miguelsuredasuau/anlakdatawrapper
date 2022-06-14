@@ -23,6 +23,11 @@ export const data = new writable('');
  */
 export const visualization = new writable({});
 
+/**
+ * theme store
+ */
+export const theme = new writable({});
+
 export const onNextSave = new Set();
 export const hasUnsavedChanges = new writable(false);
 export const saveError = new writable(false);

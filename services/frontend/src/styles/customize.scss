@@ -18,7 +18,7 @@
         color: inherit;
     }
     &.is-ghost:hover {
-        background-color: $dw-shade-light;
+        background-color: $dw-shade-lighter;
     }
     .icon {
         svg {
@@ -54,14 +54,18 @@
     &.is-deletable {
         .message-body {
             position: relative;
+            padding-right: 2.5em;
             & > .delete {
                 position: absolute;
                 right: 0.5rem;
                 top: 0.5rem;
             }
         }
+        .message-header + .message-body {
+            padding: $message-body-padding;
+        }
     }
-    box-shadow: 0 0 0 1px rgba(black,0.05) inset;
+    box-shadow: $shadow-border;
 }
 
 .modal {
@@ -144,24 +148,29 @@
 
 .help {
     line-height: 1.3;
+    &.is-success { color: $success-text; }
+    &.is-warning { color: $warning-text; }
 }
 
 // adjust bulma dropdowm arrow
 .select:not(.is-multiple):not(.is-loading)::after,
 .navbar-link:not(.is-arrowless)::after {
-    border-width: 2px;
-    border-radius: 0;
-    width: 0.5em;
-    height: 0.5em;
+    border-width: 3px;
+    border-radius: 1px;
+}
+
+// Radio & Checkbox
+.checkbox, .radio {
+    line-height: unset;
+}
+
+// Textarea
+.textarea {
+    line-height: 1.3;
 }
 
 // Control
 .control {
-
-    // Textarea
-    .textarea {
-        line-height: 1.3;
-    }
 
     // Icons
     &.has-icons-left,

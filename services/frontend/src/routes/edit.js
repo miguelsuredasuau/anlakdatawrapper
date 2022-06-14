@@ -2,6 +2,7 @@ const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const get = require('lodash/get');
 const set = require('lodash/set');
+const cloneDeep = require('lodash/cloneDeep');
 const { getNestedObjectKeys } = require('../utils');
 const { Op } = require('@datawrapper/orm').db;
 const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
@@ -30,6 +31,7 @@ module.exports = {
              */
             includeInChartTypeSelector: []
         };
+
         server.method('registerEditWorkflow', workflow => {
             workflow.options = { ...defaultWorkflowOptions, ...(workflow.options || {}) };
             editWorkflows.push(workflow);
@@ -37,6 +39,38 @@ module.exports = {
                 editWorkflowSteps.set(`${workflow.id}.${step.id}`, step);
             });
         });
+
+        server.method(
+            'getLayoutControlGroups',
+            async ({ request, teamSettings, chart, theme, productFeatures }) => {
+                const { controls } = await server.methods.getCustomData('edit/visualize/layout', {
+                    request,
+                    chart,
+                    theme,
+                    teamSettings,
+                    productFeatures
+                });
+                const visibleControls = controls.filter(c => c.visible === undefined || c.visible);
+                return [
+                    {
+                        title: null,
+                        controls: visibleControls.filter(c => c.group === 'top')
+                    },
+                    {
+                        title: 'layout / group-layout',
+                        controls: visibleControls.filter(c => c.group === 'layout')
+                    },
+                    {
+                        title: 'layout / group-footer',
+                        controls: visibleControls.filter(c => c.group === 'footer')
+                    },
+                    {
+                        title: 'layout / group-sharing',
+                        controls: visibleControls.filter(c => c.group === 'sharing')
+                    }
+                ];
+            }
+        );
 
         // register default chart workflow
         server.methods.registerEditWorkflow({
@@ -85,15 +119,37 @@ module.exports = {
                     id: 'visualize',
                     view: 'edit/chart/visualize',
                     title: ['Visualize', 'core'],
-                    async data({ team }) {
-                        const { controls, previewWidths, customFields } = {
-                            controls: {},
-                            previewWidths: [],
-                            customFields: [],
-                            ...team?.settings
-                        };
+                    async data({ request, team, chart, theme, productFeatures }) {
+                        const { controls, previewWidths, customFields, flags } = assign(
+                            {
+                                // extend flags from default feature flags
+                                flags: Object.fromEntries(
+                                    server.methods
+                                        .getFeatureFlags()
+                                        .map(({ id, default: defValue }) => [id, defValue])
+                                ),
+                                controls: {},
+                                previewWidths: [],
+                                customFields: []
+                            },
+                            cloneDeep(team?.settings || {})
+                        );
+                        const layoutControlsGroups = await server.methods.getLayoutControlGroups({
+                            request,
+                            chart,
+                            theme,
+                            teamSettings: { flags },
+                            productFeatures
+                        });
+                        const api = server.methods.createAPI(request);
+                        const themes = (await api('/themes')).list;
+                        const chartLocales = server.methods.config('general').locales;
                         return {
+                            themes,
+                            chartLocales,
+                            layoutControlsGroups,
                             teamSettings: {
+                                flags,
                                 controls,
                                 previewWidths,
                                 customFields
@@ -153,30 +209,83 @@ module.exports = {
             ]
         });
 
-        // register view components for chart workflow
-        server.methods.registerViewComponent({
-            id: 'edit/chart/upload',
-            page: 'edit/Index.svelte',
-            view: 'edit/steps/Upload.svelte'
+        // register view components
+        const viewComponents = [
+            // chart workflow steps
+            { id: 'upload', view: 'Upload' },
+            { id: 'describe', view: 'Describe' },
+            { id: 'visualize', view: 'Visualize' },
+            { id: 'publish', view: 'Publish' },
+            // core layout tab controls
+            { id: 'visualize/layout/darkMode', view: 'visualize/layout/DarkModeControl' },
+            { id: 'visualize/layout/embed', view: 'visualize/layout/EmbedControl' },
+            { id: 'visualize/layout/data', view: 'visualize/layout/GetTheDataControl' },
+            { id: 'visualize/layout/logo', view: 'visualize/layout/LogoControl' },
+            { id: 'visualize/layout/theme', view: 'visualize/layout/ThemeControl' },
+            { id: 'visualize/layout/locale', view: 'visualize/layout/LocaleControl' }
+        ];
+
+        viewComponents.forEach(({ id, view }) => {
+            server.methods.registerViewComponent({
+                id: `edit/chart/${id}`,
+                page: 'edit/Index.svelte',
+                view: `edit/chart/${view}.svelte`
+            });
         });
 
-        server.methods.registerViewComponent({
-            id: 'edit/chart/describe',
-            page: 'edit/Index.svelte',
-            view: 'edit/steps/Describe.svelte'
-        });
-
-        server.methods.registerViewComponent({
-            id: 'edit/chart/visualize',
-            page: 'edit/Index.svelte',
-            view: 'edit/steps/Visualize.svelte'
-        });
-
-        server.methods.registerViewComponent({
-            id: 'edit/chart/publish',
-            page: 'edit/Index.svelte',
-            view: 'edit/steps/Publish.svelte'
-        });
+        // register core layout controls
+        server.methods.registerCustomData(
+            'edit/visualize/layout',
+            async ({ productFeatures, teamSettings }) => {
+                const { flags } = teamSettings;
+                const { enableCustomLayouts } = productFeatures;
+                return {
+                    controls: [
+                        {
+                            component: 'edit/chart/visualize/layout/locale',
+                            props: {},
+                            group: 'top'
+                        },
+                        {
+                            component: 'edit/chart/visualize/layout/embed',
+                            visible: (flags && flags.embed) || !flags,
+                            props: {},
+                            group: 'footer',
+                            priority: 10
+                        },
+                        {
+                            component: 'edit/chart/visualize/layout/data',
+                            visible: (flags && flags.get_the_data) || !flags,
+                            props: {},
+                            group: 'footer',
+                            priority: 0
+                        },
+                        {
+                            component: 'edit/chart/visualize/layout/logo',
+                            visible: true,
+                            props: {
+                                // in the latter case we'll use this as upsell promo
+                                requireUpgrade: !enableCustomLayouts
+                            },
+                            group: 'layout',
+                            priority: 2
+                        },
+                        {
+                            component: 'edit/chart/visualize/layout/darkMode',
+                            group: 'layout',
+                            priority: 5
+                        },
+                        {
+                            component: 'edit/chart/visualize/layout/theme',
+                            visible: (flags && flags.layout_selector) || !flags,
+                            props: {},
+                            group: 'layout',
+                            priority: 0
+                        }
+                    ]
+                };
+            }
+        );
 
         server.route({
             method: 'GET',
@@ -196,6 +305,7 @@ module.exports = {
                 auth: 'guest',
                 async handler(request, h) {
                     const { params } = request;
+                    const user = request.auth.artifacts;
                     const chart = await getChart(params.chartId, request);
 
                     const vis = server.app.visualizations.get(chart.type);
@@ -206,6 +316,17 @@ module.exports = {
                     if (chart.organization_id) {
                         team = await chart.getTeam();
                     }
+
+                    const teamProducts = team ? await team.getProducts() : [];
+                    const products =
+                        teamProducts.length > 0 ? teamProducts : [await user.getActiveProduct()];
+
+                    const productFeatures = Object.fromEntries(
+                        ['enableCustomLayouts', 'requireDatawrapperAttribution'].map(key => [
+                            key,
+                            !!products.find(product => product.hasFeature(key))
+                        ])
+                    );
 
                     if (!workflow) {
                         throw Boom.notImplemented('unknown workflow ' + vis.workflow);
@@ -271,7 +392,13 @@ module.exports = {
                         // @todo: remove `step.id === params.step` check to pre-load
                         // data for all steps in single-page editor
                         if (step.id === params.step && typeof step.data === 'function') {
-                            step.data = await step.data({ request, chart, theme, team });
+                            step.data = await step.data({
+                                request,
+                                chart,
+                                theme,
+                                team,
+                                productFeatures
+                            });
                         }
                     }
 
@@ -319,7 +446,6 @@ module.exports = {
                     const disabledFields = await applyExternalMetadata(api, rawChart);
 
                     // check if this is an admin accessing a chart by someone else
-                    const user = request.auth.artifacts;
                     const showAdminWarning =
                         user.isAdmin() &&
                         user.id !== chart.author_id &&
@@ -337,7 +463,7 @@ module.exports = {
                                 ...workflow,
                                 steps: workflowSteps
                             },
-                            theme,
+                            rawTheme: theme,
                             visualizations: Array.from(server.app.visualizations.values()),
                             customViews,
                             showEditorNavInCmsMode: get(

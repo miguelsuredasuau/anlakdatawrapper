@@ -32,4 +32,13 @@ const Product = db.define(
     }
 );
 
+Product.prototype.getData = function () {
+    return this.data ? JSON.parse(this.data) : {};
+};
+
+Product.prototype.hasFeature = function (key) {
+    const data = this.getData();
+    return !!data[key];
+};
+
 module.exports = Product;

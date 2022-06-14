@@ -11,4 +11,7 @@
             <button class="button" on:click={() => (tags = ['apple', 'banana'])}>reset tags</button>
         </div>
     </div>
+    <div class="columns">
+        <div class="column is-variable"><TagsInput bind:tags loading /></div>
+    </div>
 </div>

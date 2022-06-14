@@ -1,0 +1,40 @@
+<script>
+    import ViewComponent from '_partials/ViewComponent.svelte';
+
+    export let __;
+    export let chart;
+    export let theme;
+    export let themes;
+    export let teamSettings;
+    export let chartLocales;
+    export let layoutControlsGroups = [];
+
+    $: sharedProps = {
+        __,
+        chart,
+        theme,
+        themes,
+        teamSettings,
+        chartLocales
+    };
+
+    function byPriority(a, b) {
+        return (
+            (a.priority !== undefined ? a.priority : 999) -
+            (b.priority !== undefined ? b.priority : 999)
+        );
+    }
+</script>
+
+{#each layoutControlsGroups as group}
+    {#if group.controls.length > 0}
+        {#if group.title}
+            <h4 class="title is-4 mb-2">{__(group.title)}</h4>
+        {/if}
+        <div class="block">
+            {#each group.controls.sort(byPriority) as ctrl}
+                <ViewComponent {__} id={ctrl.component} props={{ ...sharedProps, ...ctrl.props }} />
+            {/each}
+        </div>
+    {/if}
+{/each}

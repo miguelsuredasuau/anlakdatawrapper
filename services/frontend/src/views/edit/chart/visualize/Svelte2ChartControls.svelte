@@ -5,13 +5,13 @@
     import isEqual from 'lodash/isEqual';
     import clone from 'lodash/cloneDeep';
     import { loadScript } from '@datawrapper/shared/fetch';
+    import { subscribeChart } from '../../stores';
 
     export let chart;
     export let dwChart;
     export let theme;
     export let visualization;
     export let visualizations;
-    export let subscribeChart;
     export let teamSettings;
     export let controlsModule = 'Refine';
 
@@ -49,6 +49,7 @@
         vis = dwVisualization(type);
         vis.meta = visMeta;
         vis.chart(dwChart);
+        vis.theme = () => theme.data;
         // load dataset from chart
         dataset = dwChart.dataset();
         storeData = getStoreData();
@@ -63,6 +64,14 @@
 
     function getMetadata(key, fallback) {
         return dwChart.getMetadata(key, fallback);
+    }
+
+    function observeDeep(key, handler) {
+        if (key === 'visualization') {
+            visualization.subscribe(handler);
+        } else if (key.startsWith('metadata')) {
+            subscribeChart(key, handler);
+        }
     }
 
     function beforeInitControls(event) {
@@ -116,7 +125,7 @@
         module={controlsModule}
         on:beforeInit={beforeInitControls}
         bind:storeData
-        storeMethods={{ getMetadata, setMetadata }}
+        storeMethods={{ getMetadata, setMetadata, observeDeep }}
         bind:data={state}
     />
 {/if}

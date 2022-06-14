@@ -47,7 +47,13 @@
     let request;
 
     Object.keys(stores).forEach(key => {
-        const store = writable(cloneDeep(stores[key]));
+        // this exception for contexts starting with
+        // "page/" allows tests to emulate non-store
+        // contexts defined in view index components
+        // such as `page/archive`
+        const store = key.startsWith('page/')
+            ? cloneDeep(stores[key])
+            : writable(cloneDeep(stores[key]));
         if (key === 'messages') store.translate = translate;
         if (key === 'userData' && typeof window !== 'undefined') {
             store.subscribe(

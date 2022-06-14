@@ -1,5 +1,5 @@
 <script>
-    import IconDisplay from '_partials/displays/IconDisplay.svelte';
+    import TextInput from '_partials/controls/TextInput.svelte';
     import { getContext } from 'svelte';
     import debounce from 'lodash/debounce';
 
@@ -10,6 +10,7 @@
         __ = (key, scope = 'core') => messages.translate(key, scope, $messages);
     }
 
+    export let uid;
     export let value = '';
     export let onInput;
 
@@ -32,7 +33,11 @@
     })();
 </script>
 
-<div class="control has-icons-left" class:is-loading={isLoading} data-uid="search-input">
-    <input class="input" type="text" bind:value on:input={handleInput} placeholder={__('Search')} />
-    <IconDisplay icon="search" className="is-left" size="20px" />
-</div>
+<TextInput
+    icon="search"
+    placeholder={__('Search')}
+    loading={isLoading}
+    bind:value
+    on:input={handleInput}
+    {uid}
+/>

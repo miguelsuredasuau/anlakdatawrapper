@@ -1,6 +1,6 @@
 <script>
     import Svelte2ChartControls from './Svelte2ChartControls.svelte';
-    import ChartDescription from './ChartDescription.svelte';
+    import ChartDescription from './annotate/ChartDescription.svelte';
 
     export let __;
     export let chart;
@@ -20,7 +20,7 @@
     controlsModule="Annotate"
     {chart}
     {dwChart}
-    {theme}
+    theme={$theme}
     {visualization}
     {visualizations}
     {subscribeChart}

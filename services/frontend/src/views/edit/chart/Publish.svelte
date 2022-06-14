@@ -104,7 +104,7 @@
                         value: id,
                         label: title
                     })),
-                    theme,
+                    theme: $theme,
                     /*
                      * we're passing this getter function instead of the iframePreview
                      * reference itself because at the time of setting this storeData
@@ -132,7 +132,7 @@
                 class:sticky={isSticky}
                 class:sticky-header={$headerProps.isSticky}
             >
-                <ChartPreviewIframeDisplay bind:this={iframePreview} {chart} {theme} />
+                <ChartPreviewIframeDisplay bind:this={iframePreview} {chart} theme={$theme} />
             </div>
         </div>
     </div>

@@ -15,6 +15,7 @@ const {
 } = require('@datawrapper/schemas/config');
 const { requireConfig } = require('@datawrapper/service-utils/findConfig');
 const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
+const registerFeatureFlag = require('@datawrapper/service-utils/registerFeatureFlag');
 const config = requireConfig();
 const path = require('path');
 const { createAPI, waitForAPI } = require('./utils/create-api');
@@ -119,6 +120,7 @@ const start = async () => {
     server.method('logAction', require('@datawrapper/orm/utils/action').logAction);
     server.method('isDevMode', () => process.env.DW_DEV_MODE);
     server.method('registerVisualization', registerVisualizations(server));
+    server.method('registerFeatureFlag', registerFeatureFlag(server));
     server.method('createAPI', createAPI(server));
     server.method('getRedis', () => redis);
 

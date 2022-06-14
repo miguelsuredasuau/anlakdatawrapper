@@ -60,6 +60,9 @@ const defaultSettings = {
     },
     restrictDefaultThemes: false,
     css: '',
+    // Note that these flags do not include the default feature flags
+    // which are set during server initialization and can also be
+    // defined by plugins
     flags: {},
     displayLocale: false,
     displayCustomField: {

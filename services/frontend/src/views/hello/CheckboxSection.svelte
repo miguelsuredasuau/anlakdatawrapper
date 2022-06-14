@@ -14,6 +14,9 @@
             <div class="level-item">
                 <CheckboxInput bind:value disabled label="disabled checkbox" />
             </div>
+            <div class="level-item">
+                <CheckboxInput bind:value label="with help" help="Help me!" />
+            </div>
             <div class="level-item"><CheckboxInput bind:value faded label="faded checkbox" /></div>
         </div>
     </div>

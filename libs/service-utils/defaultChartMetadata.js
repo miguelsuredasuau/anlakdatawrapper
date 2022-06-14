@@ -17,9 +17,12 @@ module.exports = {
     },
     visualize: {
         'highlighted-series': [],
-        'highlighted-values': []
+        'highlighted-values': [],
+        sharing: {
+            enabled: false
+        }
     },
-    publish: { 'embed-width': 600, 'embed-height': 400 },
+    publish: { 'embed-width': 600, 'embed-height': 400, blocks: {} },
     annotate: {
         notes: ''
     },

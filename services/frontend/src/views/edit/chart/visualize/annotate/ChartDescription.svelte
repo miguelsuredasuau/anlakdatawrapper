@@ -27,7 +27,8 @@
     }
 </script>
 
-<style>
+<style lang="scss">
+    @import '../../../../../styles/export.scss';
     .chart-title {
         position: relative;
     }
@@ -37,8 +38,7 @@
         position: absolute;
         right: 0;
         top: 0;
-        font-size: 12px !important;
-        color: #777;
+        font-size: $size-small;
     }
     .chart-title :global(.checkbox:hover) {
         opacity: 1;
@@ -46,7 +46,7 @@
 </style>
 
 <div class="block">
-    <div class="chart-title">
+    <div class="field chart-title">
         <CheckboxInput
             label={__('annotate / hide-title')}
             bind:value={$chart.metadata.describe['hide-title']}
@@ -80,7 +80,7 @@
         />
     </FormFieldDisplay>
 
-    <div class="columns mb-0">
+    <div class="columns">
         <div class="column is-half pb-0">
             <FormFieldDisplay compact label={__('Source name')}>
                 <TextInput
@@ -118,7 +118,7 @@
     </FormFieldDisplay>
 
     <FormFieldDisplay
-        help={__('visualize / annotate / aria-description / help')}
+        tooltip={__('visualize / annotate / aria-description / help')}
         compact
         label={__('visualize / annotate / aria-description')}
     >
@@ -130,7 +130,7 @@
             {textDirection}
         />
         <span slot="labelExtra" class="has-text-grey ml-1">
-            <IconDisplay icon="accessibility" />
+            <IconDisplay icon="accessibility" size="18px" valign="middle" />
         </span>
     </FormFieldDisplay>
 </div>
@@ -140,10 +140,13 @@
         <h4 class="title is-4">Custom fields</h4>
         {#each teamSettings.customFields as field}
             {#if field.type == 'checkbox'}
-                <HorizontalFormFieldDisplay compact help={purifyHtml(field.description)}>
+                <HorizontalFormFieldDisplay
+                    labelPadding="off"
+                    compact
+                    tooltip={purifyHtml(field.description)}
+                >
                     <CheckboxInput
                         label={purifyHtml(field.title)}
-                        help={purifyHtml(field.description)}
                         bind:value={$chart.metadata.custom[field.key]}
                         disabled={disabledFields.has(`metadata.custom.${field.key}`)}
                     />
@@ -152,7 +155,7 @@
                 <HorizontalFormFieldDisplay
                     compact
                     label={purifyHtml(field.title)}
-                    help={purifyHtml(field.description)}
+                    tooltip={purifyHtml(field.description)}
                 >
                     {#if field.type == 'text'}
                         <TextInput

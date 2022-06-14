@@ -1,8 +1,11 @@
 <script>
+    import IconDisplay from './IconDisplay.svelte';
+
     export let helpClass = '';
-    export let uid;
-    export let inline = false;
+    export let uid = null;
+    export let float = false;
     export let compact = false;
+    export let type = null;
 
     let visible = false;
     let t = null;
@@ -20,84 +23,111 @@
     }
 </script>
 
-<style>
-    .help {
+<style lang="scss">
+    @import '../../../styles/export.scss';
+    .sidehelp {
         position: relative;
-    }
-    .help:not(.inline) {
-        float: right;
-        top: 4px;
-    }
-
-    .help.compact {
-        top: 0px;
-    }
-    .help.inline {
-        margin-top: 0;
-    }
-    .help-icon {
         display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        width: 1.3em;
-        height: 1.3em;
-        border-radius: 50%;
-        border: 1px solid var(--color-dw-gray-lighter);
-        background: transparent;
-        text-align: center;
-        color: var(--color-dw-grey);
-        font-weight: 700;
-        font-size: 12px;
-        cursor: default;
-    }
-    .help-icon:hover {
-        background: var(--color-dw-scooter-light);
-        border: 1px solid var(--color-dw-scooter-light);
-        color: #f9f9f9;
-    }
-    .hat-icon {
-        font-size: 16px;
-        color: #fff;
-        position: absolute;
-        left: -15px;
-        top: 12px;
-    }
-    .help-content {
-        text-align: left;
-        position: absolute;
-        z-index: 1000;
-        top: -8px;
-        left: -5px;
-        padding: 8px;
-        text-indent: 25px;
-        background: var(--color-dw-scooter-light);
-        color: #fff;
-        width: 240px;
-        border-radius: 2px;
-        box-shadow: 3px 2px 2px rgba(0, 0, 0, 0.1);
-    }
-    .help-content :global(img) {
-        max-width: none;
-    }
-    .help-content :global(a) {
-        color: white;
-        text-decoration: underline;
+        &-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 1.5em;
+            height: 1.5em;
+            // reset default button border
+            border: none;
+            border-radius: 50%;
+            background: $dw-shade-light;
+            color: $dw-grey;
+            font-size: $size-7;
+            cursor: default;
+            &:hover {
+                background: $dw-grey-lighter;
+                color: $dw-grey-dark;
+            }
+            &:focus + .sidehelp-content {
+                visibility: visible;
+            }
+        }
+        &-content {
+            visibility: hidden;
+            position: absolute;
+            z-index: 1000;
+            top: -1em;
+            left: -1em;
+            padding: 1em 1em 1em 3em;
+            background: $info-light;
+            color: $info-dark;
+            width: 240px;
+            border-radius: $radius;
+            box-shadow: $shadow;
+            text-align: left;
+
+            &.is-visible {
+                visibility: visible;
+            }
+            & > :global(.icon) {
+                font-size: $size-3;
+                position: absolute;
+                left: 0.45em;
+                top: 0.45em;
+            }
+            & :global(a) {
+                color: $info-dark;
+                text-decoration: underline;
+            }
+        }
+
+        &.upgrade {
+            .sidehelp {
+                &-icon {
+                    background: lighten($dw-turquoise, 30);
+                    color: $dw-turquoise-dark;
+                }
+                &-content {
+                    background: $dw-turquoise-dark;
+                    color: white;
+                }
+            }
+        }
+        &.floating {
+            float: right;
+            top: 0.35em;
+        }
+        &.small,
+        &.normal,
+        &.medium,
+        &.large {
+            top: 0.375em;
+        }
+        &.small {
+            font-size: 0.75rem;
+        }
+        &.medium {
+            font-size: 1.25rem;
+        }
+        &.large {
+            font-size: 1.5rem;
+        }
     }
 </style>
 
 <div
-    class="help {helpClass}"
+    class="sidehelp {helpClass}"
     class:compact
-    class:inline
+    class:floating={float}
+    class:upgrade={type === 'upgrade'}
     on:mouseenter={handleHelpMouseenter}
     on:mouseleave={handleHelpMouseleave}
     data-uid={uid}
 >
-    <span class="help-icon">?</span>
-    {#if visible}
-        <div class="help-content">
-            <i class="hat-icon im im-graduation-hat" />
-            <slot />
-        </div>
-    {/if}
+    <button class="sidehelp-icon"
+        >{#if type === 'upgrade'}<IconDisplay icon="arrow-up-bold" />{:else}<IconDisplay
+                icon="help"
+            />{/if}</button
+    >
+    <div class="sidehelp-content" role="tooltip" class:is-visible={visible}>
+        <IconDisplay icon={type === 'upgrade' ? 'arrow-up-circle' : 'help-circle'} />
+        <slot />
+    </div>
 </div>

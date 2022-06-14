@@ -4,6 +4,9 @@ module.exports = function registerFeatureFlag(server) {
         server.app.featureFlags.set(id, { id, ...attributes });
     }
 
+    server.method('getFeatureFlags', () => Array.from(server.app.featureFlags.values()));
+
+    // core feature flags
     registerFeatureFlag('byline', {
         default: true,
         type: 'switch',

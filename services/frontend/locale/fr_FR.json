@@ -1145,5 +1145,8 @@
   "dashboard / hiring / title": "Nous embauchons !",
   "dashboard / hiring / intro": "Joignez-vous à notre équipe, à distance ou à Berlin, dans l'un des postes suivants :",
   "describe / table / warning": "%num% alerte",
-  "describe / table / warnings": "%num% alertes"
+  "describe / table / warnings": "%num% alertes",
+  "visualize / annotate / source-url / not-allowed": "",
+  "visualize / layout / locale-select / explainer": "Définit les séparateurs de décimales et de milliers, ainsi que la traduction des noms de mois et de jours de la semaine.",
+  "visualize / layout / locale-select / hed": "Région"
 }

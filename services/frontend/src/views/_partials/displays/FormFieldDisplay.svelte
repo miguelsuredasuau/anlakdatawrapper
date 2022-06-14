@@ -1,6 +1,5 @@
 <script>
     import HelpDisplay from './HelpDisplay.svelte';
-    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { getContext } from 'svelte';
 
     const msg = getContext('messages');
@@ -12,11 +11,35 @@
 
     export let error = null;
     export let id = null;
-    export let loading = false;
-    export let checked = false;
+
     export let label = null;
     export let compact = false;
-    export let help = '';
+
+    /**
+     * tooltip to be shown on the side when hovering
+     * the little (?) icon
+     */
+    export let tooltip = '';
+
+    /**
+     * tooltip type can be set to "upgrade" to introduce features
+     * available after upgrading the account
+     */
+    export let tooltipType = null;
+
+    /**
+     * Optional message to display below field controls.
+     * Is only visible if no error is set.
+     */
+    export let message = null;
+
+    /**
+     * can be set to success, info etc
+     */
+    export let messageType = null;
+
+    let className = '';
+    export { className as class };
 </script>
 
 <style>
@@ -25,39 +48,43 @@
         flex-wrap: wrap;
         justify-content: space-between;
     }
-    .field.compact {
-        margin-bottom: 0.5em;
+    :global(:not(.field-body) > .field.compact:not(:last-child)) {
+        margin-bottom: 0.5rem;
     }
     .field.compact .label {
-        font-weight: normal;
+        font-weight: 400;
     }
     .field.compact .label:not(:last-child) {
-        margin-bottom: 0;
+        margin-bottom: 0.15rem;
     }
     .control {
         flex-basis: 100%;
     }
 </style>
 
-<div class="field" on:input class:compact>
+<div class="field {className}" on:input class:compact>
     {#if label}
         <label for={id} class="label">{label}<slot name="labelExtra" /></label>
     {/if}
-    {#if help}
-        <HelpDisplay inline>
-            <div>{@html help}</div>
+    {#if tooltip || $$slots.tooltip}
+        <HelpDisplay type="{tooltipType}f">
+            {#if tooltip}
+                <div>{@html tooltip}</div>
+            {/if}
+            <slot name="tooltip" />
         </HelpDisplay>
     {/if}
-    <div class="control" class:is-loading={loading} class:has-icons-right={checked}>
+    <div class="control">
         <slot {id} />
-        {#if checked}
-            <IconDisplay icon="checkmark-bold" className="is-right" />
-        {/if}
     </div>
     {#if error}
         <p class="help is-danger">
             {__('Error:')}
             {error}
+        </p>
+    {:else if message}
+        <p class="help {messageType ? `is-${messageType}` : 'has-text-grey'}">
+            {@html message}
         </p>
     {/if}
 </div>
