@@ -99,6 +99,17 @@
                     color: $dw-black-bis;
                 }
             }
+            .icon {
+                width: auto;
+                height: auto;
+                font-size: 1.2em;
+                vertical-align: -0.2em;
+
+                svg {
+                    width: 1em;
+                    height: 1em;
+                }
+            }
         }
     }
 </style>
@@ -133,10 +144,22 @@
                                     )}
                                     on:click|preventDefault={() => pageClick(page)}
                                     href={page.url}
-                                    ><IconDisplay
-                                        className="mr-3"
-                                        icon={page.svgIcon || 'workflow'}
-                                    /><span
+                                >
+                                    {#if page.svgIcon}
+                                        <IconDisplay className="mr-1" icon={page.svgIcon} />
+                                    {:else}
+                                        <span class="icon mr-1">
+                                            <svg
+                                                viewBox="0 0 30 30"
+                                                fill="currentColor"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                ><path
+                                                    d="M14.963 2a1 1 0 0 0-.41.105l-10 5A1 1 0 0 0 4 8v11.662a1 1 0 0 0 .465.844l10 6.338a1 1 0 0 0 1.07 0l10-6.338a1.002 1.002 0 0 0 .465-.844V8a1 1 0 0 0-.553-.895l-10-5A1 1 0 0 0 14.963 2ZM15 4.117l8.39 4.195L21 9.834V12l-5 3v6l4.514-2.709a.998.998 0 0 0 .486-.857v-5.229l3-1.91v8.816l-8 5.07V21l-1 .645L14 21v3.182l-8-5.07v-8.817l3 1.91v5.229c0 .35.184.677.486.857L14 21v-6l-5-3V9.834L6.61 8.312 15 4.117ZM9 9.84l6 3.75 6-3.75-5.084-2.62a2 2 0 0 0-1.832 0L9 9.84Z"
+                                                /></svg
+                                            >
+                                        </span>
+                                    {/if}
+                                    <span
                                         >{#if page.escape}{truncate(
                                                 page.title
                                             )}{:else}{@html truncate(page.title)}{/if}</span
