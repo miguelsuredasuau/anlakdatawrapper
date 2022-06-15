@@ -100,6 +100,12 @@
                     view: SetPasswordSection,
                     props: { __ }
                 },
+                {
+                    url: '#markdown-input',
+                    title: 'Markdown Input',
+                    view: MarkdownInputSection,
+                    props: { __ }
+                },
                 { url: '#file', title: 'File Input', view: FileInputSection, props: { __ } },
                 { url: '#codemirror', title: 'CodeMirror Input', view: CodeMirrorInputSection }
             ]
@@ -115,12 +121,6 @@
         {
             title: 'Content',
             pages: [
-                {
-                    url: '#markdown-input',
-                    title: 'Markdown Input',
-                    view: MarkdownInputSection,
-                    props: { __ }
-                },
                 { url: '#signup', title: 'Sign Up', view: SignUpSection, props: { __ } },
                 { url: '#bulma', title: 'Bulma', view: BulmaComponentsSection }
             ]

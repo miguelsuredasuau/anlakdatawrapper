@@ -1,8 +1,15 @@
 <script>
     import MarkdownInput from '_partials/controls/MarkdownInput.svelte';
+    import { getContext } from 'svelte';
 
-    export let __;
-    let value = '';
+    const msg = getContext('messages');
+
+    let __;
+    $: {
+        __ = (key, scope = 'core') => msg.translate(key, scope, $msg);
+    }
+
+    let value = 'Hello, this is **markdown**!\n\n- This is\n- a list';
 </script>
 
 <div class="section pl-0 pt-0">
@@ -10,9 +17,22 @@
 
     <div class="columns">
         <div class="column is-half">
+            <h5 class="title is-4 mb-1 mt-4">normal</h5>
             <MarkdownInput {__} bind:value aria-label="My label" style="height: 10em">
-                slot
+                SLOT
             </MarkdownInput>
+
+            <h5 class="title is-4 mb-1 mt-4">checked</h5>
+            <MarkdownInput checked {__} bind:value aria-label="My label" style="height: 10em" />
+
+            <h5 class="title is-4 mb-1 mt-4">loading</h5>
+            <MarkdownInput loading {__} bind:value aria-label="My label" style="height: 10em" />
+
+            <h5 class="title is-4 mb-1 mt-4">disabled</h5>
+            <MarkdownInput disabled {__} bind:value aria-label="My label" style="height: 10em" />
+
+            <h5 class="title is-4 mb-1 mt-4">readonly</h5>
+            <MarkdownInput readonly {__} bind:value aria-label="My label" style="height: 10em" />
         </div>
     </div>
 </div>

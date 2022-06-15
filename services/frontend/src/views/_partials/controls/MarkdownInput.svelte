@@ -1,5 +1,6 @@
 <script>
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
+    import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import snarkdown from 'snarkdown';
 
     export let __;
@@ -8,22 +9,52 @@
     export let ariaLabel = null;
     export let style = null;
     export let uid = null;
+    export let disabled = false;
+    export let readonly = false;
 
-    let html = snarkdown(value);
+    /**
+     * optional checked state, e.g. to indicate that a change
+     * has been saved
+     */
+    export let checked = false;
+
+    /**
+     * to indicate that the text input is waiting for some
+     * server response etc.
+     */
+    export let loading = false;
+
+    export let allowedTags = ALLOWED_TAGS;
+
+    const ALLOWED_TAGS =
+        '<a><abbr><address><b><big><blockquote><br/><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figure><font><h1><h2><h3><h4><h5><h6><hr><hgroup><i><img><ins><kbd><li><mark><meter><ol><p><pre><q><s><small><span><strike><strong><sub><summary><sup><table><tbody><td><th><thead><tfoot><tr><tt><u><ul><wbr>';
+
+    $: html = snarkdown(value);
     let opened = true;
     let refTextarea;
 
     function showPreview() {
-        html = snarkdown(value);
+        if (readonly || disabled) return;
         opened = true;
     }
 
     function hidePreview() {
+        if (readonly || disabled) return;
         opened = false;
     }
 </script>
 
-<div class="mb-2" style="position: relative" on:input data-uid={uid}>
+<style>
+</style>
+
+<div
+    class="control mb-2"
+    style="position: relative"
+    class:is-loading={loading}
+    class:has-icons-right={loading || checked}
+    on:input
+    data-uid={uid}
+>
     <textarea
         bind:this={refTextarea}
         bind:value
@@ -31,16 +62,23 @@
         class="textarea"
         placeholder={__('editor / notes / placeholder', 'river')}
         {style}
+        {disabled}
+        {readonly}
         on:focus={hidePreview}
         on:blur={showPreview}
     />
+    {#if !loading && checked}
+        <IconDisplay icon="checkmark-bold" className="is-right" />
+    {/if}
     {#if opened && value}
         <div
-            class="textarea"
+            class="textarea content"
+            disabled={disabled ? 'disabled' : null}
+            readonly={readonly ? 'readonly' : null}
             style="position: absolute; left: 0; top: 0; height: 100%; overflow-y:auto;"
-            on:click={refTextarea.focus()}
+            on:click={() => refTextarea.focus()}
         >
-            {@html purifyHtml(html)}
+            {@html purifyHtml(html, allowedTags)}
         </div>
     {/if}
 </div>
