@@ -105,6 +105,9 @@ require_once ROOT_PATH . 'lib/utils/call_v3_api.php';
                 // auto-redirect to last step
                 $last_step = min($chart->getLastEditStep(), count($workflow['steps'])) - 1;
                 $step = $workflow['steps'][max(0, $last_step)];
+                // we need to redirect to publish step in order to make sure 
+                // this request gets served by the correct frontend server
+                return $app->redirect('/edit/'.$chart->getID().'/'.$step);
             }
 
             Hooks::register(Hooks::CORE_SET_CHART, function() use ($chart) {
