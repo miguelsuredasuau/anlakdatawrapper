@@ -26,15 +26,9 @@ dwInitTwigEnvironment($twig);
 
 require_once ROOT_PATH . 'controller/plugin-templates.php';
 require_once ROOT_PATH . 'controller/edit.php';
-require_once ROOT_PATH . 'controller/chart/create.php';
 require_once ROOT_PATH . 'controller/chart/edit.php';
-require_once ROOT_PATH . 'controller/chart/upload.php';
-require_once ROOT_PATH . 'controller/chart/describe.php';
 require_once ROOT_PATH . 'controller/chart/visualize.php';
 require_once ROOT_PATH . 'controller/chart/data.php';
-require_once ROOT_PATH . 'controller/chart/preview.php';
-require_once ROOT_PATH . 'controller/chart/embed.php';
-require_once ROOT_PATH . 'controller/chart/publish.php';
 
 
 $app->notFound(function() {
