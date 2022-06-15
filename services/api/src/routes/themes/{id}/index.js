@@ -59,7 +59,7 @@ module.exports = {
                     payload: Joi.object({
                         title: Joi.string(),
                         extend: themeId(),
-                        data: require('@datawrapper/schemas/themeData'),
+                        data: Joi.object(),
                         assets: Joi.object(),
                         less: Joi.string().allow('')
                     })
@@ -72,20 +72,6 @@ module.exports = {
 
                 const data = {};
 
-                // save colors.groups as flat array to colors.palette
-                if (payload.data?.colors?.groups) {
-                    payload.data.colors.palette = payload.data.colors.groups.reduce(
-                        (acc, group) => {
-                            if (!group.colors) return acc;
-                            group.colors.forEach(subgroup => {
-                                acc.push(...subgroup);
-                            });
-                            return acc;
-                        },
-                        []
-                    );
-                }
-
                 // copy white-listed attributes from payload
                 ['title', 'extend', 'data', 'assets', 'less'].forEach(key => {
                     if (payload[key] !== undefined) data[key] = payload[key];
@@ -93,6 +79,18 @@ module.exports = {
 
                 if (data.less) await validateThemeLess(data.less, server, theme.id);
                 if (data.data) await validateThemeData(data.data, server);
+
+                // save colors.groups as flat array to colors.palette
+                if (data.data?.colors?.groups) {
+                    data.data.colors.palette = data.data.colors.groups.reduce((acc, group) => {
+                        if (!group.colors) return acc;
+                        group.colors.forEach(subgroup => {
+                            acc.push(...subgroup);
+                        });
+                        return acc;
+                    }, []);
+                }
+
                 await theme.update(data);
 
                 await dropCache({
