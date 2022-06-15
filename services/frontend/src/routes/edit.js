@@ -5,7 +5,7 @@ const set = require('lodash/set');
 const cloneDeep = require('lodash/cloneDeep');
 const { getNestedObjectKeys } = require('../utils');
 const { Op } = require('@datawrapper/orm').db;
-const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
+const { Chart, User, Folder, Team, Theme } = require('@datawrapper/orm/models');
 const prepareChart = require('@datawrapper/service-utils/prepareChart');
 const assign = require('assign-deep');
 
@@ -142,7 +142,10 @@ module.exports = {
                             productFeatures
                         });
                         const api = server.methods.createAPI(request);
-                        const themes = (await api('/themes')).list;
+                        const user = request.auth.artifacts;
+                        const themes = user.isAdmin()
+                            ? await Theme.findAll({ attributes: ['id', 'title', 'created_at'] })
+                            : (await api('/themes')).list;
                         const chartLocales = server.methods.config('general').locales;
                         return {
                             themes,
