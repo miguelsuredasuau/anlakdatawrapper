@@ -1148,5 +1148,6 @@
   "describe / table / warnings": "%num% warnings",
   "visualize / annotate / source-url / not-allowed": "Invalid URL",
   "visualize / layout / locale-select / explainer": "Defines decimal and thousand separators as well as translation of month and weekday names.",
-  "visualize / layout / locale-select / hed": "Output locale"
+  "visualize / layout / locale-select / hed": "Output locale",
+  "login / login / password-changed": "You successfully changed your password. Please log in again."
 }

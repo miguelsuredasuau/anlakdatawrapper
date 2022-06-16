@@ -1,6 +1,6 @@
 <script>
     import httpReq from '@datawrapper/shared/httpReq';
-    import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
+    import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
     import ProviderButtons from './ProviderButtons.svelte';
     import { isValidEmail } from './utils';
@@ -11,8 +11,9 @@
     export let emailOpen;
     export let providers;
     export let noSignUp;
-
     export let email = '';
+    export let passwordChanged;
+
     let password = '';
     let rememberLogin = true;
 
@@ -100,12 +101,18 @@
 
 <div>
     <h2 class="title is-3">{@html __('login / login / headline')}</h2>
-    <p>{@html __('login / login / intro')}</p>
+    {#if passwordChanged}
+        <MessageDisplay type="success" deletable={false}
+            >{@html __('login / login / password-changed')}</MessageDisplay
+        >
+    {:else}
+        <p>{@html __('login / login / intro')}</p>
+    {/if}
     {#if emailOpen}
         {#if loginError || loginSuccess}
-            <NotificationDisplay type={loginError ? 'warning' : 'success'} deletable={false}>
+            <MessageDisplay type={loginError ? 'warning' : 'success'} deletable={false}>
                 {@html loginError || loginSuccess}
-            </NotificationDisplay>
+            </MessageDisplay>
         {/if}
         <form class="signup-form" on:submit|preventDefault={handleSubmit}>
             {#if !needOTP}

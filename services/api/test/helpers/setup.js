@@ -83,7 +83,7 @@ async function createUser(
     server,
     { role = 'editor', pwd = PASSWORD_HASH, scopes = ALL_SCOPES, language = 'en-US' } = {}
 ) {
-    const { AccessToken, Session, User } = require('@datawrapper/orm/models');
+    const { AccessToken, User } = require('@datawrapper/orm/models');
     const credentials = getCredentials();
     const user = await User.create({
         name: `name-${credentials.email.split('@').shift()}`,
@@ -93,15 +93,7 @@ async function createUser(
         language
     });
 
-    const session = await Session.create({
-        id: server.methods.generateToken(),
-        user_id: user.id,
-        data: {
-            'dw-user-id': user.id,
-            persistent: true,
-            last_action_time: Math.floor(Date.now() / 1000)
-        }
-    });
+    const session = await createSession(server, user);
 
     const { token } = await AccessToken.newToken({
         user_id: user.id,
@@ -119,6 +111,20 @@ async function createUser(
         session,
         token
     };
+}
+
+async function createSession(server, user) {
+    const { Session } = require('@datawrapper/orm/models');
+
+    return await Session.create({
+        id: server.methods.generateToken(),
+        user_id: user.id,
+        data: {
+            'dw-user-id': user.id,
+            persistent: true,
+            last_action_time: Math.floor(Date.now() / 1000)
+        }
+    });
 }
 
 async function setUserData(user, key, value) {
@@ -466,6 +472,7 @@ module.exports = {
     createTheme,
     createThemes,
     createUser,
+    createSession,
     destroy,
     genNonExistentFolderId,
     genRandomChartId,

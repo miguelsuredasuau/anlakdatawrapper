@@ -176,6 +176,7 @@ async function editUser(request, h) {
     const { generateToken, isAdmin, userIsDeleted, hashPassword, comparePassword, config } =
         server.methods;
     const userId = params.id;
+    let requiresSessionInvalidation = false;
 
     await userIsDeleted(userId);
 
@@ -203,6 +204,7 @@ async function editUser(request, h) {
         data.role = payload.role;
         if (payload.password) {
             data.pwd = await hashPassword(payload.password);
+            requiresSessionInvalidation = true;
         }
     } else {
         // all users need to confirm their email and password changes
@@ -252,12 +254,19 @@ async function editUser(request, h) {
                 return Boom.unauthorized('The old password is wrong');
             }
             data.pwd = await hashPassword(payload.password);
+            requiresSessionInvalidation = true;
         }
     }
 
     await User.update(decamelizeKeys(data), {
         where: { id: userId }
     });
+
+    if (requiresSessionInvalidation) {
+        await Session.destroy({
+            where: { user_id: userId }
+        });
+    }
 
     const updatedAt = new Date().toISOString();
     const user = await getUser(request, h);

@@ -7,13 +7,14 @@
     export let noSignUp = false;
     export let noSignIn = false;
     export let signupWithoutPassword = false;
+    export let email = '';
+    export let passwordChanged = false;
 
     export let providers;
 
     let step = noSignIn ? 'signup' : 'login'; // can also be 'login'
 
-    let email = '';
-    let emailOpen = providers.length === 0;
+    let emailOpen = providers.length === 0 || email;
 </script>
 
 <style>
@@ -35,6 +36,15 @@
             bind:step
         />
     {:else if step === 'login' && !noSignIn}
-        <LogIn {__} {providers} {target} {noSignUp} bind:emailOpen bind:email bind:step />
+        <LogIn
+            {__}
+            {providers}
+            {target}
+            {noSignUp}
+            bind:emailOpen
+            bind:email
+            bind:step
+            {passwordChanged}
+        />
     {/if}
 </div>

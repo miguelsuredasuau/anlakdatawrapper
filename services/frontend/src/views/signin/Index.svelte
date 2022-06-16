@@ -7,8 +7,18 @@
     export let providers;
     export let noSignUp;
     export let signupWithoutPassword = false;
+    export let email;
+    export let passwordChanged;
 </script>
 
 <SignInPageLayout title="Welcome">
-    <SignUpForm {__} {target} {providers} {noSignUp} {signupWithoutPassword} />
+    <SignUpForm
+        {__}
+        {target}
+        {providers}
+        {noSignUp}
+        {signupWithoutPassword}
+        {email}
+        {passwordChanged}
+    />
 </SignInPageLayout>

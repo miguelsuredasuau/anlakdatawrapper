@@ -34,12 +34,14 @@ module.exports = {
                         ref: Joi.string()
                             .optional()
                             .uri({ relativeOnly: true })
-                            .pattern(/^(\/$|\/[^/])/) // prevent domains without implicit protocol
+                            .pattern(/^(\/$|\/[^/])/), // prevent domains without implicit protocol
+                        email: Joi.string().email().optional(), // allows prefilling of email field
+                        passwordChanged: Joi.boolean().optional()
                     })
                 }
             },
             async handler(request, h) {
-                const { ref } = request.query;
+                const { ref, email, passwordChanged } = request.query;
 
                 if (request.auth.isAuthenticated && request.auth.artifacts?.role !== 'guest') {
                     return h.redirect(ref || '/');
@@ -49,6 +51,8 @@ module.exports = {
                     props: {
                         target: ref || '/',
                         providers,
+                        email: email || '',
+                        passwordChanged,
                         // @todo: read from config
                         noSignUp: !!preventGuestAccess,
                         signupWithoutPassword: false

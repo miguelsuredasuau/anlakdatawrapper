@@ -274,7 +274,7 @@
                 }
             },
             async changePassword() {
-                const { currentPassword, newPassword } = this.get();
+                const { currentPassword, newPassword, email } = this.get();
 
                 this.set({ savingPassword: true });
 
@@ -283,12 +283,15 @@
                     oldPassword: currentPassword
                 };
 
-                const messages = [];
                 const errors = [];
 
                 try {
                     await httpReq.patch('/v3/me', { payload });
-                    messages.push('Your password has been changed!');
+                    const params = new URLSearchParams();
+                    params.append('ref', '/account');
+                    params.append('email', email);
+                    params.append('passwordChanged', 'true');
+                    window.location.href = `/signin?${params}`;
                 } catch (e) {
                     if (e.name === 'HttpReqError') {
                         const res = await e.response.json();
@@ -303,7 +306,6 @@
                         changePassword: false,
                         currentPassword: '',
                         newPassword: '',
-                        messages,
                         errors: []
                     });
                 } else {

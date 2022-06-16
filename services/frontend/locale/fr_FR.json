@@ -1126,7 +1126,7 @@
   "browser-warning / not-supported": "Vous utilisez un navigateur (Internet Explorer) qui n'est <strong>pas pris en charge par l'éditeur Datawrapper</strong> en ce moment.",
   "browser-warning / switch-browser": "Veuillez changer de navigateur pour continuer à utiliser le site.<br/> Voici quelques navigateurs pris en charge : <a href=\"https://www.mozilla.org/firefox/\">Mozilla Firefox</a>, <a href=\"https://www.google.com/chrome/\">Google Chrome</a>, <a href=\"https://www.microsoft.com/edge/\">Microsoft Edge</a>.",
   "browser-warning / visualizations": "<strong>Veuillez noter que vos visualisations Datawrapper peuvent être consultées partout.</strong> Toutes les visualisations prennent en charge tous les principaux navigateurs, y compris <em>Internet Explorer</em>.",
-  "layout / dark-mode-invert / help": "Par défaut, les couleurs de visualisation sont ajustées en mode sombre pour garantir qu'elles sont toujours lisibles et qu'elles gardent une bonne apparence. Si vous souhaitez <b>conserver les mêmes couleurs en mode sombre</b>, vous pouvez activer cette option. Regardez la prévisualisation sous la visualisation pour vous assurer que vous êtes satisfait de l'apparence de vos couleurs. Pour en savoir plus, suivez <a href=\"https://academy.datawrapper.de/\">ce lien.</a>",
+  "layout / dark-mode-invert / help": "Par défaut, les couleurs de visualisation sont ajustées en mode sombre pour garantir qu'elles sont toujours lisibles et qu'elles gardent une bonne apparence. Si vous souhaitez <b>conserver les mêmes couleurs en mode sombre</b>, vous pouvez activer cette option. Regardez la prévisualisation sous la visualisation pour vous assurer que vous êtes satisfait de l'apparence de vos couleurs. Pour en savoir plus, suivez <a href=\"https://academy.datawrapper.de/article/357-dark-mode-in-embedded-datawrapper-visualizations#disable-color-inversion\">ce lien.</a>",
   "layout / dark-mode-invert / label": "Utiliser les mêmes couleurs en mode sombre",
   "typeahead / no-results": "Aucun résultat trouvé",
   "typeahead / searching": "Recherche...",
@@ -1148,5 +1148,6 @@
   "describe / table / warnings": "%num% alertes",
   "visualize / annotate / source-url / not-allowed": "",
   "visualize / layout / locale-select / explainer": "Définit les séparateurs de décimales et de milliers, ainsi que la traduction des noms de mois et de jours de la semaine.",
-  "visualize / layout / locale-select / hed": "Région"
+  "visualize / layout / locale-select / hed": "Région",
+  "login / login / password-changed": ""
 }
