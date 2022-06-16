@@ -1,7 +1,7 @@
 (function () {
     // numeral.js locale configuration
-    // locale : arabic kuwait (kw)
-    // author : Nusret Parlak : https://github.com/nusretparlak
+    // locale : Pashto (Afghanistan) (ps_AF)
+    // author : Patrick Boehler (RFE/RL) (frontId: msg_oob5j9h)
 
     return {
         delimiters: {
@@ -9,10 +9,10 @@
             decimal: '٫'
         },
         abbreviations: {
-            thousand: ' ألف',
-            million: ' مليون',
-            billion: ' مليار',
-            trillion: ' تريليون'
+            thousand: ' زر',
+            million: ' ملیونه',
+            billion: ' میلیارده',
+            trillion: ' تریلیونه'
         },
         ordinal: function () {
             return ' ';

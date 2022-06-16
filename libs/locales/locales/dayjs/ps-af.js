@@ -1,6 +1,6 @@
 (function() {
     // dayjs locale configuration
-    // locale : Pashto (Afghanistan) (pa_AF)
+    // locale : Pashto (Afghanistan) (ps_AF)
     // author : Patrick Boehler (RFE/RL) (frontId: msg_onpt8at)
     return {
         name: 'pa-AF',
