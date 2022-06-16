@@ -39,9 +39,10 @@
             () => _app,
             () => _app.set(data)
         );
-        if (_store && storeData) {
-            _store.set(storeData);
-        }
+        waitFor(
+            () => storeInitialized,
+            () => _store && storeData && _store.set(storeData)
+        );
     }
 
     let container;
@@ -50,6 +51,7 @@
 
     let _app;
     let _store;
+    let storeInitialized = false;
 
     function loadCSS(src) {
         return new Promise((resolve, reject) => {
@@ -94,6 +96,9 @@
                 if (store && window.__svelte2wrapper[uid].storeMethods) {
                     Object.assign(store, window.__svelte2wrapper[uid].storeMethods);
                 }
+
+                storeInitialized = true;
+
                 if (!bundle[module]) {
                     loading = false;
                     return;
