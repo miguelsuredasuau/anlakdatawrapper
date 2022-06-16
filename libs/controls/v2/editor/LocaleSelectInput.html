@@ -2,7 +2,6 @@
 
 <script>
     import SelectInput from '../SelectInput.html';
-    import { __ } from '@datawrapper/shared/l10n';
 
     export default {
         components: { SelectInput },
@@ -16,7 +15,6 @@
                 });
             }
         },
-        helpers: { __ },
         onstate() {
             const { language } = this.store.get();
 
