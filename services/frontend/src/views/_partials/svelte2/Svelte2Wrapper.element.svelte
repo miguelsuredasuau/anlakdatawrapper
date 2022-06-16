@@ -78,13 +78,6 @@
             ...(Array.isArray(css) ? css.map(loadCSS) : [loadCSS(css)])
         ]);
 
-        const style = document.createElement('style');
-        style.innerText = `
-    .vis-option-type-switch {
-        position: relative;
-    }`;
-        parent.appendChild(style);
-
         require([id], bundle => {
             const { store } = bundle;
             try {

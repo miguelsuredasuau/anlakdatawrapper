@@ -129,12 +129,6 @@
     }
 </script>
 
-<style>
-    :global(.vis-option-type-switch) {
-        position: relative;
-    }
-</style>
-
 {#if ready}
     <svelte2-wrapper
         bind:this={component}
