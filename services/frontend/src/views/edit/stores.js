@@ -124,6 +124,11 @@ export function initChartStore(rawChart, rawTheme, visualizations, disabledField
             // and store the patch
             assign(unsavedChanges, patch);
 
+            if (unsavedChanges.type) {
+                // chart type has changed, update visualization store
+                visualization.set(visualizations.find(vis => vis.id === unsavedChanges.type));
+            }
+
             prevState = cloneDeep(value);
             if (newUnsaved) {
                 hasUnsavedChanges.set(true);
@@ -135,11 +140,6 @@ export function initChartStore(rawChart, rawTheme, visualizations, disabledField
                         handler(value);
                     }
                 }
-            }
-
-            if (unsavedChanges.type) {
-                // chart type has changed, update visualization store
-                visualization.set(visualizations.find(vis => vis.id === unsavedChanges.type));
             }
 
             if (unsavedChanges.theme) {

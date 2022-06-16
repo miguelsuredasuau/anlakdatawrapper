@@ -1,7 +1,7 @@
 <script>
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import dwVisualization from '@datawrapper/chart-core/lib/dw/visualization';
-    import { onMount, tick, getContext } from 'svelte';
+    import { onMount, tick, getContext, onDestroy } from 'svelte';
     import isEqual from 'lodash/isEqual';
     import clone from 'lodash/cloneDeep';
     import { loadScript } from '@datawrapper/shared/fetch';
@@ -13,13 +13,22 @@
     export let teamSettings;
     export let controlsModule = 'Refine';
 
+    let visUnsubscribe;
+
     onMount(() => {
-        loadControls($chart.type);
-        chart.subscribeKey('type', newType => {
-            if (newType) {
-                loadControls(newType);
+        visUnsubscribe = visualization.subscribe(vis => {
+            if (vis && vis.id) {
+                loadControls(vis.id);
             }
         });
+    });
+
+    onDestroy(() => {
+        if (typeof visUnsubscribe === 'function') {
+            // unsubscribe from vis changes after the Refine/Annotate
+            // tab has been destroyed (e.g. the user switched tab)
+            visUnsubscribe();
+        }
     });
 
     let vis;
@@ -39,7 +48,7 @@
 
     async function loadControls(type) {
         controlsReady = false;
-        // load script that registers visualzationn
+        // load script that registers visualzation
         const visMeta = visualizations.find(v => v.id === type);
         window.dw.visualization = dwVisualization;
         await loadScript(`/lib/plugins/${visMeta.__plugin}/static/${type}.js`);

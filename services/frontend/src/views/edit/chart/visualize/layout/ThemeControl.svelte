@@ -1,9 +1,11 @@
 <script>
     import HorizontalFormFieldDisplay from '_partials/displays/HorizontalFormFieldDisplay.svelte';
     import SelectInput from '_partials/controls/SelectInput.svelte';
+    import { getContext } from 'svelte';
+
+    const { chart } = getContext('page/edit');
 
     export let __;
-    export let chart;
     export let themes;
 
     $: themeOptions = themes

@@ -1,8 +1,5 @@
 <script>
     import ViewComponent from '_partials/ViewComponent.svelte';
-    import { getContext } from 'svelte';
-
-    const { chart, theme } = getContext('page/edit');
 
     export let __;
     export let themes;
@@ -12,8 +9,6 @@
 
     $: sharedProps = {
         __,
-        chart,
-        theme,
         themes,
         teamSettings,
         chartLocales

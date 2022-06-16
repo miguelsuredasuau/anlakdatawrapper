@@ -3,9 +3,10 @@
     import SwitchControl from '_partials/controls/SwitchControl.svelte';
     import purifyHtml from '@datawrapper/shared/purifyHtml';
     import get from '@datawrapper/shared/get';
+    import { getContext } from 'svelte';
 
-    export let chart;
-    export let theme;
+    const { chart, theme } = getContext('page/edit');
+
     export let __;
 
     $: themeAutoDark = get(theme.data, 'options.darkMode.auto', 'user');

@@ -3,10 +3,11 @@
     import get from '@datawrapper/shared/get';
     import SelectInput from '_partials/controls/SelectInput.svelte';
     import SwitchControl from '_partials/controls/SwitchControl.svelte';
+    import { getContext } from 'svelte';
+
+    const { chart, theme } = getContext('page/edit');
 
     export let __;
-    export let theme;
-    export let chart;
     export let requireUpgrade;
 
     $: logos = get($theme.data, 'options.blocks.logo.data.options', []);
