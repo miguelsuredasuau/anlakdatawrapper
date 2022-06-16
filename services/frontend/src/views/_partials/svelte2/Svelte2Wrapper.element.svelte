@@ -104,7 +104,6 @@
                     return;
                 }
 
-                dispatch('beforeInit', bundle);
                 _app = new bundle[module]({
                     target: container,
                     store,

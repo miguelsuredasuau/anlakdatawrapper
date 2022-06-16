@@ -145,7 +145,6 @@
         {module}
         on:update={update}
         on:change
-        on:beforeInit
         on:init
     />
 {/if}

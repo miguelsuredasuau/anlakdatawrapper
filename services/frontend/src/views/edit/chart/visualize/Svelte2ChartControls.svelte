@@ -48,6 +48,9 @@
 
     async function loadControls(type) {
         controlsReady = false;
+
+        await applyDefaultsAndMigration();
+
         // load script that registers visualzation
         const visMeta = visualizations.find(v => v.id === type);
         window.dw.visualization = dwVisualization;
@@ -57,12 +60,48 @@
         vis.meta = visMeta;
         vis.chart(dwChart);
         vis.theme = () => $theme.data;
+
         // load dataset from chart
         dataset = dwChart.dataset();
         storeData = getStoreData();
         prevStoreData = clone(storeData);
         await tick();
         controlsReady = true;
+    }
+
+    async function applyDefaultsAndMigration() {
+        // apply defaults from visualization
+        if ($visualization.defaultMetadata) {
+            $chart.metadata.visualize = {
+                ...$visualization.defaultMetadata,
+                ...$chart.metadata.visualize
+            };
+        }
+
+        if ($visualization && $visualization.controls.migrate) {
+            // load and execute migrate.js
+            const { default: migrate } = await dynamicImport($visualization.controls.migrate);
+            if (typeof migrate === 'function') {
+                migrate($chart.type, $chart.metadata, dataset);
+            }
+        }
+    }
+
+    /**
+     * Dynamically import a JS module using the browser import() API.
+     *
+     * We are wrapping the call in eval() to prevent rollup from hijacking
+     * the import() method, which would break the import since as of now rollup
+     * does not support dynamic imports from variable filenames. For more
+     * information see
+     *
+     * - https://github.com/rollup/rollup/issues/2463
+     * - https://github.com/rollup/rollup/issues/2097
+     *
+     * @param filename - the file to import
+     */
+    function dynamicImport(filename) {
+        return eval(`import('${filename}')`);
     }
 
     function setMetadata(key, value) {
@@ -79,25 +118,6 @@
         } else if (key.startsWith('metadata')) {
             chart.subscribeKey(key, handler);
         }
-    }
-
-    function beforeInitControls(event) {
-        // apply defaults from visualization
-        if ($visualization.defaultMetadata) {
-            $chart.metadata.visualize = {
-                ...$visualization.defaultMetadata,
-                ...$chart.metadata.visualize
-            };
-        }
-        // apply migrations
-        if (event.detail.migrate) {
-            event.detail.migrate($chart.type, $chart.metadata, dataset);
-        }
-
-        // check if we have something to store
-        $chart = $chart;
-        // update store data
-        storeData = getStoreData();
     }
 
     let state = {};
@@ -130,7 +150,6 @@
         js="/static/plugins/{$visualization.controls.js}"
         css="/static/plugins/{$visualization.controls.css}"
         module={controlsModule}
-        on:beforeInit={beforeInitControls}
         bind:storeData
         storeMethods={{ getMetadata, setMetadata, observeDeep }}
         bind:data={state}
