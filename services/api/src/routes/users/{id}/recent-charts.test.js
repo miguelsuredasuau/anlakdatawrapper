@@ -174,3 +174,39 @@ test('GET /users/:id/recently-published-charts - returns charts', async t => {
         );
     }
 });
+
+test('GET /users/:id/recently-edited-charts - only returns charts user has access to', async t => {
+    const { server } = t.context;
+    const { setUserData } = require('@datawrapper/orm/utils/userData');
+
+    let charts, teamObj1, teamObj2;
+
+    try {
+        teamObj1 = await createTeamWithUser(server);
+        teamObj2 = await createTeamWithUser(server);
+        const { user: user1, session: session1 } = teamObj1;
+        const { team: team2 } = teamObj2;
+
+        charts = await createCharts([{ author_id: user1.id, organization_id: team2.id }]);
+
+        // add to recently edited for user1
+        await setUserData(
+            user1.id,
+            'recently_edited',
+            JSON.stringify(charts.map(chart => chart.id))
+        );
+
+        const res = await server.inject({
+            method: 'GET',
+            url: `/v3/users/${user1.id}/recently-edited-charts`,
+            headers: {
+                cookie: `DW-SESSION=${session1.id}`
+            }
+        });
+
+        t.is(res.result.total, 0);
+        t.is(res.result.list.length, 0);
+    } finally {
+        destroy(...charts, ...Object.values(teamObj1), ...Object.values(teamObj2));
+    }
+});

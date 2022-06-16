@@ -66,7 +66,12 @@ function getRecentChartHandler(type) {
                 ...(!request.server.methods.isAdmin(request)
                     ? {
                           [Op.or]: [
-                              { author_id: auth.artifacts.id },
+                              {
+                                  [Op.and]: [
+                                      { author_id: auth.artifacts.id },
+                                      { organization_id: null }
+                                  ]
+                              },
                               { organization_id: await auth.artifacts.getActiveTeamIds() }
                           ]
                       }
