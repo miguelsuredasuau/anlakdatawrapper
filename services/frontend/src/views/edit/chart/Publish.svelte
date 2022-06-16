@@ -4,7 +4,8 @@
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import { getContext, onMount } from 'svelte';
     import { headerProps } from '_layout/stores';
-    import { chart } from '../stores';
+    // load stores from context
+    const { chart, theme } = getContext('page/edit');
 
     const user = getContext('user');
     const userData = getContext('userData');
@@ -13,7 +14,6 @@
 
     export let dwChart;
     export let language;
-    export let theme;
     export let afterEmbed;
     export let guestAboveInvite;
     export let guestBelowInvite;

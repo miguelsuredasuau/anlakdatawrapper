@@ -43,6 +43,11 @@
     export let visBoxSublines;
     export let visModalMetadata;
 
+    /*
+     * we're using a "page context" here to be able to make
+     * our helper methods available to all sub components of this
+     * view without having to pass them around as state props.
+     */
     setContext('page/archive', {
         addFolder,
         updateFolders: refreshFolders,

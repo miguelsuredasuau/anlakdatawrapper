@@ -10,11 +10,11 @@
         data,
         chart,
         theme,
+        visualization,
         hasUnsavedChanges,
         initChartStore,
         initDataStore,
-        onNextSave,
-        subscribeChart
+        onNextSave
     } from './stores';
     import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
     import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
@@ -30,8 +30,17 @@
     export let urlPrefix;
     export let rawTheme;
 
+    /*
+     * we're using a "page context" here to be able to make
+     * our store instances available to all sub components of this
+     * view without having to pass them around as state props.
+     */
     setContext('page/edit', {
-        subscribeChart
+        chart,
+        data,
+        theme,
+        visualization,
+        hasUnsavedChanges
     });
 
     /*
@@ -117,9 +126,6 @@
 
     $: stepProps = {
         ...activeStep.data,
-        chart,
-        data,
-        theme,
         workflow,
         visualizations,
         language: rawChart.language,
@@ -139,9 +145,8 @@
         : null;
 
     onMount(async () => {
-        initChartStore(rawChart, visualizations, disabledFields);
+        initChartStore(rawChart, rawTheme, visualizations, disabledFields);
         initDataStore(rawChart.id, rawData);
-        theme.set(rawTheme);
 
         if (!initUrlStep && rawChart.lastEditStep) {
             activeStep = steps[Math.max(1, Math.min(steps.length - 1, rawChart.lastEditStep - 1))];

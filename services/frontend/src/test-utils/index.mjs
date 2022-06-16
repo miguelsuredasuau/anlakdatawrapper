@@ -60,7 +60,7 @@ export async function renderWithContext(view, props = {}, stores = {}) {
         }
     });
 
-    return { ...context, component: context.component.ref };
+    return { ...context, component: context.component.ref, stores };
 }
 
 export function delay(time) {

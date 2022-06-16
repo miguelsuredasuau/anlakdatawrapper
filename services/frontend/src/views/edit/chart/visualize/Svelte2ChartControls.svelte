@@ -1,23 +1,21 @@
 <script>
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import dwVisualization from '@datawrapper/chart-core/lib/dw/visualization';
-    import { onMount, tick } from 'svelte';
+    import { onMount, tick, getContext } from 'svelte';
     import isEqual from 'lodash/isEqual';
     import clone from 'lodash/cloneDeep';
     import { loadScript } from '@datawrapper/shared/fetch';
-    import { subscribeChart } from '../../stores';
+    // load stores from context
+    const { chart, theme, visualization } = getContext('page/edit');
 
-    export let chart;
     export let dwChart;
-    export let theme;
-    export let visualization;
     export let visualizations;
     export let teamSettings;
     export let controlsModule = 'Refine';
 
     onMount(() => {
         loadControls($chart.type);
-        subscribeChart('type', newType => {
+        chart.subscribeKey('type', newType => {
             if (newType) {
                 loadControls(newType);
             }
@@ -33,8 +31,8 @@
             vis,
             dataset,
             visualization: visualizations.find(v => v.id === $chart.type),
-            themeData: theme.data,
-            computedThemeData: theme._computed,
+            themeData: $theme.data,
+            computedThemeData: $theme._computed,
             teamSettings
         };
     }
@@ -49,7 +47,7 @@
         vis = dwVisualization(type);
         vis.meta = visMeta;
         vis.chart(dwChart);
-        vis.theme = () => theme.data;
+        vis.theme = () => $theme.data;
         // load dataset from chart
         dataset = dwChart.dataset();
         storeData = getStoreData();
@@ -70,7 +68,7 @@
         if (key === 'visualization') {
             visualization.subscribe(handler);
         } else if (key.startsWith('metadata')) {
-            subscribeChart(key, handler);
+            chart.subscribeKey(key, handler);
         }
     }
 

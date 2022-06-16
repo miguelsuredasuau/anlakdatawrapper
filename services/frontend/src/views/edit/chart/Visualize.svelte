@@ -7,14 +7,13 @@
     import LayoutTab from './visualize/LayoutTab.svelte';
     import RefineTab from './visualize/RefineTab.svelte';
     import clone from 'lodash/cloneDeep';
-    import { onMount } from 'svelte';
-    import { chart, visualization, subscribeChart } from '../stores';
+    import { onMount, getContext } from 'svelte';
     import { headerProps } from '_layout/stores';
+    // load stores from context
+    const { chart, theme, visualization } = getContext('page/edit');
 
     export let __;
     export let dwChart;
-    export let theme;
-    export let data;
     export let visualizations;
     export let workflow;
     export let teamSettings;
@@ -104,9 +103,9 @@
     }
 
     onMount(() => {
-        RELOAD.forEach(key => subscribeChart(key, reloadPreview));
-        UPDATE.forEach(key => subscribeChart(key, updatePreview));
-        subscribeChart('metadata.visualize', rerenderPreview);
+        RELOAD.forEach(key => chart.subscribeKey(key, reloadPreview));
+        UPDATE.forEach(key => chart.subscribeKey(key, updatePreview));
+        chart.subscribeKey('metadata.visualize', rerenderPreview);
         // read current tab from url hash
         if (tabs.find(t => `#${t.id}` === window.location.hash)) {
             active = prevActive = window.location.hash.substring(1);
@@ -167,15 +166,10 @@
                 <svelte:component
                     this={activeTab.ui}
                     {__}
-                    {data}
-                    {chart}
-                    {theme}
                     {themes}
                     {chartLocales}
                     {dwChart}
-                    {subscribeChart}
                     {workflow}
-                    {visualization}
                     {visualizations}
                     {teamSettings}
                     {disabledFields}

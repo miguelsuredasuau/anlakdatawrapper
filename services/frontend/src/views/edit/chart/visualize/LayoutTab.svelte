@@ -1,9 +1,10 @@
 <script>
     import ViewComponent from '_partials/ViewComponent.svelte';
+    import { getContext } from 'svelte';
+
+    const { chart, theme } = getContext('page/edit');
 
     export let __;
-    export let chart;
-    export let theme;
     export let themes;
     export let teamSettings;
     export let chartLocales;

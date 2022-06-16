@@ -52,6 +52,24 @@ const baseChart = {
     }
 };
 
+function renderChartTypeTab({ chart, visualization, visualizations, workflow }) {
+    return renderWithContext(
+        ChartTypeTab,
+        {
+            visualizations,
+            workflow,
+            __
+        },
+        {
+            // mock page/edit context
+            'page/edit': {
+                chart,
+                visualization
+            }
+        }
+    );
+}
+
 describe('ChartTypeTab', () => {
     describe('initial display', function () {
         let result;
@@ -62,12 +80,11 @@ describe('ChartTypeTab', () => {
         });
 
         beforeEach(async () => {
-            result = await renderWithContext(ChartTypeTab, {
+            result = await renderChartTypeTab({
                 chart,
                 visualization,
                 visualizations,
-                workflow: { id: 'chart', options: {} },
-                __
+                workflow: { id: 'chart', options: {} }
             });
         });
 
@@ -95,7 +112,7 @@ describe('ChartTypeTab', () => {
         });
 
         beforeEach(async () => {
-            result = await renderWithContext(ChartTypeTab, {
+            result = await renderChartTypeTab({
                 chart,
                 visualization,
                 visualizations: [
@@ -107,8 +124,7 @@ describe('ChartTypeTab', () => {
                         includeInWorkflow: 'chart'
                     }
                 ],
-                workflow: { id: 'chart', options: {} },
-                __
+                workflow: { id: 'chart', options: {} }
             });
         });
 
@@ -131,7 +147,7 @@ describe('ChartTypeTab', () => {
         });
 
         beforeEach(async () => {
-            result = await renderWithContext(ChartTypeTab, {
+            result = await renderChartTypeTab({
                 chart,
                 visualization,
                 visualizations: [
@@ -147,8 +163,7 @@ describe('ChartTypeTab', () => {
                     options: {
                         includeInChartTypeSelector: ['chart']
                     }
-                },
-                __
+                }
             });
         });
 
@@ -170,7 +185,7 @@ describe('ChartTypeTab', () => {
             const visualization = writable({
                 id: 'd3-lines'
             });
-            result = await renderWithContext(ChartTypeTab, {
+            result = await renderChartTypeTab({
                 chart,
                 visualization,
                 visualizations,
@@ -199,7 +214,7 @@ describe('ChartTypeTab', () => {
         beforeEach(async () => {
             const chart = writable(baseChart);
 
-            result = await renderWithContext(ChartTypeTab, {
+            result = await renderChartTypeTab({
                 chart,
                 visualization: writable({
                     id: 'd3-lines'
@@ -207,8 +222,7 @@ describe('ChartTypeTab', () => {
                 visualizations,
                 workflow: {
                     id: 'chart'
-                },
-                __
+                }
             });
 
             trackStoreChanges(chart, (chartWatcher = sinon.spy()));

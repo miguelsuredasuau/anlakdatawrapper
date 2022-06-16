@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
 import assign from 'assign-deep';
@@ -12,6 +12,10 @@ import { filterNestedObjectKeys } from '../../utils';
  * chart object store
  */
 export const chart = new writable({});
+const chartKeyWatchers = new Set();
+chart.subscribeKey = (key, handler) => {
+    chartKeyWatchers.add({ key, handler: debounce(handler, 100) });
+};
 
 /**
  * raw dataset store
@@ -19,21 +23,24 @@ export const chart = new writable({});
 export const data = new writable('');
 
 /**
- * visualization store
+ * visualization store (readonly to views)
  */
-export const visualization = new writable({});
+const visualization = new writable({});
+const visualizationReadonly = derived(visualization, $vis => $vis);
+export { visualizationReadonly as visualization };
 
 /**
- * theme store
+ * theme store (readonly to views)
  */
-export const theme = new writable({});
+const theme = new writable({});
+const themeReadonly = derived(theme, $theme => $theme);
+export { themeReadonly as theme };
 
 export const onNextSave = new Set();
 export const hasUnsavedChanges = new writable(false);
 export const saveError = new writable(false);
 
 let unsavedChanges = {};
-const watchers = new Set();
 
 const ALLOWED_CHART_KEYS = [
     'title',
@@ -45,8 +52,9 @@ const ALLOWED_CHART_KEYS = [
     'lastEditStep'
 ];
 
-export function initChartStore(rawChart, visualizations, disabledFields = []) {
+export function initChartStore(rawChart, rawTheme, visualizations, disabledFields = []) {
     chart.set(rawChart);
+    theme.set(rawTheme);
     let prevState;
 
     const patchChartSoon = debounce(async function (id) {
@@ -100,7 +108,7 @@ export function initChartStore(rawChart, visualizations, disabledFields = []) {
 
     visualization.set(visualizations.find(vis => vis.id === rawChart.type) || visualizations[0]);
 
-    chart.subscribe(value => {
+    chart.subscribe(async value => {
         if (!prevState && value.id) {
             // initial set
             prevState = cloneDeep(value);
@@ -116,17 +124,12 @@ export function initChartStore(rawChart, visualizations, disabledFields = []) {
             // and store the patch
             assign(unsavedChanges, patch);
 
-            if (unsavedChanges.type) {
-                // chart type has changed, update visualization store
-                visualization.set(visualizations.find(vis => vis.id === unsavedChanges.type));
-            }
-
             prevState = cloneDeep(value);
             if (newUnsaved) {
                 hasUnsavedChanges.set(true);
                 patchChartSoon(value.id);
 
-                for (const { key, handler } of watchers) {
+                for (const { key, handler } of chartKeyWatchers) {
                     const value = get(patch, key);
                     if (value !== undefined && value !== null) {
                         handler(value);
@@ -137,6 +140,12 @@ export function initChartStore(rawChart, visualizations, disabledFields = []) {
             if (unsavedChanges.type) {
                 // chart type has changed, update visualization store
                 visualization.set(visualizations.find(vis => vis.id === unsavedChanges.type));
+            }
+
+            if (unsavedChanges.theme) {
+                // chart theme has changed, update theme store
+                const newTheme = await httpReq.get(`/v3/themes/${unsavedChanges.theme}`);
+                theme.set(newTheme);
             }
         }
     });
@@ -182,8 +191,4 @@ export function initDataStore(chartId, rawData) {
             storeDataSoon();
         }
     });
-}
-
-export function subscribeChart(key, handler) {
-    watchers.add({ key, handler: debounce(handler, 100) });
 }

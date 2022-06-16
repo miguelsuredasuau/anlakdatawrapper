@@ -1,10 +1,10 @@
 <script>
     import get from '@datawrapper/shared/get';
     import set from '@datawrapper/shared/set';
+    import { getContext } from 'svelte';
 
-    // from ../../stores
-    export let chart;
-    export let visualization;
+    const { chart, visualization } = getContext('page/edit');
+
     // from route
     export let visualizations;
     export let workflow;

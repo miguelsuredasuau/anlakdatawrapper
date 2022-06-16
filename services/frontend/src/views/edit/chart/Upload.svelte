@@ -1,10 +1,11 @@
 <script>
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import { getContext } from 'svelte';
+    // load stores from context
+    const { chart, data } = getContext('page/edit');
+
     const config = getContext('config');
 
-    export let chart;
-    export let data;
     export let chartData;
     export let datasets;
     export let dwChart;
