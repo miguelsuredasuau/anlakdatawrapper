@@ -357,9 +357,13 @@ value.stopCount}
             invalidStops({ customStops, stopCount }) {
                 if (!Array.isArray(customStops)) return [];
                 return customStops.map((val, i) => {
-                    // first and last never invalid
+                    // first and last stops are never invalid:
                     if (i === 0 || i > stopCount - 1) return false;
-                    return i && +val < +customStops[i - 1];
+
+                    // current stop is invalid if < previous stop:
+                    const previousStop = customStops[i - 1];
+                    const lowerBound = !previousStop ? -Infinity : +previousStop;
+                    return +val < lowerBound;
                 });
             }
         },
