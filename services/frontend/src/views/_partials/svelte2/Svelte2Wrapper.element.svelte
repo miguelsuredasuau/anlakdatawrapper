@@ -111,7 +111,10 @@
                         });
                     });
                 }
-                _app.on('state', ({ current }) => {
+                _app.on('state', ({ current, changed }) => {
+                    // forward the raw state event to allow a consuming
+                    // component to watch changes to computed properties
+                    dispatch('state', { current, changed });
                     window.__svelte2wrapper[uid].data = current;
                     dispatch('update', {
                         data: filterOutComputedProps(_app, current),

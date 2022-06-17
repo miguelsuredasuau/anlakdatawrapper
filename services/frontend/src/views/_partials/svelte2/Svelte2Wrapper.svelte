@@ -139,6 +139,7 @@
         {module}
         on:update={update}
         on:change
+        on:state
         on:init
     />
 {/if}

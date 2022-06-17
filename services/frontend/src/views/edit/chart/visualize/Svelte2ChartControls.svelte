@@ -1,5 +1,6 @@
 <script>
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
+    import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import dwVisualization from '@datawrapper/chart-core/lib/dw/visualization';
     import { onMount, tick, getContext, onDestroy } from 'svelte';
     import isEqual from 'lodash/isEqual';
@@ -124,6 +125,7 @@
     let storeData = {};
     let prevStoreData = {};
     let controlsReady = false;
+    let notifications = [];
 
     $: {
         if (controlsReady && !isEqual(storeData, prevStoreData)) {
@@ -145,6 +147,13 @@
 </script>
 
 {#if controlsReady}
+    {#if notifications.length}
+        {#each notifications as notification}
+            <MessageDisplay type={notification.type} deletable={notification.closeable}
+                >{@html notification.message}</MessageDisplay
+            >
+        {/each}
+    {/if}
     <Svelte2Wrapper
         id={$visualization.controls.amd}
         js="/static/plugins/{$visualization.controls.js}"
@@ -153,5 +162,11 @@
         bind:storeData
         storeMethods={{ getMetadata, setMetadata, observeDeep }}
         bind:data={state}
+        on:init={evt => {
+            notifications = evt.detail._state.notifications || [];
+        }}
+        on:state={evt => {
+            notifications = evt.detail.current.notifications || [];
+        }}
     />
 {/if}
