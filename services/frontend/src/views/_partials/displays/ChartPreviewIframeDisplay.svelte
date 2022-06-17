@@ -30,13 +30,18 @@
      */
     export let fixedHeight = false;
 
+    export let isDark = false;
+
     $: width = customWidth || get($chart, 'metadata.publish.embed-width', 550);
     $: height =
         customHeight || reportedIframeSize || get($chart, 'metadata.publish.embed-height', 450);
-    $: background = customBackground || get(theme, 'data.colors.background', 'white');
+    $: background =
+        customBackground || get(theme, `_computed.${isDark ? 'bgDark' : 'bgLight'}`, 'white');
     $: borderColor = chroma.valid(background) ? chroma(background).darken(0.7) : background;
     $: border = customBorder === null ? 10 : customBorder;
     $: scale = customScale || 1;
+
+    $: backgroundIsDark = chroma.valid(background) ? chroma(background).get('lab.l') < 30 : false;
 
     $: src = customSrc || `/preview/${$chart.id}`;
     let prevSrc;
@@ -149,6 +154,16 @@
         }
     }
 
+    $: {
+        // update preview if isDark changes
+        waitFor(
+            () => !loading && contentWindow && contentWindow.__dw && contentWindow.__dw.vis,
+            () => {
+                contentWindow.__dw.vis.darkMode(isDark);
+            }
+        );
+    }
+
     let resizing = false;
     let resizeOrigMousePos;
 
@@ -215,6 +230,9 @@
         cursor: se-resize;
         font-size: 17px;
     }
+    .dark-background .resizer {
+        color: var(--color-dw-grey-lightest);
+    }
     .fixed-height .resizer {
         cursor: ew-resize;
     }
@@ -243,7 +261,11 @@
 
 <svelte:window on:message={onMessage} on:mousemove={resize} on:mouseup={stopResize} />
 
-<div class="iframe-wrapper" style="transform: scale({scale || 1})">
+<div
+    class="iframe-wrapper"
+    style="transform: scale({scale || 1})"
+    class:dark-background={backgroundIsDark}
+>
     <div
         class="iframe-border"
         class:resizing

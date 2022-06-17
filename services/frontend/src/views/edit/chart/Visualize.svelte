@@ -1,6 +1,7 @@
 <script>
     import ChartPreviewIframeDisplay from '_partials/displays/ChartPreviewIframeDisplay.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
+    import DarkModeToggle from '_partials/editor/DarkModeToggle.svelte';
     import Tabs from '_partials/Tabs.svelte';
     import AnnotateTab from './visualize/AnnotateTab.svelte';
     import ChartTypeTab from './visualize/ChartTypeTab.svelte';
@@ -10,7 +11,7 @@
     import { onMount, getContext } from 'svelte';
     import { headerProps } from '_layout/stores';
     // load stores from context
-    const { chart, theme, visualization } = getContext('page/edit');
+    const { chart, theme, visualization, isDark } = getContext('page/edit');
 
     export let __;
     export let dwChart;
@@ -123,7 +124,7 @@
         }
     }
 
-    function changeTab(offset) {
+    function changeTabBy(offset) {
         const curTabIndex = tabs.indexOf(activeTab);
         if (curTabIndex > -1) {
             if (tabs[curTabIndex + offset]) {
@@ -178,10 +179,10 @@
             </div>
 
             <div class="buttons">
-                <button class="button" on:click={() => changeTab(-1)}
+                <button class="button" on:click={() => changeTabBy(-1)}
                     ><IconDisplay icon="arrow-left" /><span>Back</span></button
                 >
-                <button class="button is-primary" on:click={() => changeTab(+1)}>
+                <button class="button is-primary" on:click={() => changeTabBy(+1)}>
                     <span>Proceed</span>
                     <IconDisplay icon="arrow-right" />
                 </button>
@@ -194,14 +195,16 @@
                 class:sticky-header={$headerProps.isSticky}
             >
                 <ChartPreviewIframeDisplay
-                    resizable
-                    fixedHeight={$visualization.height === 'fixed'}
-                    on:resize={onPreviewResize}
                     bind:this={iframePreview}
                     {chart}
+                    fixedHeight={$visualization.height === 'fixed'}
+                    isDark={$isDark}
+                    on:resize={onPreviewResize}
+                    resizable
                     theme={$theme}
                 />
                 <div class="block mt-4" style="text-align: center;">
+                    <DarkModeToggle {__} on:change-tab={evt => (active = evt.detail)} />
                     - - - - - Some more controls - - - - -<br />x x x x x x
                 </div>
             </div>

@@ -40,6 +40,11 @@ export const onNextSave = new Set();
 export const hasUnsavedChanges = new writable(false);
 export const saveError = new writable(false);
 
+/**
+ * store for dark mode state
+ */
+export const isDark = new writable(false);
+
 let unsavedChanges = {};
 
 const ALLOWED_CHART_KEYS = [

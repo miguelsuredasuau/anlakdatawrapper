@@ -7,14 +7,15 @@
     import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import Header from './nav/Header.svelte';
     import {
-        data,
         chart,
-        theme,
-        visualization,
+        data,
         hasUnsavedChanges,
         initChartStore,
         initDataStore,
-        onNextSave
+        isDark,
+        onNextSave,
+        theme,
+        visualization
     } from './stores';
     import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
     import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
@@ -38,9 +39,10 @@
     setContext('page/edit', {
         chart,
         data,
+        hasUnsavedChanges,
+        isDark,
         theme,
-        visualization,
-        hasUnsavedChanges
+        visualization
     });
 
     /*
