@@ -99,6 +99,7 @@
     import { trackEvent } from '@datawrapper/shared/analytics';
     import httpReq from '@datawrapper/shared/httpReq';
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch';
+    import omit from 'lodash/omit';
 
     import ConfirmationModal from '@datawrapper/controls/ConfirmationModal.html';
     import ShareEmbed from './ShareEmbed.html';
@@ -230,7 +231,9 @@
                     .post(`/v3/charts/${chartId}/unpublish`)
                     .then(() => {
                         httpReq.get(`/v3/charts/${chartId}`).then(chartInfo => {
-                            this.store.set(chartInfo);
+                            // 'theme' on chartInfo is the theme id, but theme in the store is the theme object
+                            this.store.set(omit(chartInfo, ['theme']));
+
                             trackEvent('Chart Editor', 'unpublish-success');
 
                             // slow down visual response, reduces flickering:
@@ -283,7 +286,8 @@
                     lastEditStep: 5
                 });
 
-                this.store.set(chartInfo);
+                // 'theme' on chartInfo is the theme id, but theme in the store is the theme object
+                this.store.set(omit(chartInfo, ['theme']));
 
                 const { eventDispatch } = this.store.get();
                 eventDispatch('publish', { chart: chartInfo });
