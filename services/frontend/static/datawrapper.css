@@ -10330,18 +10330,16 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   color: #dab600;
 }
 
-.select:not(.is-multiple):not(.is-loading)::after,
-.navbar-link:not(.is-arrowless)::after {
-  border-width: 3px;
-  border-radius: 1px;
-}
-
 .checkbox, .radio {
   line-height: unset;
 }
 
 .textarea {
   line-height: 1.3;
+}
+
+.select:not(.is-fullwidth) {
+  max-width: 14em;
 }
 
 .control.has-icons-left .icon, .control.has-icons-right .icon {
@@ -10351,6 +10349,12 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 }
 .control.has-icons-left .icon svg {
   font-size: 1.2em;
+}
+
+.select:not(.is-multiple):not(.is-loading)::after,
+.navbar-link:not(.is-arrowless)::after {
+  border-width: 3px;
+  border-radius: 1px;
 }
 
 /*
