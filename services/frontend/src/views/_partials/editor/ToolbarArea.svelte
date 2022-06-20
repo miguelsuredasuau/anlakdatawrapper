@@ -2,20 +2,20 @@
     export let title = null;
 </script>
 
-<style>
+<style lang="scss">
+    @import '../../../styles/export.scss';
     .toolbar-area-header {
-        /* todo: replace with correct styles */
-        font-weight: bold;
-        color: magenta;
+        font-weight: $title-weight;
+        letter-spacing: 0.025em;
         text-transform: uppercase;
+        font-size: $size-7;
     }
     .toolbar-area-body {
-        /* todo: replace with correct styles */
-        border: 1px solid magenta;
-        border-radius: 4px;
-        padding: 1em;
-        gap: 1em;
+        border: 1px solid $border;
+        border-radius: $radius;
+        padding: 1rem;
         display: flex;
+        gap: 1rem;
     }
 </style>
 

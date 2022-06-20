@@ -5,26 +5,32 @@
     export let tooltip = null;
 </script>
 
-<style>
+<style lang="scss">
+    @import '../../../styles/export.scss';
+
     .toolbar-header {
-        /* todo: replace with correct styles */
         display: flex;
-        color: magenta;
+        color: $grey-dark;
         justify-content: space-between;
-        gap: 1ex;
-        margin-bottom: 1ex;
+        font-size: $size-7;
+        margin-bottom: 0.25rem;
+        column-gap: 0.5em;
     }
 
     .toolbar-body {
         display: flex;
-        gap: 1ex;
+        gap: 0.5rem;
+
+        > :global(.field.is-grouped > .control) {
+            margin-right: 0.25rem;
+        }
     }
 </style>
 
 <div class="toolbar-item">
     <div class="toolbar-header">
         <div class="toolbar-title">
-            {title}
+            {#if title}{@html title}{/if}
             <slot name="title" />
         </div>
         {#if tooltip || $$slots.tooltip}

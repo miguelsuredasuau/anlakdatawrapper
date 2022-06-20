@@ -21,7 +21,7 @@
     .button :global(.icon) {
         color: var(--color-dw-grey-light);
     }
-    .button.is-active :global(.icon) {
+    .button.is-selected :global(.icon) {
         color: var(--color-dw-orange);
     }
 </style>
@@ -30,12 +30,21 @@
     <div slot="tooltip" class="toolbar-note" on:click={toLayoutTab}>
         {@html __('darkmode / note')}
     </div>
-    <div class="buttons has-addons">
-        <button on:click={toggle} class="button" class:is-active={!$isDark}>
-            <IconDisplay icon="sun" />
-        </button>
-        <button id="dark-mode" on:click={toggle} class="button" class:is-active={$isDark}>
-            <IconDisplay icon="moon" />
-        </button>
+    <div class="field has-addons">
+        <div class="control">
+            <button on:click={toggle} class="button is-small" class:is-selected={!$isDark}>
+                <IconDisplay icon="sun" />
+            </button>
+        </div>
+        <div class="control">
+            <button
+                id="dark-mode"
+                on:click={toggle}
+                class="button is-small"
+                class:is-selected={$isDark}
+            >
+                <IconDisplay icon="moon" />
+            </button>
+        </div>
     </div>
 </ToolbarItem>

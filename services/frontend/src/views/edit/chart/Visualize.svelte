@@ -1,14 +1,19 @@
 <script>
-    import Toolbar from '_partials/editor/Toolbar.svelte';
-    import ToolbarArea from '_partials/editor/ToolbarArea.svelte';
+    // displays
     import ChartPreviewIframeDisplay from '_partials/displays/ChartPreviewIframeDisplay.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
+    // editor
+    import ColorblindCheck from '_partials/editor/ColorblindCheck.svelte';
     import DarkModeToggle from '_partials/editor/DarkModeToggle.svelte';
+    import Toolbar from '_partials/editor/Toolbar.svelte';
+    import ToolbarArea from '_partials/editor/ToolbarArea.svelte';
+    // other Svelte
     import Tabs from '_partials/Tabs.svelte';
     import AnnotateTab from './visualize/AnnotateTab.svelte';
     import ChartTypeTab from './visualize/ChartTypeTab.svelte';
     import LayoutTab from './visualize/LayoutTab.svelte';
     import RefineTab from './visualize/RefineTab.svelte';
+    // other JS
     import clone from 'lodash/cloneDeep';
     import { onMount, getContext } from 'svelte';
     import { headerProps } from '_layout/stores';
@@ -208,6 +213,7 @@
                 <div class="block mt-4">
                     <Toolbar>
                         <ToolbarArea title="Preview">
+                            <ColorblindCheck iframe={iframePreview} {__} />
                             <DarkModeToggle {__} on:change-tab={evt => (active = evt.detail)} />
                         </ToolbarArea>
                     </Toolbar>

@@ -166,6 +166,13 @@
 .select:not(.is-fullwidth) {
     max-width: 14em;
 }
+// adjust bulma dropdowm arrow
+.select:not(.is-multiple):not(.is-loading)::after,
+.navbar-link:not(.is-arrowless)::after {
+    border-width: 3px;
+    border-radius: 1px;
+} 
+
 
 // Control
 .control {
@@ -186,10 +193,4 @@
     }
 }
 
-// adjust bulma dropdowm arrow
-.select:not(.is-multiple):not(.is-loading)::after,
-.navbar-link:not(.is-arrowless)::after {
-    border-width: 3px;
-    border-radius: 1px;
-}
 

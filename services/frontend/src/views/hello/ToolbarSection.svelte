@@ -20,21 +20,38 @@
             <ToolbarArea title="Preview">
                 <ToolbarItem title="Mode" tooltip="Inline tooltip"
                     ><div class="buttons has-addons">
-                        <button class="button">Web</button>
-                        <button class="button">Print</button>
+                        <button class="button is-small">Web</button>
+                        <button class="button is-small">Print</button>
                     </div></ToolbarItem
                 >
-                <ToolbarItem title="Size"
-                    ><input type="text" class="input" value="640" />
-                    <input type="text" class="input" value="480" />
+                <ToolbarItem title="Size">
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <input class="input is-small size" type="number" placeholder="0" />
+                        </div>
+                        <div class="control">
+                            <input class="input is-small size" type="number" placeholder="0" />
+                        </div>
+                    </div>
+                    <div class="field has-addons">
+                        <div class="control">
+                            <button class="button is-small"><IconDisplay icon="circle" /></button>
+                        </div>
+                        <div class="control">
+                            <button class="button is-small"><IconDisplay icon="circle" /></button>
+                        </div>
+                        <div class="control">
+                            <button class="button is-small"><IconDisplay icon="circle" /></button>
+                        </div>
+                    </div>
                     <div slot="footer">This is the item footer</div>
                 </ToolbarItem>
                 <ToolbarItem title="Colorblind">
                     <div class="buttons has-addons">
-                        <button class="button">x</button>
-                        <button class="button">x</button>
-                        <button class="button">x</button>
-                        <button class="button">x</button>
+                        <button class="button is-small">x</button>
+                        <button class="button is-small">x</button>
+                        <button class="button is-small">x</button>
+                        <button class="button is-small">x</button>
                     </div>
                 </ToolbarItem>
                 <ToolbarItem title="Dark mode">
@@ -42,10 +59,10 @@
                         This is an <b>HTML</b> tooltip in a slot
                     </svelte:fragment>
                     <div class="buttons has-addons">
-                        <button class="button is-active">
+                        <button class="button is-small is-active">
                             <IconDisplay icon="sun" color="var(--color-dw-orange)" />
                         </button>
-                        <button id="dark-mode" class="button">
+                        <button id="dark-mode" class="button is-small">
                             <IconDisplay icon="moon" color="var(--color-dw-grey)" />
                         </button>
                     </div>

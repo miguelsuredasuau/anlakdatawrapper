@@ -2,7 +2,8 @@
     .toolbar {
         justify-content: center;
         display: flex;
-        gap: 1em;
+        column-gap: 1rem;
+        margin: 2rem;
     }
 </style>
 
