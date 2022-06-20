@@ -5,7 +5,7 @@
 
     export let __;
     export let token;
-    export let team;
+    export let teamId;
     export let headlineText;
     export let introText;
     export let buttonText;
@@ -25,12 +25,12 @@
                 }
             });
 
-            if (team) {
-                await httpReq.post(`/v3/teams/${team}/invites/${token}`);
+            if (teamId) {
+                await httpReq.post(`/v3/teams/${teamId}/invites/${token}`);
             }
 
             setTimeout(() => {
-                window.location.href = team ? `/team/${team}` : '/archive';
+                window.location.href = teamId ? `/team/${teamId}` : '/archive';
             }, 400);
         } catch (error) {
             submitting = false;

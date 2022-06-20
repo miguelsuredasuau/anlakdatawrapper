@@ -60,7 +60,7 @@ module.exports = {
                     return h.view('account/DatawrapperInvite.svelte', {
                         props: {
                             token: inviteToken,
-                            team: inviteTeam ? inviteTeam.organization_id : false,
+                            teamId: inviteTeam ? inviteTeam.id : false,
                             headlineText: inviteTeam
                                 ? __('team / invite / headline').replace(
                                       '%s',
