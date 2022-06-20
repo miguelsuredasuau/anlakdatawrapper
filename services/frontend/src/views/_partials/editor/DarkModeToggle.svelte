@@ -1,4 +1,5 @@
 <script>
+    import ToolbarItem from './ToolbarItem.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { createEventDispatcher, getContext } from 'svelte';
 
@@ -17,9 +18,6 @@
 </script>
 
 <style>
-    .dark-mode-toggle {
-        max-width: 10em;
-    }
     .button :global(.icon) {
         color: var(--color-dw-grey-light);
     }
@@ -28,9 +26,10 @@
     }
 </style>
 
-<div class="dark-mode-toggle">
-    <label for="dark-mode">{__('darkmode / caption')}</label>
-
+<ToolbarItem title={__('darkmode / caption')}>
+    <div slot="tooltip" class="toolbar-note" on:click={toLayoutTab}>
+        {@html __('darkmode / note')}
+    </div>
     <div class="buttons has-addons">
         <button on:click={toggle} class="button" class:is-active={!$isDark}>
             <IconDisplay icon="sun" />
@@ -39,7 +38,4 @@
             <IconDisplay icon="moon" />
         </button>
     </div>
-    <div class="toolbar-note" on:click={toLayoutTab}>
-        {@html __('darkmode / note')}
-    </div>
-</div>
+</ToolbarItem>

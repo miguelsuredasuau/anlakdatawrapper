@@ -1,4 +1,6 @@
 <script>
+    import Toolbar from '_partials/editor/Toolbar.svelte';
+    import ToolbarArea from '_partials/editor/ToolbarArea.svelte';
     import ChartPreviewIframeDisplay from '_partials/displays/ChartPreviewIframeDisplay.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import DarkModeToggle from '_partials/editor/DarkModeToggle.svelte';
@@ -203,9 +205,12 @@
                     resizable
                     theme={$theme}
                 />
-                <div class="block mt-4" style="text-align: center;">
-                    <DarkModeToggle {__} on:change-tab={evt => (active = evt.detail)} />
-                    - - - - - Some more controls - - - - -<br />x x x x x x
+                <div class="block mt-4">
+                    <Toolbar>
+                        <ToolbarArea title="Preview">
+                            <DarkModeToggle {__} on:change-tab={evt => (active = evt.detail)} />
+                        </ToolbarArea>
+                    </Toolbar>
                 </div>
             </div>
         </div>

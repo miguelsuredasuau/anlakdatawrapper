@@ -27,6 +27,7 @@
     import SearchInputSection from './SearchInputSection.svelte';
     import TextInputSection from './TextInputSection.svelte';
     import TagsInputSection from './TagsInputSection.svelte';
+    import ToolbarSection from './ToolbarSection.svelte';
     import BulmaComponentsSection from './BulmaComponentsSection.svelte';
     import TypeaheadInputSection from './TypeaheadInputSection.svelte';
     import FileInputSection from './FileInputSection.svelte';
@@ -111,6 +112,10 @@
             ]
         },
         {
+            title: 'Editor',
+            pages: [{ url: '#toolbar', title: 'Toolbar', view: ToolbarSection, props: { __ } }]
+        },
+        {
             title: 'Navigation',
             pages: [
                 { url: '#pagination', title: 'Pagination', view: PaginationSection },
@@ -118,6 +123,7 @@
                 { url: '#menu', title: 'Menu', view: MenuSection }
             ]
         },
+
         {
             title: 'Content',
             pages: [
