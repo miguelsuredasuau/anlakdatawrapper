@@ -22,7 +22,7 @@ module.exports = {
             enabled: false
         }
     },
-    publish: { 'embed-width': 600, 'embed-height': 400, blocks: {} },
+    publish: { 'embed-width': 600, blocks: {} },
     annotate: {
         notes: ''
     },
