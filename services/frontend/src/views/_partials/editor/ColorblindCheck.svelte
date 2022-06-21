@@ -91,7 +91,7 @@
         lastColors.add(k);
         if (colorLookup[k] !== undefined) return colorLookup[k];
         try {
-            color = chroma(k).hex();
+            color = chroma(k).rgba();
             return (colorLookup[k] = blinder[activeMode](color));
         } catch (e) {
             return color;
