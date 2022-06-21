@@ -37,7 +37,7 @@
             bind:selected="editorState.selectedTextAnnotations"
         />
         {/if} {#if editorState.selectedTextAnnotations.length === 1}
-        <AnnotationEditor
+        <TextAnnotationEditor
             bind:selected="editorState.selectedTextAnnotations[0]"
             bind:annotationData="$metadata.visualize['text-annotations']"
             on:deleteAnnotations="deleteTextAnnotations(event)"
@@ -186,7 +186,7 @@
     import Group from './Group.html';
     import ListInput from './ListInput.html';
 
-    import AnnotationEditor from './annotations/AnnotationEditor.html';
+    import TextAnnotationEditor from './annotations/TextAnnotationEditor.html';
     import MultiAnnotationEditor from './annotations/MultiAnnotationEditor.html';
     import MultiRangeAnnotationEditor from './annotations/MultiRangeAnnotationEditor.html';
 
@@ -206,7 +206,7 @@
         components: {
             Group,
             ListInput,
-            AnnotationEditor,
+            TextAnnotationEditor,
             MultiAnnotationEditor,
             RangeAnnotationEditor,
             MultiRangeAnnotationEditor
