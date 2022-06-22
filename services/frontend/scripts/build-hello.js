@@ -1,6 +1,8 @@
 const path = require('path');
 const fs = require('fs-extra');
 const chartCore = require('@datawrapper/chart-core');
+const fastGlob = require('fast-glob');
+const { getInfo } = require('@el3um4s/svelte-get-component-info');
 
 (async () => {
     const noop = d => d;
@@ -41,6 +43,14 @@ const chartCore = require('@datawrapper/chart-core');
     );
     const icons = (await fs.readdir(iconPath)).map(file => file.replace('.svg', ''));
 
+    const componentInfos = Object.fromEntries(
+        (
+            await fastGlob([path.join(__dirname, '../src/views/_partials', '**/*.svelte')], {
+                dot: true
+            })
+        ).map(file => [path.relative(path.join(__dirname, '../src/views'), file), getInfo(file)])
+    );
+
     const html = await render({
         stores: {
             config: {
@@ -70,6 +80,7 @@ const chartCore = require('@datawrapper/chart-core');
         storeHashes: {},
         props: {
             magicNumber: 42,
+            componentInfos,
             icons
         }
     });
