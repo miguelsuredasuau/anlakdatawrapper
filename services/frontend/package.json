@@ -16,7 +16,8 @@
         "format": "cd ../.. && scripts/format services/frontend",
         "test": "rollup -c rollup.test.config.js && npx mocha",
         "test:watch-rollup": "rollup -wc rollup.test.config.js",
-        "test:watch-mocha": "mocha --watch"
+        "test:watch-mocha": "mocha --watch",
+        "build:hello": "rm -Rf build/hello && TARGET=hello npm run build && TARGET=_partials/svelte2 npm run build && node scripts/build-hello.js"
     },
     "dependencies": {
         "@datawrapper/chart-core": "file:../../libs/chart-core",

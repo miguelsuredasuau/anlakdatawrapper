@@ -183,13 +183,17 @@ function createInput(view, viewComponents, ssr) {
 }
 
 module.exports = inspectApp().then(({ views, viewComponents }) =>
-    views.flatMap(view =>
-        [true, false].map(ssr =>
-            createInput(
-                view,
-                viewComponents.filter(c => c.page === view),
-                ssr
+    views
+        .filter(view => {
+            return !process.env.TARGET || view.startsWith(process.env.TARGET);
+        })
+        .flatMap(view =>
+            [true, false].map(ssr =>
+                createInput(
+                    view,
+                    viewComponents.filter(c => c.page === view),
+                    ssr
+                )
             )
         )
-    )
 );
