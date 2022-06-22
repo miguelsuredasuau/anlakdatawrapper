@@ -157,7 +157,12 @@
                 </div>
             {/if}
             {#if !resetPassword}
-                <button type="submit" disabled={loggingIn} class="button is-primary mb-2">
+                <button
+                    type="submit"
+                    disabled={loggingIn}
+                    class="button is-primary mb-2"
+                    data-uid="login"
+                >
                     {@html __('Login')}
                     {#if loggingIn}<LoadingSpinnerDisplay className="ml-1" />{/if}
                 </button>

@@ -1,5 +1,5 @@
 <script>
-    /* globals process */
+    /* global process */
     import TypeAheadInput from '../TypeAheadInput.svelte';
     import TypeAheadCustomItem from '../TypeAheadCustomItem.svelte';
 

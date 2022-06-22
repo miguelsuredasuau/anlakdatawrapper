@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 import test from 'ava';
 
 import TypeAheadInput from './TypeAheadInput.svelte';

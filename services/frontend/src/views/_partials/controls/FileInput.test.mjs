@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions */
-
 import FileInput from './FileInput.svelte';
 import { fireEvent, createEvent } from '@testing-library/svelte';
 import { renderWithContext, setConfig, delay } from '../../../test-utils';

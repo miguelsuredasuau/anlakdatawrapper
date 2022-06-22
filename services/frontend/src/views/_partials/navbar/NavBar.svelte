@@ -172,6 +172,7 @@
             {:else if link.submenuItems}
                 <!-- top level navbar entry with submenu -->
                 <div
+                    data-uid={link.id}
                     class="navbar-item has-dropdown is-hoverable is-size-5 has-text-weight-medium ml-1 {link.class ||
                         ''}"
                     class:just-arrow={link.type === 'visArchive' &&

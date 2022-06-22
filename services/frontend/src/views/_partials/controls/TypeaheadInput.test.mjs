@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions */
-
 import TypeaheadInput from './TypeaheadInput.svelte';
 import TypeaheadItemRenderer from '../../hello/TypeaheadItemRenderer.svelte';
 import { fireEvent } from '@testing-library/svelte';
