@@ -23,13 +23,45 @@
     </div>
 
     <div class="buttons has-addons">
-        <button class="button is-light"
+        <button class="button"
             ><span class="icon"><IconDisplay icon="arrow-left" /></span><span>Back</span></button
         >
-        <button class="button is-primary"
+        <button class="button"
             ><span>Proceed</span>
             <span class="icon"><IconDisplay icon="arrow-right" /></span></button
         >
+    </div>
+
+    <div class="buttons">
+        <button class="button is-outlined">Default</button>
+        <button class="button is-outlined is-light">Light</button>
+        <button class="button is-outlined is-dark">Dark</button>
+        <button class="button is-outlined is-black">Black</button>
+    </div>
+
+    <div class="buttons has-addons are-outlined">
+        <button class="button is-outlined is-dark is-selected">First</button>
+        <button class="button is-outlined is-dark">Second</button>
+        <button class="button is-outlined is-dark">Third</button>
+        <button class="button is-outlined is-dark">Fourth</button>
+    </div>
+    <div class="buttons has-addons">
+        <button class="button is-selected">First</button>
+        <button class="button">Second</button>
+        <button class="button">Third</button>
+        <button class="button">Fourth</button>
+    </div>
+    <div class="buttons has-addons">
+        <button class="button is-primary is-selected">First</button>
+        <button class="button is-primary">Second</button>
+        <button class="button is-primary">Third</button>
+        <button class="button is-primary">Fourth</button>
+    </div>
+    <div class="buttons has-addons">
+        <button class="button is-danger is-selected">First</button>
+        <button class="button is-danger">Second</button>
+        <button class="button is-danger">Third</button>
+        <button class="button is-danger">Fourth</button>
     </div>
 
     <div class="buttons">

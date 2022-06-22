@@ -9,11 +9,13 @@
         letter-spacing: 0.025em;
         text-transform: uppercase;
         font-size: $size-7;
+        margin-bottom: 0.25rem;
+        color: $grey-darker;
     }
     .toolbar-area-body {
         border: 1px solid $border;
         border-radius: $radius;
-        padding: 1rem;
+        padding: 0.75rem 1rem 1rem;
         display: flex;
         gap: 1rem;
     }

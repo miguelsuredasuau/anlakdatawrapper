@@ -3,7 +3,6 @@
         justify-content: center;
         display: flex;
         column-gap: 1rem;
-        margin: 2rem;
     }
 </style>
 

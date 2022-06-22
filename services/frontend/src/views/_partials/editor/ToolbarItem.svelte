@@ -10,13 +10,19 @@
 
     .toolbar-header {
         display: flex;
-        color: $grey-dark;
         justify-content: space-between;
-        font-size: $size-7;
         margin-bottom: 0.25rem;
         column-gap: 0.5em;
     }
 
+    .toolbar-title {
+        color: $grey-dark;
+        font-size: $size-7;
+        :global(.icon) {
+            font-size: $size-5;
+            vertical-align: middle;
+        }
+    }
     .toolbar-body {
         display: flex;
         gap: 0.5rem;

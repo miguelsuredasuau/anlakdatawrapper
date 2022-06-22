@@ -60,7 +60,7 @@
             color: $info-dark;
             width: 240px;
             border-radius: $radius;
-            box-shadow: $shadow;
+            box-shadow: $shadow-small;
             text-align: left;
 
             &.is-visible {

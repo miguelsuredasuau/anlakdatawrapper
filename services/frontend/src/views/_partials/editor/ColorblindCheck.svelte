@@ -229,57 +229,56 @@
 
     .button {
         .mode-label {
-            font-size: 12px;
+            font-size: 10px;
+            text-transform: uppercase;
             display: none;
         }
+        .mode-icon {
+            margin: 0 -0.5em;
+            display: inline-flex;
+            align-items: center;
 
+            img {
+                width: 20px;
+            }
+        }
         .more-info {
             &:before {
                 content: '';
                 display: block;
-                height: 0.7rem;
+                height: 1rem;
                 position: absolute;
-                left: 25px;
+                left: 1em;
                 top: 0;
                 border-left: 1px solid $dw-grey-dark;
             }
-            padding-top: 1rem;
             display: none;
-            line-height: 16px;
-            font-size: 13px;
             position: absolute;
+            top: 2.25rem;
+            left: 0;
+            padding-top: 1.25rem;
             text-align: left;
-            top: 40px;
-            left: -10px;
-            color: #777;
+            width: 15em;
             white-space: normal;
-            right: -158px;
-            // TODO: Set background color:
-            // background: @dw_background;
-            .arrow {
-                color: #ccc;
-            }
+            color: $grey-dark;
+            font-size: $size-6;
+            line-height: 1.35;
         }
-
-        img {
-            pointer-events: none;
-            width: 20px;
-            height: 20px;
-            display: block;
-            margin: 0 auto;
-        }
-
-        .warning-icon {
-            display: inline-block;
-            position: absolute;
-            top: 7px;
-            left: 8px;
-            font-size: 14px;
-            color: #c71e1d;
+        .color-warning {
+            color: $warning;
             border-radius: 50%;
-            width: 18px;
-            pointer-events: none;
-            height: 18px;
+            background-color: rgba(0, 0, 0, 0.3);
+            position: absolute;
+            width: 2em;
+            height: 2em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            :global(.icon) {
+                position: relative;
+                top: -0.05em;
+            }
         }
     }
 
@@ -287,51 +286,39 @@
     .buttons:not(:hover) .button.is-active .more-info {
         display: block;
     }
-
-    .color-warning {
-        color: $warning;
-        border-radius: 50%;
-        background-color: rgba(0, 0, 0, 0.3);
-        position: absolute;
-        width: 2em;
-        height: 2em;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
 </style>
 
 <ToolbarItem>
-    <div slot="title">
+    <svelte:fragment slot="title">
         {__('colorblind / caption')}
-        <IconDisplay icon="accessibility" />
-    </div>
-    <div data-uid={uid}>
-        <div class="field has-addons">
-            {#each modes as mode}
-                <div class="control">
-                    <button
-                        class="button is-small"
-                        on:click={() => setMode(mode.id)}
-                        class:has-color-warning={warnings[mode.id]}
-                        class:is-selected={mode.id === activeMode}
-                        data-uid={uid && `${uid}-${mode.id}`}
-                    >
+        <IconDisplay icon="accessibility" valign="-0.2em" />
+    </svelte:fragment>
+    <div class="field has-addons buttons are-outlined" data-uid={uid}>
+        {#each modes as mode}
+            <div class="control">
+                <button
+                    class="button is-small is-outlined is-dark"
+                    on:click={() => setMode(mode.id)}
+                    class:has-color-warning={warnings[mode.id]}
+                    class:is-selected={mode.id === activeMode}
+                    data-uid={uid && `${uid}-${mode.id}`}
+                >
+                    <figure class="mode-icon">
                         <img alt={mode.id} src="/static/img/colorblind-check/{mode.icon}" />
-                        {#if warnings[mode.id]}
-                            <div class="color-warning">
-                                <IconDisplay icon="warning" />
-                            </div>
-                        {/if}
-                        <div class="mode-label">{mode.label}</div>
-                        {#if mode.info}
-                            <div class="more-info">
-                                {@html mode.info}
-                            </div>
-                        {/if}
-                    </button>
-                </div>
-            {/each}
-        </div>
+                        <figcaption class="mode-label">{mode.label}</figcaption>
+                    </figure>
+                    {#if warnings[mode.id]}
+                        <div class="color-warning">
+                            <IconDisplay icon="warning" />
+                        </div>
+                    {/if}
+                    {#if mode.info}
+                        <div class="more-info">
+                            {@html mode.info}
+                        </div>
+                    {/if}
+                </button>
+            </div>
+        {/each}
     </div>
 </ToolbarItem>

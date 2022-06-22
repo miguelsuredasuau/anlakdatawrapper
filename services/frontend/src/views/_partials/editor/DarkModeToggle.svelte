@@ -18,21 +18,22 @@
 </script>
 
 <style>
-    .button :global(.icon) {
-        color: var(--color-dw-grey-light);
-    }
     .button.is-selected :global(.icon) {
         color: var(--color-dw-orange);
     }
 </style>
 
 <ToolbarItem title={__('darkmode / caption')}>
-    <div slot="tooltip" class="toolbar-note" on:click={toLayoutTab}>
+    <div slot="tooltip" on:click={toLayoutTab}>
         {@html __('darkmode / note')}
     </div>
-    <div class="field has-addons">
+    <div class="field has-addons buttons are-outlined">
         <div class="control">
-            <button on:click={toggle} class="button is-small" class:is-selected={!$isDark}>
+            <button
+                on:click={toggle}
+                class="button is-small is-outlined is-dark"
+                class:is-selected={!$isDark}
+            >
                 <IconDisplay icon="sun" />
             </button>
         </div>
@@ -40,7 +41,7 @@
             <button
                 id="dark-mode"
                 on:click={toggle}
-                class="button is-small"
+                class="button is-small is-outlined is-dark"
                 class:is-selected={$isDark}
             >
                 <IconDisplay icon="moon" />
