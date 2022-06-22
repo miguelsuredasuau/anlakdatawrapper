@@ -1,7 +1,9 @@
 const path = require('path');
 const { readdir } = require('fs').promises;
+const fastGlob = require('fast-glob');
 const { Op } = require('@datawrapper/orm').db;
 const { Chart, Theme } = require('@datawrapper/orm/models');
+const { getInfo } = require('@el3um4s/svelte-get-component-info');
 
 module.exports = {
     name: 'routes/hello',
@@ -35,11 +37,26 @@ module.exports = {
                     });
                     const theme = await Theme.findByPk(chart.theme);
 
+                    const componentInfos = Object.fromEntries(
+                        (
+                            await fastGlob(
+                                [path.join(__dirname, '../views/_partials', '**/*.svelte')],
+                                {
+                                    dot: true
+                                }
+                            )
+                        ).map(file => [
+                            path.relative(path.join(__dirname, '../views'), file),
+                            getInfo(file)
+                        ])
+                    );
+
                     return h.view('hello/Index.svelte', {
                         htmlClass: 'has-background-white',
                         props: {
                             icons,
                             magicNumber: 42,
+                            componentInfos,
                             chart: chart.toJSON(),
                             theme: theme.toJSON()
                         }

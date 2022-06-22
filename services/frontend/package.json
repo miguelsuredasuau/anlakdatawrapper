@@ -27,6 +27,7 @@
         "@datawrapper/schemas": "file:../../libs/schemas",
         "@datawrapper/service-utils": "file:../../libs/service-utils",
         "@datawrapper/shared": "^0.47.0",
+        "@el3um4s/svelte-get-component-info": "^0.0.16",
         "@hapi/bell": "^12.2.0",
         "@hapi/boom": "^9.1.3",
         "@hapi/catbox-memory": "^5.0.1",
@@ -46,6 +47,7 @@
         "codemirror": "^5.65.2",
         "dayjs": "^1.10.7",
         "ejs": "^3.1.6",
+        "fast-glob": "^3.2.11",
         "fs-extra": "^10.0.0",
         "glob-parent": "^6.0.2",
         "got": "^11.5.2",
@@ -82,7 +84,8 @@
         "jsdom": "^18.1.0",
         "mocha": "^9.1.3",
         "nock": "^13.2.4",
-        "sinon-chai": "^3.7.0"
+        "sinon-chai": "^3.7.0",
+        "svelte-highlight": "^6.1.0"
     },
     "mocha": {
         "spec": "build/bundle-tests.js",

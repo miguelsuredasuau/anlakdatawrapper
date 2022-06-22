@@ -3,6 +3,7 @@
     import { readable } from 'svelte/store';
     import MainLayout from '_layout/MainLayout.svelte';
     import TreeMenu from './TreeMenu.svelte';
+    import ComponentInfo from './ComponentInfo.svelte';
 
     import WelcomeSection from './WelcomeSection.svelte';
     import IconsSection from './IconsSection.svelte';
@@ -20,7 +21,6 @@
     import SetPasswordSection from './SetPasswordSection.svelte';
     import FormFieldSection from './FormFieldSection.svelte';
     import HorizontalFormFieldSection from './HorizontalFormFieldSection.svelte';
-    import SignUpSection from './SignUpSection.svelte';
     import DropdownSection from './DropdownSection.svelte';
     import Svelte2Section from './Svelte2Section.svelte';
     import ErrorsSection from './ErrorsSection.svelte';
@@ -54,31 +54,67 @@
         window.location.hash = page.url;
     }
 
+    export let componentInfos;
+
     const menuGroups = [
         {
-            title: 'Displays',
+            title: 'General',
             pages: [
                 {
                     url: '#welcome',
                     title: 'Welcome',
                     view: WelcomeSection,
                     props: { magicNumber, __ }
+                }
+            ]
+        },
+        {
+            title: 'Displays',
+            pages: [
+                {
+                    url: '#icons',
+                    title: 'Icons',
+                    view: IconsSection,
+                    props: { icons, __ },
+                    components: ['_partials/displays/IconDisplay.svelte']
                 },
-                { url: '#icons', title: 'Icons', view: IconsSection, props: { icons, __ } },
-                { url: '#message', title: 'Message', view: MessageSection },
-                { url: '#modal', title: 'Modal', view: ModalSection },
-                { url: '#save', title: 'Save button', view: SaveButtonSection },
-                { url: '#form-field', title: 'FormField', view: FormFieldSection, props: { __ } },
+                {
+                    url: '#message',
+                    title: 'Message',
+                    view: MessageSection,
+                    components: ['_partials/displays/MessageDisplay.svelte']
+                },
+                {
+                    url: '#modal',
+                    title: 'Modal',
+                    view: ModalSection,
+                    components: ['_partials/displays/ModalDisplay.svelte']
+                },
+                {
+                    url: '#save',
+                    title: 'Save button',
+                    view: SaveButtonSection,
+                    components: ['_partials/displays/SaveButtonDisplay.svelte']
+                },
+                {
+                    url: '#form-field',
+                    title: 'FormField',
+                    view: FormFieldSection,
+                    components: ['_partials/displays/FormFieldDisplay.svelte'],
+                    props: { __ }
+                },
                 {
                     url: '#form-field-h',
                     title: 'FormField (horiz.)',
                     view: HorizontalFormFieldSection,
+                    components: ['_partials/displays/HorizontalFormFieldDisplay.svelte'],
                     props: { __ }
                 },
                 {
                     url: '#preview',
                     title: 'ChartIframePreview',
                     view: ChartPreviewIframeSection,
+                    components: ['_partials/displays/ChartPreviewIframeDisplay.svelte'],
                     props: { chart: chartStore, theme, __ }
                 }
             ]
@@ -87,55 +123,145 @@
         {
             title: 'Controls',
             pages: [
-                { url: '#button-groups', title: 'Button groups', view: ButtonGroupSection },
-                { url: '#checkbox', title: 'Checkbox', view: CheckboxSection },
-                { url: '#radio', title: 'Radio Input', view: RadioInputSection },
-                { url: '#switch', title: 'Switch Input', view: SwitchControlSection },
-                { url: '#textinput', title: 'Text Input', view: TextInputSection },
-                { url: '#tagsinput', title: 'Tags Input', view: TagsInputSection },
-                { url: '#typeahead', title: 'Typeahead Input', view: TypeaheadInputSection },
-                { url: '#search', title: 'Search Input', view: SearchInputSection },
+                {
+                    url: '#button-groups',
+                    title: 'Button groups',
+                    view: ButtonGroupSection,
+                    components: ['_partials/controls/ButtonGroupInput.svelte']
+                },
+                {
+                    url: '#checkbox',
+                    title: 'Checkbox',
+                    view: CheckboxSection,
+                    components: ['_partials/controls/CheckboxInput.svelte']
+                },
+                {
+                    url: '#radio',
+                    title: 'Radio Input',
+                    view: RadioInputSection,
+                    components: ['_partials/controls/RadioInput.svelte']
+                },
+                {
+                    url: '#switch',
+                    title: 'Switch Input',
+                    view: SwitchControlSection,
+                    components: ['_partials/controls/SwitchControl.svelte']
+                },
+                {
+                    url: '#textinput',
+                    title: 'Text Input',
+                    view: TextInputSection,
+                    components: [
+                        '_partials/controls/TextInput.svelte',
+                        '_partials/controls/TextAreaInput.svelte'
+                    ]
+                },
+                {
+                    url: '#tagsinput',
+                    title: 'Tags Input',
+                    view: TagsInputSection,
+                    components: ['_partials/controls/TagsInput.svelte']
+                },
+                {
+                    url: '#typeahead',
+                    title: 'Typeahead Input',
+                    view: TypeaheadInputSection,
+                    components: ['_partials/controls/TypeaheadInput.svelte']
+                },
+                {
+                    url: '#search',
+                    title: 'Search Input',
+                    view: SearchInputSection,
+                    components: ['_partials/controls/SearchInput.svelte']
+                },
                 {
                     url: '#setpassword',
                     title: 'Set Password',
                     view: SetPasswordSection,
+                    components: ['_partials/controls/SetPasswordInput.svelte'],
                     props: { __ }
                 },
                 {
                     url: '#markdown-input',
                     title: 'Markdown Input',
                     view: MarkdownInputSection,
+                    components: ['_partials/controls/MarkdownInput.svelte'],
                     props: { __ }
                 },
-                { url: '#file', title: 'File Input', view: FileInputSection, props: { __ } },
-                { url: '#codemirror', title: 'CodeMirror Input', view: CodeMirrorInputSection }
+                {
+                    url: '#file',
+                    title: 'File Input',
+                    view: FileInputSection,
+                    props: { __ },
+                    components: ['_partials/controls/MarkdownInput.svelte']
+                },
+                {
+                    url: '#codemirror',
+                    title: 'CodeMirror Input',
+                    view: CodeMirrorInputSection,
+                    components: ['_partials/controls/CodeMirrorInput.svelte']
+                }
             ]
         },
         {
             title: 'Editor',
-            pages: [{ url: '#toolbar', title: 'Toolbar', view: ToolbarSection, props: { __ } }]
+            pages: [
+                {
+                    url: '#toolbar',
+                    title: 'Toolbar',
+                    view: ToolbarSection,
+                    props: { __ },
+                    components: [
+                        '_partials/editor/Toolbar.svelte',
+                        '_partials/editor/ToolbarArea.svelte',
+                        '_partials/editor/ToolbarItem.svelte'
+                    ]
+                }
+            ]
         },
         {
             title: 'Navigation',
             pages: [
-                { url: '#pagination', title: 'Pagination', view: PaginationSection },
-                { url: '#tabs', title: 'Tabs', view: TabsSection },
-                { url: '#menu', title: 'Menu', view: MenuSection }
+                {
+                    url: '#pagination',
+                    title: 'Pagination',
+                    view: PaginationSection,
+                    components: ['_partials/Pagination.svelte']
+                },
+                {
+                    url: '#tabs',
+                    title: 'Tabs',
+                    view: TabsSection,
+                    components: ['_partials/Tabs.svelte']
+                },
+                {
+                    url: '#menu',
+                    title: 'Menu',
+                    view: MenuSection,
+                    components: ['_partials/Menu.svelte']
+                }
             ]
         },
 
         {
             title: 'Content',
-            pages: [
-                { url: '#signup', title: 'Sign Up', view: SignUpSection, props: { __ } },
-                { url: '#bulma', title: 'Bulma', view: BulmaComponentsSection }
-            ]
+            pages: [{ url: '#bulma', title: 'Bulma', view: BulmaComponentsSection }]
         },
         {
             title: 'Misc.',
             pages: [
-                { url: '#dropdown', title: 'Dropdown', view: DropdownSection },
-                { url: '#svelte2', title: 'Svelte2', view: Svelte2Section },
+                {
+                    url: '#dropdown',
+                    title: 'Dropdown',
+                    view: DropdownSection,
+                    components: ['_partials/Dropdown.svelte']
+                },
+                {
+                    url: '#svelte2',
+                    title: 'Svelte2',
+                    view: Svelte2Section,
+                    components: ['_partials/svelte2/Svelte2Wrapper.svelte']
+                },
                 { url: '#errors', title: 'Errors', view: ErrorsSection }
             ]
         }
@@ -181,6 +307,16 @@
                 </div>
                 <div class="column is-four-fifths" bind:this={contentRef}>
                     <svelte:component this={activePage.view} {...activePage.props || {}} />
+                    {#if activePage.components}
+                        <hr />
+                        <div class="columns is-multiline">
+                            {#each activePage.components as component}
+                                <div class="column is-half">
+                                    <ComponentInfo {component} info={componentInfos[component]} />
+                                </div>
+                            {/each}
+                        </div>
+                    {/if}
                 </div>
             </div>
         </div>
