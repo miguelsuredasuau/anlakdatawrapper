@@ -9,9 +9,8 @@
     data-uid="{uid}"
 >
     <label class="checkbox {disabled? 'disabled' :''} {faded? 'faded' :''}">
-        <input type="checkbox" disabled="{disabled}" bind:checked="value" bind:indeterminate /><span
-            class="css-ui"
-        ></span>
+        <input type="checkbox" disabled="{disabled}" bind:checked="value" bind:indeterminate />
+        <span class="css-ui"></span>
         { label }
     </label>
     {#if disabled && disabledMessage}
