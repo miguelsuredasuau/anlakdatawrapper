@@ -168,7 +168,12 @@ module.exports = {
                 path: '/csr/{file*}',
                 method: 'GET',
                 config: {
-                    auth: false
+                    auth: false,
+                    validate: {
+                        params: Joi.object({
+                            file: Joi.string().required()
+                        })
+                    }
                 },
                 async handler(request, h) {
                     const { file } = request.params;
