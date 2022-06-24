@@ -29,7 +29,7 @@
         }
         .page-content {
             max-height: 650px;
-            overflow-y: scroll;
+            overflow-y: auto;
         }
     }
 </style>
@@ -56,7 +56,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="column has-background-light is-flex is-flex-direction-column">
+                    <div class="column has-background-white-bis is-flex is-flex-direction-column">
                         <div
                             class="page-content p-6 is-flex is-flex-direction-column is-justify-content-space-between is-flex-grow-1"
                         >
