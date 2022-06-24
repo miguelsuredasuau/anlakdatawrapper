@@ -18,7 +18,6 @@ Usage: scaffold [template]
 
 Available templates are: 
  - ava-esm
- - githead-hook
  - lint-js
  - lint-svelte3
  - plugin

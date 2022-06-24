@@ -16,6 +16,7 @@ const {
 const { requireConfig } = require('@datawrapper/service-utils/findConfig');
 const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
 const registerFeatureFlag = require('@datawrapper/service-utils/registerFeatureFlag');
+const getGitRevision = require('@datawrapper/service-utils/getGitRevision');
 const config = requireConfig();
 const path = require('path');
 const { createAPI, waitForAPI } = require('./utils/create-api');
@@ -124,6 +125,8 @@ const start = async () => {
     server.method('createAPI', createAPI(server));
     server.method('getRedis', () => redis);
 
+    await server.register(require('@datawrapper/service-utils/computeFileHash'));
+
     await server.register(require('./utils/header-links'));
     await server.register(require('./utils/settings-pages'));
     await server.register(require('./utils/demo-datasets'));
@@ -135,9 +138,7 @@ const start = async () => {
     server.app.event = eventList;
     server.app.events = new FrontendEventEmitter({ logger: server.logger, eventList });
 
-    server.app.GITHEAD = (
-        await fs.readFile(path.join(__dirname, '..', '.githead'), 'utf-8')
-    ).trim();
+    server.app.GITHEAD = await getGitRevision();
 
     await server.register(require('./utils/svelte-view/index'));
 

@@ -346,27 +346,5 @@ function add_header_vars(&$page, $active = null, $page_css = null) {
             $page['PIWIK_IDSITE_NO_CHARTS'] = $config['piwik']['idSiteNoCharts'];
         }
     }
-
-    $shaPath = ROOT_PATH . '/.githead';
-
-    if (file_exists($shaPath)) {
-        $commit = file_get_contents($shaPath);
-        $page['COMMIT_SHA'] = substr($commit, 0, 8);
-
-        if ($config['debug'] ?? false) {
-            try {
-                if (file_exists('../../../.git/HEAD')) {
-                    // parse git branch
-                    $head = file_get_contents('../../../.git/HEAD');
-                    $parts = explode("/", $head);
-                    $branch = trim($parts[count($parts)-1]);
-                    $page['COMMIT_SHA'] = substr($commit, 0, 8);
-                    if ($config['debug']) {
-                        $page['BRANCH'] = ' (<a href="https://github.com/datawrapper/datawrapper/tree/'.$commit.'">'.$branch.'</a>)';
-                    }
-                }
-            } catch (Error $e) {
-            }
-        }
-    }
+    
 }

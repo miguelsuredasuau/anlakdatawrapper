@@ -22,7 +22,7 @@ module.exports = {
     register: server => {
         const config = server.methods.config();
         const useThemeCache = get(config, 'general.cache.themes');
-        const { styleCache, themeCache, githeadCache } = getCaches(server);
+        const { styleCache, themeCache } = getCaches(server);
 
         // GET /v3/themes/{id}
         server.route({
@@ -97,8 +97,7 @@ module.exports = {
                     theme,
                     themeCache,
                     styleCache,
-                    visualizations: server.app.visualizations,
-                    githeadCache
+                    visualizations: server.app.visualizations
                 });
 
                 return theme.toJSON();

@@ -55,11 +55,10 @@ module.exports = server => {
             // register with theme
             await theme.addAssetFile(origName, publicUrl);
 
-            const { themeCache, githeadCache } = getCaches(server);
+            const { themeCache } = getCaches(server);
             await dropCache({
                 theme,
                 themeCache,
-                githeadCache,
                 visualizations: server.app.visualizations
             });
 

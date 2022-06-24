@@ -12,12 +12,6 @@ module.exports = server => {
         shared: true
     });
 
-    const githeadCache = server.cache({
-        segment: 'vis-githead',
-        expiresIn: 86400000 * 365 /* 1 year */,
-        shared: true
-    });
-
     server.route({
         method: 'GET',
         path: '/styles.css',
@@ -50,15 +44,9 @@ module.exports = server => {
 
         const transparent = !!query.transparent;
 
-        // if vis.githead was written upon registration, write to cache
-        if (vis.githead) {
-            await githeadCache.set(vis.id, vis.githead);
-            vis.githead = '';
-        }
-
-        const githead = (await githeadCache.get(vis.id)) || 'head';
-
-        const cacheKey = `${query.theme}__${params.id}${query.dark ? '__dark' : ''}__${githead}`;
+        const cacheKey = `${query.theme}__${params.id}${query.dark ? '__dark' : ''}__${
+            vis.__styleHash
+        }`;
         const cachedCSS = await styleCache.get(cacheKey);
         const cacheStyles = get(server.methods.config('general'), 'cache.styles', false);
 

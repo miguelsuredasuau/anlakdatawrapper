@@ -6,23 +6,15 @@ const deepmerge = require('deepmerge');
 const get = require('lodash/get');
 const { getSchemaJSON } = require('@datawrapper/schemas');
 
-module.exports.dropCache = async function ({
-    theme,
-    themeCache,
-    styleCache,
-    visualizations,
-    githeadCache
-}) {
+module.exports.dropCache = async function ({ theme, themeCache, styleCache, visualizations }) {
     const descendants = await findDescendants(theme);
 
     for (const t of descendants) {
         if (styleCache) {
             for (const visId of visualizations.keys()) {
                 const vis = visualizations.get(visId);
-                const githead = (await githeadCache.get(vis.id)) || vis.githead || 'head';
-
-                await styleCache.drop(`${t.id}__${visId}__${githead}`);
-                await styleCache.drop(`${t.id}__${visId}__dark__${githead}`);
+                await styleCache.drop(`${t.id}__${visId}__${vis.__styleHash}`);
+                await styleCache.drop(`${t.id}__${visId}__dark__${vis.__styleHash}`);
                 await styleCache.drop(`${t.id}__${visId}`);
             }
         }
@@ -39,7 +31,6 @@ module.exports.dropCache = async function ({
 module.exports.getCaches = function (server) {
     return {
         styleCache: server.cache({ segment: 'vis-styles', shared: true }),
-        githeadCache: server.cache({ segment: 'vis-githead', shared: true }),
         themeCache: server.cache({
             segment: 'themes',
             shared: true,

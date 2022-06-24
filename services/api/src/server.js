@@ -14,8 +14,8 @@ const schemas = require('@datawrapper/schemas');
 const { ApiEventEmitter, eventList } = require('./utils/events');
 const { addScope, translate, getTranslate } = require('@datawrapper/service-utils/l10n');
 const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
+const getGitRevision = require('@datawrapper/service-utils/getGitRevision');
 const { generateToken, loadChart, copyChartAssets } = require('./utils');
-const { promisify } = require('util');
 const {
     validateAPI,
     validateORM,
@@ -23,7 +23,6 @@ const {
     validateRedis,
     validatePlugins
 } = require('@datawrapper/schemas/config');
-const exec = promisify(require('child_process').exec);
 
 const pkg = require('../package.json');
 const configPath = findConfigPath();
@@ -156,21 +155,6 @@ function getLogLevel() {
     }
 }
 
-async function getGitRevision() {
-    if (process.env.COMMIT) {
-        return process.env.COMMIT;
-    }
-    try {
-        return (await exec('git rev-parse HEAD', { timeout: 1000 })).stdout;
-    } catch (e) {
-        process.stderr.write(
-            'Failed to get Git revision, because the app is probably not checked out from Git. ' +
-                'No Sentry release or log VERSION will be set.'
-        );
-        return undefined;
-    }
-}
-
 function usesCookieAuth(request) {
     return get(request, 'auth.isAuthenticated') && get(request, 'auth.credentials.session');
 }
@@ -286,6 +270,9 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     server.method('createChartWebsite', require('./utils/publish/create-chart-website.js'));
     server.method('registerVisualization', registerVisualizations(server));
     server.method('registerFeatureFlag', registerFeatureFlag(server));
+
+    await server.register(require('@datawrapper/service-utils/computeFileHash'));
+
     server.method('getScopes', (admin = false) => {
         return admin
             ? [...server.app.scopes, ...server.app.adminScopes]

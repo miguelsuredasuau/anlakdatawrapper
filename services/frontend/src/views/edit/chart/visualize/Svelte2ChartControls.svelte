@@ -156,8 +156,8 @@
     {/if}
     <Svelte2Wrapper
         id={$visualization.controls.amd}
-        js="/static/plugins/{$visualization.controls.js}"
-        css="/static/plugins/{$visualization.controls.css}"
+        js="/lib/plugins/{$visualization.controls.js}?sha={$visualization.__controlsHash}"
+        css="/lib/plugins/{$visualization.controls.css}?sha={$visualization.__controlsHash}"
         module={controlsModule}
         bind:storeData
         storeMethods={{ getMetadata, setMetadata, observeDeep }}

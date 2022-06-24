@@ -1,19 +1,21 @@
 'use strict';
 
+const MemoryCache = require('@datawrapper/service-utils/MemoryCache');
+const context = require('./context');
 const ejs = require('ejs');
 const jsesc = require('jsesc');
 const { join, relative } = require('path');
 const { readFile } = require('fs').promises;
 const { readFileSync } = require('fs');
-const { withCache, clearCache } = require('./cache');
-const context = require('./context');
 
 const baseViewDir = join(__dirname, '../../views');
 const buildViewDir = join(__dirname, '../../../build/views');
 
-const templateCache = new Map();
 const views = new Set();
 const viewComponents = new Map();
+
+const templateCache = new MemoryCache();
+const viewCache = new MemoryCache();
 
 /**
  * Registers a view with rollup.
@@ -29,15 +31,10 @@ function registerViewComponent({ id, page, view }) {
     viewComponents.set(id, { id, page, view });
 }
 
-async function getTemplate(file) {
-    if (!process.env.DW_DEV_MODE && templateCache.get(file)) {
-        return templateCache.get(file);
-    }
-    const data = await readFile(join(baseViewDir, file), 'utf-8');
-    if (!process.env.DW_DEV_MODE) {
-        templateCache.set(file, data);
-    }
-    return data;
+function getTemplate(file) {
+    return templateCache.withCache(file, () => readFile(join(baseViewDir, file), 'utf-8'), {
+        useCache: !process.env.DW_DEV_MODE
+    });
 }
 
 /**
@@ -46,7 +43,7 @@ async function getTemplate(file) {
  * Used also by the '/libs' route to serve compiled views.
  */
 function getView(page) {
-    return withCache(page, () => {
+    return viewCache.withCache(page, () => {
         try {
             const build = join(buildViewDir, page);
             const ssr = readFileSync(build + '.ssr.js', 'utf-8');
@@ -80,7 +77,7 @@ function watchViews(wsClients) {
             // necessary (if rollup always builds csr after ssr has been built).
             setTimeout(() => {
                 // invalidate the view cache
-                clearCache(page);
+                viewCache.drop(page);
                 process.stdout.write(`Invalidated csr/ssr cache for ${page}\n`);
                 // notify page
                 wsClients.forEach(ws => ws.send(JSON.stringify({ page })));
