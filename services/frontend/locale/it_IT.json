@@ -1090,7 +1090,6 @@
   "next-page": "Pagina successiva",
   "controls / color-category / include-in-key": "Includi nella legenda",
   "controls / custom-format / empty": "---",
-  "darkmode / caption": "Anteprima modalità scura",
   "darkmode / note": "Puoi attivare la modalità scura nella scheda di <b><a href=\"#layout\" id=\"to-layout-tab\">layout</a></b>. Scopri di più nell'<b><a href=\"https://academy.datawrapper.de/article/357-dark-mode-in-embedded-datawrapper-visualizations\" target=\"_blank\">Academy</a></b>.",
   "layout / auto-dark / intro / title": "Introduzione: modalità scura",
   "layout / auto-dark / intro / body": "Abilita la <b>modalità scura automatica</b> per fare in modo che le tue visualizzazioni incorporate si adattino automaticamente alle preferenze di dispositivo dei tuoi lettori. Scopri di più nella nostra <a href=\"https://blog.datawrapper.de/dark-mode-for-embedded-visualizations/\" target=\"_blank\">introduzione dettagliata</a>.",
@@ -1110,7 +1109,6 @@
   "teams / archive / custom-fields": "Campo personalizzato",
   "teams / archive / custom-fields / label": "Mostra campo personalizzato",
   "teams / archive / custom-fields / p": "Puoi <a href='$1'>creare campi personalizzati qui</a> e selezionarne uno da mostrare nella vista dell'archivio. Il campo personalizzato che selezioni verrà mostrato quando contrassegni questo team (\"$2\") come tuo team attivo.",
-  "darkmode / caption-short": "Modalità scura",
   "teams / archive / locale / p": "Le impostazioni locali verranno mostrate quando contrassegni questo team (\"$1\") come tuo team attivo.",
   "layout / auto-dark / intro / preview": "Per visualizzare in anteprima la modalità scura, usa i pulsanti situati sotto la tua visualizzazione:",
   "teams / archive / thumbnails / h3": "Visualizzazione anteprime",
@@ -1149,5 +1147,9 @@
   "visualize / annotate / source-url / not-allowed": "",
   "visualize / layout / locale-select / explainer": "Definisce i separatori dei decimali e delle migliaia e la traduzione dei nomi dei mesi e dei giorni della settimana.",
   "visualize / layout / locale-select / hed": "Posizione output",
-  "login / login / password-changed": ""
+  "login / login / password-changed": "",
+  "dashboard / checks / pending-team-invites / invite-without-user": "",
+  "darkmode / caption": "Anteprima modalità scura",
+  "darkmode / caption-short": "Modalità scura",
+  "edit / preview": "Anteprima"
 }

@@ -1090,7 +1090,6 @@
   "next-page": "下一页",
   "controls / color-category / include-in-key": "包括在键中",
   "controls / custom-format / empty": "---",
-  "darkmode / caption": "深色模式预览",
   "darkmode / note": "您可以在<b><a href=\"#layout\" id=\"to-layout-tab\">布局</a></b>选项卡中激活深色模式。详情请参见<b><a href=\"https://academy.datawrapper.de/article/357-dark-mode-in-embedded-datawrapper-visualizations\" target=\"_blank\">Academy</a></b>。",
   "layout / auto-dark / intro / title": "简介：深色模式",
   "layout / auto-dark / intro / body": "启用<b>自动深色模式</b>，您的嵌入可视化将自动适应阅读者的设备首选项。更多详情请参见<a href=\"https://blog.datawrapper.de/dark-mode-for-embedded-visualizations/\" target=\"_blank\">详细简介</a>。",
@@ -1110,7 +1109,6 @@
   "teams / archive / custom-fields": "自定义字段",
   "teams / archive / custom-fields / label": "显示自定义字段",
   "teams / archive / custom-fields / p": "您可以<a href='$1'>在此创建自定义字段</a>，选择要在存档视图中显示的一个字段。当您选择此团队（\"$2\"）作为活动团队时，将显示所选自定义字段。",
-  "darkmode / caption-short": "深色模式",
   "teams / archive / locale / p": "当您选择此团队（\"$1\"）作为活动团队时，将显示语言环境。",
   "layout / auto-dark / intro / preview": "您可以使用可视化下面的这些按钮预览深色模式：",
   "teams / archive / thumbnails / h3": "可视化缩略图",
@@ -1149,5 +1147,9 @@
   "visualize / annotate / source-url / not-allowed": "",
   "visualize / layout / locale-select / explainer": "定义小数和千位分隔符，以及月份和工作日名称的翻译。",
   "visualize / layout / locale-select / hed": "输出语言环境",
-  "login / login / password-changed": ""
+  "login / login / password-changed": "",
+  "dashboard / checks / pending-team-invites / invite-without-user": "",
+  "darkmode / caption": "深色模式预览",
+  "darkmode / caption-short": "深色模式",
+  "edit / preview": "预览"
 }

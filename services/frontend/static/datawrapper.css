@@ -10225,6 +10225,9 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .button:not(.is-white, .is-light, .is-ghost, .is-text, .is-outlined).is-small {
   border-radius: 2px;
 }
+.button.is-selected {
+  background-color: rgba(0, 0, 0, 0.035);
+}
 .button.is-text:disabled {
   color: inherit;
 }

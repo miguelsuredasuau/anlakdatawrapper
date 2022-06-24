@@ -12,9 +12,11 @@
         hasUnsavedChanges,
         initChartStore,
         initDataStore,
+        initTeamStore,
         isDark,
         onNextSave,
         theme,
+        team,
         visualization
     } from './stores';
     import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
@@ -26,10 +28,17 @@
     export let __;
     export let rawData; // the csv dataset
     export let rawChart; // the JSON chart object
+    export let rawTeam; // the JSON team object
     export let visualizations;
     export let initUrlStep;
     export let urlPrefix;
     export let rawTheme;
+
+    /**
+     * custom view components to be rendered on various
+     * places throughout the editor
+     */
+    export let customViews = {};
 
     /*
      * we're using a "page context" here to be able to make
@@ -41,8 +50,11 @@
         data,
         hasUnsavedChanges,
         isDark,
+        team,
         theme,
-        visualization
+        visualization,
+        onNextSave,
+        customViews
     });
 
     /*
@@ -51,11 +63,6 @@
      * from the current users active team.
      */
     export let showEditorNavInCmsMode = false;
-
-    /**
-     * custom view components to be rendered
-     */
-    export let customViews = [];
 
     /**
      * charts can define an external source for
@@ -149,6 +156,9 @@
     onMount(async () => {
         initChartStore(rawChart, rawTheme, visualizations, disabledFields);
         initDataStore(rawChart.id, rawData);
+        if (rawTeam) {
+            initTeamStore(rawTeam);
+        }
 
         if (!initUrlStep && rawChart.lastEditStep) {
             activeStep = steps[Math.max(1, Math.min(steps.length - 1, rawChart.lastEditStep - 1))];

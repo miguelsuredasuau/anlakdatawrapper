@@ -24,6 +24,9 @@
             border-radius: $radius-small;
         }
     }
+    &.is-selected {
+        background-color: $dw-shade-lighter;
+    }
     &.is-text:disabled {
         color: inherit;
     }

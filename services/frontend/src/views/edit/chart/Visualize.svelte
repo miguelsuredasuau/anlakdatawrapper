@@ -5,9 +5,11 @@
     // editor
     import ColorblindCheck from '_partials/editor/ColorblindCheck.svelte';
     import DarkModeToggle from '_partials/editor/DarkModeToggle.svelte';
+    import PreviewResizer from '_partials/editor/PreviewResizer.svelte';
     import Toolbar from '_partials/editor/Toolbar.svelte';
     import ToolbarArea from '_partials/editor/ToolbarArea.svelte';
     // other Svelte
+    import ViewComponent from '_partials/ViewComponent.svelte';
     import Tabs from '_partials/Tabs.svelte';
     import AnnotateTab from './visualize/AnnotateTab.svelte';
     import ChartTypeTab from './visualize/ChartTypeTab.svelte';
@@ -18,7 +20,7 @@
     import { onMount, getContext } from 'svelte';
     import { headerProps } from '_layout/stores';
     // load stores from context
-    const { chart, theme, visualization, isDark } = getContext('page/edit');
+    const { chart, theme, visualization, isDark, customViews } = getContext('page/edit');
 
     export let __;
     export let dwChart;
@@ -61,9 +63,12 @@
     function onPreviewResize(event) {
         // todo: store size elsewhere in print mode
         dwChart.set('metadata.publish.embed-width', event.detail.width);
+        const reset = { width: null };
         if (event.detail.height) {
+            reset.height = null;
             dwChart.set('metadata.publish.embed-height', event.detail.height);
         }
+        iframePreview.set(reset);
     }
 
     /*
@@ -160,6 +165,13 @@
     .preview.sticky.sticky-header {
         top: 85px;
     }
+
+    .limit-width {
+        max-width: calc(100vw - 510px);
+        overflow-x: scroll;
+        overflow-y: clip;
+        height: auto;
+    }
 </style>
 
 <svelte:window bind:innerHeight bind:innerWidth bind:scrollY />
@@ -170,27 +182,29 @@
             <div class="vis-controls block">
                 <Tabs items={tabs} bind:active />
             </div>
-            <div class="block">
-                <svelte:component
-                    this={activeTab.ui}
-                    {__}
-                    {themes}
-                    {chartLocales}
-                    {dwChart}
-                    {workflow}
-                    {visualizations}
-                    {teamSettings}
-                    {disabledFields}
-                    {layoutControlsGroups}
-                />
-            </div>
+            {#each tabs as tab}
+                <div class="block" class:is-hidden={tab !== activeTab}>
+                    <svelte:component
+                        this={tab.ui}
+                        {__}
+                        {themes}
+                        {chartLocales}
+                        {dwChart}
+                        {workflow}
+                        {visualizations}
+                        {teamSettings}
+                        {disabledFields}
+                        {layoutControlsGroups}
+                    />
+                </div>
+            {/each}
 
             <div class="buttons">
                 <button class="button" on:click={() => changeTabBy(-1)}
-                    ><IconDisplay icon="arrow-left" /><span>Back</span></button
+                    ><IconDisplay icon="arrow-left" /><span>{__('Back')}</span></button
                 >
                 <button class="button is-primary" on:click={() => changeTabBy(+1)}>
-                    <span>Proceed</span>
+                    <span>{__('Proceed')}</span>
                     <IconDisplay icon="arrow-right" />
                 </button>
             </div>
@@ -201,18 +215,28 @@
                 class:sticky={isSticky}
                 class:sticky-header={$headerProps.isSticky}
             >
-                <ChartPreviewIframeDisplay
-                    bind:this={iframePreview}
-                    {chart}
-                    fixedHeight={$visualization.height === 'fixed'}
-                    isDark={$isDark}
-                    on:resize={onPreviewResize}
-                    resizable
-                    theme={$theme}
-                />
+                <div class="limit-width">
+                    <ChartPreviewIframeDisplay
+                        bind:this={iframePreview}
+                        {chart}
+                        fixedHeight={$visualization.height === 'fixed'}
+                        isDark={$isDark}
+                        on:resize={onPreviewResize}
+                        resizable
+                        theme={$theme}
+                    />
+                </div>
+
                 <div class="block mt-4">
                     <Toolbar>
-                        <ToolbarArea title="Preview">
+                        {#if customViews && customViews.visualizeToolbarPrepend && customViews.visualizeToolbarPrepend.length > 0}
+                            {#each customViews.visualizeToolbarPrepend as comp}
+                                <ViewComponent id={comp.id} {__} props={{ ...comp.props }} />
+                            {/each}
+                        {/if}
+
+                        <ToolbarArea title={__('edit / preview')}>
+                            <PreviewResizer {__} />
                             <ColorblindCheck iframe={iframePreview} {__} />
                             <DarkModeToggle {__} on:change-tab={evt => (active = evt.detail)} />
                         </ToolbarArea>

@@ -9,6 +9,7 @@
     export let value = false;
     export let tooltip = '';
     export let tooltipType = null;
+    export let tooltipPlacement = 'right';
     export let disabledMessage = '';
     export let disabledState = 'auto';
     export let disabled = false;
@@ -152,7 +153,7 @@
 
 <div class="field switch" data-uid={uid}>
     {#if tooltip || $$slots.tooltip}
-        <HelpDisplay float type="{tooltipType}f">
+        <HelpDisplay float type={tooltipType} placement={tooltipPlacement}>
             {#if tooltip}
                 <div>{@html tooltip}</div>
             {/if}

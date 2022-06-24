@@ -26,6 +26,7 @@
      * available after upgrading the account
      */
     export let tooltipType = null;
+    export let tooltipPlacement = 'right';
 
     /**
      * Optional message to display below field controls.
@@ -67,7 +68,7 @@
         <label for={id} class="label">{label}<slot name="labelExtra" /></label>
     {/if}
     {#if tooltip || $$slots.tooltip}
-        <HelpDisplay type="{tooltipType}f">
+        <HelpDisplay type={tooltipType} placement={tooltipPlacement}>
             {#if tooltip}
                 <div>{@html tooltip}</div>
             {/if}

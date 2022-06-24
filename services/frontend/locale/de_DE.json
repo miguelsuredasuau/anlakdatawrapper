@@ -1090,7 +1090,6 @@
   "next-page": "Nächste Seite",
   "controls / color-category / include-in-key": "In Legende anzeigen",
   "controls / custom-format / empty": "---",
-  "darkmode / caption": "Dunkelmodus-Vorschau",
   "darkmode / note": "Du kannst den Dunkelmodus unter <b><a href=\"#layout\" id=\"to-layout-tab\">Layout</a></b> aktivieren. Weitere Informationen findest du in der <b><a href=\"https://academy.datawrapper.de/article/357-dark-mode-in-embedded-datawrapper-visualizations\" target=\"_blank\">Academy</a></b>.",
   "layout / auto-dark / intro / title": "Einführung: Dunkelmodus (Dark Mode)",
   "layout / auto-dark / intro / body": "Aktiviere den <b>automatischen Dunkelmodus</b> und deine eingebetteten Visualisierungen passen sich automatisch an die Geräteeinstellungen deiner Leser an. Weitere Informationen findest du in unserer <a href=\"https://blog.datawrapper.de/dark-mode-for-embedded-visualizations/\" target=\"_blank\">ausführlichen Einführung</a>.",
@@ -1110,7 +1109,6 @@
   "teams / archive / custom-fields": "Custom-Field",
   "teams / archive / custom-fields / label": "Custom-Field anzeigen",
   "teams / archive / custom-fields / p": "Du kannst <a href='$1'>Custom-Fields hier anlegen</a> und dann eins auswählen um auf der Archiv-Seite anzuzeigen. Das ausgewählte Custom-Field wird angezeigt, wenn du dieses Team (\"$2\") als dein aktives Team setzt.",
-  "darkmode / caption-short": "Dunkelmodus",
   "teams / archive / locale / p": "Sprache wird angezeigt, wenn du dieses Team (\"$1\") als dein aktives Team setzt.",
   "layout / auto-dark / intro / preview": "Mit diesen Schaltflächen unter deiner Visualisierung kannst du eine Vorschau des Dunkelmodus anzeigen:",
   "teams / archive / thumbnails / h3": "Visualisierungs-Vorschaubilder",
@@ -1149,5 +1147,9 @@
   "visualize / annotate / source-url / not-allowed": "",
   "visualize / layout / locale-select / explainer": "Bestimmt Dezimal- und Tausendertrennzeichen sowie die Übersetzung von Monatsnamen und Wochentagen.",
   "visualize / layout / locale-select / hed": "Ausgabe-Sprachraum",
-  "login / login / password-changed": "Dein Passwort wurde erfolgreich geändert. Bitte melde dich erneut an."
+  "login / login / password-changed": "Dein Passwort wurde erfolgreich geändert. Bitte melde dich erneut an.",
+  "dashboard / checks / pending-team-invites / invite-without-user": "Du wurdest eingeladen, dem Team <b>%team_name%</b> beizutreten!",
+  "darkmode / caption": "Dunkelmodus-Vorschau",
+  "darkmode / caption-short": "Dunkelmodus",
+  "edit / preview": "Vorschau"
 }

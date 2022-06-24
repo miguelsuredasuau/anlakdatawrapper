@@ -3,6 +3,9 @@
     export let title = null;
 
     export let tooltip = null;
+    export let tooltipType = null;
+    export let tooltipPlacement = 'right';
+    export let uid = null;
 </script>
 
 <style lang="scss">
@@ -30,17 +33,21 @@
         > :global(.field.is-grouped > .control) {
             margin-right: 0.25rem;
         }
+
+        > :global(.field) {
+            margin-bottom: 0;
+        }
     }
 </style>
 
-<div class="toolbar-item">
+<div class="toolbar-item" data-uid={uid}>
     <div class="toolbar-header">
         <div class="toolbar-title">
             {#if title}{@html title}{/if}
             <slot name="title" />
         </div>
         {#if tooltip || $$slots.tooltip}
-            <HelpDisplay inline>
+            <HelpDisplay inline type={tooltipType} placement={tooltipPlacement}>
                 {#if tooltip}{@html tooltip}{/if}
                 <slot name="tooltip" />
             </HelpDisplay>

@@ -197,3 +197,14 @@ export function initDataStore(chartId, rawData) {
         }
     });
 }
+
+/**
+ * store for team
+ */
+const team = new writable({ settings: {} });
+const teamReadonly = derived(team, $settings => $settings);
+export { teamReadonly as team };
+// export setter function
+export function initTeamStore(rawTeam) {
+    team.set(rawTeam);
+}

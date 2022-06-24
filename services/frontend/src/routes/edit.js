@@ -325,10 +325,11 @@ module.exports = {
                         teamProducts.length > 0 ? teamProducts : [await user.getActiveProduct()];
 
                     const productFeatures = Object.fromEntries(
-                        ['enableCustomLayouts', 'requireDatawrapperAttribution'].map(key => [
-                            key,
-                            !!products.find(product => product.hasFeature(key))
-                        ])
+                        [
+                            'enableCustomLayouts',
+                            'requireDatawrapperAttribution',
+                            'enableWebToPrint'
+                        ].map(key => [key, !!products.find(product => product.hasFeature(key))])
                     );
 
                     if (!workflow) {
@@ -432,7 +433,9 @@ module.exports = {
 
                     const customViews = await server.methods.getCustomData('edit/customViews', {
                         request,
-                        chart
+                        chart,
+                        user,
+                        productFeatures
                     });
 
                     const stepIndex =
@@ -459,6 +462,7 @@ module.exports = {
                         props: {
                             rawChart,
                             rawData: data,
+                            rawTeam: team,
                             initUrlStep: params.step,
                             urlPrefix: `/${params.prefix}`,
                             breadcrumbPath,

@@ -1,5 +1,5 @@
 import TypeaheadInput from './TypeaheadInput.svelte';
-import TypeaheadItemRenderer from '../../hello/TypeaheadItemRenderer.svelte';
+import TypeaheadItemRenderer from '../../hello/sections/controls/TypeaheadItemRenderer.svelte';
 import { fireEvent } from '@testing-library/svelte';
 import { renderWithContext, setConfig, delay } from '../../../test-utils';
 import chai, { expect } from 'chai';

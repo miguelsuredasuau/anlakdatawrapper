@@ -26,6 +26,7 @@
      * available after upgrading the account
      */
     export let tooltipType = null;
+    export let tooltipPlacement = 'right';
 
     /**
      * Optional message to display below field controls.
@@ -84,7 +85,7 @@
     </div>
     <div class="field-help">
         {#if tooltip || $$slots.tooltip}
-            <HelpDisplay type={tooltipType} helpClass={labelPadding}>
+            <HelpDisplay type={tooltipType} placement={tooltipPlacement} helpClass={labelPadding}>
                 {#if tooltip}
                     <div>{@html tooltip}</div>
                 {/if}

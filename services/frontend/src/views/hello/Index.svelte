@@ -5,36 +5,9 @@
     import TreeMenu from './TreeMenu.svelte';
     import ComponentInfo from './ComponentInfo.svelte';
 
-    import WelcomeSection from './WelcomeSection.svelte';
-    import IconsSection from './IconsSection.svelte';
-    import ButtonGroupSection from './ButtonGroupSection.svelte';
-    import PaginationSection from './PaginationSection.svelte';
-    import TabsSection from './TabsSection.svelte';
-    import MenuSection from './MenuSection.svelte';
-    import MessageSection from './MessageSection.svelte';
-    import ModalSection from './ModalSection.svelte';
-
-    import CheckboxSection from './CheckboxSection.svelte';
-    import RadioInputSection from './RadioInputSection.svelte';
-    import MarkdownInputSection from './MarkdownInputSection.svelte';
-    import CodeMirrorInputSection from './CodeMirrorInputSection.svelte';
-    import SetPasswordSection from './SetPasswordSection.svelte';
-    import FormFieldSection from './FormFieldSection.svelte';
-    import HorizontalFormFieldSection from './HorizontalFormFieldSection.svelte';
-    import DropdownSection from './DropdownSection.svelte';
-    import Svelte2Section from './Svelte2Section.svelte';
-    import ErrorsSection from './ErrorsSection.svelte';
-    import SearchInputSection from './SearchInputSection.svelte';
-    import TextInputSection from './TextInputSection.svelte';
-    import TagsInputSection from './TagsInputSection.svelte';
-    import ToolbarSection from './ToolbarSection.svelte';
-    import BulmaComponentsSection from './BulmaComponentsSection.svelte';
-    import TypeaheadInputSection from './TypeaheadInputSection.svelte';
-    import FileInputSection from './FileInputSection.svelte';
-    import SaveButtonSection from './SaveButtonSection.svelte';
-    import SwitchControlSection from './SwitchControlSection.svelte';
-    import ChartPreviewIframeSection from './ChartPreviewIframeSection.svelte';
     import RadioInput from '_partials/controls/RadioInput.svelte';
+
+    import * as sections from './sections';
 
     export let magicNumber;
     export let chart;
@@ -63,7 +36,7 @@
                 {
                     url: '#welcome',
                     title: 'Welcome',
-                    view: WelcomeSection,
+                    view: sections.WelcomeSection,
                     props: { magicNumber, __ }
                 }
             ]
@@ -74,46 +47,46 @@
                 {
                     url: '#icons',
                     title: 'Icons',
-                    view: IconsSection,
+                    view: sections.IconsSection,
                     props: { icons, __ },
                     components: ['_partials/displays/IconDisplay.svelte']
                 },
                 {
                     url: '#message',
                     title: 'Message',
-                    view: MessageSection,
+                    view: sections.MessageSection,
                     components: ['_partials/displays/MessageDisplay.svelte']
                 },
                 {
                     url: '#modal',
                     title: 'Modal',
-                    view: ModalSection,
+                    view: sections.ModalSection,
                     components: ['_partials/displays/ModalDisplay.svelte']
                 },
                 {
                     url: '#save',
                     title: 'Save button',
-                    view: SaveButtonSection,
+                    view: sections.SaveButtonSection,
                     components: ['_partials/displays/SaveButtonDisplay.svelte']
                 },
                 {
                     url: '#form-field',
                     title: 'FormField',
-                    view: FormFieldSection,
+                    view: sections.FormFieldSection,
                     components: ['_partials/displays/FormFieldDisplay.svelte'],
                     props: { __ }
                 },
                 {
                     url: '#form-field-h',
                     title: 'FormField (horiz.)',
-                    view: HorizontalFormFieldSection,
+                    view: sections.HorizontalFormFieldSection,
                     components: ['_partials/displays/HorizontalFormFieldDisplay.svelte'],
                     props: { __ }
                 },
                 {
                     url: '#preview',
                     title: 'ChartIframePreview',
-                    view: ChartPreviewIframeSection,
+                    view: sections.ChartPreviewIframeSection,
                     components: ['_partials/displays/ChartPreviewIframeDisplay.svelte'],
                     props: { chart: chartStore, theme, __ }
                 }
@@ -126,31 +99,31 @@
                 {
                     url: '#button-groups',
                     title: 'Button groups',
-                    view: ButtonGroupSection,
+                    view: sections.ButtonGroupSection,
                     components: ['_partials/controls/ButtonGroupInput.svelte']
                 },
                 {
                     url: '#checkbox',
                     title: 'Checkbox',
-                    view: CheckboxSection,
+                    view: sections.CheckboxSection,
                     components: ['_partials/controls/CheckboxInput.svelte']
                 },
                 {
                     url: '#radio',
                     title: 'Radio Input',
-                    view: RadioInputSection,
+                    view: sections.RadioInputSection,
                     components: ['_partials/controls/RadioInput.svelte']
                 },
                 {
                     url: '#switch',
                     title: 'Switch Input',
-                    view: SwitchControlSection,
+                    view: sections.SwitchControlSection,
                     components: ['_partials/controls/SwitchControl.svelte']
                 },
                 {
                     url: '#textinput',
                     title: 'Text Input',
-                    view: TextInputSection,
+                    view: sections.TextInputSection,
                     components: [
                         '_partials/controls/TextInput.svelte',
                         '_partials/controls/TextAreaInput.svelte'
@@ -159,46 +132,46 @@
                 {
                     url: '#tagsinput',
                     title: 'Tags Input',
-                    view: TagsInputSection,
+                    view: sections.TagsInputSection,
                     components: ['_partials/controls/TagsInput.svelte']
                 },
                 {
                     url: '#typeahead',
                     title: 'Typeahead Input',
-                    view: TypeaheadInputSection,
+                    view: sections.TypeaheadInputSection,
                     components: ['_partials/controls/TypeaheadInput.svelte']
                 },
                 {
                     url: '#search',
                     title: 'Search Input',
-                    view: SearchInputSection,
+                    view: sections.SearchInputSection,
                     components: ['_partials/controls/SearchInput.svelte']
                 },
                 {
                     url: '#setpassword',
                     title: 'Set Password',
-                    view: SetPasswordSection,
+                    view: sections.SetPasswordSection,
                     components: ['_partials/controls/SetPasswordInput.svelte'],
                     props: { __ }
                 },
                 {
                     url: '#markdown-input',
                     title: 'Markdown Input',
-                    view: MarkdownInputSection,
+                    view: sections.MarkdownInputSection,
                     components: ['_partials/controls/MarkdownInput.svelte'],
                     props: { __ }
                 },
                 {
                     url: '#file',
                     title: 'File Input',
-                    view: FileInputSection,
+                    view: sections.FileInputSection,
                     props: { __ },
                     components: ['_partials/controls/MarkdownInput.svelte']
                 },
                 {
                     url: '#codemirror',
                     title: 'CodeMirror Input',
-                    view: CodeMirrorInputSection,
+                    view: sections.CodeMirrorInputSection,
                     components: ['_partials/controls/CodeMirrorInput.svelte']
                 }
             ]
@@ -209,7 +182,7 @@
                 {
                     url: '#toolbar',
                     title: 'Toolbar',
-                    view: ToolbarSection,
+                    view: sections.ToolbarSection,
                     props: { __ },
                     components: [
                         '_partials/editor/Toolbar.svelte',
@@ -225,19 +198,19 @@
                 {
                     url: '#pagination',
                     title: 'Pagination',
-                    view: PaginationSection,
+                    view: sections.PaginationSection,
                     components: ['_partials/Pagination.svelte']
                 },
                 {
                     url: '#tabs',
                     title: 'Tabs',
-                    view: TabsSection,
+                    view: sections.TabsSection,
                     components: ['_partials/Tabs.svelte']
                 },
                 {
                     url: '#menu',
                     title: 'Menu',
-                    view: MenuSection,
+                    view: sections.MenuSection,
                     components: ['_partials/Menu.svelte']
                 }
             ]
@@ -245,7 +218,7 @@
 
         {
             title: 'Content',
-            pages: [{ url: '#bulma', title: 'Bulma', view: BulmaComponentsSection }]
+            pages: [{ url: '#bulma', title: 'Bulma', view: sections.BulmaComponentsSection }]
         },
         {
             title: 'Misc.',
@@ -253,16 +226,16 @@
                 {
                     url: '#dropdown',
                     title: 'Dropdown',
-                    view: DropdownSection,
+                    view: sections.DropdownSection,
                     components: ['_partials/Dropdown.svelte']
                 },
                 {
                     url: '#svelte2',
                     title: 'Svelte2',
-                    view: Svelte2Section,
+                    view: sections.Svelte2Section,
                     components: ['_partials/svelte2/Svelte2Wrapper.svelte']
                 },
-                { url: '#errors', title: 'Errors', view: ErrorsSection }
+                { url: '#errors', title: 'Errors', view: sections.ErrorsSection }
             ]
         }
     ];
@@ -309,9 +282,9 @@
                     <svelte:component this={activePage.view} {...activePage.props || {}} />
                     {#if activePage.components}
                         <hr />
-                        <div class="columns is-multiline">
+                        <div class="columns is-widescreen is-multiline">
                             {#each activePage.components as component}
-                                <div class="column is-half">
+                                <div class="column">
                                     <ComponentInfo {component} info={componentInfos[component]} />
                                 </div>
                             {/each}

@@ -100,7 +100,7 @@
 
     function runTests() {
         // get list of all colors used in last run
-        if (!__dw.vis) {
+        if (typeof __dw === 'undefined' || !__dw.vis) {
             // try again later
             return setTimeout(() => {
                 runTests();

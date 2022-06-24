@@ -3,7 +3,12 @@
 import ChartTypeTab from './ChartTypeTab.svelte';
 import { writable } from 'svelte/store';
 import { fireEvent, waitFor } from '@testing-library/svelte';
-import { renderWithContext, setConfig, trackStoreChanges } from '../../../../test-utils';
+import {
+    renderWithContext,
+    setConfig,
+    trackStoreChanges,
+    mockTranslations
+} from '../../../../test-utils';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import sinonChai from 'sinon-chai';
@@ -15,11 +20,10 @@ setConfig({ testIdAttribute: 'data-uid' });
 chai.use(chaiDom);
 chai.use(sinonChai);
 
-const messages = {
+const __ = mockTranslations({
     'bar-chart': 'Bar chart',
     'visualize / transpose-button': 'transpose'
-};
-const __ = d => messages[d] || d;
+});
 
 const visualizations = [
     {

@@ -21,6 +21,8 @@
         clearTimeout(t);
         visible = false;
     }
+
+    export let placement = 'right'; // only left and right
 </script>
 
 <style lang="scss">
@@ -78,6 +80,17 @@
             }
         }
 
+        &.open-to-left .sidehelp-content {
+            left: auto;
+            right: -1em;
+            padding: 1em 3em 1em 1em;
+
+            & > :global(.icon) {
+                left: auto;
+                right: 0.45em;
+            }
+        }
+
         &.upgrade {
             .sidehelp {
                 &-icon {
@@ -117,6 +130,7 @@
     class:compact
     class:floating={float}
     class:upgrade={type === 'upgrade'}
+    class:open-to-left={placement === 'left'}
     on:mouseenter={handleHelpMouseenter}
     on:mouseleave={handleHelpMouseleave}
     data-uid={uid}
