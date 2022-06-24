@@ -587,8 +587,8 @@ server.methods.registerChartAction(async ({ request, chart, theme }) => {
         order: 400,
         mod: {
             id: 'svelte/export-zip',
-            src: '/static/plugins/export-zip/export-zip.js',
-            css: '/static/plugins/export-zip/export-zip.css',
+            src: `/static/plugins/export-zip/export-zip.js?v=${jsHash}`,
+            css: `/static/plugins/export-zip/export-zip.css?v=${cssHash}`,
             data: {
                 answer: 42
             }
@@ -622,7 +622,7 @@ async function onPublish(event) {
 The view component can then listen to these events, no matter where it's being loaded:
 
 ```jsx
-// in plugins/foo/src/frontend/views/Custom.svelte 
+// in plugins/foo/src/frontend/views/Custom.svelte
 import { onMount, getContext } from 'svelte';
 const { initEvents } = getContext('events');
 

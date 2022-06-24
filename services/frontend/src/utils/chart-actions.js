@@ -16,7 +16,7 @@ module.exports = {
         });
 
         /**
-         * return registered custom data for specific key
+         * return registered chart actions for passed chart and theme
          */
         server.method('getChartActions', async ({ request, chart, theme }) => {
             const chartActions = await Promise.all(
