@@ -22,7 +22,7 @@
                 min="{range[0]}"
                 max="{range[1]}"
                 step="{step_*multiply_}"
-                placeholder="{placeholder}"
+                placeholder="{placeholder || ''}"
                 on:input="update()"
                 bind:value="value2"
             />

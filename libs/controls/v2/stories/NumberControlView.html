@@ -30,23 +30,24 @@
 <NumberControl labelWidth="80px" label="steps of 10" min="0" max="100" step="10" bind:value />
 <NumberControl labelWidth="80px" label="range 0...200" min="0" max="200" bind:value />
 <NumberControl labelWidth="80px" label="multiply by 5" multiply="5" min="0" max="100" bind:value />
-<NumberControl
-    labelWidth="80px"
-    label="placeholder"
-    min="0"
-    max="100"
-    placeholder="auto"
-    bind:value
-/>
+<NumberControl labelWidth="80px" label="placeholder" min="0" max="100" placeholder="auto" />
+<NumberControl labelWidth="80px" label="no placeholder" min="0" max="100" />
 <NumberControl disabled="{true}" labelWidth="80px" label="disabled" min="0" max="100" bind:value />
 <NumberControl labelWidth="80px" label="no slider" slider="{false}" min="0" max="100" bind:value />
 <NumberControl
     labelWidth="80px"
-    label="no slider with placeholder"
+    label="no slider, placeholder"
     slider="{false}"
     min="0"
     max="100"
     placeholder="auto"
+/>
+<NumberControl
+    labelWidth="80px"
+    label="no slider, no placeholder"
+    slider="{false}"
+    min="0"
+    max="100"
 />
 
 <script>
