@@ -11,6 +11,7 @@ const INCLUDE_PROPERTIES = new Set([
     'controls',
     'defaultMetadata',
     'dependencies',
+    'height',
     'icon',
     'id',
     'includeInWorkflow',
