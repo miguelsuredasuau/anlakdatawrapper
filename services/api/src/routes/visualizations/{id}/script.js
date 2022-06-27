@@ -18,16 +18,10 @@ module.exports = server => {
 async function getVisualizationScript(request, h) {
     const { params, server } = request;
 
-    const { result, statusCode } = await server.inject({
-        url: `/v3/visualizations/${params.id}`,
-        validate: false
-    });
+    const vis = server.app.visualizations.get(params.id);
+    if (!vis) return Boom.notFound();
 
-    if (statusCode !== 200) {
-        return new Boom.Boom(result.message, result);
-    }
-
-    const file = result.script;
+    const file = vis.script;
     const { mtime } = await fs.stat(file);
 
     /* https://hapi.dev/api/?v=19.1.1#-hentityoptions */

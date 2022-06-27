@@ -1,6 +1,7 @@
 const get = require('lodash/get');
 const { translate } = require('@datawrapper/service-utils/l10n');
 const clone = require('lodash/cloneDeep');
+const prepareVisualization = require('@datawrapper/service-utils/prepareVisualization');
 
 module.exports = {
     name: 'routes/visualizations',
@@ -33,7 +34,8 @@ module.exports = {
                     delete vis.icon;
                     return vis;
                 })
-                .filter(vis => !vis.hidden);
+                .filter(vis => !vis.hidden)
+                .map(prepareVisualization);
         }
 
         server.register(require('./{id}'), {

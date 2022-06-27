@@ -1,6 +1,7 @@
 const Boom = require('@hapi/boom');
 const get = require('lodash/get');
 const { translate } = require('@datawrapper/service-utils/l10n');
+const prepareVisualization = require('@datawrapper/service-utils/prepareVisualization');
 
 module.exports = {
     name: 'routes/visualizations/{id}',
@@ -36,7 +37,7 @@ async function register(server, options) {
             language: get(auth.artifacts, 'language') || 'en-US'
         });
 
-        return h.response(vis);
+        return h.response(prepareVisualization(vis));
     }
 
     require('./styles')(server, options);

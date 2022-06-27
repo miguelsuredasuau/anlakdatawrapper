@@ -8,6 +8,7 @@ const { Op } = require('@datawrapper/orm').db;
 const { Chart, User, Folder, Team, Theme } = require('@datawrapper/orm/models');
 const prepareChart = require('@datawrapper/service-utils/prepareChart');
 const assign = require('assign-deep');
+const prepareVisualization = require('@datawrapper/service-utils/prepareVisualization');
 
 module.exports = {
     name: 'routes/edit',
@@ -471,7 +472,9 @@ module.exports = {
                                 steps: workflowSteps
                             },
                             rawTheme: theme,
-                            visualizations: Array.from(server.app.visualizations.values()),
+                            visualizations: Array.from(server.app.visualizations.values()).map(
+                                prepareVisualization
+                            ),
                             customViews,
                             showEditorNavInCmsMode: get(
                                 request.auth.artifacts.activeTeam,
