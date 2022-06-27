@@ -6,20 +6,23 @@
  * @returns {object}
  */
 const INCLUDE_PROPERTIES = new Set([
-    'id',
-    'title',
     'ariaLabel',
-    'controls',
-    'dependencies',
     'axes',
+    'controls',
     'defaultMetadata',
-    'namespace',
-    'libraries',
+    'dependencies',
     'icon',
-    '__title',
-    '__styleHash',
+    'id',
+    'includeInWorkflow',
+    'libraries',
+    'namespace',
+    'options',
+    'title',
+    'workflow',
     '__controlsHash',
-    '__plugin'
+    '__plugin',
+    '__styleHash',
+    '__title'
 ]);
 
 module.exports = function prepareVisualization(visualization) {
