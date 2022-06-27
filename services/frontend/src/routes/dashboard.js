@@ -227,7 +227,6 @@ module.exports = {
 
             return Promise.all(
                 userTeams.map(async ({ id, name, users: [user] }) => {
-                    // const invitedBy = await User.findByPk(user.user_team.invited_by);
                     const invitedBy = await User.findOne({
                         where: {
                             id: user.user_team.invited_by,
@@ -238,7 +237,7 @@ module.exports = {
                         id,
                         name,
                         token: user.user_team.invite_token,
-                        invitedBy: {
+                        invitedBy: invitedBy && {
                             name: invitedBy.email || `"${invitedBy.name}"`,
                             url: invitedBy.sm_profile
                         }

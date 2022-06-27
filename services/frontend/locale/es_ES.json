@@ -1148,7 +1148,6 @@
   "visualize / layout / locale-select / explainer": "Define separadores decimales y de miles, así como la traducción de los nombres de los meses y los días de la semana.",
   "visualize / layout / locale-select / hed": "Configuración regional del resultado",
   "login / login / password-changed": "",
-  "dashboard / checks / pending-team-invites / invite-without-user": "",
   "darkmode / caption": "Vista previa del modo oscuro",
   "darkmode / caption-short": "Modo oscuro",
   "edit / preview": "Vista previa"

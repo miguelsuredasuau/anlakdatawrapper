@@ -1148,7 +1148,6 @@
   "visualize / layout / locale-select / explainer": "定义小数和千位分隔符，以及月份和工作日名称的翻译。",
   "visualize / layout / locale-select / hed": "输出语言环境",
   "login / login / password-changed": "",
-  "dashboard / checks / pending-team-invites / invite-without-user": "",
   "darkmode / caption": "深色模式预览",
   "darkmode / caption-short": "深色模式",
   "edit / preview": "预览"

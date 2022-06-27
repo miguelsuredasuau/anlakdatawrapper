@@ -1148,7 +1148,6 @@
   "visualize / layout / locale-select / explainer": "Bestimmt Dezimal- und Tausendertrennzeichen sowie die Übersetzung von Monatsnamen und Wochentagen.",
   "visualize / layout / locale-select / hed": "Ausgabe-Sprachraum",
   "login / login / password-changed": "Dein Passwort wurde erfolgreich geändert. Bitte melde dich erneut an.",
-  "dashboard / checks / pending-team-invites / invite-without-user": "Du wurdest eingeladen, dem Team <b>%team_name%</b> beizutreten!",
   "darkmode / caption": "Dunkelmodus-Vorschau",
   "darkmode / caption-short": "Dunkelmodus",
   "edit / preview": "Vorschau"

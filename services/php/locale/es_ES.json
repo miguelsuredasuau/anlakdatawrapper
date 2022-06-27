@@ -1090,7 +1090,6 @@
   "next-page": "Página siguiente",
   "controls / color-category / include-in-key": "Incluir en leyenda",
   "controls / custom-format / empty": "---",
-  "darkmode / caption": "Vista previa del modo oscuro",
   "darkmode / note": "Puedes activar el modo oscuro en la pestaña de <b><a href=\"#layout\" id=\"to-layout-tab\">diseño</a></b>. Obtén más información en <b><a href=\"https://academy.datawrapper.de/article/357-dark-mode-in-embedded-datawrapper-visualizations\" target=\"_blank\">Academy</a></b>.",
   "layout / auto-dark / intro / title": "Introducción: modo oscuro",
   "layout / auto-dark / intro / body": "Activa el <b>modo oscuro automático</b> y tus visualizaciones integradas se adaptarán automáticamente a las preferencias del dispositivo de tu lector. Obtén más información en nuestra <a href=\"https://blog.datawrapper.de/dark-mode-for-embedded-visualizations/\" target=\"_blank\">introducción detallada</a>.",
@@ -1110,7 +1109,6 @@
   "teams / archive / custom-fields": "Campo personalizado",
   "teams / archive / custom-fields / label": "Mostrar campo personalizado",
   "teams / archive / custom-fields / p": "Puedes <a href='$1'>crear campos personalizados aquí</a> y seleccionar un campo para que aparezca en la vista del archivo. El campo personalizado seleccionado aparecerá cuando selecciones este equipo (\"$2\") como tu equipo activo.",
-  "darkmode / caption-short": "Modo oscuro",
   "teams / archive / locale / p": "La configuración regional aparecerá cuando selecciones este equipo (\"$1\") como tu equipo activo.",
   "layout / auto-dark / intro / preview": "Puedes obtener una vista previa del modo oscuro usando los botones que aparecen debajo de tu visualización:",
   "teams / archive / thumbnails / h3": "Miniaturas de la visualización",
@@ -1148,5 +1146,9 @@
   "describe / table / warnings": "%num% avisos",
   "visualize / annotate / source-url / not-allowed": "",
   "visualize / layout / locale-select / explainer": "Define separadores decimales y de miles, así como la traducción de los nombres de los meses y los días de la semana.",
-  "visualize / layout / locale-select / hed": "Configuración regional del resultado"
+  "visualize / layout / locale-select / hed": "Configuración regional del resultado",
+  "login / login / password-changed": "",
+  "darkmode / caption": "Vista previa del modo oscuro",
+  "darkmode / caption-short": "Modo oscuro",
+  "edit / preview": "Vista previa"
 }

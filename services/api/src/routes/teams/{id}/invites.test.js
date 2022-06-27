@@ -6,15 +6,15 @@ const {
     setup
 } = require('../../../../test/helpers/setup');
 
-async function inviteUser(context, teamObj, email) {
-    const { User } = require('@datawrapper/orm/models');
+async function inviteUser(context, teamObj, email, invitingUser) {
+    const { User, Team } = require('@datawrapper/orm/models');
     const res = await context.server.inject({
         method: 'POST',
         url: `/v3/teams/${teamObj.team.id}/invites`,
         auth: {
             strategy: 'session',
-            credentials: teamObj.session,
-            artifacts: teamObj.user
+            credentials: invitingUser?.session || teamObj.session,
+            artifacts: invitingUser?.user || teamObj.user
         },
         headers: context.headers,
         payload: {
@@ -22,8 +22,19 @@ async function inviteUser(context, teamObj, email) {
             role: 'member'
         }
     });
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email }, include: [Team] });
     return { res, user };
+}
+
+async function getUserTeam(user, team, inviteToken) {
+    const { UserTeam } = require('@datawrapper/orm/models');
+    return await UserTeam.findOne({
+        where: {
+            invite_token: inviteToken,
+            user_id: user.id,
+            organization_id: team.id
+        }
+    });
 }
 
 test.before(async t => {
@@ -105,6 +116,7 @@ test('owners can invite a maximum number of users equal to MAX_TEAM_INVITES', as
         await destroy(users, ...Object.values(teamObj));
     }
 });
+
 test('owners cannot invite more than MAX_TEAM_INVITES by deleting invite', async t => {
     const users = [];
     let teamObj = {};
@@ -136,5 +148,53 @@ test('owners cannot invite more than MAX_TEAM_INVITES by deleting invite', async
         }
     } finally {
         await destroy(users, ...Object.values(teamObj));
+    }
+});
+
+test('team invites get removed when user deletes account', async t => {
+    let teamObj = {};
+    let member, invitee, invite, userTeam;
+
+    try {
+        teamObj = await createTeamWithUser(t.context.server);
+        member = await teamObj.addUser('admin');
+        invitee = await createUser(t.context.server);
+        invite = await inviteUser(t.context, teamObj, invitee.user.email, member);
+        const { invite_token: inviteToken } = invite.user.teams[0].user_team;
+
+        // Delete inviting user:
+        await t.context.server.inject({
+            method: 'DELETE',
+            url: `/v3/users/${member.user.id}`,
+            headers: t.context.headers,
+            auth: {
+                strategy: 'session',
+                credentials: member.session,
+                artifacts: member.user
+            },
+            payload: {
+                email: member.user.email,
+                password: 'test-password'
+            }
+        });
+
+        // Invite has been removed from DB:
+        userTeam = await getUserTeam(invitee.user, teamObj.team, inviteToken);
+        t.falsy(userTeam);
+
+        // Invite cannot be accepted:
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/teams/${teamObj.team.id}/invites/${inviteToken}`,
+            auth: {
+                strategy: 'session',
+                credentials: invitee.session,
+                artifacts: invitee.user
+            },
+            headers: t.context.headers
+        });
+        t.is(res.statusCode, 404);
+    } finally {
+        await destroy(member, invitee, invite, userTeam, ...Object.values(teamObj));
     }
 });

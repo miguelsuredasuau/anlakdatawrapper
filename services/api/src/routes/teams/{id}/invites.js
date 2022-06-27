@@ -101,6 +101,17 @@ module.exports = async server => {
         },
         handler: rejectTeamInvitation
     });
+
+    // remove pending team invites from users who deleted their account
+    const { events, event } = server.app;
+    events.on(event.USER_DELETED, async ({ id }) => {
+        await UserTeam.destroy({
+            where: {
+                invited_by: id,
+                invite_token: { [User.sequelize.Op.ne]: '' }
+            }
+        });
+    });
 };
 
 /**

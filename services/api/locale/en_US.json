@@ -1002,7 +1002,7 @@
   "dashboard / checks / email-setup / setup": "Help us getting in touch with you by [[setting up an email address]] for your account.",
   "dashboard / checks / email-setup / title": "Complete your profile",
   "dashboard / checks / pending-team-invites / accept": "Accept invitation",
-  "dashboard / checks / pending-team-invites / invite": "You have been invited to join the Datawrapper Team <b>%team_name%</b>!",
+  "dashboard / checks / pending-team-invites / invite": "The user <tt>%user%</tt> has invited you to join the team <b>\"%team_name%\"</b>! ",
   "dashboard / checks / pending-team-invites / reject": "reject it",
   "dashboard / checks / pending-team-invites / title": "Pending invitation",
   "dashboard / expired-at": "Single expired at",
@@ -1090,7 +1090,6 @@
   "next-page": "Next page",
   "controls / color-category / include-in-key": "Include in key",
   "controls / custom-format / empty": "---",
-  "darkmode / caption": "Dark Mode Preview",
   "darkmode / note": "You can activate dark mode in the <b><a href=\"#layout\" id=\"to-layout-tab\">layout</a></b> tab. Find out more in the <b><a href=\"https://academy.datawrapper.de/article/357-dark-mode-in-embedded-datawrapper-visualizations\" target=\"_blank\">Academy</a></b>.",
   "layout / auto-dark / intro / title": "Introducing: dark mode",
   "layout / auto-dark / intro / body": "Enable <b>automatic dark mode</b>, and your embedded visualizations will automatically adapt to your readers' device preferences. Find out more in our <a href=\"https://blog.datawrapper.de/dark-mode-for-embedded-visualizations/\" target=\"_blank\">detailed introduction</a>.",
@@ -1110,7 +1109,6 @@
   "teams / archive / custom-fields": "Custom field",
   "teams / archive / custom-fields / label": "Show custom field",
   "teams / archive / custom-fields / p": "You can <a href='$1'>create custom fields here</a> and select one field to show in the archive view. Selected custom field will be shown when you select this team (\"$2\") as your active team.",
-  "darkmode / caption-short": "Dark Mode",
   "teams / archive / locale / p": "Locale will be shown when you select this team (\"$1\") as your active team.",
   "layout / auto-dark / intro / preview": "You can preview dark mode using these buttons below your visualization:",
   "teams / archive / thumbnails / h3": "Visualization thumbnails",
@@ -1145,5 +1143,12 @@
   "dashboard / hiring / title": "We're Hiring!",
   "dashboard / hiring / intro": "Join our team remotely or in Berlin for one of the following positions:",
   "describe / table / warning": "%num% warning",
-  "describe / table / warnings": "%num% warnings"
+  "describe / table / warnings": "%num% warnings",
+  "visualize / annotate / source-url / not-allowed": "Invalid URL",
+  "visualize / layout / locale-select / explainer": "Defines decimal and thousand separators as well as translation of month and weekday names.",
+  "visualize / layout / locale-select / hed": "Output locale",
+  "login / login / password-changed": "You successfully changed your password. Please log in again.",
+  "darkmode / caption": "Dark Mode Preview",
+  "darkmode / caption-short": "Dark Mode",
+  "edit / preview": "Preview"
 }

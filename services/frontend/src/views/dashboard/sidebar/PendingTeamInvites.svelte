@@ -5,21 +5,26 @@
 
     export let pendingTeams;
     export let __;
+    export let uid;
 
-    function getMessage(teamName, user) {
-        const userName = truncate(purifyHtml(user.name, ''), 15, 15);
-        let url = false;
-        if (user.url) {
-            try {
-                const parsed = new URL(user.url);
-                url = parsed.href;
-            } catch (e) {
-                url = false;
-            }
+    function getUserDisplay({ name, url }) {
+        const userName = truncate(purifyHtml(name, ''), 15, 15);
+        if (!url) {
+            return userName;
         }
+        try {
+            const { href } = new URL(url);
+            return `<a href="${href}" target="_blank">${userName}</a>`;
+        } catch (e) {
+            return userName;
+        }
+    }
+
+    function getMessage(team, user) {
+        const teamName = truncate(purifyHtml(team, ''));
         return __('dashboard / checks / pending-team-invites / invite')
-            .replace('%team_name%', `${truncate(purifyHtml(teamName, ''))}`)
-            .replace('%user%', url ? `<a href="${url}" target="_blank">${userName}</a>` : userName);
+            .replace('%team_name%', teamName)
+            .replace('%user%', getUserDisplay(user));
     }
 </script>
 
@@ -42,23 +47,34 @@
 
 {#if pendingTeams}
     {#each pendingTeams as team}
-        <IconBox icon="team">
-            <span slot="title">
-                {__('dashboard / checks / pending-team-invites / title')}
-            </span>
+        {#if team.invitedBy}
+            <IconBox icon="team" {uid}>
+                <span slot="title">
+                    {__('dashboard / checks / pending-team-invites / title')}
+                </span>
 
-            <p class="invite-msg pb-4">{@html getMessage(team.name, team.invitedBy)}</p>
+                <p class="invite-msg pb-4" data-uid={uid && `${uid}-message`}>
+                    {@html getMessage(team.name, team.invitedBy)}
+                </p>
 
-            <a class="button is-primary" href="/team/{team.id}/invite/{team.token}/accept">
-                {__('dashboard / checks / pending-team-invites / accept')}
-            </a>
-
-            <span class="reject pt-2 pl-1 has-text-grey-dark">
-                &nbsp;{__('account / or')}
-                <a href="/team/{team.id}/invite/{team.token}/reject">
-                    {__('dashboard / checks / pending-team-invites / reject')}
+                <a
+                    class="button is-primary"
+                    href="/team/{team.id}/invite/{team.token}/accept"
+                    data-uid={uid && `${uid}-accept`}
+                >
+                    {__('dashboard / checks / pending-team-invites / accept')}
                 </a>
-            </span>
-        </IconBox>
+
+                <span class="reject pt-2 pl-1 has-text-grey-dark">
+                    &nbsp;{__('account / or')}
+                    <a
+                        href="/team/{team.id}/invite/{team.token}/reject"
+                        data-uid={uid && `${uid}-reject`}
+                    >
+                        {__('dashboard / checks / pending-team-invites / reject')}
+                    </a>
+                </span>
+            </IconBox>
+        {/if}
     {/each}
 {/if}

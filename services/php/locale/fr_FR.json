@@ -1090,7 +1090,6 @@
   "next-page": "Page suivante",
   "controls / color-category / include-in-key": "Inclure dans la clé",
   "controls / custom-format / empty": "---",
-  "darkmode / caption": "Aperçu du mode sombre",
   "darkmode / note": "Vous pouvez activer le mode sombre dans l'onglet <b><a href=\"#layout\" id=\"to-layout-tab\">Mise en page</a></b>. Pour en savoir plus, consultez <b><a href=\"https://academy.datawrapper.de/article/357-dark-mode-in-embedded-datawrapper-visualizations\" target=\"_blank\">Academy</a></b>.",
   "layout / auto-dark / intro / title": "Présentation du mode sombre",
   "layout / auto-dark / intro / body": "Activez le <b>mode sombre automatique</b>, et vos visualisations incorporées s'adapteront automatiquement aux préférences d'appareil de vos lecteurs. Pour en savoir plus, consultez notre <a href=\"https://blog.datawrapper.de/dark-mode-for-embedded-visualizations/\" target=\"_blank\">introduction détaillée</a>.",
@@ -1110,7 +1109,6 @@
   "teams / archive / custom-fields": "Champ personnalisé",
   "teams / archive / custom-fields / label": "Afficher le champ personnalisé",
   "teams / archive / custom-fields / p": "Vous pouvez <a href='$1'>créer des champs personnalisés ici</a> et sélectionner un champ à afficher dans la visualisation des archives. Le champ personnalisé sélectionné sera affiché lorsque vous sélectionnez cette équipe (\"$2\") en tant qu'équipe active.",
-  "darkmode / caption-short": "Mode sombre",
   "teams / archive / locale / p": "La région sera affichée lorsque vous sélectionnez cette équipe (\"$1\") en tant qu'équipe active.",
   "layout / auto-dark / intro / preview": "Vous pouvez prévisualiser le mode sombre à l'aide des boutons en dessous de votre visualisation :",
   "teams / archive / thumbnails / h3": "Vignettes de visualisation",
@@ -1148,5 +1146,9 @@
   "describe / table / warnings": "%num% alertes",
   "visualize / annotate / source-url / not-allowed": "",
   "visualize / layout / locale-select / explainer": "Définit les séparateurs de décimales et de milliers, ainsi que la traduction des noms de mois et de jours de la semaine.",
-  "visualize / layout / locale-select / hed": "Région"
+  "visualize / layout / locale-select / hed": "Région",
+  "login / login / password-changed": "",
+  "darkmode / caption": "Aperçu du mode sombre",
+  "darkmode / caption-short": "Mode sombre",
+  "edit / preview": "Aper&ccedil;u"
 }
