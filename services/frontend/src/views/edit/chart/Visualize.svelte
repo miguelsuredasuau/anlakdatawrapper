@@ -168,7 +168,7 @@
 
     .limit-width {
         max-width: calc(100vw - 510px);
-        overflow-x: scroll;
+        overflow-x: auto;
         overflow-y: clip;
         height: auto;
     }
