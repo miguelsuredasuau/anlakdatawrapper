@@ -6552,6 +6552,37 @@ function set(object, key, value) {
     return false;
 }
 
+/**
+ * Use this function to post event messages out of Datawrapper iframe and
+ * web component embeds to the parent website.
+ *
+ * @exports postEvent
+ * @kind function
+ *
+ * @param {string} chartId - the chart id each message should be signed with
+ * @param {boolean} isIframe - render context (`true`: iframe, `false`: web component)
+ * @returns {function}
+ *
+ * @example
+ * import genPostEvent from '@datawrapper/shared/postEvent';
+ * const postEvent = genPostEvent(chart.get('id'), true);
+ * postEvent('bar.click', { value: 123 });
+ */
+function postEvent(chartId, isIframe) {
+    const host = isIframe ? window.parent : window;
+    return function (event, data) {
+        if (host && host.postMessage) {
+            const evt = {
+                source: 'datawrapper',
+                chartId,
+                type: event,
+                data
+            };
+            host.postMessage(evt, '*');
+        }
+    };
+}
+
 /*
  * simple event callbacks, mimicing the $.Callbacks API
  */
@@ -6920,6 +6951,7 @@ function chart (attributes) {
     let theme;
     let metricPrefix;
     let locale;
+    let flags = {};
 
     // I believe these are no longer in use anywhere.
     // TODO: Clarify & remove
@@ -6929,17 +6961,6 @@ function chart (attributes) {
     const _assets = {};
     let _translations = {};
     let _ds;
-
-    const flagsBoolean = [
-        'plain',
-        'static',
-        'svgonly',
-        'map2svg',
-        'transparent',
-        'fitchart',
-        'fitheight'
-    ];
-    const flagsString = ['theme', 'search'];
 
     // public interface
     const chart = {
@@ -7074,11 +7095,27 @@ function chart (attributes) {
             }
         },
 
-        render(isIframe, outerContainer) {
+        createPostEvent() {
+            const chartId = chart.get('id');
+            const { isIframe } = flags;
+            return postEvent(chartId, isIframe);
+        },
+
+        // sets or gets the flags
+        flags(_flags) {
+            if (arguments.length) {
+                flags = _flags;
+                return chart;
+            }
+            return flags;
+        },
+
+        render(outerContainer) {
             if (!visualization$1 || !theme || !dataset) {
                 throw new Error('cannot render the chart!');
             }
 
+            const isIframe = flags.isIframe;
             const container = chart.vis().target();
 
             visualization$1.chart(chart);
@@ -7119,16 +7156,7 @@ function chart (attributes) {
             visualization$1.size(w, h);
             visualization$1.__init();
 
-            const flags = { isIframe };
-            const urlParams = new URLSearchParams(window.location.search);
-            if (isIframe) {
-                flagsBoolean.forEach(
-                    key => (flags[key] = JSON.parse(urlParams.get(key) || 'false'))
-                );
-                flagsString.forEach(key => (flags[key] = urlParams.get(key)));
-            }
-
-            visualization$1.render(container, flags);
+            visualization$1.render(container);
 
             if (isIframe) {
                 window.clearInterval(this.__resizingInterval);

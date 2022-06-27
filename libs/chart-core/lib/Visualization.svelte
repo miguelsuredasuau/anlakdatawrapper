@@ -18,7 +18,6 @@
     import svgRule from './blocks/svgRule.svelte';
 
     import { domReady, width } from './dw/utils/index.mjs';
-    import PostEvent from '@datawrapper/shared/postEvent.js';
     import observeFonts from '@datawrapper/shared/observeFonts.js';
     import createEmotion from '@emotion/css/create-instance/dist/emotion-css-create-instance.cjs.js';
     import deepmerge from 'deepmerge';
@@ -535,17 +534,41 @@ Please make sure you called __(key) with a key of type "string".
             });
         }
 
+        // set flags
+        const flags = { isIframe };
+        const flagsBoolean = [
+            'plain',
+            'static',
+            'svgonly',
+            'map2svg',
+            'transparent',
+            'fitchart',
+            'fitheight'
+        ];
+        const flagsString = ['theme', 'search'];
+        if (isIframe) {
+            const urlParams = new URLSearchParams(window.location.search);
+            flagsBoolean.forEach(key => (flags[key] = JSON.parse(urlParams.get(key) || 'false')));
+            flagsString.forEach(key => (flags[key] = urlParams.get(key)));
+        } else {
+            // @todo: read flags from script tag , e.g.
+            // const script = document.currentScript;
+            // flagsBoolean.forEach(key => (flags[key] = JSON.parse(script.getAttribute(`data-${key}`) || 'false'));
+            // flagsString.forEach(key => (flags[key] = script.getAttribute(`data-${key}`)));
+        }
+        dwChart.flags(flags);
+
         // render chart
-        dwChart.render(isIframe, outerContainer);
+        dwChart.render(outerContainer);
 
         // await necessary reload triggers
         observeFonts(theme.fonts, theme.data.typography)
-            .then(() => dwChart.render(isIframe, outerContainer))
-            .catch(() => dwChart.render(isIframe, outerContainer));
+            .then(() => dwChart.render(outerContainer))
+            .catch(() => dwChart.render(outerContainer));
 
         // iPhone/iPad fix
         if (/iP(hone|od|ad)/.test(navigator.platform)) {
-            window.onload = dwChart.render(isIframe, outerContainer);
+            window.onload = dwChart.render(outerContainer);
         }
 
         isIframe && initResizeHandler(target);
@@ -586,7 +609,7 @@ Please make sure you called __(key) with a key of type "string".
                 set(theme.data, 'colors.palette', get(themeDataLight, 'colors.palette', []));
             }
             outerContainer.classList.toggle('is-dark-mode', isDark);
-            dwChart.render(isIframe, outerContainer);
+            dwChart.render(outerContainer);
         }
 
         function initResizeHandler(container) {
@@ -596,7 +619,7 @@ Please make sure you called __(key) with a key of type "string".
                 clearTimeout(reloadTimer);
                 reloadTimer = setTimeout(function () {
                     dwChart.vis().fire('resize');
-                    dwChart.render(isIframe, outerContainer);
+                    dwChart.render(outerContainer);
                 }, 200);
             }
 
@@ -614,10 +637,12 @@ Please make sure you called __(key) with a key of type "string".
 
             window.addEventListener('resize', resizeHandler);
         }
+
+        return dwChart;
     }
 
     onMount(async () => {
-        await run();
+        const dwChart = await run();
 
         outerContainer.classList.toggle('dir-rtl', textDirection === 'rtl');
 
@@ -642,7 +667,7 @@ Please make sure you called __(key) with a key of type "string".
 
             // fire events on hashchange
             domReady(() => {
-                postEvent = PostEvent(chart.id);
+                postEvent = dwChart.createPostEvent();
                 window.addEventListener('hashchange', () => {
                     postEvent('hash.change', { hash: window.location.hash });
                 });
@@ -653,7 +678,7 @@ Please make sure you called __(key) with a key of type "string".
             afterUpdate(() => {
                 const newHeight = document.body.offsetHeight;
                 if (currentHeight !== newHeight && typeof dwChart.render === 'function') {
-                    dwChart.render(isIframe, outerContainer);
+                    dwChart.render(outerContainer);
                     currentHeight = newHeight;
                 }
             });
@@ -666,7 +691,7 @@ Please make sure you called __(key) with a key of type "string".
             };
             window.__dw.vis = vis;
             window.__dw.render = () => {
-                dwChart.render(isIframe, outerContainer);
+                dwChart.render(outerContainer);
             };
             window.fontsJSON = theme.fonts;
         }

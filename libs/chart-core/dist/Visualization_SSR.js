@@ -8423,33 +8423,6 @@ function domReady(callback) {
       callback();
     });
   }
-}/**
- * Use this function to post event messages out of Datawrapper iframe embeds
- * to the parent website.
- *
- * @exports postEvent
- * @kind function
- *
- * @param {string} chartId - the chart id each message should be signed with
- * @returns {function}
- *
- * @example
- * import genPostEvent from '@datawrapper/shared/postEvent';
- * const postEvent = genPostEvent(chart.get('id'));
- * postEvent('bar:hover', {value: 123});
- */
-function postEvent(chartId) {
-  return function (event, data) {
-    if (window.parent && window.parent.postMessage) {
-      const evt = {
-        source: 'datawrapper',
-        chartId,
-        type: event,
-        data
-      };
-      window.parent.postMessage(evt, '*');
-    }
-  };
 }var fontfaceobserver_standalone = {exports: {}};/* Font Face Observer v2.1.0 - © Bram Stein. License: BSD-3-Clause */
 
 (function (module) {
@@ -10541,7 +10514,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
 
   let target, dwChart, vis;
 
-  let postEvent$1 = () => {};
+  let postEvent = () => {};
 
   const datasetName = `dataset.${get(chart.metadata, "data.json") ? "json" : "csv"}`;
   const coreBlocks = [{
@@ -10882,15 +10855,33 @@ Please make sure you called __(key) with a key of type "string".
       matchMediaQuery.addEventListener("change", e => {
         updateDarkModeState(e.matches);
       });
-    } // render chart
+    } // set flags
 
 
-    dwChart.render(isIframe, outerContainer); // await necessary reload triggers
+    const flags = {
+      isIframe
+    };
+    const flagsBoolean = ["plain", "static", "svgonly", "map2svg", "transparent", "fitchart", "fitheight"];
+    const flagsString = ["theme", "search"];
 
-    observeFonts(theme.fonts, theme.data.typography).then(() => dwChart.render(isIframe, outerContainer)).catch(() => dwChart.render(isIframe, outerContainer)); // iPhone/iPad fix
+    if (isIframe) {
+      const urlParams = new URLSearchParams(window.location.search);
+      flagsBoolean.forEach(key => flags[key] = JSON.parse(urlParams.get(key) || "false"));
+      flagsString.forEach(key => flags[key] = urlParams.get(key));
+    } // @todo: read flags from script tag , e.g.
+    // const script = document.currentScript;
+    // flagsBoolean.forEach(key => (flags[key] = JSON.parse(script.getAttribute(`data-${key}`) || 'false'));
+    // flagsString.forEach(key => (flags[key] = script.getAttribute(`data-${key}`)));
+
+
+    dwChart.flags(flags); // render chart
+
+    dwChart.render(outerContainer); // await necessary reload triggers
+
+    observeFonts(theme.fonts, theme.data.typography).then(() => dwChart.render(outerContainer)).catch(() => dwChart.render(outerContainer)); // iPhone/iPad fix
 
     if (/iP(hone|od|ad)/.test(navigator.platform)) {
-      window.onload = dwChart.render(isIframe, outerContainer);
+      window.onload = dwChart.render(outerContainer);
     }
 
     isIframe && initResizeHandler(target);
@@ -10931,7 +10922,7 @@ Please make sure you called __(key) with a key of type "string".
       }
 
       outerContainer.classList.toggle("is-dark-mode", isDark);
-      dwChart.render(isIframe, outerContainer);
+      dwChart.render(outerContainer);
     }
 
     function initResizeHandler(container) {
@@ -10941,7 +10932,7 @@ Please make sure you called __(key) with a key of type "string".
         clearTimeout(reloadTimer);
         reloadTimer = setTimeout(function () {
           dwChart.vis().fire("resize");
-          dwChart.render(isIframe, outerContainer);
+          dwChart.render(outerContainer);
         }, 200);
       }
 
@@ -10960,10 +10951,12 @@ Please make sure you called __(key) with a key of type "string".
       const resizeHandler = fixedHeight ? resizeFixed : resize;
       window.addEventListener("resize", resizeHandler);
     }
+
+    return dwChart;
   }
 
   onMount(async () => {
-    await run();
+    const dwChart = await run();
     outerContainer.classList.toggle("dir-rtl", textDirection === "rtl");
 
     if (isIframe) {
@@ -10988,9 +10981,9 @@ Please make sure you called __(key) with a key of type "string".
 
 
       domReady(() => {
-        postEvent$1 = postEvent(chart.id);
+        postEvent = dwChart.createPostEvent();
         window.addEventListener("hashchange", () => {
-          postEvent$1("hash.change", {
+          postEvent("hash.change", {
             hash: window.location.hash
           });
         });
@@ -11001,7 +10994,7 @@ Please make sure you called __(key) with a key of type "string".
         const newHeight = document.body.offsetHeight;
 
         if (currentHeight !== newHeight && typeof dwChart.render === "function") {
-          dwChart.render(isIframe, outerContainer);
+          dwChart.render(outerContainer);
           currentHeight = newHeight;
         }
       }); // provide external APIs
@@ -11014,7 +11007,7 @@ Please make sure you called __(key) with a key of type "string".
       window.__dw.vis = vis;
 
       window.__dw.render = () => {
-        dwChart.render(isIframe, outerContainer);
+        dwChart.render(outerContainer);
       };
 
       window.fontsJSON = theme.fonts;
@@ -11097,7 +11090,7 @@ Please make sure you called __(key) with a key of type "string".
     __,
     purifyHtml: clean,
     get,
-    postEvent: postEvent$1,
+    postEvent,
     teamPublicSettings,
     theme,
     chart,
