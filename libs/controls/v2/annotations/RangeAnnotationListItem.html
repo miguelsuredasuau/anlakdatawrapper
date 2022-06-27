@@ -5,7 +5,7 @@
         item.x1 : item.y1}` : ''}</span
     >
     <span class="pull-right">
-        <i on:click|stopPropagation="deleteAnnotation(item.id)" class="fa fa-fw fa-trash"></i>
+        <i on:click|stopPropagation="fire('delete')" class="fa fa-fw fa-trash"></i>
     </span>
 </div>
 
@@ -40,15 +40,5 @@
 </style>
 
 <script>
-    export default {
-        methods: {
-            deleteAnnotation(id) {
-                // @todo: there must be a better way to send delete event from here,
-                // without relying on custom events
-                const customEvent = new CustomEvent('deleteInList', { detail: id });
-                const annotationsWrapEl = document.getElementById('svelte-range-annotations-wrap');
-                annotationsWrapEl.dispatchEvent(customEvent);
-            }
-        }
-    };
+    export default {};
 </script>

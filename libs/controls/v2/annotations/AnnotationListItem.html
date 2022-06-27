@@ -12,7 +12,7 @@
         {/if} {#if !item.showMobile && !item.showDesktop}
         <i class="fa fa-fw fa-eye-slash"></i>
         {/if}
-        <i on:click|stopPropagation="deleteAnnotation(item.id)" class="fa fa-fw fa-trash"></i>
+        <i on:click|stopPropagation="fire('delete')" class="fa fa-fw fa-trash"></i>
     </span>
 </div>
 
@@ -62,15 +62,6 @@
                 return false;
             }
         },
-        helpers: { __ },
-        methods: {
-            deleteAnnotation(id) {
-                // @todo: there must be a better way to send delete event from here,
-                // without relying on custom events
-                const customEvent = new CustomEvent('deleteInList', { detail: id });
-                const annotationsWrapEl = document.getElementById('svelte-annotations-wrap');
-                annotationsWrapEl.dispatchEvent(customEvent);
-            }
-        }
+        helpers: { __ }
     };
 </script>

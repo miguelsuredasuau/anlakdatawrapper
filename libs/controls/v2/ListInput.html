@@ -29,6 +29,7 @@
             {draggable}
             {index}
             on:change="onChange(event)"
+            on:delete="fire('deleteItems', [item.id])"
             this="{itemRenderer}"
             {data}
         />

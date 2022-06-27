@@ -123,9 +123,16 @@
         // vs data.settings.default_theme.
         // notify parent component about data changes from svelte2 wrapper
         const cloned = clone(event.detail);
-        data = cloned.data;
-        storeData = cloned.store;
-        eventDispatch('update', cloned);
+        let fireUpdate = false;
+        if (!isEqual(data, cloned.data)) {
+            data = cloned.data;
+            fireUpdate = true;
+        }
+        if (!isEqual(storeData, cloned.store)) {
+            storeData = cloned.store;
+            fireUpdate = true;
+        }
+        fireUpdate && eventDispatch('update', cloned);
     }
 </script>
 

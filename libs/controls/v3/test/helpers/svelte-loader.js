@@ -31,7 +31,7 @@ export function resolve(specifier, context, defaultResolve) {
         return { url: new URL(specifier, parentURL).href };
     }
 
-    if (lodashRegex.test(specifier)) {
+    if (lodashRegex.test(specifier) && !specifier.endsWith('.js')) {
         return defaultResolve(specifier + '.js', context, defaultResolve);
     }
 

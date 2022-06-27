@@ -17,8 +17,10 @@
     import RefineTab from './visualize/RefineTab.svelte';
     // other JS
     import clone from 'lodash/cloneDeep';
+    import unset from 'lodash/unset';
     import { onMount, getContext } from 'svelte';
     import { headerProps } from '_layout/stores';
+    import objectDiff from '@datawrapper/shared/objectDiff';
     // load stores from context
     const { chart, theme, visualization, isDark, customViews } = getContext('page/edit');
 
@@ -106,12 +108,22 @@
      * since we don't want to wait for the server roundtrip
      * we inject the new metadata before re-rendering
      */
+    const IGNORE = ['text-annotations', 'range-annotations'];
     function rerenderPreview() {
         iframePreview.getContext(win => {
             // Re-render chart with new attributes:
-            win.__dw.vis.chart().set('metadata', clone($chart.metadata));
-            win.__dw.vis.chart().load(win.__dw.params.data);
-            win.__dw.render();
+
+            const { metadata: oldMetadata } = win.__dw.vis.chart().get();
+            const newMetadata = clone($chart.metadata);
+            const visualizeDiff = objectDiff(oldMetadata.visualize, newMetadata.visualize);
+            IGNORE.forEach(key => {
+                unset(visualizeDiff, key);
+            });
+            if (Object.keys(visualizeDiff).length) {
+                win.__dw.vis.chart().set('metadata', newMetadata);
+                win.__dw.vis.chart().load(win.__dw.params.data);
+                win.__dw.render();
+            }
         });
     }
 

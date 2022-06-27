@@ -22,7 +22,6 @@
                 loadControls(vis.id);
             }
         });
-
         chart.subscribeKey('metadata', () => {
             storeData = getStoreData();
         });

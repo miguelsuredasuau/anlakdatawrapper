@@ -34,6 +34,7 @@
             draggable="{true}"
             deselectable="{true}"
             on:itemDrag="dragAnnotation(event)"
+            on:deleteItems="deleteTextAnnotations(event)"
             bind:selected="editorState.selectedTextAnnotations"
         />
         {/if} {#if editorState.selectedTextAnnotations.length === 1}
@@ -83,6 +84,7 @@
             items="{rangeAnnotationList}"
             itemRenderer="{RangeAnnotationListItem}"
             deselectable="{true}"
+            on:deleteItems="deleteRangeAnnotations(event)"
             bind:selected="editorState.selectedRangeAnnotations"
         />
         {/if} {#if editorState.selectedRangeAnnotations.length === 1}
@@ -201,6 +203,7 @@
     import purifyHtml from '@datawrapper/shared/purifyHtml';
     import clone from '@datawrapper/shared/clone';
     import { __ } from '@datawrapper/shared/l10n';
+    import set from 'lodash/set';
 
     export default {
         components: {
@@ -272,15 +275,19 @@
             syncAnnotationLayer(annotationLayer) {
                 let { annotationLayerOff } = this.get();
                 if (typeof annotationLayerOff === 'function') annotationLayerOff();
-                annotationLayerOff = annotationLayer.$on('update', () => this.updateState());
+                annotationLayerOff = annotationLayer.$on('update', event =>
+                    this.updateState(event.detail)
+                );
                 this.set({ annotationLayer, annotationLayerOff });
             },
-            updateState() {
-                const { $metadata, editorState } = this.get();
-                this.set({ $metadata, editorState });
-                // we need to manually save metadata changes since
-                // setting `$metadata` above does not cause a store state update
-                this.store.set({ metadata: $metadata });
+            updateState({ rangeAnnotations, textAnnotations, editorState }) {
+                this.store.setMetadata('visualize.range-annotations', rangeAnnotations);
+                this.store.setMetadata('visualize.text-annotations', textAnnotations);
+                // ensure svelte re-renders
+                const { $metadata } = this.get();
+                set($metadata, 'visualize.range-annotations', rangeAnnotations);
+                set($metadata, 'visualize.text-annotations', textAnnotations);
+                this.set({ editorState, $metadata });
             },
             setEditorState(propObj) {
                 const { editorState } = this.get();
@@ -339,6 +346,9 @@
                 ids.sort((a, b) => b - a);
                 ids.forEach(id => updatedAnnotationData.splice(id, 1));
                 this.store.setMetadata('visualize.text-annotations', updatedAnnotationData);
+                const { $metadata } = this.get();
+                set($metadata, 'visualize.text-annotations', updatedAnnotationData);
+                this.set({ $metadata });
             },
             deleteRangeAnnotations(ids) {
                 this.setEditorState({ selectedRangeAnnotations: [] });
@@ -349,6 +359,9 @@
                 ids.sort((a, b) => b - a);
                 ids.forEach(id => updatedAnnotationData.splice(id, 1));
                 this.store.setMetadata('visualize.range-annotations', updatedAnnotationData);
+                const { $metadata } = this.get();
+                set($metadata, 'visualize.range-annotations', updatedAnnotationData);
+                this.set({ $metadata });
             },
             duplicateTextAnnotation(id) {
                 this.setEditorState({ selectedTextAnnotations: [] });
@@ -491,16 +504,18 @@
 
             // push state updates from controls to render layer
             if (previous && current.annotationLayer) {
-                const textAnnotationData = this.store.getMetadata('visualize.text-annotations', []);
-                const rangeAnnotationData = this.store.getMetadata(
-                    'visualize.range-annotations',
-                    []
+                const textAnnotationData = clone(
+                    this.store.getMetadata('visualize.text-annotations', [])
+                );
+                const rangeAnnotationData = clone(
+                    this.store.getMetadata('visualize.range-annotations', [])
                 );
                 const { editorState } = this.get();
-                current.annotationLayer.$set({
+                const editorStateData = clone(editorState);
+                current.annotationLayer.setAnnotationState({
                     textAnnotations: textAnnotationData,
                     rangeAnnotations: rangeAnnotationData,
-                    editorState
+                    editorState: editorStateData
                 });
             }
 
