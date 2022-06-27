@@ -135,7 +135,10 @@ class SvelteView {
                     SSR_CSS: css.code,
                     NODE_ENV: process.env.NODE_ENV,
                     SSR_HTML: html,
-                    GITHEAD: this.server.app.GITHEAD.substr(0, 8),
+                    GITHEAD:
+                        typeof this.server.app.GITHEAD === 'string'
+                            ? this.server.app.GITHEAD.substr(0, 8)
+                            : undefined,
                     PAGE: page,
                     PAGE_PROPS: jsesc(JSON.stringify(context.props), {
                         isScriptContext: true,

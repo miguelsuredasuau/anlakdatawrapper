@@ -30,7 +30,10 @@ module.exports = async function (request) {
                 languages: frontendConfig.languages || [],
                 headerLinks: await server.methods.getHeaderLinks(request),
                 stickyHeaderThreshold: 800,
-                GITHEAD: server.app.GITHEAD.substr(0, 8),
+                GITHEAD:
+                    typeof server.app.GITHEAD === 'string'
+                        ? server.app.GITHEAD.substr(0, 8)
+                        : undefined,
                 chartLocales: generalConfig.locales
             },
             browser: {
