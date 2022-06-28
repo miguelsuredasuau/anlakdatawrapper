@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs/promises');
 const path = require('path');
 
 module.exports = function registerVisualization(server) {
@@ -38,7 +38,7 @@ module.exports = function registerVisualization(server) {
             if (!pluginRoot) {
                 throw new Error('localPluginRoot must be defined to register visualization');
             }
-            vis.icon = fs.readFileSync(
+            vis.icon = await fs.readFile(
                 path.join(pluginRoot, plugin, 'static', `${vis.id}.svg`),
                 'utf-8'
             );

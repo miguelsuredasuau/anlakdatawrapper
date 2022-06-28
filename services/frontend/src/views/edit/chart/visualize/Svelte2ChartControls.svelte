@@ -15,10 +15,12 @@
     export let controlsModule = 'Refine';
 
     let visUnsubscribe;
+    let prevVisId;
 
     onMount(() => {
         visUnsubscribe = visualization.subscribe(vis => {
-            if (vis && vis.id) {
+            if (vis && vis.id && prevVisId !== vis.id) {
+                prevVisId = vis.id;
                 loadControls(vis.id);
             }
         });

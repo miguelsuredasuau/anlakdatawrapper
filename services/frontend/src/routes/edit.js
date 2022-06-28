@@ -3,7 +3,7 @@ const Joi = require('joi');
 const get = require('lodash/get');
 const set = require('lodash/set');
 const cloneDeep = require('lodash/cloneDeep');
-const { getNestedObjectKeys } = require('../utils');
+const { getNestedObjectKeys, byOrder } = require('../utils');
 const { Op } = require('@datawrapper/orm').db;
 const { Chart, User, Folder, Team, Theme } = require('@datawrapper/orm/models');
 const prepareChart = require('@datawrapper/service-utils/prepareChart');
@@ -472,9 +472,9 @@ module.exports = {
                                 steps: workflowSteps
                             },
                             rawTheme: theme,
-                            visualizations: Array.from(server.app.visualizations.values()).map(
-                                prepareVisualization
-                            ),
+                            visualizations: Array.from(server.app.visualizations.values())
+                                .map(prepareVisualization)
+                                .sort(byOrder),
                             customViews,
                             showEditorNavInCmsMode: get(
                                 request.auth.artifacts.activeTeam,

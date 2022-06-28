@@ -18,6 +18,7 @@ const INCLUDE_PROPERTIES = new Set([
     'libraries',
     'namespace',
     'options',
+    'order',
     'title',
     'workflow',
     '__controlsHash',

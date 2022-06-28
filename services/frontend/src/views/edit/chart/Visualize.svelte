@@ -148,6 +148,15 @@
         }
     }
 
+    /**
+     * remember which tabs we've opened already to keep them
+     * in DOM, but without having to load them all at once
+     */
+    let tabLoaded = {};
+    $: {
+        if (prevActive) tabLoaded = { ...tabLoaded, [prevActive]: true };
+    }
+
     function changeTabBy(offset) {
         const curTabIndex = tabs.indexOf(activeTab);
         if (curTabIndex > -1) {
@@ -195,20 +204,22 @@
                 <Tabs items={tabs} bind:active />
             </div>
             {#each tabs as tab}
-                <div class="block" class:is-hidden={tab !== activeTab}>
-                    <svelte:component
-                        this={tab.ui}
-                        {__}
-                        {themes}
-                        {chartLocales}
-                        {dwChart}
-                        {workflow}
-                        {visualizations}
-                        {teamSettings}
-                        {disabledFields}
-                        {layoutControlsGroups}
-                    />
-                </div>
+                {#if tab === activeTab || tabLoaded[tab.id]}
+                    <div class="block" class:is-hidden={tab !== activeTab}>
+                        <svelte:component
+                            this={tab.ui}
+                            {__}
+                            {themes}
+                            {chartLocales}
+                            {dwChart}
+                            {workflow}
+                            {visualizations}
+                            {teamSettings}
+                            {disabledFields}
+                            {layoutControlsGroups}
+                        />
+                    </div>
+                {/if}
             {/each}
 
             <div class="buttons">
