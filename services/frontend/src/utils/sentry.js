@@ -2,6 +2,9 @@ const { createHash } = require('crypto');
 const set = require('lodash/set');
 const get = require('lodash/get');
 
+const IGNORE_TAG_KEY = 'ignore';
+const IGNORE_TAG_VAL = 'true';
+
 module.exports = {
     name: 'utils/sentry',
     version: '1.0.0',
@@ -16,8 +19,12 @@ module.exports = {
                     serverName: 'frontend',
                     ...config.sentry.client,
                     beforeSend(event) {
-                        // make sure to scrub sensitive information before
-                        // sending it to Sentry
+                        // Ignore the event if the server method `sentryIgnoreCurrentError` has been
+                        // called.
+                        if (event.tags && event.tags[IGNORE_TAG_KEY] === IGNORE_TAG_VAL) {
+                            return undefined;
+                        }
+                        // Scrub sensitive information.
                         [
                             'request.cookies.DW-SESSION',
                             'request.headers.cookie',
@@ -46,5 +53,9 @@ module.exports = {
                 request.log(['sentry'], event.error);
             }
         });
+
+        server.method('sentryIgnoreCurrentError', request =>
+            request.sentryScope.setTag(IGNORE_TAG_KEY, IGNORE_TAG_VAL)
+        );
     }
 };

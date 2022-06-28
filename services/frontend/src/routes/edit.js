@@ -522,7 +522,7 @@ module.exports = {
  * a list of keys that should be readonly because they are now controlled
  * via external metadata
  *
- * @param {object} api  - api instance created with server.methods.createApi()
+ * @param {object} api  - api instance created with server.methods.createAPI()
  * @param {*} rawChart
  * @returns {string[]} - list of readonly chart keys (e.g. "metadata.annotate.notes")
  */

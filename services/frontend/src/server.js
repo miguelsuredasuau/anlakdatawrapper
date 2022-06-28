@@ -19,7 +19,6 @@ const registerFeatureFlag = require('@datawrapper/service-utils/registerFeatureF
 const getGitRevision = require('@datawrapper/service-utils/getGitRevision');
 const config = requireConfig();
 const path = require('path');
-const { createAPI, waitForAPI } = require('./utils/create-api');
 const { FrontendEventEmitter, eventList } = require('./utils/events');
 
 const {
@@ -122,11 +121,11 @@ const start = async () => {
     server.method('isDevMode', () => process.env.DW_DEV_MODE);
     server.method('registerVisualization', registerVisualizations(server));
     server.method('registerFeatureFlag', registerFeatureFlag(server));
-    server.method('createAPI', createAPI(server));
     server.method('getRedis', () => redis);
 
     await server.register(require('@datawrapper/service-utils/computeFileHash'));
 
+    await server.register(require('./utils/api'));
     await server.register(require('./utils/header-links'));
     await server.register(require('./utils/settings-pages'));
     await server.register(require('./utils/demo-datasets'));
@@ -172,7 +171,7 @@ const start = async () => {
     await server.register(require('./utils/dw-auth'));
     await server.register(require('./utils/features'));
 
-    await waitForAPI(server);
+    await server.methods.waitForAPI();
 
     await server.register([require('./routes')]);
     server.logger.info('loading plugins...');
