@@ -1150,5 +1150,6 @@
   "login / login / password-changed": "",
   "darkmode / caption": "Aperçu du mode sombre",
   "darkmode / caption-short": "Mode sombre",
-  "edit / preview": "Aper&ccedil;u"
+  "edit / preview": "Aper&ccedil;u",
+  "edit / stored-changes": "Enregistré"
 }

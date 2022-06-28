@@ -37,8 +37,11 @@ const themeReadonly = derived(theme, $theme => $theme);
 export { themeReadonly as theme };
 
 export const onNextSave = new Set();
+
 export const hasUnsavedChanges = new writable(false);
+
 export const saveError = new writable(false);
+export const saveSuccess = new writable(false);
 
 /**
  * store for dark mode state
@@ -90,6 +93,10 @@ export function initChartStore(rawChart, rawTheme, visualizations, disabledField
                 if (!Object.keys(unsavedChanges).length) {
                     hasUnsavedChanges.set(false);
                 }
+                saveSuccess.set(true);
+                setTimeout(() => {
+                    saveSuccess.set(false);
+                }, 1000);
             } catch (err) {
                 // restore unsaved changes that failed to save
                 unsavedChanges = assign(changesToSave, unsavedChanges);
@@ -97,6 +104,8 @@ export function initChartStore(rawChart, rawTheme, visualizations, disabledField
                 console.error(err);
                 saveError.set(err);
             }
+        } else {
+            hasUnsavedChanges.set(false);
         }
         if (!savingFailed) {
             /*

@@ -1150,5 +1150,6 @@
   "login / login / password-changed": "",
   "darkmode / caption": "Vista previa del modo oscuro",
   "darkmode / caption-short": "Modo oscuro",
-  "edit / preview": "Vista previa"
+  "edit / preview": "Vista previa",
+  "edit / stored-changes": "Salvado"
 }

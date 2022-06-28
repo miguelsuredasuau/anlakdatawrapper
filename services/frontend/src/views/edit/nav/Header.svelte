@@ -1,9 +1,10 @@
 <script>
+    import { fade } from 'svelte/transition';
     import { createEventDispatcher, getContext } from 'svelte';
     import BreadcrumbsDisplay from '_partials/displays/BreadcrumbsDisplay.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import Step from './Step.svelte';
-    import { hasUnsavedChanges, saveError } from '../stores';
+    import { hasUnsavedChanges, saveSuccess, saveError } from '../stores';
 
     const config = getContext('config');
     $: stickyHeaderThreshold = $config.stickyHeaderThreshold;
@@ -80,6 +81,11 @@
                     />
                     {__('edit / storing-changes')}…</span
                 >
+            {:else if $saveSuccess}
+                <span out:fade={{ delay: 0, duration: 500 }}>
+                    <span>{__('edit / stored-changes')}</span>
+                    <IconDisplay icon="checkmark-bold" />
+                </span>
             {/if}
         </div>
     </div>

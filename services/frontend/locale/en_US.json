@@ -1150,5 +1150,6 @@
   "login / login / password-changed": "You successfully changed your password. Please log in again.",
   "darkmode / caption": "Dark Mode Preview",
   "darkmode / caption-short": "Dark Mode",
-  "edit / preview": "Preview"
+  "edit / preview": "Preview",
+  "edit / stored-changes": "Saved"
 }

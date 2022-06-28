@@ -1150,5 +1150,6 @@
   "login / login / password-changed": "Dein Passwort wurde erfolgreich geändert. Bitte melde dich erneut an.",
   "darkmode / caption": "Dunkelmodus-Vorschau",
   "darkmode / caption-short": "Dunkelmodus",
-  "edit / preview": "Vorschau"
+  "edit / preview": "Vorschau",
+  "edit / stored-changes": "Gespeichert"
 }
