@@ -18,9 +18,9 @@ Usage: scaffold [template]
 
 Available templates are: 
  - ava-esm
- - lint-js
- - lint-svelte3
  - plugin
+ - plugin-api
+ - plugin-frontend
  - sort-pkg-json
  - svelte2
  - update-dw-deps
@@ -29,18 +29,18 @@ Available templates are:
 Find out more about a certain template:
 
 ```sh
-> npx github:datawrapper/scaffold lint-js --help
-scaffold lint-js
+> npx github:datawrapper/scaffold sort-pkg-json --help
+scaffold sort-pkg-json
 
-Installs `prettier`, `healthier`, and `eslint`. 
-Will also install the npm commands `lint` and `format`. 
+Brings package.json properties into a consistent order and fills in
+Datawrapper GmbH as author if missing.
 ```
 
 Execute a template:
 
 ```
 > cd core/plugins/my-plugin
-> npx github:datawrapper/scaffold lint-js
+> npx github:datawrapper/scaffold sort-pkg-json
 ```
 
 ## Development

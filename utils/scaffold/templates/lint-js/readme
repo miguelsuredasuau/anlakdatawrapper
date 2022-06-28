@@ -1,2 +1,0 @@
-Installs `prettier`, `healthier`, and `eslint`. 
-Will also install the npm commands `lint` and `format`. 
