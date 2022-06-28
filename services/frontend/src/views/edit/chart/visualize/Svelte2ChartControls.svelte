@@ -6,6 +6,8 @@
     import isEqual from 'lodash/isEqual';
     import clone from 'lodash/cloneDeep';
     import { loadScript } from '@datawrapper/shared/fetch';
+    import get from 'lodash/get';
+    import set from 'lodash/set';
     // load stores from context
     const { chart, theme, visualization } = getContext('page/edit');
 
@@ -110,12 +112,21 @@
         return eval(`import('${filename}')`);
     }
 
+    /*
+     * setMetadata and getMetadata are convenience wrappers
+     * provided by our SvelteChart which simplify access to
+     * chart.metadata properties
+     */
     function setMetadata(key, value) {
-        dwChart.setMetadata(key, value);
+        const curVal = get($chart.metadata, key);
+        if (!isEqual(curVal, value)) {
+            set(storeData.metadata, key, value);
+            storeData = storeData;
+        }
     }
 
     function getMetadata(key, fallback) {
-        return dwChart.getMetadata(key, fallback);
+        return get(storeData.metadata, key, fallback);
     }
 
     function observeDeep(key, handler) {
