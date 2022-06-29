@@ -1,6 +1,7 @@
 <script>
     import get from '@datawrapper/shared/get';
     import set from '@datawrapper/shared/set';
+    import purifySvg from '@datawrapper/shared/purifySvg';
     import { getContext } from 'svelte';
 
     const { chart, visualization } = getContext('page/edit');
@@ -117,7 +118,7 @@
                 on:click={() => setVisualization(vis)}
             >
                 <div>
-                    {@html vis.icon}
+                    {@html purifySvg(vis.icon)}
                     <div class="vis-title">{__(vis.title, vis.__plugin)}</div>
                 </div>
             </button>

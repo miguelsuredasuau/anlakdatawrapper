@@ -1,5 +1,6 @@
 <script>
     import httpReq from '@datawrapper/shared/httpReq';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import SignInPageLayout from '_layout/SignInPageLayout.svelte';
     import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
     import SetPasswordInput from '_partials/controls/SetPasswordInput.svelte';
@@ -58,7 +59,7 @@
         </NotificationDisplay>
     {:else if resetError}
         <NotificationDisplay type="warning" deletable={false}>
-            {@html resetError}
+            {@html purifyHtml(resetError)}
         </NotificationDisplay>
     {/if}
 

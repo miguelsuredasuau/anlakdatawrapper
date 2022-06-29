@@ -3,12 +3,11 @@
     import { getContext } from 'svelte';
     import debounce from 'lodash/debounce';
 
-    const messages = getContext('messages');
-    let __;
-
-    $: {
-        __ = (key, scope = 'core') => messages.translate(key, scope, $messages);
+    const msg = getContext('messages');
+    function createTranslate(msg, messages) {
+        return (key, scope = 'core') => msg.translate(key, scope, messages);
     }
+    $: __ = createTranslate(msg, $msg);
 
     export let uid;
     export let value = '';

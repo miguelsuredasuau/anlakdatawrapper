@@ -1,4 +1,5 @@
 <script>
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import { getContext } from 'svelte';
     // load stores from context
@@ -36,4 +37,4 @@
     />
 </div>
 
-{@html uploadAfterContent}
+{@html purifyHtml(uploadAfterContent, '<script>')}

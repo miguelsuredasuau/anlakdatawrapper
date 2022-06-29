@@ -1,5 +1,6 @@
 <script>
     import HelpDisplay from '_partials/displays/HelpDisplay.svelte';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     export let title = null;
 
     export let tooltip = null;
@@ -43,12 +44,12 @@
 <div class="toolbar-item" data-uid={uid}>
     <div class="toolbar-header">
         <div class="toolbar-title">
-            {#if title}{@html title}{/if}
+            {#if title}{@html purifyHtml(title)}{/if}
             <slot name="title" />
         </div>
         {#if tooltip || $$slots.tooltip}
             <HelpDisplay inline type={tooltipType} placement={tooltipPlacement}>
-                {#if tooltip}{@html tooltip}{/if}
+                {#if tooltip}{@html purifyHtml(tooltip)}{/if}
                 <slot name="tooltip" />
             </HelpDisplay>
         {/if}

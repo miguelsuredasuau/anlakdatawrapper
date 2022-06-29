@@ -2,6 +2,7 @@
     import { createEventDispatcher } from 'svelte';
     import { slide } from 'svelte/transition';
     import HelpDisplay from '../displays/HelpDisplay.svelte';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
 
     const dispatch = createEventDispatcher();
 
@@ -155,7 +156,7 @@
     {#if tooltip || $$slots.tooltip}
         <HelpDisplay float type={tooltipType} placement={tooltipPlacement}>
             {#if tooltip}
-                <div>{@html tooltip}</div>
+                <div>{@html purifyHtml(tooltip)}</div>
             {/if}
             <slot name="tooltip" />
         </HelpDisplay>
@@ -173,13 +174,13 @@
             />
             <span class="slider" />
         </button>
-        {@html label}
+        {@html purifyHtml(label)}
     </label>
 
     {#if disabled && disabledMessage}
         <div transition:slide>
             <div class="disabled-msg">
-                {@html disabledMessage}
+                {@html purifyHtml(disabledMessage)}
             </div>
         </div>
     {:else}

@@ -2,6 +2,7 @@
     import { getContext } from 'svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import truncate from '@datawrapper/shared/truncate';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
 
     const request = getContext('request');
 
@@ -108,7 +109,7 @@
         <div class="block">
             {#if g.title && g.title !== 'null'}
                 <h3 class="menu-label">
-                    {@html g.title}
+                    {@html purifyHtml(g.title)}
                 </h3>
             {/if}
             <ul role="navigation" class="menu-list">
@@ -123,9 +124,9 @@
                                         className="mr-3"
                                         icon={page.svgIcon}
                                     />{/if}<span
-                                    >{#if page.escape}{truncate(page.title)}{:else}{@html truncate(
+                                    >{#if page.escape}{truncate(
                                             page.title
-                                        )}{/if}</span
+                                        )}{:else}{@html purifyHtml(truncate(page.title))}{/if}</span
                                 ></a
                             >
                         </li>

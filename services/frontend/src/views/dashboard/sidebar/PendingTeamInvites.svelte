@@ -54,7 +54,7 @@
                 </span>
 
                 <p class="invite-msg pb-4" data-uid={uid && `${uid}-message`}>
-                    {@html getMessage(team.name, team.invitedBy)}
+                    {@html purifyHtml(getMessage(team.name, team.invitedBy))}
                 </p>
 
                 <a

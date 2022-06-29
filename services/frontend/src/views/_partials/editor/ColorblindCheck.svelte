@@ -1,6 +1,7 @@
 <script>
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import ToolbarItem from '_partials/editor/ToolbarItem.svelte';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import { onMount } from 'svelte';
     import { uniq } from 'underscore';
     import chroma from 'chroma-js';
@@ -314,7 +315,7 @@
                     {/if}
                     {#if mode.info}
                         <div class="more-info">
-                            {@html mode.info}
+                            {@html purifyHtml(mode.info)}
                         </div>
                     {/if}
                 </button>

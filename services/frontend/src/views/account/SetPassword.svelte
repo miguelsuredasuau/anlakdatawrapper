@@ -1,14 +1,15 @@
 <script>
     import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
     import SetPasswordInput from '_partials/controls/SetPasswordInput.svelte';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import { createEventDispatcher } from 'svelte';
 
     import { getContext } from 'svelte';
-    const messages = getContext('messages');
-    export let __;
-    $: {
-        __ = (key, scope = 'core') => messages.translate(key, scope, $messages);
+    const msg = getContext('messages');
+    function createTranslate(msg, messages) {
+        return (key, scope = 'core') => msg.translate(key, scope, messages);
     }
+    $: __ = createTranslate(msg, $msg);
 
     export let headlineText;
     export let headlineTextBold = false;
@@ -49,13 +50,13 @@
 </style>
 
 <h2 class="title is-3" class:has-text-weight-normal={!headlineTextBold}>
-    {@html headlineText}
+    {@html purifyHtml(headlineText)}
 </h2>
 <p class="intro-p mb-3">{introText}</p>
 
 {#if submitError}
     <NotificationDisplay type="warning" deletable={false}>
-        {@html submitError}
+        {@html purifyHtml(submitError)}
     </NotificationDisplay>
 {/if}
 
@@ -74,6 +75,6 @@
     </div>
 
     <button class="button is-primary" on:click={submit} disabled={submitting || !passwordOk}>
-        {@html buttonText}
+        {@html purifyHtml(buttonText)}
     </button>
 </div>

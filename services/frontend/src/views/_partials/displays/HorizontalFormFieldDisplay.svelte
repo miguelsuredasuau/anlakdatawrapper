@@ -1,14 +1,15 @@
 <script>
     import FormFieldDisplay from './FormFieldDisplay.svelte';
     import HelpDisplay from './HelpDisplay.svelte';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import { getContext } from 'svelte';
 
     const msg = getContext('messages');
 
-    let __;
-    $: {
-        __ = (key, scope = 'core') => msg.translate(key, scope, $msg);
+    function createTranslate(msg, messages) {
+        return (key, scope = 'core') => msg.translate(key, scope, messages);
     }
+    $: __ = createTranslate(msg, $msg);
 
     export let error = null;
     export let id = null;
@@ -87,7 +88,7 @@
         {#if tooltip || $$slots.tooltip}
             <HelpDisplay type={tooltipType} placement={tooltipPlacement} helpClass={labelPadding}>
                 {#if tooltip}
-                    <div>{@html tooltip}</div>
+                    <div>{@html purifyHtml(tooltip)}</div>
                 {/if}
                 <slot name="tooltip" />
             </HelpDisplay>

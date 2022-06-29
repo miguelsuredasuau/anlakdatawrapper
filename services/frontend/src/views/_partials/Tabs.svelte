@@ -1,6 +1,8 @@
 <script>
     import { createEventDispatcher } from 'svelte';
     import IconDisplay from './displays/IconDisplay.svelte';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
+
     const dispatch = createEventDispatcher();
 
     export let items = []; // { id, title }
@@ -25,7 +27,7 @@
         {#each items as item}
             <li class:is-active={active === item.id}>
                 <a on:click|preventDefault={() => setActive(item)} href="#{item.id}"
-                    >{@html item.title}
+                    >{@html purifyHtml(item.title)}
                     {#if item.icon}
                         <div class="icon-wrap">
                             <IconDisplay icon={item.icon} color={item.iconColor} />

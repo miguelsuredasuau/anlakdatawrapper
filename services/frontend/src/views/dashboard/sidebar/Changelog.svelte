@@ -49,7 +49,7 @@
                 {#each items.slice(0, 6) as item}
                     <article class="block" data-uid="changelog-item">
                         <div class="has-text-grey-dark is-size-7 is-uppercase mb-1">
-                            {@html item.title.split(' / ')[1]} — {dayjs(
+                            {@html purifyHtml(item.title.split(' / ')[1])} — {dayjs(
                                 item.title.split(' / ')[0]
                             ).fromNow()}
                         </div>

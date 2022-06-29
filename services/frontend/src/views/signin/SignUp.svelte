@@ -1,5 +1,6 @@
 <script>
     import httpReq from '@datawrapper/shared/httpReq';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
     import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
     import SetPasswordInput from '_partials/controls/SetPasswordInput.svelte';
@@ -67,7 +68,7 @@
     {#if emailOpen}
         {#if signupError || signupSuccess}
             <NotificationDisplay type={signupError ? 'warning' : 'success'} deletable={false}>
-                {@html signupError || signupSuccess}
+                {@html purifyHtml(signupError || signupSuccess)}
             </NotificationDisplay>
         {/if}
         <div class="signup-form">

@@ -3,6 +3,7 @@
     import VisArchive from './VisArchive.svelte';
     import TeamSelect from './TeamSelect.svelte';
     import { post, patch } from '@datawrapper/shared/httpReq';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import NavBarIcon from './NavBarIcon.svelte';
 
@@ -188,7 +189,7 @@
                         class:is-arrowless={link.type !== 'visArchive'}
                     >
                         <NavBarIcon item={link} />
-                        <span class="navbar-title">{@html link.title || ''}</span></a
+                        <span class="navbar-title">{@html purifyHtml(link.title || '')}</span></a
                     >
                     <!-- navbar dropdown menu -->
                     <div class="navbar-dropdown is-right is-boxed">
@@ -211,7 +212,7 @@
                                     on:click={event => onNavItemClick(event, subItem)}
                                     style={subItem.style || ''}
                                 >
-                                    {@html subItem.content}
+                                    {@html purifyHtml(subItem.content)}
                                 </div>
                             {:else if subItem.submenuItems}
                                 <!-- dropdown with dropdown -->
@@ -221,7 +222,7 @@
                                     on:click|preventDefault
                                 >
                                     <NavBarIcon item={subItem} />
-                                    <span>{@html subItem.title || ''}</span>
+                                    <span>{@html purifyHtml(subItem.title || '')}</span>
                                     <div class="navbar-dropdown is-right is-boxed">
                                         {#each subItem.submenuItems as subItem2}
                                             <a
@@ -234,7 +235,7 @@
                                             >
                                                 <NavBarIcon item={subItem2} />
                                                 <span class="navbar-title"
-                                                    >{@html subItem2.title}</span
+                                                    >{@html purifyHtml(subItem2.title)}</span
                                                 >
                                             </a>
                                         {/each}
@@ -246,7 +247,9 @@
                                     href={subItem.url}
                                     on:click={event => onNavItemClick(event, subItem)}
                                     ><NavBarIcon item={subItem} />
-                                    <span class="navbar-title">{@html subItem.title || ''}</span></a
+                                    <span class="navbar-title"
+                                        >{@html purifyHtml(subItem.title || '')}</span
+                                    ></a
                                 >
                             {/if}
                         {/each}
@@ -261,7 +264,7 @@
                     class="navbar-item is-size-5 has-text-weight-medium ml-1 {link.class || ''}"
                     on:click={event => onNavItemClick(event, link)}
                     href={link.url}
-                    ><NavBarIcon item={link} /> <span>{@html link.title || ''}</span></a
+                    ><NavBarIcon item={link} /> <span>{@html purifyHtml(link.title || '')}</span></a
                 >
             {/if}
         {/each}

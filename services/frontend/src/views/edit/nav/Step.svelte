@@ -1,4 +1,5 @@
 <script>
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
     export let active = false;
@@ -71,7 +72,7 @@
     class:visited
     style="clip-path: path('{clipPath}');"
 >
-    <span class="step ml-1 mr-3">{step.index}</span>{@html step.title}
+    <span class="step ml-1 mr-3">{step.index}</span>{@html purifyHtml(step.title)}
     {#if !active && visited}
         <i class="fa fa-check" />
     {/if}

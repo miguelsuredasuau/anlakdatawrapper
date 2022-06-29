@@ -7,10 +7,10 @@
     const msg = getContext('messages');
     const browser = getContext('browser');
 
-    let __;
-    $: {
-        __ = (key, scope = 'core') => msg.translate(key, scope, $msg);
+    function createTranslate(msg, messages) {
+        return (key, scope = 'core') => msg.translate(key, scope, messages);
     }
+    $: __ = createTranslate(msg, $msg);
 </script>
 
 <style lang="scss">

@@ -1,5 +1,6 @@
 <script>
     import httpReq from '@datawrapper/shared/httpReq';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
     import ProviderButtons from './ProviderButtons.svelte';
@@ -111,7 +112,7 @@
     {#if emailOpen}
         {#if loginError || loginSuccess}
             <MessageDisplay type={loginError ? 'warning' : 'success'} deletable={false}>
-                {@html loginError || loginSuccess}
+                {@html purifyHtml(loginError || loginSuccess)}
             </MessageDisplay>
         {/if}
         <form class="signup-form" on:submit|preventDefault={handleSubmit}>

@@ -1,5 +1,6 @@
 <script>
     import { createEventDispatcher } from 'svelte';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
 
     export let title = '';
     export let type = 'info';
@@ -23,7 +24,7 @@
     >
         {#if title}
             <div class="message-header">
-                <p>{@html title}</p>
+                <p>{@html purifyHtml(title)}</p>
                 {#if deletable}
                     <button class="delete" on:click={deleteMessage} aria-label="delete" />
                 {/if}

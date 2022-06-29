@@ -15,6 +15,7 @@
     import { autoTickFormatDate } from '@datawrapper/shared/autoTickFormat';
     import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited';
     import SignInPageLayout from '_layout/SignInPageLayout.svelte';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
 
     let loggedIn = false;
     let ds;
@@ -293,10 +294,9 @@
                 {#if get(chartData, field.key)}
                     <tr
                         ><th>{field.label}:</th><td class={field.key.split('.').slice(-1)[0]}
-                            >{#if field.html}{@html get(chartData, field.key)}{:else}{get(
-                                    chartData,
-                                    field.key
-                                )}{/if}</td
+                            >{#if field.html}{@html purifyHtml(
+                                    get(chartData, field.key)
+                                )}{:else}{get(chartData, field.key)}{/if}</td
                         ></tr
                     >
                 {/if}

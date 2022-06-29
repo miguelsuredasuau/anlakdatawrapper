@@ -1,4 +1,5 @@
 <script>
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     export let title = null;
 </script>
 
@@ -23,7 +24,7 @@
 
 <div class="toolbar-area">
     <div class="toolbar-area-header">
-        {#if title}{@html title}{/if}
+        {#if title}{@html purifyHtml(title)}{/if}
         <slot name="title" />
     </div>
     <div class="toolbar-area-body">

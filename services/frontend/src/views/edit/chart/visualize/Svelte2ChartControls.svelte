@@ -2,6 +2,7 @@
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import dwVisualization from '@datawrapper/chart-core/lib/dw/visualization';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import { onMount, tick, getContext, onDestroy } from 'svelte';
     import isEqual from 'lodash/isEqual';
     import clone from 'lodash/cloneDeep';
@@ -166,7 +167,7 @@
     {#if notifications.length}
         {#each notifications as notification}
             <MessageDisplay type={notification.type} deletable={notification.closeable}
-                >{@html notification.message}</MessageDisplay
+                >{@html purifyHtml(notification.message)}</MessageDisplay
             >
         {/each}
     {/if}

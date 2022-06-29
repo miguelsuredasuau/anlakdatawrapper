@@ -1,4 +1,6 @@
 <script>
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
+
     let showPassword = false;
     let help = '';
     let success = '';
@@ -77,11 +79,11 @@
     {/if}
 
     {#if error}
-        <p class="help is-danger">{@html error}</p>
+        <p class="help is-danger">{@html purifyHtml(error)}</p>
     {:else if success}
-        <p class="help is-success is-dark">{@html success}</p>
+        <p class="help is-success is-dark">{@html purifyHtml(success)}</p>
     {:else if help}
-        <p class="help has-text-grey-dark">{@html help}</p>
+        <p class="help has-text-grey-dark">{@html purifyHtml(help)}</p>
     {/if}
 </div>
 

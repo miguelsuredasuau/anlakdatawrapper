@@ -2,12 +2,12 @@
     import { getContext } from 'svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import truncate from '@datawrapper/shared/truncate';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
 
     const request = getContext('request');
 
     export let groups = [];
     export let sticky = false;
-    export let compact = false;
     export let content = null;
     export let loadPage;
 
@@ -126,7 +126,7 @@
                     on:click={() => (g.collapsed = !g.collapsed)}
                 >
                     <IconDisplay icon="disclosure" valign="baseline" />
-                    {@html g.title}
+                    {@html purifyHtml(g.title)}
                 </h3>
             {/if}
             {#if !g.collapsed}
@@ -162,7 +162,9 @@
                                     <span
                                         >{#if page.escape}{truncate(
                                                 page.title
-                                            )}{:else}{@html truncate(page.title)}{/if}</span
+                                            )}{:else}{@html purifyHtml(
+                                                truncate(page.title)
+                                            )}{/if}</span
                                     ></a
                                 >
                             </li>

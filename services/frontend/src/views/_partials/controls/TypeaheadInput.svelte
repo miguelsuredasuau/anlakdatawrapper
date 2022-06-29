@@ -3,13 +3,13 @@
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import debounce from 'lodash/debounce';
     import decodeHtml from '@datawrapper/shared/decodeHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
 
-    const messages = getContext('messages');
-    let __;
-
-    $: {
-        __ = (key, scope = 'core') => messages.translate(key, scope, $messages);
+    const msg = getContext('messages');
+    function createTranslate(msg, messages) {
+        return (key, scope = 'core') => msg.translate(key, scope, messages);
     }
+    $: __ = createTranslate(msg, $msg);
 
     const dispatch = createEventDispatcher();
 
@@ -348,7 +348,10 @@
                                 class="dropdown-item"
                                 class:is-active={i === selectedIndex}
                             >
-                                {@html highlightQuery(decodeHtml(match.label), searchQuery)}
+                                {@html purifyHtml(
+                                    highlightQuery(decodeHtml(match.label), searchQuery),
+                                    '<mark>'
+                                )}
                             </a>
                         {/if}
                     {/each}

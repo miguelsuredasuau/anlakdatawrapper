@@ -3,11 +3,10 @@
     import { getContext } from 'svelte';
 
     const msg = getContext('messages');
-
-    let __;
-    $: {
-        __ = (key, scope = 'core') => msg.translate(key, scope, $msg);
+    function createTranslate(msg, messages) {
+        return (key, scope = 'core') => msg.translate(key, scope, messages);
     }
+    $: __ = createTranslate(msg, $msg);
 
     let value = 'Hello, this is **markdown**!\n\n- This is\n- a list';
 </script>

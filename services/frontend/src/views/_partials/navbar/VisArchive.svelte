@@ -2,7 +2,7 @@
     import { onMount, getContext } from 'svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
-    import purifyHTML from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import truncate from '@datawrapper/shared/truncate';
     import NavBarIcon from './NavBarIcon.svelte';
 
@@ -74,7 +74,7 @@
         class:is-arrowless={link.type !== 'visArchive'}
     >
         <NavBarIcon item={link} />
-        <span class="navbar-title">{@html link.title || ''}</span></a
+        <span class="navbar-title">{@html purifyHtml(link.title || '')}</span></a
     >
 
     <div class="navbar-dropdown is-right is-boxed">
@@ -102,7 +102,7 @@
                             <img width="40" src={item.thumbnails.plain} alt="" class="mr-2" />
                         </div>
                         <div class="column">
-                            {truncate(purifyHTML(item.title, ''), 30, 20)}
+                            {truncate(purifyHtml(item.title, ''), 30, 20)}
                         </div>
                     </div>
                 </a>
