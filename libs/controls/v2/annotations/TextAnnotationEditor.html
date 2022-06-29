@@ -1,11 +1,9 @@
 <div class="well">
     {#if disable}
     <div transition:slide class="alert alert-info">
-        {@html __('controls / annotations / mobile-note').replace('%s', __(`controls / annotations /
-        mobile-note / ${isMap ? 'map' : 'chart'}`))}
+        {@html mobileAnnotationNote(isMap ? 'map' : 'chart')}
     </div>
     {/if}
-
     <TextAreaControl
         label="{__('controls / annotations / text')}"
         {labelWidth}
@@ -283,7 +281,15 @@
                 return $textDirection === 'rtl' && !mirrorX ? -1 : 1;
             }
         },
-        helpers: { __ },
+        helpers: {
+            __,
+            mobileAnnotationNote(type) {
+                return __('controls / annotations / mobile-note').replace(
+                    '%s',
+                    __(`controls / annotations / mobile-note / ${type}`)
+                );
+            }
+        },
         methods: {
             handlePositionKeydown(event, input) {
                 const up = event.key === 'ArrowUp';
