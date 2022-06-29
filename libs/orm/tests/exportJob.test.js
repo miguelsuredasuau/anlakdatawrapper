@@ -35,11 +35,13 @@ test('process task', async t => {
         job = await createJob({ chart, user });
         t.is(typeof job.process, 'function');
         t.is(typeof job.log, 'undefined');
+        t.is(job.status, 'queued');
         await job.process();
         t.is(typeof job.log, 'object');
         t.is(job.log.attempts, 1);
         t.is(job.user_id, user.id);
         t.is(job.chart_id, chart.id);
+        t.is(job.status, 'in_progress');
         // one more process attempt
         await job.process();
         t.is(job.log.attempts, 2);

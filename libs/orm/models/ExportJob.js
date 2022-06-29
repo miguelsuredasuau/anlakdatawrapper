@@ -50,7 +50,8 @@ ExportJob.prototype.process = async function () {
     log.attempts = (log.attempts || 0) + 1;
     this.set('log', log);
     this.processed_at = new Date();
-    return this.save({ fields: ['processed_at', 'log'] });
+    this.status = 'in_progress';
+    return this.save({ fields: ['processed_at', 'log', 'status'] });
 };
 
 /**
