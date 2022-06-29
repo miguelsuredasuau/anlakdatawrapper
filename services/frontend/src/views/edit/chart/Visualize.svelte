@@ -76,7 +76,14 @@
     /*
      * some changes require a full reload of the iframe
      */
-    const RELOAD = ['type', 'theme', 'language', 'metadata.data.transpose', 'metadata.axes'];
+    const RELOAD = [
+        'type',
+        'theme',
+        'language',
+        'metadata.data.transpose',
+        'metadata.data.column-order',
+        'metadata.axes'
+    ];
     function reloadPreview() {
         dwChart.onNextSave(() => {
             iframePreview.reset();
