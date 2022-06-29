@@ -17,7 +17,8 @@ module.exports = {
         enableMigration: true,
         hashRounds: 5,
         secretAuthSalt: 'MY_SECRET_AUTH_KEY',
-        cors: ['*']
+        cors: ['*'],
+        openCage: 'fake-opencage-key'
     },
     opensearch: {
         host: 'opensearch-node1',

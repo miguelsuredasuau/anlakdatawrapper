@@ -34,14 +34,14 @@ module.exports = {
 
 async function geoCode(request, h) {
     const { openCage } = request.server.methods.config('api');
-    const { query } = request;
 
-    query.key = openCage;
+    const searchParams = request.url.searchParams;
+    searchParams.set('key', openCage);
 
     const res = await got({
         throwHttpErrors: false,
         url: 'https://api.opencagedata.com/geocode/v1/json',
-        searchParams: query
+        searchParams
     });
 
     return h.response(res.body).code(res.statusCode).type(res.headers['content-type']);
