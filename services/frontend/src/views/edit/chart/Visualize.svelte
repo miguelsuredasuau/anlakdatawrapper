@@ -257,7 +257,7 @@
                     />
                 </div>
 
-                <div class="block mt-4">
+                <div class="block mt-5 pt-2">
                     <Toolbar>
                         {#if customViews && customViews.visualizeToolbarPrepend && customViews.visualizeToolbarPrepend.length > 0}
                             {#each customViews.visualizeToolbarPrepend as comp}

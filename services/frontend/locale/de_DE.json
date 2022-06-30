@@ -1151,5 +1151,6 @@
   "darkmode / caption": "Dunkelmodus-Vorschau",
   "darkmode / caption-short": "Dunkelmodus",
   "edit / preview": "Vorschau",
-  "edit / stored-changes": "Gespeichert"
+  "edit / stored-changes": "Gespeichert",
+  "colorblind / note": ""
 }

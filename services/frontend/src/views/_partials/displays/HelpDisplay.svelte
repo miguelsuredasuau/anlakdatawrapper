@@ -23,6 +23,8 @@
     }
 
     export let placement = 'right'; // only left and right
+
+    const randomId = Math.ceil(Math.random() * 1e5).toString(36);
 </script>
 
 <style lang="scss">
@@ -52,14 +54,14 @@
             }
         }
         &-content {
-            visibility: hidden;
             position: absolute;
+            visibility: hidden;
             z-index: 1000;
             top: -1em;
             left: -1em;
             padding: 1em 1em 1em 3em;
-            background: $info-light;
-            color: $info-dark;
+            background: $primary-light;
+            color: $primary;
             width: 240px;
             border-radius: $radius;
             box-shadow: $shadow-small;
@@ -75,7 +77,7 @@
                 top: 0.45em;
             }
             & :global(a) {
-                color: $info-dark;
+                color: inherit;
                 text-decoration: underline;
             }
         }
@@ -135,12 +137,12 @@
     on:mouseleave={handleHelpMouseleave}
     data-uid={uid}
 >
-    <button class="sidehelp-icon"
+    <button class="sidehelp-icon" aria-labelledby={randomId}
         >{#if type === 'upgrade'}<IconDisplay icon="arrow-up-bold" />{:else}<IconDisplay
                 icon="help"
             />{/if}</button
     >
-    <div class="sidehelp-content" role="tooltip" class:is-visible={visible}>
+    <div class="sidehelp-content" id={randomId} role="tooltip" class:is-visible={visible}>
         <IconDisplay icon={type === 'upgrade' ? 'arrow-up-circle' : 'help-circle'} />
         <slot />
     </div>

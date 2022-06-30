@@ -1151,5 +1151,6 @@
   "darkmode / caption": "Dark Mode Preview",
   "darkmode / caption-short": "Dark Mode",
   "edit / preview": "Preview",
-  "edit / stored-changes": "Saved"
+  "edit / stored-changes": "Saved",
+  "colorblind / note": "Colorblind check lets you test your colors and warns you if the colors in your chart/map would not be distinguishable by somebody with a color vision deficiency. See our <a href=\"https://academy.datawrapper.de/article/206-how-we-make-sure-our-charts-maps-and-tables-are-accessible\">Academy article</a>."
 }

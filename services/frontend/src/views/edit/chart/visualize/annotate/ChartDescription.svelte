@@ -130,14 +130,14 @@
             {textDirection}
         />
         <span slot="labelExtra" class="has-text-grey ml-1">
-            <IconDisplay icon="accessibility" size="18px" valign="middle" />
+            <IconDisplay icon="accessibility" valign="middle" />
         </span>
     </FormFieldDisplay>
 </div>
 
 {#if teamSettings.customFields.length}
     <div class="block">
-        <h4 class="title is-4">Custom fields</h4>
+        <h4 class="title is-4 mb-3">Custom fields</h4>
         {#each teamSettings.customFields as field}
             {#if field.type == 'checkbox'}
                 <HorizontalFormFieldDisplay

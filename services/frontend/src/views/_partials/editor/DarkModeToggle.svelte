@@ -42,7 +42,7 @@
                     class="button is-small is-outlined is-dark"
                     class:is-selected={!$isDark}
                 >
-                    <IconDisplay icon="sun" />
+                    <IconDisplay icon="sun" className="mx-0" />
                 </button>
             </div>
             <div class="control">
@@ -52,7 +52,7 @@
                     class="button is-small is-outlined is-dark"
                     class:is-selected={$isDark}
                 >
-                    <IconDisplay icon="moon" />
+                    <IconDisplay icon="moon" className="mx-0" />
                 </button>
             </div>
         </div>

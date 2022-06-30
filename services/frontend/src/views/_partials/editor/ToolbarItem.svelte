@@ -23,7 +23,7 @@
         color: $grey-dark;
         font-size: $size-7;
         :global(.icon) {
-            font-size: $size-5;
+            font-size: $size-6;
             vertical-align: middle;
         }
     }
@@ -31,7 +31,7 @@
         display: flex;
         gap: 0.5rem;
 
-        > :global(.field.is-grouped > .control) {
+        > :global(.field.is-grouped > .control:not(:last-child)) {
             margin-right: 0.25rem;
         }
 

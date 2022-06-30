@@ -1151,5 +1151,6 @@
   "darkmode / caption": "Anteprima modalità scura",
   "darkmode / caption-short": "Modalità scura",
   "edit / preview": "Anteprima",
-  "edit / stored-changes": "Salvato"
+  "edit / stored-changes": "Salvato",
+  "colorblind / note": ""
 }

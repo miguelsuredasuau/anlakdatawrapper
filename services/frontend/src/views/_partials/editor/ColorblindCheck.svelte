@@ -231,16 +231,31 @@
     .button {
         .mode-label {
             font-size: 10px;
-            text-transform: uppercase;
+            // text-transform: uppercase;
             display: none;
         }
         .mode-icon {
             margin: 0 -0.5em;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
 
             img {
                 width: 20px;
+            }
+        }
+        &.normal {
+            .mode-label {
+                display: inline-flex;
+                position: absolute;
+                font-weight: $weight-bold;
+                text-shadow: 0 1px rgba(white, 0.5), 1px 0 rgba(white, 0.5), 0 -1px rgba(white, 0.5),
+                    -1px 0 rgba(white, 0.5);
+            }
+            .mode-icon {
+                img {
+                    opacity: 0.5;
+                }
             }
         }
         .more-info {
@@ -264,6 +279,7 @@
             color: $grey-dark;
             font-size: $size-6;
             line-height: 1.35;
+            font-weight: 400;
         }
         .color-warning {
             color: $warning;
@@ -289,16 +305,19 @@
     }
 </style>
 
-<ToolbarItem>
+<ToolbarItem tooltipPlacement="left">
     <svelte:fragment slot="title">
         {__('colorblind / caption')}
-        <IconDisplay icon="accessibility" valign="-0.2em" />
+        <IconDisplay icon="accessibility" valign="-0.2em" className="has-text-grey" />
     </svelte:fragment>
+    <div slot="tooltip">
+        {@html __('colorblind / note')}
+    </div>
     <div class="field has-addons buttons are-outlined" data-uid={uid}>
         {#each modes as mode}
             <div class="control">
                 <button
-                    class="button is-small is-outlined is-dark"
+                    class="button is-small is-outlined is-dark {mode.id}"
                     on:click={() => setMode(mode.id)}
                     class:has-color-warning={warnings[mode.id]}
                     class:is-selected={mode.id === activeMode}

@@ -258,11 +258,9 @@
                 </MessageDisplay>
             </div>{/if}
         <!-- step content -->
-        <div class="block">
-            {#if activeStep && activeStep.view}
-                <ViewComponent id={activeStep.view} props={stepProps} {__} />
-            {/if}
-        </div>
+        {#if activeStep && activeStep.view}
+            <ViewComponent id={activeStep.view} props={stepProps} {__} />
+        {/if}
     </section>
 
     {#if customViews && customViews.belowEditor && customViews.belowEditor.length > 0}

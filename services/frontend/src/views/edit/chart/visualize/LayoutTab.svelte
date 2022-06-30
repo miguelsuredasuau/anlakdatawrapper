@@ -25,7 +25,7 @@
 {#each layoutControlsGroups as group}
     {#if group.controls.length > 0}
         {#if group.title}
-            <h4 class="title is-4 mb-2">{__(group.title)}</h4>
+            <h4 class="title is-4 mb-3">{__(group.title)}</h4>
         {/if}
         <div class="block">
             {#each group.controls.sort(byPriority) as ctrl}

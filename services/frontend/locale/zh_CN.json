@@ -1151,5 +1151,6 @@
   "darkmode / caption": "深色模式预览",
   "darkmode / caption-short": "深色模式",
   "edit / preview": "预览",
-  "edit / stored-changes": "保存"
+  "edit / stored-changes": "保存",
+  "colorblind / note": ""
 }

@@ -116,6 +116,17 @@
     .print-options {
         border-top: 1px solid $border;
     }
+    .size-presets {
+        :global(.icon) {
+            font-size: 1.15em;
+        }
+        :global(.icon.mobile) {
+            font-size: 0.75em;
+        }
+        :global(.icon.desktop) {
+            font-size: 1.4em;
+        }
+    }
 </style>
 
 <ToolbarItem title={`${__('chart-size')} (${uiMode === 'web' ? 'px' : unit})`} {uid}>
@@ -169,7 +180,7 @@
         </div>
     {/if}
     {#if uiMode === 'web'}
-        <div class="field has-addons">
+        <div class="field has-addons size-presets">
             {#each breakpoints as preset, i}
                 <div class="control">
                     <button
@@ -177,7 +188,7 @@
                         class:is-selected={widthInPixel >= preset.minWidth &&
                             widthInPixel <= preset.maxWidth}
                         on:click={() => setWidth(preset.width)}
-                        ><IconDisplay icon={preset.icon} /></button
+                        ><IconDisplay icon={preset.icon} className={preset.icon} /></button
                     >
                 </div>
             {/each}

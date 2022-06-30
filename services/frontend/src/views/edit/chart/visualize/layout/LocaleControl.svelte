@@ -13,7 +13,7 @@
     }));
 </script>
 
-<h4 class="title is-4 mb-2">{__('visualize / layout / locale-select / hed')}</h4>
+<h4 class="title is-4 mb-3">{__('visualize / layout / locale-select / hed')}</h4>
 
 <p class="mb-2">{__('visualize / layout / locale-select / explainer')}</p>
 <SelectInput options={localeOptions} bind:value={$chart.language} />

@@ -8,7 +8,7 @@
 .button {
     font-weight: 500;
     
-    &:not(.is-white, .is-light, .is-ghost, .is-text, .is-outlined) {
+    &:not(.is-white, .is-light, .is-ghost, .is-text, .is-outlined, .is-inline) {
         &:before {
             content: '';
             position: absolute;
@@ -22,6 +22,11 @@
         }
         &.is-small {
             border-radius: $radius-small;
+        }
+        &.is-circle {
+            &:before {
+                border-radius: 50%;
+            }
         }
     }
     &.is-selected {
@@ -90,6 +95,7 @@
         margin: 0;
         height: auto;
         border: 0;
+        background-color: transparent;
         &:hover {
             background-color: transparent;
         }
@@ -170,6 +176,7 @@
 }
 
 .modal {
+    position: fixed;
     .modal-content {
         max-width: 1100px;
     }
@@ -293,5 +300,3 @@
         }
     }
 }
-
-
