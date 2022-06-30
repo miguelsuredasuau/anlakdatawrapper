@@ -7,6 +7,8 @@ import httpReq from '@datawrapper/shared/httpReq';
 import objectDiff from '@datawrapper/shared/objectDiff';
 import get from '@datawrapper/shared/get';
 import { filterNestedObjectKeys } from '../../utils';
+import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
+import { distinct } from '../../utils/svelte-store';
 
 /**
  * chart object store
@@ -25,8 +27,14 @@ export const data = new writable('');
 /**
  * visualization store (readonly to views)
  */
-const visualization = new writable({});
-const visualizationReadonly = derived(visualization, $vis => $vis);
+const chartType = derived(chart, $chart => $chart.type); // no need to use distinct as type is primitive
+const visualizations = new writable([]);
+const visualizationReadonly = derived(
+    [chartType, visualizations],
+    ([$chartType, $visualizations]) => {
+        return $visualizations.find(vis => vis.id === $chartType) || visualizations[0] || {};
+    }
+);
 export { visualizationReadonly as visualization };
 
 /**
@@ -35,6 +43,18 @@ export { visualizationReadonly as visualization };
 const theme = new writable({});
 const themeReadonly = derived(theme, $theme => $theme);
 export { themeReadonly as theme };
+
+/**
+ * dataset store (readonly to views
+ */
+const dataOpts = distinct(derived(chart, $chart => get($chart, 'metadata.data')));
+export const dataset = derived([data, dataOpts], ([$data, $dataOpts]) => {
+    return delimited({
+        csv: $data,
+        transpose: $dataOpts.transpose,
+        firstRowIsHeader: $dataOpts['horizontal-header']
+    }).parse();
+});
 
 export const onNextSave = new Set();
 
@@ -60,9 +80,10 @@ const ALLOWED_CHART_KEYS = [
     'lastEditStep'
 ];
 
-export function initChartStore(rawChart, rawTheme, visualizations, disabledFields = []) {
+export function initChartStore(rawChart, rawTheme, rawVisualizations, disabledFields = []) {
     chart.set(rawChart);
     theme.set(rawTheme);
+    visualizations.set(rawVisualizations);
     let prevState;
 
     const patchChartSoon = debounce(async function (id) {
@@ -120,8 +141,6 @@ export function initChartStore(rawChart, rawTheme, visualizations, disabledField
         }
     }, 1000);
 
-    visualization.set(visualizations.find(vis => vis.id === rawChart.type) || visualizations[0]);
-
     chart.subscribe(async value => {
         if (!prevState && value.id) {
             // initial set
@@ -137,11 +156,6 @@ export function initChartStore(rawChart, rawTheme, visualizations, disabledField
             const newUnsaved = Object.keys(patch).length > 0;
             // and store the patch
             assign(unsavedChanges, patch);
-
-            if (unsavedChanges.type) {
-                // chart type has changed, update visualization store
-                visualization.set(visualizations.find(vis => vis.id === unsavedChanges.type));
-            }
 
             prevState = cloneDeep(value);
             if (newUnsaved) {

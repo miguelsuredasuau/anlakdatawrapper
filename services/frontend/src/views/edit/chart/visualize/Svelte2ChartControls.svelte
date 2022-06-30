@@ -3,7 +3,7 @@
     import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import dwVisualization from '@datawrapper/chart-core/lib/dw/visualization';
     import purifyHtml from '@datawrapper/shared/purifyHtml';
-    import { onMount, tick, getContext, onDestroy } from 'svelte';
+    import { onMount, tick, getContext } from 'svelte';
     import isEqual from 'lodash/isEqual';
     import clone from 'lodash/cloneDeep';
     import { loadScript } from '@datawrapper/shared/fetch';
@@ -17,28 +17,13 @@
     export let teamSettings;
     export let controlsModule = 'Refine';
 
-    let visUnsubscribe;
-    let prevVisId;
-
     onMount(() => {
-        visUnsubscribe = visualization.subscribe(vis => {
-            if (vis && vis.id && prevVisId !== vis.id) {
-                prevVisId = vis.id;
-                loadControls(vis.id);
-            }
-        });
         chart.subscribeKey('metadata', () => {
             storeData = getStoreData();
         });
     });
 
-    onDestroy(() => {
-        if (typeof visUnsubscribe === 'function') {
-            // unsubscribe from vis changes after the Refine/Annotate
-            // tab has been destroyed (e.g. the user switched tab)
-            visUnsubscribe();
-        }
-    });
+    $: loadControls($visualization);
 
     let vis;
     let dataset;
@@ -55,18 +40,21 @@
         };
     }
 
-    async function loadControls(type) {
+    async function loadControls(visualization) {
+        if (!visualization || !visualization.id) {
+            return;
+        }
+        const type = visualization.id;
         controlsReady = false;
 
         await applyDefaultsAndMigration();
 
         // load script that registers visualzation
-        const visMeta = visualizations.find(v => v.id === type);
         window.dw.visualization = dwVisualization;
-        await loadScript(`/lib/plugins/${visMeta.__plugin}/static/${type}.js`);
+        await loadScript(`/lib/plugins/${visualization.__plugin}/static/${type}.js`);
         // create visualization instance
         vis = dwVisualization(type);
-        vis.meta = visMeta;
+        vis.meta = visualization;
         vis.chart(dwChart);
         vis.theme = () => $theme.data;
 

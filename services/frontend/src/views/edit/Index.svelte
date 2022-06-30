@@ -17,9 +17,9 @@
         onNextSave,
         theme,
         team,
-        visualization
+        visualization,
+        dataset
     } from './stores';
-    import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
     import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
     import escapeHtml from '@datawrapper/shared/escapeHtml.cjs';
     import httpReq from '@datawrapper/shared/httpReq';
@@ -54,7 +54,8 @@
         theme,
         visualization,
         onNextSave,
-        customViews
+        customViews,
+        dataset
     });
 
     /*
@@ -83,11 +84,6 @@
     dwChart.save = dwChart.saveSoon = () => {
         $chart = dwChart.attributes();
     };
-    dwChart.dataset(
-        delimited({
-            csv: rawData
-        }).parse()
-    );
     dwChart.onChange(() => {
         $chart = dwChart.attributes();
     });
@@ -117,6 +113,10 @@
         // is not reactive to dwChart changes, this won't
         // have any effect
         dwChart.attributes($chart);
+    });
+
+    dataset.subscribe(dataset => {
+        dwChart.dataset(dataset);
     });
 
     const steps = workflow.steps.map(step => ({
