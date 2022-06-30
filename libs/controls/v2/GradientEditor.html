@@ -693,29 +693,27 @@
         <div>{@html __('controls / gradient-editor / help', 'core')}</div>
     </HelpDisplay>
     {/if}
-    <div style="white-space: nowrap">
-        <div style="display: inline-block" ref:gradientdropdown>
-            <DropdownControl
-                passEvent="{true}"
-                on:change="handleChange(event)"
-                label="{label}"
-                itemRenderer="{GradientDisplay}"
-                forceLabel="{selectedPreset}"
-                options="{presetOptions}"
-                placeholder="{__('controls / gradient-editor / preset / placeholder', 'core')}"
-                labelWidth="100px"
-            >
-            </DropdownControl>
-        </div>
-        <button
-            class:active="customize"
-            on:click="set({customize:!customize})"
-            title="Customize"
-            class="btn"
+    <div style="display: inline-block" ref:gradientdropdown>
+        <DropdownControl
+            passEvent="{true}"
+            on:change="handleChange(event)"
+            label="{label}"
+            itemRenderer="{GradientDisplay}"
+            forceLabel="{selectedPreset}"
+            options="{presetOptions}"
+            placeholder="{__('controls / gradient-editor / preset / placeholder', 'core')}"
+            labelWidth="100px"
         >
-            <i class="fa fa-wrench fa-fw"></i>
-        </button>
+        </DropdownControl>
     </div>
+    <button
+        class:active="customize"
+        on:click="set({customize:!customize})"
+        title="Customize"
+        class="btn"
+    >
+        <i class="fa fa-wrench fa-fw"></i>
+    </button>
 </div>
 {#if customize}
 <div transition:slide>
