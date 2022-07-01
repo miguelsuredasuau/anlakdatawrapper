@@ -10,7 +10,7 @@
     import get from 'lodash/get';
     import set from 'lodash/set';
     // load stores from context
-    const { chart, theme, visualization } = getContext('page/edit');
+    const { chart, theme, visualization, locale } = getContext('page/edit');
 
     export let dwChart;
     export let visualizations;
@@ -20,6 +20,9 @@
     onMount(() => {
         chart.subscribeKey('metadata', () => {
             storeData = getStoreData();
+        });
+        locale.subscribe($locale => {
+            if ($locale) storeData = getStoreData();
         });
     });
 
@@ -33,6 +36,7 @@
             ...clone($chart),
             vis,
             dataset,
+            textDirection: $locale.textDirection,
             visualization: visualizations.find(v => v.id === $chart.type),
             themeData: $theme.data,
             computedThemeData: $theme._computed,

@@ -41,11 +41,15 @@ async function loadVendorLocale(vendor, locale, team) {
 
 async function loadLocaleConfig(locale) {
     const tryLocales = getLocaleCodeOptions(locale);
-    const localeConfig = JSON.parse(
+    const localeMeta = await loadLocaleMeta();
+    const localeCode = tryLocales.find(l => l in localeMeta);
+    return localeCode ? localeMeta[localeCode] : {};
+}
+
+async function loadLocaleMeta() {
+    return JSON.parse(
         await fs.readFile(path.resolve(path.resolve(__dirname, localePath, 'config.json')))
     );
-    const localeCode = tryLocales.find(l => l in localeConfig);
-    return localeCode ? localeConfig[localeCode] : {};
 }
 
 function getLocaleCodeOptions(locale) {
@@ -59,6 +63,7 @@ function getLocaleCodeOptions(locale) {
 }
 
 module.exports = {
+    loadLocaleMeta,
     loadLocales,
     loadLocaleConfig,
     loadVendorLocale

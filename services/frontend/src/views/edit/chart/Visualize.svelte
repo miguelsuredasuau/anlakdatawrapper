@@ -32,10 +32,6 @@
     export let disabledFields;
     export let layoutControlsGroups;
     /**
-     * config.general.locales
-     */
-    export let chartLocales;
-    /**
      * all themes available to authenticated user
      */
     export let themes;
@@ -217,7 +213,6 @@
                             this={tab.ui}
                             {__}
                             {themes}
-                            {chartLocales}
                             {dwChart}
                             {workflow}
                             {visualizations}

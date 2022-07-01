@@ -1,4 +1,5 @@
 <script>
+    import { getContext } from 'svelte';
     import { isAllowedSourceUrl } from '@datawrapper/shared/validation';
     import get from '@datawrapper/shared/get';
     import purifyHtml from '@datawrapper/shared/purifyHtml';
@@ -10,12 +11,14 @@
     import RadioInput from '_partials/controls/RadioInput.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
+    const { locale } = getContext('page/edit');
+
     export let __;
     export let chart;
     export let teamSettings;
     export let disabledFields = new Set();
 
-    export let textDirection = 'ltr';
+    $: textDirection = $locale.textDirection;
 
     let sourceUrlError;
     $: {

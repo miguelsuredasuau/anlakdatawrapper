@@ -13,6 +13,8 @@
         initChartStore,
         initDataStore,
         initTeamStore,
+        locale,
+        locales,
         isDark,
         onNextSave,
         theme,
@@ -29,6 +31,7 @@
     export let rawData; // the csv dataset
     export let rawChart; // the JSON chart object
     export let rawTeam; // the JSON team object
+    export let rawLocales;
     export let visualizations;
     export let initUrlStep;
     export let urlPrefix;
@@ -52,6 +55,8 @@
         isDark,
         team,
         theme,
+        locale,
+        locales,
         visualization,
         onNextSave,
         customViews,
@@ -154,7 +159,7 @@
         : null;
 
     onMount(async () => {
-        initChartStore(rawChart, rawTheme, visualizations, disabledFields);
+        initChartStore(rawChart, rawTheme, rawLocales, visualizations, disabledFields);
         initDataStore(rawChart.id, rawData);
         if (rawTeam) {
             initTeamStore(rawTeam);

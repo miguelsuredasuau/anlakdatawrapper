@@ -56,6 +56,13 @@ export const dataset = derived([data, dataOpts], ([$data, $dataOpts]) => {
     }).parse();
 });
 
+const locales = new writable([]);
+const chartLocale = derived(chart, $chart => $chart.language || 'en-US');
+const localeReadOnly = derived([chartLocale, locales], ([$locale, $locales]) => {
+    return $locales.find(l => l.id === $locale) || $locales.find(l => l.id === 'en-US');
+});
+export { localeReadOnly as locale, locales };
+
 export const onNextSave = new Set();
 
 export const hasUnsavedChanges = new writable(false);
@@ -80,10 +87,17 @@ const ALLOWED_CHART_KEYS = [
     'lastEditStep'
 ];
 
-export function initChartStore(rawChart, rawTheme, rawVisualizations, disabledFields = []) {
+export function initChartStore(
+    rawChart,
+    rawTheme,
+    rawLocales,
+    rawVisualizations,
+    disabledFields = []
+) {
     chart.set(rawChart);
     theme.set(rawTheme);
     visualizations.set(rawVisualizations);
+    locales.set(rawLocales);
     let prevState;
 
     const patchChartSoon = debounce(async function (id) {

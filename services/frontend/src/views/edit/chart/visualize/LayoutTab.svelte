@@ -4,14 +4,12 @@
     export let __;
     export let themes;
     export let teamSettings;
-    export let chartLocales;
     export let layoutControlsGroups = [];
 
     $: sharedProps = {
         __,
         themes,
-        teamSettings,
-        chartLocales
+        teamSettings
     };
 
     function byPriority(a, b) {

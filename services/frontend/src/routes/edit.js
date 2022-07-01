@@ -9,6 +9,7 @@ const { Chart, User, Folder, Team, Theme } = require('@datawrapper/orm/models');
 const prepareChart = require('@datawrapper/service-utils/prepareChart');
 const assign = require('assign-deep');
 const prepareVisualization = require('@datawrapper/service-utils/prepareVisualization');
+const { loadLocaleMeta } = require('@datawrapper/service-utils/loadLocales');
 
 module.exports = {
     name: 'routes/edit',
@@ -147,10 +148,9 @@ module.exports = {
                         const themes = user.isAdmin()
                             ? await Theme.findAll({ attributes: ['id', 'title', 'created_at'] })
                             : (await api('/themes')).list;
-                        const chartLocales = server.methods.config('general').locales;
+
                         return {
                             themes,
-                            chartLocales,
                             layoutControlsGroups,
                             teamSettings: {
                                 flags,
@@ -458,12 +458,22 @@ module.exports = {
                         user.id !== chart.author_id &&
                         !(await user.hasActivatedTeam(chart.organization_id));
 
+                    const localeMeta = await loadLocaleMeta();
+                    const chartLocales = server.methods.config('general').locales;
+                    chartLocales.forEach(locale => {
+                        Object.assign(
+                            locale,
+                            localeMeta[locale.id.toLowerCase()] || { textDirection: 'ltr' }
+                        );
+                    });
+
                     return h.view('edit/Index.svelte', {
                         htmlClass: 'has-background-white-bis',
                         props: {
                             rawChart,
                             rawData: data,
                             rawTeam: team,
+                            rawLocales: chartLocales,
                             initUrlStep: params.step,
                             urlPrefix: `/${params.prefix}`,
                             breadcrumbPath,

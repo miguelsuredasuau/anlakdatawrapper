@@ -2,12 +2,11 @@
     import SelectInput from '_partials/controls/SelectInput.svelte';
     import { getContext } from 'svelte';
 
-    const { chart } = getContext('page/edit');
+    const { chart, locales } = getContext('page/edit');
 
     export let __;
-    export let chartLocales;
 
-    $: localeOptions = chartLocales.map(({ id, title }) => ({
+    $: localeOptions = $locales.map(({ id, title }) => ({
         value: id,
         label: `${title} (${id})`
     }));
