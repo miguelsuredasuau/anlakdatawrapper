@@ -64,8 +64,21 @@ function filterNestedObjectKeys(object, removeKeys) {
     );
 }
 
+/**
+ * wait for test() to return true
+ *
+ * @param test test method
+ * @param interval number of ms to wait between tests
+ */
+async function waitFor(test, interval = 100) {
+    while (!test()) {
+        await new Promise(resolve => setTimeout(resolve, interval));
+    }
+}
+
 module.exports = {
     byOrder,
     getNestedObjectKeys,
-    filterNestedObjectKeys
+    filterNestedObjectKeys,
+    waitFor
 };
