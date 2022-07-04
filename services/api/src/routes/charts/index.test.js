@@ -357,7 +357,7 @@ test('Cannot filter by folder a user does not have access to', async t => {
     // admin creates a chart
     await admin.createChart({ folderId: folder.id });
     // normal team user tries to filter charts
-    await teamUser.getCharts(`?folderId=${folder.id}`, 406);
+    await teamUser.getCharts(`?folderId=${folder.id}`, 403);
 });
 
 test('Cannot filter by team a user does not have access to', async t => {
@@ -370,8 +370,8 @@ test('Cannot filter by team a user does not have access to', async t => {
     await teamUser1.getCharts(`?teamId=${teamObj1.team.id}`, 200);
     await teamUser2.getCharts(`?teamId=${teamObj2.team.id}`, 200);
     // but not the other ones
-    await teamUser1.getCharts(`?teamId=${teamObj2.team.id}`, 406);
-    await teamUser2.getCharts(`?teamId=${teamObj1.team.id}`, 406);
+    await teamUser1.getCharts(`?teamId=${teamObj2.team.id}`, 403);
+    await teamUser2.getCharts(`?teamId=${teamObj1.team.id}`, 403);
 });
 
 test('Cannot combine by folderId with different teamId', async t => {
@@ -389,7 +389,7 @@ test('Cannot combine by folderId with different teamId', async t => {
     // can query folder combined with correct team
     await admin.getCharts(`?folderId=${folder1.id}&teamId=${teamObj1.team.id}`, 200);
     // cannot query folder combined with different team
-    await admin.getCharts(`?folderId=${folder1.id}&teamId=${teamObj2.team.id}`, 406);
+    await admin.getCharts(`?folderId=${folder1.id}&teamId=${teamObj2.team.id}`, 403);
 });
 
 test('Users can create charts in a team they have access to', async t => {
@@ -716,7 +716,7 @@ test('User cannot query charts by different user', async t => {
     const a = (await admin.getCharts(`?authorId=${user1.user.id}`)).result;
     t.is(a.total, 1);
     // but user 2 may not
-    await user2.getCharts(`?authorId=${user1.user.id}`, 406);
+    await user2.getCharts(`?authorId=${user1.user.id}`, 403);
 });
 
 test('Admins can not query charts from non-existing users', async t => {

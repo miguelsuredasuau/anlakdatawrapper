@@ -173,13 +173,13 @@ async function searchCharts({ query, request, openSearchClient }) {
             if (c !== 1) return Boom.notFound();
         } else {
             // check that authenticated user is part of that team (or admin)
-            if (!(await auth.artifacts.hasActivatedTeam(query.teamId))) return Boom.notAcceptable();
+            if (!(await auth.artifacts.hasActivatedTeam(query.teamId))) return Boom.forbidden();
         }
     }
 
     if (!isAdmin && query.authorId === 'all') {
         // only admins may user authorId=all
-        return Boom.unauthorized();
+        return Boom.forbidden();
     }
 
     if (query.authorId === 'me') {
@@ -188,7 +188,7 @@ async function searchCharts({ query, request, openSearchClient }) {
 
     if (!isAdmin && query.authorId && query.authorId !== auth.artifacts.id) {
         // non-admins may only pass their own user id
-        return Boom.notAcceptable();
+        return Boom.forbidden();
     }
 
     if (isAdmin && query.authorId && query.authorId !== 'all' && query.authorId !== 'me') {
@@ -305,13 +305,13 @@ async function searchCharts({ query, request, openSearchClient }) {
         } else {
             // check folder permission
             const folder = await Folder.findByPk(query.folderId);
-            if (!folder) return Boom.notAcceptable();
+            if (!folder) return Boom.forbidden();
             if (!(await folder.isWritableBy(auth.artifacts)) && !isAdmin) {
-                return Boom.notAcceptable();
+                return Boom.forbidden();
             }
             if (query.teamId && folder.org_id && folder.org_id !== query.teamId) {
                 // tried to combine a folder with a different team
-                return Boom.notAcceptable();
+                return Boom.forbidden();
             }
             filters.push({
                 term: {

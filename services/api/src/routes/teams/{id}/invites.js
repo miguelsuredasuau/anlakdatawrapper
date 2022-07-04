@@ -244,7 +244,7 @@ async function inviteTeamMember(request, h) {
         const pendingInvites = await getPendingTeamInvites({ user });
         const past24HourInvites = await countPastInviteActions({ user, days: 1 });
         if (pendingInvites >= maxTeamInvites || past24HourInvites >= 2 * maxTeamInvites) {
-            const error = Boom.notAcceptable(
+            const error = Boom.badRequest(
                 `You already invited ${maxTeamInvites} user into teams. You can invite more users when invitations have been accepted.`
             );
             error.output.payload.data = { maxTeamInvites };

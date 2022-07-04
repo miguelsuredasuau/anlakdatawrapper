@@ -778,19 +778,19 @@ test('GET /search/charts filters by author when the user is not an admin', async
             query: prefix,
             authorId: otherUserObj.user.id
         });
-        t.is(resOther.statusCode, 406);
+        t.is(resOther.statusCode, 403);
 
         const resNonExistent = await t.context.search(t.context.userObj, {
             query: prefix,
             authorId: randomInt(99999)
         });
-        t.is(resNonExistent.statusCode, 406);
+        t.is(resNonExistent.statusCode, 403);
 
         const resAll = await t.context.search(t.context.userObj, {
             query: prefix,
             authorId: 'all'
         });
-        t.is(resAll.statusCode, 401);
+        t.is(resAll.statusCode, 403);
     } finally {
         await destroy(...Object.values(otherUserObj));
         await t.context.openSearchClient.delete(charts);
@@ -1072,20 +1072,20 @@ test('GET /search/charts filters by team when the user is not admin', async t =>
             teamId: userTeam1.id,
             authorId: otherUserObj.user.id
         });
-        t.is(resOtherUsersChartsInMyTeam.statusCode, 406);
+        t.is(resOtherUsersChartsInMyTeam.statusCode, 403);
 
         const resAllChartsInAnotherTeam = await t.context.search(userObj, {
             query: prefix,
             teamId: otherTeam.id
         });
-        t.is(resAllChartsInAnotherTeam.statusCode, 406);
+        t.is(resAllChartsInAnotherTeam.statusCode, 403);
 
         const resAllChartsInAnotherTeam2 = await t.context.search(userObj, {
             query: prefix,
             teamId: otherTeam.id,
             authorId: 'all'
         });
-        t.is(resAllChartsInAnotherTeam2.statusCode, 406);
+        t.is(resAllChartsInAnotherTeam2.statusCode, 403);
 
         const resMyChartsInNoTeam = await t.context.search(userObj, {
             query: prefix,
@@ -1103,20 +1103,20 @@ test('GET /search/charts filters by team when the user is not admin', async t =>
             teamId: 'null',
             authorId: otherUserObj.user.id
         });
-        t.is(resOtherUsersChartsInNoTeam.statusCode, 406);
+        t.is(resOtherUsersChartsInNoTeam.statusCode, 403);
 
         const resAllChartsInNoTeam = await t.context.search(userObj, {
             query: prefix,
             teamId: 'null',
             authorId: 'all'
         });
-        t.is(resAllChartsInNoTeam.statusCode, 401);
+        t.is(resAllChartsInNoTeam.statusCode, 403);
 
         const resNonExistentTeam = await t.context.search(userObj, {
             query: prefix,
             teamId: String(randomInt(99999))
         });
-        t.is(resNonExistentTeam.statusCode, 406);
+        t.is(resNonExistentTeam.statusCode, 403);
     } finally {
         await destroy(
             otherTeam,
@@ -1189,7 +1189,7 @@ test('GET /search/charts filters charts by folder', async t => {
     }
 });
 
-test('GET /search/charts returns error 406 when the folder does not exist', async t => {
+test('GET /search/charts returns error 403 when the folder does not exist', async t => {
     const prefix = genRandomChartPrefix();
     const charts = [
         {
@@ -1205,13 +1205,13 @@ test('GET /search/charts returns error 406 when the folder does not exist', asyn
             authorId: 'all',
             folderId: genNonExistentFolderId()
         });
-        t.is(resNonExistent.statusCode, 406);
+        t.is(resNonExistent.statusCode, 403);
     } finally {
         await t.context.openSearchClient.delete(charts);
     }
 });
 
-test('GET /search/charts returns error 406 when the folder is not writable by the user', async t => {
+test('GET /search/charts returns error 403 when the folder is not writable by the user', async t => {
     const prefix = genRandomChartPrefix();
     let charts;
     let folder;
@@ -1238,7 +1238,7 @@ test('GET /search/charts returns error 406 when the folder is not writable by th
             query: `${prefix} user`,
             folderId: folder.id
         });
-        t.is(resUser2.statusCode, 406);
+        t.is(resUser2.statusCode, 403);
 
         const resAdmin = await t.context.search(t.context.adminObj, {
             query: `${prefix} user`,
