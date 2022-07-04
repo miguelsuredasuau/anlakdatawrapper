@@ -467,6 +467,8 @@ module.exports = {
                         );
                     });
 
+                    const mayAdministrateTeam = await user.mayAdministrateTeam(team.id);
+
                     return h.view('edit/Index.svelte', {
                         htmlClass: 'has-background-white-bis',
                         props: {
@@ -483,6 +485,9 @@ module.exports = {
                             },
                             rawTheme: theme,
                             visualizations: Array.from(server.app.visualizations.values())
+                                .filter(vis =>
+                                    isDisabledVisualization(vis, team, mayAdministrateTeam)
+                                )
                                 .map(prepareVisualization)
                                 .sort(byOrder),
                             customViews,
@@ -523,6 +528,18 @@ module.exports = {
                 });
             }
             return chart;
+        }
+
+        function isDisabledVisualization(vis, team, mayAdministrateTeam) {
+            const disabledVisSettings = team.settings.disableVisualizations;
+
+            if (!disabledVisSettings.enabled) {
+                return true;
+            }
+            if (disabledVisSettings.allowAdmins && mayAdministrateTeam) {
+                return true;
+            }
+            return !disabledVisSettings.visualizations[vis.id];
         }
     }
 };
