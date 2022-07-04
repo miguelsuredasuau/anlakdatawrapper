@@ -136,7 +136,8 @@
             <div class="control">
                 <NumberInput
                     class="is-small"
-                    width="8ex"
+                    width="10ex"
+                    spinner="true"
                     bind:value={$chart.metadata.publish['embed-width']}
                 />
             </div>
@@ -152,7 +153,8 @@
                 {:else}
                     <NumberInput
                         class="is-small"
-                        width="8ex"
+                        spinner="true"
+                        width="10ex"
                         bind:value={$chart.metadata.publish['embed-height']}
                     />
                 {/if}
@@ -164,7 +166,8 @@
             <div class="control">
                 <NumberInput
                     class="is-small"
-                    width="8ex"
+                    spinner="true"
+                    width="10ex"
                     bind:value={printWidth}
                     on:change={updateEmbedSize}
                 />
@@ -172,7 +175,8 @@
             <div class="control">
                 <NumberInput
                     class="is-small"
-                    width="8ex"
+                    spinner="true"
+                    width="10ex"
                     bind:value={printHeight}
                     on:change={updateEmbedSize}
                 />

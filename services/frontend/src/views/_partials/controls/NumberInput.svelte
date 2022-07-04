@@ -3,13 +3,16 @@
     export let value = 0;
     export let disabled = null;
 
-    export let spinner = false;
+    export let spinner = true;
     let className = '';
     export { className as class };
     export let width = 'auto';
 </script>
 
 <style>
+    input[type='number'].spinner {
+        padding-right: 2px;
+    }
     input[type='number']:not(.spinner) {
         -moz-appearance: textfield;
         appearance: textfield;

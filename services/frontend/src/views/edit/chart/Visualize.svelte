@@ -181,7 +181,8 @@
     }
 </script>
 
-<style>
+<style lang="scss">
+    @import '../../../styles/export.scss';
     .preview.sticky {
         position: sticky;
         top: 20px;
@@ -191,10 +192,20 @@
     }
 
     .limit-width {
-        max-width: calc(100vw - 510px);
+        max-width: calc(100vw - (2 * $gap));
         overflow-x: auto;
         overflow-y: clip;
         height: auto;
+    }
+    @include tablet {
+        .limit-width {
+            max-width: calc(66.6vw - (2 * $gap));
+        }
+    }
+    @include widescreen {
+        .limit-width {
+            max-width: calc(($widescreen - (2 * $gap)) * 0.66);
+        }
     }
 </style>
 

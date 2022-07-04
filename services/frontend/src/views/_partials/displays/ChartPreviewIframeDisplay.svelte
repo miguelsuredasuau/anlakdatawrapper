@@ -225,13 +225,27 @@
     }
     .resizer {
         position: absolute;
-        right: 3px;
-        bottom: -2px;
+        right: 0;
+        bottom: 0;
         cursor: se-resize;
-        font-size: 17px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        padding: 0.25em;
+        color: var(--color-dw-grey);
+        background-color: rgba(0, 0, 0, 0.05);
+        color: #666;
+    }
+    .resizer:hover {
+        background-color: rgba(0, 0, 0, 0.1);
     }
     .dark-background .resizer {
-        color: var(--color-dw-grey-lightest);
+        color: var(--color-dw-grey-lighter);
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    .dark-background .resizer:hover {
+        background-color: rgba(255, 255, 255, 0.15);
     }
     .fixed-height .resizer {
         cursor: ew-resize;
