@@ -67,6 +67,19 @@
     // .dw-chart-body
     let target, dwChart, vis;
     let postEvent = () => {};
+    const flags = { isIframe };
+
+    const FLAGS = [
+        { key: 'plain', type: 'boolean' },
+        { key: 'static', type: 'boolean' },
+        { key: 'svgonly', type: 'boolean' },
+        { key: 'map2svg', type: 'boolean' },
+        { key: 'transparent', type: 'boolean' },
+        { key: 'fitchart', type: 'boolean' },
+        { key: 'fitheight', type: 'boolean' },
+        { key: 'theme', type: 'string' },
+        { key: 'search', type: 'string' }
+    ];
 
     const datasetName = `dataset.${get(chart.metadata, 'data.json') ? 'json' : 'csv'}`;
 
@@ -417,6 +430,22 @@ Please make sure you called __(key) with a key of type "string".
             }
         });
 
+        // read flags
+        if (isIframe) {
+            const urlParams = new URLSearchParams(window.location.search);
+            FLAGS.forEach(({ key, type }) => {
+                const val = urlParams.get(key);
+                flags[key] = type === 'boolean' ? JSON.parse(val || 'false') : val;
+            });
+        } else {
+            // @todo: read flags from script tag , e.g.
+            // const script = document.currentScript;
+            // FLAGS.forEach(({ key, type }) => {
+            //     const val = script.getAttribute(`data-${key}`);
+            //     flags[key] = type === 'boolean' ? JSON.parse(val || 'false') : val;
+            // });
+        }
+
         const useDwCdn = get(chart, 'metadata.data.use-datawrapper-cdn', true);
 
         const externalJSON =
@@ -452,7 +481,8 @@ Please make sure you called __(key) with a key of type "string".
             .chart(chart)
             .locale((chart.language || 'en-US').substr(0, 2))
             .translations(translations)
-            .theme(dw.theme(chart.theme));
+            .theme(dw.theme(chart.theme))
+            .flags(flags);
 
         // register chart assets
         const assetPromises = [];
@@ -533,30 +563,6 @@ Please make sure you called __(key) with a key of type "string".
                 updateDarkModeState(e.matches);
             });
         }
-
-        // set flags
-        const flags = { isIframe };
-        const flagsBoolean = [
-            'plain',
-            'static',
-            'svgonly',
-            'map2svg',
-            'transparent',
-            'fitchart',
-            'fitheight'
-        ];
-        const flagsString = ['theme', 'search'];
-        if (isIframe) {
-            const urlParams = new URLSearchParams(window.location.search);
-            flagsBoolean.forEach(key => (flags[key] = JSON.parse(urlParams.get(key) || 'false')));
-            flagsString.forEach(key => (flags[key] = urlParams.get(key)));
-        } else {
-            // @todo: read flags from script tag , e.g.
-            // const script = document.currentScript;
-            // flagsBoolean.forEach(key => (flags[key] = JSON.parse(script.getAttribute(`data-${key}`) || 'false'));
-            // flagsString.forEach(key => (flags[key] = script.getAttribute(`data-${key}`)));
-        }
-        dwChart.flags(flags);
 
         // render chart
         dwChart.render(outerContainer);

@@ -10516,6 +10516,37 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
 
   let postEvent = () => {};
 
+  const flags = {
+    isIframe
+  };
+  const FLAGS = [{
+    key: "plain",
+    type: "boolean"
+  }, {
+    key: "static",
+    type: "boolean"
+  }, {
+    key: "svgonly",
+    type: "boolean"
+  }, {
+    key: "map2svg",
+    type: "boolean"
+  }, {
+    key: "transparent",
+    type: "boolean"
+  }, {
+    key: "fitchart",
+    type: "boolean"
+  }, {
+    key: "fitheight",
+    type: "boolean"
+  }, {
+    key: "theme",
+    type: "string"
+  }, {
+    key: "search",
+    type: "string"
+  }];
   const datasetName = `dataset.${get(chart.metadata, "data.json") ? "json" : "csv"}`;
   const coreBlocks = [{
     id: "headline",
@@ -10757,7 +10788,25 @@ Please make sure you called __(key) with a key of type "string".
         const localeBase = eval(locales[vendor].base);
         locales[vendor] = cjs(localeBase, locales[vendor].custom);
       }
-    });
+    }); // read flags
+
+    if (isIframe) {
+      const urlParams = new URLSearchParams(window.location.search);
+      FLAGS.forEach(({
+        key,
+        type
+      }) => {
+        const val = urlParams.get(key);
+        flags[key] = type === "boolean" ? JSON.parse(val || "false") : val;
+      });
+    } // @todo: read flags from script tag , e.g.
+    // const script = document.currentScript;
+    // FLAGS.forEach(({ key, type }) => {
+    //     const val = script.getAttribute(`data-${key}`);
+    //     flags[key] = type === 'boolean' ? JSON.parse(val || 'false') : val;
+    // });
+
+
     const useDwCdn = get(chart, "metadata.data.use-datawrapper-cdn", true);
     const externalJSON = useDwCdn && get(chart, "metadata.data.external-metadata", "").length ? `//${externalDataUrl}/${chart.id}.metadata.json` : get(chart, "metadata.data.external-metadata");
 
@@ -10782,7 +10831,7 @@ Please make sure you called __(key) with a key of type "string".
     } // initialize dw.chart object
 
 
-    dwChart = dw.chart(chart).locale((chart.language || "en-US").substr(0, 2)).translations(translations).theme(dw.theme(chart.theme)); // register chart assets
+    dwChart = dw.chart(chart).locale((chart.language || "en-US").substr(0, 2)).translations(translations).theme(dw.theme(chart.theme)).flags(flags); // register chart assets
 
     const assetPromises = [];
 
@@ -10855,26 +10904,8 @@ Please make sure you called __(key) with a key of type "string".
       matchMediaQuery.addEventListener("change", e => {
         updateDarkModeState(e.matches);
       });
-    } // set flags
+    } // render chart
 
-
-    const flags = {
-      isIframe
-    };
-    const flagsBoolean = ["plain", "static", "svgonly", "map2svg", "transparent", "fitchart", "fitheight"];
-    const flagsString = ["theme", "search"];
-
-    if (isIframe) {
-      const urlParams = new URLSearchParams(window.location.search);
-      flagsBoolean.forEach(key => flags[key] = JSON.parse(urlParams.get(key) || "false"));
-      flagsString.forEach(key => flags[key] = urlParams.get(key));
-    } // @todo: read flags from script tag , e.g.
-    // const script = document.currentScript;
-    // flagsBoolean.forEach(key => (flags[key] = JSON.parse(script.getAttribute(`data-${key}`) || 'false'));
-    // flagsString.forEach(key => (flags[key] = script.getAttribute(`data-${key}`)));
-
-
-    dwChart.flags(flags); // render chart
 
     dwChart.render(outerContainer); // await necessary reload triggers
 
