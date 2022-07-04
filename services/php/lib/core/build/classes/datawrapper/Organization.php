@@ -1,6 +1,6 @@
 <?php
 
-require_once ROOT_PATH . 'lib/utils/call_v3_api.php';  
+require_once ROOT_PATH . 'lib/utils/call_v3_api.php';
 define('REDIS_FEATURE_DEFAULTS', 'php:feature-flags:defaults');
 
 /**
@@ -133,10 +133,17 @@ class Organization extends BaseOrganization
             ],
             'customFields' => [],
             'sso' => [
+                'enabled' => false,
+                'protcol' => 'openId',
                 'openId' => [
                     'domain' => '',
                     'clientId' => '',
                     'clientSecret' => ''
+                ],
+                'saml' => [
+                    'url' => '',
+                    'entityId' => '',
+                    'certificate' => ''
                 ]
             ],
             'disableVisualizations' => [
@@ -188,7 +195,7 @@ class Organization extends BaseOrganization
             // read default flags from v3 API
             [$status, $defaultFlags] = call_v3_api('GET', '/admin/default-features');
         }
-     
+
         foreach ($defaultFlags as $flag) {
             $default['flags'][$flag['id']] = $flag['default'];
         }

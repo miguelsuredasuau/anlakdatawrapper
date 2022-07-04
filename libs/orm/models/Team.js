@@ -28,10 +28,17 @@ const defaultSettings = {
     },
     customFields: [],
     sso: {
+        enabled: false,
+        protocol: 'openId',
         openId: {
             domain: '',
             clientId: '',
             clientSecret: ''
+        },
+        saml: {
+            url: '',
+            entityId: '',
+            certificate: ''
         }
     },
     disableVisualizations: {

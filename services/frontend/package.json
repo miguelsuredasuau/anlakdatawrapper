@@ -63,6 +63,7 @@
         "lodash": "^4.17.20",
         "numeral": "^2.0.6",
         "openid-client": "^4.9.0",
+        "passport-saml": "^3.2.1",
         "pug": "^3.0.1",
         "requirejs": "^2.3.6",
         "rollup": "^2.72.1",
