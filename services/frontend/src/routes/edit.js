@@ -467,7 +467,7 @@ module.exports = {
                         );
                     });
 
-                    const mayAdministrateTeam = await user.mayAdministrateTeam(team.id);
+                    const mayAdministrateTeam = team && (await user.mayAdministrateTeam(team.id));
 
                     return h.view('edit/Index.svelte', {
                         htmlClass: 'has-background-white-bis',
@@ -531,6 +531,8 @@ module.exports = {
         }
 
         function isDisabledVisualization(vis, team, mayAdministrateTeam) {
+            if (!team) return false;
+
             const disabledVisSettings = team.settings.disableVisualizations;
 
             if (!disabledVisSettings.enabled) {
