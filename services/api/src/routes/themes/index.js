@@ -66,6 +66,7 @@ module.exports = {
                 tags: ['api'],
                 description: 'List themes',
                 auth: {
+                    strategy: 'guest',
                     access: { scope: ['theme:read'] }
                 },
                 notes: `Get a list of themes accessible by the authenticated user

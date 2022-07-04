@@ -6,6 +6,7 @@ const {
     createTeamWithUser,
     createThemes,
     createUser,
+    createGuestSession,
     destroy,
     getTheme,
     setup
@@ -49,6 +50,30 @@ test('GET /themes returns all themes of a user', async t => {
         });
     } finally {
         await destroy(themes, Object.values(teamObj));
+    }
+});
+
+test('GET /themes returns themes for a guest', async t => {
+    let session;
+    const defaultThemeIds = t.context.config.general.defaultThemes;
+    try {
+        session = await createGuestSession(t.context.server);
+
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/themes`,
+            headers: {
+                cookie: `DW-SESSION=${session}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            }
+        });
+
+        t.is(res.statusCode, 200);
+
+        t.deepEqual(defaultThemeIds.sort(), res.result.list.map(d => d.id).sort());
+    } finally {
+        await destroy(session);
     }
 });
 
