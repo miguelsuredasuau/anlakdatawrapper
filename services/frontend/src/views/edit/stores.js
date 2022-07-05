@@ -27,13 +27,14 @@ export const data = new writable('');
 /**
  * visualization store (readonly to views)
  */
-const chartType = derived(chart, $chart => $chart.type); // no need to use distinct as type is primitive
+const chartType = derived(chart, $chart => $chart.type, ''); // no need to use distinct as type is primitive
 const visualizations = new writable([]);
 const visualizationReadonly = derived(
     [chartType, visualizations],
     ([$chartType, $visualizations]) => {
         return $visualizations.find(vis => vis.id === $chartType) || visualizations[0] || {};
-    }
+    },
+    false
 );
 export { visualizationReadonly as visualization };
 
@@ -41,26 +42,34 @@ export { visualizationReadonly as visualization };
  * theme store (readonly to views)
  */
 const theme = new writable({});
-const themeReadonly = derived(theme, $theme => $theme);
+const themeReadonly = derived(theme, $theme => $theme, false);
 export { themeReadonly as theme };
 
 /**
  * dataset store (readonly to views
  */
-const dataOpts = distinct(derived(chart, $chart => get($chart, 'metadata.data')));
-export const dataset = derived([data, dataOpts], ([$data, $dataOpts]) => {
-    return delimited({
-        csv: $data,
-        transpose: $dataOpts.transpose,
-        firstRowIsHeader: $dataOpts['horizontal-header']
-    }).parse();
-});
+const dataOpts = distinct(derived(chart, $chart => get($chart, 'metadata.data'), {}));
+export const dataset = derived(
+    [data, dataOpts],
+    ([$data, $dataOpts]) => {
+        return delimited({
+            csv: $data,
+            transpose: $dataOpts.transpose,
+            firstRowIsHeader: $dataOpts['horizontal-header']
+        }).parse();
+    },
+    false
+);
 
 const locales = new writable([]);
-const chartLocale = derived(chart, $chart => $chart.language || 'en-US');
-const localeReadOnly = derived([chartLocale, locales], ([$locale, $locales]) => {
-    return $locales.find(l => l.id === $locale) || $locales.find(l => l.id === 'en-US');
-});
+const chartLocale = derived(chart, $chart => $chart.language || 'en-US', 'en-US');
+const localeReadOnly = derived(
+    [chartLocale, locales],
+    ([$chartLocale, $locales]) => {
+        return $locales.find(l => l.id === $chartLocale) || $locales.find(l => l.id === 'en-US');
+    },
+    'en-US'
+);
 export { localeReadOnly as locale, locales };
 
 export const onNextSave = new Set();
@@ -193,7 +202,7 @@ export function initChartStore(
     });
 }
 
-export function initDataStore(chartId, rawData) {
+export function initDataStore(chartId, rawData, readonly = false) {
     let prevState;
     let unsavedState;
 
@@ -224,6 +233,7 @@ export function initDataStore(chartId, rawData) {
     }, 1000);
 
     data.subscribe(value => {
+        if (readonly) return;
         if (prevState === undefined && value !== undefined) {
             // initial set
             prevState = cloneDeep(value);

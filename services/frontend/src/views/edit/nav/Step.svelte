@@ -2,10 +2,15 @@
     import purifyHtml from '@datawrapper/shared/purifyHtml';
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
+
     export let active = false;
     export let lastActiveStep;
+
     $: visited = step.index <= lastActiveStep;
     export let step = { index: 0, title: 'foo' };
+
+    export let disabled = false;
+
     // internals
     let height = 48;
     let width = 294;
@@ -60,10 +65,15 @@
         text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
         font-size: 26px;
     }
+    a.disabled:not(.active) {
+        pointer-events: none;
+        color: var(--color-dw-grey);
+    }
 </style>
 
 <a
     href={step.id}
+    class:disabled
     on:click|preventDefault={event => !active && dispatch('navigate', { ...step, event })}
     bind:clientHeight={height}
     bind:clientWidth={width}

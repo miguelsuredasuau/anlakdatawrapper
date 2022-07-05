@@ -16,6 +16,7 @@
     export let steps;
     export let activeStep;
     export let lastActiveStep;
+    export let dataReadonly;
 
     let innerHeight = 0;
     let innerWidth = 0;
@@ -97,6 +98,7 @@
                     <Step
                         {step}
                         {lastActiveStep}
+                        disabled={step.isDataStep && dataReadonly}
                         on:navigate={evt => dispatch('navigate', evt.detail)}
                         active={step === activeStep}
                     />

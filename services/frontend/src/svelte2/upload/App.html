@@ -16,7 +16,7 @@
             <div class="sidebar">
                 <h3>{@html __('upload / title')}</h3>
 
-                <ul class="import-methods">
+                <ul class="import-methods" class:readonly>
                     {#each buttons as btn}
                     <li on:click="btnAction(btn)" class="action {active==btn?'active':''}">
                         <label>
@@ -274,6 +274,10 @@
         padding: 0;
         list-style: none;
         display: flex;
+
+        &.readonly {
+            pointer-events: none;
+        }
 
         .action {
             color: #1d81a2;

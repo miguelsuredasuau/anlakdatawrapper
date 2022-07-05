@@ -82,6 +82,7 @@ module.exports = {
                 {
                     id: 'upload',
                     view: 'edit/chart/upload',
+                    isDataStep: true,
                     title: ['Upload Data', 'core'],
                     async data({ request, chart }) {
                         const datasets = await server.methods.getDemoDatasets({ request, chart });
@@ -103,17 +104,13 @@ module.exports = {
                     id: 'describe',
                     view: 'edit/chart/describe',
                     title: ['Check & Describe', 'core'],
-                    async data({ request, chart, team }) {
+                    async data({ team }) {
                         let showLocaleSelect = true;
                         if (team && team.settings?.flags?.output_locale === false) {
                             showLocaleSelect = false;
                         }
                         return {
-                            showLocaleSelect,
-                            readonly: !(await chart.isDataEditableBy(
-                                request.auth.artifacts,
-                                request.auth.credentials.session
-                            ))
+                            showLocaleSelect
                         };
                     }
                 },
@@ -492,12 +489,16 @@ module.exports = {
                                 .sort(byOrder),
                             customViews,
                             showEditorNavInCmsMode: get(
-                                request.auth.artifacts.activeTeam,
+                                user.activeTeam,
                                 'settings.showEditorNavInCmsMode',
                                 false
                             ),
                             disabledFields,
-                            showAdminWarning
+                            showAdminWarning,
+                            dataReadonly: !(await chart.isDataEditableBy(
+                                user,
+                                request.auth.credentials.session
+                            ))
                         }
                     });
                 }

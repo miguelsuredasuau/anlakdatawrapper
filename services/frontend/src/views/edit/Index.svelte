@@ -83,6 +83,12 @@
      */
     export let showAdminWarning = false;
 
+    /**
+     * in certain cases, the data of a visualization is protected
+     * and can not be edited by the user
+     */
+    export let dataReadonly = false;
+
     $chart = rawChart;
 
     const dwChart = ChartCoreChart(rawChart);
@@ -145,6 +151,7 @@
         language: rawChart.language,
         chartData: rawData,
         dwChart,
+        dataReadonly,
         disabledFields: new Set(disabledFields),
         __
     };
@@ -160,7 +167,7 @@
 
     onMount(async () => {
         initChartStore(rawChart, rawTheme, rawLocales, visualizations, disabledFields);
-        initDataStore(rawChart.id, rawData);
+        initDataStore(rawChart.id, rawData, dataReadonly);
         if (rawTeam) {
             initTeamStore(rawTeam);
         }
@@ -238,6 +245,7 @@
                 {__}
                 prefix={workflow.prefix}
                 {steps}
+                {dataReadonly}
                 breadcrumbPath={truncatedBreadcrumbPath}
                 bind:activeStep
                 bind:lastActiveStep
