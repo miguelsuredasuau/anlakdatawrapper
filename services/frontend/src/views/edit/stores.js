@@ -15,8 +15,18 @@ import { distinct } from '../../utils/svelte-store';
  */
 export const chart = new writable({});
 const chartKeyWatchers = new Set();
+
+/**
+ * Subscribe to changes of a certain key within the chart store
+ *
+ * @param {string} key
+ * @param {function} handler
+ * @returns {function} - to unsubscribe
+ */
 chart.subscribeKey = (key, handler) => {
-    chartKeyWatchers.add({ key, handler: debounce(handler, 100) });
+    const watcher = { key, handler: debounce(handler, 100) };
+    chartKeyWatchers.add(watcher);
+    return () => chartKeyWatchers.remove(watcher);
 };
 
 /**
@@ -46,7 +56,7 @@ const themeReadonly = derived(theme, $theme => $theme, false);
 export { themeReadonly as theme };
 
 /**
- * dataset store (readonly to views
+ * dataset store (readonly to views)
  */
 const dataOpts = distinct(derived(chart, $chart => get($chart, 'metadata.data'), {}));
 export const dataset = derived(

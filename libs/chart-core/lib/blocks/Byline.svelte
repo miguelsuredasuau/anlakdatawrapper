@@ -32,7 +32,7 @@
 </script>
 
 <span class="byline-caption">{bylineCaption}</span>
-{byline}
+<span class="byline-content">{byline}</span>
 {#if chart.basedOnByline}
     {@html purifyHtml(basedOnByline)}
 {/if}

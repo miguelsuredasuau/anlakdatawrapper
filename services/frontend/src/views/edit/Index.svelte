@@ -176,7 +176,10 @@
             activeStep = steps[Math.max(1, Math.min(steps.length - 1, rawChart.lastEditStep - 1))];
         }
         navigateTo(activeStep, initUrlStep !== activeStep.id);
+        window.__subscribeKey = chart.subscribeKey;
     });
+
+    $: if (typeof window !== 'undefined') window.__chart = $chart;
 
     export let breadcrumbPath = [];
 

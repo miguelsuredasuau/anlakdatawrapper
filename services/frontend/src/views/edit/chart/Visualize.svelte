@@ -17,12 +17,10 @@
     import RefineTab from './visualize/RefineTab.svelte';
     // other JS
     import clone from 'lodash/cloneDeep';
-    import unset from 'lodash/unset';
-    import { onMount, getContext } from 'svelte';
+    import { onMount, getContext, onDestroy } from 'svelte';
     import { headerProps } from '_layout/stores';
-    import objectDiff from '@datawrapper/shared/objectDiff';
     // load stores from context
-    const { chart, theme, visualization, isDark, customViews } = getContext('page/edit');
+    const { chart, theme, visualization, isDark, customViews, dataset } = getContext('page/edit');
 
     export let __;
     export let dwChart;
@@ -111,29 +109,20 @@
      * since we don't want to wait for the server roundtrip
      * we inject the new metadata before re-rendering
      */
-    const IGNORE = ['text-annotations', 'range-annotations'];
-    function rerenderPreview() {
-        iframePreview.getContext(win => {
-            // Re-render chart with new attributes:
+    const RERENDER = ['metadata.visualize', 'metadata.data.changes'];
 
-            const { metadata: oldMetadata } = win.__dw.vis.chart().get();
-            const newMetadata = clone($chart.metadata);
-            const visualizeDiff = objectDiff(oldMetadata.visualize, newMetadata.visualize);
-            IGNORE.forEach(key => {
-                unset(visualizeDiff, key);
-            });
-            if (Object.keys(visualizeDiff).length) {
-                win.__dw.vis.chart().set('metadata', newMetadata);
-                win.__dw.vis.chart().load(win.__dw.params.data);
-                win.__dw.render();
-            }
-        });
-    }
+    /*
+     * keep track of store subscriptions to we can unsubscribe
+     * when this component gets destroyed
+     */
+    const storeSubscriptions = new Set();
 
     onMount(() => {
-        RELOAD.forEach(key => chart.subscribeKey(key, reloadPreview));
-        UPDATE.forEach(key => chart.subscribeKey(key, updatePreview));
-        chart.subscribeKey('metadata.visualize', rerenderPreview);
+        RELOAD.forEach(key => storeSubscriptions.add(chart.subscribeKey(key, reloadPreview)));
+        UPDATE.forEach(key => storeSubscriptions.add(chart.subscribeKey(key, updatePreview)));
+        RERENDER.forEach(key =>
+            storeSubscriptions.add(chart.subscribeKey(key, iframePreview.rerender))
+        );
         // read current tab from url hash
         if (tabs.find(t => `#${t.id}` === window.location.hash)) {
             active = prevActive = window.location.hash.substring(1);
@@ -179,6 +168,12 @@
             }
         }
     }
+
+    onDestroy(() => {
+        for (const unsubscribe of storeSubscriptions) {
+            unsubscribe();
+        }
+    });
 </script>
 
 <style lang="scss">
@@ -258,8 +253,10 @@
                         fixedHeight={$visualization.height === 'fixed'}
                         isDark={$isDark}
                         on:resize={onPreviewResize}
-                        resizable
+                        allowInlineEditing
+                        {disabledFields}
                         theme={$theme}
+                        dataset={$dataset}
                     />
                 </div>
 

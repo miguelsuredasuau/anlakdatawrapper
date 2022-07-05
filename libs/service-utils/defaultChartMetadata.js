@@ -1,5 +1,6 @@
 module.exports = {
     data: {
+        changes: [],
         transpose: false,
         'vertical-header': true,
         'horizontal-header': true

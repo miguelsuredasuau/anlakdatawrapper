@@ -194,6 +194,17 @@ const start = async () => {
         return h.continue;
     });
 
+    /*
+     * disable browser cache to prevent loading of an outdated
+     * state after using the back/forward browser navigation
+     */
+    server.ext('onPreResponse', (request, h) => {
+        if (!request.route.path.startsWith('/lib/')) {
+            request.response.header('Cache-Control', 'no-store');
+        }
+        return h.continue;
+    });
+
     await server.start();
 
     setTimeout(() => {

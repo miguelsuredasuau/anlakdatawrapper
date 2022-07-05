@@ -115,7 +115,6 @@
             expandable
             disabled={disabledFields.has('metadata.describe.byline')}
             placeholder={__('visualize / annotate / byline / placeholder')}
-            error={!!sourceUrlError}
             {textDirection}
         />
     </FormFieldDisplay>
