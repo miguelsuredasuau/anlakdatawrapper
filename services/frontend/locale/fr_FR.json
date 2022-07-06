@@ -1153,5 +1153,6 @@
   "edit / preview": "Aper&ccedil;u",
   "edit / stored-changes": "Enregistré",
   "colorblind / note": "",
-  "edit / data-readonly": ""
+  "edit / data-readonly": "",
+  "archive / modal / public-url": ""
 }

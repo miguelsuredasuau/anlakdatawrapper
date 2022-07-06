@@ -1153,5 +1153,6 @@
   "edit / preview": "Vista previa",
   "edit / stored-changes": "Salvado",
   "colorblind / note": "",
-  "edit / data-readonly": ""
+  "edit / data-readonly": "",
+  "archive / modal / public-url": ""
 }

@@ -1153,5 +1153,6 @@
   "edit / preview": "预览",
   "edit / stored-changes": "保存",
   "colorblind / note": "",
-  "edit / data-readonly": ""
+  "edit / data-readonly": "",
+  "archive / modal / public-url": ""
 }

@@ -31,8 +31,18 @@
     let selectedEmbedCode;
     let copyTextInput;
 
+    async function loadSharingURL() {
+        const displayURLs = await httpReq.get(`/v3/charts/${chart.id}/display-urls`);
+        return displayURLs.find(({ id }) => id === 'standalone').url;
+    }
+
     async function loadEmbedCodes() {
         embedCodes = await httpReq.get(`/v3/charts/${chart.id}/embed-codes`);
+        embedCodes.push({
+            title: __('archive / modal / public-url'),
+            code: chart.publicUrl,
+            id: 'url'
+        });
     }
 
     async function handleDeleteButtonClick() {
@@ -153,6 +163,19 @@
                         <div class="kicker">{__('archive / modal / last-edit')}</div>
                         {dayjs(chart.lastModifiedAt).fromNow()}
                     </div>
+                    {#if chart.publishedAt}
+                        <div class="block">
+                            <div class="kicker">{__('archive / modal / share-url')}</div>
+                            {#await loadSharingURL()}
+                                <span class="has-text-grey">...</span>
+                            {:then sharingURL}
+                                <a href="https:{sharingURL}" target="_blank">{sharingURL}</a>
+                            {:catch error}
+                                <span class="has-text-grey">{__('archive / modal / na')}</span>
+                            {/await}
+                        </div>
+                    {/if}
+
                     <div class="block">
                         <a
                             href="/chart/{chart.id}/edit"

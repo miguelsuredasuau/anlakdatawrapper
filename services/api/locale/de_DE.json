@@ -1049,7 +1049,7 @@
   "dashboard / visualization / select": "Auswählen",
   "archive / action-bar / select-all": "Alle auswählen",
   "archive / action-bar / selected": "ausgewählt",
-  "archive / modal / share-url": "URL-Freigabe",
+  "archive / modal / share-url": "Öffentliche URL",
   "archive / add-in-folder / chart": "Diagramm",
   "archive / add-in-folder / map": "Karte",
   "archive / add-in-folder / table": "Tabelle",
@@ -1152,5 +1152,7 @@
   "darkmode / caption-short": "Dunkelmodus",
   "edit / preview": "Vorschau",
   "edit / stored-changes": "Gespeichert",
-  "colorblind / note": ""
+  "colorblind / note": "",
+  "edit / data-readonly": "Die Daten dieser Visualisierung sind vor Änderungen geschützt.",
+  "archive / modal / public-url": "URL der Visualisierung"
 }

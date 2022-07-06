@@ -1049,7 +1049,7 @@
   "dashboard / visualization / select": "Select",
   "archive / action-bar / select-all": "Select all",
   "archive / action-bar / selected": "selected",
-  "archive / modal / share-url": "Sharing-URL",
+  "archive / modal / share-url": "Sharing URL",
   "archive / add-in-folder / chart": "Chart",
   "archive / add-in-folder / map": "Map",
   "archive / add-in-folder / table": "Table",
@@ -1153,5 +1153,6 @@
   "edit / preview": "Preview",
   "edit / stored-changes": "Saved",
   "colorblind / note": "Colorblind check lets you test your colors and warns you if the colors in your chart/map would not be distinguishable by somebody with a color vision deficiency. See our <a href=\"https://academy.datawrapper.de/article/206-how-we-make-sure-our-charts-maps-and-tables-are-accessible\">Academy article</a>.",
-  "edit / data-readonly": "The data of this visualization is protected against changes."
+  "edit / data-readonly": "The data of this visualization is protected against changes.",
+  "archive / modal / public-url": "Visualization URL"
 }

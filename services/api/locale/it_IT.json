@@ -1152,5 +1152,7 @@
   "darkmode / caption-short": "Modalità scura",
   "edit / preview": "Anteprima",
   "edit / stored-changes": "Salvato",
-  "colorblind / note": ""
+  "colorblind / note": "",
+  "edit / data-readonly": "",
+  "archive / modal / public-url": ""
 }
