@@ -78,10 +78,10 @@
     $: src = customSrc || `/preview/${$chart.id}`;
     let prevSrc;
 
-    let customWidth;
-    let customHeight;
+    export let customWidth;
+    export let customHeight;
     let reportedIframeSize;
-    let customSrc;
+    export let customSrc;
     let customBorder = null;
     let customScale;
     let customBackground;
@@ -193,7 +193,7 @@
         const message = e.data;
         if (resizing) return;
         if (typeof message['datawrapper-height'] !== 'undefined' && fixedHeight) {
-            if (message['datawrapper-height'][$chart.id]) {
+            if ($chart && message['datawrapper-height'][$chart.id]) {
                 reportedIframeSize = message['datawrapper-height'][$chart.id];
             }
         }
@@ -497,7 +497,7 @@
     >
         <iframe
             id="iframe-vis"
-            title={$chart.title}
+            title={get($chart, 'title', '')}
             {src}
             scrolling="no"
             bind:this={iframe}
