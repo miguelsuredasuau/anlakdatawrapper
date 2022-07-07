@@ -27,7 +27,9 @@
         : zxcvbn(value);
     $: passwordTooShort = value.length < MIN_CHARACTERS;
 
-    $: pwdTooShortMsg = __('account / pwd-too-short').replace('%num', MIN_CHARACTERS);
+    $: pwdTooShortMsg = __('account / pwd-too-short', 'core', {
+        num: MIN_CHARACTERS
+    });
 
     $: help =
         value === '' || !passwordStrength

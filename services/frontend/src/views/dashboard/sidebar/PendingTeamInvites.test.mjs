@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import PendingTeamInvites from './PendingTeamInvites.svelte';
 import { renderWithContext, setConfig } from '../../../test-utils';
+import translate from '../../../utils/translate.mjs';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 
@@ -10,7 +11,7 @@ chai.use(chaiDom);
 
 const uid = 'invite';
 
-const locale = {
+const core = {
     'dashboard / checks / pending-team-invites / invite':
         'The user <tt>%user%</tt> has invited you to join the team <b>"%team_name%"</b>!',
     'dashboard / checks / pending-team-invites / invite-without-user':
@@ -19,7 +20,7 @@ const locale = {
     'dashboard / checks / pending-team-invites / reject': 'reject it'
 };
 
-const __ = key => locale[key] || key;
+const __ = (key, scope, replacements) => translate(key, scope, { core }, replacements);
 
 describe('PendingTeamInvites', () => {
     describe('Invite with inviting user email address', function () {

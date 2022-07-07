@@ -7,7 +7,8 @@
     import { getContext } from 'svelte';
     const msg = getContext('messages');
     function createTranslate(msg, messages) {
-        return (key, scope = 'core') => msg.translate(key, scope, messages);
+        return (key, scope = 'core', replacements) =>
+            msg.translate(key, scope, messages, replacements);
     }
     $: __ = createTranslate(msg, $msg);
 
@@ -66,10 +67,9 @@
     <div class="field">
         <div class="control-group login-help">
             {#if email}
-                {@html __('account / invite / your-login-is').replace(
-                    '%s',
-                    `<span class="email" style="color: #222">${email}</span>`
-                )}
+                {@html __('account / invite / your-login-is', 'core', {
+                    s: `<span class="email" style="color: #222">${email}</span>`
+                })}
             {/if}
         </div>
     </div>

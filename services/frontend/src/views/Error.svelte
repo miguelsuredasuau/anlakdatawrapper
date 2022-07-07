@@ -54,14 +54,13 @@
                             </ul>
                         {/if}
                         <p>
-                            {@html __('error / support-help').replace(
-                                '%s',
-                                `mailto:support@datawrapper.de?subject=Error%20${statusCode}:%20${error}&body=%0A%0A%0A%0A----%0AError:%20${statusCode}%20/%20${message}%0AURL:%20${$request.method.toUpperCase()}%20${
+                            {@html __('error / support-help', 'core', {
+                                s: `mailto:support@datawrapper.de?subject=Error%20${statusCode}:%20${error}&body=%0A%0A%0A%0A----%0AError:%20${statusCode}%20/%20${message}%0AURL:%20${$request.method.toUpperCase()}%20${
                                     $config.frontendDomain
                                 }${$request.path}%0AQuery:%20${encodeURI(
                                     JSON.stringify($request.query)
                                 )}%0ATime:%20${new Date().toUTCString()}`
-                            )}
+                            })}
                         </p>
                     </div>
                 </div>

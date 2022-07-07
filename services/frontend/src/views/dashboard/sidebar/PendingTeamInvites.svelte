@@ -22,9 +22,10 @@
 
     function getMessage(team, user) {
         const teamName = truncate(purifyHtml(team, ''));
-        return __('dashboard / checks / pending-team-invites / invite')
-            .replace('%team_name%', teamName)
-            .replace('%user%', getUserDisplay(user));
+        return __('dashboard / checks / pending-team-invites / invite', 'core', {
+            team_name: teamName,
+            user: getUserDisplay(user)
+        });
     }
 </script>
 

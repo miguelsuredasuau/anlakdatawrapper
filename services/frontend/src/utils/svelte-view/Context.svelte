@@ -12,6 +12,7 @@
     import advancedFormat from 'dayjs/plugin/advancedFormat';
     import localizedFormat from 'dayjs/plugin/localizedFormat';
     import isoWeek from 'dayjs/plugin/isoWeek';
+    import translate from '../translate.mjs';
 
     import de from 'dayjs/locale/de';
     import es from 'dayjs/locale/es';
@@ -77,19 +78,9 @@
 
     setContext('viewComponents', viewComponents);
 
-    function translate(key, scope = 'core', messages) {
-        if (!messages) messages = stores.messages;
-        try {
-            const msg = messages[scope];
-            return msg[key] || key;
-        } catch (e) {
-            return key;
-        }
-    }
-
     const msg = getContext('messages');
-    function __(key, scope = 'core') {
-        return translate(key, scope, $msg);
+    function __(key, scope = 'core', replacements = {}) {
+        return translate(key, scope, $msg, replacements);
     }
 
     const config = getContext('config');

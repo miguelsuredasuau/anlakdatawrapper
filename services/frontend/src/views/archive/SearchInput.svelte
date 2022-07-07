@@ -11,7 +11,7 @@
               level: 0,
               teamId: null,
               search: $query.search,
-              name: __('archive / search-results').replace('%s', $query.search),
+              name: __('archive / search-results', 'core', { s: $query.search }),
               path: '/archive'
           }
         : null;

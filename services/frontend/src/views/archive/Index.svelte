@@ -425,7 +425,7 @@
         if (draggedObject.type === 'folder') {
             if (draggedObject.object.teamId !== destinationFolder.teamId) {
                 dragNotification = destinationFolder.teamId
-                    ? __('mycharts / confirm-move-folder-to-org').replace('%s', teamName())
+                    ? __('mycharts / confirm-move-folder-to-org', 'core', { s: teamName() })
                     : __('mycharts / confirm-move-folder-to-user');
             }
         }
@@ -434,7 +434,7 @@
             const [chart] = draggedObject.object;
             if (chart.organizationId !== destinationFolder.teamId) {
                 dragNotification = destinationFolder.teamId
-                    ? __('mycharts / confirm-move-chart-to-org').replace('%s', teamName())
+                    ? __('mycharts / confirm-move-chart-to-org', 'core', { s: teamName() })
                     : __('mycharts / confirm-move-chart-to-user');
             }
         }
@@ -565,14 +565,13 @@
                             <p
                                 class="subtitle is-size-4 has-text-grey pt-6 has-text-centered-tablet"
                             >
-                                {@html __('mycharts / empty-folder').replace(
-                                    /%location%/g,
-                                    folderId
+                                {@html __('mycharts / empty-folder', 'core', {
+                                    location: folderId
                                         ? `?folder=${folderId}`
                                         : teamId
                                         ? `?team=${teamId}`
                                         : ''
-                                )}
+                                })}
                             </p>
                         {/if}
                     </div>

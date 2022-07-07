@@ -36,7 +36,7 @@ module.exports = {
                             !email ? ' / no-email' : ''
                         }`;
                         const successText = email
-                            ? __(translationKey).replace('%s', email)
+                            ? __(translationKey, 'core', { s: email })
                             : __(translationKey);
                         await user.save();
                         url = `/?t=s&m=` + encodeURIComponent(successText);

@@ -4,7 +4,8 @@
 
     const msg = getContext('messages');
     function createTranslate(msg, messages) {
-        return (key, scope = 'core') => msg.translate(key, scope, messages);
+        return (key, scope = 'core', replacements) =>
+            msg.translate(key, scope, messages, replacements);
     }
     $: __ = createTranslate(msg, $msg);
 

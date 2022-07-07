@@ -62,10 +62,9 @@ module.exports = {
                             token: inviteToken,
                             teamId: inviteTeam ? inviteTeam.id : false,
                             headlineText: inviteTeam
-                                ? __('team / invite / headline').replace(
-                                      '%s',
-                                      escapeHtml(inviteTeam.name)
-                                  )
+                                ? __('team / invite / headline', 'core', {
+                                      s: escapeHtml(inviteTeam.name)
+                                  })
                                 : __('team / invite / headline-no-team'),
                             introText: __(`team / invite / intro${!inviteTeam ? '-no-team' : ''}`),
                             buttonText: __(
