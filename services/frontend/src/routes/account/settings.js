@@ -166,21 +166,32 @@ module.exports = {
                 },
                 async handler(request, h) {
                     const user = request.auth.artifacts;
+                    const isAdmin = user.role === 'admin';
                     const settingsPages = await server.methods.getSettingsPages('account', request);
                     const __ = server.methods.getTranslate(request);
                     const userTeams = await user.getAcceptedTeams();
 
                     if (userTeams.length > 0) {
-                        // add group with links to team settings pages
-                        settingsPages.push({
-                            title: __('account / settings / team'),
-                            pages: userTeams.map(team => ({
+                        const teamSettingsPages = userTeams
+                            .filter(team => {
+                                if (isAdmin) return true;
+                                const roleInTeam = user.teams.find(t => t.id === team.id).user_team
+                                    .team_role;
+                                return ['owner', 'admin'].includes(roleInTeam);
+                            })
+                            .map(team => ({
                                 url: `/team/${team.id}/settings`,
                                 title: team.name,
                                 escape: true,
                                 svgIcon: 'team'
-                            }))
-                        });
+                            }));
+
+                        if (teamSettingsPages.length > 0) {
+                            settingsPages.push({
+                                title: __('account / settings / team'),
+                                pages: teamSettingsPages
+                            });
+                        }
                     }
 
                     return h.view('account/Settings.svelte', {
