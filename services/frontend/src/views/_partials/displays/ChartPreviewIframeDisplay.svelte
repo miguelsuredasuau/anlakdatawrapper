@@ -189,8 +189,9 @@
         });
     }
 
-    function onMessage(e) {
-        const message = e.data;
+    function onMessage(event) {
+        const message = event.data;
+        dispatch('message', message);
         if (resizing) return;
         if (typeof message['datawrapper-height'] !== 'undefined' && fixedHeight) {
             if ($chart && message['datawrapper-height'][$chart.id]) {

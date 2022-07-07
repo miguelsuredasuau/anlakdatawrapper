@@ -2,6 +2,7 @@
     // displays
     import ChartPreviewIframeDisplay from '_partials/displays/ChartPreviewIframeDisplay.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
+    import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     // editor
     import ColorblindCheck from '_partials/editor/ColorblindCheck.svelte';
     import DarkModeToggle from '_partials/editor/DarkModeToggle.svelte';
@@ -18,6 +19,7 @@
     // other JS
     import clone from 'lodash/cloneDeep';
     import { onMount, getContext, onDestroy } from 'svelte';
+    import { fade } from 'svelte/transition';
     import { headerProps } from '_layout/stores';
     // load stores from context
     const { chart, theme, visualization, isDark, customViews, dataset } = getContext('page/edit');
@@ -65,6 +67,17 @@
             dwChart.set('metadata.publish.embed-height', event.detail.height);
         }
         iframePreview.set(reset);
+    }
+
+    let messages = [];
+    function onPreviewMessage(event) {
+        const { type, data } = event.detail;
+        if (type === 'editor:notification:show') {
+            messages = [...messages, data];
+        }
+        if (type === 'editor:notification:hide') {
+            messages = messages.filter(({ id }) => id !== data.id);
+        }
     }
 
     /*
@@ -246,19 +259,47 @@
                 class:sticky={isSticky}
                 class:sticky-header={$headerProps.isSticky}
             >
-                <div class="limit-width">
+                <div class="block limit-width">
                     <ChartPreviewIframeDisplay
                         bind:this={iframePreview}
                         {chart}
                         fixedHeight={$visualization.height === 'fixed'}
                         isDark={$isDark}
                         on:resize={onPreviewResize}
+                        on:message={onPreviewMessage}
                         allowInlineEditing
                         {disabledFields}
                         theme={$theme}
                         dataset={$dataset}
                     />
                 </div>
+
+                {#each messages as message}
+                    <div
+                        class="block is-flex is-justify-content-center"
+                        transition:fade={{ duration: 300 }}
+                    >
+                        <MessageDisplay
+                            deletable={message.deletable}
+                            title={message.title}
+                            type={message.type || 'info'}
+                            visible
+                        >
+                            {#if message.pending}
+                                <IconDisplay
+                                    icon="loading-spinner"
+                                    size="20px"
+                                    className="mr-1"
+                                    valign="middle"
+                                    timing="steps(12)"
+                                    duration="1s"
+                                    spin
+                                />
+                            {/if}
+                            {__(message.translateKey)}
+                        </MessageDisplay>
+                    </div>
+                {/each}
 
                 <div class="block mt-5 pt-2">
                     <Toolbar>
