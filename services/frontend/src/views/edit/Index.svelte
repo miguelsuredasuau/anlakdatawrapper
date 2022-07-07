@@ -20,7 +20,8 @@
         theme,
         team,
         visualization,
-        dataset
+        dataset,
+        editorMode
     } from './stores';
     import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
     import escapeHtml from '@datawrapper/shared/escapeHtml.cjs';
@@ -60,7 +61,8 @@
         visualization,
         onNextSave,
         customViews,
-        dataset
+        dataset,
+        editorMode
     });
 
     /*
@@ -168,6 +170,7 @@
     onMount(async () => {
         initChartStore(rawChart, rawTheme, rawLocales, visualizations, disabledFields);
         initDataStore(rawChart.id, rawData, dataReadonly);
+
         if (rawTeam) {
             initTeamStore(rawTeam);
         }

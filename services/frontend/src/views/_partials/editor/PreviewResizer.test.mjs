@@ -2,35 +2,57 @@
 
 import PreviewResizer from './PreviewResizer.svelte';
 import { tick } from 'svelte';
-import { writable, readable, get as getStoreValue } from 'svelte/store';
+import { writable, derived, readable, get as getStoreValue } from 'svelte/store';
 import {
     renderWithContext,
     setConfig,
     mockTranslations,
     storeWithSetKey,
     clickOn,
+    fireChangeEvent,
     changeValueTo
 } from '../../../test-utils';
 import chai, { expect } from 'chai';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, get } from 'lodash';
 import assign from 'assign-deep';
 import chaiDom from 'chai-dom';
+import sinonChai from 'sinon-chai';
+import { spy } from 'sinon';
 
 setConfig({ testIdAttribute: 'data-uid' });
 chai.use(chaiDom);
+chai.use(sinonChai);
 
 const __ = mockTranslations({
     'chart-size': 'Size'
 });
 
+const pxToInch = px => px / 96;
+// const pxToMM = px => pxToInch(px) * 25.4;
+const inchToPx = inch => Math.round(inch * 96);
+const mmToPx = mm => Math.round((mm * 96) / 25.4);
+
 async function renderPreviewResizer({ chart, team, theme, visualization }) {
     chart = storeWithSetKey(chart);
+    const iframePreview = { set: spy() };
+
+    const editorMode = derived(
+        [chart, theme],
+        ([$chart, $theme]) => {
+            return get($chart, 'metadata.custom.webToPrint.mode', 'web') === 'print' ||
+                get($theme, 'data.type', 'web') === 'print'
+                ? 'print'
+                : 'web';
+        },
+        'web'
+    );
 
     const result = await renderWithContext(
         PreviewResizer,
         {
             __,
-            uid: 'resizer'
+            uid: 'resizer',
+            iframePreview
         },
         {
             // mock page/edit context
@@ -38,24 +60,52 @@ async function renderPreviewResizer({ chart, team, theme, visualization }) {
                 chart,
                 team,
                 theme,
-                visualization: visualization || lineChart
+                visualization: visualization || lineChart,
+                editorMode
             }
         }
     );
-    return { ...result, updateChart: chart.setKey };
+    return { ...result, updateChart: chart.setKey, iframePreview };
 }
 
 const baseChart = {
     metadata: {
         publish: {
             'embed-width': 550,
-            'embed-height': 420
+            'embed-height': 420,
+            'export-pdf': {}
         }
     }
 };
+const basePrintChart = assign(cloneDeep(baseChart), {
+    metadata: {
+        publish: {
+            'export-pdf': {
+                colorMode: 'cmyk',
+                width: 80,
+                height: 120,
+                unit: 'mm'
+            }
+        }
+    }
+});
 
 const lineChart = readable({});
 const barChart = readable({ height: 'fixed' });
+const pieChart = readable({ height: 'fixed', supportsFitHeight: true });
+
+const webTheme = { data: {} };
+const printTheme = { data: { type: 'print' } };
+
+const presets = {
+    A5mm: {
+        title: 'A5',
+        width: 148,
+        height: 210,
+        unit: 'mm',
+        default: true
+    }
+};
 
 describe('PreviewResizer', () => {
     let result;
@@ -65,7 +115,7 @@ describe('PreviewResizer', () => {
             beforeEach(async () => {
                 const chart = writable(cloneDeep(baseChart));
                 const team = readable({ settings: {} });
-                const theme = readable({ data: {} });
+                const theme = readable(webTheme);
                 result = await renderPreviewResizer({
                     chart,
                     team,
@@ -93,21 +143,39 @@ describe('PreviewResizer', () => {
                 expect(buttons[2]).to.have.class('is-selected');
             });
 
+            it('sets correct preview size', () => {
+                expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                    width: 550,
+                    height: 420
+                });
+            });
+
             it('clicking button updates preview size', async () => {
                 const toolbar = result.getByTestId('resizer');
+                const preview = result.iframePreview;
                 const buttons = toolbar.querySelectorAll('button');
+                preview.set.resetHistory();
                 await clickOn(buttons[0]);
                 expect(buttons[0]).to.have.class('is-selected');
                 // check if embed-width changed
                 const { publish } = getStoreValue(result.stores['page/edit'].chart).metadata;
                 expect(publish).to.have.property('embed-width', 320);
                 expect(publish).to.have.property('embed-height', 420);
+                expect(preview.set).to.have.been.calledOnceWith({
+                    width: 320,
+                    height: 420
+                });
+                preview.set.resetHistory();
                 await clickOn(buttons[2]);
                 const { publish: publish2 } = getStoreValue(
                     result.stores['page/edit'].chart
                 ).metadata;
                 expect(publish2).to.have.property('embed-width', 600);
                 expect(publish2).to.have.property('embed-height', 420);
+                expect(preview.set).to.have.been.calledOnceWith({
+                    width: 600,
+                    height: 420
+                });
             });
         });
 
@@ -115,7 +183,7 @@ describe('PreviewResizer', () => {
             beforeEach(async () => {
                 const chart = writable(cloneDeep(baseChart));
                 const team = readable({ settings: {} });
-                const theme = readable({ data: {} });
+                const theme = readable(webTheme);
                 result = await renderPreviewResizer({
                     chart,
                     team,
@@ -139,11 +207,85 @@ describe('PreviewResizer', () => {
             });
         });
 
+        describe('with fixed height chart that supports fitHeight', () => {
+            beforeEach(async () => {
+                const chart = writable(cloneDeep(baseChart));
+                const team = readable({ settings: {} });
+                const theme = readable(webTheme);
+                result = await renderPreviewResizer({
+                    chart,
+                    team,
+                    theme,
+                    visualization: pieChart
+                });
+            });
+
+            it('supportsFitHeight is ignored', () => {
+                const toolbar = result.getByTestId('resizer');
+                const inputs = toolbar.querySelectorAll('input');
+                expect(inputs).to.have.length(2);
+                expect(inputs[0]).to.have.attribute('type', 'number');
+                expect(inputs[0]).to.have.value('550');
+                expect(inputs[1]).to.have.attribute('type', 'text');
+                expect(inputs[1]).to.have.attribute('disabled');
+                expect(inputs[1]).to.have.value('auto');
+            });
+        });
+
+        describe('switch from fit to fixed', () => {
+            const visualization = writable({});
+
+            beforeEach(async () => {
+                const chart = writable(cloneDeep(baseChart));
+                const team = readable({ settings: {} });
+                const theme = readable(webTheme);
+                result = await renderPreviewResizer({
+                    chart,
+                    team,
+                    theme,
+                    visualization
+                });
+            });
+
+            it('shows inputs for width and height', () => {
+                const toolbar = result.getByTestId('resizer');
+                expect(toolbar).to.exist;
+                expect(result.queryByText('Size (px)')).to.exist;
+                const inputs = toolbar.querySelectorAll('input[type=number]');
+                expect(inputs[0]).to.exist;
+                expect(inputs[0]).to.have.value('550');
+                expect(inputs[1]).to.exist;
+                expect(inputs[1]).to.have.value('420');
+            });
+
+            it('sets correct preview size', () => {
+                expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                    width: 550,
+                    height: 420
+                });
+            });
+
+            describe('change visualization to fixed height', () => {
+                beforeEach(async () => {
+                    result.iframePreview.set.resetHistory();
+                    visualization.set({ height: 'fixed' });
+                    await tick();
+                });
+
+                it('sets correct preview size', () => {
+                    expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                        width: 550,
+                        height: null
+                    });
+                });
+            });
+        });
+
         describe('with custom preview breakpoints', () => {
             beforeEach(async () => {
                 const chart = writable(cloneDeep(baseChart));
                 const team = readable({ settings: { previewWidths: [380, 580, 780] } });
-                const theme = readable({ data: {} });
+                const theme = readable(webTheme);
 
                 result = await renderPreviewResizer({
                     chart,
@@ -181,7 +323,7 @@ describe('PreviewResizer', () => {
             beforeEach(async () => {
                 const chart = writable(cloneDeep(baseChart));
                 const team = readable({ settings: { previewWidths: [null, 480, null] } });
-                const theme = readable({ data: {} });
+                const theme = readable(webTheme);
 
                 result = await renderPreviewResizer({
                     chart,
@@ -217,7 +359,7 @@ describe('PreviewResizer', () => {
             beforeEach(async () => {
                 const chart = writable(cloneDeep(baseChart));
                 const team = readable({ settings: { previewWidths: [700, 250, null] } });
-                const theme = readable({ data: {} });
+                const theme = readable(webTheme);
 
                 result = await renderPreviewResizer({
                     chart,
@@ -251,11 +393,12 @@ describe('PreviewResizer', () => {
     });
 
     describe('print mode', () => {
-        describe('through theme', () => {
+        describe('through print theme', () => {
+            let chart;
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
+                chart = writable(cloneDeep(basePrintChart));
                 const team = readable({ settings: {} });
-                const theme = readable({ data: { type: 'print' } });
+                const theme = readable(printTheme);
                 result = await renderPreviewResizer({
                     chart,
                     team,
@@ -263,14 +406,22 @@ describe('PreviewResizer', () => {
                 });
             });
 
-            it('shows inputs for width and height with correct unit', () => {
+            it('shows inputs for width and height with correct unit', async () => {
                 const toolbar = result.getByTestId('resizer');
+                const preview = result.iframePreview;
                 expect(toolbar).to.exist;
                 expect(result.queryByText('Size (mm)')).to.exist;
                 expect(result.queryByText('Size (px)')).not.to.exist;
+                await tick();
+                await tick();
+
                 const inputs = toolbar.querySelectorAll('input[type=number]');
-                expect(inputs[0]).to.have.value(((550 * 25.4) / 96).toFixed());
-                expect(inputs[1]).to.have.value(((420 * 25.4) / 96).toFixed());
+                expect(inputs[0]).to.have.value('80');
+                expect(inputs[1]).to.have.value('120');
+                expect(preview.set).to.have.been.calledWith({
+                    width: mmToPx(80),
+                    height: mmToPx(120)
+                });
             });
 
             it('shows dropdown button, but no print options', () => {
@@ -295,30 +446,24 @@ describe('PreviewResizer', () => {
                 await clickOn(dropdownToggle);
                 const unitRadioOptions = toolbar.querySelectorAll('.print-options label.radio');
                 expect(unitRadioOptions).to.have.length(3);
+
                 await clickOn(unitRadioOptions[1]); // inch
-                expect(result.queryByText('Size (in)')).to.exist;
-                const inputs = toolbar.querySelectorAll('input[type=number]');
-                expect(inputs[0]).to.have.value((550 / 96).toFixed(2));
-                expect(inputs[1]).to.have.value((420 / 96).toFixed(2));
-            });
-
-            it('changing iframe chart size updates inputs with units', async () => {
-                const toolbar = result.getByTestId('resizer');
-                const inputs = toolbar.querySelectorAll('input[type=number]');
-                expect(inputs[0]).to.have.value(((550 * 25.4) / 96).toFixed());
-                expect(inputs[1]).to.have.value(((420 * 25.4) / 96).toFixed());
-                // get chart store
-                const { chart } = result.stores['page/edit'];
-                expect(chart).to.exist;
-                // set pixel width in chart store (i.e. iframe gets resized)
-                chart.setKey('metadata.publish.embed-width', 700);
-                chart.setKey('metadata.publish.embed-height', 300);
                 await tick();
-                expect(inputs[0]).to.have.value(((700 * 25.4) / 96).toFixed());
-                expect(inputs[1]).to.have.value(((300 * 25.4) / 96).toFixed());
+                const pdfMeta = getStoreValue(chart).metadata.publish['export-pdf'];
+                expect(pdfMeta).to.have.property('unit', 'in');
+                const [pxWidth, pxHeight] = [80, 120].map(mmToPx);
+                expect(result.queryByText('Size (in)')).to.exist;
+
+                expect(pdfMeta).to.have.property('width', +pxToInch(pxWidth).toFixed(2));
+                expect(pdfMeta).to.have.property('height', +pxToInch(pxHeight).toFixed(2));
+
+                // const inputs = toolbar.querySelectorAll('input[type=number]');
+
+                // expect(inputs[0]).to.have.value(pxToInch(pxWidth).toFixed(2));
+                // expect(inputs[1]).to.have.value(pxToInch(pxHeight).toFixed(2));
             });
 
-            it('changing inputs with units updates chart size in pixels', async () => {
+            it('changing inputs with units updates chart size export-pdf meta, leaves embed size unchanged', async () => {
                 const toolbar = result.getByTestId('resizer');
                 const inputs = toolbar.querySelectorAll('input[type=number]');
                 await changeValueTo(inputs[0], 100); // 100mm
@@ -326,18 +471,31 @@ describe('PreviewResizer', () => {
                 await tick();
                 // get chart store
                 const { chart } = result.stores['page/edit'];
-                const { publish } = getStoreValue(chart).metadata;
-                expect(publish).to.have.property('embed-width', Math.round((100 * 96) / 25.4));
-                expect(publish).to.have.property('embed-height', Math.round((80 * 96) / 25.4));
+                const publishMeta = getStoreValue(chart).metadata.publish;
+                const pdfMeta = publishMeta['export-pdf'];
+                expect(pdfMeta).to.have.property('width', 100);
+                expect(pdfMeta).to.have.property('height', 80);
+                expect(publishMeta).to.have.property('embed-width', 550);
+                expect(publishMeta).to.have.property('embed-height', 420);
+            });
+
+            it('pre-existing properties are kept in metadata', () => {
+                const { chart } = result.stores['page/edit'];
+                const publishMeta = getStoreValue(chart).metadata.publish;
+                const pdfMeta = publishMeta['export-pdf'];
+                expect(pdfMeta).to.have.property('colorMode', 'cmyk');
             });
         });
 
-        describe('through theme, with custom pdf export scale', () => {
+        describe('through print theme, with custom pdf export scale', () => {
+            let theme;
+            const scale = 1.5;
+
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
+                const chart = writable(cloneDeep(basePrintChart));
                 const team = readable({ settings: {} });
-                const theme = readable({
-                    data: { type: 'print', export: { pdf: { scale: 1.5 } } }
+                theme = writable({
+                    data: { type: 'print', export: { pdf: { scale } } }
                 });
                 result = await renderPreviewResizer({
                     chart,
@@ -346,19 +504,31 @@ describe('PreviewResizer', () => {
                 });
             });
 
-            it('shows inputs for width and height with correct unit', () => {
+            it('shows inputs for width and height with unscaled unit', () => {
                 const toolbar = result.getByTestId('resizer');
-                expect(toolbar).to.exist;
-                expect(result.queryByText('Size (mm)')).to.exist;
                 const inputs = toolbar.querySelectorAll('input[type=number]');
-                expect(inputs[0]).to.have.value((((550 * 25.4) / 96) * 1.5).toFixed());
-                expect(inputs[1]).to.have.value((((420 * 25.4) / 96) * 1.5).toFixed());
+                expect(inputs[0]).to.have.value('80');
+                expect(inputs[1]).to.have.value('120');
+            });
+
+            it('preview iframe is scaled', () => {
+                expect(result.iframePreview.set).to.have.been.calledWith({
+                    width: mmToPx(80 / scale),
+                    height: mmToPx(120 / scale)
+                });
             });
         });
 
         describe('through theme, with custom pdf export presets', () => {
+            const preset = {
+                title: '10 inch',
+                width: 10,
+                unit: 'in',
+                include: 'plain',
+                scale: 0.8
+            };
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
+                const chart = writable(cloneDeep(basePrintChart));
                 const team = readable({ settings: {} });
                 const theme = readable({
                     data: {
@@ -366,7 +536,7 @@ describe('PreviewResizer', () => {
                         export: {
                             pdf: {
                                 presets: [
-                                    { title: '10in', width: 10, unit: 'in' },
+                                    preset,
                                     { title: 'A5', width: 148, height: 210, unit: 'mm' },
                                     { title: 'A6', width: 105, height: 148, unit: 'mm' }
                                 ]
@@ -391,9 +561,102 @@ describe('PreviewResizer', () => {
                 const options = toolbar.querySelectorAll('.print-options select option');
                 expect(options).to.have.length(3 + 1); // +1 for the placeholder
             });
+
+            it('size inputs show correct value before applying preset', () => {
+                const toolbar = result.getByTestId('resizer');
+                const inputs = toolbar.querySelectorAll('input[type=number]');
+
+                expect(result.queryByText('Size (mm)')).to.exist;
+                expect(inputs[0]).to.have.value('80');
+                expect(inputs[1]).to.have.value('120');
+            });
+
+            describe('after presets are applied', () => {
+                beforeEach(async () => {
+                    const toolbar = result.getByTestId('resizer');
+                    const dropdownToggle = toolbar.querySelector('button');
+
+                    await clickOn(dropdownToggle);
+                    const select = toolbar.querySelector('.print-options select');
+                    select.selectedIndex = 1;
+                    result.iframePreview.set.resetHistory();
+                    fireChangeEvent(select);
+                    await tick();
+                });
+
+                it('preset attributes are copied as well', () => {
+                    const { chart } = result.stores['page/edit'];
+                    const publishMeta = getStoreValue(chart).metadata.publish;
+                    const pdfMeta = publishMeta['export-pdf'];
+                    expect(pdfMeta).to.have.property('width', preset.width);
+                    // height is unchanged
+                    expect(pdfMeta).to.have.property('height', +pxToInch(mmToPx(120)).toFixed(2));
+                    expect(pdfMeta).to.have.property('unit', preset.unit);
+                    expect(pdfMeta).to.have.property('scale', preset.scale);
+                    expect(pdfMeta).to.have.property('include', preset.include);
+                    expect(pdfMeta).not.to.have.property('title');
+                });
+
+                it('pre-existing properties are kept in metadata', () => {
+                    const { chart } = result.stores['page/edit'];
+                    const publishMeta = getStoreValue(chart).metadata.publish;
+                    const pdfMeta = publishMeta['export-pdf'];
+                    expect(pdfMeta).to.have.property('colorMode', 'cmyk');
+                });
+
+                it('missing dimensions are converted', () => {
+                    const toolbar = result.getByTestId('resizer');
+                    const inputs = toolbar.querySelectorAll('input[type=number]');
+                    expect(result.queryByText('Size (in)')).to.exist;
+                    expect(inputs[0]).to.have.value('10');
+                    expect(inputs[1]).to.have.value(pxToInch(mmToPx(120)).toFixed(2));
+                });
+
+                it('preview size is updated correctly', () => {
+                    expect(result.iframePreview.set).to.have.been.calledWith({
+                        width: inchToPx(10),
+                        height: inchToPx(pxToInch(mmToPx(120)))
+                    });
+                });
+            });
         });
 
-        describe('through chart', () => {
+        describe('theme with default preset, fresh chart', () => {
+            beforeEach(async () => {
+                const chart = writable(cloneDeep(baseChart));
+                const team = readable({ settings: {} });
+                const theme = readable({
+                    data: {
+                        type: 'print',
+                        export: {
+                            pdf: {
+                                presets: [
+                                    { title: '10in', width: 10, unit: 'in', default: true },
+                                    { title: 'A5', width: 148, height: 210, unit: 'mm' },
+                                    { title: 'A6', width: 105, height: 148, unit: 'mm' }
+                                ]
+                            }
+                        }
+                    }
+                });
+                result = await renderPreviewResizer({
+                    chart,
+                    team,
+                    theme
+                });
+            });
+
+            it('dimensions from default preset get set automatically', async () => {
+                const toolbar = result.getByTestId('resizer');
+                const inputs = toolbar.querySelectorAll('input[type=number]');
+
+                expect(result.queryByText('Size (in)')).to.exist;
+                expect(inputs[0]).to.have.value('10');
+                expect(inputs[1]).to.have.value(pxToInch(mmToPx(120)).toFixed(2));
+            });
+        });
+
+        describe('through print chart', () => {
             beforeEach(async () => {
                 const chart = writable(
                     assign(cloneDeep(baseChart), {
@@ -407,7 +670,7 @@ describe('PreviewResizer', () => {
                     })
                 );
                 const team = readable({ settings: {} });
-                const theme = readable({ data: {} });
+                const theme = readable(webTheme);
                 result = await renderPreviewResizer({
                     chart,
                     team,
@@ -420,10 +683,218 @@ describe('PreviewResizer', () => {
                 expect(toolbar).to.exist;
                 expect(result.queryByText('Size (mm)')).to.exist;
                 const inputs = toolbar.querySelectorAll('input[type=number]');
-                expect(inputs[0]).to.have.value(((550 * 25.4) / 96).toFixed());
-                expect(inputs[1]).to.have.value(((420 * 25.4) / 96).toFixed());
+                expect(inputs[0]).to.have.value('80');
+                expect(inputs[1]).to.have.value('120');
                 const buttons = toolbar.querySelectorAll('button');
                 expect(buttons).to.have.length(1);
+            });
+        });
+
+        describe('print theme, with fixed height vis', () => {
+            beforeEach(async () => {
+                const chart = writable(cloneDeep(baseChart));
+                const team = readable({ settings: {} });
+                const theme = readable(printTheme);
+                result = await renderPreviewResizer({
+                    chart,
+                    team,
+                    theme,
+                    visualization: barChart
+                });
+            });
+
+            it('shows number input for width, but not for height', () => {
+                const toolbar = result.getByTestId('resizer');
+                expect(toolbar).to.exist;
+                expect(result.queryByText('Size (mm)')).to.exist;
+                const inputs = toolbar.querySelectorAll('input');
+                expect(inputs).to.have.length(2);
+                expect(inputs[0]).to.have.attribute('type', 'number');
+                expect(inputs[0]).to.have.value('80');
+                expect(inputs[1]).to.have.attribute('type', 'text');
+                expect(inputs[1]).to.have.attribute('disabled');
+                expect(inputs[1]).to.have.value('auto');
+            });
+        });
+
+        describe('print theme, with fixed height vis that supports fitHeight', () => {
+            beforeEach(async () => {
+                const chart = writable(cloneDeep(baseChart));
+                const team = readable({ settings: {} });
+                const theme = readable(printTheme);
+                result = await renderPreviewResizer({
+                    chart,
+                    team,
+                    theme,
+                    visualization: pieChart
+                });
+            });
+
+            it('shows number inputs for width and height', () => {
+                const toolbar = result.getByTestId('resizer');
+                expect(toolbar).to.exist;
+                expect(result.queryByText('Size (mm)')).to.exist;
+                const inputs = toolbar.querySelectorAll('input');
+                expect(inputs).to.have.length(2);
+                expect(inputs[0]).to.have.attribute('type', 'number');
+                expect(inputs[0]).to.have.value('80');
+                expect(inputs[1]).to.have.attribute('type', 'number');
+                expect(inputs[1]).to.have.value('120');
+            });
+        });
+    });
+
+    describe('switch from web to print (through theme)', () => {
+        describe('fresh web chart', () => {
+            let chart, theme;
+
+            beforeEach(async () => {
+                chart = writable(cloneDeep(baseChart));
+                const team = readable({ settings: {} });
+                theme = writable({ data: {} });
+                result = await renderPreviewResizer({
+                    chart,
+                    team,
+                    theme
+                });
+            });
+
+            it('shows inputs for width and height', () => {
+                const toolbar = result.getByTestId('resizer');
+                expect(toolbar).to.exist;
+                expect(result.queryByText('Size (px)')).to.exist;
+                const inputs = toolbar.querySelectorAll('input[type=number]');
+                expect(inputs[0]).to.exist;
+                expect(inputs[0]).to.have.value('550');
+                expect(inputs[1]).to.exist;
+                expect(inputs[1]).to.have.value('420');
+            });
+
+            it('sets correct size for iframe', () => {
+                expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                    width: 550,
+                    height: 420
+                });
+            });
+
+            describe('theme changes to print theme', () => {
+                beforeEach(async () => {
+                    result.iframePreview.set.resetHistory();
+                    theme.set({
+                        data: {
+                            type: 'print',
+                            export: { pdf: { presets: [presets.A5mm] } }
+                        }
+                    });
+                    await tick();
+                });
+
+                it('shows print mode inputs', () => {
+                    const toolbar = result.getByTestId('resizer');
+                    expect(toolbar).to.exist;
+                    expect(result.queryByText('Size (mm)')).to.exist;
+                });
+
+                it('applies default export preset', () => {
+                    const toolbar = result.getByTestId('resizer');
+                    const inputs = toolbar.querySelectorAll('input[type=number]');
+                    expect(inputs).to.have.length(2);
+                    expect(inputs[0]).to.have.value('148');
+                    expect(inputs[1]).to.have.value('210');
+                });
+
+                it('sets correct iframe size', () => {
+                    expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                        width: mmToPx(148),
+                        height: mmToPx(210)
+                    });
+                });
+            });
+        });
+
+        describe('existing print chart', () => {
+            let chart, theme;
+
+            beforeEach(async () => {
+                chart = writable(cloneDeep(basePrintChart));
+                const team = readable({ settings: {} });
+                theme = writable({ data: {} });
+                result = await renderPreviewResizer({
+                    chart,
+                    team,
+                    theme
+                });
+            });
+
+            it('is in web mode', () => {
+                expect(result.queryByText('Size (px)')).to.exist;
+            });
+
+            it('sets correct size for iframe', () => {
+                expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                    width: 550,
+                    height: 420
+                });
+            });
+
+            describe('theme changes to print theme', () => {
+                beforeEach(async () => {
+                    result.iframePreview.set.resetHistory();
+                    theme.set({
+                        data: {
+                            type: 'print',
+                            export: { pdf: { presets: [presets.A5mm] } }
+                        }
+                    });
+                    await tick();
+                });
+
+                it('shows print mode inputs', () => {
+                    const toolbar = result.getByTestId('resizer');
+                    expect(toolbar).to.exist;
+                    expect(result.queryByText('Size (mm)')).to.exist;
+                });
+
+                it('uses print size from metadata', () => {
+                    const toolbar = result.getByTestId('resizer');
+                    const inputs = toolbar.querySelectorAll('input[type=number]');
+                    expect(inputs).to.have.length(2);
+                    expect(inputs[0]).to.have.value('80');
+                    expect(inputs[1]).to.have.value('120');
+                });
+
+                it('sets correct iframe size', () => {
+                    expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                        width: mmToPx(80),
+                        height: mmToPx(120)
+                    });
+                });
+
+                describe('switch back to web theme', () => {
+                    beforeEach(async () => {
+                        result.iframePreview.set.resetHistory();
+                        theme.set({ data: {} });
+                        await tick();
+                    });
+
+                    it('shows inputs for width and height', () => {
+                        const toolbar = result.getByTestId('resizer');
+                        expect(toolbar).to.exist;
+                        expect(result.queryByText('Size (px)')).to.exist;
+                        const inputs = toolbar.querySelectorAll('input[type=number]');
+                        expect(inputs[0]).to.exist;
+                        expect(inputs[0]).to.have.value('550');
+                        expect(inputs[1]).to.exist;
+                        expect(inputs[1]).to.have.value('420');
+                    });
+
+                    it('sets correct iframe size', () => {
+                        expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                            width: 550,
+                            height: 420
+                        });
+                    });
+                });
             });
         });
     });

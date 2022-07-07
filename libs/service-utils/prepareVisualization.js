@@ -19,6 +19,7 @@ const INCLUDE_PROPERTIES = new Set([
     'namespace',
     'options',
     'order',
+    'supportsFitHeight',
     'title',
     'workflow',
     '__controlsHash',

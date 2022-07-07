@@ -37,6 +37,7 @@
      * set to true if visualization is fixed height
      */
     export let fixedHeight = false;
+    export let enforceFitHeight = false;
 
     export let isDark = false;
 
@@ -64,9 +65,10 @@
     // default html tags allowed for inline-editing
     const DEFAULT_ALLOWED_HTML = '<a><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt>';
 
-    $: width = customWidth || get($chart, 'metadata.publish.embed-width', 550);
-    $: height =
-        customHeight || reportedIframeSize || get($chart, 'metadata.publish.embed-height', 450);
+    $: embedWidth = get($chart, 'metadata.publish.embed-width', 550);
+    $: embedHeight = get($chart, 'metadata.publish.embed-height', 450);
+    $: width = customWidth || embedWidth;
+    $: height = customHeight || reportedIframeSize || embedHeight;
     $: background =
         customBackground || get(theme, `_computed.${isDark ? 'bgDark' : 'bgLight'}`, 'white');
     $: borderColor = chroma.valid(background) ? chroma(background).darken(0.7) : background;
@@ -75,7 +77,9 @@
 
     $: backgroundIsDark = chroma.valid(background) ? chroma(background).get('lab.l') < 30 : false;
 
-    $: src = customSrc || `/preview/${$chart.id}`;
+    $: queryParameters = enforceFitHeight ? new URLSearchParams({ fitheight: 1 }) : '';
+
+    $: src = customSrc || `/preview/${$chart.id}${queryParameters ? `?${queryParameters}` : ''}`;
     let prevSrc;
 
     export let customWidth;
@@ -160,6 +164,7 @@
         if (allowInlineEditing) {
             activateInlineEditing(contentDocument, disabledFields);
         }
+        dispatch('render');
     }
 
     const IGNORE = ['text-annotations', 'range-annotations'];

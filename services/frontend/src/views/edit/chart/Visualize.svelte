@@ -22,7 +22,8 @@
     import { fade } from 'svelte/transition';
     import { headerProps } from '_layout/stores';
     // load stores from context
-    const { chart, theme, visualization, isDark, customViews, dataset } = getContext('page/edit');
+    const { chart, theme, visualization, isDark, customViews, dataset, editorMode } =
+        getContext('page/edit');
 
     export let __;
     export let dwChart;
@@ -59,7 +60,6 @@
     $: isSticky = innerHeight > 600 && innerWidth > 1200;
 
     function onPreviewResize(event) {
-        // todo: store size elsewhere in print mode
         dwChart.set('metadata.publish.embed-width', event.detail.width);
         const reset = { width: null };
         if (event.detail.height) {
@@ -93,7 +93,6 @@
     ];
     function reloadPreview() {
         dwChart.onNextSave(() => {
-            iframePreview.reset();
             iframePreview.reload();
         });
     }
@@ -182,6 +181,16 @@
         }
     }
 
+    function measureBodyHeight() {
+        iframePreview.getContext((contentWindow, contentDocument) => {
+            const chartBody = contentDocument.querySelector('.dw-chart-body');
+            if (chartBody && chartBody.getBoundingClientRect) {
+                const chartBodyHeight = chartBody.getBoundingClientRect().height;
+                $chart.metadata.publish['chart-height'] = Math.ceil(chartBodyHeight);
+            }
+        });
+    }
+
     onDestroy(() => {
         for (const unsubscribe of storeSubscriptions) {
             unsubscribe();
@@ -263,14 +272,19 @@
                     <ChartPreviewIframeDisplay
                         bind:this={iframePreview}
                         {chart}
-                        fixedHeight={$visualization.height === 'fixed'}
+                        fixedHeight={$visualization.height === 'fixed' &&
+                            ($editorMode === 'web' || !$visualization.supportsFitHeight)}
+                        enforceFitHeight={$editorMode === 'print' &&
+                            $visualization.supportsFitHeight}
                         isDark={$isDark}
                         on:resize={onPreviewResize}
+                        resizable={$editorMode === 'web'}
                         on:message={onPreviewMessage}
                         allowInlineEditing
                         {disabledFields}
                         theme={$theme}
                         dataset={$dataset}
+                        on:render={measureBodyHeight}
                     />
                 </div>
 
@@ -310,7 +324,7 @@
                         {/if}
 
                         <ToolbarArea title={__('edit / preview')}>
-                            <PreviewResizer {__} />
+                            <PreviewResizer {__} {iframePreview} />
                             <ColorblindCheck iframe={iframePreview} {__} />
                             <DarkModeToggle {__} on:change-tab={evt => (active = evt.detail)} />
                         </ToolbarArea>

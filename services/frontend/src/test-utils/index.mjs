@@ -4,7 +4,9 @@ import { getLocale } from './setup-locales.mjs';
 import cloneDeep from 'lodash/cloneDeep';
 import objectDiff from '@datawrapper/shared/objectDiff';
 import { get as getStoreValue } from 'svelte/store';
+import get from 'lodash/get';
 import set from 'lodash/set';
+import isEqual from 'lodash/isEqual';
 
 export function setConfig(config) {
     configure(config);
@@ -113,18 +115,30 @@ export function mockTranslations(messages) {
  * @returns
  */
 export function storeWithSetKey(store) {
-    const watchers = new Map();
+    const watchers = new Set();
     store.subscribeKey = (key, handler) => {
-        watchers.set(key, handler);
+        watchers.add({ key, handler });
     };
     store.setKey = (key, value) => {
-        const prev = getStoreValue(store);
+        const prev = cloneDeep(getStoreValue(store));
         set(prev, key, value);
         store.set(prev);
-        if (watchers.get(key)) {
-            watchers.get(key)(value);
-        }
     };
+    let prevState = cloneDeep(getStoreValue(store));
+    store.subscribe(async value => {
+        if (prevState && !isEqual(prevState, value)) {
+            const patch = objectDiff(prevState, value);
+            prevState = cloneDeep(value);
+            if (Object.keys(patch).length) {
+                for (const { key, handler } of watchers) {
+                    const value = get(patch, key);
+                    if (value !== undefined && value !== null) {
+                        handler(value);
+                    }
+                }
+            }
+        }
+    });
     return store;
 }
 
@@ -136,6 +150,15 @@ export async function clickOn(element) {
     await fireEvent(
         element,
         new MouseEvent('click', {
+            bubbles: true
+        })
+    );
+}
+
+export async function fireChangeEvent(element) {
+    await fireEvent(
+        element,
+        new window.Event('change', {
             bubbles: true
         })
     );

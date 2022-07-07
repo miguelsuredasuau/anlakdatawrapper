@@ -2,6 +2,7 @@
     export let placeholder = null;
     export let value = 0;
     export let disabled = null;
+    export let step = 1;
 
     export let spinner = true;
     let className = '';
@@ -32,6 +33,7 @@
     bind:value
     on:change
     class:spinner
+    {step}
     {placeholder}
     {disabled}
 />

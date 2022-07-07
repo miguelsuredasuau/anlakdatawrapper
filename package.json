@@ -17,7 +17,7 @@
         "render-client": "render-client",
         "render-server": "render-server",
         "update-translations": "node scripts/update-translations.js",
-        "prepare": "husky install",
+        "prepare": "scripts/husky-install",
         "drop-vis-cache": "node scripts/drop-vis-cache.js"
     },
     "repository": {

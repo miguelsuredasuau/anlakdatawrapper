@@ -44,7 +44,7 @@ const visualizationReadonly = derived(
     ([$chartType, $visualizations]) => {
         return $visualizations.find(vis => vis.id === $chartType) || visualizations[0] || {};
     },
-    false
+    visualizations[0]
 );
 export { visualizationReadonly as visualization };
 
@@ -52,23 +52,38 @@ export { visualizationReadonly as visualization };
  * theme store (readonly to views)
  */
 const theme = new writable({});
-const themeReadonly = derived(theme, $theme => $theme, false);
+const themeReadonly = derived(theme, $theme => $theme, {});
 export { themeReadonly as theme };
 
 /**
  * dataset store (readonly to views)
  */
-const dataOpts = distinct(derived(chart, $chart => get($chart, 'metadata.data'), {}));
+const dataOptions = distinct(derived(chart, $chart => get($chart, 'metadata.data'), {}));
 export const dataset = derived(
-    [data, dataOpts],
-    ([$data, $dataOpts]) => {
+    [data, dataOptions],
+    ([$data, $dataOptions]) => {
         return delimited({
             csv: $data,
-            transpose: $dataOpts.transpose,
-            firstRowIsHeader: $dataOpts['horizontal-header']
+            transpose: $dataOptions.transpose,
+            firstRowIsHeader: $dataOptions['horizontal-header']
         }).parse();
     },
-    false
+    {}
+);
+
+/**
+ * the editor mode determines which resizer controls are
+ * displayed below the chart preview and if it's resizable
+ */
+export const editorMode = derived(
+    [chart, theme],
+    ([$chart, $theme]) => {
+        return get($chart, 'metadata.custom.webToPrint.mode', 'web') === 'print' ||
+            get($theme, 'data.type', 'web') === 'print'
+            ? 'print'
+            : 'web';
+    },
+    'web'
 );
 
 const locales = new writable([]);
@@ -259,7 +274,7 @@ export function initDataStore(chartId, rawData, readonly = false) {
  * store for team
  */
 const team = new writable({ settings: {} });
-const teamReadonly = derived(team, $settings => $settings);
+const teamReadonly = derived(team, $team => $team, {});
 export { teamReadonly as team };
 // export setter function
 export function initTeamStore(rawTeam) {

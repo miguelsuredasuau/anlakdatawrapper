@@ -1,7 +1,4 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
-
-    const dispatch = createEventDispatcher();
     /**
      * array of available options as { value, label } pairs
      */
@@ -99,7 +96,7 @@
             <input
                 type="radio"
                 disabled={disabled || null}
-                on:change={() => dispatch('change', value)}
+                on:change
                 bind:group={value}
                 value={opt.value}
             />

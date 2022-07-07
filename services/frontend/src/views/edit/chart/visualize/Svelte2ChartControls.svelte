@@ -71,20 +71,19 @@
     }
 
     async function applyDefaultsAndMigration() {
-        // apply defaults from visualization
-        if ($visualization.defaultMetadata) {
-            $chart.metadata.visualize = {
-                ...$visualization.defaultMetadata,
-                ...$chart.metadata.visualize
-            };
-        }
-
         if ($visualization && $visualization.controls.migrate) {
             // load and execute migrate.js
             const { default: migrate } = await dynamicImport($visualization.controls.migrate);
             if (typeof migrate === 'function') {
                 migrate($chart.type, $chart.metadata, dataset);
             }
+        }
+        // apply defaults from visualization
+        if ($visualization.defaultMetadata) {
+            $chart.metadata.visualize = {
+                ...$visualization.defaultMetadata,
+                ...$chart.metadata.visualize
+            };
         }
     }
 
