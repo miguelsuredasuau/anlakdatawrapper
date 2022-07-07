@@ -55,6 +55,92 @@ test('Login and logout work with correct credentials', async t => {
     t.false(res.headers['set-cookie'].includes(session));
 });
 
+test('Authentication succeeds when one of the first two session cookies is valid', async t => {
+    const resSession = await t.context.server.inject({
+        method: 'POST',
+        url: '/v3/auth/login',
+        payload: {
+            email: t.context.user.email,
+            password: correctPassword
+        }
+    });
+    const sessionId = resSession.result['DW-SESSION'];
+    t.truthy(sessionId);
+
+    const resMeSuccess = await t.context.server.inject({
+        method: 'GET',
+        url: '/v3/me',
+        headers: {
+            cookie: `DW-SESSION=foo;DW-SESSION=${sessionId}`
+        }
+    });
+    t.is(resMeSuccess.statusCode, 200);
+    t.is(resMeSuccess.result.id, t.context.userObj.user.id);
+
+    const resMeFail = await t.context.server.inject({
+        method: 'GET',
+        url: '/v3/me',
+        headers: {
+            cookie: `DW-SESSION=foo;DW-SESSION=bar;DW-SESSION=${sessionId}`
+        }
+    });
+    t.is(resMeFail.statusCode, 401);
+});
+
+test('Authentication fails when the session cookie is expired but succeeds when another valid session cookie is sent', async t => {
+    const resSessionOld = await t.context.server.inject({
+        method: 'POST',
+        url: '/v3/auth/login',
+        payload: {
+            email: t.context.user.email,
+            password: correctPassword
+        }
+    });
+    const sessionIdOld = resSessionOld.result['DW-SESSION'];
+    t.truthy(sessionIdOld);
+
+    const resLogout = await t.context.server.inject({
+        method: 'POST',
+        url: '/v3/auth/logout',
+        headers: {
+            cookie: `DW-SESSION=${sessionIdOld}; crumb=abc`,
+            'X-CSRF-Token': 'abc',
+            referer: 'http://localhost'
+        }
+    });
+    t.is(resLogout.statusCode, 205);
+
+    const resMeFail = await t.context.server.inject({
+        method: 'GET',
+        url: '/v3/me',
+        headers: {
+            cookie: `DW-SESSION=${sessionIdOld}`
+        }
+    });
+    t.is(resMeFail.statusCode, 401);
+
+    const resSessionNew = await t.context.server.inject({
+        method: 'POST',
+        url: '/v3/auth/login',
+        payload: {
+            email: t.context.user.email,
+            password: correctPassword
+        }
+    });
+    const sessionIdNew = resSessionNew.result['DW-SESSION'];
+    t.truthy(sessionIdNew);
+
+    const resMeSuccess = await t.context.server.inject({
+        method: 'GET',
+        url: '/v3/me',
+        headers: {
+            cookie: `DW-SESSION=${sessionIdOld};DW-SESSION=${sessionIdNew}`
+        }
+    });
+    t.is(resMeSuccess.statusCode, 200);
+    t.is(resMeSuccess.result.id, t.context.userObj.user.id);
+});
+
 test('Login fails with incorrect credentials', async t => {
     const res = await t.context.server.inject({
         method: 'POST',

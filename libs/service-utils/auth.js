@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const get = require('lodash/get');
 
 const DEFAULT_SALT = 'uRPAqgUJqNuBdW62bmq3CLszRFkvq4RW';
+const MAX_SESSION_COOKIES_IN_REQ = 2;
 
 const generateToken = customAlphabet(
     '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
@@ -281,35 +282,43 @@ module.exports = function createAuth(
         return auth;
     }
 
-    async function cookieValidation(request, session) {
-        let row = await Session.findByPk(session);
+    async function cookieValidation(request, sessionIds) {
+        const sessions = await Session.findAll({ where: { id: sessionIds } });
 
-        if (!row) {
-            return { isValid: false, message: Boom.unauthorized('Session not found', 'Session') };
+        if (!sessions.length) {
+            return { error: Boom.unauthorized('Session not found', 'Session') };
         }
 
-        row = await row.update({
-            data: {
-                ...row.data,
-                last_action_time: Math.floor(Date.now() / 1000)
+        for (let session of sessions) {
+            session = await session.update({
+                data: {
+                    ...session.data,
+                    last_action_time: Math.floor(Date.now() / 1000)
+                }
+            });
+
+            const auth = await getUser(session.data['dw-user-id'], {
+                credentials: { session: session.id, data: session },
+                strategy: 'Session',
+                logger:
+                    typeof request.server.logger === 'object' ? request.server.logger : undefined
+            });
+
+            if (auth.isValid) {
+                if (typeof request.server.methods.getScopes === 'function') {
+                    // add all scopes to cookie session
+                    auth.credentials.scope = request.server.methods.getScopes(
+                        auth.artifacts.isAdmin()
+                    );
+                }
+
+                auth.sessionType = session.data.type;
+
+                return auth;
             }
-        });
-
-        const auth = await getUser(row.data['dw-user-id'], {
-            credentials: { session, data: row },
-            strategy: 'Session',
-            logger: typeof request.server.logger === 'object' ? request.server.logger : undefined
-        });
-
-        if (auth.isValid) {
-            if (typeof request.server.methods.getScopes === 'function') {
-                // add all scopes to cookie session
-                auth.credentials.scope = request.server.methods.getScopes(auth.artifacts.isAdmin());
-            }
-
-            auth.sessionType = row.data.type;
         }
-        return auth;
+
+        return { error: Boom.unauthorized(null, 'Session') };
     }
 
     function createCookieAuthScheme(createGuestSessions) {
@@ -321,43 +330,32 @@ module.exports = function createAuth(
 
             const scheme = {
                 authenticate: async (request, h) => {
-                    let session = request.state[opts.cookie];
-
-                    /**
-                     * Sometimes there are 2 session cookies, in the staging environment, with name
-                     * DW-SESSION. The reason is that the same name is used on live (.datawrapper.de) and
-                     * staging (.staging.datawrapper.de). The cookie parser therefore returns an array with
-                     * both cookies and since the server doesn't send any information which cookie belongs
-                     * to which domain, the code relies on the server sending the more specific cookie
-                     * first. This is fine since it only happens on staging and the quick fix is to delete
-                     * the wrong cookie in dev tools.
-                     *
-                     * More information and a similar issue can be found on Github:
-                     * https://github.com/jshttp/cookie/issues/18#issuecomment-30344206
-                     */
-                    if (Array.isArray(session)) {
-                        session = session[0];
+                    const cookieValueOrArray = request.state[opts.cookie];
+                    const sessionIds = [];
+                    if (Array.isArray(cookieValueOrArray)) {
+                        // There are multiple session cookies in the request.
+                        sessionIds.push(...cookieValueOrArray.slice(0, MAX_SESSION_COOKIES_IN_REQ));
+                    } else if (cookieValueOrArray) {
+                        // There is one session cookie in the request.
+                        sessionIds.push(cookieValueOrArray);
                     }
 
-                    const {
-                        isValid,
-                        credentials,
-                        artifacts,
-                        sessionType,
-                        message = Boom.unauthorized(null, 'Session')
-                    } = await cookieValidation(request, session, h);
+                    const { error, credentials, artifacts, sessionType } = await cookieValidation(
+                        request,
+                        sessionIds
+                    );
 
-                    const sameSite = process.env.NODE_ENV === 'development' ? 'None' : 'Lax';
-
-                    if (isValid) {
+                    if (!error) {
                         const cookieOpts = getStateOpts(
                             server,
                             90,
-                            sessionType === 'token' ? 'None' : sameSite
+                            sessionType === 'token' ? 'None' : undefined
                         );
-                        h.state(opts.cookie, session, cookieOpts);
+                        h.state(opts.cookie, credentials.session, cookieOpts);
                         return h.authenticated({ credentials, artifacts });
-                    } else if (createGuestSessions) {
+                    }
+
+                    if (createGuestSessions) {
                         // no cookie or session expired, let's create a new session
                         const sessionId = generateToken();
 
@@ -375,7 +373,7 @@ module.exports = function createAuth(
                         const cookieOpts = getStateOpts(
                             server,
                             90,
-                            sessionType === 'token' ? 'None' : sameSite
+                            sessionType === 'token' ? 'None' : undefined
                         );
                         h.state(opts.cookie, sessionId, cookieOpts);
 
@@ -387,7 +385,7 @@ module.exports = function createAuth(
                         return h.authenticated(auth);
                     }
 
-                    return message;
+                    return error;
                 }
             };
 
