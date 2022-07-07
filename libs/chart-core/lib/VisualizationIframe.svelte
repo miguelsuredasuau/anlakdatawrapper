@@ -55,7 +55,7 @@
 <svelte:head>
     <title>{purifyHtml(chart.title, '')}</title>
     <meta name="description" content={get(chart, 'metadata.describe.intro')} />
-    {@html `<${'style'}>${customCSS}</style>`}
+    {@html purifyHtml(`<${'style'}>${customCSS}</style>`, `<${'style'}>`)}
 </svelte:head>
 
 <Visualization

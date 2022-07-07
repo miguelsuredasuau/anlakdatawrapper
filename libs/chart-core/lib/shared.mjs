@@ -10,3 +10,26 @@ export function clean(s, alsoAllow = '') {
 export function isTransparentColor(color) {
     return color === 'transparent' || !chroma(color).alpha();
 }
+
+const FLAG_BOOL_FALSE = new Set(['0', 'false', 'null']);
+
+function parseFlags(getValue, flagTypes) {
+    return Object.fromEntries(
+        Object.entries(flagTypes).map(([key, type]) => {
+            const val = getValue(key);
+            if (type === Boolean) {
+                return [key, !!val && !FLAG_BOOL_FALSE.has(val)];
+            }
+            return [key, val && type(val)];
+        })
+    );
+}
+
+export function parseFlagsFromElement(el, flagTypes) {
+    return parseFlags(key => el.getAttribute(`data-${key}`), flagTypes);
+}
+
+export function parseFlagsFromURL(searchString, flagTypes) {
+    const urlParams = new URLSearchParams(searchString);
+    return parseFlags(key => urlParams.get(key), flagTypes);
+}

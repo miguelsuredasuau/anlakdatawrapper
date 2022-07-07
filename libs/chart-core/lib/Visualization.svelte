@@ -26,7 +26,7 @@
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch.js';
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import invertColor from '@datawrapper/shared/invertColor.cjs';
-    import { clean, isTransparentColor } from './shared.mjs';
+    import { clean, isTransparentColor, parseFlagsFromURL } from './shared.mjs';
     import { isObject } from 'underscore';
     import chroma from 'chroma-js';
 
@@ -69,31 +69,28 @@
     let postEvent = () => {};
     const flags = { isIframe };
 
-    const FLAGS = [
-        { key: 'plain', type: 'boolean' },
-        { key: 'static', type: 'boolean' },
-        { key: 'svgonly', type: 'boolean' },
-        { key: 'map2svg', type: 'boolean' },
-        { key: 'transparent', type: 'boolean' },
-        { key: 'fitchart', type: 'boolean' },
-        { key: 'fitheight', type: 'boolean' },
-        { key: 'theme', type: 'string' },
-        { key: 'search', type: 'string' }
-    ];
+    const FLAG_TYPES = {
+        plain: Boolean,
+        static: Boolean,
+        svgonly: Boolean,
+        map2svg: Boolean,
+        transparent: Boolean,
+        fitchart: Boolean,
+        fitheight: Boolean,
+        theme: String,
+        search: String
+    };
 
     const datasetName = `dataset.${get(chart.metadata, 'data.json') ? 'json' : 'csv'}`;
 
-    $: {
-        if (!get(chart, 'metadata.publish.blocks')) {
-            // no footer settings found in metadata, apply theme defaults
-            set(chart, 'metadata.publish.blocks', get(theme.data, 'metadata.publish.blocks'));
-        }
+    $: if (!get(chart, 'metadata.publish.blocks')) {
+        // no footer settings found in metadata, apply theme defaults
+        set(chart, 'metadata.publish.blocks', get(theme.data, 'metadata.publish.blocks'));
     }
 
-    $: ariaDescription = purifyHtml(
-        get(chart, 'metadata.describe.aria-description', ''),
-        '<a><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt><table><thead><tbody><tfoot><caption><colgroup><col><tr><td><th>'
-    );
+    const allowedAriaDescriptionTags =
+        '<a><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt><table><thead><tbody><tfoot><caption><colgroup><col><tr><td><th>';
+    $: ariaDescription = get(chart, 'metadata.describe.aria-description', '');
 
     $: customCSS = purifyHtml(get(chart, 'metadata.publish.custom-css', ''), '');
 
@@ -336,49 +333,43 @@
         });
     }
 
-    let regions;
-    $: {
-        // build all the region
-        regions = {
-            header: getBlocks(allBlocks, 'header', { chart, theme, isStyleStatic }),
-            aboveFooter: getBlocks(allBlocks, 'aboveFooter', {
-                chart,
-                theme,
-                isStyleStatic
-            }),
-            footerLeft: getBlocks(allBlocks, 'footerLeft', {
-                chart,
-                theme,
-                isStyleStatic
-            }),
-            footerCenter: getBlocks(allBlocks, 'footerCenter', {
-                chart,
-                theme,
-                isStyleStatic
-            }),
-            footerRight: getBlocks(allBlocks, 'footerRight', {
-                chart,
-                theme,
-                isStyleStatic
-            }),
-            belowFooter: getBlocks(allBlocks, 'belowFooter', {
-                chart,
-                theme,
-                isStyleStatic
-            }),
-            afterBody: getBlocks(allBlocks, 'afterBody', {
-                chart,
-                theme,
-                isStyleStatic
-            }),
-            menu: getBlocks(allBlocks, 'menu', { chart, theme, isStyleStatic })
-        };
-    }
+    // build all the region
+    $: regions = {
+        header: getBlocks(allBlocks, 'header', { chart, theme, isStyleStatic }),
+        aboveFooter: getBlocks(allBlocks, 'aboveFooter', {
+            chart,
+            theme,
+            isStyleStatic
+        }),
+        footerLeft: getBlocks(allBlocks, 'footerLeft', {
+            chart,
+            theme,
+            isStyleStatic
+        }),
+        footerCenter: getBlocks(allBlocks, 'footerCenter', {
+            chart,
+            theme,
+            isStyleStatic
+        }),
+        footerRight: getBlocks(allBlocks, 'footerRight', {
+            chart,
+            theme,
+            isStyleStatic
+        }),
+        belowFooter: getBlocks(allBlocks, 'belowFooter', {
+            chart,
+            theme,
+            isStyleStatic
+        }),
+        afterBody: getBlocks(allBlocks, 'afterBody', {
+            chart,
+            theme,
+            isStyleStatic
+        }),
+        menu: getBlocks(allBlocks, 'menu', { chart, theme, isStyleStatic })
+    };
 
-    let menu;
-    $: {
-        menu = get(theme, 'data.options.menu', {});
-    }
+    $: menu = get(theme, 'data.options.menu', {});
 
     function getCaption(id) {
         if (id === 'd3-maps-choropleth' || id === 'd3-maps-symbols' || id === 'locator-map')
@@ -431,20 +422,8 @@ Please make sure you called __(key) with a key of type "string".
         });
 
         // read flags
-        if (isIframe) {
-            const urlParams = new URLSearchParams(window.location.search);
-            FLAGS.forEach(({ key, type }) => {
-                const val = urlParams.get(key);
-                flags[key] = type === 'boolean' ? JSON.parse(val || 'false') : val;
-            });
-        } else {
-            // @todo: read flags from script tag , e.g.
-            // const script = document.currentScript;
-            // FLAGS.forEach(({ key, type }) => {
-            //     const val = script.getAttribute(`data-${key}`);
-            //     flags[key] = type === 'boolean' ? JSON.parse(val || 'false') : val;
-            // });
-        }
+        const newFlags = isIframe ? parseFlagsFromURL(window.location.search, FLAG_TYPES) : {}; // TODO parseFlagsFromElement(scriptEl, FLAG_TYPES);
+        Object.assign(flags, newFlags);
 
         const useDwCdn = get(chart, 'metadata.data.use-datawrapper-cdn', true);
 
@@ -758,7 +737,7 @@ Please make sure you called __(key) with a key of type "string".
 
 {#if ariaDescription}
     <div class="sr-only">
-        {@html ariaDescription}
+        {@html purifyHtml(ariaDescription, allowedAriaDescriptionTags)}
     </div>
 {/if}
 

@@ -1,5 +1,6 @@
 <script>
     import BlocksRegion from './BlocksRegion.svelte';
+    import purifySvg from '@datawrapper/shared/purifySvg.js';
 
     export let id;
     export let name;
@@ -82,7 +83,7 @@
 {#if blocks.length}
     <div class:ha-menu={!props.icon} class="menu container" on:click|stopPropagation={toggle}>
         {#if props.icon}
-            {@html props.icon}
+            {@html purifySvg(props.icon)}
         {:else}
             <div />
         {/if}

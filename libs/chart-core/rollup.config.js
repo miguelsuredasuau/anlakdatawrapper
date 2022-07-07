@@ -36,7 +36,10 @@ module.exports = [
             svelte({ hydratable: true }),
             // for @emotion/css
             replace({
-                'process.env.NODE_ENV': JSON.stringify('production')
+                values: {
+                    'process.env.NODE_ENV': JSON.stringify('production')
+                },
+                preventAssignment: true
             }),
             resolve(),
             commonjs(),
@@ -62,7 +65,10 @@ module.exports = [
             svelte({ generate: 'ssr', hydratable: true }),
             // for @emotion/css
             replace({
-                'process.env.NODE_ENV': JSON.stringify('production')
+                values: {
+                    'process.env.NODE_ENV': JSON.stringify('production')
+                },
+                preventAssignment: true
             }),
             resolve(),
             commonjs(),
@@ -121,8 +127,11 @@ module.exports = [
             resolve(),
             commonjs(),
             replace({
-                __chartCoreVersion__: require('./package.json').version,
-                'process.env.NODE_ENV': JSON.stringify('production')
+                values: {
+                    __chartCoreVersion__: require('./package.json').version,
+                    'process.env.NODE_ENV': JSON.stringify('production')
+                },
+                preventAssignment: true
             }),
             babel({
                 ...babelConfig,
@@ -154,8 +163,11 @@ module.exports = [
             }),
             commonjs(),
             replace({
-                __chartCoreVersion__: require('./package.json').version,
-                'process.env.NODE_ENV': JSON.stringify('production')
+                values: {
+                    __chartCoreVersion__: require('./package.json').version,
+                    'process.env.NODE_ENV': JSON.stringify('production')
+                },
+                preventAssignment: true
             })
         ],
         onwarn,

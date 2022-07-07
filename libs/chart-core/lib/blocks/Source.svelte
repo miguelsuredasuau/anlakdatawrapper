@@ -8,7 +8,7 @@
 
     // internal props
     $: caption = get(theme, 'data.options.blocks.source.data.caption', __('Source'));
-    $: sourceName = purifyHtml(get(chart, 'metadata.describe.source-name'));
+    $: sourceName = get(chart, 'metadata.describe.source-name');
     $: sourceUrl = get(chart, 'metadata.describe.source-url');
     $: allowedSourceUrl = isAllowedSourceUrl(sourceUrl);
 
@@ -27,11 +27,11 @@
             rel="noopener noreferrer"
             href={sourceUrl}
         >
-            {@html sourceName}
+            {@html purifyHtml(sourceName)}
         </a>
     {:else}
         <span class="source" title={sourceUrl && !allowedSourceUrl ? sourceUrl : null}>
-            {@html sourceName}
+            {@html purifyHtml(sourceName)}
         </span>
     {/if}
 {/if}

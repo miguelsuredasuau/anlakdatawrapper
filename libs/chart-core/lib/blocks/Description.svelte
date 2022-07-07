@@ -8,7 +8,7 @@
         '<table><thead><tbody><tfoot><caption><colgroup><col><tr><td><th><details><summary>';
 
     // internal props
-    $: description = clean(get(chart, 'metadata.describe.intro'), allowedTags);
+    $: description = get(chart, 'metadata.describe.intro');
 </script>
 
-{@html description}
+{@html clean(description, allowedTags)}

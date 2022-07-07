@@ -1,4 +1,6 @@
 <script>
+    import { clean } from '../shared.mjs';
+
     // external props
     export let props;
     const { get, __ } = props;
@@ -126,8 +128,9 @@
             </svg>
         </div>
         <p>
-            {@html embed.text ||
-                'You can copy and paste this <b>code to embed</b> the visualization:'}
+            {@html clean(
+                embed.text || 'You can copy and paste this <b>code to embed</b> the visualization:'
+            )}
         </p>
 
         <div class="actions">
