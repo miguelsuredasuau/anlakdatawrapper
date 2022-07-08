@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    import { onMount, setContext } from 'svelte';
+    import { getContext, onMount, setContext } from 'svelte';
     import truncate from '@datawrapper/shared/truncate';
     import MainLayout from '_layout/MainLayout.svelte';
     import { openedInsideIframe } from '_layout/stores';
@@ -26,6 +26,7 @@
     import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
     import escapeHtml from '@datawrapper/shared/escapeHtml.cjs';
     import httpReq from '@datawrapper/shared/httpReq';
+    import dw from '@datawrapper/chart-core/dist/dw-2.0.cjs';
 
     export let workflow;
     export let __;
@@ -43,6 +44,10 @@
      * places throughout the editor
      */
     export let customViews = {};
+
+    const messages = getContext('messages');
+    const config = getContext('config');
+    const userData = getContext('userData');
 
     /*
      * we're using a "page context" here to be able to make
@@ -170,7 +175,19 @@
     onMount(async () => {
         initChartStore(rawChart, rawTheme, rawLocales, visualizations, disabledFields);
         initDataStore(rawChart.id, rawData, dataReadonly);
-
+        // mimic old dw setup
+        window.dw = {
+            ...dw,
+            backend: {
+                __messages: $messages,
+                __api_domain: $config.apiDomain,
+                __userData: $userData,
+                hooks:
+                    window && window.dw && window.dw.backend && window.dw.backend.hooks
+                        ? window.dw.backend.hooks
+                        : initHooks()
+            }
+        };
         if (rawTeam) {
             initTeamStore(rawTeam);
         }
@@ -211,6 +228,28 @@
         // }
         // if (pushState)
         //     window.history.pushState({ id: step.id }, '', `/v2/edit/${$chart.id}/${step.id}`);
+    }
+
+    function initHooks() {
+        const hooks = new Map();
+        return {
+            register(key, method) {
+                if (!hooks.has(key)) hooks.set(key, new Set());
+                hooks.get(key).add(method);
+            },
+            unregister(key) {
+                hooks.delete(key);
+            },
+            call(key) {
+                const results = [];
+                if (hooks.has(key)) {
+                    for (const method of hooks.get(key)) {
+                        results.push(method());
+                    }
+                }
+                return { results };
+            }
+        };
     }
 
     function onPopState(event) {

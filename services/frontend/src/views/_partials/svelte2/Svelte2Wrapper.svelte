@@ -57,9 +57,18 @@
         window.dw = {
             ...dw,
             backend: {
-                __messages: $messages,
-                __api_domain: $config.apiDomain,
-                __userData: $userData,
+                __messages:
+                    window && window.dw && window.dw.backend && window.dw.backend.__messages
+                        ? window.dw.backend.__messages
+                        : $messages,
+                __api_domain:
+                    window && window.dw && window.dw.backend && window.dw.backend.__api_domain
+                        ? window.dw.backend.__api_domain
+                        : $config.apiDomain,
+                __userData:
+                    window && window.dw && window.dw.backend && window.dw.backend.__userData
+                        ? window.dw.backend.__userData
+                        : $userData,
                 hooks:
                     window && window.dw && window.dw.backend && window.dw.backend.hooks
                         ? window.dw.backend.hooks

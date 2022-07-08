@@ -445,8 +445,9 @@
                 document.querySelector('#iframe-vis').contentWindow &&
                 document.querySelector('#iframe-vis').contentWindow.__registerAnnotationControls;
 
-            if (typeof register === 'function')
+            if (typeof register === 'function') {
                 register(dw.backend.hooks.call('get-annotation-controls').results[0]);
+            }
 
             this.refs.wrap.addEventListener('deleteInList', e => {
                 this.deleteTextAnnotations([e.detail]);
@@ -510,13 +511,17 @@
                 const rangeAnnotationData = clone(
                     this.store.getMetadata('visualize.range-annotations', [])
                 );
-                const { editorState } = this.get();
+                const { editorState, annotationLayer } = this.get();
                 const editorStateData = clone(editorState);
-                current.annotationLayer.setAnnotationState({
-                    textAnnotations: textAnnotationData,
-                    rangeAnnotations: rangeAnnotationData,
-                    editorState: editorStateData
-                });
+                // Somehow – under mysterious circumstances – setAnnotationState is undefined.
+                // Hence this extra check.
+                if (annotationLayer.setAnnotationState) {
+                    annotationLayer.setAnnotationState({
+                        textAnnotations: textAnnotationData,
+                        rangeAnnotations: rangeAnnotationData,
+                        editorState: editorStateData
+                    });
+                }
             }
 
             // this should be replaced
