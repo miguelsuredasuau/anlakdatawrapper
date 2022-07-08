@@ -79,7 +79,7 @@ module.exports = server => {
             notes: `If a chart has an external data source configured, this endpoint fetches the data and saves it to the chart. Requires scope \`chart:write\`.`,
             auth: {
                 strategy: 'guest',
-                access: { scope: ['chart:write'] }
+                access: { scope: ['chart:read'] }
             },
             validate: {
                 params: Joi.object({
