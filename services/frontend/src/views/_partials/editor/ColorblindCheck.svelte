@@ -92,8 +92,12 @@
         lastColors.add(k);
         if (colorLookup[k] !== undefined) return colorLookup[k];
         try {
-            color = chroma(k).rgba();
-            return (colorLookup[k] = blinder[activeMode](color));
+            const chromaColor = chroma(k);
+            color = chromaColor.rgba();
+            const alpha = chromaColor.alpha();
+            const processedColor = blinder[activeMode](color);
+            const outputColor = chroma(processedColor).alpha(alpha).css();
+            return (colorLookup[k] = outputColor);
         } catch (e) {
             return color;
         }
