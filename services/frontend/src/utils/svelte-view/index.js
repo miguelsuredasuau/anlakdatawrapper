@@ -153,6 +153,7 @@ class SvelteView {
                     }),
                     DW_DOMAIN: config.api.domain,
                     MATOMO: config.frontend.matomo || null,
+                    SENTRY: config.frontend.sentry || null,
                     FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico',
                     CORE_BEFORE_HEAD: await this.server.methods.getCustomHTML(
                         'core/beforeHead',
