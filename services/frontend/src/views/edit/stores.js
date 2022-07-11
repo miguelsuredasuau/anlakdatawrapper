@@ -220,7 +220,9 @@ export function initChartStore(
 
             if (unsavedChanges.theme) {
                 // chart theme has changed, update theme store
-                const newTheme = await httpReq.get(`/v3/themes/${unsavedChanges.theme}`);
+                const newTheme = await httpReq.get(
+                    `/v3/themes/${unsavedChanges.theme}?extend=true`
+                );
                 theme.set(newTheme);
             }
         }
