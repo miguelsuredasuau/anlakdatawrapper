@@ -7,7 +7,6 @@
 
     export let __;
     export let dwChart;
-    export let visualizations;
     export let teamSettings;
     export let disabledFields;
 </script>
@@ -15,4 +14,4 @@
 <div class="block">
     <ChartDescription {chart} {teamSettings} {disabledFields} {__} />
 </div>
-<Svelte2ChartControls controlsModule="Annotate" {dwChart} {visualizations} {teamSettings} {__} />
+<Svelte2ChartControls controlsModule="Annotate" {dwChart} {teamSettings} {__} />

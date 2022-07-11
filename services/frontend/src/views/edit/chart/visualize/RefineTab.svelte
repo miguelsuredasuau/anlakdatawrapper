@@ -3,8 +3,7 @@
 
     export let __;
     export let dwChart;
-    export let visualizations;
     export let teamSettings;
 </script>
 
-<Svelte2ChartControls controlsModule="Refine" {dwChart} {visualizations} {teamSettings} {__} />
+<Svelte2ChartControls controlsModule="Refine" {dwChart} {teamSettings} {__} />

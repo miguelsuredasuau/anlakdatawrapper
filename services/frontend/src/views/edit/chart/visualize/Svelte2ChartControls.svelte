@@ -10,39 +10,41 @@
     import get from 'lodash/get';
     import set from 'lodash/set';
     // load stores from context
-    const { chart, theme, visualization, locale } = getContext('page/edit');
+    const { chart, theme, visualization, locale, dataset } = getContext('page/edit');
 
     export let __;
     export let dwChart;
-    export let visualizations;
     export let teamSettings;
     export let controlsModule = 'Refine';
 
     onMount(() => {
-        chart.subscribeKey('metadata', () => {
-            storeData = getStoreData();
+        chart.subscribe(() => {
+            updateStoreData();
         });
-        locale.subscribe($locale => {
-            if ($locale) storeData = getStoreData();
+        locale.subscribe(() => {
+            updateStoreData();
         });
     });
 
     $: loadControls($visualization);
 
     let vis;
-    let dataset;
 
-    function getStoreData() {
-        return {
+    function updateStoreData() {
+        if (!$chart || !$locale) {
+            return;
+        }
+        storeData = {
             ...clone($chart),
             vis,
-            dataset,
+            dataset: $dataset,
             textDirection: $locale.textDirection,
-            visualization: visualizations.find(v => v.id === $chart.type),
+            visualization: $visualization,
             themeData: $theme.data,
             computedThemeData: $theme._computed,
             teamSettings
         };
+        prevStoreData = clone(storeData);
     }
 
     async function loadControls(visualization) {
@@ -58,15 +60,13 @@
         window.dw.visualization = dwVisualization;
         await loadScript(`/lib/plugins/${visualization.__plugin}/static/${type}.js`);
         // create visualization instance
-        vis = dwVisualization(type);
-        vis.meta = visualization;
-        vis.chart(dwChart);
-        vis.theme = () => $theme.data;
+        const newVis = dwVisualization(type);
+        newVis.meta = visualization;
+        newVis.chart(dwChart);
+        newVis.theme = () => $theme.data;
+        vis = newVis;
 
-        // load dataset from chart
-        dataset = dwChart.dataset();
-        storeData = getStoreData();
-        prevStoreData = clone(storeData);
+        updateStoreData();
         await tick();
         controlsReady = true;
     }
