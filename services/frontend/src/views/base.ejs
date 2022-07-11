@@ -19,9 +19,9 @@
             <%- SSR_CSS %>
         </style>
 
-        <% if (SENTRY) { %>
+        <% if (SENTRY && SENTRY.browser) { %>
         <script
-            src="https://js.sentry-cdn.com/<%- SENTRY.client.dsn.match(/\/\/([^@]+)/)[1] %>.min.js"
+            src="https://js.sentry-cdn.com/<%- SENTRY.browser.dsn.match(/\/\/([^@]+)/)[1] %>.min.js"
             crossorigin="anonymous"
         ></script>
         <script>
@@ -29,8 +29,8 @@
                 Sentry.init({
                     release: '<%- GITHEAD %>',
                     serverName: 'frontend',
-                    tracesSampleRate: <%- SENTRY.client.tracesSampleRate || 1 %>,
-                    environment: '<%- SENTRY.client.environment %>'
+                    tracesSampleRate: <%- SENTRY.browser.tracesSampleRate || 1 %>,
+                    environment: '<%- SENTRY.browser.environment || '' %>'
                 });
             });
         </script>
