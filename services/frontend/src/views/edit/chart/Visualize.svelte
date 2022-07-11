@@ -142,6 +142,8 @@
             window.location.hash = `#${active}`;
             prevActive = active;
         }
+        // preload the annotate tab, so that inline editing of annotations always works
+        tabLoaded.annotate = true;
     });
 
     $: {
