@@ -482,8 +482,8 @@ module.exports = {
                             },
                             rawTheme: theme,
                             visualizations: Array.from(server.app.visualizations.values())
-                                .filter(vis =>
-                                    isDisabledVisualization(vis, team, mayAdministrateTeam)
+                                .filter(
+                                    vis => !isDisabledVisualization(vis, team, mayAdministrateTeam)
                                 )
                                 .map(prepareVisualization)
                                 .sort(byOrder),
@@ -534,15 +534,15 @@ module.exports = {
         function isDisabledVisualization(vis, team, mayAdministrateTeam) {
             if (!team) return false;
 
-            const disabledVisSettings = team.settings.disableVisualizations;
+            const disabledVisSettings = team.settings?.disableVisualizations || {};
 
             if (!disabledVisSettings.enabled) {
-                return true;
+                return false;
             }
             if (disabledVisSettings.allowAdmins && mayAdministrateTeam) {
-                return true;
+                return false;
             }
-            return !disabledVisSettings.visualizations[vis.id];
+            return disabledVisSettings.visualizations[vis.id];
         }
     }
 };
