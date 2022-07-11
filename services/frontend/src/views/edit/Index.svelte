@@ -47,6 +47,7 @@
 
     const messages = getContext('messages');
     const config = getContext('config');
+    const user = getContext('user');
     const userData = getContext('userData');
 
     /*
@@ -196,10 +197,14 @@
             activeStep = steps[Math.max(1, Math.min(steps.length - 1, rawChart.lastEditStep - 1))];
         }
         navigateTo(activeStep, initUrlStep !== activeStep.id);
-        window.__subscribeKey = chart.subscribeKey;
-    });
 
-    $: if (typeof window !== 'undefined') window.__chart = $chart;
+        if ($user.isAdmin) {
+            window.__chart = {
+                ...dwChart,
+                subscribe: chart.subscribeKey
+            };
+        }
+    });
 
     export let breadcrumbPath = [];
 
