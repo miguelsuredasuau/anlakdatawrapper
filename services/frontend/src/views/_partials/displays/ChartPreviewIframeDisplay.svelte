@@ -429,7 +429,7 @@
         border: 1px solid #ddd;
         position: relative;
     }
-    .iframe-border.resizing * {
+    .iframe-border.resizing > :not(.resizer) {
         pointer-events: none;
     }
 
@@ -441,7 +441,7 @@
         position: absolute;
         right: 0;
         bottom: 0;
-        cursor: se-resize;
+        cursor: nwse-resize;
         display: inline-flex;
         justify-content: center;
         align-items: center;
