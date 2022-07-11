@@ -7,6 +7,7 @@
     import chroma from 'chroma-js';
 
     import blinder from '../../../utils/blinder.js';
+    import { waitFor } from '../../../utils';
 
     export let __;
     export let iframe;
@@ -73,10 +74,15 @@
     }
 
     function initIframe() {
-        iframe.getContext(contentWindow => {
+        iframe.getContext(async contentWindow => {
+            await waitForColorMap(contentWindow);
             __dw = contentWindow.__dw;
             __dw.vis.colorMap(color => colorMap(color));
         });
+    }
+
+    function waitForColorMap(win) {
+        return waitFor(() => win.__dw && win.__dw.vis && win.__dw.vis.colorMap);
     }
 
     function colorMap(color) {
