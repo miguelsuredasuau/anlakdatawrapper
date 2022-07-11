@@ -76,7 +76,7 @@
             // load and execute migrate.js
             const { default: migrate } = await dynamicImport($visualization.controls.migrate);
             if (typeof migrate === 'function') {
-                migrate($chart.type, $chart.metadata, dataset);
+                migrate($chart.type, $chart.metadata, $dataset);
             }
         }
         // apply defaults from visualization
