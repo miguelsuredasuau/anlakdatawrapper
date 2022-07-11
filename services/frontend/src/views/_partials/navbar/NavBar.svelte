@@ -17,7 +17,16 @@
     async function onNavItemClick(event, item) {
         if (item.type === 'logout') {
             event.preventDefault();
-            await post('/v3/auth/logout');
+            try {
+                await post('/v3/auth/logout');
+            } catch (err) {
+                if (err.name === 'HttpReqError' && err.status === 401) {
+                    // safe to ignore this 401 Unauthorized error since
+                    // we were trying to logout the user anyway
+                } else {
+                    throw err;
+                }
+            }
             window.location.reload();
         } else if (item.type === 'language') {
             event.preventDefault();
