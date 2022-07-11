@@ -23,6 +23,7 @@ module.exports = {
             enabled: false
         }
     },
+    axes: {},
     publish: { 'embed-width': 600, 'embed-height': 400, blocks: {}, 'export-pdf': {} },
     annotate: {
         notes: ''
