@@ -17,6 +17,7 @@ module.exports = {
         'number-prepend': ''
     },
     visualize: {
+        'dark-mode-invert': true,
         'highlighted-series': [],
         'highlighted-values': [],
         sharing: {
