@@ -108,16 +108,17 @@
             </FormFieldDisplay>
         </div>
     </div>
-
-    <FormFieldDisplay compact label={__('visualize / annotate / byline')}>
-        <TextInput
-            bind:value={$chart.metadata.describe.byline}
-            expandable
-            disabled={disabledFields.has('metadata.describe.byline')}
-            placeholder={__('visualize / annotate / byline / placeholder')}
-            {textDirection}
-        />
-    </FormFieldDisplay>
+    {#if get(teamSettings, 'flags.byline', true)}
+        <FormFieldDisplay compact label={__('visualize / annotate / byline')}>
+            <TextInput
+                bind:value={$chart.metadata.describe.byline}
+                expandable
+                disabled={disabledFields.has('metadata.describe.byline')}
+                placeholder={__('visualize / annotate / byline / placeholder')}
+                {textDirection}
+            />
+        </FormFieldDisplay>
+    {/if}
 
     <FormFieldDisplay
         tooltip={__('visualize / annotate / aria-description / help')}
