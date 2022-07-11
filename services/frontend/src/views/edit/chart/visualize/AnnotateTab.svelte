@@ -15,4 +15,4 @@
 <div class="block">
     <ChartDescription {chart} {teamSettings} {disabledFields} {__} />
 </div>
-<Svelte2ChartControls controlsModule="Annotate" {dwChart} {visualizations} {teamSettings} />
+<Svelte2ChartControls controlsModule="Annotate" {dwChart} {visualizations} {teamSettings} {__} />

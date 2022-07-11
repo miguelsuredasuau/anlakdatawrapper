@@ -1154,5 +1154,9 @@
   "edit / stored-changes": "保存",
   "colorblind / note": "",
   "edit / data-readonly": "",
-  "archive / modal / public-url": ""
+  "archive / modal / public-url": "",
+  "edit / controls-loading-error / title": "",
+  "edit / controls-loading-error / description": "",
+  "edit / controls-loading-error / button": "",
+  "edit / controls-loading-error / contact": ""
 }

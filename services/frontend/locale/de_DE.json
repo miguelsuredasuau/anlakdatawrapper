@@ -1154,5 +1154,9 @@
   "edit / stored-changes": "Gespeichert",
   "colorblind / note": "",
   "edit / data-readonly": "Die Daten dieser Visualisierung sind vor Änderungen geschützt.",
-  "archive / modal / public-url": "URL der Visualisierung"
+  "archive / modal / public-url": "URL der Visualisierung",
+  "edit / controls-loading-error / title": "Hier fehlt etwas",
+  "edit / controls-loading-error / description": "Leider konnten einige <strong>Inhalte nicht geladen</strong> werden. Probiere die Seite neu zu laden, um das Problem zu beheben.",
+  "edit / controls-loading-error / button": "Seite neu laden",
+  "edit / controls-loading-error / contact": "Wenn du weitere Hilfe benötigst, wende dich bitte <a href=\"mailto:support@datawrapper.de\"> an den Support.</a>"
 }

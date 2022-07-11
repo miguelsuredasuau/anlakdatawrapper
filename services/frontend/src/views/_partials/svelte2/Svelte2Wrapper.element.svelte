@@ -129,6 +129,7 @@
                 dispatch('init', _app);
             } catch (err) {
                 console.error(err);
+                dispatch('error', err);
             }
         });
     });

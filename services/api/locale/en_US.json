@@ -1154,5 +1154,9 @@
   "edit / stored-changes": "Saved",
   "colorblind / note": "Colorblind check lets you test your colors and warns you if the colors in your chart/map would not be distinguishable by somebody with a color vision deficiency. See our <a href=\"https://academy.datawrapper.de/article/206-how-we-make-sure-our-charts-maps-and-tables-are-accessible\">Academy article</a>.",
   "edit / data-readonly": "The data of this visualization is protected against changes.",
-  "archive / modal / public-url": "Visualization URL"
+  "archive / modal / public-url": "Visualization URL",
+  "edit / controls-loading-error / title": "Something is missing here",
+  "edit / controls-loading-error / description": "Unfortunately some <strong>content couldn't be loaded</strong>. Often this can be fixed by simply reloading this page.",
+  "edit / controls-loading-error / button": "Reload page",
+  "edit / controls-loading-error / contact": "If you need any help, please don't hesitate and <a href=\"mailto:support@datawrapper.de\">contact support.</a>"
 }

@@ -12,6 +12,7 @@
     // load stores from context
     const { chart, theme, visualization, locale } = getContext('page/edit');
 
+    export let __;
     export let dwChart;
     export let visualizations;
     export let teamSettings;
@@ -176,5 +177,18 @@
         on:state={evt => {
             notifications = evt.detail.current.notifications || [];
         }}
-    />
+    >
+        <article slot="error" class="message is-danger my-6">
+            <div class="message-header">{__('edit / controls-loading-error / title')}</div>
+            <div class="message-body">
+                <p>{@html __('edit / controls-loading-error / description')}</p>
+                <button
+                    class="button my-3"
+                    on:click|stopPropagation={() => window.location.reload()}
+                    >{__('edit / controls-loading-error / button')}</button
+                >
+                <p>{@html __('edit / controls-loading-error / contact')}</p>
+            </div>
+        </article>
+    </Svelte2Wrapper>
 {/if}

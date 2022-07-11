@@ -21,6 +21,7 @@
     let ready = false;
     let prevData = clone(data);
     let prevStoreData = clone(storeData);
+    let hasError = false;
 
     /*
      * event dispatcher to be used by the Svelte2 component
@@ -157,5 +158,9 @@
         on:change
         on:state
         on:init
+        on:error={() => (hasError = true)}
     />
+    {#if $$slots.error && hasError}
+        <slot name="error" />
+    {/if}
 {/if}
