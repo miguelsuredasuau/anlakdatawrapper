@@ -1158,5 +1158,11 @@
   "edit / controls-loading-error / title": "Hier fehlt etwas",
   "edit / controls-loading-error / description": "Leider konnten einige <strong>Inhalte nicht geladen</strong> werden. Probiere die Seite neu zu laden, um das Problem zu beheben.",
   "edit / controls-loading-error / button": "Seite neu laden",
-  "edit / controls-loading-error / contact": "Wenn du weitere Hilfe benötigst, wende dich bitte <a href=\"mailto:support@datawrapper.de\"> an den Support.</a>"
+  "edit / controls-loading-error / contact": "Wenn du weitere Hilfe benötigst, wende dich bitte <a href=\"mailto:support@datawrapper.de\"> an den Support.</a>",
+  "archive / chart / not-found / title": "Problem beim Öffnen der Visualisierung",
+  "archive / chart / not-found / body": "Wir konnten die Visualisierung nicht öffnen, da sie nicht mehr existiert. Vielleicht wurde sie gelöscht (oder verschoben)?",
+  "archive / folder / delete / confirm / yes": "Ja, löschen",
+  "archive / chart / delete / confirm / yes": "Ja, löschen",
+  "archive / folder / delete / confirm / no": "Nein",
+  "archive / chart / delete / confirm / no": "Nein"
 }

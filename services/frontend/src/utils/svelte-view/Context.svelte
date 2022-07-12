@@ -6,6 +6,7 @@
     import cloneDeep from 'lodash/cloneDeep';
     import httpReq from '@datawrapper/shared/httpReq';
     import { loadScript } from '@datawrapper/shared/fetch';
+    import ConfirmationModalDisplay from '_partials/displays/ConfirmationModalDisplay.svelte';
 
     import dayjs from 'dayjs';
     import relativeTime from 'dayjs/plugin/relativeTime';
@@ -13,6 +14,7 @@
     import localizedFormat from 'dayjs/plugin/localizedFormat';
     import isoWeek from 'dayjs/plugin/isoWeek';
     import translate from '../translate.mjs';
+    import { waitFor } from '../index.js';
 
     import de from 'dayjs/locale/de';
     import es from 'dayjs/locale/es';
@@ -109,18 +111,32 @@
         $request.hash = window.location.hash;
     }
 
-    /**
-     * wait for test() to return true
-     *
-     * @param test test method
-     * @param interval number of ms to wait between tests
-     */
-    async function waitFor(test, interval = 100) {
-        while (!test()) {
-            await new Promise(resolve => setTimeout(resolve, interval));
+    setContext('main', {
+        /**
+         * displays a confirmation modal
+         * @returns {boolean} - true if "yes" was selected, otherwise false
+         */
+        async showConfirmationModal(modalOptions) {
+            confirmationModalResult = 'pending';
+            confirmationModal = modalOptions;
+            await waitFor(() => confirmationModalResult !== 'pending');
+            const confirmed = confirmationModalResult === 'confirm';
+            confirmationModalResult = confirmationModal = null;
+            return confirmed;
         }
-    }
+    });
+
+    let confirmationModal;
+    let confirmationModalResult;
 </script>
 
 <svelte:window on:hashchange={onHashChange} />
 <svelte:component this={view} bind:this={ref} {__} {...$$restProps} />
+
+{#if confirmationModal}
+    <ConfirmationModalDisplay
+        {...confirmationModal}
+        on:cancel={() => (confirmationModalResult = 'cancel')}
+        on:confirm={() => (confirmationModalResult = 'confirm')}
+    />
+{/if}

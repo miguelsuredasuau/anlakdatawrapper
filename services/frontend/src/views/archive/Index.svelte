@@ -30,6 +30,7 @@
 
     const user = getContext('user');
     const request = getContext('request');
+    const { showConfirmationModal } = getContext('main');
 
     export let __;
 
@@ -52,7 +53,15 @@
         addFolder,
         updateFolders: refreshFolders,
         async deleteFolder(folder) {
-            if (window.confirm(__('archive / folder / delete / confirm'))) {
+            if (
+                await showConfirmationModal({
+                    body: __('archive / folder / delete / confirm'),
+                    yesOption: __('archive / folder / delete / confirm / yes'),
+                    noOption: __('archive / folder / delete / confirm / no'),
+                    yesIcon: 'trash',
+                    yesType: 'danger'
+                })
+            ) {
                 await httpReq.delete(`/v3/folders/${folder.id}`);
                 delete folders[folder.key];
                 refreshFolders();
@@ -301,7 +310,11 @@
             charts = newCharts;
             $selectedCharts = new Set();
         } catch (e) {
-            window.alert(__('archive / search / error'));
+            showConfirmationModal({
+                body: __('archive / search / error'),
+                noOption: false,
+                yesOption: 'Ok'
+            });
         } finally {
             $chartsLoading = false;
         }
@@ -327,12 +340,22 @@
     }
 
     async function deleteChart(chart) {
-        if (window.confirm(__('archive / chart / delete / confirm'))) {
+        if (
+            await showConfirmationModal({
+                body: __('archive / chart / delete / confirm'),
+                yesOption: __('archive / chart / delete / confirm / yes'),
+                noOption: __('archive / chart / delete / confirm / no'),
+                yesIcon: 'trash',
+                yesType: 'danger'
+            })
+        ) {
             await httpReq.delete(`/v3/charts/${chart.id}`);
             $currentFolder.chartCount--;
             loadCharts();
             refreshFolders();
+            return true;
         }
+        return false;
     }
 
     async function moveCharts(chartsToMove, folder) {
@@ -355,16 +378,34 @@
 
             refreshFolders();
         } catch (err) {
-            window.alert(err);
+            showConfirmationModal({
+                body: err,
+                noOption: false,
+                yesOption: 'Ok'
+            });
             console.error(err);
         }
     }
 
     async function openChart(chartId, pushState = true) {
-        currentChart = await httpReq.get(`/v3/charts/${chartId}`);
-        if (pushState) {
-            const path = window.location.pathname + (window.location.search || '');
-            window.history.pushState({ chartId }, '', `${path}#/${chartId}`);
+        try {
+            currentChart = await httpReq.get(`/v3/charts/${chartId}`);
+            if (pushState) {
+                const path = window.location.pathname + (window.location.search || '');
+                window.history.pushState({ chartId }, '', `${path}#/${chartId}`);
+            }
+        } catch (error) {
+            if (error.name === 'HttpReqError' && error.status === 404) {
+                currentChart = null;
+                showConfirmationModal({
+                    title: __('archive / chart / not-found / title'),
+                    body: __('archive / chart / not-found / body'),
+                    yesOption: 'Ok',
+                    noOption: false
+                });
+                return undefined;
+            }
+            throw error;
         }
     }
 
@@ -389,7 +430,11 @@
                 teamId: destinationFolder.teamId || null
             });
         } catch (err) {
-            window.alert(err.message);
+            showConfirmationModal({
+                body: err.message,
+                noOption: false,
+                yesOption: 'Ok'
+            });
         }
     }
 
@@ -477,6 +522,7 @@
 
 <MainLayout title="{$currentFolder.name || ''} - Archive">
     <VisualizationModal {__} bind:chart={currentChart} />
+
     {#if dragNotification}
         <DragNotification {__} message={dragNotification} />
     {/if}

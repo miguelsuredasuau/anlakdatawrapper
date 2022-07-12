@@ -1158,5 +1158,11 @@
   "edit / controls-loading-error / title": "",
   "edit / controls-loading-error / description": "",
   "edit / controls-loading-error / button": "",
-  "edit / controls-loading-error / contact": ""
+  "edit / controls-loading-error / contact": "",
+  "archive / chart / not-found / title": "",
+  "archive / chart / not-found / body": "",
+  "archive / folder / delete / confirm / yes": "",
+  "archive / chart / delete / confirm / yes": "",
+  "archive / folder / delete / confirm / no": "No",
+  "archive / chart / delete / confirm / no": "No"
 }

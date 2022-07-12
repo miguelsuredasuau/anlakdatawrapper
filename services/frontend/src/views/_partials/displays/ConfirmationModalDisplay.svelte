@@ -41,11 +41,13 @@
         </p>
         <hr class="my-4" />
         <div class="buttons is-justify-content-flex-end">
-            <IconButton
-                on:click={() => dispatch('cancel')}
-                class={noType ? `is-${noType}` : null}
-                icon={noIcon}>{noOption}</IconButton
-            >
+            {#if !!noOption}
+                <IconButton
+                    on:click={() => dispatch('cancel')}
+                    class={noType ? `is-${noType}` : null}
+                    icon={noIcon}>{noOption}</IconButton
+                >
+            {/if}
             <IconButton
                 on:click={() => dispatch('confirm')}
                 class={yesType ? `is-${yesType}` : null}

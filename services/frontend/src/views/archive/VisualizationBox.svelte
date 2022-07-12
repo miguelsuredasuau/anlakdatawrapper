@@ -63,9 +63,12 @@
         isDropdownActive = false;
     }
 
-    function handleDeleteButtonClick() {
+    async function handleDeleteButtonClick() {
         chart.isDeleting = true;
-        deleteChart(chart);
+        const isDeleted = await deleteChart(chart);
+        if (!isDeleted) {
+            chart.isDeleting = false;
+        }
         isDropdownActive = false;
     }
 
