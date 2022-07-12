@@ -254,11 +254,9 @@
                 if (event.target.classList.contains('btn-delete')) {
                     const { userPresets } = this.get();
                     userPresets.splice(userPresets.indexOf(value), 1);
-                    if (window.dw && window.dw.backend && window.dw.backend.setUserData) {
-                        window.dw.backend.setUserData({
-                            'gradienteditor-presets': JSON.stringify(userPresets)
-                        });
-                    }
+                    this.store.get().setUserData({
+                        'gradienteditor-presets': JSON.stringify(userPresets)
+                    });
                     this.set({ userPresets });
                 } else {
                     this.select(value);
@@ -346,11 +344,9 @@
             savePreset() {
                 const { userPresets, colors } = this.get();
                 userPresets.push(colors);
-                if (window.dw && window.dw.backend && window.dw.backend.setUserData) {
-                    window.dw.backend.setUserData({
-                        'gradienteditor-presets': JSON.stringify(userPresets)
-                    });
-                }
+                this.store.get().setUserData({
+                    'gradienteditor-presets': JSON.stringify(userPresets)
+                });
                 this.set({ userPresets });
             },
             swatchClick(color, index) {
@@ -441,11 +437,9 @@
             },
             closeHelp() {
                 this.set({ gotIt: true });
-                if (window.dw && window.dw.backend && window.dw.backend.setUserData) {
-                    window.dw.backend.setUserData({
-                        'gradienteditor-help': 1
-                    });
-                }
+                this.store.get().setUserData({
+                    'gradienteditor-help': 1
+                });
             },
             handleGradientClick(event) {
                 // add new color stop to gradient
