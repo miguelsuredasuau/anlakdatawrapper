@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import PendingTeamInvites from './PendingTeamInvites.svelte';
 import { renderWithContext, setConfig } from '../../../test-utils';
-import translate from '../../../utils/translate.mjs';
+import { translate } from '@datawrapper/shared/l10n';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 

@@ -6,6 +6,7 @@
     import cloneDeep from 'lodash/cloneDeep';
     import httpReq from '@datawrapper/shared/httpReq';
     import { loadScript } from '@datawrapper/shared/fetch';
+    import { translate } from '@datawrapper/shared/l10n';
     import ConfirmationModalDisplay from '_partials/displays/ConfirmationModalDisplay.svelte';
 
     import dayjs from 'dayjs';
@@ -13,7 +14,6 @@
     import advancedFormat from 'dayjs/plugin/advancedFormat';
     import localizedFormat from 'dayjs/plugin/localizedFormat';
     import isoWeek from 'dayjs/plugin/isoWeek';
-    import translate from '../translate.mjs';
     import { waitFor } from '../index.js';
 
     import de from 'dayjs/locale/de';

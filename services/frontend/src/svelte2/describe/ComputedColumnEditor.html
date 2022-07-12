@@ -247,8 +247,7 @@
         },
         computed: {
             title({ name }) {
-                var s = __('describe / edit-column');
-                return s.replace('%s', `"${name}"`);
+                return __('describe / edit-column', 'core', { s: `"${name}"` });
             },
             metaColumns({ columns, column }) {
                 const metaColumns = [];

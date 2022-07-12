@@ -185,7 +185,7 @@
                 const { user, teams } = this.get();
                 if (
                     window.confirm(
-                        __('account / my-teams / leave-team / confirm').replace('%team%', team.name)
+                        __('account / my-teams / leave-team / confirm', 'core', { team: team.name })
                     )
                 ) {
                     httpReq(`/v3/teams/${team.id}/members/${user.id}`, { method: 'delete' })

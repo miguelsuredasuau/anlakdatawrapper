@@ -1,7 +1,7 @@
 <p>
     {#if numUsers === 1} { __('teams / total / 1') } {:elseif numUsers > 1}
     <!-- prettier-ignroe -->
-    { __('teams / total').replace('%i%', numUsers) } {/if} { @html numChartsCaption }
+    { __('teams / total', 'core', { i: numUsers }) } {/if} { @html numChartsCaption }
 </p>
 
 {#if sortedUsers.length}
@@ -153,11 +153,14 @@
                     return __('teams / charts-total / 1');
                 } else if (numCharts > 1) {
                     if (isAdmin) {
-                        return __('teams / charts-total-admin')
-                            .replace('%i%', numCharts)
-                            .replace('%link%', `/admin/chart/by/team/${team.id}`);
+                        return __('teams / charts-total-admin', 'core', {
+                            i: numCharts,
+                            link: `/admin/chart/by/team/${team.id}`
+                        });
                     } else {
-                        return __('teams / charts-total').replace('%i%', numCharts);
+                        return __('teams / charts-total', 'core', {
+                            i: numCharts
+                        });
                     }
                 } else {
                     return '';
@@ -168,26 +171,22 @@
                 const owner = users.find(u => u.id !== editId && u.role === 'owner');
                 const userEmail = user ? user.name || user.email || user.id : 'non-existent';
                 const ownerEmail = owner ? owner.name || owner.email || owner.id : 'non-existent';
-                return __('teams / change-owner-confirmation / message')
-                    .replace('%member%', `<b>${purifyHtml(userEmail, '')}</b>`)
-                    .replace(
-                        '%message%',
-                        isTeamOwner
-                            ? __('teams / change-owner-confirmation / owner-message')
-                            : __('teams / change-owner-confirmation / non-owner-message').replace(
-                                  '%member%',
-                                  `<b>${purifyHtml(ownerEmail, '')}</b>`
-                              )
-                    )
-                    .replace('%team%', `<b>${team.name}</b>`);
+                return __('teams / change-owner-confirmation / message', 'core', {
+                    member: `<b>${purifyHtml(userEmail, '')}</b>`,
+                    team: `<b>${team.name}</b>`,
+                    message: isTeamOwner
+                        ? __('teams / change-owner-confirmation / owner-message')
+                        : __('teams / change-owner-confirmation / non-owner-message', 'core', {
+                              member: `<b>${ownerEmail}</b>`
+                          })
+                });
             },
             ownerChangeTitle({ users, editId }) {
                 const user = users.find(u => u.id === editId);
                 const userEmail = user ? user.name || user.email || user.id : 'non-existent';
-                return __('teams / change-owner-confirmation / title').replace(
-                    '%member%',
-                    purifyHtml(userEmail, '')
-                );
+                return __('teams / change-owner-confirmation / title', 'core', {
+                    member: userEmail
+                });
             }
         },
         helpers: {

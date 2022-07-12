@@ -136,8 +136,9 @@
         },
         computed: {
             title({ column }) {
-                var s = __('describe / edit-column');
-                return s.replace('%s', `"${column ? column.title() || column.name() : '--'}"`);
+                return __('describe / edit-column', 'core', {
+                    s: `"${column ? column.title() || column.name() : '--'}"`
+                });
             }
         },
         helpers: { __ },
