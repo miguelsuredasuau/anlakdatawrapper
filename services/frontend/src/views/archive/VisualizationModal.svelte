@@ -169,7 +169,7 @@
                             {#await loadSharingURL()}
                                 <span class="has-text-grey">...</span>
                             {:then sharingURL}
-                                <a href="https:{sharingURL}" target="_blank">{sharingURL}</a>
+                                <a href={sharingURL} target="_blank">{sharingURL}</a>
                             {:catch error}
                                 <span class="has-text-grey">{__('archive / modal / na')}</span>
                             {/await}
