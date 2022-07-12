@@ -76,18 +76,12 @@
 </div>
 
 <ModalDisplay maxWidth="50em" closeable={false} bind:open>
-    <div class="box has-background-white p-6">
-        <h3 class="title is-2">Heads up!</h3>
-        <p class="subtitle is-size-3 mb-5">This modal really needs your attention!</p>
-        <div class="level">
-            <div class="level-left">
-                <button on:click={confirmed} class="button is-large is-primary">
-                    Confirmed!
-                </button>
-            </div>
-            <div class="level-right">
-                <button on:click={cancel} class="button is-large">Back to safety</button>
-            </div>
+    <div class="box">
+        <h3 class="title is-3">Heads up!</h3>
+        <p class="is-size-5 mb-5">This modal really needs your attention!</p>
+        <div class="buttons">
+            <button on:click={confirmed} class="button is-primary">Confirmed!</button>
+            <button on:click={cancel} class="button">Back to safety</button>
         </div>
     </div>
 </ModalDisplay>
@@ -95,7 +89,7 @@
 <ModalDisplay maxWidth="50em" closeable={true} bind:open={open2}>
     <p class="modal-card-title" slot="header">Heads up!</p>
 
-    <p class="subtitle is-size-3 mb-5">This modal really needs your attention!</p>
+    <p class="subtitle mb-5">This modal really needs your attention!</p>
 
     <div slot="footer">
         <div class="buttons">

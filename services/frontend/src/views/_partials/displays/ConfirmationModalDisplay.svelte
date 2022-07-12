@@ -29,14 +29,14 @@
 </style>
 
 <ModalDisplay maxWidth="40em" backgroundOpacity={0.8} open={true} closeable={false}>
-    <div class="box p-5">
+    <div class="box pt-5 px-5 pb-4">
         {#if closeable}
             <button aria-label="close" class="delete" on:click={() => dispatch('cancel')} />
         {/if}
         {#if title}
-            <h3 class="title is-4 mb-2">{@html purifyHtml(title)}</h3>
+            <h3 class="title is-4 mb-2" class:pr-4={closeable}>{@html purifyHtml(title)}</h3>
         {/if}
-        <p class="is-size-5">
+        <p class="is-size-5" class:pr-4={closeable && !title}>
             {@html purifyHtml(body)}
         </p>
         <hr class="my-4" />
