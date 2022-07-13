@@ -62,7 +62,7 @@ module.exports = {
                         If this endpoint should be used in an application (CMS), it is recommended to
                         ask the user for confirmation.  Requires scope \`chart:write\`.`,
                 auth: {
-                    access: { scope: ['chart', 'chart:write'] }
+                    access: { scope: ['chart:write'] }
                 },
                 validate: {
                     params: Joi.object({

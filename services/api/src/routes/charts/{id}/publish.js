@@ -21,9 +21,11 @@ module.exports = server => {
         options: {
             tags: ['api'],
             description: 'Publish a chart',
-            notes: 'Requires scopes `chart:read`, `chart:write`, `theme:read` and `visualization:read`.',
+            notes: 'Requires scopes `chart:read` *and* `chart:write` *and* `theme:read` *and* `visualization:read`.',
             auth: {
-                access: { scope: ['chart:read', 'chart:write', 'theme:read', 'visualization:read'] }
+                access: {
+                    scope: ['+chart:read', '+chart:write', '+theme:read', '+visualization:read']
+                }
             },
             validate: {
                 params: Joi.object({
@@ -46,9 +48,11 @@ module.exports = server => {
         method: 'GET',
         path: '/publish/data',
         options: {
+            description: 'Get chart data for publication',
+            notes: 'Requires scopes `chart:write` *and* `theme:read` *and* `visualization:read`.',
             auth: {
                 strategy: 'guest',
-                access: { scope: ['chart:write', 'theme:read', 'visualization:read'] }
+                access: { scope: ['+chart:write', '+theme:read', '+visualization:read'] }
             },
             validate: {
                 params: Joi.object({

@@ -12,9 +12,9 @@ module.exports = async server => {
             options: {
                 tags: ['api'],
                 description: `Get a list of your recently ${type} charts`,
-                notes: 'Requires scopes `user:read` and `chart:read`.',
+                notes: 'Requires scopes `user:read` *and* `chart:read`.',
                 auth: {
-                    access: { scope: ['user:read', 'chart:read'] }
+                    access: { scope: ['+user:read', '+chart:read'] }
                 },
                 response: chartListResponse,
                 validate: {
