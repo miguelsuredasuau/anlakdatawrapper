@@ -52,7 +52,9 @@ module.exports = server => {
             notes: 'Requires scopes `chart:write` *and* `theme:read` *and* `visualization:read`.',
             auth: {
                 strategy: 'guest',
-                access: { scope: ['+chart:write', '+theme:read', '+visualization:read'] }
+                access: {
+                    scope: ['+chart:read', '+chart:write', '+theme:read', '+visualization:read']
+                }
             },
             validate: {
                 params: Joi.object({

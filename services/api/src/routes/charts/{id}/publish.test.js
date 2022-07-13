@@ -192,7 +192,7 @@ test('GET /charts/{id}/publish/data returns the last published data when publish
     t.is(res.result.chart.metadata.foo, 'Published version');
 });
 
-test('GET /charts/{id}/publish/data returns 404 for unpublished chart when published=true', async t => {
+test('GET /charts/{id}/publish/data returns error 404 for unpublished chart when published=true', async t => {
     const { chart } = t.context;
     const res = await t.context.server.inject({
         method: 'GET',
@@ -203,7 +203,29 @@ test('GET /charts/{id}/publish/data returns 404 for unpublished chart when publi
     t.is(res.statusCode, 404);
 });
 
-test('GET /charts/{id}/publish/data returns 401 for unpublished chart when requested as another user', async t => {
+test('GET /charts/{id}/publish/data returns error 403 when the scope is insufficient', async t => {
+    const { publicChart } = t.context;
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:read', 'theme:read', 'visualization:read']
+        });
+        const res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${publicChart.id}/publish/data?published=true`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.statusCode, 403);
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
+test('GET /charts/{id}/publish/data returns error 401 for unpublished chart when requested as another user', async t => {
     const { chart } = t.context;
     let userObj;
     try {
@@ -457,7 +479,7 @@ test('POST /charts/{id}/publish publishes a chart with an invalid JSON dataset',
     }
 });
 
-test('POST /charts/{id}/publish returns an error 400 when trying to publish chart with invalid type', async t => {
+test('POST /charts/{id}/publish returns error 400 when trying to publish chart with invalid type', async t => {
     let chart;
     try {
         chart = await createChart({ type: 'spam' });
@@ -473,7 +495,7 @@ test('POST /charts/{id}/publish returns an error 400 when trying to publish char
     }
 });
 
-test('POST /charts/{id}/publish returns an error 400 when trying to publish chart with nonexistent theme', async t => {
+test('POST /charts/{id}/publish returns error 400 when trying to publish chart with nonexistent theme', async t => {
     let chart;
     try {
         chart = await createChart({ theme: 'spam' });
@@ -489,7 +511,7 @@ test('POST /charts/{id}/publish returns an error 400 when trying to publish char
     }
 });
 
-test('POST /charts/{id}/publish returns an error 502 when the GET_PUBLIC_URL event fails', async t => {
+test('POST /charts/{id}/publish returns error 502 when the GET_PUBLIC_URL event fails', async t => {
     const { server } = t.context;
 
     let chart;
@@ -515,7 +537,7 @@ test('POST /charts/{id}/publish returns an error 502 when the GET_PUBLIC_URL eve
     }
 });
 
-test('POST /charts/{id}/publish returns an error 502 when the PUBLISH_CHART event fails', async t => {
+test('POST /charts/{id}/publish returns error 502 when the PUBLISH_CHART event fails', async t => {
     const { server } = t.context;
 
     let chart;
@@ -538,5 +560,28 @@ test('POST /charts/{id}/publish returns an error 502 when the PUBLISH_CHART even
         t.is(res.statusCode, 502);
     } finally {
         await destroy(chart);
+    }
+});
+
+test('GET /charts/{id}/publish returns error 403 when the scope is insufficient', async t => {
+    let userObj = {};
+    let chart;
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'editor',
+            scopes: ['chart:read', 'theme:read', 'visualization:read']
+        });
+        chart = await createChart({ author_id: userObj.user.id });
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/publish`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${userObj.token}`
+            }
+        });
+        t.is(res.statusCode, 403);
+    } finally {
+        await destroy(chart, Object.values(userObj));
     }
 });
