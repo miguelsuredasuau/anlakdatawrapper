@@ -55,6 +55,9 @@ Ukraine conflict between Russia and Western Countries;2;30;2;52;14`
         await $describeProceed.click(); // Go to the next step.
 
         // Visualize
+        const $visualizeChartTypeTab = await $('a[href="#select-vis"]');
+        await expect($visualizeChartTypeTab).toBeDisplayed();
+        await $visualizeChartTypeTab.click(); // Switch to the Chart type tab.
         const $visualizeChartTypeButton = await $('.title=Stacked Bars').parentElement();
         await expect($visualizeChartTypeButton).toBeDisplayed();
         await $visualizeChartTypeButton.click(); // Change chart type.
@@ -67,7 +70,7 @@ Ukraine conflict between Russia and Western Countries;2;30;2;52;14`
         await $visualizeAnnotateTab.click(); // Switch to the Annotate tab.
 
         // Annotate
-        const $annotateTitle = await $('#text-title');
+        const $annotateTitle = await $('[data-uid="annotate-chart-title"] textarea');
         await expect($annotateTitle).toBeDisplayed();
         await $annotateTitle.setValue(chartTitle); // Change chart title.
         await browser.switchToFrameById('iframe-vis');
@@ -103,8 +106,9 @@ Ukraine conflict between Russia and Western Countries;2;30;2;52;14`
         );
         await expect($archiveBoxDropdownDelete).toBeDisplayed();
         await $archiveBoxDropdownDelete.click(); // Delete the chart.
-        expect(await browser.getAlertText()).toHaveTextContaining('delete');
-        await browser.acceptAlert(); // Accept the delete confirmation.
+        const $modalConfirmButton = await $('.modal-content button.is-danger');
+        await expect($modalConfirmButton).toBeDisplayed();
+        await $modalConfirmButton.click(); // Confirm chart deletion.
         const $archiveBoxNonExistent = await $(`.box=${chartTitle}`);
         await expect($archiveBoxNonExistent).not.toExist(); // Check that the visualization box disappeared.
     });

@@ -1,8 +1,10 @@
 const Joi = require('joi');
 
+const DW_DEV_MODE = !!JSON.parse(process.env.DW_DEV_MODE || 'false');
+
 function createResponseConfig(schema) {
     return {
-        sample: process.env.NODE_ENV === 'development' ? 100 : 0,
+        sample: DW_DEV_MODE ? 100 : 0,
         ...schema
     };
 }
@@ -29,14 +31,18 @@ const chartListItem = Joi.object({
     publicId: Joi.string().description(
         'Public ID of the visualization. May be different from the internal ID, if *hash publishing* is enabled.'
     ),
-    authorId: Joi.number().integer().description('ID of user that created the visualization.'),
-    organizationId: Joi.number()
+    authorId: Joi.number()
         .integer()
+        .allow(null)
+        .description('ID of user that created the visualization.'),
+    organizationId: Joi.string()
+        .allow(null)
         .description(
             'ID of the team that the visualization is located in. If `null`, visualization is private.'
         ),
     folderId: Joi.number()
         .integer()
+        .allow(null)
         .description(
             'ID of the folder that the visualization is located in. If `null`, visualization is in the root of a team, or your private archive.'
         ),
@@ -47,9 +53,11 @@ const chartListItem = Joi.object({
     ),
     createdAt: Joi.date().description('Time and date when the visualization was created.'),
     lastModifiedAt: Joi.date().description('Time and date when the visualization was last edited.'),
-    publishedAt: Joi.date().description(
-        'Time and date when the visualization was last published. `null`, if the visualization has not been published yet.'
-    ),
+    publishedAt: Joi.date()
+        .allow(null)
+        .description(
+            'Time and date when the visualization was last published. `null`, if the visualization has not been published yet.'
+        ),
     lastEditStep: Joi.number()
         .integer()
         .min(0)
@@ -62,7 +70,9 @@ const chartListItem = Joi.object({
         .min(0)
         .description('Indicates how many times a visualization has been published.'),
     author: Joi.object({
-        name: Joi.string().description('Name of the user who created the visualization'),
+        name: Joi.string()
+            .allow(null)
+            .description('Name of the user who created the visualization'),
         email: Joi.string().description('Email address of the user who created the visualization')
     }),
     thumbnails: Joi.object({
@@ -75,7 +85,10 @@ const chartListItem = Joi.object({
     }),
     url: Joi.string().description(
         'API URL for the visualization, can be used to retreive additional information, including its metadata.'
-    )
+    ),
+    metadata: Joi.object().description("All of the visualization's settings."),
+    guestSession: Joi.string().allow(null).description('Guest session id'),
+    customFields: Joi.object().allow(null).optional().description('Custom fields')
 });
 
 const createUserPayload = [
@@ -115,22 +128,30 @@ const createUserPayload = [
 
 const chartResponse = createResponseConfig({
     schema: chartListItem.keys({
-        publicUrl: Joi.string().description('URL of published visualization.'),
+        publicUrl: Joi.string().allow(null).description('URL of published visualization.'),
         deleted: Joi.boolean(),
-        deletedAt: Joi.date().description('Time and date when the visualization was deleted.'),
+        deletedAt: Joi.date()
+            .allow(null)
+            .description('Time and date when the visualization was deleted.'),
         forkable: Joi.boolean().description(
             'Indicates if the visualization has been shared in the Datawrapper River.'
         ),
         isFork: Joi.boolean().description(
             'Indicates if the visualization is a copy of another visualization.'
         ),
-        forkedFrom: Joi.string().description(
-            'ID of the visualization that this visualization was copied from. `null` if it is not a copy.'
-        ),
-        externalData: Joi.string().description(
-            'External data URL, relevant for live visualizations.'
-        ),
-        metadata: Joi.object().description("All of the visualization's settings.")
+        forkedFrom: Joi.string()
+            .allow(null)
+            .description(
+                'ID of the visualization that this visualization was copied from. `null` if it is not a copy.'
+            ),
+        externalData: Joi.string()
+            .allow(null)
+            .empty('')
+            .description('External data URL, relevant for live visualizations.'),
+        metadata: Joi.object().description("All of the visualization's settings."),
+        customFields: Joi.object().allow(null).optional().description('Custom fields'),
+        keywords: Joi.string().optional().description('Keywords'),
+        utf8: Joi.boolean().optional().description('UTF-8')
     })
 });
 

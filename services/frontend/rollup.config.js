@@ -14,7 +14,7 @@ const { terser } = require('rollup-plugin-terser');
 const configPath = findConfigPath();
 const config = require(configPath);
 
-const production = process.env.NODE_ENV === 'production';
+const production = !process.env.ROLLUP_WATCH;
 
 function onwarn(warning, handler) {
     if (

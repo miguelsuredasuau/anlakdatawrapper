@@ -1,7 +1,6 @@
 const Hapi = require('@hapi/hapi');
 const Vision = require('@hapi/vision');
 const Inert = require('@hapi/inert');
-const Pino = require('hapi-pino');
 const ORM = require('@datawrapper/orm');
 const fs = require('fs-extra');
 const Pug = require('pug');
@@ -27,6 +26,8 @@ const {
     getTranslate,
     getUserLanguage
 } = require('@datawrapper/service-utils/l10n');
+
+const DW_DEV_MODE = !!JSON.parse(process.env.DW_DEV_MODE || 'false');
 
 const start = async () => {
     validateAPI(config.api);
@@ -68,11 +69,11 @@ const start = async () => {
         router: { stripTrailingSlash: true }
     });
 
-    if (process.env.DW_DEV_MODE) {
+    if (DW_DEV_MODE) {
         await server.register({
             plugin: require('hapi-dev-errors'),
             options: {
-                showErrors: process.env.NODE_ENV !== 'production'
+                showErrors: true
             }
         });
     }
@@ -83,16 +84,12 @@ const start = async () => {
     await server.register(Inert);
 
     await server.register({
-        plugin: Pino,
+        plugin: require('hapi-pino'),
         options: {
             prettyPrint: true,
             timestamp: () => `,"time":"${new Date().toISOString()}"`,
             logEvents: ['request', 'log', 'onPostStart', 'onPostStop', 'request-error'],
-            level: process.env.DW_DEV_MODE
-                ? 'debug'
-                : process.env.NODE_ENV === 'test'
-                ? 'error'
-                : 'info',
+            level: getLogLevel(),
             base: { name: process.env.COMMIT || require('../package.json').version },
             redact: ['req.headers.authorization', 'req.headers.cookie', 'res.headers["set-cookie"]']
         }
@@ -117,8 +114,9 @@ const start = async () => {
     }
 
     server.method('config', key => (key ? config[key] : config));
+    server.method('isDevMode', () => DW_DEV_MODE);
+
     server.method('logAction', require('@datawrapper/orm/utils/action').logAction);
-    server.method('isDevMode', () => process.env.DW_DEV_MODE);
     server.method('registerVisualization', registerVisualizations(server));
     server.method('registerFeatureFlag', registerFeatureFlag(server));
     server.method('getRedis', () => redis);
@@ -152,7 +150,7 @@ const start = async () => {
         },
         path: 'views',
         context: server.app.SvelteView.context,
-        isCached: !process.env.DW_DEV_MODE
+        isCached: !DW_DEV_MODE
     });
 
     server.method('getUserLanguage', getUserLanguage);
@@ -221,5 +219,15 @@ const start = async () => {
         process.exit(0);
     });
 };
+
+function getLogLevel() {
+    if (DW_DEV_MODE) {
+        return 'debug';
+    }
+    if (process.env.NODE_ENV === 'test') {
+        return 'error';
+    }
+    return 'info';
+}
 
 start();

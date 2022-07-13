@@ -28,7 +28,7 @@ const pkg = require('../package.json');
 const configPath = findConfigPath();
 const config = require(configPath);
 
-const DW_DEV_MODE = JSON.parse(process.env.DW_DEV_MODE || 'false');
+const DW_DEV_MODE = !!JSON.parse(process.env.DW_DEV_MODE || 'false');
 
 const CSRF_COOKIE_NAME = 'crumb';
 const CSRF_COOKIE_OPTIONS = {
@@ -146,13 +146,10 @@ function getLogLevel() {
     if (DW_DEV_MODE) {
         return 'debug';
     }
-
-    switch (process.env.NODE_ENV) {
-        case 'test':
-            return 'error';
-        default:
-            return 'info';
+    if (process.env.NODE_ENV === 'test') {
+        return 'error';
     }
+    return 'info';
 }
 
 function usesCookieAuth(request) {
@@ -164,7 +161,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     const revShort = rev && rev.slice(0, 8);
     await server.register([
         {
-            plugin: require('hapi-pino'), // logger plugin
+            plugin: require('hapi-pino'),
             options: {
                 prettyPrint: true,
                 timestamp: () => `,"time":"${new Date().toISOString()}"`,
@@ -195,6 +192,7 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     ]);
 
     server.method('config', key => (key ? get(config, key) : config));
+    server.method('isDevMode', () => DW_DEV_MODE);
 
     if (config.api.sentry) {
         await server.register({

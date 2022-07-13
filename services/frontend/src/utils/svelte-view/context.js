@@ -25,7 +25,7 @@ module.exports = async function (request) {
                 apiDomain: `${apiConfig.subdomain}.${apiConfig.domain}`,
                 frontendDomain: `${frontendConfig.domain}`,
                 imageDomain: `${generalConfig.imageDomain}`,
-                dev: process.env.DW_DEV_MODE,
+                dev: server.methods.isDevMode(),
                 footerLinks: frontendConfig.footerLinks || [],
                 languages: frontendConfig.languages || [],
                 headerLinks: await server.methods.getHeaderLinks(request),

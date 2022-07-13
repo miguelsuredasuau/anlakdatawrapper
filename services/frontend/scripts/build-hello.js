@@ -24,6 +24,9 @@ const { getInfo } = require('@el3um4s/svelte-get-component-info');
                     frontend: {}
                 };
             },
+            isDevMode() {
+                return false;
+            },
             getCustomHTML() {
                 return '';
             }

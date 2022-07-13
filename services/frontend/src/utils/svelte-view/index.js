@@ -31,9 +31,9 @@ function registerViewComponent({ id, page, view }) {
     viewComponents.set(id, { id, page, view });
 }
 
-function getTemplate(file) {
+function getTemplate(file, { useCache = true }) {
     return templateCache.withCache(file, () => readFile(join(baseViewDir, file), 'utf-8'), {
-        useCache: !process.env.DW_DEV_MODE
+        useCache
     });
 }
 
@@ -94,6 +94,7 @@ class SvelteView {
         const page = relative(baseViewDir, compileOpts.filename);
 
         return async context => {
+            const DW_DEV_MODE = this.server.methods.isDevMode();
             const config = this.server.methods.config();
 
             let view;
@@ -101,12 +102,12 @@ class SvelteView {
                 view = await getView(page);
             } catch (e) {
                 this.server.log(['sentry'], e);
-                const template = await getTemplate('error.ejs');
+                const template = await getTemplate('error.ejs', { useCache: !DW_DEV_MODE });
                 const output = ejs.render(template, {
                     FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico',
                     TITLE: 'Template error',
                     HEADING: 'Template error',
-                    BODY: process.env.DW_DEV_MODE ? `<p>${e.message}</p>` : ''
+                    BODY: DW_DEV_MODE ? `<p>${e.message}</p>` : ''
                 });
                 return output;
             }
@@ -128,7 +129,7 @@ class SvelteView {
                     context.props.stores[key] = {};
                 });
 
-                const template = await getTemplate('base.ejs');
+                const template = await getTemplate('base.ejs', { useCache: !DW_DEV_MODE });
                 const output = ejs.render(template, {
                     HTML_CLASS: context.htmlClass || '',
                     SSR_HEAD: head,
@@ -145,7 +146,7 @@ class SvelteView {
                         json: true,
                         wrap: true
                     }),
-                    DW_DEV_MODE: process.env.DW_DEV_MODE,
+                    DW_DEV_MODE,
                     STORE_HASHES: jsesc(JSON.stringify(context.storeHashes), {
                         isScriptContext: true,
                         json: true,
@@ -209,7 +210,7 @@ module.exports = {
             server.app.SvelteView.cacheAllViews();
         });
 
-        if (process.env.DW_DEV_MODE) {
+        if (server.methods.isDevMode()) {
             const wsClients = new Set();
 
             watchViews(wsClients);

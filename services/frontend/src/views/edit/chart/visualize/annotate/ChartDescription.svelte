@@ -60,6 +60,7 @@
                 disabled={disabledFields.has('title')}
                 bind:value={$chart.title}
                 expandable
+                uid="annotate-chart-title"
                 {textDirection}
             />
         </FormFieldDisplay>

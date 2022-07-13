@@ -209,11 +209,7 @@ module.exports = function createAuth(
         };
     }
 
-    function getStateOpts(
-        server,
-        ttl,
-        sameSite = process.env.NODE_ENV === 'development' ? 'None' : 'Lax'
-    ) {
+    function getStateOpts(server, ttl, sameSite = 'Lax') {
         return {
             isSecure: server.methods.config('frontend').https,
             strictHeader: false,
