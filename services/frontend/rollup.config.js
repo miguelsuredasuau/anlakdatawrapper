@@ -124,7 +124,7 @@ function createInput(view, viewComponents, ssr) {
         ],
         input: join('src/utils/svelte-view/View.svelte'),
         output: {
-            sourcemap: !production,
+            sourcemap: true,
             format: ssr || view.endsWith('.element.svelte') ? 'iife' : 'amd',
             name: 'App',
             amd: {
