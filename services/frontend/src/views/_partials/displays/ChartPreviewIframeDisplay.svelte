@@ -170,8 +170,9 @@
     const IGNORE = ['text-annotations', 'range-annotations'];
 
     export function rerender() {
-        getContext((win, doc) => {
+        getContext(async (win, doc) => {
             // Re-render chart with new attributes:
+            await waitForVis();
             const { metadata: oldMetadata } = win.__dw.vis.chart().get();
             const newMetadata = clone($chart.metadata);
             const visualizeDiff = objectDiff(oldMetadata.visualize, newMetadata.visualize);
