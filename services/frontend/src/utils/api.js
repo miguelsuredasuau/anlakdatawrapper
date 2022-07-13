@@ -62,7 +62,7 @@ function createAPI(request, apiBase, sessionID) {
                     // Don't send errors caused by an API outage to Sentry, because we are notified
                     // about such errors by StatusCake.
                     request.server.methods.sentryIgnoreCurrentError(request);
-                } else {
+                } else if (request.sentryScope) {
                     // Send more details about the failed API request to Sentry.
                     request.sentryScope.setExtras({
                         url: e.response.requestUrl,
