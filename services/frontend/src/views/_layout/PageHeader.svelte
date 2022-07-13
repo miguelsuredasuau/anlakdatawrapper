@@ -87,12 +87,7 @@
 
 <header class:is-sticky={isHeaderSticky} id="top" bind:clientHeight={headerHeight}>
     <div class="container">
-        <nav
-            class="navbar"
-            class:navbar-compact={scrolledDown}
-            role="navigation"
-            aria-label="main navigation"
-        >
+        <nav class="navbar" class:navbar-compact={scrolledDown} aria-label="main navigation">
             <div class="navbar-brand">
                 <a class="navbar-item" href="/" style="line-height: 1">
                     <DatawrapperLogoDisplay />

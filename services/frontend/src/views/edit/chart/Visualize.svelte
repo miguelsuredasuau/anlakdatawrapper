@@ -21,6 +21,7 @@
     import { onMount, getContext, onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     import { headerProps } from '_layout/stores';
+    import get from '@datawrapper/shared/get';
     // load stores from context
     const { chart, theme, visualization, isDark, customViews, dataset, editorMode } =
         getContext('page/edit');
@@ -49,7 +50,11 @@
     ];
 
     // id of the initially active tab
-    let active = 'refine';
+    let active =
+        !get($chart, 'metadata.visualize.chart-type-set', false) &&
+        !workflow.options.hideChartTypeSelector
+            ? 'select-vis'
+            : 'refine';
     let prevActive;
     $: activeTab = tabs.find(d => d.id === active) || tabs[0];
 
