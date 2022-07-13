@@ -9,6 +9,7 @@ import get from '@datawrapper/shared/get';
 import { filterNestedObjectKeys } from '../../utils';
 import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
 import { distinct } from '../../utils/svelte-store';
+import coreMigrate from '@datawrapper/chart-core/lib/migrate';
 
 /**
  * chart object store
@@ -227,6 +228,11 @@ export function initChartStore(
             }
         }
     });
+
+    // apply core migrations after subscribing so changes get stored
+    const clonedRawChart = cloneDeep(rawChart);
+    coreMigrate(clonedRawChart.metadata);
+    chart.set(clonedRawChart);
 }
 
 export function initDataStore(chartId, rawData, readonly = false) {

@@ -16,6 +16,7 @@
     import Watermark from './blocks/Watermark.svelte';
     import HorizontalRule from './blocks/HorizontalRule.svelte';
     import svgRule from './blocks/svgRule.svelte';
+    import migrate from './migrate';
 
     import { domReady, width } from './dw/utils/index.mjs';
     import observeFonts from '@datawrapper/shared/observeFonts.js';
@@ -82,6 +83,9 @@
     };
 
     const datasetName = `dataset.${get(chart.metadata, 'data.json') ? 'json' : 'csv'}`;
+
+    // apply core metadata migrations
+    migrate(chart.metadata);
 
     $: if (!get(chart, 'metadata.publish.blocks')) {
         // no footer settings found in metadata, apply theme defaults
