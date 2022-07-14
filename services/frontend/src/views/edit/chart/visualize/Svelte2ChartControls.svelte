@@ -9,6 +9,7 @@
     import { loadScript } from '@datawrapper/shared/fetch';
     import get from 'lodash/get';
     import set from 'lodash/set';
+    import assign from 'assign-deep';
     // load stores from context
     const { chart, theme, visualization, locale, dataset } = getContext('page/edit');
 
@@ -83,10 +84,10 @@
         }
         // apply defaults from visualization
         if ($visualization.defaultMetadata) {
-            $chart.metadata.visualize = {
-                ...$visualization.defaultMetadata,
-                ...$chart.metadata.visualize
-            };
+            $chart.metadata.visualize = assign(
+                clone($visualization.defaultMetadata),
+                $chart.metadata.visualize
+            );
         }
     }
 
