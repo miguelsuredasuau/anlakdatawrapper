@@ -5,6 +5,7 @@ const get = require('lodash/get');
 const injectSafe = require('../../../utils/inject.js');
 const set = require('lodash/set');
 const uniq = require('lodash/uniq');
+const pick = require('lodash/pick');
 const { Action, Chart, ChartAccessToken, ChartPublic, User } = require('@datawrapper/orm/models');
 const { Op } = require('@datawrapper/orm').db;
 const { createResponseConfig } = require('../../../utils/schemas');
@@ -123,7 +124,13 @@ async function publishChart(request) {
     // refresh external data
     await server.app.events.emit(server.app.event.CUSTOM_EXTERNAL_DATA, { chart });
 
-    const { chartData, outDir, fileMap, cleanup } = await createChartWebsite(chart, options);
+    const {
+        chartData,
+        outDir,
+        fileMap,
+        cleanup,
+        data: publishData
+    } = await createChartWebsite(chart, options);
 
     /**
      * The hard work is done!
@@ -254,7 +261,8 @@ async function publishChart(request) {
     await server.app.events.emit(server.app.event.CHART_PUBLISHED, {
         chart,
         user,
-        log: logPublishStatus
+        log: logPublishStatus,
+        ...pick(publishData, ['themeDataDark', 'themeDataLight'])
     });
 
     logPublishStatus('done');
