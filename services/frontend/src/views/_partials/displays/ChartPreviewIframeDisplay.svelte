@@ -202,6 +202,7 @@
         if (typeof message['datawrapper-height'] !== 'undefined' && fixedHeight) {
             if ($chart && message['datawrapper-height'][$chart.id]) {
                 reportedIframeSize = message['datawrapper-height'][$chart.id];
+                dispatch('fixed-height-changed', reportedIframeSize);
             }
         }
     }

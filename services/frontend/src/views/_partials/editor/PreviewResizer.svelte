@@ -11,7 +11,7 @@
     import { onMount, getContext } from 'svelte';
     import { UNIT_IN, UNIT_MM, UNIT_PX, unitToPx, pxToUnit } from '@datawrapper/shared/units';
 
-    const { chart, team, theme, visualization, editorMode } = getContext('page/edit');
+    const { chart, team, theme, editorMode, isFixedHeight } = getContext('page/edit');
 
     $: webToPrintMode = get($chart, 'metadata.custom.webToPrint.mode', 'web');
 
@@ -40,27 +40,13 @@
     let previousPrintScale;
 
     $: printScale = get($theme, 'data.export.pdf.scale', 1);
-    $: isFixedHeight =
-        $visualization.height === 'fixed' &&
-        (!$visualization.supportsFitHeight || $editorMode === 'web');
-
-    let previousIsFixedHeight;
-
-    $: {
-        if (isFixedHeight !== previousIsFixedHeight) {
-            // update preview size after switching chart types
-            if (previousIsFixedHeight !== undefined) {
-                updatePreview();
-            }
-            previousIsFixedHeight = isFixedHeight;
-        }
-    }
-
     $: printPresets = get($theme, 'data.export.pdf.presets', []);
     $: printPresetsOptions = printPresets.map(preset => ({
         value: preset,
         label: preset.title
     }));
+
+    $: if ($isFixedHeight) updatePreview();
 
     chart.subscribeKey('metadata.publish.embed-width', updatePreview);
     chart.subscribeKey('metadata.publish.embed-height', updatePreview);
@@ -98,6 +84,10 @@
             minWidth: i ? breakpointWidths[i - 1] + 1 : 0,
             maxWidth: i < breakpointWidths.length - 1 ? breakpointWidths[i] : Infinity
         }));
+
+    $: if (iframePreview) {
+        iframePreview.$on('fixed-height-changed', e => saveNewFixedHeight(e.detail));
+    }
 
     editorMode.subscribe($editorMode => {
         if ($editorMode === 'print') {
@@ -139,8 +129,17 @@
         await waitFor(() => iframePreview);
         iframePreview.set({
             width: widthPx,
-            height: isFixedHeight ? null : heightPx
+            height: $isFixedHeight ? null : heightPx
         });
+    }
+
+    function saveNewFixedHeight(height) {
+        if ($editorMode === 'web') {
+            $chart.metadata.publish['embed-height'] = height;
+        }
+        if ($editorMode === 'print') {
+            $chart.metadata.publish['export-pdf'].height = printSizeFromPxSize(unit, height);
+        }
     }
 
     function setInitialPrintProps() {
@@ -239,7 +238,7 @@
                 />
             </div>
             <div class="control">
-                {#if isFixedHeight}
+                {#if $isFixedHeight}
                     <input
                         class="input is-small"
                         type="text"
@@ -270,7 +269,7 @@
                 />
             </div>
             <div class="control">
-                {#if isFixedHeight}
+                {#if $isFixedHeight}
                     <input
                         class="input is-small"
                         type="text"

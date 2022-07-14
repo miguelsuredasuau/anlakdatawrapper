@@ -28,13 +28,12 @@ const __ = mockTranslations({
 });
 
 const pxToInch = px => px / 96;
-// const pxToMM = px => pxToInch(px) * 25.4;
+const pxToMM = px => (px / 96) * 25.4;
 const inchToPx = inch => Math.round(inch * 96);
 const mmToPx = mm => Math.round((mm * 96) / 25.4);
 
-async function renderPreviewResizer({ chart, team, theme, visualization }) {
+async function renderPreviewResizer({ chart, team, theme, visualization = lineChart }) {
     chart = storeWithSetKey(chart);
-    const iframePreview = { set: spy() };
 
     const editorMode = derived(
         [chart, theme],
@@ -46,6 +45,30 @@ async function renderPreviewResizer({ chart, team, theme, visualization }) {
         },
         'web'
     );
+
+    const isFixedHeight = derived(
+        [visualization, editorMode],
+        ([$visualization, $editorMode]) => {
+            const { height, supportsFitHeight } = $visualization;
+            return $editorMode === 'web'
+                ? height === 'fixed'
+                : height === 'fixed' && !supportsFitHeight;
+        },
+        false
+    );
+
+    const iframe = document.createElement('div');
+
+    const triggerFixedHeightChange = height => {
+        if (!getStoreValue(isFixedHeight)) return;
+        const event = new CustomEvent('fixed-height-changed', { detail: height });
+        iframe.dispatchEvent(event);
+    };
+
+    const iframePreview = {
+        set: spy(),
+        $on: (event, cb) => iframe.addEventListener(event, cb)
+    };
 
     const result = await renderWithContext(
         PreviewResizer,
@@ -60,12 +83,13 @@ async function renderPreviewResizer({ chart, team, theme, visualization }) {
                 chart,
                 team,
                 theme,
-                visualization: visualization || lineChart,
-                editorMode
+                visualization,
+                editorMode,
+                isFixedHeight
             }
         }
     );
-    return { ...result, updateChart: chart.setKey, iframePreview };
+    return { ...result, updateChart: chart.setKey, iframePreview, triggerFixedHeightChange };
 }
 
 const baseChart = {
@@ -198,6 +222,22 @@ describe('PreviewResizer', () => {
                 expect(result.queryByText('Size (px)')).to.exist;
                 expect(result.queryByText('Size (mm)')).not.to.exist;
                 const inputs = toolbar.querySelectorAll('input');
+                expect(inputs).to.have.length(2);
+                expect(inputs[0]).to.have.attribute('type', 'number');
+                expect(inputs[0]).to.have.value('550');
+                expect(inputs[1]).to.have.attribute('type', 'text');
+                expect(inputs[1]).to.have.attribute('disabled');
+                expect(inputs[1]).to.have.value('auto');
+            });
+
+            it('embed-height updated when iframe resize event fired', () => {
+                const toolbar = result.getByTestId('resizer');
+                const inputs = toolbar.querySelectorAll('input');
+
+                result.triggerFixedHeightChange(500);
+                const { publish } = getStoreValue(result.stores['page/edit'].chart).metadata;
+                expect(publish).to.have.property('embed-height', 500);
+
                 expect(inputs).to.have.length(2);
                 expect(inputs[0]).to.have.attribute('type', 'number');
                 expect(inputs[0]).to.have.value('550');
@@ -709,6 +749,25 @@ describe('PreviewResizer', () => {
                 expect(result.queryByText('Size (mm)')).to.exist;
                 const inputs = toolbar.querySelectorAll('input');
                 expect(inputs).to.have.length(2);
+                expect(inputs[0]).to.have.attribute('type', 'number');
+                expect(inputs[0]).to.have.value('80');
+                expect(inputs[1]).to.have.attribute('type', 'text');
+                expect(inputs[1]).to.have.attribute('disabled');
+                expect(inputs[1]).to.have.value('auto');
+            });
+
+            it('export-pdf.height updated when iframe resize event fired', () => {
+                const toolbar = result.getByTestId('resizer');
+                expect(toolbar).to.exist;
+                const inputs = toolbar.querySelectorAll('input');
+
+                result.triggerFixedHeightChange(500);
+                const { publish } = getStoreValue(result.stores['page/edit'].chart).metadata;
+                expect(publish['export-pdf']).to.have.property(
+                    'height',
+                    Number(pxToMM(500).toFixed())
+                );
+
                 expect(inputs[0]).to.have.attribute('type', 'number');
                 expect(inputs[0]).to.have.value('80');
                 expect(inputs[1]).to.have.attribute('type', 'text');

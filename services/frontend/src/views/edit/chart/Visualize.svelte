@@ -23,7 +23,7 @@
     import { headerProps } from '_layout/stores';
     import get from '@datawrapper/shared/get';
     // load stores from context
-    const { chart, theme, visualization, isDark, customViews, dataset, editorMode } =
+    const { chart, theme, visualization, isDark, customViews, dataset, editorMode, isFixedHeight } =
         getContext('page/edit');
 
     export let __;
@@ -279,8 +279,7 @@
                     <ChartPreviewIframeDisplay
                         bind:this={iframePreview}
                         {chart}
-                        fixedHeight={$visualization.height === 'fixed' &&
-                            ($editorMode === 'web' || !$visualization.supportsFitHeight)}
+                        fixedHeight={$isFixedHeight}
                         enforceFitHeight={$editorMode === 'print' &&
                             $visualization.supportsFitHeight}
                         isDark={$isDark}

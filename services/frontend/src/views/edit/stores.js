@@ -87,6 +87,17 @@ export const editorMode = derived(
     'web'
 );
 
+export const isFixedHeight = derived(
+    [visualizationReadonly, editorMode],
+    ([$visualizationReadonly, $editorMode]) => {
+        const { height, supportsFitHeight } = $visualizationReadonly;
+        return $editorMode === 'web'
+            ? height === 'fixed'
+            : height === 'fixed' && !supportsFitHeight;
+    },
+    false
+);
+
 const locales = new writable([]);
 const chartLocale = derived(chart, $chart => $chart.language || 'en-US', 'en-US');
 const localeReadOnly = derived(

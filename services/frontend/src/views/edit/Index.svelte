@@ -21,7 +21,8 @@
         team,
         visualization,
         dataset,
-        editorMode
+        editorMode,
+        isFixedHeight
     } from './stores';
     import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
     import escapeHtml from '@datawrapper/shared/escapeHtml.cjs';
@@ -68,7 +69,8 @@
         onNextSave,
         customViews,
         dataset,
-        editorMode
+        editorMode,
+        isFixedHeight
     });
 
     /*
