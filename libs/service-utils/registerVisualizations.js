@@ -21,7 +21,7 @@ module.exports = function registerVisualization(server) {
             vis.workflow = vis.workflow || 'chart';
 
             // compute hash for visualization styles and controls
-            const [styleHash, controlsHash] = await Promise.all([
+            const [styleHash, controlsHash, visHash] = await Promise.all([
                 server.methods.computeFileGlobHash(
                     path.join(__dirname, `../../plugins/${plugin}/less/**/*.less`)
                 ),
@@ -29,10 +29,12 @@ module.exports = function registerVisualization(server) {
                     ? server.methods.computeFileHash(
                           path.join(__dirname, `../../plugins/${vis.controls.js}`)
                       )
-                    : undefined
+                    : undefined,
+                vis.script ? server.methods.computeFileHash(vis.script) : undefined
             ]);
             vis.__styleHash = styleHash;
             vis.__controlsHash = controlsHash;
+            vis.__visHash = visHash;
 
             const pluginRoot = server.methods.config('general').localPluginRoot;
             if (!pluginRoot) {

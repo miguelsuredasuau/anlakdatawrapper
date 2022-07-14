@@ -56,9 +56,11 @@
 
         await applyDefaultsAndMigration();
 
-        // load script that registers visualzation
+        // load script that registers visualization
         window.dw.visualization = dwVisualization;
-        await loadScript(`/lib/plugins/${visualization.__plugin}/static/${type}.js`);
+        await loadScript(
+            `/lib/plugins/${visualization.__plugin}/static/${type}.js?sha=${visualization.__visHash}`
+        );
         // create visualization instance
         const newVis = dwVisualization(type);
         newVis.meta = visualization;

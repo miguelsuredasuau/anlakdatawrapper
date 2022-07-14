@@ -23,6 +23,7 @@ const INCLUDE_PROPERTIES = new Set([
     'title',
     'workflow',
     '__controlsHash',
+    '__visHash',
     '__plugin',
     '__styleHash',
     '__title'
