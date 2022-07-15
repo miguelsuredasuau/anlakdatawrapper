@@ -1,5 +1,6 @@
 <script>
-    import { setContext, getContext, onMount } from 'svelte';
+    import { setContext, getContext, onMount, createEventDispatcher } from 'svelte';
+    import { get_current_component as getCurrentComponent } from 'svelte/internal';
     import { writable } from 'svelte/store';
     import debounce from 'lodash/debounce';
     import isEqual from 'lodash/isEqual';
@@ -86,22 +87,18 @@
     }
 
     const config = getContext('config');
-    const events = {
-        async initEvents() {
-            await waitFor(() => events.target);
-            return events;
-        }
-    };
-    setContext('events', events);
+
+    const dispatch = createEventDispatcher();
+    const component = getCurrentComponent();
+    setContext('events', {
+        on: (type, callback) => component.$on(type, callback),
+        dispatch
+    });
 
     onMount(async () => {
         await loadScript(
             `/lib/csr/_partials/svelte2/Svelte2Wrapper.element.svelte.js?sha=${$config.GITHEAD}`
         );
-        events.dispatch = (type, detail) => {
-            events.target.dispatchEvent(new CustomEvent(type, { detail }));
-        };
-        events.target = new EventTarget();
         if (window.location.hash) {
             $request.hash = window.location.hash;
         }

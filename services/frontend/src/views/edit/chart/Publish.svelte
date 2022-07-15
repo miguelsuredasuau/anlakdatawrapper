@@ -10,7 +10,7 @@
     const user = getContext('user');
     const userData = getContext('userData');
     const config = getContext('config');
-    const { initEvents } = getContext('events');
+    const events = getContext('events');
 
     export let dwChart;
     export let language;
@@ -67,8 +67,7 @@
     });
 
     async function onPublish(event) {
-        const { dispatch } = await initEvents();
-        dispatch('chart-publish', event.detail);
+        events.dispatch('chart-publish', event.detail);
     }
 </script>
 

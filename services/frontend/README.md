@@ -608,11 +608,10 @@ Sometimes a view component provided by a plugin needs to react to client-side ev
 <-- in src/views/edit/Index.svelte -->
 <script>
 import { getContext } from 'svelte';
-const { initEvents } = getContext('events');
+const contextEvents = getContext('events');
 
-async function onPublish(event) {
-    const { dispatch } = await initEvents();
-    dispatch('custom-event', event.detail);
+function onPublish(event) {
+    contextEvents.dispatch('custom-event', event.detail);
 }
 </script>
 
@@ -624,11 +623,10 @@ The view component can then listen to these events, no matter where it's being l
 ```jsx
 // in plugins/foo/src/frontend/views/Custom.svelte
 import { onMount, getContext } from 'svelte';
-const { initEvents } = getContext('events');
+const contextEvents = getContext('events');
 
-onMount(async () => {
-    const { target } = await initEvents();
-    targets.addEventListener('custom-event', event => {
+onMount(() => {
+    contextEvents.on('custom-event', event => {
         console.log('custom event happened', event.detail);
     });
 });
