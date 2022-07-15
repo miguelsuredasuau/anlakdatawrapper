@@ -116,12 +116,14 @@
     function setMetadata(key, value) {
         const curVal = get($chart.metadata, key);
         if (!isEqual(curVal, value)) {
-            set(storeData.metadata, key, value);
-            storeData = storeData;
+            set($chart.metadata, key, value);
+            // this will trigger an updateStoreData() call (see chart.subscribe callback above)
+            $chart = $chart;
         }
     }
 
     function getMetadata(key, fallback) {
+        if (!key) return storeData.metadata;
         return get(storeData.metadata, key, fallback);
     }
 
