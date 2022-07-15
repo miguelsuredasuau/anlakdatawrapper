@@ -49,7 +49,8 @@ function getView(page) {
             const ssr = readFileSync(build + '.ssr.js', 'utf-8');
             const csr = readFileSync(build + '.csr.js', 'utf-8');
             const csrMap = readFileSync(build + '.csr.js.map', 'utf-8');
-            return { ssr, csr, csrMap };
+            const ssrFunc = new Function(ssr + ';return App');
+            return { ssr, csr, csrMap, ssrFunc };
         } catch (e) {
             if (e.code === 'ENOENT') {
                 let message = `Compiled view files for \`${page}\` were not found`;
@@ -111,7 +112,7 @@ class SvelteView {
                 });
                 return output;
             }
-            const { ssr } = view;
+            const { ssr, ssrFunc } = view;
 
             for (const key in context.stores) {
                 // resolve store values in case they are async
@@ -120,8 +121,6 @@ class SvelteView {
             context.props.stores = context.stores;
 
             try {
-                const ssrFunc = new Function(ssr + ';return App');
-
                 const { css, html, head } = ssrFunc().render(context.props);
 
                 // remove stores that we already have in client-side cache
