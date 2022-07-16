@@ -93,6 +93,13 @@
     let resizeWidth;
     let resizeHeight;
 
+    /**
+     * readonly export of the current width of the iframe
+     */
+    export let previewWidth;
+    $: previewWidth = (2 + border * 2 + (resizeWidth || width)) * scale;
+    $: previewHeight = (2 + border * 2 + (resizeHeight || height)) * scale;
+
     let iframe;
     export let loading = false;
 
@@ -493,7 +500,7 @@
 
 <div
     class="iframe-wrapper"
-    style="transform: scale({scale || 1})"
+    style="transform: scale({scale || 1}); height: {previewHeight}px"
     class:dark-background={backgroundIsDark}
 >
     <div

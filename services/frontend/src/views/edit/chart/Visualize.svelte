@@ -64,6 +64,9 @@
 
     $: isSticky = innerHeight > 600 && innerWidth > 1200;
 
+    // controlled by ChartPreviewIframe
+    let previewWidth;
+
     function onPreviewResize(event) {
         dwChart.set('metadata.publish.embed-width', event.detail.width);
         const reset = { width: null };
@@ -133,6 +136,16 @@
      * when this component gets destroyed
      */
     const storeSubscriptions = new Set();
+
+    let sidebarWidth;
+    let mainWidth;
+
+    $: sidebarMarginLeft =
+        -0.5 *
+        Math.min(
+            innerWidth - mainWidth - 20,
+            Math.max(0, previewWidth - (mainWidth - sidebarWidth))
+        );
 
     onMount(() => {
         RELOAD.forEach(key => storeSubscriptions.add(chart.subscribeKey(key, reloadPreview)));
@@ -216,57 +229,52 @@
     }
 
     .limit-width {
-        max-width: calc(100vw - (2 * $gap));
         overflow-x: auto;
         overflow-y: clip;
         height: auto;
     }
-    @include tablet {
-        .limit-width {
-            max-width: calc(66.6vw - (2 * $gap));
-        }
-    }
-    @include widescreen {
-        .limit-width {
-            max-width: calc(($widescreen - (2 * $gap)) * 0.66);
-        }
+
+    .sidebar {
+        position: relative;
     }
 </style>
 
 <svelte:window bind:innerHeight bind:innerWidth bind:scrollY />
 
 <div class="container">
-    <div class="columns">
+    <div class="columns" bind:clientWidth={mainWidth}>
         <div class="column is-one-third">
-            <div class="vis-controls block">
-                <Tabs items={tabs} bind:active />
-            </div>
-            {#each tabs as tab}
-                {#if tab === activeTab || tabLoaded[tab.id]}
-                    <div class="block" class:is-hidden={tab !== activeTab}>
-                        <svelte:component
-                            this={tab.ui}
-                            {__}
-                            {themes}
-                            {dwChart}
-                            {workflow}
-                            {visualizations}
-                            {teamSettings}
-                            {disabledFields}
-                            {layoutControlsGroups}
-                        />
-                    </div>
-                {/if}
-            {/each}
+            <div class="sidebar" style="left:{sidebarMarginLeft}px" bind:clientWidth={sidebarWidth}>
+                <div class="vis-controls block">
+                    <Tabs items={tabs} bind:active />
+                </div>
+                {#each tabs as tab}
+                    {#if tab === activeTab || tabLoaded[tab.id]}
+                        <div class="block" class:is-hidden={tab !== activeTab}>
+                            <svelte:component
+                                this={tab.ui}
+                                {__}
+                                {themes}
+                                {dwChart}
+                                {workflow}
+                                {visualizations}
+                                {teamSettings}
+                                {disabledFields}
+                                {layoutControlsGroups}
+                            />
+                        </div>
+                    {/if}
+                {/each}
 
-            <div class="buttons">
-                <button class="button" on:click={() => changeTabBy(-1)}
-                    ><IconDisplay icon="arrow-left" /><span>{__('Back')}</span></button
-                >
-                <button class="button is-primary" on:click={() => changeTabBy(+1)}>
-                    <span>{__('Proceed')}</span>
-                    <IconDisplay icon="arrow-right" />
-                </button>
+                <div class="buttons">
+                    <button class="button" on:click={() => changeTabBy(-1)}
+                        ><IconDisplay icon="arrow-left" /><span>{__('Back')}</span></button
+                    >
+                    <button class="button is-primary" on:click={() => changeTabBy(+1)}>
+                        <span>{__('Proceed')}</span>
+                        <IconDisplay icon="arrow-right" />
+                    </button>
+                </div>
             </div>
         </div>
         <div class="column">
@@ -275,66 +283,72 @@
                 class:sticky={isSticky}
                 class:sticky-header={$headerProps.isSticky}
             >
-                <div class="block limit-width">
-                    <ChartPreviewIframeDisplay
-                        bind:this={iframePreview}
-                        {chart}
-                        fixedHeight={$isFixedHeight}
-                        enforceFitHeight={$editorMode === 'print' &&
-                            $visualization.supportsFitHeight}
-                        isDark={$isDark}
-                        on:resize={onPreviewResize}
-                        resizable={$editorMode === 'web'}
-                        on:message={onPreviewMessage}
-                        allowInlineEditing
-                        {disabledFields}
-                        theme={$theme}
-                        dataset={$dataset}
-                        on:render={measureBodyHeight}
-                    />
-                </div>
-
-                {#each messages as message}
+                <div style="position:relative;left:{sidebarMarginLeft}px">
                     <div
-                        class="block is-flex is-justify-content-center"
-                        transition:fade={{ duration: 300 }}
+                        class="block limit-width"
+                        style="max-width:{innerWidth - sidebarWidth - 75}px"
                     >
-                        <MessageDisplay
-                            deletable={message.deletable}
-                            title={message.title}
-                            type={message.type || 'info'}
-                            visible
-                        >
-                            {#if message.pending}
-                                <IconDisplay
-                                    icon="loading-spinner"
-                                    size="20px"
-                                    className="mr-1"
-                                    valign="middle"
-                                    timing="steps(12)"
-                                    duration="1s"
-                                    spin
-                                />
-                            {/if}
-                            {__(message.translateKey)}
-                        </MessageDisplay>
+                        <ChartPreviewIframeDisplay
+                            bind:this={iframePreview}
+                            {chart}
+                            fixedHeight={$isFixedHeight}
+                            enforceFitHeight={$editorMode === 'print' &&
+                                $visualization.supportsFitHeight}
+                            isDark={$isDark}
+                            on:resize={onPreviewResize}
+                            resizable={$editorMode === 'web'}
+                            on:message={onPreviewMessage}
+                            allowInlineEditing
+                            {disabledFields}
+                            theme={$theme}
+                            dataset={$dataset}
+                            bind:previewWidth
+                            on:render={measureBodyHeight}
+                        />
                     </div>
-                {/each}
 
-                <div class="block mt-5 pt-2">
-                    <Toolbar>
-                        {#if customViews && customViews.visualizeToolbarPrepend && customViews.visualizeToolbarPrepend.length > 0}
-                            {#each customViews.visualizeToolbarPrepend as comp}
-                                <ViewComponent id={comp.id} {__} props={{ ...comp.props }} />
-                            {/each}
-                        {/if}
+                    {#each messages as message}
+                        <div
+                            class="block is-flex is-justify-content-center"
+                            transition:fade={{ duration: 300 }}
+                        >
+                            <MessageDisplay
+                                deletable={message.deletable}
+                                title={message.title}
+                                type={message.type || 'info'}
+                                visible
+                            >
+                                {#if message.pending}
+                                    <IconDisplay
+                                        icon="loading-spinner"
+                                        size="20px"
+                                        className="mr-1"
+                                        valign="middle"
+                                        timing="steps(12)"
+                                        duration="1s"
+                                        spin
+                                    />
+                                {/if}
+                                {__(message.translateKey)}
+                            </MessageDisplay>
+                        </div>
+                    {/each}
 
-                        <ToolbarArea title={__('edit / preview')}>
-                            <PreviewResizer {__} {iframePreview} />
-                            <ColorblindCheck iframe={iframePreview} {__} />
-                            <DarkModeToggle {__} on:change-tab={evt => (active = evt.detail)} />
-                        </ToolbarArea>
-                    </Toolbar>
+                    <div class="block mt-5 pt-2">
+                        <Toolbar>
+                            {#if customViews && customViews.visualizeToolbarPrepend && customViews.visualizeToolbarPrepend.length > 0}
+                                {#each customViews.visualizeToolbarPrepend as comp}
+                                    <ViewComponent id={comp.id} {__} props={{ ...comp.props }} />
+                                {/each}
+                            {/if}
+
+                            <ToolbarArea title={__('edit / preview')}>
+                                <PreviewResizer {__} {iframePreview} />
+                                <ColorblindCheck iframe={iframePreview} {__} />
+                                <DarkModeToggle {__} on:change-tab={evt => (active = evt.detail)} />
+                            </ToolbarArea>
+                        </Toolbar>
+                    </div>
                 </div>
             </div>
         </div>
