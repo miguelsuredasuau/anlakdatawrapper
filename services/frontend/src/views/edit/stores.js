@@ -11,118 +11,6 @@ import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
 import { distinct } from '../../utils/svelte-store';
 import coreMigrate from '@datawrapper/chart-core/lib/migrate';
 
-/**
- * chart object store
- */
-export const chart = new writable({});
-const chartKeyWatchers = new Set();
-
-/**
- * Subscribe to changes of a certain key within the chart store
- *
- * @param {string} key
- * @param {function} handler
- * @returns {function} - to unsubscribe
- */
-chart.subscribeKey = (key, handler) => {
-    const watcher = { key, handler: debounce(handler, 100) };
-    chartKeyWatchers.add(watcher);
-    return () => chartKeyWatchers.remove(watcher);
-};
-
-/**
- * raw dataset store
- */
-export const data = new writable('');
-
-/**
- * visualization store (readonly to views)
- */
-const chartType = derived(chart, $chart => $chart.type, ''); // no need to use distinct as type is primitive
-const visualizations = new writable([]);
-const visualizationReadonly = derived(
-    [chartType, visualizations],
-    ([$chartType, $visualizations]) => {
-        return $visualizations.find(vis => vis.id === $chartType) || visualizations[0] || {};
-    },
-    visualizations[0]
-);
-export { visualizationReadonly as visualization };
-
-/**
- * theme store (readonly to views)
- */
-const theme = new writable({});
-const themeReadonly = derived(theme, $theme => $theme, {});
-export { themeReadonly as theme };
-
-/**
- * dataset store (readonly to views)
- */
-const dataOptions = distinct(derived(chart, $chart => get($chart, 'metadata.data'), {}));
-export const dataset = derived(
-    [data, dataOptions],
-    ([$data, $dataOptions]) => {
-        return delimited({
-            csv: $data,
-            transpose: $dataOptions.transpose,
-            firstRowIsHeader: $dataOptions['horizontal-header']
-        }).parse();
-    },
-    {}
-);
-
-/**
- * the editor mode determines which resizer controls are
- * displayed below the chart preview and if it's resizable
- */
-export const editorMode = derived(
-    [chart, theme],
-    ([$chart, $theme]) => {
-        return get($chart, 'metadata.custom.webToPrint.mode', 'web') === 'print' ||
-            get($theme, 'data.type', 'web') === 'print'
-            ? 'print'
-            : 'web';
-    },
-    'web'
-);
-
-export const isFixedHeight = derived(
-    [visualizationReadonly, editorMode],
-    ([$visualizationReadonly, $editorMode]) => {
-        const { height, supportsFitHeight } = $visualizationReadonly;
-        return $editorMode === 'web'
-            ? height === 'fixed'
-            : height === 'fixed' && !supportsFitHeight;
-    },
-    false
-);
-
-const locales = new writable([]);
-const chartLocale = derived(chart, $chart => $chart.language || 'en-US', 'en-US');
-const localeReadOnly = derived(
-    [chartLocale, locales],
-    ([$chartLocale, $locales]) => {
-        return $locales.find(l => l.id === $chartLocale) || $locales.find(l => l.id === 'en-US');
-    },
-    'en-US'
-);
-export { localeReadOnly as locale, locales };
-
-export const onNextSave = new Set();
-
-export const hasUnsavedChanges = new writable(false);
-
-export const saveError = new writable(false);
-export const saveSuccess = new writable(false);
-
-/**
- * store for dark mode state
- */
-export const isDark = new writable(false);
-
-let unsavedChanges = {};
-
 const ALLOWED_CHART_KEYS = [
     'title',
     'theme',
@@ -133,21 +21,133 @@ const ALLOWED_CHART_KEYS = [
     'lastEditStep'
 ];
 
-export function initChartStore(
+export function initStores({
     rawChart,
+    rawData,
+    rawTeam,
     rawTheme,
     rawLocales,
     rawVisualizations,
-    disabledFields = []
-) {
-    chart.set(rawChart);
-    theme.set(rawTheme);
-    visualizations.set(rawVisualizations);
-    locales.set(rawLocales);
-    let prevState;
+    disabledFields = [],
+    dataReadonly
+}) {
+    /**
+     * chart object store
+     */
+    const chart = new writable(rawChart);
+    const chartKeyWatchers = new Set();
+
+    /**
+     * data store --> can be used to update the underlying data of a chart
+     */
+    const data = new writable(rawData);
+
+    /**
+     * store for team
+     */
+    const team = new writable(rawTeam || { settings: {} });
+    const teamReadonly = derived(team, $team => $team, {});
+
+    const onNextSave = new Set();
+    const hasUnsavedChanges = new writable(false);
+    const saveError = new writable(false);
+    const saveSuccess = new writable(false);
+
+    /**
+     * store for dark mode state
+     */
+    const isDark = new writable(false);
+
+    let unsavedChartChanges = {};
+
+    /**
+     * Subscribe to changes of a certain key within the chart store
+     *
+     * @param {string} key
+     * @param {function} handler
+     * @returns {function} - to unsubscribe
+     */
+    chart.subscribeKey = (key, handler) => {
+        const watcher = { key, handler: debounce(handler, 100) };
+        chartKeyWatchers.add(watcher);
+        return () => chartKeyWatchers.remove(watcher);
+    };
+
+    /**
+     * visualization store (readonly to views)
+     */
+    const chartType = derived(chart, $chart => $chart.type, ''); // no need to use distinct as type is primitive
+    const visualizations = new writable(rawVisualizations);
+    const visualization = derived(
+        [chartType, visualizations],
+        ([$chartType, $visualizations]) => {
+            return $visualizations.find(vis => vis.id === $chartType) || visualizations[0] || {};
+        },
+        visualizations[0]
+    );
+
+    /**
+     * theme store (readonly to views)
+     */
+    const theme = new writable(rawTheme);
+    const themeReadonly = derived(theme, $theme => $theme, rawTheme);
+
+    /**
+     * dataset store (readonly to views)
+     */
+    const dataOptions = distinct(derived(chart, $chart => get($chart, 'metadata.data'), {}));
+    const dataset = derived(
+        [data, dataOptions],
+        ([$data, $dataOptions]) => {
+            return delimited({
+                csv: $data,
+                transpose: $dataOptions.transpose,
+                firstRowIsHeader: $dataOptions['horizontal-header']
+            }).parse();
+        },
+        {}
+    );
+
+    /**
+     * the editor mode determines which resizer controls are
+     * displayed below the chart preview and if it's resizable
+     */
+    const editorMode = derived(
+        [chart, theme],
+        ([$chart, $theme]) => {
+            return get($chart, 'metadata.custom.webToPrint.mode', 'web') === 'print' ||
+                get($theme, 'data.type', 'web') === 'print'
+                ? 'print'
+                : 'web';
+        },
+        'web'
+    );
+
+    const isFixedHeight = derived(
+        [visualization, editorMode],
+        ([$visualization, $editorMode]) => {
+            const { height, supportsFitHeight } = $visualization;
+            return $editorMode === 'web'
+                ? height === 'fixed'
+                : height === 'fixed' && !supportsFitHeight;
+        },
+        false
+    );
+
+    const locales = new writable(rawLocales);
+    const chartLocale = derived(chart, $chart => $chart.language || 'en-US', 'en-US');
+    const localeReadOnly = derived(
+        [chartLocale, locales],
+        ([$chartLocale, $locales]) => {
+            return (
+                $locales.find(l => l.id === $chartLocale) || $locales.find(l => l.id === 'en-US')
+            );
+        },
+        'en-US'
+    );
 
     const patchChartSoon = debounce(async function (id) {
-        const changesToSave = cloneDeep(unsavedChanges);
+        const changesToSave = cloneDeep(unsavedChartChanges);
         let savingFailed = false;
 
         /*
@@ -156,7 +156,7 @@ export function initChartStore(
          * end up deleting any new changes that come in while
          * the request is running on request completion
          */
-        unsavedChanges = {};
+        unsavedChartChanges = {};
 
         if (Object.keys(changesToSave).length > 0) {
             try {
@@ -164,14 +164,14 @@ export function initChartStore(
                     payload: changesToSave
                 });
                 saveError.set(false);
-                if (!Object.keys(unsavedChanges).length) {
+                if (!Object.keys(unsavedChartChanges).length) {
                     hasUnsavedChanges.set(false);
                 }
                 for (const method of onNextSave) {
                     method();
                     onNextSave.delete(method);
                 }
-                if (!Object.keys(unsavedChanges).length) {
+                if (!Object.keys(unsavedChartChanges).length) {
                     hasUnsavedChanges.set(false);
                 }
                 saveSuccess.set(true);
@@ -180,7 +180,7 @@ export function initChartStore(
                 }, 1000);
             } catch (err) {
                 // restore unsaved changes that failed to save
-                unsavedChanges = assign(changesToSave, unsavedChanges);
+                unsavedChartChanges = assign(changesToSave, unsavedChartChanges);
                 savingFailed = true;
                 console.error(err);
                 saveError.set(err);
@@ -201,23 +201,24 @@ export function initChartStore(
         }
     }, 1000);
 
+    let prevChartState;
     chart.subscribe(async value => {
-        if (!prevState && value.id) {
+        if (!prevChartState && value.id) {
             // initial set
-            prevState = cloneDeep(value);
-        } else if (prevState && !isEqual(prevState, value)) {
+            prevChartState = cloneDeep(value);
+        } else if (prevChartState && !isEqual(prevChartState, value)) {
             // find out what has been changed
             // but ignore changes to disabled fields
             const patch = filterNestedObjectKeys(
-                objectDiff(prevState, value, ALLOWED_CHART_KEYS),
+                objectDiff(prevChartState, value, ALLOWED_CHART_KEYS),
                 disabledFields
             );
 
             const newUnsaved = Object.keys(patch).length > 0;
             // and store the patch
-            assign(unsavedChanges, patch);
+            assign(unsavedChartChanges, patch);
 
-            prevState = cloneDeep(value);
+            prevChartState = cloneDeep(value);
             if (newUnsaved) {
                 hasUnsavedChanges.set(true);
                 patchChartSoon(value.id);
@@ -230,10 +231,10 @@ export function initChartStore(
                 }
             }
 
-            if (unsavedChanges.theme) {
+            if (unsavedChartChanges.theme) {
                 // chart theme has changed, update theme store
                 const newTheme = await httpReq.get(
-                    `/v3/themes/${unsavedChanges.theme}?extend=true`
+                    `/v3/themes/${unsavedChartChanges.theme}?extend=true`
                 );
                 theme.set(newTheme);
             }
@@ -244,26 +245,21 @@ export function initChartStore(
     const clonedRawChart = cloneDeep(rawChart);
     coreMigrate(clonedRawChart.metadata);
     chart.set(clonedRawChart);
-}
 
-export function initDataStore(chartId, rawData, readonly = false) {
-    let prevState;
-    let unsavedState;
-
-    data.set(rawData);
-
+    let prevDataState;
+    let unsavedDataState;
     const storeDataSoon = debounce(async function () {
         try {
-            await httpReq.put(`/v3/charts/${chartId}/data`, {
-                body: unsavedState,
+            await httpReq.put(`/v3/charts/${rawChart.id}/data`, {
+                body: unsavedDataState,
                 headers: {
                     // @todo: handle json data as well
                     'Content-Type': 'text/csv'
                 }
             });
             saveError.set(false);
-            prevState = unsavedState;
-            if (!Object.keys(unsavedChanges).length) {
+            prevDataState = unsavedDataState;
+            if (!Object.keys(unsavedChartChanges).length) {
                 hasUnsavedChanges.set(false);
             }
             for (const method of onNextSave) {
@@ -277,25 +273,32 @@ export function initDataStore(chartId, rawData, readonly = false) {
     }, 1000);
 
     data.subscribe(value => {
-        if (readonly) return;
-        if (prevState === undefined && value !== undefined) {
+        if (dataReadonly) return;
+        if (prevDataState === undefined && value !== undefined) {
             // initial set
-            prevState = cloneDeep(value);
-        } else if (prevState !== undefined && !isEqual(prevState, value) && value !== '') {
-            unsavedState = value;
+            prevDataState = cloneDeep(value);
+        } else if (prevDataState !== undefined && !isEqual(prevDataState, value) && value !== '') {
+            unsavedDataState = value;
             hasUnsavedChanges.set(true);
             storeDataSoon();
         }
     });
-}
 
-/**
- * store for team
- */
-const team = new writable({ settings: {} });
-const teamReadonly = derived(team, $team => $team, {});
-export { teamReadonly as team };
-// export setter function
-export function initTeamStore(rawTeam) {
-    team.set(rawTeam);
+    return {
+        chart,
+        data,
+        visualization,
+        team: teamReadonly,
+        theme: themeReadonly,
+        dataset,
+        editorMode,
+        isFixedHeight,
+        locales,
+        locale: localeReadOnly,
+        onNextSave,
+        hasUnsavedChanges,
+        saveError,
+        saveSuccess,
+        isDark
+    };
 }

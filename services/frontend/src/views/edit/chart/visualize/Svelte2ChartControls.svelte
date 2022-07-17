@@ -55,23 +55,27 @@
         const type = visualization.id;
         controlsReady = false;
 
-        await applyDefaultsAndMigration();
+        try {
+            await applyDefaultsAndMigration();
 
-        // load script that registers visualization
-        window.dw.visualization = dwVisualization;
-        await loadScript(
-            `/lib/plugins/${visualization.__plugin}/static/${type}.js?sha=${visualization.__visHash}`
-        );
-        // create visualization instance
-        const newVis = dwVisualization(type);
-        newVis.meta = visualization;
-        newVis.chart(dwChart);
-        newVis.theme = () => $theme.data;
-        vis = newVis;
+            // load script that registers visualzation
+            window.dw.visualization = dwVisualization;
+            await loadScript(
+                `/lib/plugins/${visualization.__plugin}/static/${type}.js?sha=${visualization.__visHash}`
+            );
+            // create visualization instance
+            const newVis = dwVisualization(type);
+            newVis.meta = visualization;
+            newVis.chart(dwChart);
+            newVis.theme = () => $theme.data;
+            vis = newVis;
 
-        updateStoreData();
-        await tick();
-        controlsReady = true;
+            updateStoreData();
+            await tick();
+            controlsReady = true;
+        } catch (e) {
+            console.error(`Couldn't initialize chart controls`, e);
+        }
     }
 
     async function applyDefaultsAndMigration() {

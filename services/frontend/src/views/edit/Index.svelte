@@ -6,24 +6,7 @@
     import ViewComponent from '_partials/ViewComponent.svelte';
     import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import Header from './nav/Header.svelte';
-    import {
-        chart,
-        data,
-        hasUnsavedChanges,
-        initChartStore,
-        initDataStore,
-        initTeamStore,
-        locale,
-        locales,
-        isDark,
-        onNextSave,
-        theme,
-        team,
-        visualization,
-        dataset,
-        editorMode,
-        isFixedHeight
-    } from './stores';
+    import { initStores } from './stores';
     import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
     import escapeHtml from '@datawrapper/shared/escapeHtml.cjs';
     import httpReq from '@datawrapper/shared/httpReq';
@@ -52,28 +35,6 @@
     const userData = getContext('userData');
 
     /*
-     * we're using a "page context" here to be able to make
-     * our store instances available to all sub components of this
-     * view without having to pass them around as state props.
-     */
-    setContext('page/edit', {
-        chart,
-        data,
-        hasUnsavedChanges,
-        isDark,
-        team,
-        theme,
-        locale,
-        locales,
-        visualization,
-        onNextSave,
-        customViews,
-        dataset,
-        editorMode,
-        isFixedHeight
-    });
-
-    /*
      * if set to true, the editor nav is shown even if the app is opened
      * inside an iframe as part of a CMS integration. This setting comes
      * from the current users active team.
@@ -99,7 +60,29 @@
      */
     export let dataReadonly = false;
 
-    $chart = rawChart;
+    /*
+     * we're using a "page context" here to be able to make
+     * our store instances available to all sub components of this
+     * view without having to pass them around as state props.
+     */
+    const { chart, theme, dataset, onNextSave, hasUnsavedChanges, ...stores } = initStores({
+        rawChart,
+        rawData,
+        rawTeam,
+        rawTheme,
+        rawLocales,
+        rawVisualizations: visualizations,
+        disabledFields,
+        dataReadonly
+    });
+    setContext('page/edit', {
+        chart,
+        theme,
+        dataset,
+        onNextSave,
+        hasUnsavedChanges,
+        ...stores
+    });
 
     const dwChart = ChartCoreChart(rawChart);
     dwChart.save = dwChart.saveSoon = () => {
@@ -129,16 +112,11 @@
     };
 
     // update dwChart when our chart store changes
-    chart.subscribe(() => {
-        // we can update dwChart here, but since the old UI
-        // is not reactive to dwChart changes, this won't
-        // have any effect
-        dwChart.attributes($chart);
-    });
-
-    dataset.subscribe(dataset => {
-        dwChart.dataset(dataset);
-    });
+    // we can update dwChart here, but since the old UI
+    // is not reactive to dwChart changes, this won't
+    // have any effect
+    $: dwChart.attributes($chart);
+    $: dwChart.dataset($dataset);
 
     const steps = workflow.steps.map(step => ({
         ...step,
@@ -166,9 +144,6 @@
         __
     };
 
-    $: chartTitle = $chart.title || rawChart.title;
-    $: chartId = $chart.id || rawChart.id;
-
     $: lastActiveStep = $chart.lastEditStep || 1;
 
     $: author = $chart.author
@@ -176,8 +151,6 @@
         : null;
 
     onMount(async () => {
-        initChartStore(rawChart, rawTheme, rawLocales, visualizations, disabledFields);
-        initDataStore(rawChart.id, rawData, dataReadonly);
         // mimic old dw setup
         window.dw = {
             ...dw,
@@ -191,9 +164,6 @@
                         : initHooks()
             }
         };
-        if (rawTeam) {
-            initTeamStore(rawTeam);
-        }
 
         if (!initUrlStep && rawChart.lastEditStep) {
             activeStep = steps[Math.max(1, Math.min(steps.length - 1, rawChart.lastEditStep - 1))];
@@ -289,7 +259,7 @@
     on:unload={onBeforeUnload}
 />
 
-<MainLayout title="{chartTitle} - [{chartId}] - {activeStep.title}">
+<MainLayout title="{$chart.title} - [{$chart.id}] - {activeStep.title}">
     <section class="section pt-5">
         {#if !$openedInsideIframe || showEditorNavInCmsMode}
             <!-- step nav -->

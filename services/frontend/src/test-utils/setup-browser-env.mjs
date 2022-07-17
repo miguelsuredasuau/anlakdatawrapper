@@ -15,6 +15,7 @@ Object.getOwnPropertyNames(window)
     .forEach(prop =>
         Object.defineProperty(global, prop, {
             configurable: true,
+            set: () => {},
             get: () => window[prop]
         })
     );

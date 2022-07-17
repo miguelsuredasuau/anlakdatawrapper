@@ -4,8 +4,8 @@
     import BreadcrumbsDisplay from '_partials/displays/BreadcrumbsDisplay.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import Step from './Step.svelte';
-    import { hasUnsavedChanges, saveSuccess, saveError } from '../stores';
 
+    const { hasUnsavedChanges, saveSuccess, saveError } = getContext('page/edit');
     const config = getContext('config');
     $: stickyHeaderThreshold = $config.stickyHeaderThreshold;
     const dispatch = createEventDispatcher();
