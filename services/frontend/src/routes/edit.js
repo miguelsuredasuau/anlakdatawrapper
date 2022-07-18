@@ -363,8 +363,16 @@ module.exports = {
                         })
                         .map(step => ({ ...step }));
 
+                    if (params.step === 'edit') {
+                        // auto-redirect to correct step from lastEditStep
+                        return h.redirect(
+                            `/${workflow.prefix}/${params.chartId}/${
+                                workflowSteps[Math.min(2, chart.last_edit_step)].id
+                            }`
+                        );
+                    }
                     if (!workflowSteps.find(step => step.id === params.step)) {
-                        params.step = workflow.steps[0];
+                        params.step = workflowSteps[0].id;
                     }
 
                     const api = server.methods.createAPI(request);
