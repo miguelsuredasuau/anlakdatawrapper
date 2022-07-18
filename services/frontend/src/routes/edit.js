@@ -363,11 +363,14 @@ module.exports = {
                         })
                         .map(step => ({ ...step }));
 
+                    // for now we still let users access chart steps for maps, but these are hidden
+                    const visibleWorkflowSteps = workflowSteps.filter(step => !step.hide);
+
                     if (params.step === 'edit') {
                         // auto-redirect to correct step from lastEditStep
                         return h.redirect(
                             `/${workflow.prefix}/${params.chartId}/${
-                                workflowSteps[Math.min(2, chart.last_edit_step)].id
+                                visibleWorkflowSteps[Math.min(2, chart.last_edit_step)].id
                             }`
                         );
                     }
