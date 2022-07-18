@@ -129,8 +129,16 @@
         background-color: #18a1cd;
     }
 
-    input:checked:disabled + .slider {
+    input:checked:disabled + .slider:before {
+        background-color: #ededed;
+    }
+
+    input:checked:disabled:not(.disabled-force-checked) + .slider {
         background-color: #ccc;
+    }
+
+    input:disabled.disabled-force-checked + .slider {
+        background-color: #999;
     }
 
     input:focus + .slider {

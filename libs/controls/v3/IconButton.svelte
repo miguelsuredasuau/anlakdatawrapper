@@ -9,13 +9,13 @@
     export let assetURL;
     export let uid;
 
-    $: getRenderedIconColor = () => {
+    function getRenderedIconColor(iconLeft, iconColor, active) {
         if (iconLeft && iconColor) return iconColor;
         else if (iconLeft) return active ? '#333' : '#858585';
         return active ? '#333' : '#1d81a2';
-    };
+    }
 
-    $: renderedIconColor = getRenderedIconColor();
+    $: renderedIconColor = getRenderedIconColor(iconLeft, iconColor, active);
 </script>
 
 <style>

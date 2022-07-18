@@ -9,7 +9,7 @@
 
     export let __;
 
-    $: themeAutoDark = get(theme.data, 'options.darkMode.auto', 'user');
+    $: themeAutoDark = get($theme.data, 'options.darkMode.auto', 'user');
     $: disabledMessage =
         themeAutoDark !== 'user'
             ? __(`layout / auto-dark / disabled / always-${themeAutoDark ? 'on' : 'off'}`)
