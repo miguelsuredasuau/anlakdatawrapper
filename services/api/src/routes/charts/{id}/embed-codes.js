@@ -35,6 +35,7 @@ module.exports = async server => {
                         preferred: Joi.boolean(),
                         title: Joi.string(),
                         template: Joi.string(),
+                        text: Joi.string(),
                         code: Joi.string()
                     })
                 )

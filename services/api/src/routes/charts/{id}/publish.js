@@ -86,7 +86,7 @@ module.exports = server => {
             },
             response: createResponseConfig({
                 schema: Joi.object({
-                    progress: Joi.array().items(Joi.string())
+                    progress: Joi.array().items(Joi.string()).empty()
                 }).unknown()
             })
         },
