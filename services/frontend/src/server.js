@@ -159,13 +159,10 @@ const start = async () => {
     server.method('getDB', () => ORM.db);
     server.method('getModel', name => ORM.db.models[name]);
 
-    if (config.frontend.sentry) {
-        await server.register({
-            plugin: require('./utils/sentry'),
-            options: { commit: server.app.GITHEAD }
-        });
-    }
-
+    await server.register({
+        plugin: require('./utils/sentry'),
+        options: { commit: server.app.GITHEAD }
+    });
     await server.register(require('./utils/dw-auth'));
     await server.register(require('./utils/features'));
 

@@ -194,12 +194,10 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     server.method('config', key => (key ? get(config, key) : config));
     server.method('isDevMode', () => DW_DEV_MODE);
 
-    if (config.api.sentry) {
-        await server.register({
-            plugin: require('./utils/sentry'),
-            options: { release: rev }
-        });
-    }
+    await server.register({
+        plugin: require('./utils/sentry'),
+        options: { release: rev }
+    });
 
     if (config.api.matomo) {
         await server.register(require('./utils/matomo'));

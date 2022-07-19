@@ -10,6 +10,11 @@ module.exports = {
     version: '1.0.0',
     register: async (server, { commit }) => {
         const config = server.methods.config('frontend');
+        const sentryConfig = config.sentry && config.sentry.serverSide;
+        if (!sentryConfig) {
+            return;
+        }
+        server.logger.info(`Registering Sentry plugin: dsn=${sentryConfig.client.dsn}`);
 
         await server.register({
             plugin: require('hapi-sentry'),
@@ -17,7 +22,7 @@ module.exports = {
                 client: {
                     release: commit,
                     serverName: 'frontend',
-                    ...config.sentry.client,
+                    ...sentryConfig.client,
                     beforeSend(event) {
                         // Ignore the event if the server method `sentryIgnoreCurrentError` has been
                         // called.
@@ -39,7 +44,7 @@ module.exports = {
                         return event;
                     }
                 },
-                scope: config.sentry.scope,
+                scope: sentryConfig.scope,
                 catchLogErrors: ['sentry']
             }
         });

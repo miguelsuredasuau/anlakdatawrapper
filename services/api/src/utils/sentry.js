@@ -7,6 +7,11 @@ module.exports = {
     version: '1.0.0',
     register: async (server, { release }) => {
         const config = server.methods.config('api');
+        const sentryConfig = config.sentry;
+        if (!sentryConfig) {
+            return;
+        }
+        server.logger.info(`Registering Sentry plugin: dsn=${sentryConfig.client.dsn}`);
 
         await server.register({
             plugin: require('hapi-sentry'),
@@ -14,7 +19,7 @@ module.exports = {
                 client: {
                     release,
                     serverName: 'api',
-                    ...config.sentry.client,
+                    ...sentryConfig.client,
                     beforeSend(event) {
                         // make sure to scrub sensitive information before
                         // sending it to Sentry
@@ -32,7 +37,7 @@ module.exports = {
                         return event;
                     }
                 },
-                scope: config.sentry.scope,
+                scope: sentryConfig.scope,
                 catchLogErrors: ['sentry']
             }
         });
