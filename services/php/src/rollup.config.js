@@ -12,7 +12,6 @@ const production = !process.env.ROLLUP_WATCH;
 
 const targets = [];
 
-build('visualize');
 build('chart-breadcrumb');
 
 export default targets;

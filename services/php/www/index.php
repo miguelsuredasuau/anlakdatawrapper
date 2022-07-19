@@ -24,12 +24,7 @@ check_paths();
 $twig = $app->view()->getEnvironment();
 dwInitTwigEnvironment($twig);
 
-require_once ROOT_PATH . 'controller/plugin-templates.php';
 require_once ROOT_PATH . 'controller/edit.php';
-require_once ROOT_PATH . 'controller/chart/edit.php';
-require_once ROOT_PATH . 'controller/chart/visualize.php';
-require_once ROOT_PATH . 'controller/chart/data.php';
-
 
 $app->notFound(function() {
     error_not_found();
