@@ -49,7 +49,7 @@
     }
 
     async function loadControls(visualization) {
-        if (!visualization || !visualization.id) {
+        if (!visualization || !visualization.id || typeof window === 'undefined') {
             return;
         }
         const type = visualization.id;
