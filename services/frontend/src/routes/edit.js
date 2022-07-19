@@ -310,6 +310,9 @@ module.exports = {
                     const chart = await getChart(params.chartId, request);
 
                     const vis = server.app.visualizations.get(chart.type);
+                    if (!vis) {
+                        throw Boom.badRequest('Unknown chart type');
+                    }
                     const workflow = editWorkflows.find(w => w.id === (vis.workflow || 'chart'));
                     const __ = server.methods.getTranslate(request);
 
