@@ -2,6 +2,7 @@ const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const S3 = require('aws-sdk/clients/s3');
 const stream = require('stream');
+const uniq = require('lodash/uniq');
 const { themeId, validateThemeData, validateThemeLess } = require('../../utils/themes');
 const { Theme, TeamTheme } = require('@datawrapper/orm/models');
 const { listResponse } = require('../../utils/schemas');
@@ -70,7 +71,6 @@ module.exports = {
                     access: { scope: ['theme:read'] }
                 },
                 notes: `Get a list of themes accessible by the authenticated user
-                (either directly or through the current active team.)
                         The returned theme objects do not include the full theme configuration.
                         Requires scope \`chart:read\`.`,
                 validate: {
@@ -90,25 +90,23 @@ module.exports = {
                 response: listResponse
             },
             async handler(request) {
-                const wantedThemeIds = [];
-                let withDefaultThemes = true;
+                const wantedThemeIds = [...request.server.methods.config('general.defaultThemes')];
 
                 const { auth } = request;
-                const activeTeam = await auth.artifacts.getActiveTeam();
-                if (activeTeam) {
+
+                const userTeams = (await auth.artifacts.getAcceptedTeams()).map(t => t.id);
+
+                if (userTeams.length) {
                     const { rows } = await TeamTheme.findAndCountAll({
                         attributes: ['theme_id'],
                         where: {
-                            organization_id: activeTeam.id
+                            organization_id: userTeams
                         }
                     });
-                    wantedThemeIds.push(...rows.map(el => el['theme_id']));
-                    withDefaultThemes = !activeTeam.settings.restrictDefaultThemes;
+                    wantedThemeIds.push(...rows.map(el => el.theme_id));
                 }
-                if (withDefaultThemes) {
-                    wantedThemeIds.push(...request.server.methods.config('general.defaultThemes'));
-                }
-                const uniqueIds = wantedThemeIds.filter(onlyUnique);
+
+                const uniqueIds = uniq(wantedThemeIds);
                 const themes = await Theme.findAll({
                     where: {
                         id: uniqueIds
@@ -179,10 +177,6 @@ module.exports = {
                 title: theme.title,
                 createdAt: theme.createdAt
             };
-        }
-
-        function onlyUnique(value, index, self) {
-            return self.indexOf(value) === index;
         }
     }
 };

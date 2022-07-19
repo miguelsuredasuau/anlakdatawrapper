@@ -140,11 +140,19 @@ module.exports = {
                             teamSettings: { flags },
                             productFeatures
                         });
+
                         const api = server.methods.createAPI(request);
                         const user = request.auth.artifacts;
-                        const themes = user.isAdmin()
+                        const isAdmin = user.isAdmin();
+                        let themes = isAdmin
                             ? await Theme.findAll({ attributes: ['id', 'title', 'created_at'] })
                             : (await api('/themes')).list;
+
+                        if (!isAdmin && team?.settings?.restrictDefaultThemes) {
+                            const defaultThemes =
+                                server.methods.config('general').defaultThemes || [];
+                            themes = themes.filter(({ id }) => !defaultThemes.includes(id));
+                        }
 
                         return {
                             themes,

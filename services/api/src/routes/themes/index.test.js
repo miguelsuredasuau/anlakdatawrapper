@@ -26,12 +26,20 @@ test.before(async t => {
 test('GET /themes returns all themes of a user', async t => {
     let themes;
     let teamObj = {};
+    let team2;
     try {
         const defaultThemeIds = t.context.config.general.defaultThemes;
         teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
-        themes = await createThemes([{ title: 'Theme 1' }, { title: 'Theme 2' }]);
+        team2 = await createTeam();
+        await addUserToTeam(teamObj.user, team2);
+        themes = await createThemes([
+            { title: 'Theme 1' },
+            { title: 'Theme 2' },
+            { title: 'Theme 3' }
+        ]);
         await addThemeToTeam(themes[0], teamObj.team);
         await addThemeToTeam(themes[1], teamObj.team);
+        await addThemeToTeam(themes[2], team2);
         const res = await t.context.server.inject({
             method: 'GET',
             url: `/v3/themes`,
@@ -49,7 +57,7 @@ test('GET /themes returns all themes of a user', async t => {
             t.assert(json.list.find(el => el.id === id));
         });
     } finally {
-        await destroy(themes, Object.values(teamObj));
+        await destroy(themes, Object.values(teamObj), team2);
     }
 });
 
@@ -82,15 +90,13 @@ test('GET /themes returns themes correctly paginated', async t => {
     let team;
     let userObj = {};
     try {
+        const defaultThemeIds = t.context.config.general.defaultThemes;
         userObj = await createUser(t.context.server, { role: 'editor' });
-        team = await createTeam({
-            settings: {
-                restrictDefaultThemes: true
-            }
-        });
+        team = await createTeam();
         await addUserToTeam(userObj.user, team);
         const alphabet = Array.from(Array(26).keys()).map(n => String.fromCharCode(65 + n));
         themes = await createThemes(alphabet.map(letter => ({ title: `Theme ${letter}` })));
+        const expectedThemeIds = [...defaultThemeIds, ...themes.map(e => e.id)];
         for (const theme of themes) {
             await addThemeToTeam(theme, team);
         }
@@ -104,19 +110,19 @@ test('GET /themes returns themes correctly paginated', async t => {
                     Authorization: `Bearer ${userObj.token}`
                 }
             });
-            const expectedList = expectedThemes.slice(offset, offset + limit);
+            const expectedIdList = expectedThemes.slice(offset, offset + limit);
             t.is(res.statusCode, 200);
             const json = await res.result;
             t.is(json.total, expectedThemes.length);
-            t.is(json.list.length, expectedList.length);
-            expectedList.forEach(theme => {
-                t.assert(json.list.find(el => el.id === theme.id));
+            t.is(json.list.length, expectedIdList.length);
+            expectedIdList.forEach(id => {
+                t.assert(json.list.find(el => el.id === id));
             });
         };
-        await testPagination(0, 10, themes); // expected [A...J]
-        await testPagination(10, 10, themes); // expected [K...T]
-        await testPagination(20, 10, themes); // expected [U...Z]
-        await testPagination(30, 10, themes); // expected []
+        await testPagination(0, 10, expectedThemeIds); // expected [A...J]
+        await testPagination(10, 10, expectedThemeIds); // expected [K...T]
+        await testPagination(20, 10, expectedThemeIds); // expected [U...Z]
+        await testPagination(30, 10, expectedThemeIds); // expected []
     } finally {
         await destroy(themes, team, Object.values(userObj));
     }
@@ -218,42 +224,6 @@ test('GET /themes does not return all existing themes to an admin user', async t
         });
         themes.forEach(theme => {
             t.assert(!json.list.find(el => el.id === theme.id));
-        });
-    } finally {
-        await destroy(themes, team, Object.values(userObj));
-    }
-});
-
-test('GET /themes does not return default themes if team has restricted default themes', async t => {
-    let themes;
-    let team;
-    let userObj = {};
-    try {
-        userObj = await createUser(t.context.server, { role: 'editor' });
-        team = await createTeam({
-            settings: {
-                restrictDefaultThemes: true
-            }
-        });
-        await addUserToTeam(userObj.user, team);
-        themes = await createThemes([{ title: 'Theme 1' }, { title: 'Theme 2' }]);
-        await addThemeToTeam(themes[0], team);
-        await addThemeToTeam(themes[1], team);
-        const res = await t.context.server.inject({
-            method: 'GET',
-            url: `/v3/themes`,
-            headers: {
-                ...defaultHeaders,
-                Authorization: `Bearer ${userObj.token}`
-            }
-        });
-        const expectedThemeIds = [...themes.map(e => e.id)];
-        t.is(res.statusCode, 200);
-        const json = await res.result;
-        t.is(json.total, expectedThemeIds.length);
-        t.is(json.list.length, expectedThemeIds.length);
-        expectedThemeIds.forEach(id => {
-            t.assert(json.list.find(el => el.id === id));
         });
     } finally {
         await destroy(themes, team, Object.values(userObj));
