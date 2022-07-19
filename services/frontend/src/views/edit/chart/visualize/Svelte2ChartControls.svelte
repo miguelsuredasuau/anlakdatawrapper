@@ -10,6 +10,7 @@
     import get from 'lodash/get';
     import set from 'lodash/set';
     import assign from 'assign-deep';
+    import { logError } from '../../../../utils';
     // load stores from context
     const { chart, theme, visualization, locale, dataset } = getContext('page/edit');
 
@@ -55,16 +56,16 @@
         const type = visualization.id;
         controlsReady = false;
 
-        try {
-            await applyDefaultsAndMigration();
+        await applyDefaultsAndMigration();
 
-            // load script that registers visualzation
-            window.dw.visualization = dwVisualization;
-            await loadScript(
-                `/lib/plugins/${visualization.__plugin}/static/${type}.js?sha=${visualization.__visHash}`
-            );
-            // create visualization instance
-            const newVis = dwVisualization(type);
+        // load script that registers visualzation
+        window.dw.visualization = dwVisualization;
+        await loadScript(
+            `/lib/plugins/${visualization.__plugin}/static/${type}.js?sha=${visualization.__visHash}`
+        );
+        // create visualization instance
+        const newVis = dwVisualization(type);
+        if (newVis) {
             newVis.meta = visualization;
             newVis.chart(dwChart);
             newVis.theme = () => $theme.data;
@@ -73,8 +74,8 @@
             updateStoreData();
             await tick();
             controlsReady = true;
-        } catch (e) {
-            console.error(`Couldn't initialize chart controls`, e);
+        } else {
+            logError(new Error(`Unknown visualization type: ${type}`));
         }
     }
 

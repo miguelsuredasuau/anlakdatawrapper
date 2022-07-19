@@ -76,9 +76,26 @@ async function waitFor(test, interval = 100) {
     }
 }
 
+/**
+ * logs an error to the console and sends it to Sentry
+ * via captureException
+ *
+ * @param {string|Error} error
+ */
+function logError(error) {
+    if (typeof error === 'string') {
+        error = new Error(error);
+    }
+    console.error(error);
+    if (typeof window !== 'undefined' && typeof window.Sentry !== 'undefined') {
+        window.Sentry.captureException(error);
+    }
+}
+
 module.exports = {
     byOrder,
     getNestedObjectKeys,
     filterNestedObjectKeys,
-    waitFor
+    waitFor,
+    logError
 };
