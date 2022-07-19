@@ -4302,7 +4302,86 @@ const SvgRule = create_ssr_component(($$result, $$props, $$bindings, $$slots) =>
   let strokeDasharray = get(data, "strokeDasharray", "none");
   let strokeLinecap = get(data, "strokeLinecap", "butt");
   return `<svg style="${"height:" + escape$1(Math.max(width, 1)) + "px; margin:" + escape$1(margin) + ";"}" class="${"svelte-eczzvz"}"${add_attribute("this", svg, 1)}><line style="${"stroke:" + escape$1(color) + "; stroke-width:" + escape$1(width) + "; stroke-dasharray:" + escape$1(strokeDasharray) + ";\n        stroke-linecap: " + escape$1(strokeLinecap) + ";"}" x1="${"0"}"${add_attribute("y1", width / 2, 0)}${add_attribute("x2", length, 0)}${add_attribute("y2", width / 2, 0)}></line></svg>`;
-});// Current version.
+});/**
+ * Safely access object properties without throwing nasty
+ * `cannot access X of undefined` errors if a property along the
+ * way doesn't exist.
+ *
+ * @exports get
+ * @kind function
+ *
+ *
+ * @param object - the object which properties you want to acccess
+ * @param {String|String[]} key - path to the property as a dot-separated string or array of strings
+ * @param {*} _default - the fallback value to be returned if key doesn't exist
+ *
+ * @returns the value
+ *
+ * @example
+ * import get from '@datawrapper/shared/get';
+ * const someObject = { key: { list: ['a', 'b', 'c']}};
+ * get(someObject, 'key.list[2]') // returns 'c'
+ * get(someObject, 'missing.key') // returns undefined
+ * get(someObject, 'missing.key', false) // returns false
+ */
+function get$1(object, key = null, _default = null) {
+  if (!key) return object;
+  const keys = Array.isArray(key) ? key : key.split('.');
+  let pt = object;
+
+  for (let i = 0; i < keys.length; i++) {
+    if (pt === null || pt === undefined) break; // break out of the loop
+    // move one more level in
+
+    pt = pt[keys[i]];
+  }
+
+  return pt === undefined || pt === null ? _default : pt;
+}/**
+ * safely set object properties without throwing nasty
+ * `cannot access X of undefined` errors if a property along the
+ * way doesn't exist.
+ *
+ * @exports set
+ * @kind function
+ *
+ * @param object - the object which properties you want to acccess
+ * @param {String|String[]} key - path to the property as a dot-separated string or array of strings
+ * @param {*} value - the value to be set
+ *
+ * @returns the value
+ */
+function set(object, key, value) {
+  const keys = Array.isArray(key) ? key : key.split('.');
+  const lastKey = keys.pop();
+  let pt = object; // resolve property until the parent dict
+
+  keys.forEach(key => {
+    if (pt[key] === undefined || pt[key] === null) {
+      pt[key] = {};
+    }
+
+    pt = pt[key];
+  }); // check if new value is set
+
+  if (JSON.stringify(pt[lastKey]) !== JSON.stringify(value)) {
+    pt[lastKey] = value;
+    return true;
+  }
+
+  return false;
+}var publish = [metadata => {
+  const oldVal = get$1(metadata, 'publish.blocks.logo');
+
+  if (typeof oldVal === 'boolean') {
+    set(metadata, 'publish.blocks.logo', {
+      enabled: oldVal
+    });
+  }
+}];const migrations = [...publish];
+function migrate (metadata) {
+  migrations.forEach(migrate => migrate(metadata));
+}// Current version.
 var VERSION = '1.13.1';
 
 // Establish the root object, `window` (`self`) in the browser, `global`
@@ -4839,7 +4918,7 @@ function deepGet(obj, path) {
 // If any property in `path` does not exist or if the value is
 // `undefined`, return `defaultValue` instead.
 // The `path` is normalized through `_.toPath`.
-function get$1(object, path, defaultValue) {
+function get(object, path, defaultValue) {
   var value = deepGet(object, toPath(path));
   return isUndefined(value) ? defaultValue : value;
 }// Shortcut function for checking if an object has a given property directly on
@@ -4927,7 +5006,7 @@ function noop(){}// Generates a function for a given object that returns a given
 function propertyOf(obj) {
   if (obj == null) return noop;
   return function(path) {
-    return get$1(obj, path);
+    return get(obj, path);
   };
 }// Run a function **n** times.
 function times(n, iteratee, context) {
@@ -5852,7 +5931,7 @@ each(['concat', 'join', 'slice'], function(name) {
     return chainResult(this, obj);
   };
 });// Named Exports
-var allExports=/*#__PURE__*/Object.freeze({__proto__:null,VERSION:VERSION,restArguments:restArguments,isObject:isObject,isNull:isNull,isUndefined:isUndefined,isBoolean:isBoolean,isElement:isElement,isString:isString,isNumber:isNumber,isDate:isDate,isRegExp:isRegExp,isError:isError,isSymbol:isSymbol,isArrayBuffer:isArrayBuffer,isDataView:isDataView$1,isArray:isArray,isFunction:isFunction$1,isArguments:isArguments$1,isFinite:isFinite$1,isNaN:isNaN$1,isTypedArray:isTypedArray$1,isEmpty:isEmpty,isMatch:isMatch,isEqual:isEqual,isMap:isMap,isWeakMap:isWeakMap,isSet:isSet,isWeakSet:isWeakSet,keys:keys,allKeys:allKeys,values:values,pairs:pairs,invert:invert,functions:functions,methods:functions,extend:extend,extendOwn:extendOwn,assign:extendOwn,defaults:defaults,create:create,clone:clone,tap:tap,get:get$1,has:has,mapObject:mapObject,identity:identity,constant:constant,noop:noop,toPath:toPath$1,property:property,propertyOf:propertyOf,matcher:matcher,matches:matcher,times:times,random:random$1,now:now,escape:escape,unescape:unescape,templateSettings:templateSettings,template:template,result:result,uniqueId:uniqueId,chain:chain,iteratee:iteratee,partial:partial,bind:bind,bindAll:bindAll,memoize:memoize$1,delay:delay,defer:defer,throttle:throttle,debounce:debounce,wrap:wrap,negate:negate,compose:compose,after:after,before:before,once:once,findKey:findKey,findIndex:findIndex,findLastIndex:findLastIndex,sortedIndex:sortedIndex,indexOf:indexOf,lastIndexOf:lastIndexOf,find:find,detect:find,findWhere:findWhere,each:each,forEach:each,map:map,collect:map,reduce:reduce,foldl:reduce,inject:reduce,reduceRight:reduceRight,foldr:reduceRight,filter:filter,select:filter,reject:reject,every:every,all:every,some:some,any:some,contains:contains$1,includes:contains$1,include:contains$1,invoke:invoke,pluck:pluck,where:where,max:max$1,min:min$1,shuffle:shuffle,sample:sample,sortBy:sortBy,groupBy:groupBy,indexBy:indexBy,countBy:countBy,partition:partition,toArray:toArray,size:size,pick:pick,omit:omit,first:first,head:first,take:first,initial:initial,last:last,rest:rest,tail:rest,drop:rest,compact:compact,flatten:flatten,without:without,uniq:uniq,unique:uniq,union:union,intersection:intersection,difference:difference,unzip:unzip,transpose:unzip,zip:zip,object:object,range:range,chunk:chunk,mixin:mixin,'default':_$1});// Default Export
+var allExports=/*#__PURE__*/Object.freeze({__proto__:null,VERSION:VERSION,restArguments:restArguments,isObject:isObject,isNull:isNull,isUndefined:isUndefined,isBoolean:isBoolean,isElement:isElement,isString:isString,isNumber:isNumber,isDate:isDate,isRegExp:isRegExp,isError:isError,isSymbol:isSymbol,isArrayBuffer:isArrayBuffer,isDataView:isDataView$1,isArray:isArray,isFunction:isFunction$1,isArguments:isArguments$1,isFinite:isFinite$1,isNaN:isNaN$1,isTypedArray:isTypedArray$1,isEmpty:isEmpty,isMatch:isMatch,isEqual:isEqual,isMap:isMap,isWeakMap:isWeakMap,isSet:isSet,isWeakSet:isWeakSet,keys:keys,allKeys:allKeys,values:values,pairs:pairs,invert:invert,functions:functions,methods:functions,extend:extend,extendOwn:extendOwn,assign:extendOwn,defaults:defaults,create:create,clone:clone,tap:tap,get:get,has:has,mapObject:mapObject,identity:identity,constant:constant,noop:noop,toPath:toPath$1,property:property,propertyOf:propertyOf,matcher:matcher,matches:matcher,times:times,random:random$1,now:now,escape:escape,unescape:unescape,templateSettings:templateSettings,template:template,result:result,uniqueId:uniqueId,chain:chain,iteratee:iteratee,partial:partial,bind:bind,bindAll:bindAll,memoize:memoize$1,delay:delay,defer:defer,throttle:throttle,debounce:debounce,wrap:wrap,negate:negate,compose:compose,after:after,before:before,once:once,findKey:findKey,findIndex:findIndex,findLastIndex:findLastIndex,sortedIndex:sortedIndex,indexOf:indexOf,lastIndexOf:lastIndexOf,find:find,detect:find,findWhere:findWhere,each:each,forEach:each,map:map,collect:map,reduce:reduce,foldl:reduce,inject:reduce,reduceRight:reduceRight,foldr:reduceRight,filter:filter,select:filter,reject:reject,every:every,all:every,some:some,any:some,contains:contains$1,includes:contains$1,include:contains$1,invoke:invoke,pluck:pluck,where:where,max:max$1,min:min$1,shuffle:shuffle,sample:sample,sortBy:sortBy,groupBy:groupBy,indexBy:indexBy,countBy:countBy,partition:partition,toArray:toArray,size:size,pick:pick,omit:omit,first:first,head:first,take:first,initial:initial,last:last,rest:rest,tail:rest,drop:rest,compact:compact,flatten:flatten,without:without,uniq:uniq,unique:uniq,union:union,intersection:intersection,difference:difference,unzip:unzip,transpose:unzip,zip:zip,object:object,range:range,chunk:chunk,mixin:mixin,'default':_$1});// Default Export
 
 // Add all of the Underscore functions to the wrapper object.
 var _ = mixin(allExports);
@@ -10189,74 +10268,6 @@ deepmerge.all = function deepmergeAll(array, options) {
 var deepmerge_1 = deepmerge;
 
 var cjs = deepmerge_1;/**
- * Safely access object properties without throwing nasty
- * `cannot access X of undefined` errors if a property along the
- * way doesn't exist.
- *
- * @exports get
- * @kind function
- *
- *
- * @param object - the object which properties you want to acccess
- * @param {String|String[]} key - path to the property as a dot-separated string or array of strings
- * @param {*} _default - the fallback value to be returned if key doesn't exist
- *
- * @returns the value
- *
- * @example
- * import get from '@datawrapper/shared/get';
- * const someObject = { key: { list: ['a', 'b', 'c']}};
- * get(someObject, 'key.list[2]') // returns 'c'
- * get(someObject, 'missing.key') // returns undefined
- * get(someObject, 'missing.key', false) // returns false
- */
-function get(object, key = null, _default = null) {
-  if (!key) return object;
-  const keys = Array.isArray(key) ? key : key.split('.');
-  let pt = object;
-
-  for (let i = 0; i < keys.length; i++) {
-    if (pt === null || pt === undefined) break; // break out of the loop
-    // move one more level in
-
-    pt = pt[keys[i]];
-  }
-
-  return pt === undefined || pt === null ? _default : pt;
-}/**
- * safely set object properties without throwing nasty
- * `cannot access X of undefined` errors if a property along the
- * way doesn't exist.
- *
- * @exports set
- * @kind function
- *
- * @param object - the object which properties you want to acccess
- * @param {String|String[]} key - path to the property as a dot-separated string or array of strings
- * @param {*} value - the value to be set
- *
- * @returns the value
- */
-function set(object, key, value) {
-  const keys = Array.isArray(key) ? key : key.split('.');
-  const lastKey = keys.pop();
-  let pt = object; // resolve property until the parent dict
-
-  keys.forEach(key => {
-    if (pt[key] === undefined || pt[key] === null) {
-      pt[key] = {};
-    }
-
-    pt = pt[key];
-  }); // check if new value is set
-
-  if (JSON.stringify(pt[lastKey]) !== JSON.stringify(value)) {
-    pt[lastKey] = value;
-    return true;
-  }
-
-  return false;
-}/**
  * Download and parse a remote JSON document. Use {@link httpReq} instead
  *
  * @deprecated
@@ -10448,6 +10459,45 @@ function correctOpacity(color, background, opacity, targetContrast) {
 
     return contrast < targetContrast ? test(mid, high, i - 1) : test(low, mid, i - 1);
   }
+}function getVersion(RE) {
+  return function (userAgent) {
+    const raw = userAgent.toLowerCase().match(RE);
+    return raw ? parseInt(raw[1], 10) : false;
+  };
+}
+
+var getVersion$1 = {
+  chrome: getVersion(/chrom(?:e|ium)\/([0-9]+)\./),
+  firefox: getVersion(/firefox\/([0-9]+\.*[0-9]*)/),
+  safari: getVersion(/version\/([0-9]+).[0-9]+.[0-9]+ safari/),
+  ie: getVersion(/(?:msie |rv:)([0-9]+).[0-9]+/),
+  edge: getVersion(/edge\/([0-9]+).[0-9]+.[0-9]+/)
+};function getBrowser() {
+  const userAgent = navigator.userAgent; // Firefox 1.0+
+
+  const isFirefox = typeof InstallTrigger !== 'undefined'; // Safari 3.0+ "[object HTMLElementConstructor]"
+
+  const isSafari = /constructor/i.test(window.HTMLElement) || function (p) {
+    return p.toString() === '[object SafariRemoteNotification]';
+  }(!window.safari || window.safari.pushNotification); // Internet Explorer 6-11
+
+
+  const isIE =
+  /* @cc_on!@ */
+  !!document.documentMode; // Edge 20+
+
+  const isEdge = !isIE && !!window.StyleMedia; // Chrome, Chromium 1+ or Chrome WebView (from https://stackoverflow.com/questions/9847580)
+
+  const isChromeBrowser = /HeadlessChrome/.test(userAgent) || !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+  const isChromeWebView = /; wv/.test(userAgent) && /Chrome/.test(userAgent);
+  const isSamsungInternet = /SAMSUNG/.test(userAgent) && /Chrome/.test(userAgent);
+  const isChrome = isChromeBrowser || isChromeWebView || isSamsungInternet;
+  const browser = isChrome ? 'chrome' : isFirefox ? 'firefox' : isSafari ? 'safari' : isIE ? 'ie' : isEdge ? 'edge' : false;
+  const version = browser && getVersion$1[browser] ? getVersion$1[browser](userAgent) : false;
+  return {
+    browser: browser,
+    version: version
+  };
 }/* lib/Visualization.svelte generated by Svelte v3.23.2 */
 const allowedAriaDescriptionTags = "<a><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt><table><thead><tbody><tfoot><caption><colgroup><col><tr><td><th>";
 
@@ -10547,6 +10597,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
   const flags = {
     isIframe
   };
+  let useFallbackImage = false;
   const FLAG_TYPES = {
     plain: Boolean,
     static: Boolean,
@@ -10558,7 +10609,9 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     theme: String,
     search: String
   };
-  const datasetName = `dataset.${get(chart.metadata, "data.json") ? "json" : "csv"}`;
+  const datasetName = `dataset.${get$1(chart.metadata, "data.json") ? "json" : "csv"}`; // apply core metadata migrations
+
+  migrate(chart.metadata);
   const coreBlocks = [{
     id: "headline",
     tag: "h3",
@@ -10566,7 +10619,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     priority: 10,
     test: ({
       chart
-    }) => chart.title && !get(chart, "metadata.describe.hide-title"),
+    }) => chart.title && !get$1(chart, "metadata.describe.hide-title"),
     component: Headline
   }, {
     id: "description",
@@ -10575,7 +10628,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     priority: 20,
     test: ({
       chart
-    }) => get(chart, "metadata.describe.intro"),
+    }) => get$1(chart, "metadata.describe.intro"),
     component: Description
   }, {
     id: "notes",
@@ -10583,14 +10636,14 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     priority: 10,
     test: ({
       chart
-    }) => get(chart, "metadata.annotate.notes"),
+    }) => get$1(chart, "metadata.annotate.notes"),
     component: Notes
   }, {
     id: "byline",
     region: "footerLeft",
     test: ({
       chart
-    }) => get(chart, "metadata.describe.byline", false) || chart.basedOnByline,
+    }) => get$1(chart, "metadata.describe.byline", false) || chart.basedOnByline,
     priority: 10,
     component: Byline
   }, {
@@ -10598,7 +10651,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     region: "footerLeft",
     test: ({
       chart
-    }) => get(chart, "metadata.describe.source-name"),
+    }) => get$1(chart, "metadata.describe.source-name"),
     priority: 20,
     component: Source
   }, {
@@ -10607,7 +10660,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     test: ({
       chart,
       isStyleStatic
-    }) => get(chart, "metadata.publish.blocks.get-the-data") && !isStyleStatic && chart.type !== "locator-map",
+    }) => get$1(chart, "metadata.publish.blocks.get-the-data") && !isStyleStatic && chart.type !== "locator-map",
     priority: 30,
     component: GetTheData
   }, {
@@ -10616,7 +10669,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     test: ({
       chart,
       isStyleStatic
-    }) => get(chart, "forkable") && get(chart, "metadata.publish.blocks.edit-in-datawrapper", false) && !isStyleStatic,
+    }) => get$1(chart, "forkable") && get$1(chart, "metadata.publish.blocks.edit-in-datawrapper", false) && !isStyleStatic,
     priority: 31,
     component: EditInDatawrapper
   }, {
@@ -10625,7 +10678,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     test: ({
       chart,
       isStyleStatic
-    }) => get(chart, "metadata.publish.blocks.embed") && !isStyleStatic,
+    }) => get$1(chart, "metadata.publish.blocks.embed") && !isStyleStatic,
     priority: 40,
     component: Embed
   }, {
@@ -10635,10 +10688,10 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
       chart,
       theme
     }) => {
-      const metadataLogo = get(chart, "metadata.publish.blocks.logo", {
+      const metadataLogo = get$1(chart, "metadata.publish.blocks.logo", {
         enabled: false
       });
-      const themeLogoOptions = get(theme, "data.options.blocks.logo.data.options", []);
+      const themeLogoOptions = get$1(theme, "data.options.blocks.logo.data.options", []);
       const thisLogoId = logoId || metadataLogo.id;
       let logo = themeLogoOptions.find(logo => logo.id === thisLogoId); // fallback to first logo in theme options
 
@@ -10657,7 +10710,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     region: "header",
     test: ({
       theme
-    }) => !!get(theme, "data.options.blocks.rectangle"),
+    }) => !!get$1(theme, "data.options.blocks.rectangle"),
     priority: 1,
     component: Rectangle
   }, {
@@ -10666,8 +10719,8 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     test: ({
       theme
     }) => {
-      const field = get(theme, "data.options.watermark.custom-field");
-      return get(theme, "data.options.watermark") ? field ? get(chart, `metadata.custom.${field}`, "") : get(theme, "data.options.watermark.text", "CONFIDENTIAL") : false;
+      const field = get$1(theme, "data.options.watermark.custom-field");
+      return get$1(theme, "data.options.watermark") ? field ? get$1(chart, `metadata.custom.${field}`, "") : get$1(theme, "data.options.watermark.text", "CONFIDENTIAL") : false;
     },
     priority: 1,
     component: Watermark
@@ -10680,7 +10733,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
       region: "header",
       test: ({
         theme
-      }) => !!get(theme, `data.options.blocks.${id}`),
+      }) => !!get$1(theme, `data.options.blocks.${id}`),
       priority: 0,
       component: type === "hr" ? HorizontalRule : SvgRule
     };
@@ -10751,7 +10804,7 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
         block.test = block.component.test;
       }
 
-      const options = get(theme, "data.options.blocks", {})[block.id];
+      const options = get$1(theme, "data.options.blocks", {})[block.id];
       if (!options) return block;
       return { ...block,
         ...options
@@ -10802,10 +10855,10 @@ Please make sure you called __(key) with a key of type "string".
     const newFlags = isIframe ? parseFlagsFromURL(window.location.search, FLAG_TYPES) : {}; // TODO parseFlagsFromElement(scriptEl, FLAG_TYPES);
 
     Object.assign(flags, newFlags);
-    const useDwCdn = get(chart, "metadata.data.use-datawrapper-cdn", true);
-    const externalJSON = useDwCdn && get(chart, "metadata.data.external-metadata", "").length ? `//${externalDataUrl}/${chart.id}.metadata.json` : get(chart, "metadata.data.external-metadata");
+    const useDwCdn = get$1(chart, "metadata.data.use-datawrapper-cdn", true);
+    const externalJSON = useDwCdn && get$1(chart, "metadata.data.external-metadata", "").length ? `//${externalDataUrl}/${chart.id}.metadata.json` : get$1(chart, "metadata.data.external-metadata");
 
-    if (!isPreview && externalJSON && get(chart, "metadata.data.upload-method") === "external-data") {
+    if (!isPreview && externalJSON && get$1(chart, "metadata.data.upload-method") === "external-data") {
       try {
         const now = new Date().getTime();
         const ts = useDwCdn ? now - now % 60000 : now;
@@ -10882,7 +10935,7 @@ Please make sure you called __(key) with a key of type "string".
     theme.data._computed = theme._computed;
     const browserSupportsPrefersColorScheme = CSS.supports("color-scheme", "dark"); // we only apply dark mode if base theme is light
 
-    const lightBg = get(themeDataLight, "colors.background", "#ffffff");
+    const lightBg = get$1(themeDataLight, "colors.background", "#ffffff");
 
     if (chroma$1(lightBg).luminance() >= 0.3) {
       vis.initDarkMode(onDarkModeChange, initDarkModeColormap({
@@ -10899,18 +10952,20 @@ Please make sure you called __(key) with a key of type "string".
       matchMediaQuery.addEventListener("change", e => {
         updateDarkModeState(e.matches);
       });
-    } // render chart
-
-
-    dwChart.render(outerContainer); // await necessary reload triggers
-
-    observeFonts(theme.fonts, theme.data.typography).then(() => dwChart.render(outerContainer)).catch(() => dwChart.render(outerContainer)); // iPhone/iPad fix
-
-    if (/iP(hone|od|ad)/.test(navigator.platform)) {
-      window.onload = dwChart.render(outerContainer);
     }
 
-    isIframe && initResizeHandler(target);
+    if (!useFallbackImage) {
+      // render chart
+      dwChart.render(outerContainer); // await necessary reload triggers
+
+      observeFonts(theme.fonts, theme.data.typography).then(() => dwChart.render(outerContainer)).catch(() => dwChart.render(outerContainer)); // iPhone/iPad fix
+
+      if (/iP(hone|od|ad)/.test(navigator.platform)) {
+        window.onload = dwChart.render(outerContainer);
+      }
+
+      isIframe && initResizeHandler(target);
+    }
 
     function updateActiveCSS(isDark) {
       // @todo: access these without using document
@@ -10944,7 +10999,7 @@ Please make sure you called __(key) with a key of type "string".
 
 
       if (isDark) {
-        set(theme.data, "colors.palette", get(themeDataLight, "colors.palette", []));
+        set(theme.data, "colors.palette", get$1(themeDataLight, "colors.palette", []));
       }
 
       outerContainer.classList.toggle("is-dark-mode", isDark);
@@ -10982,6 +11037,7 @@ Please make sure you called __(key) with a key of type "string".
   }
 
   onMount(async () => {
+    useFallbackImage = getBrowser().browser === "ie" && !isPreview;
     const dwChart = await run();
     outerContainer.classList.toggle("dir-rtl", textDirection === "rtl");
 
@@ -10997,8 +11053,8 @@ Please make sure you called __(key) with a key of type "string".
       }
 
       if (isStyleStatic && !isStyleTransparent) {
-        const bodyBackground = get(theme.data, "style.body.background", "transparent");
-        const previewBackground = get(theme.data, "colors.background");
+        const bodyBackground = get$1(theme.data, "style.body.background", "transparent");
+        const previewBackground = get$1(theme.data, "colors.background");
 
         if (previewBackground && isTransparentColor(bodyBackground)) {
           document.body.style.background = previewBackground;
@@ -11045,10 +11101,10 @@ Please make sure you called __(key) with a key of type "string".
     themeDataDark
   }) {
     const colorCache = new Map();
-    const darkPalette = get(themeDataDark, "colors.palette", []);
-    const lightPalette = get(themeDataLight, "colors.palette", []);
-    const lightBg = get(themeDataLight, "colors.background", "#ffffff");
-    const darkBg = get(themeDataDark, "colors.background");
+    const darkPalette = get$1(themeDataDark, "colors.palette", []);
+    const lightPalette = get$1(themeDataLight, "colors.palette", []);
+    const lightBg = get$1(themeDataLight, "colors.background", "#ffffff");
+    const darkBg = get$1(themeDataDark, "colors.background");
     const themeColorMap = Object.fromEntries(lightPalette.map((light, i) => [light, darkPalette[i]]));
     return function (color, {
       forceInvert,
@@ -11102,18 +11158,18 @@ Please make sure you called __(key) with a key of type "string".
   if ($$props.frontendDomain === void 0 && $$bindings.frontendDomain && frontendDomain !== void 0) $$bindings.frontendDomain(frontendDomain);
 
   {
-    if (!get(chart, "metadata.publish.blocks")) {
+    if (!get$1(chart, "metadata.publish.blocks")) {
       // no footer settings found in metadata, apply theme defaults
-      set(chart, "metadata.publish.blocks", get(theme.data, "metadata.publish.blocks"));
+      set(chart, "metadata.publish.blocks", get$1(theme.data, "metadata.publish.blocks"));
     }
   }
 
-  let ariaDescription = get(chart, "metadata.describe.aria-description", "");
-  purifyHTML(get(chart, "metadata.publish.custom-css", ""), "");
+  let ariaDescription = get$1(chart, "metadata.describe.aria-description", "");
+  purifyHTML(get$1(chart, "metadata.publish.custom-css", ""), "");
   let blockProps = {
     __,
     purifyHtml: clean,
-    get,
+    get: get$1,
     postEvent,
     teamPublicSettings,
     theme,
@@ -11166,7 +11222,7 @@ Please make sure you called __(key) with a key of type "string".
       isStyleStatic
     })
   };
-  let menu = get(theme, "data.options.menu", {});
+  let menu = get$1(theme, "data.options.menu", {});
   contentBelowChart = !isStylePlain && (regions.aboveFooter.length || regions.footerLeft.length || regions.footerCenter.length || regions.footerRight.length || regions.belowFooter.length || regions.afterBody.length);
   return `${!isStylePlain ? `${validate_component(BlocksRegion, "BlocksRegion").$$render($$result, {
     name: "dw-chart-header",
@@ -11182,9 +11238,10 @@ Please make sure you called __(key) with a key of type "string".
 
 ${ariaDescription ? `<div class="${"sr-only"}">${purifyHTML(ariaDescription, allowedAriaDescriptionTags)}</div>` : ``}
 
-<div id="${"chart"}"${add_attribute("aria-hidden", !!ariaDescription, 0)} class="${["dw-chart-body", contentBelowChart ? "content-below-chart" : ""].join(" ").trim()}"${add_attribute("this", target, 1)}></div>
+<div id="${"chart"}"${add_attribute("aria-hidden", !!ariaDescription, 0)} class="${["dw-chart-body", contentBelowChart ? "content-below-chart" : ""].join(" ").trim()}"${add_attribute("this", target, 1)}>${useFallbackImage ? `<img style="${"max-width: 100%"}" src="${"../plain.png"}" aria-hidden="${"true"}" alt="${"fallback image"}">
+        <p style="${"opacity:0.6;padding:1ex; text-align:center"}">${escape$1(__("fallback-image-note"))}</p>` : ``}</div>
 
-${get(theme, "data.template.afterChart") ? `${theme.data.template.afterChart}` : ``}
+${get$1(theme, "data.template.afterChart") ? `${theme.data.template.afterChart}` : ``}
 
 ${!isStylePlain ? `${validate_component(BlocksRegion, "BlocksRegion").$$render($$result, {
     name: "dw-above-footer",

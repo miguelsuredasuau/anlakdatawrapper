@@ -27,6 +27,7 @@
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch.js';
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import invertColor from '@datawrapper/shared/invertColor.cjs';
+    import { getBrowser } from '@datawrapper/polyfills/src/getBrowser';
     import { clean, isTransparentColor, parseFlagsFromURL } from './shared.mjs';
     import { isObject } from 'underscore';
     import chroma from 'chroma-js';
@@ -69,6 +70,8 @@
     let target, dwChart, vis;
     let postEvent = () => {};
     const flags = { isIframe };
+
+    let useFallbackImage = false;
 
     const FLAG_TYPES = {
         plain: Boolean,
@@ -547,20 +550,22 @@ Please make sure you called __(key) with a key of type "string".
             });
         }
 
-        // render chart
-        dwChart.render(outerContainer);
+        if (!useFallbackImage) {
+            // render chart
+            dwChart.render(outerContainer);
 
-        // await necessary reload triggers
-        observeFonts(theme.fonts, theme.data.typography)
-            .then(() => dwChart.render(outerContainer))
-            .catch(() => dwChart.render(outerContainer));
+            // await necessary reload triggers
+            observeFonts(theme.fonts, theme.data.typography)
+                .then(() => dwChart.render(outerContainer))
+                .catch(() => dwChart.render(outerContainer));
 
-        // iPhone/iPad fix
-        if (/iP(hone|od|ad)/.test(navigator.platform)) {
-            window.onload = dwChart.render(outerContainer);
+            // iPhone/iPad fix
+            if (/iP(hone|od|ad)/.test(navigator.platform)) {
+                window.onload = dwChart.render(outerContainer);
+            }
+
+            isIframe && initResizeHandler(target);
         }
-
-        isIframe && initResizeHandler(target);
 
         function updateActiveCSS(isDark) {
             // @todo: access these without using document
@@ -631,6 +636,7 @@ Please make sure you called __(key) with a key of type "string".
     }
 
     onMount(async () => {
+        useFallbackImage = getBrowser().browser === 'ie' && !isPreview;
         const dwChart = await run();
 
         outerContainer.classList.toggle('dir-rtl', textDirection === 'rtl');
@@ -751,7 +757,14 @@ Please make sure you called __(key) with a key of type "string".
     class:content-below-chart={contentBelowChart}
     aria-hidden={!!ariaDescription}
     class="dw-chart-body"
-/>
+>
+    {#if useFallbackImage}
+        <img style="max-width: 100%" src="../plain.png" aria-hidden="true" alt="fallback image" />
+        <p style="opacity:0.6;padding:1ex; text-align:center">
+            {__('fallback-image-note')}
+        </p>
+    {/if}
+</div>
 
 {#if get(theme, 'data.template.afterChart')}
     {@html theme.data.template.afterChart}
