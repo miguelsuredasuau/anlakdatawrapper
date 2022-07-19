@@ -27,7 +27,7 @@ const createUserNameSchema = () =>
 
 const chartListItem = Joi.object({
     id: Joi.string().description('ID of the visualization'),
-    title: Joi.string().description('Title of the visualization'),
+    title: Joi.string().empty('').description('Title of the visualization'),
     publicId: Joi.string().description(
         'Public ID of the visualization. May be different from the internal ID, if *hash publishing* is enabled.'
     ),
@@ -88,7 +88,11 @@ const chartListItem = Joi.object({
     ),
     metadata: Joi.object().description("All of the visualization's settings."),
     guestSession: Joi.string().allow(null).description('Guest session id'),
-    customFields: Joi.object().allow(null).optional().description('Custom fields')
+    customFields: Joi.alternatives()
+        .try(Joi.object(), Joi.array().length(0))
+        .description('Custom fields')
+        .allow(null)
+        .optional()
 });
 
 const createUserPayload = [
@@ -149,7 +153,11 @@ const chartResponse = createResponseConfig({
             .empty('')
             .description('External data URL, relevant for live visualizations.'),
         metadata: Joi.object().description("All of the visualization's settings."),
-        customFields: Joi.object().allow(null).optional().description('Custom fields'),
+        customFields: Joi.alternatives()
+            .try(Joi.object(), Joi.array().length(0))
+            .description('Custom fields')
+            .allow(null)
+            .optional(),
         keywords: Joi.string().optional().description('Keywords'),
         utf8: Joi.boolean().optional().description('UTF-8')
     })
