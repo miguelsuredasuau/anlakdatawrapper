@@ -298,7 +298,7 @@ async function publishChartStatus(request) {
     if (!publishAction) throw Boom.notFound();
 
     return {
-        progress: publishAction.details.split(',')
+        progress: publishAction.details ? publishAction.details.split(',') : []
     };
 }
 

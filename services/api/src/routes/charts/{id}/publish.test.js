@@ -585,3 +585,48 @@ test('GET /charts/{id}/publish returns error 403 when the scope is insufficient'
         await destroy(chart, Object.values(userObj));
     }
 });
+
+test('GET /charts/{id}/publish/status/0 returns progress based on the actions table', async t => {
+    const { Action } = require('@datawrapper/orm/models');
+    let chart;
+    try {
+        chart = await createChart({ author_id: t.context.userObj.user.id });
+        const res0 = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}/publish/status/0`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${t.context.userObj.token}`
+            }
+        });
+        t.is(res0.statusCode, 404);
+
+        // Action with empty details should result in empty `progress` array.
+        await Action.create({ key: `chart/${chart.id}/publish/0`, details: '' });
+        const res1 = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}/publish/status/0`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${t.context.userObj.token}`
+            }
+        });
+        t.is(res1.statusCode, 200);
+        t.deepEqual(res1.result.progress, []);
+
+        await Action.create({ key: `chart/${chart.id}/publish/0`, details: 'my,first,action' });
+        await Action.create({ key: `chart/${chart.id}/publish/0`, details: 'my,second,action' });
+        const res2 = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}/publish/status/0`,
+            headers: {
+                ...t.context.headers,
+                Authorization: `Bearer ${t.context.userObj.token}`
+            }
+        });
+        t.is(res2.statusCode, 200);
+        t.deepEqual(res2.result.progress, ['my', 'second', 'action']);
+    } finally {
+        await destroy(chart);
+    }
+});
