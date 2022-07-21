@@ -52,23 +52,25 @@
     chart.subscribeKey('metadata.publish.embed-height', updatePreview);
 
     chart.subscribeKey('metadata.publish.export-pdf', exportPdf => {
-        // check if the unit has changed
-        if (exportPdf.unit) {
-            // the unit has changed so we may need to compute converted size
-            const prevExportPdf = $chart.metadata.publish['export-pdf'];
-            set($chart, 'metadata.publish.export-pdf', {
-                ...prevExportPdf,
-                // update width and height
-                width: exportPdf.width || printSizeFromPxSize(exportPdf.unit, widthPx),
-                height: exportPdf.height || printSizeFromPxSize(exportPdf.unit, heightPx)
-            });
-            $chart = $chart;
-            updatePreview();
-        } else if (exportPdf.width || exportPdf.height) {
-            // just the size has changed, which is bound directly
-            // to $chart.metadata.publish.export-pdf, so no need
-            // to convert any units
-            updatePreview();
+        if (exportPdf) {
+            // check if the unit has changed
+            if (exportPdf.unit) {
+                // the unit has changed so we may need to compute converted size
+                const prevExportPdf = $chart.metadata.publish['export-pdf'];
+                set($chart, 'metadata.publish.export-pdf', {
+                    ...prevExportPdf,
+                    // update width and height
+                    width: exportPdf.width || printSizeFromPxSize(exportPdf.unit, widthPx),
+                    height: exportPdf.height || printSizeFromPxSize(exportPdf.unit, heightPx)
+                });
+                $chart = $chart;
+                updatePreview();
+            } else if (exportPdf.width || exportPdf.height) {
+                // just the size has changed, which is bound directly
+                // to $chart.metadata.publish.export-pdf, so no need
+                // to convert any units
+                updatePreview();
+            }
         }
     });
 
