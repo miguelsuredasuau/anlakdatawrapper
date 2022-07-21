@@ -234,7 +234,9 @@ module.exports = {
                     auth: false,
                     validate: {
                         params: Joi.object({
-                            file: FILE_SCHEMA
+                            file: Joi.string()
+                                .required()
+                                .pattern(/\.(js|map)$/)
                         })
                     }
                 },
