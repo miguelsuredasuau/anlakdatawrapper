@@ -9,5 +9,4 @@ src/views/_plugins/*
 *.swp
 build
 .viewcache
-*.js.map
 *.css.map

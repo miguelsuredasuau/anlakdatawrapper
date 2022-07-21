@@ -51,7 +51,7 @@ function build(appId, opts) {
             /\/static\.*/ // ← legacy vendor code and other static assets required at runtime
         ],
         output: {
-            sourcemap: !production,
+            sourcemap: true,
             name: appId,
             file: `../../static/js/svelte2/${appId}${append}.js`,
             format: 'umd',

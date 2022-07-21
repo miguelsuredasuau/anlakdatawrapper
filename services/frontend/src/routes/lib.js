@@ -5,6 +5,34 @@ const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const { allScopes } = require('@datawrapper/service-utils/l10n');
 
+const ALLOWED_EXTS = [
+    'css',
+    'eot',
+    'gif',
+    'html',
+    'ico',
+    'jpeg',
+    'jpg',
+    'js',
+    'json',
+    'less',
+    'otf',
+    'png',
+    'svg',
+    'ttf',
+    'webp',
+    'woff',
+    'woff2'
+];
+if (process.env.DW_DEV_MODE) {
+    ALLOWED_EXTS.push('map');
+}
+
+// This list of allowed extensions should match the config of the nginx location that serves static files.
+const FILE_SCHEMA = Joi.string()
+    .required()
+    .pattern(new RegExp(`\\.(${ALLOWED_EXTS.join('|')})$`));
+
 module.exports = {
     name: 'routes/lib',
     version: '1.0.0',
@@ -14,7 +42,12 @@ module.exports = {
                 path: '/chart-core/{file*}',
                 method: 'GET',
                 config: {
-                    auth: false
+                    auth: false,
+                    validate: {
+                        params: Joi.object({
+                            file: FILE_SCHEMA
+                        })
+                    }
                 },
                 handler: {
                     directory: {
@@ -26,7 +59,12 @@ module.exports = {
                 path: '/polyfills/{file*}',
                 method: 'GET',
                 config: {
-                    auth: false
+                    auth: false,
+                    validate: {
+                        params: Joi.object({
+                            file: FILE_SCHEMA
+                        })
+                    }
                 },
                 handler: {
                     directory: {
@@ -41,7 +79,12 @@ module.exports = {
                 path: '/requirejs/{file*}',
                 method: 'GET',
                 config: {
-                    auth: false
+                    auth: false,
+                    validate: {
+                        params: Joi.object({
+                            file: FILE_SCHEMA
+                        })
+                    }
                 },
                 handler: {
                     directory: {
@@ -53,7 +96,12 @@ module.exports = {
                 path: '/codemirror/{file*}',
                 method: 'GET',
                 config: {
-                    auth: false
+                    auth: false,
+                    validate: {
+                        params: Joi.object({
+                            file: FILE_SCHEMA
+                        })
+                    }
                 },
                 handler: {
                     directory: {
@@ -65,7 +113,12 @@ module.exports = {
                 path: '/jsonlint/{file*}',
                 method: 'GET',
                 config: {
-                    auth: false
+                    auth: false,
+                    validate: {
+                        params: Joi.object({
+                            file: FILE_SCHEMA
+                        })
+                    }
                 },
                 handler: {
                     directory: {
@@ -77,7 +130,12 @@ module.exports = {
                 path: '/icons/{file*}',
                 method: 'GET',
                 config: {
-                    auth: false
+                    auth: false,
+                    validate: {
+                        params: Joi.object({
+                            file: FILE_SCHEMA
+                        })
+                    }
                 },
                 handler: {
                     directory: {
@@ -92,7 +150,12 @@ module.exports = {
                 path: '/static/{file*}',
                 method: 'GET',
                 config: {
-                    auth: false
+                    auth: false,
+                    validate: {
+                        params: Joi.object({
+                            file: FILE_SCHEMA
+                        })
+                    }
                 },
                 handler: {
                     directory: {
@@ -111,7 +174,7 @@ module.exports = {
                                 .required()
                                 // only allow access to configured plugins
                                 .valid(...Object.keys(server.methods.config('plugins'))),
-                            file: Joi.string().required()
+                            file: FILE_SCHEMA
                         })
                     }
                 },
@@ -171,7 +234,7 @@ module.exports = {
                     auth: false,
                     validate: {
                         params: Joi.object({
-                            file: Joi.string().required()
+                            file: FILE_SCHEMA
                         })
                     }
                 },
