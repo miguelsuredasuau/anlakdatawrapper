@@ -298,7 +298,7 @@ module.exports = {
 
         server.route({
             method: 'GET',
-            path: '/v2/{prefix}/{chartId}/{step?}',
+            path: '/{prefix}/{chartId}/{step?}',
             options: {
                 validate: {
                     params: Joi.object({
