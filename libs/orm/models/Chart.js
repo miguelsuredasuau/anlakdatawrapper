@@ -6,8 +6,7 @@ const { db, chartIdSalt, hashPublishing } = require('../index');
 
 const Chart = db.define('chart', chartAttributes, {
     updatedAt: 'last_modified_at',
-    tableName: 'chart',
-    indexes: [{ type: 'FULLTEXT', name: 'chart_fts_idx', fields: ['title', 'keywords'] }]
+    tableName: 'chart'
 });
 
 Chart.belongsTo(Chart, {

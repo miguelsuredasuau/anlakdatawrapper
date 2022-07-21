@@ -13,8 +13,7 @@ ChartPublic.init(
         external_data: SQ.STRING(),
         first_published_at: SQ.DATE(),
         author_id: SQ.INTEGER(),
-        organization_id: SQ.STRING(128),
-        keywords: SQ.TEXT()
+        organization_id: SQ.STRING(128)
     },
     {
         sequelize: db,

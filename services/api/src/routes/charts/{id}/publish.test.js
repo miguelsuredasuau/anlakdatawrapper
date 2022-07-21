@@ -324,46 +324,6 @@ test('POST /charts/{id}/publish updates chart properties', async t => {
     t.is(new Date(res.result.publishedAt) >= prePublicationDate, true);
 });
 
-test('POST /charts/{id}/publish updates keywords', async t => {
-    let chart;
-    const { userObj } = t.context;
-    const { Chart, ChartPublic } = require('@datawrapper/orm/models');
-    try {
-        chart = await createChart({
-            title: 'Hello world',
-            metadata: {
-                describe: {
-                    intro: 'Apple',
-                    byline: 'Strawberry'
-                }
-            },
-            author_id: userObj.user.id
-        });
-
-        const ormChart = await Chart.findByPk(chart.id);
-
-        t.true(ormChart.keywords.includes('apple'));
-        t.true(ormChart.keywords.includes('strawberry'));
-
-        const res = await t.context.server.inject({
-            method: 'POST',
-            url: `/v3/charts/${chart.id}/publish`,
-            auth: t.context.auth,
-            headers: t.context.headers
-        });
-
-        t.is(res.statusCode, 200);
-
-        const ormChartPublic = await ChartPublic.findByPk(chart.id);
-
-        t.is(ormChartPublic.title, 'Hello world');
-        t.true(ormChartPublic.keywords.includes('apple'));
-        t.true(ormChartPublic.keywords.includes('strawberry'));
-    } finally {
-        await destroy(chart);
-    }
-});
-
 test('POST /charts/{id}/publish updates embed codes', async t => {
     let chart;
     const { userObj } = t.context;

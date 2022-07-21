@@ -230,13 +230,17 @@ function createFoldersWithParent(propsArray, parent) {
 
 function createChart(props = {}) {
     const { Chart } = require('@datawrapper/orm/models');
+    let metadata = {
+        axes: [],
+        describe: {},
+        visualize: {},
+        annotate: {}
+    };
+    if (props.metadata) {
+        metadata = { ...metadata, ...props.metadata };
+    }
     return Chart.create({
-        metadata: {
-            axes: [],
-            describe: {},
-            visualize: {},
-            annotate: {}
-        },
+        metadata,
         language: 'en-US',
         title: 'Default',
         theme: 'default',
@@ -254,13 +258,17 @@ async function createPublicChart(props = {}) {
         ...props
     });
     const { ChartPublic } = require('@datawrapper/orm/models');
+    let metadata = {
+        axes: [],
+        describe: {},
+        visualize: {},
+        annotate: {}
+    };
+    if (props.metadata) {
+        metadata = { ...metadata, ...props.metadata };
+    }
     return ChartPublic.create({
-        metadata: {
-            axes: [],
-            describe: {},
-            visualize: {},
-            annotate: {}
-        },
+        metadata,
         language: 'en-US',
         title: 'Default',
         theme: 'default',

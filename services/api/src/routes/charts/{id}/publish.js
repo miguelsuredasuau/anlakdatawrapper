@@ -229,8 +229,7 @@ async function publishChart(request) {
         external_data: chart.external_data,
         first_published_at: chart.public_version ? undefined : now,
         author_id: chart.author_id,
-        organization_id: chart.organization_id,
-        keywords: chart.keywords
+        organization_id: chart.organization_id
     });
 
     await Promise.all([chartUpdatePromise, chartPublicPromise]);
