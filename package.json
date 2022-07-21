@@ -9,8 +9,8 @@
     "scripts": {
         "format": "scripts/format",
         "lint": "scripts/lint",
-        "test": "npm run test:e2e -- $@",
-        "test:e2e": "cd utils/e2e-tests && npm test -- $@",
+        "test": "cd utils/e2e-tests && npm test -- $@",
+        "test:ci": "cd utils/e2e-tests && npm run test:ci -- $@",
         "sync": "datawrapper-orm-sync",
         "api": "datawrapper-api",
         "crons": "crons",
