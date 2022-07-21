@@ -6743,6 +6743,7 @@ function ternaryInstruction(value) {
   this.savedCurrent = null;
   this.savedNextToken = null;
   this.allowMemberAccess = options.allowMemberAccess !== false;
+  this.restrictMemberAccess = new Set(options.restrictMemberAccess || []);
 }
 
 ParserState.prototype.next = function () {
@@ -7081,6 +7082,10 @@ ParserState.prototype.parseMemberExpression = function (instr) {
         throw new Error('unexpected ".", member access is not permitted');
       }
 
+      if (this.restrictMemberAccess.has(this.nextToken.value)) {
+        throw new Error('access to member "' + this.nextToken.value + '" is not permitted');
+      }
+
       this.expect(TNAME);
       instr.push(new Instruction(IMEMBER, this.current.value));
     } else if (op.value === '[') {
@@ -7305,6 +7310,10 @@ function sum(array) {
         nstack.push(f(resolveExpression(n1, values), resolveExpression(n2, values), resolveExpression(n3, values)));
       }
     } else if (type === IVAR) {
+      if (/^__proto__|prototype|constructor$/.test(item.value)) {
+        throw new Error('prototype access detected');
+      }
+
       if (item.value in expr.functions) {
         nstack.push(expr.functions[item.value]);
       } else if (item.value in expr.unaryOps && expr.parser.isOperatorEnabled(item.value)) {
@@ -7435,8 +7444,9 @@ Expression.prototype.variables = function () {
 
 function trim$1(s) {
   return s.trim();
-} // parser
+}
 
+const RESTRICT_MEMBER_ACCESS = new Set(['__proto__', 'prototype', 'constructor']); // parser
 
 function Parser(options) {
   this.options = options || {};
@@ -8038,6 +8048,8 @@ function Parser(options) {
      * @returns {array}
      */
     SORT(arr, asc = true, key = null) {
+      if (RESTRICT_MEMBER_ACCESS.has(key)) throw new Error('Invalid key');
+
       if (!Array.isArray(arr)) {
         throw new Error('First argument to SORT is not an array');
       }
@@ -8141,6 +8153,7 @@ function Parser(options) {
      * PLUCK(countries, 'population')
      */
     PLUCK(arr, key) {
+      if (RESTRICT_MEMBER_ACCESS.has(key)) throw new Error('Invalid key');
       if (!Array.isArray(arr)) throw new Error('First argument to PLUCK is not an array');
       return arr.map(item => Object.prototype.hasOwnProperty.call(item, key) ? item[key] : null);
     },
@@ -8459,7 +8472,8 @@ function Parser(options) {
 Parser.prototype.parse = function (expr) {
   var instr = [];
   var parserState = new ParserState(this, new TokenStream(this, expr), {
-    allowMemberAccess: true
+    allowMemberAccess: true,
+    restrictMemberAccess: RESTRICT_MEMBER_ACCESS
   });
   parserState.parseExpression(instr);
   parserState.expect(TEOF, 'EOF');
