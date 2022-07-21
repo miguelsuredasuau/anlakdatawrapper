@@ -1,15 +1,29 @@
-import { writable, derived } from 'svelte/store';
+import { writable } from 'svelte/store';
 import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
-import assign from 'assign-deep';
-import debounce from 'lodash/debounce';
 import httpReq from '@datawrapper/shared/httpReq';
 import objectDiff from '@datawrapper/shared/objectDiff';
 import get from '@datawrapper/shared/get';
+import set from '@datawrapper/shared/set';
 import { filterNestedObjectKeys } from '../../utils';
 import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
-import { distinct } from '../../utils/svelte-store';
 import coreMigrate from '@datawrapper/chart-core/lib/migrate';
+import { SvelteSubject } from '../../utils/rxjs-store.mjs';
+import {
+    distinctUntilChanged,
+    tap,
+    map,
+    debounceTime,
+    filter,
+    switchMap,
+    mergeMap,
+    withLatestFrom,
+    catchError,
+    shareReplay,
+    skip,
+    startWith
+} from 'rxjs/operators';
+import { of, from, combineLatest } from 'rxjs';
 
 const ALLOWED_CHART_KEYS = [
     'title',
@@ -23,30 +37,29 @@ const ALLOWED_CHART_KEYS = [
 
 export function initStores({
     rawChart,
-    rawData,
-    rawTeam,
     rawTheme,
     rawLocales,
     rawVisualizations,
-    disabledFields = [],
+    rawTeam,
+    rawData,
+    disabledFields,
     dataReadonly
 }) {
-    /**
-     * chart object store
-     */
-    const chart = new writable(rawChart);
-    const chartKeyWatchers = new Set();
+    const chart$ = new SvelteSubject(rawChart);
+    const data$ = new SvelteSubject(rawData);
+    const team$ = of(rawTeam || { settings: {} }); // read-only
+    const locales$ = of(rawLocales); // read-only
 
-    /**
-     * data store --> can be used to update the underlying data of a chart
-     */
-    const data = new writable(rawData);
+    // distinctChart$ only emits a value if a chart property (including nested properties) changes
+    // It gives the guarantee that between two consecutive submissions
+    // chartA and chartB => isEqual(chartA, chartB) = false
+    const distinctChart$ = chart$.pipe(
+        map(cloneDeep), // clone so that isEqual has an effect (and doesn't compare the same object)
+        distinctUntilChanged(isEqual),
+        shareReplay(1)
+    );
 
-    /**
-     * store for team
-     */
-    const team = new writable(rawTeam || { settings: {} });
-    const teamReadonly = derived(team, $team => $team, {});
+    const chartId$ = distinctChart$.pipe(map(chart => chart.id));
 
     const onNextSave = new Set();
     const hasUnsavedChanges = new writable(false);
@@ -58,7 +71,165 @@ export function initStores({
      */
     const isDark = new writable(false);
 
-    let unsavedChartChanges = {};
+    const patchChart = ({ id, patch }) => {
+        return of({ id, patch }).pipe(
+            switchMap(({ id, patch }) =>
+                httpReq.patch(`/v3/charts/${id}`, {
+                    payload: patch
+                })
+            ),
+            tap(() => {
+                hasUnsavedChanges.set(false);
+                saveSuccess.set(true);
+                saveError.set(false);
+                for (const method of onNextSave) {
+                    method();
+                    onNextSave.delete(method);
+                }
+                setTimeout(() => {
+                    saveSuccess.set(false);
+                }, 1000);
+            }),
+            catchError(err => {
+                console.warn(err);
+                saveError.set(err);
+                return of(false);
+            })
+        );
+    };
+    // chart subject representing the last version that came from the server
+    const latestSavedChart$ = new SvelteSubject(cloneDeep(rawChart));
+    distinctChart$
+        .pipe(
+            withLatestFrom(latestSavedChart$), // compare with version that was last saved
+            map(([newChart, oldChart]) => ({
+                id: newChart.id,
+                patch: filterNestedObjectKeys(
+                    objectDiff(oldChart, newChart, ALLOWED_CHART_KEYS),
+                    disabledFields
+                )
+            })),
+            tap(({ patch }) => hasUnsavedChanges.set(Object.keys(patch).length > 0)),
+            debounceTime(1000), // debounce 1 second
+            filter(({ patch }) => Object.keys(patch).length > 0),
+            mergeMap(patchChart),
+            filter(savedSuccessfully => savedSuccessfully),
+            tap(newestChart => latestSavedChart$.next(newestChart))
+        )
+        .subscribe();
+
+    // apply core migrations after subscribing so changes get stored
+    const clonedRawChart = cloneDeep(rawChart);
+    coreMigrate(clonedRawChart.metadata);
+    chart$.set(clonedRawChart);
+
+    const visualization$ = distinctChart$.pipe(
+        map(chart => chart.type),
+        distinctUntilChanged(),
+        map(type => rawVisualizations.find(vis => vis.id === type) || rawVisualizations[0])
+    );
+
+    // current theme
+    const theme$ = distinctChart$.pipe(
+        map(chart => chart.theme),
+        distinctUntilChanged(),
+        skip(1),
+        filter(themeId => themeId),
+        debounceTime(100),
+        switchMap(themeId => {
+            return from(httpReq.get(`/v3/themes/${themeId}?extend=true`)).pipe(
+                catchError(err => {
+                    console.warn(`Failed to fetch theme ${themeId} (${err})`);
+                    return of(false);
+                })
+            );
+        }),
+        startWith(rawTheme),
+        filter(theme => theme),
+        shareReplay(1)
+    );
+
+    const editorMode$ = combineLatest([distinctChart$, theme$]).pipe(
+        map(([chart, theme]) => {
+            return get(chart, 'metadata.custom.webToPrint.mode', 'web') === 'print' ||
+                get(theme, 'data.type', 'web') === 'print'
+                ? 'print'
+                : 'web';
+        })
+    );
+
+    const isFixedHeight$ = combineLatest([visualization$, editorMode$]).pipe(
+        map(([visualization, editorMode]) => {
+            const { height, supportsFitHeight } = visualization;
+            return editorMode === 'web'
+                ? height === 'fixed'
+                : height === 'fixed' && !supportsFitHeight;
+        })
+    );
+
+    const locale$ = distinctChart$.pipe(
+        map(chart => chart.language || 'en-US'),
+        map(chartLocale => rawLocales.find(l => l.id === chartLocale))
+    );
+
+    // read-only dataset
+    const dataOptions$ = distinctChart$.pipe(
+        map(chart => chart.metadata.data),
+        distinctUntilChanged(isEqual)
+    );
+    const dataset$ = combineLatest([data$, dataOptions$]).pipe(
+        map(([data, options]) =>
+            delimited({
+                csv: data,
+                transpose: options.transpose,
+                firstRowIsHeader: options['horizontal-header']
+            }).parse()
+        )
+    );
+
+    const storeData = ({ id, data }) => {
+        return of({ id, data }).pipe(
+            switchMap(({ id, data }) =>
+                httpReq.put(`/v3/charts/${id}/data`, {
+                    body: data,
+                    headers: {
+                        // @todo: handle json data as well
+                        'Content-Type': 'text/csv'
+                    }
+                })
+            ),
+            tap(() => {
+                hasUnsavedChanges.set(false);
+                saveSuccess.set(true);
+                saveError.set(false);
+                for (const method of onNextSave) {
+                    method();
+                    onNextSave.delete(method);
+                }
+                setTimeout(() => {
+                    saveSuccess.set(false);
+                }, 1000);
+            }),
+            catchError(err => {
+                console.warn(err);
+                saveError.set(err);
+                return of(false);
+            })
+        );
+    };
+    data$
+        .pipe(
+            skip(1),
+            filter(() => !dataReadonly),
+            filter(data => data),
+            distinctUntilChanged(isEqual),
+            tap(() => hasUnsavedChanges.set(true)),
+            debounceTime(1000),
+            withLatestFrom(chartId$),
+            map(([data, id]) => ({ id, data })),
+            mergeMap(storeData)
+        )
+        .subscribe();
 
     /**
      * Subscribe to changes of a certain key within the chart store
@@ -67,234 +238,50 @@ export function initStores({
      * @param {function} handler
      * @returns {function} - to unsubscribe
      */
-    chart.subscribeKey = (key, handler) => {
-        const watcher = { key, handler: debounce(handler, 100) };
-        chartKeyWatchers.add(watcher);
-        return () => chartKeyWatchers.remove(watcher);
+    chart$.subscribeKey = (key, handler) => {
+        const sub = distinctChart$
+            .pipe(
+                map(chart => get(chart, key)),
+                distinctUntilChanged(isEqual),
+                debounceTime(100),
+                tap(handler)
+            )
+            .subscribe();
+        return () => sub.unsubscribe();
     };
 
-    /**
-     * visualization store (readonly to views)
-     */
-    const chartType = derived(chart, $chart => $chart.type, ''); // no need to use distinct as type is primitive
-    const visualizations = new writable(rawVisualizations);
-    const visualization = derived(
-        [chartType, visualizations],
-        ([$chartType, $visualizations]) => {
-            return $visualizations.find(vis => vis.id === $chartType) || visualizations[0] || {};
-        },
-        visualizations[0]
-    );
-
-    /**
-     * theme store (readonly to views)
-     */
-    const theme = new writable(rawTheme);
-    const themeReadonly = derived(theme, $theme => $theme, rawTheme);
-
-    /**
-     * dataset store (readonly to views)
-     */
-    const dataOptions = distinct(derived(chart, $chart => get($chart, 'metadata.data'), {}));
-    const dataset = derived(
-        [data, dataOptions],
-        ([$data, $dataOptions]) => {
-            return delimited({
-                csv: $data,
-                transpose: $dataOptions.transpose,
-                firstRowIsHeader: $dataOptions['horizontal-header']
-            }).parse();
-        },
-        {}
-    );
-
-    /**
-     * the editor mode determines which resizer controls are
-     * displayed below the chart preview and if it's resizable
-     */
-    const editorMode = derived(
-        [chart, theme],
-        ([$chart, $theme]) => {
-            return get($chart, 'metadata.custom.webToPrint.mode', 'web') === 'print' ||
-                get($theme, 'data.type', 'web') === 'print'
-                ? 'print'
-                : 'web';
-        },
-        'web'
-    );
-
-    const isFixedHeight = derived(
-        [visualization, editorMode],
-        ([$visualization, $editorMode]) => {
-            const { height, supportsFitHeight } = $visualization;
-            return $editorMode === 'web'
-                ? height === 'fixed'
-                : height === 'fixed' && !supportsFitHeight;
-        },
-        false
-    );
-
-    const locales = new writable(rawLocales);
-    const chartLocale = derived(chart, $chart => $chart.language || 'en-US', 'en-US');
-    const localeReadOnly = derived(
-        [chartLocale, locales],
-        ([$chartLocale, $locales]) => {
-            return (
-                $locales.find(l => l.id === $chartLocale) || $locales.find(l => l.id === 'en-US')
-            );
-        },
-        'en-US'
-    );
-
-    const patchChartSoon = debounce(async function (id) {
-        const changesToSave = cloneDeep(unsavedChartChanges);
-        let savingFailed = false;
-
-        /*
-         * even though changes haven't been saved yet, clear
-         * now instead of after request, so that we don't
-         * end up deleting any new changes that come in while
-         * the request is running on request completion
-         */
-        unsavedChartChanges = {};
-
-        if (Object.keys(changesToSave).length > 0) {
-            try {
-                await httpReq.patch(`/v3/charts/${id}`, {
-                    payload: changesToSave
-                });
-                saveError.set(false);
-                if (!Object.keys(unsavedChartChanges).length) {
-                    hasUnsavedChanges.set(false);
+    chart$.bindKey = (key, defaultValue) => {
+        const setChartValue = value => {
+            const clonedChart = cloneDeep(chart$.value);
+            set(clonedChart, key, value);
+            chart$.set(clonedChart);
+        };
+        const writableKey$ = distinctChart$.pipe(
+            map(chart => get(chart, key)),
+            map(value => {
+                if (value === null && defaultValue) {
+                    setChartValue(defaultValue);
+                    return defaultValue;
                 }
-                for (const method of onNextSave) {
-                    method();
-                    onNextSave.delete(method);
-                }
-                if (!Object.keys(unsavedChartChanges).length) {
-                    hasUnsavedChanges.set(false);
-                }
-                saveSuccess.set(true);
-                setTimeout(() => {
-                    saveSuccess.set(false);
-                }, 1000);
-            } catch (err) {
-                // restore unsaved changes that failed to save
-                unsavedChartChanges = assign(changesToSave, unsavedChartChanges);
-                savingFailed = true;
-                console.error(err);
-                saveError.set(err);
-            }
-        } else {
-            hasUnsavedChanges.set(false);
-        }
-        if (!savingFailed) {
-            /*
-             * invoke onNextSave handlers regardless
-             * of whether or not there where changes
-             * to be saved, unless saving failed
-             */
-            for (const method of onNextSave) {
-                method();
-                onNextSave.delete(method);
-            }
-        }
-    }, 1000);
-
-    let prevChartState;
-    chart.subscribe(async value => {
-        if (!prevChartState && value.id) {
-            // initial set
-            prevChartState = cloneDeep(value);
-        } else if (prevChartState && !isEqual(prevChartState, value)) {
-            // find out what has been changed
-            // but ignore changes to disabled fields
-            const patch = filterNestedObjectKeys(
-                objectDiff(prevChartState, value, ALLOWED_CHART_KEYS),
-                disabledFields
-            );
-
-            const newUnsaved = Object.keys(patch).length > 0;
-            // and store the patch
-            assign(unsavedChartChanges, patch);
-
-            prevChartState = cloneDeep(value);
-            if (newUnsaved) {
-                hasUnsavedChanges.set(true);
-                patchChartSoon(value.id);
-
-                for (const { key, handler } of chartKeyWatchers) {
-                    const value = get(patch, key);
-                    if (value !== undefined && value !== null) {
-                        handler(value);
-                    }
-                }
-            }
-
-            if (unsavedChartChanges.theme) {
-                // chart theme has changed, update theme store
-                const newTheme = await httpReq.get(
-                    `/v3/themes/${unsavedChartChanges.theme}?extend=true`
-                );
-                theme.set(newTheme);
-            }
-        }
-    });
-
-    // apply core migrations after subscribing so changes get stored
-    const clonedRawChart = cloneDeep(rawChart);
-    coreMigrate(clonedRawChart.metadata);
-    chart.set(clonedRawChart);
-
-    let prevDataState;
-    let unsavedDataState;
-    const storeDataSoon = debounce(async function () {
-        try {
-            await httpReq.put(`/v3/charts/${rawChart.id}/data`, {
-                body: unsavedDataState,
-                headers: {
-                    // @todo: handle json data as well
-                    'Content-Type': 'text/csv'
-                }
-            });
-            saveError.set(false);
-            prevDataState = unsavedDataState;
-            if (!Object.keys(unsavedChartChanges).length) {
-                hasUnsavedChanges.set(false);
-            }
-            for (const method of onNextSave) {
-                method();
-                onNextSave.delete(method);
-            }
-        } catch (err) {
-            console.error(err);
-            saveError.set(err);
-        }
-    }, 1000);
-
-    data.subscribe(value => {
-        if (dataReadonly) return;
-        if (prevDataState === undefined && value !== undefined) {
-            // initial set
-            prevDataState = cloneDeep(value);
-        } else if (prevDataState !== undefined && !isEqual(prevDataState, value) && value !== '') {
-            unsavedDataState = value;
-            hasUnsavedChanges.set(true);
-            storeDataSoon();
-        }
-    });
+                return value;
+            }),
+            distinctUntilChanged(isEqual)
+        );
+        writableKey$.set = setChartValue;
+        return writableKey$;
+    };
 
     return {
-        chart,
-        data,
-        visualization,
-        team: teamReadonly,
-        theme: themeReadonly,
-        dataset,
-        editorMode,
-        isFixedHeight,
-        locales,
-        locale: localeReadOnly,
+        chart: chart$,
+        data: data$,
+        team: team$,
+        theme: theme$,
+        dataset: dataset$,
+        visualization: visualization$,
+        locale: locale$,
+        locales: locales$,
+        editorMode: editorMode$,
+        isFixedHeight: isFixedHeight$,
         onNextSave,
         hasUnsavedChanges,
         saveError,

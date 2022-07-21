@@ -16,16 +16,19 @@
     $: tooltip = requireUpgrade ? __('layout / logo / upgrade-info') : false;
 
     $: logoOptions = logos.map(({ id, title }) => ({ value: id, label: title }));
+
+    const logoId = chart.bindKey('metadata.publish.blocks.logo.id');
+    const logoEnabled = chart.bindKey('metadata.publish.blocks.logo.enabled');
 </script>
 
 {#if logos.length > 1}
     <HorizontalFormFieldDisplay compact label={__('layout / logo')}>
-        <SelectInput bind:value={$chart.metadata.publish.blocks.logo.id} options={logoOptions} />
+        <SelectInput bind:value={$logoId} options={logoOptions} />
     </HorizontalFormFieldDisplay>
 {/if}
 {#if requireUpgrade || themeHasLogo}
     <SwitchControl
-        bind:value={$chart.metadata.publish.blocks.logo.enabled}
+        bind:value={$logoEnabled}
         disabled={requireUpgrade}
         label={__('layout / logo / show')}
         {tooltip}

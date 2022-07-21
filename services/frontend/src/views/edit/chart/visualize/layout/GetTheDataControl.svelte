@@ -4,9 +4,8 @@
 
     const { chart } = getContext('page/edit');
     export let __;
+
+    const getTheData = chart.bindKey('metadata.publish.blocks.get-the-data');
 </script>
 
-<SwitchControl
-    bind:value={$chart.metadata.publish.blocks['get-the-data']}
-    label={__('layout / get-the-data')}
-/>
+<SwitchControl bind:value={$getTheData} label={__('layout / get-the-data')} />

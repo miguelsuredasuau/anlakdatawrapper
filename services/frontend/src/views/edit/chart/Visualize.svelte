@@ -22,6 +22,8 @@
     import { fade } from 'svelte/transition';
     import { headerProps } from '_layout/stores';
     import get from '@datawrapper/shared/get';
+    import { merge } from 'rxjs';
+    import { debounceTime, tap } from 'rxjs/operators';
     // load stores from context
     const { chart, theme, visualization, isDark, customViews, dataset, editorMode, isFixedHeight } =
         getContext('page/edit');
@@ -135,7 +137,7 @@
      * keep track of store subscriptions to we can unsubscribe
      * when this component gets destroyed
      */
-    const storeSubscriptions = new Set();
+    const subscriptions = new Set();
 
     let sidebarWidth;
     let mainWidth;
@@ -148,10 +150,29 @@
         );
 
     onMount(() => {
-        RELOAD.forEach(key => storeSubscriptions.add(chart.subscribeKey(key, reloadPreview)));
-        UPDATE.forEach(key => storeSubscriptions.add(chart.subscribeKey(key, updatePreview)));
-        RERENDER.forEach(key =>
-            storeSubscriptions.add(chart.subscribeKey(key, iframePreview.rerender))
+        subscriptions.add(
+            merge(...RELOAD.map(key => chart.bindKey(key)))
+                .pipe(
+                    debounceTime(100),
+                    tap(() => reloadPreview())
+                )
+                .subscribe()
+        );
+        subscriptions.add(
+            merge(...UPDATE.map(key => chart.bindKey(key)))
+                .pipe(
+                    debounceTime(100),
+                    tap(() => updatePreview())
+                )
+                .subscribe()
+        );
+        subscriptions.add(
+            merge(...RERENDER.map(key => chart.bindKey(key)))
+                .pipe(
+                    debounceTime(100),
+                    tap(() => iframePreview.rerender())
+                )
+                .subscribe()
         );
         // read current tab from url hash
         if (tabs.find(t => `#${t.id}` === window.location.hash)) {
@@ -212,8 +233,12 @@
     }
 
     onDestroy(() => {
-        for (const unsubscribe of storeSubscriptions) {
-            unsubscribe();
+        for (const subscription of subscriptions) {
+            if (subscription.unsubscribe) {
+                subscription.unsubscribe(); // rxjs observable
+            } else {
+                subscription();
+            }
         }
     });
 </script>

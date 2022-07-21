@@ -3,6 +3,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import set from 'lodash/set';
 import nock from 'nock';
 import FakeTimers from '@sinonjs/fake-timers';
+import sinon from 'sinon';
+import { take, tap } from 'rxjs/operators';
 
 const rawChart = {
     publicId: 'rBHpV',
@@ -504,15 +506,7 @@ const setupStoresForTest = ({
 };
 
 const subscribeOnce = (store, handler) => {
-    return new Promise(resolve => {
-        const unsub = store.subscribe(value => {
-            handler(value);
-            setTimeout(() => {
-                unsub();
-                resolve();
-            });
-        });
-    });
+    store.pipe(take(1), tap(handler)).subscribe();
 };
 
 describe('edit page stores', () => {
@@ -681,9 +675,7 @@ Q4 2000;;;0.6;`;
     });
 
     it('updates chart theme correctly', async () => {
-        // NOTE: I was unable to make this test work with fake timers and I have no idea why.
-        // todo: try this test again with fake timers after RXJS refactoring
-        // const clock = FakeTimers.install();
+        const clock = FakeTimers.install();
         const fakeTheme = {
             id: 'fake-theme',
             title: 'Fake Theme',
@@ -701,16 +693,99 @@ Q4 2000;;;0.6;`;
             .reply(200, expected);
 
         const { chart, theme } = setupStoresForTest();
+        const sub = theme.subscribe(); // make theme observable "hot"
         chart.set(expected);
         subscribeOnce(chart, value => expect(value).to.deep.equal(expected));
         subscribeOnce(theme, value => expect(value).to.deep.equal(rawTheme)); // theme not updated yet
 
-        // await clock.tickAsync(1000)
-        await sleep(1000);
-        await subscribeOnce(theme, value => expect(value).to.deep.equal(fakeTheme)); // new theme now available
+        await clock.tickAsync(1100);
+        subscribeOnce(theme, value => expect(value).to.deep.equal(fakeTheme)); // new theme now available
         expect(scope.isDone()).to.equal(true);
-        // clock.uninstall();
+        sub.unsubscribe();
+        clock.uninstall();
+    });
+
+    describe('chart.bindKey', () => {
+        it('returns null if the property does not exist and no default value is set', () => {
+            const { chart } = setupStoresForTest();
+            const testFoo = chart.bindKey('metadata.test.foo');
+            subscribeOnce(testFoo, value => expect(value).to.equal(null));
+        });
+
+        it('returns given default value if the property does not exist', async () => {
+            const clock = FakeTimers.install();
+            const expectedChart = cloneDeep(rawChart);
+            set(expectedChart, 'metadata.test.foo', 'bar');
+            const scope = nock('http://api.datawrapper.mock')
+                .patch(`/v3/charts/${rawChart.id}`, {
+                    metadata: { test: { foo: 'bar' } }
+                })
+                .reply(200, expectedChart);
+
+            // start test
+            const { chart } = setupStoresForTest();
+            const testFoo = chart.bindKey('metadata.test.foo', 'bar');
+            subscribeOnce(testFoo, value => expect(value).to.equal('bar'));
+            subscribeOnce(chart, value => expect(value).to.deep.equal(expectedChart));
+
+            expect(scope.isDone()).to.equal(false);
+            await clock.tickAsync(1000);
+            expect(scope.isDone()).to.equal(true);
+            clock.uninstall();
+        });
+
+        it('creates a correct two-way binding on chart.bindKey', async () => {
+            const clock = FakeTimers.install();
+            const expectedChart = cloneDeep(rawChart);
+            set(expectedChart, 'metadata.test.foo', 'bar');
+            const scope = nock('http://api.datawrapper.mock')
+                .patch(`/v3/charts/${rawChart.id}`, {
+                    metadata: { test: { foo: 'bar' } }
+                })
+                .reply(200, expectedChart);
+
+            // start test
+            const { chart } = setupStoresForTest();
+            const testFoo = chart.bindKey('metadata.test.foo');
+            subscribeOnce(testFoo, value => expect(value).to.equal(null));
+            testFoo.set('bar');
+            subscribeOnce(testFoo, value => expect(value).to.equal('bar'));
+            subscribeOnce(chart, value => expect(value).to.deep.equal(expectedChart));
+
+            expect(scope.isDone()).to.equal(false);
+            await clock.tickAsync(1000);
+            expect(scope.isDone()).to.equal(true);
+            clock.uninstall();
+        });
+
+        it('only emits distinct values', async () => {
+            const clock = FakeTimers.install();
+            const expectedChart = cloneDeep(rawChart);
+            set(expectedChart, 'metadata.test.foo', 'bar');
+            set(expectedChart, 'metadata.test.bar', 'foo');
+            const scope = nock('http://api.datawrapper.mock')
+                .patch(`/v3/charts/${rawChart.id}`, {
+                    metadata: { test: { foo: 'bar', bar: 'foo' } }
+                })
+                .reply(200, expectedChart);
+
+            // start test
+            const { chart } = setupStoresForTest();
+            const testFoo = chart.bindKey('metadata.test.foo');
+            const fake = sinon.fake();
+            const sub = testFoo.pipe(tap(fake)).subscribe();
+            testFoo.set('foo');
+            testFoo.set('bar');
+            testFoo.set('bar');
+            testFoo.set('bar');
+            chart.set(expectedChart);
+
+            expect(fake.callCount).to.equal(3); // testFoo emitted null, foo, bar
+            sub.unsubscribe();
+            expect(scope.isDone()).to.equal(false);
+            await clock.tickAsync(1000);
+            expect(scope.isDone()).to.equal(true);
+            clock.uninstall();
+        });
     });
 });
-
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
