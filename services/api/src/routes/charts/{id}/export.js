@@ -97,6 +97,7 @@ module.exports = server => {
         method: 'POST',
         path: '/export/{format}/async',
         options: {
+            tags: ['api'],
             description: 'Export chart in async mode',
             notes: `Export your chart as image or document for use in print or presentations. Returns the URL to query the async export status.
                         Not all formats might be available to you, based on your account. Requires scope \`chart:read\`.`,
@@ -123,6 +124,7 @@ module.exports = server => {
         method: 'GET',
         path: '/export/{format}/async/{exportId}',
         options: {
+            tags: ['api'],
             description: 'Export chart',
             notes: `After triggering an asynchronous export this route can be used to find out if the export has finished, yet. It returns either the HTTP code 425 to indicate that the export isn't ready or HTTP code 200 along with the export result.`,
             auth: {
