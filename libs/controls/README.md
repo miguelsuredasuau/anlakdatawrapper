@@ -52,11 +52,3 @@ npm i @datawrapper/controls
 ```
 
 Import and develop controls locally the same way as in v2.
-
-## version 1.x: Svelte 1 controls (deprecated)
-
-Actually, the component source code is already Svelte 2, but they are currently still meant to be compiled by Svelte 1 compiler with `parser: 'v2'` setting activated. The main difference to v2 is that the components might still contain legacy Svelte 1 syntax such as `<:Window>` and might still use `component.observe` etc.
-
-```sh
-npm  i @datawrapper/controls@1
-```

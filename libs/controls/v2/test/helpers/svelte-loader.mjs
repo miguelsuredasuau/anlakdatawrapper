@@ -1,14 +1,13 @@
 /* eslint-env node */
 // Custom loader for on-the-fly transpiling of Svelte files in unit tests
-// TODO: Add source maps support
 
-import { URL, pathToFileURL } from 'url';
-import path from 'path';
+import { URL, pathToFileURL } from 'node:url';
+import { basename } from 'node:path';
+import { cwd } from 'node:process';
 import { compile } from 'svelte';
 import sourceMapSupport from 'source-map-support';
 
-const baseURL = pathToFileURL(`${process.cwd()}/`).href;
-
+const baseURL = pathToFileURL(`${cwd()}/`).href;
 // Svelte2 components use .html as file extension:
 const extensionsRegex = /\.html$/;
 
@@ -21,50 +20,44 @@ sourceMapSupport.install({
     }
 });
 
-export function resolve(specifier, context, defaultResolve) {
-    const { parentURL = baseURL } = context;
-
-    // Node.js normally errors on unknown file extensions, so return a URL for
-    // specifiers ending in the Svelte file extension.
+export async function resolve(specifier, context, nextResolve) {
+    // Resolve svelte files (*.html)
     if (extensionsRegex.test(specifier)) {
-        return { url: new URL(specifier, parentURL).href };
+        const { parentURL = baseURL } = context;
+        return {
+            shortCircuit: true,
+            url: new URL(specifier, parentURL).href
+        };
     }
 
     // Let Node.js handle all other specifiers.
-    return defaultResolve(specifier, context, defaultResolve);
+    return nextResolve(specifier, context);
 }
 
-export function getFormat(url, context, defaultGetFormat) {
-    // Now that we patched resolve to let Svelte URLs through, we need to
-    // tell Node.js what format such URLs should be interpreted as. For the
-    // purposes of this loader, all Svelte URLs are ES modules.
+export async function load(url, context, nextLoad) {
+    // Load and transpile svelte files (*.html)
     if (extensionsRegex.test(url)) {
-        return { format: 'module' };
-    }
-
-    // Let Node.js handle all other URLs.
-    return defaultGetFormat(url, context, defaultGetFormat);
-}
-
-export function transformSource(source, context, defaultTransformSource) {
-    const { url } = context;
-    const filename = new URL(url).pathname;
-
-    if (extensionsRegex.test(url)) {
-        const { js } = compile(source.toString('utf8'), {
+        const format = 'module';
+        const { source: rawSource } = await nextLoad(url, { ...context, format });
+        const filename = new URL(url).pathname;
+        const { js } = compile(rawSource.toString('utf8'), {
             filename,
 
             // component name, useful for debugging
-            name: path.basename(filename, '.html')
+            name: basename(filename, '.html')
         });
 
         // Make the sourcemap available to be retrieved via source-map-support:
         sourcemaps[url] = js.map;
 
         // Pass compiled Svelte source to Node.js:
-        return { source: js.code };
+        return {
+            format: 'module',
+            shortCircuit: true,
+            source: js.code
+        };
     }
 
-    // Let Node.js handle all other sources:
-    return defaultTransformSource(source, context, defaultTransformSource);
+    // Let Node.js handle all other specifiers.
+    return nextLoad(url, context);
 }

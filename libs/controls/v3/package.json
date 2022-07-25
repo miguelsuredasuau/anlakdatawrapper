@@ -1,6 +1,6 @@
 {
     "name": "@datawrapper/controls",
-    "version": "3.16.0",
+    "version": "3.17.0-0",
     "type": "module",
     "scripts": {
         "format": "cd ../../.. && scripts/format libs/controls/v3",
@@ -8,8 +8,8 @@
         "test": "ava --verbose",
         "test:watch": "ava --watch --verbose",
         "prepublishOnly": "npm run lint && npm test",
-        "storybook": "start-storybook -p 6006",
-        "build-storybook": "build-storybook",
+        "storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook -p 6006",
+        "build-storybook": "NODE_OPTIONS=--openssl-legacy-provider build-storybook",
         "update-locales": "cp ../../../services/api/locale/en_US.json stories/static/locale.en.json && cp ../../../services/api/locale/de_DE.json stories/static/locale.de.json"
     },
     "repository": {
@@ -53,7 +53,6 @@
             "./test/helpers/setup-browser-env.js"
         ],
         "nodeArguments": [
-            "--experimental-json-modules",
             "--experimental-loader=./test/helpers/svelte-loader.js",
             "--no-warnings"
         ]
