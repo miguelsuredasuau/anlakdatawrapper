@@ -126,6 +126,10 @@
     }
 
     async function updatePreview() {
+        if (typeof window === 'undefined') {
+            // don't update preview in ssr
+            return;
+        }
         [widthPx, heightPx] = getPixelDimensions();
 
         await waitFor(() => iframePreview);

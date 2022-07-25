@@ -73,7 +73,7 @@ function filterNestedObjectKeys(object, removeKeys) {
  */
 async function waitFor(test, { interval, timeout } = {}) {
     interval = interval || 100;
-    timeout = timeout || 5000;
+    timeout = timeout || 15000;
     let result;
     let timedOut = false;
     const timer = setTimeout(() => {
