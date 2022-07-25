@@ -1,7 +1,8 @@
-import { expect } from 'chai';
-import { getNestedObjectKeys } from './index.js';
-import { filterNestedObjectKeys } from './index.js';
+import chai from 'chai';
+import { getNestedObjectKeys, filterNestedObjectKeys, waitFor } from './index.js';
 import clone from 'lodash/cloneDeep';
+
+const { expect } = chai;
 
 describe('getNestedObjectKeys', function () {
     it('returns correct keys', function () {
@@ -111,5 +112,25 @@ describe('filterNestedObjectKeys', function () {
         expect(srcObject).to.deep.equal(clonedSrc);
         filterNestedObjectKeys(srcObject, ['metadata.visualize.base']);
         expect(srcObject).to.deep.equal(clonedSrc);
+    });
+});
+
+describe('waitFor', () => {
+    it('resolves once the condition func is truthy', async () => {
+        let result = false;
+        setTimeout(() => (result = 42), 200);
+        const res = await waitFor(() => result);
+        expect(res).to.equal(42);
+    });
+
+    it('times out', async () => {
+        let result = false;
+        setTimeout(() => (result = true), 2000);
+        try {
+            await waitFor(() => result, { timeout: 500 });
+        } catch (e) {
+            expect(e).to.be.an('error');
+            expect(e.message).to.equal('waitFor timeout exceeded');
+        }
     });
 });

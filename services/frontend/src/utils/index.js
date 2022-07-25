@@ -67,13 +67,24 @@ function filterNestedObjectKeys(object, removeKeys) {
 /**
  * wait for test() to return true
  *
- * @param test test method
- * @param interval number of ms to wait between tests
+ * @param {function} test - test method
+ * @param {number} options.interval - number of ms to wait between tests, default 100
+ * @param {number} options.timeout - throw exception after [timeout] ms, default 5000
  */
-async function waitFor(test, interval = 100) {
-    while (!test()) {
+async function waitFor(test, { interval, timeout } = {}) {
+    interval = interval || 100;
+    timeout = timeout || 5000;
+    let result;
+    let timedOut = false;
+    const timer = setTimeout(() => {
+        timedOut = true;
+    }, timeout);
+    while (!(result = test())) {
+        if (timedOut) throw new Error('waitFor timeout exceeded');
         await new Promise(resolve => setTimeout(resolve, interval));
     }
+    clearTimeout(timer);
+    return result;
 }
 
 /**

@@ -10,7 +10,7 @@
     import get from 'lodash/get';
     import set from 'lodash/set';
     import assign from 'assign-deep';
-    import { logError } from '../../../../utils';
+    import { logError, waitFor } from '../../../../utils';
     // load stores from context
     const { chart, theme, visualization, locale, dataset } = getContext('page/edit');
 
@@ -64,8 +64,8 @@
             `/lib/plugins/${visualization.__plugin}/static/${type}.js?sha=${visualization.__visHash}`
         );
         // create visualization instance
-        const newVis = dwVisualization(type);
-        if (newVis) {
+        try {
+            const newVis = await waitFor(() => dwVisualization(type));
             newVis.meta = visualization;
             newVis.chart(dwChart);
             newVis.theme = () => $theme.data;
@@ -74,7 +74,7 @@
             updateStoreData();
             await tick();
             controlsReady = true;
-        } else {
+        } catch (e) {
             logError(new Error(`Unknown visualization type: ${type}`));
         }
     }
