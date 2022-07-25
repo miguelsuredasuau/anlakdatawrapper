@@ -222,7 +222,7 @@
 
     $: {
         // update preview if isDark changes
-        updateIsDark(isDark);
+        if (typeof window !== 'undefined') updateIsDark(isDark);
     }
 
     async function waitForVis() {
