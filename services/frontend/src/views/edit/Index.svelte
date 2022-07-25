@@ -77,10 +77,11 @@
     });
     setContext('page/edit', {
         chart,
-        theme,
+        customViews,
         dataset,
-        onNextSave,
         hasUnsavedChanges,
+        onNextSave,
+        theme,
         ...stores
     });
 
