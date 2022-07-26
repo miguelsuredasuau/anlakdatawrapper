@@ -6,8 +6,8 @@
         "lint": "cd ../../.. && scripts/lint libs/controls/v2",
         "test": "ava",
         "test:watch": "ava --watch --verbose",
-        "storybook": "start-storybook --port 6009",
-        "build-storybook": "build-storybook",
+        "storybook": "NODE_OPTIONS=--openssl-legacy-provider start-storybook --port 6009",
+        "build-storybook": "NODE_OPTIONS=--openssl-legacy-provider build-storybook",
         "prepublishOnly": "npm run lint && npm test",
         "update-locales": "cp ../../../services/api/locale/en_US.json stories/static/locale.en.json && cp ../../../services/api/locale/de_DE.json stories/static/locale.de.json"
     },
