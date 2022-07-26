@@ -4,7 +4,8 @@ import set from 'lodash/set';
 import nock from 'nock';
 import FakeTimers from '@sinonjs/fake-timers';
 import sinon from 'sinon';
-import { take, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
+import { subscribeOnce } from '../../test-utils';
 
 const rawChart = {
     publicId: 'rBHpV',
@@ -503,10 +504,6 @@ const setupStoresForTest = ({
         disabledFields: disabledFieldsDefault,
         dataReadonly: dataReadonlyDefault
     });
-};
-
-const subscribeOnce = (store, handler) => {
-    store.pipe(take(1), tap(handler)).subscribe();
 };
 
 describe('edit page stores', () => {

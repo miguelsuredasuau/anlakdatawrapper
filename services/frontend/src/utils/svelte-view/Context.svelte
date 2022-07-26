@@ -56,7 +56,7 @@
         // contexts defined in view index components
         // such as `page/archive`
         const store = key.startsWith('page/')
-            ? cloneDeep(stores[key])
+            ? stores[key] // don't deep clone so that tests can access the same store instances
             : writable(cloneDeep(stores[key]));
         if (key === 'messages') store.translate = translate;
         if (key === 'userData' && typeof window !== 'undefined') {

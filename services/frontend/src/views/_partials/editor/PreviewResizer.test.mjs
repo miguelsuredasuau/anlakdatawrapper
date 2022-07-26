@@ -2,22 +2,24 @@
 
 import PreviewResizer from './PreviewResizer.svelte';
 import { tick } from 'svelte';
-import { writable, derived, readable, get as getStoreValue } from 'svelte/store';
+import { get as getStoreValue } from 'svelte/store';
 import {
     renderWithContext,
     setConfig,
     mockTranslations,
-    storeWithSetKey,
     clickOn,
     fireChangeEvent,
     changeValueTo
 } from '../../../test-utils';
 import chai, { expect } from 'chai';
-import { cloneDeep, get } from 'lodash';
+import { cloneDeep } from 'lodash';
 import assign from 'assign-deep';
 import chaiDom from 'chai-dom';
 import sinonChai from 'sinon-chai';
-import { spy } from 'sinon';
+import { initStores } from '../../edit/stores.js';
+import { take, tap } from 'rxjs/operators';
+import set from 'lodash/set';
+import nock from 'nock';
 
 setConfig({ testIdAttribute: 'data-uid' });
 chai.use(chaiDom);
@@ -32,42 +34,51 @@ const pxToMM = px => (px / 96) * 25.4;
 const inchToPx = inch => Math.round(inch * 96);
 const mmToPx = mm => Math.round((mm * 96) / 25.4);
 
-async function renderPreviewResizer({ chart, team, theme, visualization = lineChart }) {
-    chart = storeWithSetKey(chart);
-
-    const editorMode = derived(
-        [chart, theme],
-        ([$chart, $theme]) => {
-            return get($chart, 'metadata.custom.webToPrint.mode', 'web') === 'print' ||
-                get($theme, 'data.type', 'web') === 'print'
-                ? 'print'
-                : 'web';
-        },
-        'web'
-    );
-
-    const isFixedHeight = derived(
-        [visualization, editorMode],
-        ([$visualization, $editorMode]) => {
-            const { height, supportsFitHeight } = $visualization;
-            return $editorMode === 'web'
-                ? height === 'fixed'
-                : height === 'fixed' && !supportsFitHeight;
-        },
-        false
-    );
-
+async function renderPreviewResizer({
+    rawChart,
+    rawTeam,
+    rawTheme,
+    rawVisualizations = [lineChart]
+}) {
+    const { chart, theme, isFixedHeight, team, editorMode, visualization } = initStores({
+        rawChart,
+        rawTheme,
+        rawTeam,
+        rawVisualizations,
+        disabledFields: []
+    });
     const iframe = document.createElement('div');
 
     const triggerFixedHeightChange = height => {
-        if (!getStoreValue(isFixedHeight)) return;
-        const event = new CustomEvent('fixed-height-changed', { detail: height });
-        iframe.dispatchEvent(event);
+        isFixedHeight
+            .pipe(
+                take(1),
+                tap(isFixedHeight => {
+                    if (!isFixedHeight) return;
+                    const event = new CustomEvent('fixed-height-changed', { detail: height });
+                    iframe.dispatchEvent(event);
+                })
+            )
+            .subscribe();
     };
 
-    const iframePreview = {
-        set: spy(),
-        $on: (event, cb) => iframe.addEventListener(event, cb)
+    const iframePreview = (function () {
+        let dimensions = { width: null, height: null };
+        return {
+            set(d) {
+                dimensions = d;
+            },
+            $on: (event, cb) => iframe.addEventListener(event, cb),
+            get dimensions() {
+                return dimensions;
+            }
+        };
+    })();
+
+    chart.setKey = (key, value) => {
+        const prev = cloneDeep(chart._value);
+        set(prev, key, value);
+        chart.set(prev);
     };
 
     const result = await renderWithContext(
@@ -114,9 +125,9 @@ const basePrintChart = assign(cloneDeep(baseChart), {
     }
 });
 
-const lineChart = readable({});
-const barChart = readable({ height: 'fixed' });
-const pieChart = readable({ height: 'fixed', supportsFitHeight: true });
+const lineChart = {};
+const barChart = { height: 'fixed' };
+const pieChart = { height: 'fixed', supportsFitHeight: true };
 
 const webTheme = { data: {} };
 const printTheme = { data: { type: 'print' } };
@@ -134,16 +145,20 @@ const presets = {
 describe('PreviewResizer', () => {
     let result;
 
+    beforeEach(() => {
+        nock('http://api.datawrapper.mock').patch('/v3/charts/undefined').reply(200);
+    });
+
     describe('web mode', () => {
         describe('with defaults', () => {
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
-                const team = readable({ settings: {} });
-                const theme = readable(webTheme);
+                const rawChart = cloneDeep(baseChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = webTheme;
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme
+                    rawChart,
+                    rawTeam,
+                    rawTheme
                 });
             });
 
@@ -167,8 +182,9 @@ describe('PreviewResizer', () => {
                 expect(buttons[2]).to.have.class('is-selected');
             });
 
-            it('sets correct preview size', () => {
-                expect(result.iframePreview.set).to.have.been.calledOnceWith({
+            it('sets correct preview size', async () => {
+                await sleep(20);
+                expect(result.iframePreview.dimensions).to.deep.equal({
                     width: 550,
                     height: 420
                 });
@@ -178,25 +194,23 @@ describe('PreviewResizer', () => {
                 const toolbar = result.getByTestId('resizer');
                 const preview = result.iframePreview;
                 const buttons = toolbar.querySelectorAll('button');
-                preview.set.resetHistory();
                 await clickOn(buttons[0]);
                 expect(buttons[0]).to.have.class('is-selected');
                 // check if embed-width changed
-                const { publish } = getStoreValue(result.stores['page/edit'].chart).metadata;
+                const { publish } = result.stores['page/edit'].chart._value.metadata;
                 expect(publish).to.have.property('embed-width', 320);
                 expect(publish).to.have.property('embed-height', 420);
-                expect(preview.set).to.have.been.calledOnceWith({
+                await sleep(20);
+                expect(preview.dimensions).to.deep.equal({
                     width: 320,
                     height: 420
                 });
-                preview.set.resetHistory();
                 await clickOn(buttons[2]);
-                const { publish: publish2 } = getStoreValue(
-                    result.stores['page/edit'].chart
-                ).metadata;
+                const { publish: publish2 } = result.stores['page/edit'].chart._value.metadata;
                 expect(publish2).to.have.property('embed-width', 600);
                 expect(publish2).to.have.property('embed-height', 420);
-                expect(preview.set).to.have.been.calledOnceWith({
+                await sleep(20);
+                expect(preview.dimensions).to.deep.equal({
                     width: 600,
                     height: 420
                 });
@@ -205,14 +219,14 @@ describe('PreviewResizer', () => {
 
         describe('with fixed height chart', () => {
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
-                const team = readable({ settings: {} });
-                const theme = readable(webTheme);
+                const rawChart = cloneDeep(baseChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = webTheme;
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme,
-                    visualization: barChart
+                    rawChart,
+                    rawTeam,
+                    rawTheme,
+                    rawVisualizations: [barChart]
                 });
             });
 
@@ -235,7 +249,7 @@ describe('PreviewResizer', () => {
                 const inputs = toolbar.querySelectorAll('input');
 
                 result.triggerFixedHeightChange(500);
-                const { publish } = getStoreValue(result.stores['page/edit'].chart).metadata;
+                const { publish } = result.stores['page/edit'].chart._value.metadata;
                 expect(publish).to.have.property('embed-height', 500);
 
                 expect(inputs).to.have.length(2);
@@ -249,14 +263,14 @@ describe('PreviewResizer', () => {
 
         describe('with fixed height chart that supports fitHeight', () => {
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
-                const team = readable({ settings: {} });
-                const theme = readable(webTheme);
+                const rawChart = cloneDeep(baseChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = webTheme;
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme,
-                    visualization: pieChart
+                    rawChart,
+                    rawTeam,
+                    rawTheme,
+                    rawVisualizations: [pieChart]
                 });
             });
 
@@ -273,17 +287,15 @@ describe('PreviewResizer', () => {
         });
 
         describe('switch from fit to fixed', () => {
-            const visualization = writable({});
-
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
-                const team = readable({ settings: {} });
-                const theme = readable(webTheme);
+                const rawChart = cloneDeep(baseChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = webTheme;
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme,
-                    visualization
+                    rawChart,
+                    rawTeam,
+                    rawTheme,
+                    rawVisualizations: [{}, { id: 'fixed-height-chart', height: 'fixed' }]
                 });
             });
 
@@ -298,8 +310,9 @@ describe('PreviewResizer', () => {
                 expect(inputs[1]).to.have.value('420');
             });
 
-            it('sets correct preview size', () => {
-                expect(result.iframePreview.set).to.have.been.calledOnceWith({
+            it('sets correct preview size', async () => {
+                await sleep(20);
+                expect(result.iframePreview.dimensions).to.deep.equal({
                     width: 550,
                     height: 420
                 });
@@ -307,13 +320,13 @@ describe('PreviewResizer', () => {
 
             describe('change visualization to fixed height', () => {
                 beforeEach(async () => {
-                    result.iframePreview.set.resetHistory();
-                    visualization.set({ height: 'fixed' });
+                    result.updateChart('type', 'fixed-height-chart');
                     await tick();
                 });
 
-                it('sets correct preview size', () => {
-                    expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                it('sets correct preview size', async () => {
+                    await sleep(20);
+                    expect(result.iframePreview.dimensions).to.deep.equal({
                         width: 550,
                         height: null
                     });
@@ -323,14 +336,13 @@ describe('PreviewResizer', () => {
 
         describe('with custom preview breakpoints', () => {
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
-                const team = readable({ settings: { previewWidths: [380, 580, 780] } });
-                const theme = readable(webTheme);
-
+                const rawChart = cloneDeep(baseChart);
+                const rawTeam = { settings: { previewWidths: [380, 580, 780] } };
+                const rawTheme = webTheme;
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme
+                    rawChart,
+                    rawTeam,
+                    rawTheme
                 });
             });
 
@@ -361,14 +373,13 @@ describe('PreviewResizer', () => {
 
         describe('with incomplete custom preview breakpoints', () => {
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
-                const team = readable({ settings: { previewWidths: [null, 480, null] } });
-                const theme = readable(webTheme);
-
+                const rawChart = cloneDeep(baseChart);
+                const rawTeam = { settings: { previewWidths: [null, 480, null] } };
+                const rawTheme = webTheme;
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme
+                    rawChart,
+                    rawTeam,
+                    rawTheme
                 });
             });
 
@@ -397,14 +408,13 @@ describe('PreviewResizer', () => {
 
         describe('with preview breakpoints in wrong order', () => {
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
-                const team = readable({ settings: { previewWidths: [700, 250, null] } });
-                const theme = readable(webTheme);
-
+                const rawChart = cloneDeep(baseChart);
+                const rawTeam = { settings: { previewWidths: [700, 250, null] } };
+                const rawTheme = webTheme;
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme
+                    rawChart,
+                    rawTeam,
+                    rawTheme
                 });
             });
 
@@ -434,31 +444,29 @@ describe('PreviewResizer', () => {
 
     describe('print mode', () => {
         describe('through print theme', () => {
-            let chart;
             beforeEach(async () => {
-                chart = writable(cloneDeep(basePrintChart));
-                const team = readable({ settings: {} });
-                const theme = readable(printTheme);
+                const rawChart = cloneDeep(basePrintChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = printTheme;
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme
+                    rawChart,
+                    rawTeam,
+                    rawTheme
                 });
             });
 
             it('shows inputs for width and height with correct unit', async () => {
                 const toolbar = result.getByTestId('resizer');
-                const preview = result.iframePreview;
                 expect(toolbar).to.exist;
                 expect(result.queryByText('Size (mm)')).to.exist;
                 expect(result.queryByText('Size (px)')).not.to.exist;
-                await tick();
                 await tick();
 
                 const inputs = toolbar.querySelectorAll('input[type=number]');
                 expect(inputs[0]).to.have.value('80');
                 expect(inputs[1]).to.have.value('120');
-                expect(preview.set).to.have.been.calledWith({
+                await sleep(20);
+                expect(result.iframePreview.dimensions).to.deep.equal({
                     width: mmToPx(80),
                     height: mmToPx(120)
                 });
@@ -489,11 +497,11 @@ describe('PreviewResizer', () => {
 
                 await clickOn(unitRadioOptions[1]); // inch
                 await tick();
+                const { chart } = result.stores['page/edit'];
                 const pdfMeta = getStoreValue(chart).metadata.publish['export-pdf'];
                 expect(pdfMeta).to.have.property('unit', 'in');
                 const [pxWidth, pxHeight] = [80, 120].map(mmToPx);
                 expect(result.queryByText('Size (in)')).to.exist;
-
                 expect(pdfMeta).to.have.property('width', +pxToInch(pxWidth).toFixed(2));
                 expect(pdfMeta).to.have.property('height', +pxToInch(pxHeight).toFixed(2));
 
@@ -528,19 +536,18 @@ describe('PreviewResizer', () => {
         });
 
         describe('through print theme, with custom pdf export scale', () => {
-            let theme;
             const scale = 1.5;
 
             beforeEach(async () => {
-                const chart = writable(cloneDeep(basePrintChart));
-                const team = readable({ settings: {} });
-                theme = writable({
+                const rawChart = cloneDeep(basePrintChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = {
                     data: { type: 'print', export: { pdf: { scale } } }
-                });
+                };
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme
+                    rawChart,
+                    rawTeam,
+                    rawTheme
                 });
             });
 
@@ -551,8 +558,9 @@ describe('PreviewResizer', () => {
                 expect(inputs[1]).to.have.value('120');
             });
 
-            it('preview iframe is scaled', () => {
-                expect(result.iframePreview.set).to.have.been.calledWith({
+            it('preview iframe is scaled', async () => {
+                await sleep(20);
+                expect(result.iframePreview.dimensions).to.deep.equal({
                     width: mmToPx(80 / scale),
                     height: mmToPx(120 / scale)
                 });
@@ -568,9 +576,9 @@ describe('PreviewResizer', () => {
                 scale: 0.8
             };
             beforeEach(async () => {
-                const chart = writable(cloneDeep(basePrintChart));
-                const team = readable({ settings: {} });
-                const theme = readable({
+                const rawChart = cloneDeep(basePrintChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = {
                     data: {
                         type: 'print',
                         export: {
@@ -583,11 +591,11 @@ describe('PreviewResizer', () => {
                             }
                         }
                     }
-                });
+                };
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme
+                    rawChart,
+                    rawTeam,
+                    rawTheme
                 });
             });
 
@@ -619,7 +627,6 @@ describe('PreviewResizer', () => {
                     await clickOn(dropdownToggle);
                     const select = toolbar.querySelector('.print-options select');
                     select.selectedIndex = 1;
-                    result.iframePreview.set.resetHistory();
                     fireChangeEvent(select);
                     await tick();
                 });
@@ -652,8 +659,9 @@ describe('PreviewResizer', () => {
                     expect(inputs[1]).to.have.value(pxToInch(mmToPx(120)).toFixed(2));
                 });
 
-                it('preview size is updated correctly', () => {
-                    expect(result.iframePreview.set).to.have.been.calledWith({
+                it('preview size is updated correctly', async () => {
+                    await sleep(20);
+                    expect(result.iframePreview.dimensions).to.deep.equal({
                         width: inchToPx(10),
                         height: inchToPx(pxToInch(mmToPx(120)))
                     });
@@ -663,9 +671,9 @@ describe('PreviewResizer', () => {
 
         describe('theme with default preset, fresh chart', () => {
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
-                const team = readable({ settings: {} });
-                const theme = readable({
+                const rawChart = cloneDeep(baseChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = {
                     data: {
                         type: 'print',
                         export: {
@@ -678,11 +686,11 @@ describe('PreviewResizer', () => {
                             }
                         }
                     }
-                });
+                };
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme
+                    rawChart,
+                    rawTeam,
+                    rawTheme
                 });
             });
 
@@ -698,23 +706,21 @@ describe('PreviewResizer', () => {
 
         describe('through print chart', () => {
             beforeEach(async () => {
-                const chart = writable(
-                    assign(cloneDeep(baseChart), {
-                        metadata: {
-                            custom: {
-                                webToPrint: {
-                                    mode: 'print'
-                                }
+                const rawChart = assign(cloneDeep(baseChart), {
+                    metadata: {
+                        custom: {
+                            webToPrint: {
+                                mode: 'print'
                             }
                         }
-                    })
-                );
-                const team = readable({ settings: {} });
-                const theme = readable(webTheme);
+                    }
+                });
+                const rawTeam = { settings: {} };
+                const rawTheme = webTheme;
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme
+                    rawChart,
+                    rawTeam,
+                    rawTheme
                 });
             });
 
@@ -732,14 +738,14 @@ describe('PreviewResizer', () => {
 
         describe('print theme, with fixed height vis', () => {
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
-                const team = readable({ settings: {} });
-                const theme = readable(printTheme);
+                const rawChart = cloneDeep(baseChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = printTheme;
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme,
-                    visualization: barChart
+                    rawChart,
+                    rawTeam,
+                    rawTheme,
+                    rawVisualizations: [barChart]
                 });
             });
 
@@ -778,14 +784,14 @@ describe('PreviewResizer', () => {
 
         describe('print theme, with fixed height vis that supports fitHeight', () => {
             beforeEach(async () => {
-                const chart = writable(cloneDeep(baseChart));
-                const team = readable({ settings: {} });
-                const theme = readable(printTheme);
+                const rawChart = cloneDeep(baseChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = printTheme;
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme,
-                    visualization: pieChart
+                    rawChart,
+                    rawTeam,
+                    rawTheme,
+                    rawVisualizations: [pieChart]
                 });
             });
 
@@ -805,16 +811,14 @@ describe('PreviewResizer', () => {
 
     describe('switch from web to print (through theme)', () => {
         describe('fresh web chart', () => {
-            let chart, theme;
-
             beforeEach(async () => {
-                chart = writable(cloneDeep(baseChart));
-                const team = readable({ settings: {} });
-                theme = writable({ data: {} });
+                const rawChart = cloneDeep(baseChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = { data: {} };
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme
+                    rawChart,
+                    rawTeam,
+                    rawTheme
                 });
             });
 
@@ -829,8 +833,9 @@ describe('PreviewResizer', () => {
                 expect(inputs[1]).to.have.value('420');
             });
 
-            it('sets correct size for iframe', () => {
-                expect(result.iframePreview.set).to.have.been.calledOnceWith({
+            it('sets correct size for iframe', async () => {
+                await sleep(20);
+                expect(result.iframePreview.dimensions).to.deep.equal({
                     width: 550,
                     height: 420
                 });
@@ -838,13 +843,16 @@ describe('PreviewResizer', () => {
 
             describe('theme changes to print theme', () => {
                 beforeEach(async () => {
-                    result.iframePreview.set.resetHistory();
-                    theme.set({
-                        data: {
-                            type: 'print',
-                            export: { pdf: { presets: [presets.A5mm] } }
-                        }
-                    });
+                    nock('http://api.datawrapper.mock')
+                        .get('/v3/themes/print-theme?extend=true')
+                        .reply(200, {
+                            data: {
+                                type: 'print',
+                                export: { pdf: { presets: [presets.A5mm] } }
+                            }
+                        });
+                    result.updateChart('theme', 'print-theme');
+                    await sleep(200);
                     await tick();
                 });
 
@@ -862,8 +870,8 @@ describe('PreviewResizer', () => {
                     expect(inputs[1]).to.have.value('210');
                 });
 
-                it('sets correct iframe size', () => {
-                    expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                it('sets correct iframe size', async () => {
+                    expect(result.iframePreview.dimensions).to.deep.equal({
                         width: mmToPx(148),
                         height: mmToPx(210)
                     });
@@ -872,16 +880,14 @@ describe('PreviewResizer', () => {
         });
 
         describe('existing print chart', () => {
-            let chart, theme;
-
             beforeEach(async () => {
-                chart = writable(cloneDeep(basePrintChart));
-                const team = readable({ settings: {} });
-                theme = writable({ data: {} });
+                const rawChart = cloneDeep(basePrintChart);
+                const rawTeam = { settings: {} };
+                const rawTheme = { data: {} };
                 result = await renderPreviewResizer({
-                    chart,
-                    team,
-                    theme
+                    rawChart,
+                    rawTeam,
+                    rawTheme
                 });
             });
 
@@ -889,8 +895,9 @@ describe('PreviewResizer', () => {
                 expect(result.queryByText('Size (px)')).to.exist;
             });
 
-            it('sets correct size for iframe', () => {
-                expect(result.iframePreview.set).to.have.been.calledOnceWith({
+            it('sets correct size for iframe', async () => {
+                await sleep(20);
+                expect(result.iframePreview.dimensions).to.deep.equal({
                     width: 550,
                     height: 420
                 });
@@ -898,13 +905,17 @@ describe('PreviewResizer', () => {
 
             describe('theme changes to print theme', () => {
                 beforeEach(async () => {
-                    result.iframePreview.set.resetHistory();
-                    theme.set({
-                        data: {
-                            type: 'print',
-                            export: { pdf: { presets: [presets.A5mm] } }
-                        }
-                    });
+                    await sleep(20); // wait for initial iframePreview.set
+                    nock('http://api.datawrapper.mock')
+                        .get('/v3/themes/print-theme?extend=true')
+                        .reply(200, {
+                            data: {
+                                type: 'print',
+                                export: { pdf: { presets: [presets.A5mm] } }
+                            }
+                        });
+                    result.updateChart('theme', 'print-theme');
+                    await sleep(150);
                     await tick();
                 });
 
@@ -923,7 +934,7 @@ describe('PreviewResizer', () => {
                 });
 
                 it('sets correct iframe size', () => {
-                    expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                    expect(result.iframePreview.dimensions).to.deep.equal({
                         width: mmToPx(80),
                         height: mmToPx(120)
                     });
@@ -931,8 +942,11 @@ describe('PreviewResizer', () => {
 
                 describe('switch back to web theme', () => {
                     beforeEach(async () => {
-                        result.iframePreview.set.resetHistory();
-                        theme.set({ data: {} });
+                        nock('http://api.datawrapper.mock')
+                            .get('/v3/themes/default-theme?extend=true')
+                            .reply(200, { data: {} });
+                        result.updateChart('theme', 'default-theme');
+                        await sleep(150);
                         await tick();
                     });
 
@@ -948,7 +962,7 @@ describe('PreviewResizer', () => {
                     });
 
                     it('sets correct iframe size', () => {
-                        expect(result.iframePreview.set).to.have.been.calledOnceWith({
+                        expect(result.iframePreview.dimensions).to.deep.equal({
                             width: 550,
                             height: 420
                         });
@@ -958,3 +972,5 @@ describe('PreviewResizer', () => {
         });
     });
 });
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));

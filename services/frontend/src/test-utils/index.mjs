@@ -7,6 +7,7 @@ import { get as getStoreValue } from 'svelte/store';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import isEqual from 'lodash/isEqual';
+import { take, tap } from 'rxjs/operators';
 
 export function setConfig(config) {
     configure(config);
@@ -181,4 +182,8 @@ export async function changeValueTo(input, newValue) {
  */
 export function waitFor(delay) {
     return new Promise(resolve => setTimeout(resolve, delay));
+}
+
+export function subscribeOnce(store, handler) {
+    store.pipe(take(1), tap(handler)).subscribe();
 }

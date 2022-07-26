@@ -155,7 +155,9 @@ export function initStores({
                 get(theme, 'data.type', 'web') === 'print'
                 ? 'print'
                 : 'web';
-        })
+        }),
+        distinctUntilChanged(),
+        shareReplay(1)
     );
 
     const isFixedHeight$ = combineLatest([visualization$, editorMode$]).pipe(
