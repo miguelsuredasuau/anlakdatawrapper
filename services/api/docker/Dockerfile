@@ -1,9 +1,9 @@
-FROM node:14-alpine
+FROM node:18-alpine
 
 RUN	ln -s /datawrapper/code/libs /usr/local/lib/node_modules/@datawrapper && \
-	mkdir /etc/datawrapper && \
-	ln -s /datawrapper/code/config.js /etc/datawrapper/config.js && \
-	ln -s /datawrapper/code/config.local.js /etc/datawrapper/config.local.js
+    mkdir /etc/datawrapper && \
+    ln -s /datawrapper/code/config.js /etc/datawrapper/config.js && \
+    ln -s /datawrapper/code/config.local.js /etc/datawrapper/config.local.js
 
 WORKDIR /datawrapper/code/services/api
 USER node

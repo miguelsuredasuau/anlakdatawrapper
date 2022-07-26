@@ -40,7 +40,7 @@ services:
       retries: 120
 
   opensearch-setup:
-    image: "node:14"
+    image: "node:18"
     depends_on:
       opensearch-node1:
         condition: service_healthy
@@ -53,7 +53,7 @@ services:
       '
 
   node:
-    image: "node:14"
+    image: "node:18"
     depends_on:
       mysql:
         condition: service_healthy
