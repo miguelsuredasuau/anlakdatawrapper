@@ -24,14 +24,16 @@
             crossorigin="anonymous"
         ></script>
         <script>
-            Sentry.onLoad(function () {
-                Sentry.init({
-                    release: '<%- GITHEAD %>',
-                    serverName: 'frontend',
-                    tracesSampleRate: <%- SENTRY.client.tracesSampleRate || 1 %>,
-                    environment: '<%- SENTRY.client.environment || '' %>'
+            if (window.Sentry !== undefined) { // Check that Sentry is defined, because it could have been blocked by an ad blocker.
+                Sentry.onLoad(function () {
+                    Sentry.init({
+                        release: '<%- GITHEAD %>',
+                        serverName: 'frontend',
+                        tracesSampleRate: <%- SENTRY.client.tracesSampleRate || 1 %>,
+                        environment: '<%- SENTRY.client.environment || '' %>'
+                    });
                 });
-            });
+            }
         </script>
         <% } %>
 

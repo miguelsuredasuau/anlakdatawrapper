@@ -6,7 +6,7 @@ module.exports = async function getGitRevision() {
         return process.env.COMMIT;
     }
     try {
-        return (await exec('git rev-parse HEAD', { timeout: 1000 })).stdout;
+        return (await exec('git rev-parse HEAD', { timeout: 1000 })).stdout.trim();
     } catch (e) {
         process.stderr.write(
             'Failed to get Git revision, because the app is probably not checked out from Git. ' +
