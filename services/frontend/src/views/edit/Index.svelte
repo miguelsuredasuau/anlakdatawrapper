@@ -65,16 +65,17 @@
      * our store instances available to all sub components of this
      * view without having to pass them around as state props.
      */
-    const { chart, theme, dataset, onNextSave, hasUnsavedChanges, ...stores } = initStores({
-        rawChart,
-        rawData,
-        rawTeam,
-        rawTheme,
-        rawLocales,
-        rawVisualizations: visualizations,
-        disabledFields,
-        dataReadonly
-    });
+    const { chart, theme, dataset, onNextSave, hasUnsavedChanges, syncData, syncChart, ...stores } =
+        initStores({
+            rawChart,
+            rawData,
+            rawTeam,
+            rawTheme,
+            rawLocales,
+            rawVisualizations: visualizations,
+            disabledFields,
+            dataReadonly
+        });
     setContext('page/edit', {
         chart,
         customViews,
@@ -150,6 +151,11 @@
     $: author = $chart.author
         ? $chart.author.email || `"${$chart.author.name}" (#${$chart.authorId})`
         : null;
+
+    // Following two lines start the syncing of chart and data with the server.
+    // Svelte takes care of subscribing and unsubscribing automatically.
+    $syncData;
+    $syncChart;
 
     onMount(async () => {
         // mimic old dw setup

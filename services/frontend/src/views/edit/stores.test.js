@@ -507,282 +507,292 @@ const setupStoresForTest = ({
 };
 
 describe('edit page stores', () => {
-    it('initializes stores correctly', () => {
-        const { chart, visualization, theme, data, team, locale, locales } = setupStoresForTest();
-        subscribeOnce(chart, value => expect(value).to.deep.equal(rawChart));
-        subscribeOnce(visualization, value => expect(value).to.deep.equal(rawVisualizations[1]));
-        subscribeOnce(theme, value => expect(value).to.deep.equal(rawTheme));
-        subscribeOnce(data, value => expect(value).to.deep.equal(rawData));
-        subscribeOnce(team, value => expect(value).to.deep.equal(defaultTeam));
-        subscribeOnce(locales, value => expect(value).to.deep.equal(rawLocales));
-        subscribeOnce(locale, value => expect(value).to.deep.equal(rawLocales[2]));
-    });
-
-    it('migrates old chart metadata correctly', async () => {
-        const clock = FakeTimers.install();
-        const oldChart = cloneDeep(rawChart);
-        set(oldChart, 'metadata.publish.blocks.logo', false);
-        const expectedChart = cloneDeep(rawChart);
-        set(expectedChart, 'metadata.publish.blocks.logo', { enabled: false });
-        const scope = nock('http://api.datawrapper.mock')
-            .patch(`/v3/charts/${rawChart.id}`, {
-                metadata: { publish: { blocks: { logo: { enabled: false } } } }
-            })
-            .reply(200, expectedChart);
-
-        // start test migration is taken care of automatically
-        const { chart } = setupStoresForTest({
-            rawChart: oldChart
+    describe('initialization', function () {
+        it('initializes stores correctly', () => {
+            const { chart, visualization, theme, data, team, locale, locales } =
+                setupStoresForTest();
+            subscribeOnce(chart, value => expect(value).to.deep.equal(rawChart));
+            subscribeOnce(visualization, value =>
+                expect(value).to.deep.equal(rawVisualizations[1])
+            );
+            subscribeOnce(theme, value => expect(value).to.deep.equal(rawTheme));
+            subscribeOnce(data, value => expect(value).to.deep.equal(rawData));
+            subscribeOnce(team, value => expect(value).to.deep.equal(defaultTeam));
+            subscribeOnce(locales, value => expect(value).to.deep.equal(rawLocales));
+            subscribeOnce(locale, value => expect(value).to.deep.equal(rawLocales[2]));
         });
-        subscribeOnce(chart, value => expect(value).to.deep.equal(expectedChart));
-
-        expect(scope.isDone()).to.equal(false);
-        await clock.tickAsync(1000);
-        expect(scope.isDone()).to.equal(true);
-        clock.uninstall();
     });
 
-    it('sends out patch request when the chart is updated', async () => {
-        const clock = FakeTimers.install();
-        const expectedChart = cloneDeep(rawChart);
-        set(expectedChart, 'metadata.test.foo', 'bar');
-        const scope = nock('http://api.datawrapper.mock')
-            .patch(`/v3/charts/${rawChart.id}`, {
-                metadata: { test: { foo: 'bar' } }
-            })
-            .reply(200, expectedChart);
-
-        // start test
-        const { chart } = setupStoresForTest();
-        chart.set(expectedChart);
-        subscribeOnce(chart, value => expect(value).to.deep.equal(expectedChart));
-
-        expect(scope.isDone()).to.equal(false);
-        await clock.tickAsync(1000);
-        expect(scope.isDone()).to.equal(true);
-        clock.uninstall();
-    });
-
-    it('debounces patch requests when the chart is updated multiple times', async () => {
-        const clock = FakeTimers.install();
-        const update1 = cloneDeep(rawChart);
-        set(update1, 'metadata.test.foo', 'bar');
-        const update2 = cloneDeep(update1);
-        set(update2, 'metadata.test.bar', 'bar');
-        const update3 = cloneDeep(update2);
-        set(update3, 'metadata.test.foo', 'foo');
-        const scope = nock('http://api.datawrapper.mock')
-            .patch(`/v3/charts/${rawChart.id}`, {
-                metadata: { test: { foo: 'foo', bar: 'bar' } }
-            })
-            .reply(200, update3);
-
-        // start test
-        const { chart } = setupStoresForTest();
-        chart.set(update1);
-        chart.set(update2);
-        chart.set(update3);
-        subscribeOnce(chart, value => expect(value).to.deep.equal(update3));
-
-        expect(scope.isDone()).to.equal(false);
-        await clock.tickAsync(1000);
-        expect(scope.isDone()).to.equal(true);
-        clock.uninstall();
-    });
-
-    it('updates chart locale correctly', async () => {
-        const clock = FakeTimers.install();
-        const { chart, locale } = setupStoresForTest();
-        const expected = cloneDeep(rawChart);
-        expected.language = 'ar-AE';
-        const scope = nock('http://api.datawrapper.mock')
-            .patch(`/v3/charts/${rawChart.id}`, {
-                language: 'ar-AE'
-            })
-            .reply(200, expected);
-        chart.set(expected);
-        subscribeOnce(chart, value => expect(value).to.deep.equal(expected));
-        subscribeOnce(locale, value => expect(value).to.deep.equal(rawLocales[0]));
-        await clock.tickAsync(1000);
-        expect(scope.isDone()).to.equal(true);
-        clock.uninstall();
-    });
-
-    it('updates visualization correctly', async () => {
-        const clock = FakeTimers.install();
-        const { chart, visualization } = setupStoresForTest();
-        const expected = cloneDeep(rawChart);
-        expected.type = 'd3-bars';
-        const scope = nock('http://api.datawrapper.mock')
-            .patch(`/v3/charts/${rawChart.id}`, {
-                type: 'd3-bars'
-            })
-            .reply(200, expected);
-        chart.set(expected);
-        subscribeOnce(chart, value => expect(value).to.deep.equal(expected));
-        subscribeOnce(visualization, value => expect(value).to.deep.equal(rawVisualizations[0]));
-        await clock.tickAsync(1000);
-        expect(scope.isDone()).to.equal(true);
-        clock.uninstall();
-    });
-
-    it('sends a put request when data is updated', async () => {
-        const clock = FakeTimers.install();
-        const expectedData = `Quarter;iPhone;iPad;Mac;iPod`;
-
-        const scope = nock('http://api.datawrapper.mock')
-            .put(`/v3/charts/${rawChart.id}/data`)
-            .reply(200);
-
-        // start test
-        const { data } = setupStoresForTest();
-        data.set(expectedData);
-        subscribeOnce(data, value => expect(value).to.deep.equal(expectedData));
-
-        expect(scope.isDone()).to.equal(false);
-        await clock.tickAsync(1000);
-        expect(scope.isDone()).to.equal(true);
-        clock.uninstall();
-    });
-
-    it('debounces put request when data is updated multiple times', async () => {
-        const clock = FakeTimers.install();
-        const update1 = `Quarter;iPhone;iPad;Mac;iPod`;
-        const update2 = `Quarter;iPhone;iPad;Mac;iPod
-Q3 2000;;;1.1;`;
-        const update3 = `Quarter;iPhone;iPad;Mac;iPod
-Q3 2000;;;1.1;
-Q4 2000;;;0.6;`;
-
-        const scope = nock('http://api.datawrapper.mock')
-            .put(`/v3/charts/${rawChart.id}/data`)
-            .reply(200);
-
-        // start test
-        const { data } = setupStoresForTest();
-        data.set(update1);
-        data.set(update2);
-        data.set(update3);
-        subscribeOnce(data, value => expect(value).to.deep.equal(update3));
-
-        expect(scope.isDone()).to.equal(false);
-        await clock.tickAsync(1000);
-        expect(scope.isDone()).to.equal(true);
-        clock.uninstall();
-    });
-
-    it('updates chart theme correctly', async () => {
-        const clock = FakeTimers.install();
-        const fakeTheme = {
-            id: 'fake-theme',
-            title: 'Fake Theme',
-            data: {}
-        };
-        const expected = cloneDeep(rawChart);
-        expected.theme = fakeTheme.id;
-
-        const scope = nock('http://api.datawrapper.mock')
-            .get(`/v3/themes/${fakeTheme.id}?extend=true`)
-            .reply(200, fakeTheme)
-            .patch(`/v3/charts/${rawChart.id}`, {
-                theme: 'fake-theme'
-            })
-            .reply(200, expected);
-
-        const { chart, theme } = setupStoresForTest();
-        const sub = theme.subscribe(); // make theme observable "hot"
-        chart.set(expected);
-        subscribeOnce(chart, value => expect(value).to.deep.equal(expected));
-        subscribeOnce(theme, value => expect(value).to.deep.equal(rawTheme)); // theme not updated yet
-
-        await clock.tickAsync(1100);
-        subscribeOnce(theme, value => expect(value).to.deep.equal(fakeTheme)); // new theme now available
-        expect(scope.isDone()).to.equal(true);
-        sub.unsubscribe();
-        clock.uninstall();
-    });
-
-    describe('chart.bindKey', () => {
-        it('returns null if the property does not exist and no default value is set', () => {
-            const { chart } = setupStoresForTest();
-            const testFoo = chart.bindKey('metadata.test.foo');
-            subscribeOnce(testFoo, value => expect(value).to.equal(null));
-        });
-
-        it('returns given default value if the property does not exist', async () => {
+    describe('metadata migration', function () {
+        it('migrates old chart metadata correctly', async () => {
             const clock = FakeTimers.install();
+            const oldChart = cloneDeep(rawChart);
+            set(oldChart, 'metadata.publish.blocks.logo', false);
             const expectedChart = cloneDeep(rawChart);
-            set(expectedChart, 'metadata.test.foo', 'bar');
+            set(expectedChart, 'metadata.publish.blocks.logo', { enabled: false });
             const scope = nock('http://api.datawrapper.mock')
                 .patch(`/v3/charts/${rawChart.id}`, {
-                    metadata: { test: { foo: 'bar' } }
+                    metadata: { publish: { blocks: { logo: { enabled: false } } } }
                 })
                 .reply(200, expectedChart);
 
-            // start test
-            const { chart } = setupStoresForTest();
-            const testFoo = chart.bindKey('metadata.test.foo', 'bar');
-            subscribeOnce(testFoo, value => expect(value).to.equal('bar'));
+            // start test migration is taken care of automatically
+            const { chart, syncChart } = setupStoresForTest({
+                rawChart: oldChart
+            });
+            const sub = syncChart.subscribe();
             subscribeOnce(chart, value => expect(value).to.deep.equal(expectedChart));
 
             expect(scope.isDone()).to.equal(false);
             await clock.tickAsync(1000);
             expect(scope.isDone()).to.equal(true);
             clock.uninstall();
-        });
-
-        it('creates a correct two-way binding on chart.bindKey', async () => {
-            const clock = FakeTimers.install();
-            const expectedChart = cloneDeep(rawChart);
-            set(expectedChart, 'metadata.test.foo', 'bar');
-            const scope = nock('http://api.datawrapper.mock')
-                .patch(`/v3/charts/${rawChart.id}`, {
-                    metadata: { test: { foo: 'bar' } }
-                })
-                .reply(200, expectedChart);
-
-            // start test
-            const { chart } = setupStoresForTest();
-            const testFoo = chart.bindKey('metadata.test.foo');
-            subscribeOnce(testFoo, value => expect(value).to.equal(null));
-            testFoo.set('bar');
-            subscribeOnce(testFoo, value => expect(value).to.equal('bar'));
-            subscribeOnce(chart, value => expect(value).to.deep.equal(expectedChart));
-
-            expect(scope.isDone()).to.equal(false);
-            await clock.tickAsync(1000);
-            expect(scope.isDone()).to.equal(true);
-            clock.uninstall();
-        });
-
-        it('only emits distinct values', async () => {
-            const clock = FakeTimers.install();
-            const expectedChart = cloneDeep(rawChart);
-            set(expectedChart, 'metadata.test.foo', 'bar');
-            set(expectedChart, 'metadata.test.bar', 'foo');
-            const scope = nock('http://api.datawrapper.mock')
-                .patch(`/v3/charts/${rawChart.id}`, {
-                    metadata: { test: { foo: 'bar', bar: 'foo' } }
-                })
-                .reply(200, expectedChart);
-
-            // start test
-            const { chart } = setupStoresForTest();
-            const testFoo = chart.bindKey('metadata.test.foo');
-            const fake = sinon.fake();
-            const sub = testFoo.pipe(tap(fake)).subscribe();
-            testFoo.set('foo');
-            testFoo.set('bar');
-            testFoo.set('bar');
-            testFoo.set('bar');
-            chart.set(expectedChart);
-
-            expect(fake.callCount).to.equal(3); // testFoo emitted null, foo, bar
             sub.unsubscribe();
+        });
+    });
+
+    describe('chart and data updates', function () {
+        let clock;
+        let chart;
+        let data;
+        let locale;
+        let visualization;
+        let theme;
+        let syncChart;
+        let syncData;
+        let chartSyncSub;
+        let dataSyncSub;
+        beforeEach(() => {
+            clock = FakeTimers.install();
+            ({ chart, data, locale, visualization, theme, syncChart, syncData } =
+                setupStoresForTest());
+            chartSyncSub = syncChart.subscribe();
+            dataSyncSub = syncData.subscribe();
+        });
+
+        afterEach(() => {
+            clock.uninstall();
+            if (chartSyncSub) {
+                chartSyncSub.unsubscribe();
+            }
+            if (dataSyncSub) {
+                dataSyncSub.unsubscribe();
+            }
+        });
+
+        it('sends out patch request when the chart is updated', async () => {
+            const expectedChart = cloneDeep(rawChart);
+            set(expectedChart, 'metadata.test.foo', 'bar');
+            const scope = nock('http://api.datawrapper.mock')
+                .patch(`/v3/charts/${rawChart.id}`, {
+                    metadata: { test: { foo: 'bar' } }
+                })
+                .reply(200, expectedChart);
+
+            // start test
+            chart.set(expectedChart);
+            subscribeOnce(chart, value => expect(value).to.deep.equal(expectedChart));
+
             expect(scope.isDone()).to.equal(false);
             await clock.tickAsync(1000);
             expect(scope.isDone()).to.equal(true);
-            clock.uninstall();
+        });
+
+        it('debounces patch requests when the chart is updated multiple times', async () => {
+            const update1 = cloneDeep(rawChart);
+            set(update1, 'metadata.test.foo', 'bar');
+            const update2 = cloneDeep(update1);
+            set(update2, 'metadata.test.bar', 'bar');
+            const update3 = cloneDeep(update2);
+            set(update3, 'metadata.test.foo', 'foo');
+            const scope = nock('http://api.datawrapper.mock')
+                .patch(`/v3/charts/${rawChart.id}`, {
+                    metadata: { test: { foo: 'foo', bar: 'bar' } }
+                })
+                .reply(200, update3);
+
+            // start test
+            chart.set(update1);
+            chart.set(update2);
+            chart.set(update3);
+            subscribeOnce(chart, value => expect(value).to.deep.equal(update3));
+
+            expect(scope.isDone()).to.equal(false);
+            await clock.tickAsync(1000);
+            expect(scope.isDone()).to.equal(true);
+        });
+
+        it('updates chart locale correctly', async () => {
+            const expected = cloneDeep(rawChart);
+            expected.language = 'ar-AE';
+            const scope = nock('http://api.datawrapper.mock')
+                .patch(`/v3/charts/${rawChart.id}`, {
+                    language: 'ar-AE'
+                })
+                .reply(200, expected);
+            chart.set(expected);
+            subscribeOnce(chart, value => expect(value).to.deep.equal(expected));
+            subscribeOnce(locale, value => expect(value).to.deep.equal(rawLocales[0]));
+            await clock.tickAsync(1000);
+            expect(scope.isDone()).to.equal(true);
+        });
+
+        it('updates visualization correctly', async () => {
+            const expected = cloneDeep(rawChart);
+            expected.type = 'd3-bars';
+            const scope = nock('http://api.datawrapper.mock')
+                .patch(`/v3/charts/${rawChart.id}`, {
+                    type: 'd3-bars'
+                })
+                .reply(200, expected);
+            chart.set(expected);
+            subscribeOnce(chart, value => expect(value).to.deep.equal(expected));
+            subscribeOnce(visualization, value =>
+                expect(value).to.deep.equal(rawVisualizations[0])
+            );
+            await clock.tickAsync(1000);
+            expect(scope.isDone()).to.equal(true);
+        });
+
+        it('sends a put request when data is updated', async () => {
+            const expectedData = `Quarter;iPhone;iPad;Mac;iPod`;
+
+            const scope = nock('http://api.datawrapper.mock')
+                .put(`/v3/charts/${rawChart.id}/data`)
+                .reply(200);
+
+            // start test
+            data.set(expectedData);
+            subscribeOnce(data, value => expect(value).to.deep.equal(expectedData));
+
+            expect(scope.isDone()).to.equal(false);
+            await clock.tickAsync(1000);
+            expect(scope.isDone()).to.equal(true);
+        });
+
+        it('debounces put request when data is updated multiple times', async () => {
+            const update1 = `Quarter;iPhone;iPad;Mac;iPod`;
+            const update2 = `Quarter;iPhone;iPad;Mac;iPod
+    Q3 2000;;;1.1;`;
+            const update3 = `Quarter;iPhone;iPad;Mac;iPod
+    Q3 2000;;;1.1;
+    Q4 2000;;;0.6;`;
+
+            const scope = nock('http://api.datawrapper.mock')
+                .put(`/v3/charts/${rawChart.id}/data`)
+                .reply(200);
+
+            // start test
+            data.set(update1);
+            data.set(update2);
+            data.set(update3);
+            subscribeOnce(data, value => expect(value).to.deep.equal(update3));
+
+            expect(scope.isDone()).to.equal(false);
+            await clock.tickAsync(1000);
+            expect(scope.isDone()).to.equal(true);
+        });
+
+        it('updates chart theme correctly', async () => {
+            const fakeTheme = {
+                id: 'fake-theme',
+                title: 'Fake Theme',
+                data: {}
+            };
+            const expected = cloneDeep(rawChart);
+            expected.theme = fakeTheme.id;
+
+            const scope = nock('http://api.datawrapper.mock')
+                .get(`/v3/themes/${fakeTheme.id}?extend=true`)
+                .reply(200, fakeTheme)
+                .patch(`/v3/charts/${rawChart.id}`, {
+                    theme: 'fake-theme'
+                })
+                .reply(200, expected);
+
+            const themeSub = theme.subscribe(); // make theme observable "hot"
+            chart.set(expected);
+            subscribeOnce(chart, value => expect(value).to.deep.equal(expected));
+            subscribeOnce(theme, value => expect(value).to.deep.equal(rawTheme)); // theme not updated yet
+
+            await clock.tickAsync(1100);
+            subscribeOnce(theme, value => expect(value).to.deep.equal(fakeTheme)); // new theme now available
+            expect(scope.isDone()).to.equal(true);
+            themeSub.unsubscribe();
+        });
+
+        describe('chart.bindKey', () => {
+            it('returns null if the property does not exist and no default value is set', () => {
+                const testFoo = chart.bindKey('metadata.test.foo');
+                subscribeOnce(testFoo, value => expect(value).to.equal(null));
+            });
+
+            it('returns given default value if the property does not exist', async () => {
+                const expectedChart = cloneDeep(rawChart);
+                set(expectedChart, 'metadata.test.foo', 'bar');
+                const scope = nock('http://api.datawrapper.mock')
+                    .patch(`/v3/charts/${rawChart.id}`, {
+                        metadata: { test: { foo: 'bar' } }
+                    })
+                    .reply(200, expectedChart);
+
+                // start test
+                const testFoo = chart.bindKey('metadata.test.foo', 'bar');
+                subscribeOnce(testFoo, value => expect(value).to.equal('bar'));
+                subscribeOnce(chart, value => expect(value).to.deep.equal(expectedChart));
+
+                expect(scope.isDone()).to.equal(false);
+                await clock.tickAsync(1000);
+                expect(scope.isDone()).to.equal(true);
+            });
+
+            it('creates a correct two-way binding on chart.bindKey', async () => {
+                const expectedChart = cloneDeep(rawChart);
+                set(expectedChart, 'metadata.test.foo', 'bar');
+                const scope = nock('http://api.datawrapper.mock')
+                    .patch(`/v3/charts/${rawChart.id}`, {
+                        metadata: { test: { foo: 'bar' } }
+                    })
+                    .reply(200, expectedChart);
+
+                // start test
+                const testFoo = chart.bindKey('metadata.test.foo');
+                subscribeOnce(testFoo, value => expect(value).to.equal(null));
+                testFoo.set('bar');
+                subscribeOnce(testFoo, value => expect(value).to.equal('bar'));
+                subscribeOnce(chart, value => expect(value).to.deep.equal(expectedChart));
+
+                expect(scope.isDone()).to.equal(false);
+                await clock.tickAsync(1000);
+                expect(scope.isDone()).to.equal(true);
+            });
+
+            it('only emits distinct values', async () => {
+                const expectedChart = cloneDeep(rawChart);
+                set(expectedChart, 'metadata.test.foo', 'bar');
+                set(expectedChart, 'metadata.test.bar', 'foo');
+                const scope = nock('http://api.datawrapper.mock')
+                    .patch(`/v3/charts/${rawChart.id}`, {
+                        metadata: { test: { foo: 'bar', bar: 'foo' } }
+                    })
+                    .reply(200, expectedChart);
+
+                // start test
+                const testFoo = chart.bindKey('metadata.test.foo');
+                const fake = sinon.fake();
+                const sub = testFoo.pipe(tap(fake)).subscribe();
+                testFoo.set('foo');
+                testFoo.set('bar');
+                testFoo.set('bar');
+                testFoo.set('bar');
+                chart.set(expectedChart);
+
+                expect(fake.callCount).to.equal(3); // testFoo emitted null, foo, bar
+                sub.unsubscribe();
+                expect(scope.isDone()).to.equal(false);
+                await clock.tickAsync(1000);
+                expect(scope.isDone()).to.equal(true);
+            });
         });
     });
 });

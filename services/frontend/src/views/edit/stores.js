@@ -99,24 +99,23 @@ export function initStores({
     };
     // chart subject representing the last version that came from the server
     const latestSavedChart$ = new SvelteSubject(cloneDeep(rawChart));
-    distinctChart$
-        .pipe(
-            withLatestFrom(latestSavedChart$), // compare with version that was last saved
-            map(([newChart, oldChart]) => ({
-                id: newChart.id,
-                patch: filterNestedObjectKeys(
-                    objectDiff(oldChart, newChart, ALLOWED_CHART_KEYS),
-                    disabledFields
-                )
-            })),
-            tap(({ patch }) => hasUnsavedChanges.set(Object.keys(patch).length > 0)),
-            debounceTime(1000), // debounce 1 second
-            filter(({ patch }) => Object.keys(patch).length > 0),
-            mergeMap(patchChart),
-            filter(savedSuccessfully => savedSuccessfully),
-            tap(newestChart => latestSavedChart$.next(newestChart))
-        )
-        .subscribe();
+    const patchChart$ = distinctChart$.pipe(
+        withLatestFrom(latestSavedChart$), // compare with version that was last saved
+        map(([newChart, oldChart]) => ({
+            id: newChart.id,
+            patch: filterNestedObjectKeys(
+                objectDiff(oldChart, newChart, ALLOWED_CHART_KEYS),
+                disabledFields
+            )
+        })),
+        tap(({ patch }) => hasUnsavedChanges.set(Object.keys(patch).length > 0)),
+        debounceTime(1000), // debounce 1 second
+        filter(({ patch }) => Object.keys(patch).length > 0),
+        mergeMap(patchChart),
+        filter(savedSuccessfully => savedSuccessfully),
+        tap(newestChart => latestSavedChart$.next(newestChart)),
+        shareReplay(1)
+    );
 
     // apply core migrations after subscribing so changes get stored
     const clonedRawChart = cloneDeep(rawChart);
@@ -219,19 +218,18 @@ export function initStores({
             })
         );
     };
-    data$
-        .pipe(
-            skip(1),
-            filter(() => !dataReadonly),
-            filter(data => data),
-            distinctUntilChanged(isEqual),
-            tap(() => hasUnsavedChanges.set(true)),
-            debounceTime(1000),
-            withLatestFrom(chartId$),
-            map(([data, id]) => ({ id, data })),
-            mergeMap(storeData)
-        )
-        .subscribe();
+    const putData$ = data$.pipe(
+        skip(1),
+        filter(() => !dataReadonly),
+        filter(data => data),
+        distinctUntilChanged(isEqual),
+        tap(() => hasUnsavedChanges.set(true)),
+        debounceTime(1000),
+        withLatestFrom(chartId$),
+        map(([data, id]) => ({ id, data })),
+        mergeMap(storeData),
+        shareReplay(1)
+    );
 
     /**
      * Subscribe to changes of a certain key within the chart store
@@ -288,6 +286,8 @@ export function initStores({
         hasUnsavedChanges,
         saveError,
         saveSuccess,
-        isDark
+        isDark,
+        syncData: putData$,
+        syncChart: patchChart$
     };
 }
