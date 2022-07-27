@@ -16,9 +16,12 @@ const { requireConfig } = require('@datawrapper/service-utils/findConfig');
 const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
 const registerFeatureFlag = require('@datawrapper/service-utils/registerFeatureFlag');
 const getGitRevision = require('@datawrapper/service-utils/getGitRevision');
+const initGCTrap = require('@datawrapper/service-utils/gcTrap.js');
 const config = requireConfig();
 const path = require('path');
 const { FrontendEventEmitter, eventList } = require('./utils/events');
+
+initGCTrap();
 
 const {
     addScope,

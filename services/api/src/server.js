@@ -1,5 +1,6 @@
 const Boom = require('@hapi/boom');
 const CodedError = require('@datawrapper/service-utils/CodedError.js');
+const initGCTrap = require('@datawrapper/service-utils/gcTrap.js');
 const Crumb = require('@hapi/crumb');
 const Hapi = require('@hapi/hapi');
 const HapiSwagger = require('hapi-swagger');
@@ -23,6 +24,8 @@ const {
     validateRedis,
     validatePlugins
 } = require('@datawrapper/schemas/config');
+
+initGCTrap();
 
 const pkg = require('../package.json');
 const configPath = findConfigPath();
