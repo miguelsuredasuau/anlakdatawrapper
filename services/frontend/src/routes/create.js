@@ -192,10 +192,19 @@ module.exports = {
                     }
                 } else {
                     // create new chart from payload metadata
-                    if (!payload.data && !payload.external_data)
+                    if (!payload.data && !payload.external_data) {
                         throw Boom.badRequest(
                             'you need to provide either data or an external_data url'
                         );
+                    }
+                    let metadata = {};
+                    if (payload.metadata) {
+                        try {
+                            metadata = JSON.parse(payload.metadata);
+                        } catch (e) {
+                            throw Boom.badRequest('Invalid chart metadata JSON');
+                        }
+                    }
                     const chartData = {
                         title: payload.title,
                         theme: payload.theme || 'datawrapper-data',
@@ -203,7 +212,7 @@ module.exports = {
                         language: payload.language,
                         external_data: payload.external_data,
                         last_edit_step: payload.last_edit_step || 3,
-                        metadata: payload.metadata ? JSON.parse(payload.metadata) : {}
+                        metadata
                     };
                     Object.keys(additionalFields).forEach(key => {
                         if (payload[key]) {
