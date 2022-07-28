@@ -1,7 +1,8 @@
 const path = require('path');
 const { ForeignKeyConstraintError } = require('sequelize');
 const { addScope } = require('@datawrapper/service-utils/l10n');
-const { init } = require('../../src/server');
+const { create } = require('../../src/server');
+const { generateToken } = require('../../src/utils');
 const { nanoid, customAlphabet } = require('nanoid');
 const { randomInt } = require('crypto');
 
@@ -38,7 +39,8 @@ function getCredentials() {
 }
 
 async function setup(options) {
-    const server = await init(options);
+    const server = await create(options);
+    await server.initialize();
 
     // Register fake d3-bars type.
     server.methods.registerVisualization('d3-bars', [
@@ -117,7 +119,7 @@ async function createSession(server, user) {
     const { Session } = require('@datawrapper/orm/models');
 
     return await Session.create({
-        id: server.methods.generateToken(),
+        id: generateToken(),
         user_id: user.id,
         data: {
             'dw-user-id': user.id,

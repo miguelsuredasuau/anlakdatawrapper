@@ -1,22 +1,18 @@
-export DW_CONFIG_PATH ?= /app/services/api/test/config.docker.js
-
-test_dir ?= services/api
-m ?= !PHP*
+export DW_CONFIG_PATH ?= /app/services/frontend/test/config.docker.js
 
 docker_compose := docker-compose -f docker-compose-test.yml
 
 .PHONY: test
-test: | test-setup  ## Run unit tests
-	$(MAKE) test-run cmd="sh -c 'cd \"/app/$(test_dir)\" && npm test -- -m \"$(m)\"'"
+test: | test-setup  ## Run unit tests for both client-side and server-side code
+	$(MAKE) test-run cmd="sh -c 'node ../api/src/index.js & (npm run test:client -- -f \"$(f)\" && npm run test:server -- -f \"$(f)\")'"
 
-.PHONY: test-coverage
-test-coverage: | test-setup  ## Run unit tests with coverage report
-	$(MAKE) test-run cmd="sh -c 'cd \"/app/$(test_dir)\" && npm run test:coverage -- -m \"$(m)\"'"
+.PHONY: test-client
+test-client: | test-setup  ## Run unit tests for client-side code only
+	$(MAKE) test-run cmd="sh -c 'npm run test:client -- -f \"$(f)\"'"
 
-.PHONY: test-plugins
-test-plugins: | test-setup  ## Run unit tests including all plugins
-	export DW_CONFIG_PATH=/app/services/api/test/config-plugins.docker.js; \
-	$(MAKE) test-run cmd="sh -c 'cd \"/app/services/api\" && npm run test:plugins -- -m \"$(m)\"'"
+.PHONY: test-server
+test-server: | test-setup  ## Run unit tests for server-side code only
+	$(MAKE) test-run cmd="sh -c 'node ../api/src/index.js & npm run test:server -- -f \"$(f)\"'"
 
 .PHONY: test-setup
 test-setup:  ## Create the testing database if it isn't running
@@ -29,6 +25,7 @@ test-teardown:  ## Stop and remove the testing database
 .PHONY: test-run
 test-run:  ## Run command specified by the variable 'cmd' in the testing node container
 	$(docker_compose) run --rm \
+		-w /app/services/frontend \
 		-e "DW_CONFIG_PATH=$(DW_CONFIG_PATH)" \
 		node $(cmd)
 

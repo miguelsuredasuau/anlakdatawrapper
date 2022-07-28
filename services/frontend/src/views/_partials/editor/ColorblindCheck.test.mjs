@@ -1,8 +1,6 @@
-/* eslint-disable no-unused-expressions */
-
 import ColorblindCheck from './ColorblindCheck.svelte';
-import { renderWithContext, setConfig } from '../../../test-utils';
-import { loadLocales } from '../../../test-utils/setup-locales.mjs';
+import { renderWithContext, setConfig } from '../../../../test/helpers/clientUtils';
+import { loadLocales } from '../../../../test/helpers/setup-locales.mjs';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import sinon from 'sinon';

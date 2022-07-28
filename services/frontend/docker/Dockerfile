@@ -9,4 +9,4 @@ WORKDIR /datawrapper/code/services/frontend
 USER node
 
 ENTRYPOINT ["/datawrapper/code/services/frontend/docker/entrypoint.sh"]
-CMD ["/datawrapper/code/services/frontend/src/server.js"]
+CMD ["/datawrapper/code/services/frontend/src/index.js"]

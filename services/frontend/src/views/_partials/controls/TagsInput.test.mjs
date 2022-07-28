@@ -1,6 +1,6 @@
 import TagsInput from './TagsInput.svelte';
 import { fireEvent } from '@testing-library/svelte';
-import { renderWithContext, setConfig } from '../../../test-utils';
+import { renderWithContext, setConfig } from '../../../../test/helpers/clientUtils';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import sinon from 'sinon';

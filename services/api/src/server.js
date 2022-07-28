@@ -33,133 +33,122 @@ const config = require(configPath);
 
 const DW_DEV_MODE = !!JSON.parse(process.env.DW_DEV_MODE || 'false');
 
-const CSRF_COOKIE_NAME = 'crumb';
-const CSRF_COOKIE_OPTIONS = {
-    domain: '.' + config.api.domain,
-    isHttpOnly: false,
-    isSameSite: 'Lax',
-    isSecure: config.frontend.https
-};
+/**
+ * Instantiate a Hapi Server instance and configure it.
+ */
+async function create({ usePlugins = true, useOpenAPI = true } = {}) {
+    const CSRF_COOKIE_NAME = 'crumb';
+    const CSRF_COOKIE_OPTIONS = {
+        domain: '.' + config.api.domain,
+        isHttpOnly: false,
+        isSameSite: 'Lax',
+        isSecure: config.frontend.https
+    };
 
-validateAPI(config.api);
-validateORM(config.orm);
-validateFrontend(config.frontend);
-validatePlugins(config.plugins);
+    validateAPI(config.api);
+    validateORM(config.orm);
+    validateFrontend(config.frontend);
+    validatePlugins(config.plugins);
 
-let useRedis = !!config.redis;
+    let useRedis = !!config.redis;
 
-if (useRedis) {
-    try {
-        validateRedis(config.redis);
-    } catch (error) {
-        useRedis = false;
-        console.warn('[Cache] Invalid Redis configuration, falling back to in memory cache.');
-    }
-}
-
-const host = config.api.subdomain
-    ? `${config.api.subdomain}.${config.api.domain}`
-    : config.api.domain;
-const scheme = config.frontend.https ? 'https' : 'http';
-
-const port = config.api.port || 3000;
-
-const OpenAPI = {
-    plugin: HapiSwagger,
-    options: {
-        debug: DW_DEV_MODE,
-        host: DW_DEV_MODE ? `${host}:${port}` : host,
-        schemes: [scheme],
-        grouping: 'tags',
-        info: {
-            title: 'Datawrapper API v3 Documentation',
-            version: pkg.version,
-            'x-info': DW_DEV_MODE
-                ? {
-                      node: process.version,
-                      hapi: pkg.dependencies.hapi
-                  }
-                : undefined
-        },
-        sortPaths: 'path-method',
-        jsonPath: '/',
-        basePath: '/v3/',
-        documentationPage: DW_DEV_MODE,
-        swaggerUI: DW_DEV_MODE,
-        deReference: true
-    }
-};
-
-const server = Hapi.server({
-    host: 'localhost',
-    address: '0.0.0.0',
-    port,
-    tls: false,
-    router: { stripTrailingSlash: true },
-    /* https://hapijs.com/api#-serveroptionsdebug */
-    debug: DW_DEV_MODE ? { request: ['implementation'] } : false,
-    cache: {
-        provider: useRedis
-            ? {
-                  constructor: require('@hapi/catbox-redis'),
-                  options: {
-                      ...config.redis,
-                      partition: 'api'
-                  }
-              }
-            : {
-                  constructor: require('@hapi/catbox-memory'),
-                  options: {
-                      maxByteSize: 52480000
-                  }
-              }
-    },
-    routes: {
-        cors: {
-            origin: config.api.cors,
-            additionalHeaders: ['X-CSRF-Token'],
-            credentials: true
-        },
-        validate: {
-            async failAction(request, h, err) {
-                throw Boom.badRequest('Invalid request payload input: ' + err.message);
-            }
+    if (useRedis) {
+        try {
+            validateRedis(config.redis);
+        } catch (error) {
+            useRedis = false;
+            console.warn('[Cache] Invalid Redis configuration, falling back to in memory cache.');
         }
     }
-});
 
-/**
- * Wrap cache get(), set() and drop() to not crash the API when Redis is temporarily unavailable.
- */
-server.events.on('cachePolicy', cachePolicy => {
-    for (const methodName of ['get', 'set', 'drop']) {
-        const oldMethod = cachePolicy[methodName];
-        cachePolicy[methodName] = async function wrapped() {
-            try {
-                return await oldMethod.apply(cachePolicy, arguments);
-            } catch (e) {
-                server.logger.error(`[Cache] Error while calling cache.${methodName}: ${e}`);
-                return null;
+    const host = config.api.subdomain
+        ? `${config.api.subdomain}.${config.api.domain}`
+        : config.api.domain;
+    const scheme = config.frontend.https ? 'https' : 'http';
+
+    const port = config.api.port || 3000;
+
+    const OpenAPI = {
+        plugin: HapiSwagger,
+        options: {
+            debug: DW_DEV_MODE,
+            host: DW_DEV_MODE ? `${host}:${port}` : host,
+            schemes: [scheme],
+            grouping: 'tags',
+            info: {
+                title: 'Datawrapper API v3 Documentation',
+                version: pkg.version,
+                'x-info': DW_DEV_MODE
+                    ? {
+                          node: process.version,
+                          hapi: pkg.dependencies.hapi
+                      }
+                    : undefined
+            },
+            sortPaths: 'path-method',
+            jsonPath: '/',
+            basePath: '/v3/',
+            documentationPage: DW_DEV_MODE,
+            swaggerUI: DW_DEV_MODE,
+            deReference: true
+        }
+    };
+
+    const server = Hapi.server({
+        host: 'localhost',
+        address: '0.0.0.0',
+        port,
+        tls: false,
+        router: { stripTrailingSlash: true },
+        /* https://hapijs.com/api#-serveroptionsdebug */
+        debug: DW_DEV_MODE ? { request: ['implementation'] } : false,
+        cache: {
+            provider: useRedis
+                ? {
+                      constructor: require('@hapi/catbox-redis'),
+                      options: {
+                          ...config.redis,
+                          partition: 'api'
+                      }
+                  }
+                : {
+                      constructor: require('@hapi/catbox-memory'),
+                      options: {
+                          maxByteSize: 52480000
+                      }
+                  }
+        },
+        routes: {
+            cors: {
+                origin: config.api.cors,
+                additionalHeaders: ['X-CSRF-Token'],
+                credentials: true
+            },
+            validate: {
+                async failAction(request, h, err) {
+                    throw Boom.badRequest('Invalid request payload input: ' + err.message);
+                }
             }
-        };
-    }
-});
+        }
+    });
 
-function getLogLevel() {
-    if (DW_DEV_MODE) {
-        return 'debug';
-    }
-    if (process.env.NODE_ENV === 'test') {
-        return 'error';
-    }
-    return 'info';
-}
+    /**
+     * Wrap cache get(), set() and drop() to not crash the API when Redis is temporarily unavailable.
+     */
+    server.events.on('cachePolicy', cachePolicy => {
+        for (const methodName of ['get', 'set', 'drop']) {
+            const oldMethod = cachePolicy[methodName];
+            cachePolicy[methodName] = async function wrapped() {
+                try {
+                    return await oldMethod.apply(cachePolicy, arguments);
+                } catch (e) {
+                    server.logger.error(`[Cache] Error while calling cache.${methodName}: ${e}`);
+                    return null;
+                }
+            };
+        }
+    });
 
-function usesCookieAuth(request) {
-    return get(request, 'auth.isAuthenticated') && get(request, 'auth.credentials.session');
-}
-
-async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     const rev = await getGitRevision();
     const revShort = rev && rev.slice(0, 8);
     await server.register([
@@ -298,13 +287,13 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
     const routeOptions = {
         routes: { prefix: '/v3' }
     };
-    if (options.useOpenAPI) {
+    if (useOpenAPI) {
         await server.register(OpenAPI, routeOptions);
     }
 
     await server.register([require('./routes')], routeOptions);
 
-    if (options.usePlugins) {
+    if (usePlugins) {
         await server.register([require('./plugin-loader')], routeOptions);
     }
 
@@ -401,22 +390,18 @@ async function configure(options = { usePlugins: true, useOpenAPI: true }) {
             return Boom.notFound();
         }
     });
-}
-
-process.on('unhandledRejection', err => {
-    server.logger.error(err);
-    process.exit(1);
-});
-
-async function init(options) {
-    await configure(options);
-    server.initialize();
 
     return server;
 }
 
-async function start() {
-    await configure();
+/**
+ * Start passed Hapi Server instance and handle process signals.
+ */
+async function start(server) {
+    process.on('unhandledRejection', err => {
+        server.logger.error(err);
+        process.exit(1);
+    });
 
     if (process.argv.includes('--check') || process.argv.includes('-c')) {
         server.logger.info("\n\n[Check successful] The server shouldn't crash on startup");
@@ -438,8 +423,20 @@ async function start() {
         server.logger.info('server has stopped');
         process.exit(0);
     });
+}
 
-    return server;
+function getLogLevel() {
+    if (DW_DEV_MODE) {
+        return 'debug';
+    }
+    if (process.env.NODE_ENV === 'test') {
+        return 'error';
+    }
+    return 'info';
+}
+
+function usesCookieAuth(request) {
+    return get(request, 'auth.isAuthenticated') && get(request, 'auth.credentials.session');
 }
 
 function loadSchemaFromUrl(baseUrl) {
@@ -466,4 +463,7 @@ function getDataPath(date) {
     return `${year}${month}`;
 }
 
-module.exports = { init, start };
+module.exports = {
+    create,
+    start
+};

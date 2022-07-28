@@ -30,38 +30,111 @@ Repository overview:
 - [`src/routes`](src/routes/) - controller for the individual frontend routes (e.g. [routes/preview/index.js](src/routes/preview/index.js) for the `GET /preview/:chartid:` route)
 - [`src/utils/`](src/utils) - some utilities such as the [plugin loader](src/utils/plugin-loader.js) or our custom [Svelte view adapter](src/utils/svelte-view)
 - [`src/views`](src/views) - the view templates (currently we support `pug` and `Svelte3` views)
-- [`src/server.js`](src/server.js) - where all the fun begins ;-)
 - [`src/styles`](src/styles) - the LESS sources for `static/datawrapper.css` (use `npm run build:css` to update)
+- [`src/server.js`](src/server.js) - where the Hapi Server is created and configured
+- [`src/index.js`](src/index.js) - where the Hapi Server is started
 
-## Testing
+## Unit tests
 
-We use [Mocha](https://mochajs.org/api/mocha) for frontend unit tests. Execute tests with `npm test` or `npm run test`. You can pass any [Mocha command line parameters](https://mochajs.org/#command-line-usage) to the test command. For example, to only run the tests for a specific component, you could use the `fgrep` option:
+There are two types of unit tests in the frontend project:
 
-`npm test -- --fgrep 'YourComponent'`
+- [Client-side unit tests](#client-side-unit-tests)
+- [Server-side unit tests](#server-side-unit-tests)
 
-Take a look at [src/views/archive/Index.test.mjs](src/views/archive/Index.test.mjs) for an example test setup. The example uses [@testing-library/svelte](https://testing-library.com/docs/svelte-testing-library/api/) and [chai-dom](https://www.chaijs.com/plugins/chai-dom/) to create and test the [src/views/archive/Index.svelte](src/views/archive/Index.svelte) component.
+We use the [Mocha](https://mochajs.org/api/mocha) framework for both of the types.
 
-### Running `test:watch` in background:
-
-Since the test cases have to be built with rollup you need to run two separate processes in order to get a "watching" test runner. First you make sure the tests get build with `rollup --watch` using:
-
-```shell
-npm run test:watch-rollup
-```
-
-Then, in a separate terminal you need to run `mocha` in watch mode as well:
+To run all unit tests against a locally running Datawrapper instance, run:
 
 ```shell
-npm run test:watch-mocha
+npm test
 ```
 
-If you only want to test a subset of components you can set the `TEST` environment var before running `test:watch-rollup`, e.g.:
+Or you can run the tests in a docker compose stack that starts its own database and api:
 
 ```shell
-TEST="views/_partials/controls/*.mjs" npm run test:watch-rollup
+make test
 ```
 
-## Quick introduction of the new Svelte views
+### Client-side unit tests
+
+These unit tests instantiate Svelte components and interact with them. To run them, use:
+
+``` shell
+npm run test:client
+```
+
+You can pass any [Mocha command line parameters](https://mochajs.org/#command-line-usage) to this
+command. For example, to only run the tests for a specific component, you could use the `-f`
+(`--fgrep`) option:
+
+```shell
+npm run test:client -- -f 'YourComponent'
+```
+
+To run the tests in watch mode, you have to run two separate processes. First you make sure the
+tests get built with `rollup --watch` using:
+
+```shell
+npm run test:client-rollup-watch
+```
+
+Then, in a separate terminal, run `mocha` itself:
+
+```shell
+npm run test:client-mocha-watch
+```
+
+If you only want to test a subset of components, you can set the `TEST` environment variable before
+running `test:client-rollup-watch`. Example:
+
+```shell
+TEST='views/_partials/controls/*.mjs' npm run test:client-rollup-watch
+```
+
+#### Test setup
+
+We use [@testing-library/svelte](https://testing-library.com/docs/svelte-testing-library/api/) and
+[chai-dom](https://www.chaijs.com/plugins/chai-dom/) to instantiate Svelte components and interact
+with the DOM.
+
+Example setup: [src/views/archive/Index.test.mjs](src/views/archive/Index.test.mjs).
+
+### Server-side unit tests
+
+These unit tests test the frontend hapi server and its routes. They require a running database and
+api. Therefore, you have to run them either against a locally running Datawrapper instance:
+
+```shell
+npm run test:server
+```
+
+Or you can run them in a docker compose environment that starts its own database and api:
+
+```shell
+make test-server
+```
+
+You can also pass mocha's `-f` option using the `f` argument:
+
+``` shell
+make test-server f='YourComponent'
+```
+
+A prerequisite for server-side tests is that the frontend views are compiled. See [Usage](#usage)
+for the usual compile command. Alternatively, you can do a minimal compilation, which is faster but
+creates results that work server-side only:
+
+```shell
+npm run test:server-rollup
+```
+
+or:
+
+```shell
+npm run test:server-rollup-watch
+```
+
+## Quick introduction to the new Svelte views
 
 In routes we can use Svelte-templates like this:
 

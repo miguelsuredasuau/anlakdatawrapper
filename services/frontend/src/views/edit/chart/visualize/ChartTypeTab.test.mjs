@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions */
-
 import ChartTypeTab from './ChartTypeTab.svelte';
 import { writable } from 'svelte/store';
 import { fireEvent, waitFor } from '@testing-library/svelte';
@@ -8,7 +6,7 @@ import {
     setConfig,
     trackStoreChanges,
     mockTranslations
-} from '../../../../test-utils';
+} from '../../../../../test/helpers/clientUtils';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import sinonChai from 'sinon-chai';

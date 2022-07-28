@@ -1,4 +1,3 @@
-/* eslint-disable no-new */
 import SwitchControl from './SwitchControl.svelte';
 import { fireEvent, render } from '@testing-library/svelte';
 import { createSlots } from '../../../../../../libs/controls/v3/test/helpers/utils.js';

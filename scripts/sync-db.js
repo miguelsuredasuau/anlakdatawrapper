@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 /* eslint no-console: "off" */
 const { white, green, yellow, red } = require('chalk');
 const ORM = require('@datawrapper/orm');

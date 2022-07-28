@@ -1,5 +1,5 @@
 import { configure, render, fireEvent } from '@testing-library/svelte';
-import Context from '../utils/svelte-view/Context.svelte';
+import Context from '../../src/utils/svelte-view/Context.svelte';
 import { getLocale } from './setup-locales.mjs';
 import cloneDeep from 'lodash/cloneDeep';
 import objectDiff from '@datawrapper/shared/objectDiff';

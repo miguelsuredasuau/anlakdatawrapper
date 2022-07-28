@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-expressions */
 import Changelog from './Changelog.svelte';
-import { renderWithContext, setConfig } from '../../../test-utils';
+import { renderWithContext, setConfig } from '../../../../test/helpers/clientUtils';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import nock from 'nock';

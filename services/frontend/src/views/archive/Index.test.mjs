@@ -1,9 +1,9 @@
 import Index from './Index.svelte';
 import { tick } from 'svelte';
-import { loadLocales } from '../../test-utils/setup-locales.mjs';
+import { loadLocales } from '../../../test/helpers/setup-locales.mjs';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
-import { renderWithContext, setConfig } from '../../test-utils';
+import { renderWithContext, setConfig } from '../../../test/helpers/clientUtils';
 
 setConfig({ testIdAttribute: 'data-uid' });
 

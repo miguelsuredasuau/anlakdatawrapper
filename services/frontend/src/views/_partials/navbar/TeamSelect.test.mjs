@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-expressions */
 import TeamSelect from './TeamSelect.svelte';
-import { renderWithContext } from '../../../test-utils';
+import { renderWithContext } from '../../../../test/helpers/clientUtils';
 import { fireEvent, waitFor } from '@testing-library/svelte';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';

@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions */
-
 import PreviewResizer from './PreviewResizer.svelte';
 import { tick } from 'svelte';
 import { get as getStoreValue } from 'svelte/store';
@@ -10,7 +8,7 @@ import {
     clickOn,
     fireChangeEvent,
     changeValueTo
-} from '../../../test-utils';
+} from '../../../../test/helpers/clientUtils';
 import chai, { expect } from 'chai';
 import { cloneDeep } from 'lodash';
 import assign from 'assign-deep';

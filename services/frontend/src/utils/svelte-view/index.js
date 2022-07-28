@@ -16,6 +16,7 @@ const viewComponents = new Map();
 
 const templateCache = new MemoryCache();
 const viewCache = new MemoryCache();
+const ssrFuncCache = new MemoryCache();
 
 /**
  * Registers a view with rollup.
@@ -37,20 +38,29 @@ function getTemplate(file, { useCache = true }) {
     });
 }
 
+const VIEW_FILE_TYPES = new Map([
+    ['csr', '.csr.js'],
+    ['csrMap', '.csr.js.map'],
+    ['ssr', '.ssr.js']
+]);
+
 /**
- * Reads view files compiled by rollup.
+ * Reads a view file compiled by rollup.
  *
  * Used also by the '/libs' route to serve compiled views.
+ *
+ * @param {string} page - View name, for example 'Create.svelte'.
+ * @param {string} type - File type. Allowed values: 'csr', 'csrMap', 'ssr'.
  */
-function getView(page) {
-    return viewCache.withCache(page, () => {
+function getView(page, type) {
+    return viewCache.withCache(page + ':' + type, () => {
+        const build = join(buildViewDir, page);
+        const ext = VIEW_FILE_TYPES.get(type);
+        if (!ext) {
+            throw new Error(`Invalid view file type ${type}`);
+        }
         try {
-            const build = join(buildViewDir, page);
-            const ssr = readFileSync(build + '.ssr.js', 'utf-8');
-            const csr = readFileSync(build + '.csr.js', 'utf-8');
-            const csrMap = readFileSync(build + '.csr.js.map', 'utf-8');
-            const ssrFunc = new Function(ssr + ';return App');
-            return { ssr, csr, csrMap, ssrFunc };
+            return readFileSync(build + ext, 'utf-8');
         } catch (e) {
             if (e.code === 'ENOENT') {
                 let message = `Compiled view files for \`${page}\` were not found`;
@@ -66,6 +76,17 @@ function getView(page) {
             throw e;
         }
     });
+}
+
+/**
+ * Create executable SSR function for passed `page` and `ssr` code string.
+ *
+ * @param {string} page - View name, for example 'Create.svelte'.
+ * @param {string} ssr - SSR code as a string.
+ * @returns {Function}
+ */
+function getSSRFunc(page, ssr) {
+    return ssrFuncCache.withCache(page, () => new Function(ssr + ';return App'));
 }
 
 function watchViews(wsClients) {
@@ -98,9 +119,9 @@ class SvelteView {
             const DW_DEV_MODE = this.server.methods.isDevMode();
             const config = this.server.methods.config();
 
-            let view;
+            let ssr;
             try {
-                view = await getView(page);
+                ssr = await getView(page, 'ssr');
             } catch (e) {
                 this.server.log(['sentry'], e);
                 const template = await getTemplate('error.ejs', { useCache: !DW_DEV_MODE });
@@ -112,7 +133,7 @@ class SvelteView {
                 });
                 return output;
             }
-            const { ssr, ssrFunc } = view;
+            const ssrFunc = await getSSRFunc(page, ssr);
 
             for (const key in context.stores) {
                 // resolve store values in case they are async
@@ -185,7 +206,7 @@ class SvelteView {
         return context(request);
     }
     cacheAllViews() {
-        views.forEach(getView);
+        views.forEach(page => VIEW_FILE_TYPES.forEach((ext, type) => getView(page, type)));
     }
 }
 

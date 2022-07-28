@@ -257,18 +257,19 @@ module.exports = {
                     if (relPath.startsWith('..')) {
                         return Boom.forbidden();
                     }
-                    let view;
+                    let code;
                     try {
-                        view = await server.methods.getView(page);
+                        if (isJSMap) {
+                            code = (await server.methods.getView(page, 'csrMap')).replace(
+                                /\/\/# sourceMappingURL=.*\.js\.map/,
+                                `//# sourceMappingURL=/lib/csr/${page}.js.map`
+                            );
+                        } else {
+                            code = await server.methods.getView(page, 'csr');
+                        }
                     } catch (e) {
                         return Boom.notFound();
                     }
-                    const code = isJSMap
-                        ? view.csrMap
-                        : view.csr.replace(
-                              /\/\/# sourceMappingURL=.*\.js\.map/,
-                              `//# sourceMappingURL=/lib/csr/${page}.js.map`
-                          );
                     return h
                         .response(
                             anonymous

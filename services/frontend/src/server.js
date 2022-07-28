@@ -32,7 +32,10 @@ const {
 
 const DW_DEV_MODE = !!JSON.parse(process.env.DW_DEV_MODE || 'false');
 
-const start = async () => {
+/**
+ * Instantiate a Hapi Server instance and configure it.
+ */
+async function create({ usePlugins = true } = {}) {
     validateAPI(config.api);
     validateORM(config.orm);
     validateFrontend(config.frontend);
@@ -172,8 +175,11 @@ const start = async () => {
     await server.methods.waitForAPI();
 
     await server.register([require('./routes')]);
-    server.logger.info('loading plugins...');
-    await server.register([require('./utils/plugin-loader')]);
+
+    if (usePlugins) {
+        server.logger.info('loading plugins...');
+        await server.register([require('./utils/plugin-loader')]);
+    }
 
     // custom HTML error pages
     server.ext('onPreResponse', (request, h) => {
@@ -203,7 +209,14 @@ const start = async () => {
         return h.continue;
     });
 
-    await server.start();
+    return server;
+}
+
+/**
+ * Start passed Hapi Server instance and handle process signals.
+ */
+async function start(server) {
+    server.start();
 
     setTimeout(() => {
         if (process.send) {
@@ -218,7 +231,7 @@ const start = async () => {
         server.logger.info('server has stopped');
         process.exit(0);
     });
-};
+}
 
 function getLogLevel() {
     if (DW_DEV_MODE) {
@@ -230,4 +243,7 @@ function getLogLevel() {
     return 'info';
 }
 
-start();
+module.exports = {
+    create,
+    start
+};

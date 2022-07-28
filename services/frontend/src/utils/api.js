@@ -7,9 +7,9 @@ module.exports = {
     name: 'utils/api',
     version: '1.0.0',
     register: async server => {
-        const apiConfig = server.methods.config('api');
-        const apiBase = getAPIBase(apiConfig);
-        const { sessionID } = apiConfig;
+        const config = server.methods.config();
+        const apiUrl = config.frontend.apiUrl || getAPIUrl(config.api);
+        const apiBase = `${apiUrl}/v3`;
 
         /**
          * Returns a wrapper around got for making authenticated API requests.
@@ -22,7 +22,7 @@ module.exports = {
          * const themes = await api('/themes');
          * await api('/charts/12345/data', { method: 'PUT', json: false, body: newCSV });
          */
-        server.method('createAPI', request => createAPI(request, apiBase, sessionID));
+        server.method('createAPI', request => createAPI(request, apiBase, config.api.sessionID));
 
         /**
          * Returns a Promise that resolves once the API is ready.
@@ -33,12 +33,12 @@ module.exports = {
     }
 };
 
-function getAPIBase(apiConfig) {
+function getAPIUrl(apiConfig) {
     const scheme = apiConfig.https ? 'https' : 'http';
     const host = apiConfig.subdomain
         ? `${apiConfig.subdomain}.${apiConfig.domain}`
         : apiConfig.domain;
-    return `${scheme}://${host}/v3`;
+    return `${scheme}://${host}`;
 }
 
 function createAPI(request, apiBase, sessionID) {
@@ -86,7 +86,7 @@ async function waitForAPI(server, apiBase, timeoutSec = 1) {
     try {
         await got.get(apiBase);
     } catch (error) {
-        server.logger.info(`API not ready, trying again in ${timeoutSec}s...`);
+        server.logger.error(`API not ready at ${apiBase}, trying again in ${timeoutSec}s...`);
         await new Promise(resolve => setTimeout(resolve, timeoutSec * 1000));
         await waitForAPI(server, apiBase);
     }

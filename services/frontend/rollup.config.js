@@ -15,6 +15,15 @@ const configPath = findConfigPath();
 const config = require(configPath);
 
 const production = !process.env.ROLLUP_WATCH;
+let sourcemap;
+let modes;
+if (process.env.NODE_ENV === 'test') {
+    sourcemap = false;
+    modes = ['ssr'];
+} else {
+    sourcemap = true;
+    modes = ['ssr', 'csr'];
+}
 
 function onwarn(warning, handler) {
     if (
@@ -103,7 +112,15 @@ async function inspectApp() {
     return { views, viewComponents };
 }
 
-function createInput(view, viewComponents, ssr) {
+/**
+ * Create a rollup input object for passed `view` component.
+ *
+ * @param {string} view - Path to a view component .svelte file.
+ * @param {Object[]} viewComponents - Array of view component objects
+ * @param {string} mode - Should the component be compiled for server-side or client-side use? Accepted values: "ssr" or "csr".
+ * @return {Object} Rollup input object.
+ */
+function createInput(view, viewComponents, mode) {
     return {
         external: [
             '/lib/codemirror/lib/codemirror',
@@ -124,13 +141,13 @@ function createInput(view, viewComponents, ssr) {
         ],
         input: join('src/utils/svelte-view/View.svelte'),
         output: {
-            sourcemap: true,
-            format: ssr || view.endsWith('.element.svelte') ? 'iife' : 'amd',
+            sourcemap,
+            format: mode === 'ssr' || view.endsWith('.element.svelte') ? 'iife' : 'amd',
             name: 'App',
             amd: {
                 id: view.endsWith('.svelte') ? 'App' : null // view
             },
-            file: `build/views/${view}.${ssr ? 'ssr' : 'csr'}.js`
+            file: `build/views/${view}.${mode}.js`
         },
         plugins: [
             replace({
@@ -154,7 +171,7 @@ function createInput(view, viewComponents, ssr) {
                     _layout: join(__dirname, 'src/views/_layout'),
                     _partials: join(__dirname, 'src/views/_partials'),
                     _plugins: join(__dirname, 'src/views/_plugins'),
-                    ...(ssr && {
+                    ...(mode === 'ssr' && {
                         '@datawrapper/shared/decodeHtml': '@datawrapper/shared/decodeHtml.ssr'
                     })
                 }
@@ -163,7 +180,7 @@ function createInput(view, viewComponents, ssr) {
             svelte({
                 compilerOptions: {
                     dev: !production,
-                    generate: ssr ? 'ssr' : 'csr',
+                    generate: mode === 'ssr' ? 'ssr' : 'dom',
                     hydratable: true,
                     accessors: true,
                     customElement: view.endsWith('.element.svelte')
@@ -184,11 +201,9 @@ function createInput(view, viewComponents, ssr) {
 
 module.exports = inspectApp().then(({ views, viewComponents }) =>
     views
-        .filter(view => {
-            return !process.env.TARGET || view.startsWith(process.env.TARGET);
-        })
+        .filter(view => !process.env.TARGET || view.startsWith(process.env.TARGET))
         .flatMap(view =>
-            [true, false].map(ssr =>
+            modes.map(ssr =>
                 createInput(
                     view,
                     viewComponents.filter(c => c.page === view),
