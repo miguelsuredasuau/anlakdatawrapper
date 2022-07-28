@@ -4371,6 +4371,12 @@ function set(object, key, value) {
 
   return false;
 }var publish = [metadata => {
+  const oldVal = get$1(metadata, 'publish');
+
+  if (Array.isArray(oldVal)) {
+    set(metadata, 'publish', {});
+  }
+}, metadata => {
   const oldVal = get$1(metadata, 'publish.blocks.logo');
 
   if (typeof oldVal === 'boolean') {

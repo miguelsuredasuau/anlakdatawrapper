@@ -484,6 +484,34 @@ const dataReadonly = false;
 
 const defaultTeam = { settings: {} };
 
+let clock;
+let chart;
+let data;
+let locale;
+let locales;
+let visualization;
+let theme;
+let team;
+let syncChart;
+let syncData;
+let chartSyncSub;
+let dataSyncSub;
+let startSync = () => {
+    throw Error('You need to call setupStoresForTest first');
+};
+
+/**
+ * Call this method to setup the stores for a test, either in the beforeEach callback
+ * or in the test itself.
+ * @param chartDefault
+ * @param dataDefault
+ * @param visualizationsDefault
+ * @param themeDefault
+ * @param teamDefault
+ * @param localesDefault
+ * @param disabledFieldsDefault
+ * @param dataReadonlyDefault
+ */
 const setupStoresForTest = ({
     rawChart: chartDefault = rawChart,
     rawData: dataDefault = rawData,
@@ -494,38 +522,82 @@ const setupStoresForTest = ({
     disabledFields: disabledFieldsDefault = disabledFields,
     dataReadonly: dataReadonlyDefault = dataReadonly
 } = {}) => {
-    return initStores({
-        rawChart: chartDefault,
-        rawData: dataDefault,
-        rawVisualizations: visualizationsDefault,
-        rawTheme: themeDefault,
-        rawTeam: teamDefault,
-        rawLocales: localesDefault,
-        disabledFields: disabledFieldsDefault,
-        dataReadonly: dataReadonlyDefault
-    });
+    ({ chart, data, locale, locales, visualization, theme, team, syncChart, syncData } = initStores(
+        {
+            rawChart: chartDefault,
+            rawData: dataDefault,
+            rawVisualizations: visualizationsDefault,
+            rawTheme: themeDefault,
+            rawTeam: teamDefault,
+            rawLocales: localesDefault,
+            disabledFields: disabledFieldsDefault,
+            dataReadonly: dataReadonlyDefault
+        }
+    ));
+
+    /**
+     * Start the syncing of chart and data (i.e. patch and put requests are sent to the "server")
+     */
+    startSync = () => {
+        chartSyncSub = syncChart.subscribe();
+        dataSyncSub = syncData.subscribe();
+    };
 };
 
 describe('edit page stores', () => {
-    describe('initialization', function () {
-        it('initializes stores correctly', () => {
-            const { chart, visualization, theme, data, team, locale, locales } =
-                setupStoresForTest();
-            subscribeOnce(chart, value => expect(value).to.deep.equal(rawChart));
-            subscribeOnce(visualization, value =>
-                expect(value).to.deep.equal(rawVisualizations[1])
-            );
-            subscribeOnce(theme, value => expect(value).to.deep.equal(rawTheme));
-            subscribeOnce(data, value => expect(value).to.deep.equal(rawData));
-            subscribeOnce(team, value => expect(value).to.deep.equal(defaultTeam));
-            subscribeOnce(locales, value => expect(value).to.deep.equal(rawLocales));
-            subscribeOnce(locale, value => expect(value).to.deep.equal(rawLocales[2]));
-        });
+    beforeEach(() => {
+        clock = FakeTimers.install();
+    });
+
+    afterEach(() => {
+        clock.uninstall();
+        if (chartSyncSub) {
+            chartSyncSub.unsubscribe();
+            chartSyncSub = undefined;
+        }
+        if (dataSyncSub) {
+            dataSyncSub.unsubscribe();
+            dataSyncSub = undefined;
+        }
+        startSync = () => {
+            throw Error('You need to call setupStoresForTest first');
+        };
+    });
+
+    it('initializes stores correctly', () => {
+        setupStoresForTest();
+        subscribeOnce(chart, value => expect(value).to.deep.equal(rawChart));
+        subscribeOnce(visualization, value => expect(value).to.deep.equal(rawVisualizations[1]));
+        subscribeOnce(theme, value => expect(value).to.deep.equal(rawTheme));
+        subscribeOnce(data, value => expect(value).to.deep.equal(rawData));
+        subscribeOnce(team, value => expect(value).to.deep.equal(defaultTeam));
+        subscribeOnce(locales, value => expect(value).to.deep.equal(rawLocales));
+        subscribeOnce(locale, value => expect(value).to.deep.equal(rawLocales[2]));
     });
 
     describe('metadata migration', function () {
-        it('migrates old chart metadata correctly', async () => {
-            const clock = FakeTimers.install();
+        it('migrates publish = [] correctly', async () => {
+            const oldChart = cloneDeep(rawChart);
+            set(oldChart, 'metadata.publish', []);
+            const expectedChart = cloneDeep(rawChart);
+            set(expectedChart, 'metadata.publish', {});
+            const scope = nock('http://api.datawrapper.mock')
+                .patch(`/v3/charts/${rawChart.id}`, {
+                    metadata: { publish: {} }
+                })
+                .reply(200, expectedChart);
+
+            // start test migration is taken care of automatically
+            setupStoresForTest({ rawChart: oldChart });
+            startSync();
+            subscribeOnce(chart, value => expect(value).to.deep.equal(expectedChart));
+
+            expect(scope.isDone()).to.equal(false);
+            await clock.tickAsync(1000);
+            expect(scope.isDone()).to.equal(true);
+        });
+
+        it('migrates publish.blocks.logo correctly', async () => {
             const oldChart = cloneDeep(rawChart);
             set(oldChart, 'metadata.publish.blocks.logo', false);
             const expectedChart = cloneDeep(rawChart);
@@ -537,47 +609,20 @@ describe('edit page stores', () => {
                 .reply(200, expectedChart);
 
             // start test migration is taken care of automatically
-            const { chart, syncChart } = setupStoresForTest({
-                rawChart: oldChart
-            });
-            const sub = syncChart.subscribe();
+            setupStoresForTest({ rawChart: oldChart });
+            startSync();
             subscribeOnce(chart, value => expect(value).to.deep.equal(expectedChart));
 
             expect(scope.isDone()).to.equal(false);
             await clock.tickAsync(1000);
             expect(scope.isDone()).to.equal(true);
-            clock.uninstall();
-            sub.unsubscribe();
         });
     });
 
     describe('chart and data updates', function () {
-        let clock;
-        let chart;
-        let data;
-        let locale;
-        let visualization;
-        let theme;
-        let syncChart;
-        let syncData;
-        let chartSyncSub;
-        let dataSyncSub;
         beforeEach(() => {
-            clock = FakeTimers.install();
-            ({ chart, data, locale, visualization, theme, syncChart, syncData } =
-                setupStoresForTest());
-            chartSyncSub = syncChart.subscribe();
-            dataSyncSub = syncData.subscribe();
-        });
-
-        afterEach(() => {
-            clock.uninstall();
-            if (chartSyncSub) {
-                chartSyncSub.unsubscribe();
-            }
-            if (dataSyncSub) {
-                dataSyncSub.unsubscribe();
-            }
+            setupStoresForTest();
+            startSync();
         });
 
         it('sends out patch request when the chart is updated', async () => {
