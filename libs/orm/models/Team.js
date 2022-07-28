@@ -30,6 +30,7 @@ const defaultSettings = {
     sso: {
         enabled: false,
         protocol: 'openId',
+        automaticProvisioning: true,
         openId: {
             domain: '',
             clientId: '',
@@ -38,7 +39,8 @@ const defaultSettings = {
         saml: {
             url: '',
             entityId: '',
-            certificate: ''
+            certificate: '',
+            disableRequestedAuthnContext: false
         }
     },
     disableVisualizations: {

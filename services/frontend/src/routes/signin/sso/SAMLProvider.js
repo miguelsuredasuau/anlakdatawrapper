@@ -13,7 +13,7 @@ class SAMLProvider {
     static async create(server, settings, teamId) {
         const frontend = server.methods.config('frontend');
         const enabled = get(settings, 'enabled');
-        const { url, certificate } = get(settings, 'saml', {});
+        const { url, certificate, disableRequestedAuthnContext } = get(settings, 'saml', {});
 
         if (!enabled || !url || !certificate) throw Boom.badRequest('SAML not configured');
 
@@ -22,6 +22,7 @@ class SAMLProvider {
         const client = new Saml.SAML({
             callbackUrl: `${baseUri}/signin/sso`,
             issuer: `${baseUri}/sp`,
+            disableRequestedAuthnContext,
             entryPoint: url,
             cert: certificate
         });

@@ -135,6 +135,7 @@ class Organization extends BaseOrganization
             'sso' => [
                 'enabled' => false,
                 'protcol' => 'openId',
+                'automaticProvisioning' => true,
                 'openId' => [
                     'domain' => '',
                     'clientId' => '',
@@ -143,7 +144,8 @@ class Organization extends BaseOrganization
                 'saml' => [
                     'url' => '',
                     'entityId' => '',
-                    'certificate' => ''
+                    'certificate' => '',
+                    'disableRequestedAuthnContext' => false
                 ]
             ],
             'disableVisualizations' => [

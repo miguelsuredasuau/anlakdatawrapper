@@ -215,13 +215,19 @@ module.exports = {
                         }
 
                         if (!user) {
-                            // else, create new user
-                            user = await User.create({
-                                role: 'editor',
-                                email: email || '',
-                                pwd: '',
-                                oauth_signin: oAuthSignin
-                            });
+                            if (ssoSettings.automaticProvisioning) {
+                                // create new user
+                                user = await User.create({
+                                    role: 'editor',
+                                    email: email || '',
+                                    pwd: '',
+                                    oauth_signin: oAuthSignin
+                                });
+                            } else {
+                                throw Boom.forbidden(
+                                    'The provided user is not yet invited to this team.'
+                                );
+                            }
                         }
                     }
 
