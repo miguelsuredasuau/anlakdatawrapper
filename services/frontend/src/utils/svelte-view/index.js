@@ -98,8 +98,9 @@ function watchViews(wsClients) {
             // Wait a bit more to make sure both csr/ssr have been compiled. Perhaps this isn't
             // necessary (if rollup always builds csr after ssr has been built).
             setTimeout(() => {
-                // invalidate the view cache
-                viewCache.drop(page);
+                // invalidate the view and ssr func caches
+                VIEW_FILE_TYPES.forEach((ext, type) => viewCache.drop(page + ':' + type));
+                ssrFuncCache.drop(page);
                 process.stdout.write(`Invalidated csr/ssr cache for ${page}\n`);
                 // notify page
                 wsClients.forEach(ws => ws.send(JSON.stringify({ page })));
