@@ -63,7 +63,19 @@
 
     onMount(() => {
         if (expandable) {
-            resize();
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Setting the initial size of the textarea only works correctly
+                        // if the element is currently visible.
+                        // Using the IntersectionObserver we make sure to only call the
+                        // initial resize command when the element first becomes visible.
+                        resize();
+                        observer.unobserve(textarea);
+                    }
+                });
+            });
+            observer.observe(textarea);
         }
     });
 </script>
