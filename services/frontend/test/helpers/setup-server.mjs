@@ -6,7 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const mochaHooks = {
     beforeAll(done) {
-        create({ userPlugins: false }).then(async server => {
+        create({ usePlugins: false }).then(async server => {
             await server.initialize();
 
             this.server = server;

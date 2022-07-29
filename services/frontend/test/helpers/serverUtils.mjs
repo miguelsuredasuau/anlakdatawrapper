@@ -1,4 +1,4 @@
-const VIEW_REGEXP = /<script type="text\/javascript" src="\/lib\/csr\/(?<view>\w+\.svelte)\.js/;
+const VIEW_REGEXP = /<script type="text\/javascript" src="\/lib\/csr\/(?<view>[\w/-]+\.svelte)\.js/;
 
 /**
  * Create a HTTP headers object for session authentication of passed `userObj`.
@@ -15,10 +15,10 @@ export function getSessionHeaders(userObj) {
 }
 
 /**
- * Get the view name from `html` that was produced by the svelte-view plugin.
+ * Get Svelte view name from `html` that was produced by the SvelteView plugin.
  *
  * @param {string} html - HTML document as a string.
- * @returns {string} View name, for example "Create.svelte".
+ * @returns {string} View name, for example "account/Settings.svelte".
  */
 export function parseSvelteView(html) {
     const m = html.match(VIEW_REGEXP);
@@ -31,7 +31,7 @@ export function parseSvelteView(html) {
 const PROPS_REGEXP = /var props = JSON\.parse\((?<json>[^\n]+)\);/;
 
 /**
- * Get the svelte properties from `html` that was produced by the svelte-view plugin.
+ * Get Svelte properties from `html` that was produced by the SvelteView plugin.
  *
  * @param {string} html - HTML document as a string.
  * @returns {Object} Svelte properties object, for example { chartData: { title: "My chart" } }.
