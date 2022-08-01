@@ -255,21 +255,21 @@
         );
     }
 
-    async function loadBlocks(blocks) {
-        function url(src) {
-            return origin && src.indexOf('http') !== 0 ? `${origin}/${src}` : src;
-        }
+    function getUrl(src) {
+        return origin && src.indexOf('http') !== 0 ? `${origin}/${src}` : src;
+    }
 
+    async function loadBlocks(blocks) {
         if (blocks.length) {
             await Promise.all(
                 blocks.map(d => {
                     return new Promise(resolve => {
-                        const p = [loadScript(url(d.source.js))];
+                        const p = [loadScript(getUrl(d.source.js))];
 
                         if (d.source.css) {
                             p.push(
                                 loadStylesheet({
-                                    src: url(d.source.css),
+                                    src: getUrl(d.source.css),
                                     parentElement: styleHolder
                                 })
                             );
@@ -484,7 +484,7 @@ Please make sure you called __(key) with a key of type "string".
                         assetPromises.push(
                             // eslint-disable-next-line
                             new Promise(async resolve => {
-                                const res = await fetch(assets[assetName].url);
+                                const res = await fetch(getUrl(assets[assetName].url));
                                 const text = await res.text();
                                 dwChart.asset(assetName, text);
                                 resolve();

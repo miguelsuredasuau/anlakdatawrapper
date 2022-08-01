@@ -4370,12 +4370,43 @@ function set(object, key, value) {
   }
 
   return false;
-}var publish = [metadata => {
-  const oldVal = get$1(metadata, 'publish');
-
-  if (Array.isArray(oldVal)) {
-    set(metadata, 'publish', {});
+}/**
+ * Converts an array with properties back to a normal object.
+ *
+ * @exports arrayToObject
+ * @kind function
+ *
+ * @description
+ * This function fixes an uglyness when working with PHP backends.
+ * in PHP, there is no distiction between arrays and objects, so
+ * PHP converts an empty object {} to a empty array [].
+ * When this empty array then ends up in client-side JS functions which
+ * might start to assign values to the array using `arr.foo = "bar"`
+ * which results in a data structure like this:
+ *
+ * @example
+ * console.log(arr);
+ * []
+ *   foo: "bar"
+ *   length: 0
+ *   <prototype>: Array []
+ *
+ * console.log(arrayToObject(arr));
+ * Object { foo: "bar" }
+ *
+ * @param {array} o - the input
+ * @returns {object}
+ */
+function arrayToObject(o) {
+  if (Array.isArray(o)) {
+    const obj = {};
+    Object.keys(o).forEach(k => obj[k] = o[k]);
+    return obj;
   }
+
+  return o;
+}var publish = [metadata => {
+  set(metadata, 'publish', arrayToObject(get$1(metadata, 'publish', {})));
 }, metadata => {
   const oldVal = get$1(metadata, 'publish.blocks.logo');
 
@@ -10761,19 +10792,19 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
 
   let pluginBlocks = [];
 
-  async function loadBlocks(blocks) {
-    function url(src) {
-      return origin && src.indexOf("http") !== 0 ? `${origin}/${src}` : src;
-    }
+  function getUrl(src) {
+    return origin && src.indexOf("http") !== 0 ? `${origin}/${src}` : src;
+  }
 
+  async function loadBlocks(blocks) {
     if (blocks.length) {
       await Promise.all(blocks.map(d => {
         return new Promise(resolve => {
-          const p = [loadScript(url(d.source.js))];
+          const p = [loadScript(getUrl(d.source.js))];
 
           if (d.source.css) {
             p.push(loadStylesheet({
-              src: url(d.source.css),
+              src: getUrl(d.source.css),
               parentElement: styleHolder
             }));
           }
@@ -10917,7 +10948,7 @@ Please make sure you called __(key) with a key of type "string".
             const assetName = name;
             assetPromises.push( // eslint-disable-next-line
             new Promise(async resolve => {
-              const res = await fetch(assets[assetName].url);
+              const res = await fetch(getUrl(assets[assetName].url));
               const text = await res.text();
               dwChart.asset(assetName, text);
               resolve();

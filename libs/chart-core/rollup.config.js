@@ -30,6 +30,61 @@ function onwarn(warning, warn) {
 
 module.exports = [
     {
+        /* Svelte Visualization Component as web component */
+        input: path.resolve(__dirname, 'web-component.js'),
+        plugins: [
+            /*
+             * why are there two svelte calls here?
+             *
+             * svelte's customElement will make svelte components render as web components
+             * or "custom elements". however, due to the way svelte is built, it will try
+             * to make_every_single svelte component that is embedded its own custom element.
+             * however chart-core and chart components assume to exist in the same context with the
+             * same styles, DOM access etc. . so we need to make svelte render our 'entrypoint'
+             * in "custom-element-mode" but all other embedded svelte components in "traditional"
+             * mode - hence the two configurations with 'include' and 'exclude' rules.
+             */
+
+            svelte({
+                customElement: true,
+                include: /\.wc\.svelte$/
+            }),
+            svelte({
+                customElement: false,
+                exclude: /\.wc\.svelte$/,
+                css: css => {
+                    css.write(path.resolve(__dirname, 'dist', 'web-component.css'));
+                }
+            }),
+
+            // for @emotion/css
+            replace({
+                'process.env.NODE_ENV': JSON.stringify('production')
+            }),
+            resolve(),
+            commonjs(),
+            production &&
+                babel({
+                    ...babelConfig,
+                    presets: [
+                        [
+                            '@babel/env',
+                            // needs to at least not throw syntax errors in IE
+                            { targets: ['> 1%'], corejs: 3, useBuiltIns: 'entry' }
+                        ]
+                    ],
+                    plugins: ['babel-plugin-transform-async-to-promises']
+                }),
+            production && terser()
+        ],
+        onwarn,
+        output: {
+            format: 'iife',
+            entryFileNames: 'web-component.js',
+            ...output
+        }
+    },
+    {
         /* Client side Svelte Visualization Component */
         input: path.resolve(__dirname, 'main.mjs'),
         plugins: [

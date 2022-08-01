@@ -14,7 +14,7 @@
     "scripts": {
         "format": "cd ../.. && scripts/format libs/chart-core",
         "build": "rollup -c rollup.config.js",
-        "dev": "rollup -c -w rollup.config.js",
+        "dev": "rollup -cw rollup.config.js",
         "lint": "cd ../.. && scripts/lint libs/chart-core",
         "prepublishOnly": "npm run build",
         "test": "ava",

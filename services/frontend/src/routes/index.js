@@ -68,6 +68,12 @@ module.exports = {
             }
         });
 
+        await server.register(require('./web-components'), {
+            routes: {
+                prefix: '/v2/web-components'
+            }
+        });
+
         server.methods.registerView('Error.svelte');
         server.methods.registerView('_partials/svelte2/Svelte2Wrapper.element.svelte');
     }

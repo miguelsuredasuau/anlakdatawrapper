@@ -283,6 +283,17 @@ module.exports = async function createChartWebsite(
         { encoding: 'utf-8' }
     );
 
+    const webComponentJS = await fs.readFile(
+        path.join(chartCore.path.dist, 'web-component.js'),
+        'utf-8'
+    );
+    publishData.styles = css;
+    publishData.theme.fontsCSS = fonts;
+    const webComponent =
+        webComponentJS + `\n\nwindow.datawrapper.render(${JSON.stringify(publishData)});`;
+    /* write "embed.js" for embedding as web component*/
+    await fs.writeFile(path.join(outDir, 'embed.js'), webComponent, { encoding: 'utf-8' });
+
     const fileMap = [
         ...dependencies.map(path => {
             return { path, hashed: true };
@@ -301,6 +312,7 @@ module.exports = async function createChartWebsite(
         { path: path.join('lib/vis', cssFile), hashed: true },
         { path: path.join('lib/vis', cssFileDark), hashed: true },
         { path: 'index.html', hashed: false },
+        { path: 'embed.js', hashed: false },
         { path: dataFile, hashed: false }
     ];
 
