@@ -64,7 +64,7 @@ module.exports = {
             try {
                 props = await api(`/charts/${chartId}/publish/data?${queryString}`);
             } catch (ex) {
-                return Boom.notFound();
+                throw Boom.notFound();
             }
 
             // also load dark mode theme & styles
@@ -72,7 +72,7 @@ module.exports = {
             const themeId = props.chart.theme;
 
             if (!server.app.visualizations.has(props.chart.type)) {
-                return Boom.badRequest('Invalid visualization type');
+                throw Boom.badRequest('Invalid visualization type');
             }
 
             const darkThemePromises = [

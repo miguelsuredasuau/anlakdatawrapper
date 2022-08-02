@@ -28,7 +28,7 @@ export function parseSvelteView(html) {
     return null;
 }
 
-const PROPS_REGEXP = /var props = JSON\.parse\((?<json>[^\n]+)\);/;
+const PROPS_REGEXP = /(var props|window\.__DW_SVELTE_PROPS__) = JSON\.parse\((?<json>[^\n]+)\);/;
 
 /**
  * Get Svelte properties from `html` that was produced by the SvelteView plugin.

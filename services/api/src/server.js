@@ -233,6 +233,10 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
     } catch (e) {
         server.logger.debug('Error while loading translations', e);
     }
+    // Initialize the 'chart' scope, otherwise the app crashes when there are some visualization
+    // plugins but none of them contain a chart-translations.json file (e.g. only the d3-bars
+    // plugin).
+    addScope('chart', { 'en-US': {} });
 
     await ORM.init(config);
     await ORM.registerPlugins(server.logger);

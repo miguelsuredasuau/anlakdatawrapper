@@ -1,6 +1,5 @@
 const path = require('path');
 const { ForeignKeyConstraintError } = require('sequelize');
-const { addScope } = require('@datawrapper/service-utils/l10n');
 const { create } = require('../../src/server');
 const { generateToken } = require('../../src/utils');
 const { nanoid, customAlphabet } = require('nanoid');
@@ -51,11 +50,6 @@ async function setup(options) {
             script: path.join(__dirname, '../data/chart.js')
         }
     ]);
-
-    // Add fake 'chart' scope.
-    addScope('chart', {
-        'en-US': {}
-    });
 
     // Create default theme if it doesn't exist.
     const { Theme } = require('@datawrapper/orm/models');

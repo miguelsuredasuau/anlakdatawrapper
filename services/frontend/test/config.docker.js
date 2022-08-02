@@ -21,7 +21,9 @@ module.exports = {
         cors: ['*'],
         openCage: 'fake-opencage-key'
     },
-    plugins: {},
+    plugins: {
+        'd3-bars': {}
+    },
     orm: {
         chartIdSalt: 'TEST_SALT',
         skipTableTest: true,

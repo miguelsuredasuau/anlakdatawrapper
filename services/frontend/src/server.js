@@ -35,7 +35,7 @@ const DW_DEV_MODE = !!JSON.parse(process.env.DW_DEV_MODE || 'false');
 /**
  * Instantiate a Hapi Server instance and configure it.
  */
-async function create({ usePlugins = true } = {}) {
+async function create() {
     validateAPI(config.api);
     validateORM(config.orm);
     validateFrontend(config.frontend);
@@ -176,10 +176,8 @@ async function create({ usePlugins = true } = {}) {
 
     await server.register([require('./routes')]);
 
-    if (usePlugins) {
-        server.logger.info('loading plugins...');
-        await server.register([require('./utils/plugin-loader')]);
-    }
+    server.logger.info('loading plugins...');
+    await server.register([require('./utils/plugin-loader')]);
 
     // custom HTML error pages
     server.ext('onPreResponse', (request, h) => {

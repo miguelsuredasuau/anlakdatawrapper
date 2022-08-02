@@ -26,7 +26,9 @@ module.exports = {
         cors: ['*'],
         openCage: 'fake-opencage-key'
     },
-    plugins: {},
+    plugins: {
+        'd3-bars': {}
+    },
     orm: {
         db: {
             dialect: 'mysql',
