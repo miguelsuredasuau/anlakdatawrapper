@@ -3,6 +3,19 @@
  */
 
 // ELEMENTS
+
+// Box
+
+.box.is-link { // add a custom link class to let to give box hover effects
+  &:hover,
+  &:focus {
+    box-shadow: $box-link-hover-shadow
+  }
+  &:active {
+    box-shadow: $box-link-active-shadow
+  }
+}
+
 // Button
 
 .button {
