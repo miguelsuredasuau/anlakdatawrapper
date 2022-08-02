@@ -439,6 +439,33 @@ test('POST /charts/{id}/publish publishes a chart with an invalid JSON dataset',
     }
 });
 
+test('POST /charts/{id}/publish publishes a chart with a missing dataset', async t => {
+    let chart;
+    try {
+        chart = await createChart({
+            metadata: {
+                axes: [],
+                describe: {},
+                visualize: {},
+                annotate: {},
+                data: {
+                    json: true
+                }
+            }
+        });
+
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/publish`,
+            auth: t.context.auth,
+            headers: t.context.headers
+        });
+        t.is(res.statusCode, 200);
+    } finally {
+        await destroy(chart);
+    }
+});
+
 test('POST /charts/{id}/publish returns error 400 when trying to publish chart with invalid type', async t => {
     let chart;
     try {
