@@ -7897,7 +7897,7 @@ Column.types = columnTypes;
 
 // dw.start.js
 const dw$1 = {
-    version: 'chart-core@8.46.1',
+    version: 'chart-core@8.47.0',
     dataset: Dataset,
     column: Column,
     datasource: {

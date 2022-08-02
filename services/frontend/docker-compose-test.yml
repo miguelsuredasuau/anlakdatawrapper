@@ -10,7 +10,7 @@ services:
       - MYSQL_DATABASE=test
 
   node:
-    image: "node:14"
+    image: "node:18"
     depends_on:
       mysql:
         condition: service_healthy
