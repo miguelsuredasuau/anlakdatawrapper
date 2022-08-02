@@ -2,7 +2,7 @@ import Changelog from './Changelog.svelte';
 import { renderWithContext, setConfig } from '../../../../test/helpers/clientUtils';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
-import nock from 'nock';
+import { MockAgent, setGlobalDispatcher } from 'undici';
 
 setConfig({ testIdAttribute: 'data-uid' });
 
@@ -55,19 +55,10 @@ describe('Changelog', () => {
     });
 
     describe('initial state, with feed', function () {
-        // create a mock changelog feed to request from
-        nock('http://datawrapper.mock')
-            .defaultReplyHeaders({
-                'access-control-allow-origin': 'https://example.org',
-                'access-control-allow-credentials': 'true',
-                'access-control-allow-headers': 'user-agent'
-            })
-            .options('/changelog.xml')
-            .reply(204)
-            .get('/changelog.xml')
-            .reply(200, testFeed, {
-                'Content-Type': 'text/xml'
-            });
+        const agent = new MockAgent();
+        setGlobalDispatcher(agent);
+        const client = agent.get('http://datawrapper.mock');
+        client.intercept({ path: '/changelog.xml' }).reply(200, testFeed);
 
         it('renders changelog', async () => {
             const changelogUrl = 'https://www.datawrapper.de/changelog';
