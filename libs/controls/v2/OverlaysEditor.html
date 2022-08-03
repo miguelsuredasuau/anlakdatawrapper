@@ -4,7 +4,6 @@
     class="btn"
     style="margin-bottom: 10px"
     id="add-overlay"
-    ref:addOverlayButton
 >
     <i class="fa fa-plus"></i> { t('overlays / add') }
 </button>
@@ -17,6 +16,8 @@
     draggable="{true}"
     deselectable="{true}"
     on:itemDrag="onDrag(event)"
+    on:deleteItems="deleteOverlay(event[0])"
+    on:updateItem="updateOverlay(event)"
     itemRenderer="{OverlayListItem}"
     bind:selected="selectedOverlays"
 />
@@ -314,22 +315,17 @@
 
                 this.set({ selectedOverlays: [selectedNew] });
                 this.store.setMetadata('visualize.overlays', overlays);
+            },
+            deleteOverlay(id) {
+                const { metadata } = this.store.get();
+                metadata.visualize.overlays.splice(id, 1);
+                this.store.set({ metadata });
+            },
+            updateOverlay({ id, update }) {
+                const { overlays } = this.get();
+                overlays[id] = update;
+                this.store.setMetadata('visualize.overlays', overlays);
             }
-        },
-
-        oncreate() {
-            this.refs.addOverlayButton.addEventListener('deleteOverlay', e => {
-                const { metadata } = this.store.get();
-                metadata.visualize.overlays.splice(e.detail, 1);
-                this.store.set({ metadata });
-            });
-
-            this.refs.addOverlayButton.addEventListener('toggleOverlayVisibility', e => {
-                const { metadata } = this.store.get();
-                metadata.visualize.overlays[e.detail].invisible =
-                    !metadata.visualize.overlays[e.detail].invisible;
-                this.store.set({ metadata });
-            });
         }
     };
 </script>

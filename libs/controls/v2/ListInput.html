@@ -30,6 +30,7 @@
             {index}
             on:change="onChange(event)"
             on:delete="fire('deleteItems', [item.id])"
+            on:updateItem="fire('updateItem', { id: item.id, update: event })"
             this="{itemRenderer}"
             {data}
         />

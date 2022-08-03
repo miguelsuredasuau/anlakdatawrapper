@@ -103,13 +103,16 @@
             }
         },
         methods: {
-            toggleVisibility(id) {
-                const customEvent = new CustomEvent('toggleOverlayVisibility', { detail: id });
-                document.getElementById('add-overlay').dispatchEvent(customEvent);
+            toggleVisibility() {
+                const { item } = this.get();
+                const update = {
+                    ...item,
+                    invisible: !item.invisible
+                };
+                this.fire('updateItem', update);
             },
-            deleteOverlay(id) {
-                const customEvent = new CustomEvent('deleteOverlay', { detail: id });
-                document.getElementById('add-overlay').dispatchEvent(customEvent);
+            deleteOverlay() {
+                this.fire('delete');
             }
         }
     };
