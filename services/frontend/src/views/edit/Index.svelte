@@ -118,7 +118,7 @@
     // is not reactive to dwChart changes, this won't
     // have any effect
     $: dwChart.attributes($chart);
-    $: dwChart.dataset($dataset);
+    $: dwChart.setDataset($dataset);
 
     const steps = workflow.steps.map(step => ({
         ...step,

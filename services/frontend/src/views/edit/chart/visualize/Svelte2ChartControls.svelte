@@ -75,6 +75,7 @@
             await tick();
             controlsReady = true;
         } catch (e) {
+            console.error(e);
             logError(new Error(`Unknown visualization type: ${type}`));
         }
     }

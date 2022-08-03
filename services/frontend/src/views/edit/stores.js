@@ -8,6 +8,9 @@ import set from '@datawrapper/shared/set';
 import { filterNestedObjectKeys } from '../../utils';
 import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
 import coreMigrate from '@datawrapper/chart-core/lib/migrate';
+import reorderColumns from '@datawrapper/chart-core/lib/dw/dataset/reorderColumns.mjs';
+import applyChanges from '@datawrapper/chart-core/lib/dw/dataset/applyChanges.mjs';
+import addComputedColumns from '@datawrapper/chart-core/lib/dw/dataset/addComputedColumns.mjs';
 import { SvelteSubject } from '../../utils/rxjs-store.mjs';
 import {
     distinctUntilChanged,
@@ -178,14 +181,50 @@ export function initStores({
         map(chart => chart.metadata.data),
         distinctUntilChanged(isEqual)
     );
-    const dataset$ = combineLatest([data$, dataOptions$]).pipe(
-        map(([data, options]) =>
-            delimited({
-                csv: data,
-                transpose: options.transpose,
-                firstRowIsHeader: options['horizontal-header']
-            }).parse()
-        )
+    // read-only computed columns
+    const computedColumns$ = distinctChart$.pipe(
+        map(chart => chart.metadata.describe['computed-columns'] || []),
+        distinctUntilChanged(isEqual)
+    );
+
+    // mock chart object with .get and .getMetadata accessor
+    // methods, used in reorderColumns() etc.
+    const dwChart$ = distinctChart$.pipe(
+        map(chart => ({
+            get() {
+                return chart;
+            },
+            getMetadata(key, defaultValue) {
+                return get(chart.metadata, key, defaultValue);
+            }
+        }))
+    );
+
+    const dataset$ = combineLatest([data$, dataOptions$, computedColumns$]).pipe(
+        withLatestFrom(dwChart$),
+        map(([[data, options], chart]) => {
+            const dataset = reorderColumns(
+                chart,
+                applyChanges(
+                    chart,
+                    addComputedColumns(
+                        chart,
+                        delimited({
+                            csv: data,
+                            transpose: options.transpose,
+                            firstRowIsHeader: options['horizontal-header']
+                        }).parse()
+                    )
+                )
+            );
+            const columnFormat = get(options, 'column-format', {});
+            const ignore = {};
+            Object.keys(columnFormat).map(key => {
+                ignore[key] = !!columnFormat[key].ignore;
+            });
+            if (dataset.filterColumns) dataset.filterColumns(ignore);
+            return dataset;
+        })
     );
 
     const storeData = ({ id, data }) => {
