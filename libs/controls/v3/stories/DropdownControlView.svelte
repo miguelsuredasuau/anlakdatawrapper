@@ -100,6 +100,14 @@
 <DropdownControl
     bind:value
     {options}
+    label="mini help"
+    labelWidth="120px"
+    miniHelp="Help text, can include <strong>HTML</strong>"
+    inline={false}
+/>
+<DropdownControl
+    bind:value
+    {options}
     label="custom item renderer"
     labelWidth="120px"
     itemRenderer={CheckboxControl}

@@ -12,10 +12,12 @@
     export let labelWidth = 'auto';
     export let valign = 'middle';
     export let help = false;
+    export let inline = true;
     export let itemRenderer = DropdownListItem;
     export let placeholder = '(select an item)';
     export let forcePlaceholder = false;
     export let forceLabel = false;
+    export let miniHelp = null;
     export let uid;
 
     let currentItem;
@@ -98,19 +100,20 @@
 </style>
 
 <ControlGroup
-    inline={true}
+    {inline}
     type="dropdown"
     {label}
-    {labelWidth}
+    labelWidth={inline && !labelWidth ? 'auto' : labelWidth}
     {valign}
     {help}
+    {miniHelp}
     {disabled}
     helpClass="mt-1"
     {uid}
 >
     <DropdownInput {disabled} {width}>
         <span slot="button">
-            <div class="btn-group mt-1">
+            <div class="btn-group mt-1" class:mb-1={!!miniHelp}>
                 <button
                     class="btn dropdown-toggle"
                     class:disabled
