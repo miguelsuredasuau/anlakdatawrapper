@@ -56,7 +56,7 @@ async function unpublishChart(request, h) {
         publicVersion
     });
 
-    await server.methods.logAction(user.id, `chart/${params.id}/unpublish`, '');
+    await server.methods.logAction(user.id, `chart/unpublish`, params.id);
 
     return h.response().code(204);
 }
