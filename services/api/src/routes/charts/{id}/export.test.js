@@ -92,17 +92,21 @@ test('POST /export/{format}/async/{exportId} streams the result of CHART_EXPORT 
 
     const chart = await createChart();
 
-    function mockChartExportListener({ data }) {
-        if (data.id === chart.id) {
+    function mockChartExportPDFListener({ data }) {
+        if (data.id === chart.id && data.format === 'pdf') {
+            return 'Test PDF data';
+        }
+        return undefined;
+    }
+
+    function mockChartExportPNGListener({ data }) {
+        if (data.id === chart.id && data.format === 'png') {
             return new Promise(resolve =>
                 setTimeout(
                     () =>
                         resolve({
-                            status: 'success',
-                            data: {
-                                testChartId: chart.id,
-                                testData: 'Test CHART_EXPORT data'
-                            }
+                            testChartId: chart.id,
+                            testData: 'Test PNG data'
                         }),
                     CHART_EXPORT_SLEEP_MS
                 )
@@ -111,7 +115,7 @@ test('POST /export/{format}/async/{exportId} streams the result of CHART_EXPORT 
         return undefined;
     }
 
-    function mockChartExportStreamListener({ data: { testChartId, testData } }) {
+    function mockChartExportStreamListener({ testChartId, testData }) {
         if (testChartId === chart.id) {
             const stream = new Readable();
             stream.push(testData);
@@ -125,7 +129,12 @@ test('POST /export/{format}/async/{exportId} streams the result of CHART_EXPORT 
     }
 
     const { events, event } = t.context.server.app;
-    events.on(event.CHART_EXPORT, mockChartExportListener);
+
+    // Add two listener that each handles different export format to test that the API chooses the
+    // result that matches the passed format.
+    events.on(event.CHART_EXPORT, mockChartExportPDFListener);
+    events.on(event.CHART_EXPORT, mockChartExportPNGListener);
+
     events.on(event.CHART_EXPORT_STREAM, mockChartExportStreamListener);
 
     try {
@@ -156,23 +165,30 @@ test('POST /export/{format}/async/{exportId} streams the result of CHART_EXPORT 
         t.is(resCheck1.statusCode, 425);
 
         // Wait until our mock CHART_EXPORT listener finishes.
-        await new Promise(resolve => setTimeout(resolve, CHART_EXPORT_SLEEP_MS));
+        let resCheck2;
+        for (let i = 0; i < 3; i++) {
+            await new Promise(resolve => setTimeout(resolve, CHART_EXPORT_SLEEP_MS));
 
-        // The second check if the export has finished should be successful.
-        const resCheck2 = await t.context.server.inject({
-            method: 'GET',
-            url: checkUrl,
-            headers: {
-                cookie: `DW-SESSION=${t.context.auth.credentials.id}; crumb=abc`,
-                'X-CSRF-Token': 'abc',
-                referer: 'http://localhost'
+            // The second check if the export has finished should be successful.
+            resCheck2 = await t.context.server.inject({
+                method: 'GET',
+                url: checkUrl,
+                headers: {
+                    cookie: `DW-SESSION=${t.context.auth.credentials.id}; crumb=abc`,
+                    'X-CSRF-Token': 'abc',
+                    referer: 'http://localhost'
+                }
+            });
+            if (resCheck2.statusCode === 200) {
+                break;
             }
-        });
+        }
         t.is(resCheck2.statusCode, 200);
-        t.is(resCheck2.result, 'Test CHART_EXPORT data');
+        t.is(resCheck2.result, 'Test PNG data');
         t.is(resCheck2.headers['content-type'], 'application/x.test-chart-export-mime');
     } finally {
-        events.off(event.CHART_EXPORT, mockChartExportListener);
+        events.off(event.CHART_EXPORT, mockChartExportPDFListener);
+        events.off(event.CHART_EXPORT, mockChartExportPNGListener);
         await destroy(chart);
     }
 });

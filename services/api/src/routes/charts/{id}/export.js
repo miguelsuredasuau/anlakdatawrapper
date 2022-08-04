@@ -213,9 +213,9 @@ async function exportChart(request, h) {
                     logger,
                     returnAsStream: false
                 },
-                { filter: 'first' }
+                { filter: res => res.status === 'success' && res.data }
             )
-            .then(async result => {
+            .then(async ([result]) => {
                 await request.server.methods.logAction(
                     user.id,
                     `chart/export/${params.format}`,
@@ -224,7 +224,7 @@ async function exportChart(request, h) {
                 asyncExportCache.set(exportId, {
                     chartId: chart.id,
                     inProgress: false,
-                    result
+                    result: result.data
                 });
             })
             .catch(error => {
