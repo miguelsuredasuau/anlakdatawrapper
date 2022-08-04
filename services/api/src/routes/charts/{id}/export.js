@@ -201,37 +201,41 @@ async function exportChart(request, h) {
         });
 
         events
-            .emit(event.CHART_EXPORT, {
-                chart,
-                user,
-                key: `export-${payload.format}`,
-                priority: 5,
-                data: payload,
-                auth,
-                logger,
-                returnAsStream: false
-            })
-            .then(async results => {
-                const result = results.find(res => res.status === 'success' && res.data);
-                if (result) {
-                    await request.server.methods.logAction(
-                        user.id,
-                        `chart/export/${params.format}`,
-                        params.id
-                    );
-
-                    asyncExportCache.set(exportId, {
-                        chartId: chart.id,
-                        inProgress: false,
-                        result: result.data
-                    });
-                }
+            .emit(
+                event.CHART_EXPORT,
+                {
+                    chart,
+                    user,
+                    key: `export-${payload.format}`,
+                    priority: 5,
+                    data: payload,
+                    auth,
+                    logger,
+                    returnAsStream: false
+                },
+                { filter: 'first' }
+            )
+            .then(async result => {
+                await request.server.methods.logAction(
+                    user.id,
+                    `chart/export/${params.format}`,
+                    params.id
+                );
+                asyncExportCache.set(exportId, {
+                    chartId: chart.id,
+                    inProgress: false,
+                    result
+                });
             })
             .catch(error => {
                 asyncExportCache.set(exportId, {
                     chartId: chart.id,
                     inProgress: false,
-                    error
+                    error: {
+                        code: error.code,
+                        name: error.name,
+                        message: error.message
+                    }
                 });
             });
 
