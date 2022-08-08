@@ -6710,7 +6710,7 @@ function toISOStringSafe(date) {
 }
 
 function addComputedColumns(chart, dataset) {
-    let virtualColumns = get(chart.get(), 'metadata.describe.computed-columns', {});
+    let virtualColumns = chart.getMetadata('describe.computed-columns', {});
     if (!Array.isArray(virtualColumns)) {
         // convert to array
         virtualColumns = Object.keys(virtualColumns).reduce((acc, cur) => {
@@ -6872,7 +6872,8 @@ function addComputedColumns(chart, dataset) {
         }
 
         // create a map of changes for this column
-        const changes = get(chart, 'metadata.data.changes', [])
+        const changes = chart
+            .getMetadata('data.changes', [])
             .filter(change => change.column === index && change.row > 0)
             .reduce((acc, cur) => {
                 const old = acc.get(cur.row - 1);
@@ -7039,6 +7040,8 @@ function chart (attributes) {
          * true as argument. This will re-apply changes, column sorting
          * and computed columns to the existing dataset.
          *
+         * @param {dw.dataset|true}
+         *
          * @returns dataset
          */
         dataset(ds) {
@@ -7051,6 +7054,17 @@ function chart (attributes) {
                 return chart;
             }
             return dataset;
+        },
+
+        /**
+         * This helper method is used by the chart editor to inject
+         * a dataset which has computed columns, changes and column
+         * ordering already applied.
+         *
+         * @param {dw.dataset} ds
+         */
+        setDataset(ds) {
+            dataset = ds;
         },
 
         // sets or gets the theme
