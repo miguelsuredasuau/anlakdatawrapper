@@ -4,6 +4,10 @@ module.exports = {
     ...baseConfig,
     plugins: {
         'api-v1': {},
+        basemaps: {
+            'basemaps-path': 'src/tests/basemaps',
+            'webhook-token': 'my-token'
+        },
         'chart-data-s3': {
             s3: {
                 endpoint: 'https://www.example.com/',
@@ -20,6 +24,7 @@ module.exports = {
                 ]
             }
         },
+        'export-pdf': {},
         'external-data': {
             s3: {
                 endpoint: 'https://www.example.com/',

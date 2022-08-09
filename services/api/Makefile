@@ -19,7 +19,7 @@ test-plugins: | test-setup  ## Run unit tests including all plugins
 	$(MAKE) test-run cmd="sh -c 'cd \"/app/services/api\" && npm run test:plugins -- -m \"$(m)\"'"
 
 .PHONY: test-setup
-test-setup:  ## Create the testing database if it isn't running
+test-setup:  ## Create tables and run migrations in the testing database
 	$(MAKE) test-run cmd="sh -c 'node /app/scripts/db-initialized.js || node /app/scripts/sync-db.js'"
 
 .PHONY: test-teardown

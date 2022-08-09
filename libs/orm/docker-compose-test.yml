@@ -8,13 +8,16 @@ services:
       - MYSQL_USER=test
       - MYSQL_PASSWORD=test
       - MYSQL_DATABASE=test
+
   node:
-    image: "node:18"
+    build:
+      context: ./tests
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     volumes:
-      - ".:/app:ro"
-      - "../service-utils:/app/node_modules/@datawrapper/service-utils:ro"
+      - "../..:/app:ro"
+
 networks:
   default:
     driver: overlay

@@ -53,7 +53,8 @@ services:
       '
 
   node:
-    image: "node:18"
+    build:
+      context: ./test
     depends_on:
       mysql:
         condition: service_healthy

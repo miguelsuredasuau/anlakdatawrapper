@@ -8,18 +8,24 @@ services:
       - MYSQL_USER=test
       - MYSQL_PASSWORD=test
       - MYSQL_DATABASE=test
+
   redis:
     image: "redis:6.0.5-alpine3.12"
     command: redis-server --appendonly yes
     expose:
       - "6379"
+
   node:
-    image: "node:18"
+    build:
+      context: ./test
     depends_on:
-      - mysql
-      - redis
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
     volumes:
       - "../..:/app"
+
 networks:
   default:
     driver: overlay

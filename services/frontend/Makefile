@@ -15,7 +15,7 @@ test-server: | test-setup  ## Run unit tests for server-side code only
 	$(MAKE) test-run cmd="sh -c 'node ../api/src/index.js & npm run test:server -- -f \"$(f)\"'"
 
 .PHONY: test-setup
-test-setup:  ## Create the testing database if it isn't running
+test-setup:  ## Create tables and run migrations in the testing database
 	$(MAKE) test-run cmd="sh -c 'node /app/scripts/db-initialized.js || node /app/scripts/sync-db.js'"
 
 .PHONY: test-teardown

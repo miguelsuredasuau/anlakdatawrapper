@@ -13,9 +13,8 @@ test-performance: | test-setup  ## Run performance tests
 	$(MAKE) test-run cmd="sh -c 'cd \"/app/$(test_dir)\" && npm run test:performance'"
 
 .PHONY: test-setup
-test-setup:  ## Create the testing database if it isn't running
-	[[ -n $$($(docker_compose) ps --services --filter status=running mysql) ]] || \
-		$(MAKE) test-run cmd="sh -c '/app/scripts/wait-for-db.sh && /app/scripts/sync-db.js'"
+test-setup:  ## Create tables and run migrations in the testing database
+	$(MAKE) test-run cmd="sh -c 'node /app/scripts/db-initialized.js || node /app/scripts/sync-db.js'"
 
 .PHONY: test-teardown
 test-teardown:  ## Stop and remove the testing database

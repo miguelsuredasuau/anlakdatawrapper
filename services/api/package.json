@@ -23,7 +23,7 @@
         "start": "node src/index.js",
         "update-translations": "echo \"\\e[1;33mupdate-translation script has been moved to the code root now\\e[0m\ntry cd ../.. && npm run update-translations\" && exit 1",
         "test": "NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} ava --verbose",
-        "test:plugins": "NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config-plugins.local.js} cd ../../ && services/api/scripts/test-plugins.sh",
+        "test:plugins": "NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config-plugins.local.js} cd ../../ && scripts/test-plugins.sh",
         "test:coverage": "NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} nyc --reporter=html --reporter=text ava --verbose",
         "test:update-snapshots": "NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} ava --update-snapshots",
         "lint": "cd ../.. && scripts/lint services/api",

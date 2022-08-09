@@ -1,23 +1,23 @@
 export DW_CONFIG_PATH ?= tests/config.docker.js
+
 m ?= *
 
 docker_compose := docker-compose -f docker-compose-test.yml
 
 .PHONY: test
 test: | test-setup  ## Run unit tests
-	$(MAKE) test-run cmd="sh -c 'cd /app && npm test -- -m \"$(m)\"'"
+	$(MAKE) test-run cmd="sh -c 'npm test -- -m \"$(m)\"'"
 
-test-watch: | test-setup  ## Run unit tests
-	$(MAKE) test-run cmd="sh -c 'cd /app && npm test -- -w -m \"$(m)\"'"
+test-watch: | test-setup  ## Run unit tests in watch mode
+	$(MAKE) test-run cmd="sh -c 'npm test -- -w -m \"$(m)\"'"
 
 .PHONY: test-coverage
 test-coverage: | test-setup  ## Run unit tests with coverage report
-	$(MAKE) test-run cmd="sh -c 'cd /app && npm run test:coverage -- -m \"$(m)\"'"
+	$(MAKE) test-run cmd="sh -c 'npm run test:coverage -- -m \"$(m)\"'"
 
 .PHONY: test-setup
-test-setup:  ## Create the testing database if it isn't running
-	[[ -n $$($(docker_compose) ps --services --filter status=running mysql) ]] || \
-		$(MAKE) test-run cmd="sh -c 'cd /app && script/wait-for-db.sh && node script/sync-db.js'"
+test-setup:  ## Create tables and run migrations in the testing database
+	$(MAKE) test-run cmd="sh -c 'node /app/scripts/db-initialized.js || node /app/libs/orm/script/sync-db.js'"
 
 .PHONY: test-teardown
 test-teardown:  ## Stop and remove the testing database
@@ -26,6 +26,7 @@ test-teardown:  ## Stop and remove the testing database
 .PHONY: test-run
 test-run:  ## Run command specified by the variable 'cmd' in the testing node container
 	$(docker_compose) run --rm \
+		-w /app/libs/orm \
 		-e "DW_CONFIG_PATH=$(DW_CONFIG_PATH)" \
 		-e "NODE_ENV=test" \
 		node $(cmd)
