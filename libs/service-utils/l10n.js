@@ -40,8 +40,36 @@ function addScope(scope, messages) {
         scopes[scope] = assign(scopes[scope], messages);
     }
 }
+/**
+ * Returns escaped HTML that can be used to display untrusted content.
+ *
+ * @param {string} unsafe
+ * @returns {string}
+ *
+ * TODO Merge with `shared/escapeHtml.cjs`.
+ */
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
 
-function translate(key, { scope = 'core', language = defaultLanguage }) {
+/**
+ * Replaces named placeholders marked with %, such as %name% or %id.
+ *
+ * TODO Merge with `shared/l10n.js`. But notice that we escape each value here in service-utils.
+ */
+function replaceNamedPlaceholders(text, replacements = {}) {
+    Object.entries(replacements).forEach(([k, v]) => {
+        text = text.replace(new RegExp(`%${k}%|%${k}(?!\\w)`, 'g'), escapeHtml(v));
+    });
+    return text;
+}
+
+function getText(key, { scope = 'core', language = defaultLanguage }) {
     try {
         const messages = getScope(scope, language);
         if (messages[key]) {
@@ -55,6 +83,11 @@ function translate(key, { scope = 'core', language = defaultLanguage }) {
     } catch (e) {
         return key;
     }
+}
+
+function translate(key, { scope, language, replacements }) {
+    const text = getText(key, { scope, language });
+    return replaceNamedPlaceholders(text, replacements);
 }
 
 function allScopes(locale = defaultLanguage) {
@@ -82,7 +115,7 @@ function getUserLanguage(auth) {
 
 function getTranslate(request) {
     const language = getUserLanguage(request.auth);
-    return (key, scope = 'core') => translate(key, { scope, language });
+    return (key, scope = 'core', replacements) => translate(key, { scope, language, replacements });
 }
 
 module.exports = {

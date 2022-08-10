@@ -1,6 +1,5 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const escapeHtml = require('@datawrapper/shared/escapeHtml.cjs');
 const { User, Team } = require('@datawrapper/orm/models');
 
 module.exports = {
@@ -62,9 +61,7 @@ module.exports = {
                             token: inviteToken,
                             teamId: inviteTeam ? inviteTeam.id : false,
                             headlineText: inviteTeam
-                                ? __('team / invite / headline', 'core', {
-                                      s: escapeHtml(inviteTeam.name)
-                                  })
+                                ? __('team / invite / headline', 'core', { s: inviteTeam.name })
                                 : __('team / invite / headline-no-team'),
                             introText: __(`team / invite / intro${!inviteTeam ? '-no-team' : ''}`),
                             buttonText: __(
