@@ -74,6 +74,9 @@
     "es-ar": {
         "textDirection": "ltr"
     },
+    "es-us": {
+        "textDirection": "ltr"
+    },
     "fo-fo": {
         "textDirection": "ltr"
     },
