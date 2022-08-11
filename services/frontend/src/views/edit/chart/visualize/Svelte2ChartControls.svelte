@@ -11,6 +11,8 @@
     import set from 'lodash/set';
     import assign from 'assign-deep';
     import { logError, waitFor } from '../../../../utils';
+    import { combineLatest } from 'rxjs';
+    import { debounceTime, skip, startWith } from 'rxjs/operators';
     // load stores from context
     const { chart, theme, visualization, locale, dataset } = getContext('page/edit');
 
@@ -18,6 +20,11 @@
     export let dwChart;
     export let teamSettings;
     export let controlsModule = 'Refine';
+
+    const dataHasChanged = combineLatest(
+        chart.bindKey('metadata.data'),
+        chart.bindKey('metadata.describe.computed-columns')
+    ).pipe(skip(1), debounceTime(500), startWith(false));
 
     onMount(() => {
         chart.subscribe(() => {
@@ -29,6 +36,7 @@
     });
 
     $: loadControls($visualization);
+    $: if ($dataHasChanged) loadVisualization();
 
     let vis;
 
@@ -64,16 +72,22 @@
             `/lib/plugins/${visualization.__plugin}/static/${type}.js?sha=${visualization.__visHash}`
         );
         // create visualization instance
+        await loadVisualization();
+        controlsReady = true;
+    }
+
+    async function loadVisualization() {
+        const type = $visualization.id;
+
         try {
             const newVis = await waitFor(() => dwVisualization(type));
-            newVis.meta = visualization;
+            newVis.meta = $visualization;
+            // dwChart.setDataset($dataset);
             newVis.chart(dwChart);
             newVis.theme = () => $theme.data;
             vis = newVis;
-
             updateStoreData();
             await tick();
-            controlsReady = true;
         } catch (e) {
             console.error(e);
             logError(new Error(`Unknown visualization type: ${type}`));

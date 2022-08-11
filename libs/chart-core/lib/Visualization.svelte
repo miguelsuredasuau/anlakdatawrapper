@@ -63,13 +63,14 @@
     // can be on|off|auto (on/off will overwrite chart setting)
     export let forceLogo = 'auto';
     export let logoId = null;
+    export let isEditingAllowed = false;
 
     export let frontendDomain = 'app.datawrapper.de';
 
     // .dw-chart-body
     let target, dwChart, vis;
     let postEvent = () => {};
-    const flags = { isIframe };
+    const flags = { isIframe, isEditingAllowed };
 
     let useFallbackImage = false;
 

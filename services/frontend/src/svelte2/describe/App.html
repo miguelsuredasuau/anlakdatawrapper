@@ -67,12 +67,21 @@
                 <hr />
 
                 <div class="btn-group">
-                    <a class="btn submit" href="upload"
-                        ><i class="icon-chevron-left"></i> {__('Back')}</a
+                    <a
+                        href="upload"
+                        on:click|preventDefault="navigateTo('upload')"
+                        class="btn submit"
                     >
-                    <a href="visualize" class="submit btn btn-primary" id="describe-proceed">
-                        {__('Proceed')} <i class="icon-chevron-right icon-white"></i
-                    ></a>
+                        <i class="icon-chevron-left"></i> {__('Back')}
+                    </a>
+                    <a
+                        href="visualize"
+                        on:click|preventDefault="navigateTo('visualize')"
+                        class="submit btn btn-primary"
+                        data-uid="describe-proceed-button"
+                    >
+                        {__('Proceed')} <i class="icon-chevron-right icon-white"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -312,10 +321,7 @@
                 }
             },
             toggleTranspose() {
-                this.set({ activeColumn: false });
                 this.set({ transpose: !this.get().transpose });
-                setTimeout(() => this.refs.hot.update(), 500);
-                // ;
             },
             revertChanges() {
                 const chart = this.store.get().dw_chart;
@@ -380,6 +386,10 @@
                 if (this.refs.ccEd) {
                     this.refs.ccEd.fire('hotRendered');
                 }
+            },
+            navigateTo(stepId) {
+                const { navigateTo } = this.get();
+                navigateTo({ id: stepId });
             }
         },
         oncreate() {
@@ -401,6 +411,15 @@
             if (dw_chart.get('metadata.data.changes', []).length > 1) {
                 this.set({ hasChanges: true });
             }
+
+            dw_chart.onChange((chart, key, value) => {
+                const entry = Object.entries(syncKeys).find(
+                    ([, metadataKey]) => metadataKey === key
+                );
+                if (entry) {
+                    this.set({ [entry[0]]: value });
+                }
+            });
             window.addEventListener('keypress', event => {
                 if (event.ctrlKey && event.key === 'f') {
                     // note that some browser may reject to pass on this event
@@ -434,6 +453,10 @@
                     }
                 }
             });
+            if (changed.transpose) {
+                this.set({ activeColumn: false });
+                setTimeout(() => this.refs.hot.update(), 500);
+            }
         }
     };
 </script>

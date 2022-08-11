@@ -73,7 +73,8 @@
         });
     }
 
-    function initIframe() {
+    async function initIframe() {
+        await waitFor(() => iframe && iframe.getContext);
         iframe.getContext(async contentWindow => {
             await waitForColorMap(contentWindow);
             __dw = contentWindow.__dw;

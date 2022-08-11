@@ -1,5 +1,4 @@
 import ChartTypeTab from './ChartTypeTab.svelte';
-import { writable } from 'svelte/store';
 import { fireEvent, waitFor } from '@testing-library/svelte';
 import {
     renderWithContext,
@@ -10,6 +9,7 @@ import {
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import sinonChai from 'sinon-chai';
+import { initStores } from '../../stores';
 
 import sinon from 'sinon';
 
@@ -23,7 +23,7 @@ const __ = mockTranslations({
     'visualize / transpose-button': 'transpose'
 });
 
-const visualizations = [
+const baseVisualizations = [
     {
         id: 'hidden',
         workflow: 'chart'
@@ -48,10 +48,21 @@ const visualizations = [
 const baseChart = {
     type: 'd3-lines',
     metadata: {
+        visualize: {},
+        publish: {},
         data: {
             transpose: false
         }
     }
+};
+
+const defaults = {
+    rawChart: baseChart,
+    rawTheme: {},
+    rawLocales: [],
+    rawVisualizations: baseVisualizations,
+    disabledFields: ['type', 'metadata.data.transpose'],
+    dontSendHttpReq: true
 };
 
 function renderChartTypeTab({ chart, visualization, visualizations, workflow }) {
@@ -76,16 +87,13 @@ describe('ChartTypeTab', () => {
     describe('initial display', function () {
         let result;
 
-        const chart = writable(baseChart);
-        const visualization = writable({
-            id: 'd3-lines'
-        });
+        const { chart, visualization } = initStores(defaults);
 
         beforeEach(async () => {
             result = await renderChartTypeTab({
                 chart,
                 visualization,
-                visualizations,
+                visualizations: baseVisualizations,
                 workflow: { id: 'chart', options: {} }
             });
         });
@@ -108,24 +116,26 @@ describe('ChartTypeTab', () => {
     describe('include visualizations from other workflows', function () {
         let result;
 
-        const chart = writable(baseChart);
-        const visualization = writable({
-            id: 'd3-lines'
+        const visualizations = [
+            ...baseVisualizations,
+            {
+                id: 'tables',
+                title: 'Table',
+                workflow: 'tables',
+                includeInWorkflow: 'chart'
+            }
+        ];
+
+        const { chart, visualization } = initStores({
+            ...defaults,
+            rawVisualizations: visualizations
         });
 
         beforeEach(async () => {
             result = await renderChartTypeTab({
                 chart,
                 visualization,
-                visualizations: [
-                    ...visualizations,
-                    {
-                        id: 'tables',
-                        title: 'Table',
-                        workflow: 'tables',
-                        includeInWorkflow: 'chart'
-                    }
-                ],
+                visualizations,
                 workflow: { id: 'chart', options: {} }
             });
         });
@@ -143,23 +153,21 @@ describe('ChartTypeTab', () => {
     describe('include visualizations from other workflows (reverse)', function () {
         let result;
 
-        const chart = writable(baseChart);
-        const visualization = writable({
-            id: 'd3-lines'
-        });
+        const { chart, visualization } = initStores({ ...defaults });
+        const visualizations = [
+            ...baseVisualizations,
+            {
+                id: 'tables',
+                title: 'Table',
+                workflow: 'tables'
+            }
+        ];
 
         beforeEach(async () => {
             result = await renderChartTypeTab({
                 chart,
                 visualization,
-                visualizations: [
-                    ...visualizations,
-                    {
-                        id: 'tables',
-                        title: 'Table',
-                        workflow: 'tables'
-                    }
-                ],
+                visualizations,
                 workflow: {
                     id: 'tables',
                     options: {
@@ -183,30 +191,28 @@ describe('ChartTypeTab', () => {
         let result, chartWatcher, visWatcher;
 
         beforeEach(async () => {
-            const chart = writable(baseChart);
-            const visualization = writable({
-                id: 'd3-lines'
-            });
+            const { chart, visualization } = initStores(defaults);
+
             result = await renderChartTypeTab({
                 chart,
                 visualization,
-                visualizations,
+                visualizations: baseVisualizations,
                 workflow: {
                     id: 'chart'
                 },
                 __
             });
 
-            trackStoreChanges(chart, (chartWatcher = sinon.spy()));
+            trackStoreChanges(chart, (chartWatcher = sinon.spy()), true);
             trackStoreChanges(visualization, (visWatcher = sinon.spy()));
         });
 
         it('fires chart and vis store change', async () => {
             const barChartButton = result.getByText('Bar chart');
             await fireEvent(barChartButton, new MouseEvent('click', { bubbles: true }));
-
             expect(chartWatcher).to.have.been.calledOnceWith({ type: 'd3-bars' });
-            waitFor(() => expect(visWatcher).to.have.been.calledOnceWith(visualizations[2]));
+
+            waitFor(() => expect(visWatcher).to.have.been.calledOnceWith(baseVisualizations[2]));
         });
     });
 
@@ -214,14 +220,12 @@ describe('ChartTypeTab', () => {
         let result, chartWatcher;
 
         beforeEach(async () => {
-            const chart = writable(baseChart);
+            const { chart, visualization } = initStores(defaults);
 
             result = await renderChartTypeTab({
                 chart,
-                visualization: writable({
-                    id: 'd3-lines'
-                }),
-                visualizations,
+                visualization,
+                visualizations: baseVisualizations,
                 workflow: {
                     id: 'chart'
                 }

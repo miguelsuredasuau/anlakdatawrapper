@@ -33,6 +33,8 @@
     export let forceLogo = 'auto';
     export let logoId = null;
 
+    export let isEditingAllowed = false;
+
     $: customCSS = purifyHtml(get(chart, 'metadata.publish.custom-css', ''), '');
 
     window.__dwUpdate = newAttrs => {
@@ -80,6 +82,7 @@
     {isAutoDark}
     {forceLogo}
     {logoId}
+    {isEditingAllowed}
     {outerContainer}
     {textDirection}
 />

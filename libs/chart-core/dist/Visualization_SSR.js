@@ -10638,6 +10638,9 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     logoId = null
   } = $$props;
   let {
+    isEditingAllowed = false
+  } = $$props;
+  let {
     frontendDomain = "app.datawrapper.de"
   } = $$props; // .dw-chart-body
 
@@ -10646,7 +10649,8 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
   let postEvent = () => {};
 
   const flags = {
-    isIframe
+    isIframe,
+    isEditingAllowed
   };
   let useFallbackImage = false;
   const FLAG_TYPES = {
@@ -11206,6 +11210,7 @@ Please make sure you called __(key) with a key of type "string".
   if ($$props.isAutoDark === void 0 && $$bindings.isAutoDark && isAutoDark !== void 0) $$bindings.isAutoDark(isAutoDark);
   if ($$props.forceLogo === void 0 && $$bindings.forceLogo && forceLogo !== void 0) $$bindings.forceLogo(forceLogo);
   if ($$props.logoId === void 0 && $$bindings.logoId && logoId !== void 0) $$bindings.logoId(logoId);
+  if ($$props.isEditingAllowed === void 0 && $$bindings.isEditingAllowed && isEditingAllowed !== void 0) $$bindings.isEditingAllowed(isEditingAllowed);
   if ($$props.frontendDomain === void 0 && $$bindings.frontendDomain && frontendDomain !== void 0) $$bindings.frontendDomain(frontendDomain);
 
   {

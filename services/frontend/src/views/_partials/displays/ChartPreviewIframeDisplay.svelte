@@ -1,24 +1,16 @@
 <script>
-    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+    import { createEventDispatcher } from 'svelte';
     import { fade } from 'svelte/transition';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import get from '@datawrapper/shared/get';
-    import sharedSet from '@datawrapper/shared/set';
     import chroma from 'chroma-js';
-    import clone from 'lodash/cloneDeep';
-    import debounce from 'lodash/debounce';
-    import unset from 'lodash/unset';
-    import isEqual from 'lodash/isEqual';
-    import objectDiff from '@datawrapper/shared/objectDiff';
     import { waitFor } from '../../../utils';
-
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
 
     const dispatch = createEventDispatcher();
 
     /*
-     * writable chart store
+     * readonly chart store data
      */
     export let chart;
 
@@ -41,32 +33,10 @@
 
     export let isDark = false;
 
-    /*
-     * set to true to activate inline editing of headline, description
-     * and other labels
-     */
     export let allowInlineEditing = false;
 
-    /*
-     * when inline editing is activated we want to make sure that only
-     * attributes which are not controlled by external metadata are made
-     * inline editable. Therefor `disabledFields` contains a set of
-     * disabled attributes
-     */
-    export let disabledFields = new Set();
-    export let dataset = null;
-
-    /*
-     * keep track of store subscriptions to we can unsubscribe
-     * when this component gets destroyed
-     */
-    const storeSubscriptions = new Set();
-
-    // default html tags allowed for inline-editing
-    const DEFAULT_ALLOWED_HTML = '<a><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt>';
-
-    $: embedWidth = get($chart, 'metadata.publish.embed-width', 550);
-    $: embedHeight = get($chart, 'metadata.publish.embed-height', 450);
+    $: embedWidth = get(chart, 'metadata.publish.embed-width', 550);
+    $: embedHeight = get(chart, 'metadata.publish.embed-height', 450);
     $: width = customWidth || embedWidth;
     $: height = customHeight || reportedIframeSize || embedHeight;
     $: background =
@@ -77,9 +47,17 @@
 
     $: backgroundIsDark = chroma.valid(background) ? chroma(background).get('lab.l') < 30 : false;
 
-    $: queryParameters = enforceFitHeight ? new URLSearchParams({ fitheight: 1 }) : '';
+    const queryParameters = new URLSearchParams();
+    $: {
+        enforceFitHeight
+            ? queryParameters.set('fitheight', '1')
+            : queryParameters.delete('fitheight');
+        allowInlineEditing
+            ? queryParameters.set('allowEditing', '1')
+            : queryParameters.delete('allowEditing');
+    }
 
-    $: src = customSrc || `/preview/${$chart.id}${queryParameters ? `?${queryParameters}` : ''}`;
+    $: src = customSrc || `/preview/${chart.id}${queryParameters ? `?${queryParameters}` : ''}`;
     let prevSrc;
 
     export let customWidth;
@@ -151,14 +129,21 @@
     }
 
     export async function getContext(callback) {
-        await waitFor(() => !loading);
-        callback(contentWindow, contentDocument);
+        try {
+            await waitFor(() => !loading);
+            callback(contentWindow, contentDocument);
+        } catch (e) {
+            // ignore waitFor timeouts
+            if (e.message !== 'waitFor timeout exceeded') throw e;
+        }
     }
 
     export function reload() {
         getContext(window => {
             loading = true;
-            window.location.reload();
+            if (typeof window !== 'undefined') {
+                window.location.reload();
+            }
         });
     }
 
@@ -168,38 +153,7 @@
         loading = false;
         dispatch('load');
         await waitForVis();
-        if (allowInlineEditing) {
-            activateInlineEditing(contentDocument, disabledFields);
-        }
         dispatch('render');
-    }
-
-    const IGNORE = ['text-annotations', 'range-annotations'];
-
-    export function rerender() {
-        getContext(async (win, doc) => {
-            // Re-render chart with new attributes:
-            await waitForVis();
-            const { metadata: oldMetadata } = win.__dw.vis.chart().get();
-            const newMetadata = clone($chart.metadata);
-            const visualizeDiff = objectDiff(oldMetadata.visualize, newMetadata.visualize);
-            IGNORE.forEach(key => {
-                unset(visualizeDiff, key);
-            });
-            if (
-                Object.keys(visualizeDiff).length ||
-                !isEqual(oldMetadata.data.changes, newMetadata.data.changes)
-            ) {
-                win.__dw.vis.chart().set('metadata', newMetadata);
-                win.__dw.vis.chart().load(win.__dw.params.data);
-                win.__dw.render();
-            }
-            if (allowInlineEditing) {
-                // re-enable inline editing since DOM elements may have
-                // been replaced due to re-rendering the vis
-                activateInlineEditing(doc, disabledFields);
-            }
-        });
     }
 
     function onMessage(event) {
@@ -207,9 +161,12 @@
         dispatch('message', message);
         if (resizing) return;
         if (typeof message['datawrapper-height'] !== 'undefined' && fixedHeight) {
-            if ($chart && message['datawrapper-height'][$chart.id]) {
-                reportedIframeSize = message['datawrapper-height'][$chart.id];
-                dispatch('fixed-height-changed', reportedIframeSize);
+            if (chart && message['datawrapper-height'][chart.id]) {
+                reportedIframeSize = message['datawrapper-height'][chart.id];
+                dispatch('resize', {
+                    width: width,
+                    height: reportedIframeSize
+                });
             }
         }
     }
@@ -225,16 +182,22 @@
         if (typeof window !== 'undefined') updateIsDark(isDark);
     }
 
-    async function waitForVis() {
+    export async function waitForVis() {
         await waitFor(
-            () => !loading && contentWindow && contentWindow.__dw && contentWindow.__dw.vis
+            () => !loading && contentWindow && contentWindow.__dw && contentWindow.__dw.vis,
+            { timeout: 60000 }
         );
         return contentWindow.__dw.vis.rendered();
     }
 
     async function updateIsDark(isDark) {
-        await waitForVis();
-        contentWindow.__dw.vis.darkMode(isDark);
+        try {
+            await waitForVis();
+            contentWindow.__dw.vis.darkMode(isDark);
+        } catch (e) {
+            // ignore waitFor timeouts
+            if (e.message !== 'waitFor timeout exceeded') throw e;
+        }
     }
 
     let resizing = false;
@@ -274,156 +237,6 @@
             resizing = false;
         }
     }
-
-    const EDITABLE_FIELDS = [
-        {
-            key: 'title',
-            selector: '.headline-block .block-inner',
-            allowedHTML: DEFAULT_ALLOWED_HTML
-        },
-        {
-            key: 'metadata.describe.intro',
-            selector: '.description-block .block-inner',
-            allowedHTML:
-                DEFAULT_ALLOWED_HTML +
-                '<summary><details><table><thead><tbody><tfoot><caption><colgroup><col><tr><td><th>',
-            multiline: true
-        },
-        {
-            key: 'metadata.annotate.notes',
-            selector: '.notes-block .block-inner',
-            multiline: true,
-            allowedHTML: DEFAULT_ALLOWED_HTML + '<summary><details>'
-        },
-        {
-            key: 'metadata.describe.byline',
-            selector: '.byline-block .byline-content',
-            allowedHTML: DEFAULT_ALLOWED_HTML
-        }
-    ];
-
-    function activateInlineEditing(doc, disabledFields) {
-        // activate editing for standard fields
-        EDITABLE_FIELDS.forEach(({ selector, key, allowedHTML, save, multiline = false }) => {
-            if (!disabledFields.has(key)) {
-                makeElementEditable({
-                    el: doc.querySelector(selector),
-                    save: save || getSaveForKey(key),
-                    allowedHTML,
-                    multiline
-                });
-            }
-        });
-        // activate editing for generic visualization labels
-        doc.querySelectorAll('.label[data-column][data-row] > span').forEach(label => {
-            const parentSpan = label.parentNode;
-            const column = parentSpan.getAttribute('data-column');
-            // row may also be a comma-separated list of row indices
-            const row = parentSpan.getAttribute('data-row').split(',');
-
-            makeElementEditable({
-                el: label,
-                save(value, prevValue) {
-                    if (value !== '' && value !== prevValue) {
-                        const transpose = $chart.metadata.data.transpose;
-                        const c = !transpose ? dataset.indexOf(column) : 0;
-                        const r = row.map(row => (!transpose ? +row + 1 : dataset.indexOf(column)));
-                        const changes = clone($chart.metadata.data.changes || []);
-                        r.forEach(function (r) {
-                            changes.push({
-                                row: r,
-                                column: c,
-                                value,
-                                time: Date.now(),
-                                previous: prevValue
-                            });
-                        });
-                        $chart.metadata.data.changes = changes;
-                    }
-                }
-            });
-        });
-
-        function getSaveForKey(key) {
-            return function (value, prevValue) {
-                if (value !== prevValue) {
-                    sharedSet($chart, key, value);
-                    $chart = $chart;
-                }
-            };
-        }
-
-        function makeElementEditable({
-            el,
-            save,
-            allowedHTML = DEFAULT_ALLOWED_HTML,
-            multiline = false
-        }) {
-            if (!el) return;
-            let lastValue = false;
-
-            el.setAttribute('contenteditable', true);
-
-            // Save old value for ESC key:
-            el.addEventListener('focus', () => {
-                lastValue = el.innerHTML;
-            });
-
-            el.addEventListener('keydown', evt => {
-                // Revert last value when ESC is hit:
-                if (evt.keyCode === 27) {
-                    evt.preventDefault();
-                    el.innerHTML = lastValue;
-                    el.blur();
-                }
-                // blur and save on Return
-                if (!multiline && evt.keyCode === 13) {
-                    evt.preventDefault();
-                    el.blur();
-                }
-            });
-
-            // Persist changes when edited element loses focus:
-            el.addEventListener('blur', () => {
-                // Remove trailing line breaks
-                const content = el.innerHTML.trim().replace(/<br ?\/?>$/i, '');
-                save(purifyHtml(content, allowedHTML), lastValue);
-            });
-        }
-    }
-
-    onMount(async () => {
-        if (allowInlineEditing) {
-            // watch chart store for changes that make an
-            // inline editable DOM element appear that wasn't
-            // showing before, e.g. when user enters a byline
-            const prevState = Object.fromEntries(
-                EDITABLE_FIELDS.map(({ key }) => [key, !!get($chart, key)])
-            );
-            const activateInlineEditingDebounced = debounce(async () => {
-                await waitForVis();
-                activateInlineEditing(contentDocument, disabledFields);
-            }, 500);
-            EDITABLE_FIELDS.forEach(({ key }) => {
-                storeSubscriptions.add(
-                    chart.subscribeKey(key, value => {
-                        if (value && !prevState[key]) {
-                            // re-activate inline editing to make newly
-                            // appeared DOM element editable, too
-                            activateInlineEditingDebounced();
-                        }
-                        prevState[key] = !!value;
-                    })
-                );
-            });
-        }
-    });
-
-    onDestroy(() => {
-        for (const unsubscribe of storeSubscriptions) {
-            unsubscribe();
-        }
-    });
 </script>
 
 <style>
@@ -512,7 +325,7 @@
     >
         <iframe
             id="iframe-vis"
-            title={get($chart, 'title', '')}
+            title={get(chart, 'title', '')}
             {src}
             scrolling="no"
             bind:this={iframe}

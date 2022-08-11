@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    import { getContext, onMount, setContext } from 'svelte';
+    import { getContext, onMount, setContext, tick } from 'svelte';
     import truncate from '@datawrapper/shared/truncate';
     import MainLayout from '_layout/MainLayout.svelte';
     import { openedInsideIframe } from '_layout/stores';
@@ -33,6 +33,7 @@
     const config = getContext('config');
     const user = getContext('user');
     const userData = getContext('userData');
+    const request = getContext('request');
 
     /*
      * if set to true, the editor nav is shown even if the app is opened
@@ -65,24 +66,35 @@
      * our store instances available to all sub components of this
      * view without having to pass them around as state props.
      */
-    const { chart, theme, dataset, onNextSave, hasUnsavedChanges, syncData, syncChart, ...stores } =
-        initStores({
-            rawChart,
-            rawData,
-            rawTeam,
-            rawTheme,
-            rawLocales,
-            rawVisualizations: visualizations,
-            disabledFields,
-            dataReadonly
-        });
+    const {
+        chart,
+        theme,
+        dataset,
+        onNextSave,
+        hasUnsavedChanges,
+        data,
+        syncData,
+        syncChart,
+        ...stores
+    } = initStores({
+        rawChart,
+        rawData,
+        rawTeam,
+        rawTheme,
+        rawLocales,
+        rawVisualizations: visualizations,
+        disabledFields,
+        dataReadonly
+    });
     setContext('page/edit', {
         chart,
         customViews,
+        data,
         dataset,
         hasUnsavedChanges,
         onNextSave,
         theme,
+        navigateTo,
         ...stores
     });
 
@@ -93,6 +105,7 @@
     dwChart.onChange(() => {
         $chart = dwChart.attributes();
     });
+
     /**
      * calls onNextSave
      * @param {function} method - pass
@@ -122,7 +135,17 @@
 
     const steps = workflow.steps.map(step => ({
         ...step,
-        title: __(step.title[0], step.title[1])
+        title: __(step.title[0], step.title[1]),
+        props: {
+            ...step.data,
+            workflow,
+            visualizations,
+            language: rawChart.language,
+            dwChart,
+            dataReadonly,
+            disabledFields: new Set(disabledFields),
+            __
+        }
     }));
 
     // d3-maps has some extra steps that it is hiding from the nav (for now)
@@ -133,18 +156,6 @@
         });
 
     let activeStep = steps.find(s => s.id === initUrlStep) || steps[0];
-
-    $: stepProps = {
-        ...activeStep.data,
-        workflow,
-        visualizations,
-        language: rawChart.language,
-        chartData: rawData,
-        dwChart,
-        dataReadonly,
-        disabledFields: new Set(disabledFields),
-        __
-    };
 
     $: lastActiveStep = $chart.lastEditStep || 1;
 
@@ -193,25 +204,46 @@
             : [...breadcrumbPath.slice(0, 3), { title: '...' }, ...breadcrumbPath.slice(-1)]
     ).map(folder => ({ ...folder, title: truncate(escapeHtml(folder.title)) }));
 
+    /**
+     * remember which tabs we've opened already to keep them
+     * in DOM, but without having to load them all at once
+     */
+    // TODO: remove forced pre-loading of upload step once it
+    // has been rewritten in Svelte 3 and no longer relies on
+    // injected script tags
+    let stepLoaded = { upload: true };
+    $: {
+        if (activeStep) stepLoaded = { ...stepLoaded, [activeStep.id]: true };
+    }
+
     async function navigateTo(step) {
         const stepUrl = `${urlPrefix}/${$chart.id}/${step.id}`;
-        if (stepUrl !== window.location.pathname && `/v2${stepUrl}` !== window.location.pathname) {
+        if (stepUrl !== window.location.pathname) {
             if (step.event && (step.event.ctrlKey || step.event.metaKey || step.event.shiftKey)) {
                 // open in new tab
                 window.open(stepUrl, '_blank');
-            } else {
-                window.location.href = stepUrl;
+                return;
             }
         }
-        // TODO: bring back single-page navigation (and remove lastEditStep incrementation logic from edit route)
-        // activeStep = { title: activeStep.title || '', view: null };
-        // await tick();
-        // activeStep = step;
-        // if (lastActiveStep && step.index > lastActiveStep) {
-        //     $chart.lastEditStep = step.index;
-        // }
-        // if (pushState)
-        //     window.history.pushState({ id: step.id }, '', `/v2/edit/${$chart.id}/${step.id}`);
+        if (step.forceReload) {
+            window.location.href = stepUrl;
+            return;
+        }
+        activeStep = { title: activeStep.title || '', view: null };
+        await tick();
+        activeStep = step;
+        if (lastActiveStep && step.index > lastActiveStep) {
+            $chart.lastEditStep = step.index;
+        }
+        if (typeof window !== 'undefined') {
+            const newPath = `${urlPrefix}/${$chart.id}/${step.id}`;
+            if ($request.path !== newPath) {
+                // only puth new history state if the path has changed to
+                // preseve initial URL hashes such as #refine
+                $request.path = newPath;
+                window.history.pushState({ id: step.id }, '', newPath);
+            }
+        }
     }
 
     function initHooks() {
@@ -259,6 +291,23 @@
     }
 </script>
 
+<style>
+    .is-invisible {
+        position: absolute;
+        pointer-events: none;
+        /*
+        just setting `visibility: hidden` is not enough as
+        child nodes of invisible elements somehow can still show
+        up. that's why we're also moving the element off screen
+        and clipping it to 1px
+        */
+        left: -10000px;
+        height: 1px;
+        width: 1px;
+        overflow: hidden;
+    }
+</style>
+
 <svelte:window
     on:popstate={onPopState}
     on:beforeunload={onBeforeUnload}
@@ -300,9 +349,13 @@
                 </MessageDisplay>
             </div>{/if}
         <!-- step content -->
-        {#if activeStep && activeStep.view}
-            <ViewComponent id={activeStep.view} props={stepProps} {__} />
-        {/if}
+        {#each steps as step}
+            {#if step.view && stepLoaded[step.id]}
+                <div class:is-invisible={step.id !== activeStep.id}>
+                    <ViewComponent id={step.view} props={step.props} {__} />
+                </div>
+            {/if}
+        {/each}
     </section>
 
     {#if customViews && customViews.belowEditor && customViews.belowEditor.length > 0}

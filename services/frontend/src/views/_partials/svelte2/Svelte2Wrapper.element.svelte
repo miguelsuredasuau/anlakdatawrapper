@@ -19,18 +19,12 @@
     export let css;
     export let module;
 
-    function isComputedProp(app, prop) {
-        try {
-            app._checkReadOnly({ [prop]: true });
-            return false;
-        } catch (ex) {
-            return true;
-        }
-    }
-
-    function filterOutComputedProps(app, data) {
+    // a set of property keys whose corresponding property changes
+    // we want to propagate to the parent component
+    let externalProperties = new Set();
+    function filterOutInternalProps(data) {
         return Object.fromEntries(
-            Object.entries(data).filter(([prop]) => !isComputedProp(app, prop))
+            Object.entries(data).filter(([prop]) => externalProperties.has(prop))
         );
     }
 
@@ -97,16 +91,18 @@
                     return;
                 }
 
+                const initialProps = window.__svelte2wrapper[uid].data;
+                externalProperties = new Set(Object.keys(initialProps));
                 _app = new bundle[module]({
                     target: container,
                     store,
-                    data: window.__svelte2wrapper[uid].data
+                    data: initialProps
                 });
 
                 if (store) {
                     store.on('state', () => {
                         dispatch('update', {
-                            data: filterOutComputedProps(_app, window.__svelte2wrapper[uid].data),
+                            data: filterOutInternalProps(window.__svelte2wrapper[uid].data),
                             store: store.get()
                         });
                     });
@@ -117,7 +113,7 @@
                     dispatch('state', { current, changed });
                     window.__svelte2wrapper[uid].data = current;
                     dispatch('update', {
-                        data: filterOutComputedProps(_app, current),
+                        data: filterOutInternalProps(current),
                         ...(store ? { store: store.get() } : {})
                     });
                 });

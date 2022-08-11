@@ -94,7 +94,32 @@ module.exports = {
             path: '/{chartId}',
             options: {
                 auth: 'guest',
-                validate
+                validate: {
+                    params: Joi.object({
+                        chartId: Joi.string()
+                            .alphanum()
+                            .length(5)
+                            .required()
+                            .description('5 character long chart ID.')
+                    }),
+                    query: Joi.object({
+                        theme: Joi.string().optional(),
+                        ott: Joi.string().optional(),
+                        search: Joi.string().optional(),
+                        published: fakeBoolean(),
+                        static: fakeBoolean(),
+                        plain: fakeBoolean(),
+                        fitchart: fakeBoolean(),
+                        fitheight: fakeBoolean(),
+                        svgonly: fakeBoolean(),
+                        map2svg: fakeBoolean(),
+                        transparent: fakeBoolean(),
+                        logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto'),
+                        logoId: logoId().optional(),
+                        dark: Joi.boolean().default(false).allow('auto'),
+                        allowEditing: fakeBoolean()
+                    })
+                }
             },
             handler: async (request, h) => {
                 const { params } = request;
@@ -111,6 +136,7 @@ module.exports = {
                 props = Object.assign(props, {
                     isIframe: true,
                     isPreview: true,
+                    isEditingAllowed: request.query.allowEditing,
                     isStyleDark: request.query.dark,
                     themeDataDark: themeDark.json.data,
                     themeDataLight: props.theme.data,

@@ -1,6 +1,6 @@
 <script>
     // displays
-    import ChartPreviewIframeDisplay from '_partials/displays/ChartPreviewIframeDisplay.svelte';
+    import ChartEditorPreview from '_partials/editor/ChartEditorPreview.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     // editor
@@ -17,16 +17,13 @@
     import LayoutTab from './visualize/LayoutTab.svelte';
     import RefineTab from './visualize/RefineTab.svelte';
     // other JS
-    import clone from 'lodash/cloneDeep';
-    import { onMount, getContext, onDestroy } from 'svelte';
+    import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
     import { headerProps } from '_layout/stores';
     import get from '@datawrapper/shared/get';
-    import { merge } from 'rxjs';
-    import { debounceTime, tap } from 'rxjs/operators';
+
     // load stores from context
-    const { chart, theme, visualization, isDark, customViews, dataset, editorMode, isFixedHeight } =
-        getContext('page/edit');
+    const { chart, customViews, isFixedHeight, navigateTo } = getContext('page/edit');
 
     export let __;
     export let dwChart;
@@ -90,55 +87,6 @@
         }
     }
 
-    /*
-     * some changes require a full reload of the iframe
-     */
-    const RELOAD = [
-        'type',
-        'theme',
-        'language',
-        'metadata.data.transpose',
-        'metadata.data.column-order',
-        'metadata.axes'
-    ];
-    function reloadPreview() {
-        dwChart.onNextSave(() => {
-            iframePreview.reload();
-        });
-    }
-
-    /*
-     * some changes require updating the state of the chart-core
-     * Visualization.svelte component inside the preview iframe
-     */
-    const UPDATE = [
-        'title',
-        'metadata.describe',
-        'metadata.annotate.notes',
-        'metadata.custom',
-        'metadata.publish.blocks',
-        'metadata.publish.force-attribution',
-        'metadata.visualize.sharing'
-    ];
-    function updatePreview() {
-        iframePreview.getContext(win => {
-            win.__dwUpdate({ chart: clone($chart) });
-        });
-    }
-
-    /*
-     * some changes require a re-rendering of the visualization
-     * since we don't want to wait for the server roundtrip
-     * we inject the new metadata before re-rendering
-     */
-    const RERENDER = ['metadata.visualize', 'metadata.data.changes'];
-
-    /*
-     * keep track of store subscriptions to we can unsubscribe
-     * when this component gets destroyed
-     */
-    const subscriptions = new Set();
-
     let sidebarWidth;
     let mainWidth;
 
@@ -150,30 +98,6 @@
         );
 
     onMount(() => {
-        subscriptions.add(
-            merge(...RELOAD.map(key => chart.bindKey(key)))
-                .pipe(
-                    debounceTime(100),
-                    tap(() => reloadPreview())
-                )
-                .subscribe()
-        );
-        subscriptions.add(
-            merge(...UPDATE.map(key => chart.bindKey(key)))
-                .pipe(
-                    debounceTime(100),
-                    tap(() => updatePreview())
-                )
-                .subscribe()
-        );
-        subscriptions.add(
-            merge(...RERENDER.map(key => chart.bindKey(key)))
-                .pipe(
-                    debounceTime(100),
-                    tap(() => iframePreview.rerender())
-                )
-                .subscribe()
-        );
         // read current tab from url hash
         if (tabs.find(t => `#${t.id}` === window.location.hash)) {
             active = prevActive = window.location.hash.substring(1);
@@ -216,7 +140,8 @@
                     (offset < 0 && curStepIndex > 0) ||
                     (offset > 0 && curStepIndex < workflow.steps.length - 1)
                 ) {
-                    window.location.href = workflow.steps[curStepIndex + Math.sign(offset)].id;
+                    const nextStep = workflow.steps[curStepIndex + Math.sign(offset)];
+                    navigateTo(nextStep);
                 }
             }
         }
@@ -231,16 +156,6 @@
             }
         });
     }
-
-    onDestroy(() => {
-        for (const subscription of subscriptions) {
-            if (subscription.unsubscribe) {
-                subscription.unsubscribe(); // rxjs observable
-            } else {
-                subscription();
-            }
-        }
-    });
 </script>
 
 <style lang="scss">
@@ -313,21 +228,15 @@
                         class="block limit-width"
                         style="max-width:{innerWidth - sidebarWidth - 75}px"
                     >
-                        <ChartPreviewIframeDisplay
+                        <ChartEditorPreview
                             bind:this={iframePreview}
-                            {chart}
-                            fixedHeight={$isFixedHeight}
-                            enforceFitHeight={$editorMode === 'print' &&
-                                $visualization.supportsFitHeight}
-                            isDark={$isDark}
-                            on:resize={onPreviewResize}
-                            resizable={$editorMode === 'web'}
-                            on:message={onPreviewMessage}
-                            allowInlineEditing
-                            {disabledFields}
-                            theme={$theme}
-                            dataset={$dataset}
                             bind:previewWidth
+                            {disabledFields}
+                            allowInlineEditing
+                            allowResizing
+                            fixedHeight={$isFixedHeight}
+                            on:resize={onPreviewResize}
+                            on:message={onPreviewMessage}
                             on:render={measureBodyHeight}
                         />
                     </div>

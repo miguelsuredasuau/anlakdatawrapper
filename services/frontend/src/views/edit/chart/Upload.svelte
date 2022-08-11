@@ -5,11 +5,10 @@
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { getContext } from 'svelte';
     // load stores from context
-    const { chart, data } = getContext('page/edit');
+    const { chart, data, navigateTo } = getContext('page/edit');
 
     const config = getContext('config');
 
-    export let chartData;
     export let datasets;
     export let __;
     export let dwChart;
@@ -19,13 +18,13 @@
 
     $: props = {
         chart: $chart,
-        chartData,
+        chartData: $data,
         datasets,
-        readonly: dataReadonly
+        readonly: dataReadonly,
+        navigateTo
     };
 
     function onChange(event) {
-        chartData = event.detail;
         $data = event.detail;
     }
 </script>

@@ -99,7 +99,7 @@
     import { trackEvent } from '@datawrapper/shared/analytics';
     import httpReq from '@datawrapper/shared/httpReq';
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch';
-    import omit from 'lodash/omit';
+    import pick from 'lodash/pick';
 
     import ConfirmationModal from '@datawrapper/controls/ConfirmationModal.html';
     import ShareEmbed from './ShareEmbed.html';
@@ -232,8 +232,19 @@
                     .then(() => {
                         httpReq.get(`/v3/charts/${chartId}`).then(chartInfo => {
                             // 'theme' on chartInfo is the theme id, but theme in the store is the theme object
-                            this.store.set(omit(chartInfo, ['theme']));
-
+                            const { dw_chart } = this.store.get();
+                            dw_chart.attributes({
+                                ...dw_chart.attributes(),
+                                ...pick(chartInfo, [
+                                    'lastEditStep',
+                                    'lastModifiedAt',
+                                    'metadata',
+                                    'publicId',
+                                    'publicUrl',
+                                    'publicVersion',
+                                    'publishedAt'
+                                ])
+                            });
                             trackEvent('Chart Editor', 'unpublish-success');
 
                             // slow down visual response, reduces flickering:
@@ -287,9 +298,21 @@
                 });
 
                 // 'theme' on chartInfo is the theme id, but theme in the store is the theme object
-                this.store.set(omit(chartInfo, ['theme']));
+                const { eventDispatch, dw_chart } = this.store.get();
 
-                const { eventDispatch } = this.store.get();
+                dw_chart.attributes({
+                    ...dw_chart.attributes(),
+                    ...pick(chartInfo, [
+                        'lastEditStep',
+                        'lastModifiedAt',
+                        'metadata',
+                        'publicId',
+                        'publicUrl',
+                        'publicVersion',
+                        'publishedAt'
+                    ])
+                });
+
                 eventDispatch('publish', { chart: chartInfo });
             },
 

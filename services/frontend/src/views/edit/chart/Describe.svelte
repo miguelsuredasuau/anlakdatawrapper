@@ -7,17 +7,19 @@
 
     const config = getContext('config');
 
+    const { data, navigateTo } = getContext('page/edit');
+
     export let __;
     export let dwChart;
-    export let chartData;
     export let showLocaleSelect;
     export let language;
     export let dataReadonly;
 
-    let data = {
+    $: props = {
         readonly: dataReadonly,
-        chartData,
-        showLocaleSelect
+        chartData: $data,
+        showLocaleSelect,
+        navigateTo
     };
 </script>
 
@@ -35,7 +37,7 @@
             '/static/vendor/codemirror/lib/codemirror.css',
             '/static/vendor/codemirror/addon/hint/show-hint.css'
         ]}
-        bind:data
+        data={props}
         storeData={{
             dw_chart: dwChart,
             language,

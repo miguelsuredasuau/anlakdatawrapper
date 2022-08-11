@@ -1,6 +1,6 @@
 <script>
     import { loadScript } from '@datawrapper/shared/fetch';
-    import ChartPreviewIframeDisplay from '_partials/displays/ChartPreviewIframeDisplay.svelte';
+    import ChartEditorPreview from '_partials/editor/ChartEditorPreview.svelte';
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import { getContext, onMount } from 'svelte';
     import { headerProps } from '_layout/stores';
@@ -30,7 +30,7 @@
     let afterEmbedComponents = [];
     let iframePreview;
 
-    $: data = {
+    $: svelteProps = {
         published: !!$chart.publishedAt,
         afterEmbed: afterEmbedComponents,
         guestAboveInvite,
@@ -41,10 +41,6 @@
         shareurlType: $userData.shareurl_type || 'default',
         needsRepublish
     };
-
-    $: embedWidth = 500;
-    $: embedHeight = 300;
-    $: chartUrlLocal = '';
 
     let innerHeight = 0;
     let innerWidth = 0;
@@ -93,7 +89,7 @@
                     `/lib/static/css/svelte2/publish.css?sha=${$config.GITHEAD}`,
                     ...afterEmbed.map(p => p.css)
                 ]}
-                bind:data
+                bind:data={svelteProps}
                 on:publish={onPublish}
                 storeData={{
                     dw_chart: dwChart,
@@ -131,7 +127,7 @@
                 class:sticky={isSticky}
                 class:sticky-header={$headerProps.isSticky}
             >
-                <ChartPreviewIframeDisplay bind:this={iframePreview} {chart} theme={$theme} />
+                <ChartEditorPreview bind:this={iframePreview} />
             </div>
         </div>
     </div>

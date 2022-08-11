@@ -139,7 +139,7 @@
     </FormFieldDisplay>
 </div>
 
-{#if teamSettings.customFields.length}
+{#if get(teamSettings, 'customFields', []).length}
     <div class="block">
         <h4 class="title is-4 mb-3">Custom fields</h4>
         {#each teamSettings.customFields as field}

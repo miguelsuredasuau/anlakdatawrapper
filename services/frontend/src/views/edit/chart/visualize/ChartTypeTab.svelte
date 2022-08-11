@@ -1,6 +1,5 @@
 <script>
     import get from '@datawrapper/shared/get';
-    import set from '@datawrapper/shared/set';
     import purifySvg from '@datawrapper/shared/purifySvg';
     import { getContext } from 'svelte';
 
@@ -10,6 +9,9 @@
     export let visualizations;
     export let workflow;
     export let __;
+
+    const transpose = chart.bindKey('metadata.data.transpose');
+    const chartType = chart.bindKey('type');
 
     $: chartTypes = visualizations.filter(
         vis =>
@@ -21,13 +23,11 @@
     );
 
     function setVisualization(vis) {
-        $chart.type = vis.id;
-        $chart = $chart;
+        $chartType = vis.id;
     }
 
-    function transpose() {
-        set($chart, 'metadata.data.transpose', !get($chart, 'metadata.data.transpose'));
-        $chart = $chart;
+    function toggleTranspose() {
+        $transpose = !$transpose;
     }
 </script>
 
@@ -128,7 +128,7 @@
 <p>
     <b>{__('Hint')}:</b>
     {__('visualize / transpose-hint')}
-    <button class="button is-ghost is-inline" on:click={transpose}>
+    <button class="button is-ghost is-inline" on:click={toggleTranspose}>
         {__('visualize / transpose-button')}
     </button>
 </p>

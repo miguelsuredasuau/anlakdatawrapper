@@ -106,21 +106,26 @@
                 delete clonedData[key];
             }
         });
-        if (!isEqual(prevData, clonedData)) {
-            prevData = clonedData;
+
+        // update svelte2 component if data or storeData changes
+        const dataChanged = !isEqual(prevData, clonedData);
+        const storeDataChanged = !isEqual(prevStoreData, storeData);
+        if (dataChanged || storeDataChanged) {
+            if (dataChanged) {
+                prevData = clonedData;
+            }
+            if (storeDataChanged) {
+                prevStoreData = clone(storeData);
+            }
             waitFor(
                 () => component && component.update,
                 () => {
-                    component.update(prevData);
-                }
-            );
-        }
-        // also update if storeData changes
-        if (!isEqual(prevStoreData, storeData)) {
-            prevStoreData = clone(storeData);
-            waitFor(
-                () => component && component.update,
-                () => {
+                    // Notice that we send `data` and `storeData` to the Svelte 2 component in one
+                    // `component.update()` call. If we did it in two calls (first `update(data)`
+                    // and then `update(data, storeData)`), then the first call would trigger the
+                    // `on:update` handler, which would write the old `storeData` from the Svelte 2
+                    // component back to the Svelte 3 component, thus reverting the change we were
+                    // trying to do.
                     component.update(prevData, prevStoreData);
                 }
             );

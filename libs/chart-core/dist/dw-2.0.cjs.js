@@ -1,9 +1,13 @@
 'use strict';
 
+var isPlainObject = require('lodash/isPlainObject.js');
+var isEqual$1 = require('lodash/isEqual.js');
 var numeral = require('numeral');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
+var isPlainObject__default = /*#__PURE__*/_interopDefaultLegacy(isPlainObject);
+var isEqual__default = /*#__PURE__*/_interopDefaultLegacy(isEqual$1);
 var numeral__default = /*#__PURE__*/_interopDefaultLegacy(numeral);
 
 function guessDelimiterFromLocale(numeral) {
@@ -6567,6 +6571,63 @@ function set(object, key, value) {
 }
 
 /**
+ * Recursively compares two objects and returns the
+ * "merge patch" object which can be deep-assigned to
+ * the source to create the target
+ *
+ * @exports objectDiff
+ * @kind function
+ *
+ * @example
+ * import objectDiff from '@datawrapper/shared/objectDiff';
+ * objectDiff({ foo: 1, bar: 'hello' }, { foo: 1, bar: 'world' });
+ * // returns { bar: 'world' }
+ *
+ * @param {object} source - the original object
+ * @param {object} target - the changed object
+ * @param {array} allowedKeys - if given, the diff will
+ *     ignore any first-level keys not in this array
+ *
+ * @returns {object} - the merge patch
+ */
+function objectDiff(source, target, allowedKeys = null) {
+    return diffKeys(source, target, allowedKeys ? new Set(allowedKeys) : null);
+}
+
+/**
+ * @param {object} source - the source object
+ * @param {object} target - the target object
+ * @param {Set|null} allowedKeys - Set
+ *
+ * @returns {object} - the merge patch
+ */
+function diffKeys(source, target, allowedKeys = null) {
+    const patch = {};
+    Object.keys(target).forEach(targetKey => {
+        if (!isEqual__default["default"](target[targetKey], source[targetKey])) {
+            if (allowedKeys && !allowedKeys.has(targetKey)) return;
+            if (isPlainObject__default["default"](target[targetKey]) && isPlainObject__default["default"](source[targetKey])) {
+                // iterate one level down
+                const childPatch = diffKeys(source[targetKey], target[targetKey]);
+                if (Object.keys(childPatch).length) {
+                    patch[targetKey] = childPatch;
+                }
+            } else {
+                patch[targetKey] = target[targetKey];
+            }
+        }
+    });
+    // also look for removed keys and set them null
+    Object.keys(source).forEach(sourceKey => {
+        if (allowedKeys && !allowedKeys.has(sourceKey)) return;
+        if (target[sourceKey] === undefined) {
+            patch[sourceKey] = null;
+        }
+    });
+    return patch;
+}
+
+/**
  * Use this function to post event messages out of Datawrapper iframe and
  * web component embeds to the parent website.
  *
@@ -6968,8 +7029,6 @@ function chart (attributes) {
     let locale;
     let flags = {};
 
-    // I believe these are no longer in use anywhere.
-    // TODO: Clarify & remove
     const changeCallbacks = events();
     const datasetChangeCallbacks = events();
 
@@ -7268,7 +7327,12 @@ function chart (attributes) {
 
         attributes(attrs) {
             if (arguments.length) {
+                const diff = objectDiff(attributes, attrs);
                 attributes = attrs;
+                // fire onChange callbacks
+                getNestedObjectKeys(diff).forEach(key => {
+                    changeCallbacks.fire(chart, key, get(attrs, key));
+                });
                 return chart;
             }
             return attributes;
@@ -7336,6 +7400,26 @@ function chart (attributes) {
     };
 
     return chart;
+}
+
+/**
+ * returns list of keys defined in an object
+ *
+ * @param {object} object
+ * @returns {string[]} list of keys
+ */
+function getNestedObjectKeys(object) {
+    const candidates = Object.keys(object);
+    const keys = [];
+    candidates.forEach(key => {
+        if (!isPlainObject__default["default"](object[key])) keys.push(key);
+        else {
+            getNestedObjectKeys(object[key]).forEach(subkey => {
+                keys.push(`${key}.${subkey}`);
+            });
+        }
+    });
+    return keys;
 }
 
 /* globals dw */

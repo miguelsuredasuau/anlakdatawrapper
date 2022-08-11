@@ -235,7 +235,7 @@ describe('TypeaheadInput', () => {
 
             const control = outerDiv.querySelector('.control');
             expect(control).not.to.have.class('is-loading');
-            await delay(200);
+            await delay(300);
             expect(customSearchFunc.calledOnceWith('x')).to.equal(true);
             expect(control).to.have.class('is-loading');
             await delay(310);

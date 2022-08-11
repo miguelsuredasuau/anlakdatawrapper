@@ -100,7 +100,7 @@
                         {lastActiveStep}
                         disabled={step.isDataStep && dataReadonly}
                         on:navigate={evt => dispatch('navigate', evt.detail)}
-                        active={step === activeStep}
+                        active={step.id === activeStep.id}
                     />
                 </div>
             {/each}

@@ -57,9 +57,14 @@
             <svelte:component this="{MainPanel}" bind:chartData bind:readonly />
 
             <div class="buttons pull-right">
-                <a href="describe" class="submit btn btn-primary" id="describe-proceed">
-                    {__("Proceed")} <i class="icon-chevron-right icon-white"></i
-                ></a>
+                <a
+                    href="describe"
+                    on:click|preventDefault="navigateTo('describe')"
+                    class="submit btn btn-primary"
+                    data-uid="upload-proceed-button"
+                >
+                    {__("Proceed")} <i class="icon-chevron-right icon-white"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -218,11 +223,20 @@
                                 chartData: result
                             });
                             dw_chart.onNextSave(() => {
-                                window.location.href = 'describe';
+                                const { navigateTo } = this.get();
+                                if (navigateTo) {
+                                    navigateTo({ id: 'describe' });
+                                } else {
+                                    window.location.href = 'describe';
+                                }
                             });
                         });
                     }
                 }
+            },
+            navigateTo(stepId) {
+                const { navigateTo } = this.get();
+                navigateTo({ id: stepId });
             }
         },
         oncreate() {

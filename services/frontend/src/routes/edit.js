@@ -412,19 +412,19 @@ module.exports = {
                     ]);
 
                     // evaluate data function for each step
-                    for (const step of workflowSteps) {
-                        // @todo: remove `step.id === params.step` check to pre-load
-                        // data for all steps in single-page editor
-                        if (step.id === params.step && typeof step.data === 'function') {
-                            step.data = await step.data({
-                                request,
-                                chart,
-                                theme,
-                                team,
-                                productFeatures
-                            });
-                        }
-                    }
+                    await Promise.all(
+                        workflowSteps
+                            .filter(step => typeof step.data === 'function')
+                            .map(async step => {
+                                step.data = await step.data({
+                                    request,
+                                    chart,
+                                    theme,
+                                    team,
+                                    productFeatures
+                                });
+                            })
+                    );
 
                     const breadcrumbPath = [
                         chart.organization_id
@@ -457,15 +457,6 @@ module.exports = {
                         user,
                         productFeatures
                     });
-
-                    const stepIndex =
-                        workflowSteps
-                            .filter(d => !d.hide)
-                            .findIndex(step => step.id === params.step) + 1;
-
-                    if (stepIndex > 0 && stepIndex > chart.last_edit_step) {
-                        chart.update({ last_edit_step: stepIndex });
-                    }
 
                     const rawChart = await prepareChart(chart);
 
