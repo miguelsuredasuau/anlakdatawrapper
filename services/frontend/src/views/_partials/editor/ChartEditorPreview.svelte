@@ -329,12 +329,19 @@
     export function set() {
         return iframePreview.set.apply(iframePreview, arguments);
     }
+
     export function reset() {
         return iframePreview.reset.apply(iframePreview, arguments);
     }
+
+    export function getIframeStyle() {
+        return iframePreview.getIframeStyle.apply(iframePreview, arguments);
+    }
+
     function iframeGetContext() {
         return iframePreview.getContext.apply(iframePreview, arguments);
     }
+
     export { iframeGetContext as getContext };
 </script>
 
