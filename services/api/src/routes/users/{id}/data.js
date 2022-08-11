@@ -36,7 +36,7 @@ module.exports = async server => {
                 request.server.methods.isAdmin(request, { throwError: true });
             }
 
-            // for setting genereric settings
+            // for setting generic settings
             if (request.payload !== undefined) {
                 const keys = Object.keys(request.payload);
                 for (let i = 0; i < keys.length; i++) {

@@ -45,6 +45,7 @@ module.exports = {
             options: {
                 tags: ['api'],
                 auth: {
+                    strategy: 'guest',
                     access: { scope: ['user:write'] }
                 },
                 description: 'Update your account information',

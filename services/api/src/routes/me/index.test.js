@@ -318,3 +318,64 @@ test('User cannot set their name to invalid characters', async t => {
         }
     }
 });
+
+test('A guest user can update their language', async t => {
+    let userObj;
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'guest',
+            scopes: ['user:read', 'user:write']
+        });
+        const { session } = userObj;
+
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/me',
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {
+                language: 'de-DE'
+            }
+        });
+
+        t.is(res.statusCode, 200);
+        t.is(res.result.language, 'de-DE');
+    } finally {
+        if (userObj) {
+            await destroy(...Object.values(userObj));
+        }
+    }
+});
+
+test('A guest user cannot update their language to an invalid language', async t => {
+    let userObj;
+    try {
+        userObj = await createUser(t.context.server, {
+            role: 'guest',
+            scopes: ['user:read', 'user:write']
+        });
+        const { session } = userObj;
+
+        const res = await t.context.server.inject({
+            method: 'PATCH',
+            url: '/v3/me',
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {
+                language: 'Klingon'
+            }
+        });
+
+        t.is(res.statusCode, 400);
+    } finally {
+        if (userObj) {
+            await destroy(...Object.values(userObj));
+        }
+    }
+});
