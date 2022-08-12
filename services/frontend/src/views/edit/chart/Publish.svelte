@@ -14,7 +14,7 @@
 
     export let dwChart;
     export let language;
-    export let afterEmbed;
+    export let afterEmbed = [];
     export let guestAboveInvite;
     export let guestBelowInvite;
     export let embedTemplates;

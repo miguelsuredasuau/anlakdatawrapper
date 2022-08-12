@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    import { getContext, onMount, setContext, tick } from 'svelte';
+    import { getContext, onDestroy, onMount, setContext, tick } from 'svelte';
     import truncate from '@datawrapper/shared/truncate';
     import MainLayout from '_layout/MainLayout.svelte';
     import { openedInsideIframe } from '_layout/stores';
@@ -163,12 +163,24 @@
         ? $chart.author.email || `"${$chart.author.name}" (#${$chart.authorId})`
         : null;
 
-    // Following two lines start the syncing of chart and data with the server.
-    // Svelte takes care of subscribing and unsubscribing automatically.
-    $syncData;
-    $syncChart;
+    /*
+     * keep track of store subscriptions so we can unsubscribe when this component gets destroyed
+     */
+    const storeSubscriptions = new Set();
 
     onMount(async () => {
+        /*
+         * Start the syncing of chart and data with the server.
+         *
+         * Notice that we don't prefix the store variables with `$` but instead call `subscribe()`
+         * manually. The reason is that if we use the `$` prefix, then Svelte always subscribes to
+         * the stores during server-side rendering, even though this code is inside `onMount()`.
+         * This causes the app to try to PATCH a chart during server-side rendering, which throws an
+         * exception in httpReq: "Neither options.fetch nor window.fetch is defined".
+         */
+        storeSubscriptions.add(syncData.subscribe());
+        storeSubscriptions.add(syncChart.subscribe());
+
         // mimic old dw setup
         window.dw = {
             ...dw,
@@ -193,6 +205,16 @@
                 ...dwChart,
                 subscribe: chart.subscribeKey
             };
+        }
+    });
+
+    onDestroy(() => {
+        for (const subscription of storeSubscriptions) {
+            if (subscription.unsubscribe) {
+                subscription.unsubscribe(); // rxjs observable
+            } else {
+                subscription();
+            }
         }
     });
 

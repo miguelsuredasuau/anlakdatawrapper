@@ -44,16 +44,22 @@ function getAPIUrl(apiConfig) {
 function createAPI(request, apiBase, sessionID) {
     const requestSession = get(request, 'auth.credentials.data.id');
 
-    return async function api(path, { json = true, method = 'GET', body = undefined } = {}) {
+    return async function api(
+        path,
+        { method = 'GET', body = undefined, headers = {}, json = true } = {}
+    ) {
         const session = requestSession || (await createGuestSession());
         let res;
         try {
             res = await got(`${apiBase}${path}`, {
-                headers: session && {
-                    Cookie: `${sessionID}=${session};crumb=${CSRF_TOKEN}`,
-                    'X-CSRF-Token': CSRF_TOKEN
-                },
                 method,
+                headers: {
+                    ...headers,
+                    ...(session && {
+                        Cookie: `${sessionID}=${session};crumb=${CSRF_TOKEN}`,
+                        'X-CSRF-Token': CSRF_TOKEN
+                    })
+                },
                 body
             });
         } catch (e) {

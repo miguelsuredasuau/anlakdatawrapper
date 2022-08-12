@@ -43,8 +43,7 @@
     export let disabledFields = new Set();
 
     /*
-     * keep track of store subscriptions to we can unsubscribe
-     * when this component gets destroyed
+     * keep track of store subscriptions so we can unsubscribe when this component gets destroyed
      */
     const storeSubscriptions = new Set();
 

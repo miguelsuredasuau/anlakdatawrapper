@@ -15,6 +15,26 @@ export function getSessionHeaders(userObj) {
 }
 
 /**
+ * Returns a wrapper around got for making authenticated API requests as passed `userObj`.
+ *
+ * @see ../../src/utils/api.js#createAPI()
+ *
+ * @param {Object} userObj - User object as returned by `api/test/helpers/setup#createUser()`.
+ * @returns {function}
+ */
+export function createAPIForUser(server, userObj) {
+    return server.methods.createAPI({
+        auth: {
+            credentials: {
+                data: {
+                    id: userObj.session.id
+                }
+            }
+        }
+    });
+}
+
+/**
  * Get Svelte view name from `html` that was produced by the SvelteView plugin.
  *
  * @param {string} html - HTML document as a string.

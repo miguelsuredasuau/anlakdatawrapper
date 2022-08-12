@@ -1,11 +1,16 @@
 const path = require('path');
+
 module.exports = {
     general: {
         localPluginRoot: path.join(process.cwd(), '../../plugins'),
         localChartAssetRoot: '/tmp/data',
         localChartPublishRoot: '/tmp/charts',
         imageDomain: 'charts.datawrapper.local/preview',
-        defaultThemes: ['default', 'datawrapper']
+        defaultThemes: ['default', 'datawrapper'],
+        locales: [
+            { id: 'de-DE', title: 'Deutsch' },
+            { id: 'en-US', title: 'English' }
+        ]
     },
     frontend: {
         domain: 'localhost',

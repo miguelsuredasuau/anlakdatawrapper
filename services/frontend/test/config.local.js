@@ -9,7 +9,11 @@ module.exports = {
         localChartAssetRoot: '/tmp/data',
         localChartPublishRoot: '/tmp/charts',
         imageDomain: process.env.DW_THUMBNAIL_URL,
-        defaultThemes: ['default', 'datawrapper']
+        defaultThemes: ['default', 'datawrapper'],
+        locales: [
+            { id: 'de-DE', title: 'Deutsch' },
+            { id: 'en-US', title: 'English' }
+        ]
     },
     frontend: {
         domain: 'localhost',
