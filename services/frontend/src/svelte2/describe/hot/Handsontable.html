@@ -414,7 +414,7 @@
         const colIndex = +app.refs.hot.querySelector(
             `.htCore tbody tr:first-child td:nth-child(${thIndex + 1})`
         ).dataset.column;
-        const { dwChart } = app.store.get();
+        const { dw_chart: dwChart } = app.store.get();
         const { activeColumn, hot } = app.get();
         if (dwChart.dataset().hasColumn(colIndex)) {
             const newActive = dwChart.dataset().column(+colIndex);
