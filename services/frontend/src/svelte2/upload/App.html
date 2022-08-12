@@ -158,9 +158,9 @@
                 this.set({ active: btn });
                 if (btn.id !== 'external-data') {
                     // turn off externalData, if still set
-                    const { dw_chart } = this.store.get();
-                    if (dw_chart.get('externalData')) {
-                        dw_chart.set('externalData', '');
+                    const { dw_chart: dwChart } = this.store.get();
+                    if (dwChart.get('externalData')) {
+                        dwChart.set('externalData', '');
                     }
                 }
                 let activeKey = btn.id;
@@ -171,15 +171,15 @@
                         // this.set({active:coreUploads[0]});
                     }, 1000);
                 }
-                const { dw_chart } = this.store.get();
-                dw_chart.set('metadata.data.upload-method', activeKey);
+                const { dw_chart: dwChart } = this.store.get();
+                dwChart.set('metadata.data.upload-method', activeKey);
                 if (btn.action) btn.action();
                 if (btn.mainPanel) this.set({ MainPanel: btn.mainPanel });
                 if (btn.sidebar) this.set({ Sidebar: btn.sidebar });
             },
             btnUpload(btn, event) {
-                const { dw_chart } = this.store.get();
-                if (btn.onFileUpload) btn.onFileUpload(event, dw_chart);
+                const { dw_chart: dwChart } = this.store.get();
+                if (btn.onFileUpload) btn.onFileUpload(event, dwChart);
             },
             dragStart(event) {
                 const { active } = this.get();
@@ -193,7 +193,7 @@
             },
             onFileDrop(event) {
                 const { active } = this.get();
-                const { dw_chart } = this.store.get();
+                const { dw_chart: dwChart } = this.store.get();
                 if (active.id !== 'copy') return;
                 // Prevent default behavior (Prevent file from being opened)
                 this.resetDrag();
@@ -222,7 +222,7 @@
                             this.set({
                                 chartData: result
                             });
-                            dw_chart.onNextSave(() => {
+                            dwChart.onNextSave(() => {
                                 const { navigateTo } = this.get();
                                 if (navigateTo) {
                                     navigateTo({ id: 'describe' });
@@ -241,8 +241,8 @@
         },
         oncreate() {
             app = this;
-            const { dw_chart } = this.store.get();
-            const method = dw_chart.get('metadata.data.upload-method', 'copy');
+            const { dw_chart: dwChart } = this.store.get();
+            const method = dwChart.get('metadata.data.upload-method', 'copy');
             this.set({ defaultMethod: method });
             coreUploads.forEach(u => {
                 if (u.id === method) {

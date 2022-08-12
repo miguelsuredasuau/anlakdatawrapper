@@ -62,10 +62,10 @@
                 if (!data) return;
 
                 // get chart
-                const { dw_chart } = this.store.get();
+                const { dw_chart: dwChart } = this.store.get();
 
                 // pass dataset through chart to apply changes and computed columns
-                const ds = dw_chart
+                const ds = dwChart
                     .dataset(
                         delimited({
                             csv: data,
@@ -91,7 +91,7 @@
                 // pass data to hot
                 hot.loadData(hotData);
 
-                const cellRenderer = getCellRenderer(this, dw_chart, ds, HOT, {});
+                const cellRenderer = getCellRenderer(this, dwChart, ds, HOT, {});
 
                 hot.updateSettings({
                     cells: (row, col) => {
@@ -108,7 +108,7 @@
 
                 this.set({
                     ds,
-                    hasChanges: clone(dw_chart.get('metadata.data.changes', [])).length > 0
+                    hasChanges: clone(dwChart.get('metadata.data.changes', [])).length > 0
                 });
 
                 HOT.hooks.once('afterRender', () => this.initCustomEvents());
@@ -224,8 +224,8 @@
             },
 
             getColumnFormat(name) {
-                const { dw_chart } = this.store.get();
-                const colFormats = dw_chart.get('metadata.data.column-format', {});
+                const { dw_chart: dwChart } = this.store.get();
+                const colFormats = dwChart.get('metadata.data.column-format', {});
                 return colFormats[name] || { type: 'auto', ignore: false };
             }
         },
@@ -262,7 +262,7 @@
                 }
             });
 
-            const { dw_chart } = this.store.get();
+            const { dw_chart: dwChart } = this.store.get();
             const hot = new HOT(this.refs.hot, {
                 data: [],
                 rowHeaders: i => {
@@ -289,7 +289,7 @@
                 columnSorting: true,
                 sortFunction: function (sortOrder, columnMeta) {
                     if (columnMeta.col > -1) {
-                        const column = dw_chart.dataset().column(columnMeta.col);
+                        const column = dwChart.dataset().column(columnMeta.col);
                         const colType = column.type();
                         return (a, b) => {
                             if (a[0] === 0) return -1;
@@ -414,10 +414,10 @@
         const colIndex = +app.refs.hot.querySelector(
             `.htCore tbody tr:first-child td:nth-child(${thIndex + 1})`
         ).dataset.column;
-        const { dw_chart } = app.store.get();
+        const { dwChart } = app.store.get();
         const { activeColumn, hot } = app.get();
-        if (dw_chart.dataset().hasColumn(colIndex)) {
-            const newActive = dw_chart.dataset().column(+colIndex);
+        if (dwChart.dataset().hasColumn(colIndex)) {
+            const newActive = dwChart.dataset().column(+colIndex);
             // set active column (or unset if it's already set)
             if (activeColumn && activeColumn.name() === newActive.name()) {
                 evt.target.parentNode.classList.remove('selected');

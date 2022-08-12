@@ -46,7 +46,7 @@
 </script>
 
 {#if numPages > 1}
-    <nav class="pagination" role="navigation" aria-label="pagination">
+    <nav class="pagination" aria-label="pagination">
         <ul class="pagination-list">
             {#if centerPages[0] > 0}
                 <li>

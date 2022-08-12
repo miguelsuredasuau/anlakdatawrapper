@@ -456,15 +456,15 @@
             },
             removeColumn() {
                 const { column } = this.get();
-                const { dw_chart } = this.store.get();
-                const ds = dw_chart.dataset();
-                const customCols = clone(getComputedColumns(dw_chart)).filter(
+                const { dw_chart: dwChart } = this.store.get();
+                const ds = dwChart.dataset();
+                const customCols = clone(getComputedColumns(dwChart)).filter(
                     col => col.name !== column.origName()
                 );
                 // get old column index
                 const colIndex = ds.columnOrder()[ds.indexOf(column.name())];
                 // delete all changes that have been made to this column
-                const changes = dw_chart.get('metadata.data.changes', []);
+                const changes = dwChart.get('metadata.data.changes', []);
                 const newChanges = [];
                 changes.forEach(c => {
                     if (c.column === colIndex) return; // skip
@@ -472,9 +472,9 @@
                     if (c.column > colIndex) c.column--;
                     newChanges.push(c);
                 });
-                dw_chart.set('metadata.describe.computed-columns', customCols);
-                dw_chart.set('metadata.data.changes', newChanges);
-                dw_chart.saveSoon();
+                dwChart.set('metadata.describe.computed-columns', customCols);
+                dwChart.set('metadata.data.changes', newChanges);
+                dwChart.saveSoon();
                 this.fire('updateTable');
                 this.fire('unselect');
             },
@@ -496,7 +496,7 @@
             },
             setFormula(formula, name, origName) {
                 if (formula === undefined) return;
-                const { dw_chart } = this.store.get();
+                const { dw_chart: dwChart } = this.store.get();
                 // try out formula first
                 const { cm } = this.get();
                 this.set({ formula });
@@ -508,7 +508,7 @@
                 // remove custom error marks
                 setTimeout(() => this.unmarkErrors());
                 // update dw.chart
-                const customCols = clone(getComputedColumns(dw_chart));
+                const customCols = clone(getComputedColumns(dwChart));
                 const thisCol = customCols.find(d => d.name === origName);
                 if (!thisCol) {
                     // try again later
@@ -518,18 +518,18 @@
                 }
                 if (thisCol.formula !== formula) {
                     thisCol.formula = formula;
-                    dw_chart.set('metadata.describe.computed-columns', customCols);
+                    dwChart.set('metadata.describe.computed-columns', customCols);
                     // check for errors later
                     this.set({ checking: true });
-                    if (dw_chart.saveSoon) dw_chart.saveSoon();
+                    if (dwChart.saveSoon) dwChart.saveSoon();
                     this.store.set({
-                        dw_chart
+                        dwChart
                     });
                     updateTable();
                 } else {
                     let column;
                     try {
-                        column = dw_chart.dataset().column(name);
+                        column = dwChart.dataset().column(name);
                     } catch (e) {
                         console.error(`Failed to load column "${name}"`);
                     }
@@ -555,7 +555,7 @@
             const app = this;
             const { column, computedColumns } = this.get();
 
-            const { dw_chart } = this.store.get();
+            const { dw_chart: dwChart } = this.store.get();
 
             const thisCol = computedColumns.find(d => d.name === column.origName());
 
@@ -666,9 +666,9 @@
                     }
                     computedColumn.name = newName;
                     column.name(newName);
-                    dw_chart.set('metadata.describe.computed-columns', computedColumns);
-                    this.store.set({ dw_chart });
-                    if (dw_chart.saveSoon) dw_chart.saveSoon();
+                    dwChart.set('metadata.describe.computed-columns', computedColumns);
+                    this.store.set({ dwChart });
+                    if (dwChart.saveSoon) dwChart.saveSoon();
                     updateTable();
                 }, 1500);
             };

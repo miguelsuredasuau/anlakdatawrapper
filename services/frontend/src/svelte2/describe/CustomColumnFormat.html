@@ -145,9 +145,9 @@
 
         methods: {
             autoDivisor() {
-                const { dw_chart } = this.store.get();
+                const { dw_chart: dwChart } = this.store.get();
                 const { column } = this.get();
-                const mtrSuf = dw.utils.metricSuffix(dw_chart.locale());
+                const mtrSuf = dw.utils.metricSuffix(dwChart.locale());
                 const values = column.values();
                 const dim = dw.utils.significantDimension(values);
                 let div = dim < -2 ? Math.round((dim * -1) / 3) * 3 : dim > 4 ? dim * -1 : 0;
@@ -179,10 +179,8 @@
                 });
             },
             getColumnFormat(column) {
-                const { dw_chart } = this.store.get();
-                const columnFormats = arrayToObject(
-                    dw_chart.get('metadata.data.column-format', {})
-                );
+                const { dw_chart: dwChart } = this.store.get();
+                const columnFormats = arrayToObject(dwChart.get('metadata.data.column-format', {}));
                 let columnFormat = clone(columnFormats[column.name()]);
                 if (!columnFormat || columnFormat === 'auto' || columnFormat.length !== undefined) {
                     // no valid column format
@@ -238,10 +236,10 @@
 
                 if (changed.columnFormat) {
                     const colFormat = current.columnFormat;
-                    const { dw_chart } = this.store.get();
+                    const { dw_chart: dwChart } = this.store.get();
                     const column = current.column;
                     const columnFormats = arrayToObject(
-                        clone(dw_chart.get('metadata.data.column-format', {}))
+                        clone(dwChart.get('metadata.data.column-format', {}))
                     );
                     const oldFormat = columnFormats[column.name()];
                     if (!oldFormat || JSON.stringify(oldFormat) !== JSON.stringify(colFormat)) {
@@ -251,8 +249,8 @@
                             return;
                         }
                         columnFormats[column.name()] = clone(colFormat);
-                        dw_chart.set('metadata.data.column-format', columnFormats);
-                        if (dw_chart.saveSoon) dw_chart.saveSoon();
+                        dwChart.set('metadata.data.column-format', columnFormats);
+                        if (dwChart.saveSoon) dwChart.saveSoon();
                         if (!oldFormat || oldFormat.type !== colFormat.type) updateTable();
                         else renderTable();
                     }

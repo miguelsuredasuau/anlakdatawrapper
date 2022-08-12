@@ -274,19 +274,19 @@
             activeValues({ activeColumn }) {
                 return activeColumn ? activeColumn.values() : [];
             },
-            activeFormat({ activeColumn, $dw_chart }) {
+            activeFormat({ activeColumn, $dw_chart: $dwChart }) {
                 return activeColumn
                     ? columnFormatter(
                           numeral,
                           activeColumn,
-                          $dw_chart.get().metadata,
+                          $dwChart.get().metadata,
                           activeColumn.name()
                       )
                     : d => d;
             },
-            // eslint-disable-next-line
-            columns({ activeColumn, $dw_chart }) {
-                const ds = $dw_chart.dataset();
+            // eslint-disable-next-line no-unused-vars
+            columns({ activeColumn, $dw_chart: $dwChart }) {
+                const ds = $dwChart.dataset();
                 return ds ? ds.columns() : [];
             },
             normalColumns({ columns }) {
@@ -393,12 +393,12 @@
             }
         },
         oncreate() {
-            const { dw_chart } = this.store.get();
+            const { dw_chart: dwChart } = this.store.get();
 
             // initialize app data from existing metadata
             const initialState = Object.entries(syncKeys).reduce(
                 (toSet, [svelteKey, metadataKey]) => {
-                    const metadataValue = get(dw_chart.get(), metadataKey);
+                    const metadataValue = get(dwChart.get(), metadataKey);
                     if (metadataValue !== null) toSet[svelteKey] = metadataValue;
                     return toSet;
                 },
@@ -408,11 +408,11 @@
             this.set(initialState);
             this.refs.hot.update();
 
-            if (dw_chart.get('metadata.data.changes', []).length > 1) {
+            if (dwChart.get('metadata.data.changes', []).length > 1) {
                 this.set({ hasChanges: true });
             }
 
-            dw_chart.onChange((chart, key, value) => {
+            dwChart.onChange((chart, key, value) => {
                 const entry = Object.entries(syncKeys).find(
                     ([, metadataKey]) => metadataKey === key
                 );
@@ -441,15 +441,15 @@
             Object.entries(syncKeys).forEach(([svelteKey, metadataKey]) => {
                 if (changed[svelteKey]) {
                     const svelteValue = current[svelteKey];
-                    const { dw_chart } = this.store.get();
+                    const { dw_chart: dwChart } = this.store.get();
                     if (svelteKey === '$language') {
                         if (!svelteValue) return;
-                        dw_chart.set('language', svelteValue);
-                        dw_chart.locale(svelteValue, () => {
+                        dwChart.set('language', svelteValue);
+                        dwChart.locale(svelteValue, () => {
                             this.refs.hot.render();
                         });
                     } else {
-                        dw_chart.set(metadataKey, svelteValue);
+                        dwChart.set(metadataKey, svelteValue);
                     }
                 }
             });
