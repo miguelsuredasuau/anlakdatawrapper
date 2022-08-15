@@ -29,9 +29,13 @@
         {@html guestBelowInvite}
 
         <div style="margin-top: 30px">
-            <button class="btn btn-save btn-default btn-back">
-                <i class="fa fa-chevron-left"></i> &nbsp; {@html __('publish / guest / back')}
-            </button>
+            <a
+                href="visualize"
+                on:click|preventDefault="navigateTo('visualize')"
+                class="btn btn-save btn-default btn-back"
+            >
+                <i class="icon-chevron-left"></i> {@html __('publish / guest / back')}
+            </a>
 
             {#if error}
             <div class="mt-2 alert alert-warning">{error}</div>
@@ -88,6 +92,10 @@
                         this.set({ error: `Unknown error: ${e}` });
                     }
                 }
+            },
+            navigateTo(stepId) {
+                const { navigateTo } = this.get();
+                navigateTo({ id: stepId });
             }
         }
     };

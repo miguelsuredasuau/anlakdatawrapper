@@ -2,7 +2,7 @@
 <div class="dw-create-publish">
     <div class="publish-step is-published">
         {#if $user.isGuest}
-        <Guest fromSvelte="true" {guestAboveInvite} {guestBelowInvite} />
+        <Guest fromSvelte="true" {guestAboveInvite} {guestBelowInvite} {navigateTo} />
         {:elseif !$user.isActivated}
         <PendingActivation />
         {:else}

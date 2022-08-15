@@ -5,7 +5,7 @@
     import { getContext, onMount } from 'svelte';
     import { headerProps } from '_layout/stores';
     // load stores from context
-    const { chart, theme } = getContext('page/edit');
+    const { chart, theme, navigateTo } = getContext('page/edit');
 
     const user = getContext('user');
     const userData = getContext('userData');
@@ -39,7 +39,8 @@
         embedType,
         pluginShareurls: displayURLs,
         shareurlType: $userData.shareurl_type || 'default',
-        needsRepublish
+        needsRepublish,
+        navigateTo
     };
 
     let innerHeight = 0;
