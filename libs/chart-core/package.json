@@ -1,7 +1,7 @@
 {
     "name": "@datawrapper/chart-core",
     "version": "8.47.0",
-    "description": "Svelte component to render charts. Used by Sapper App and Node API.",
+    "description": "Svelte component to render charts.",
     "main": "index.js",
     "engines": {
         "node": ">=18.0.0",
@@ -13,22 +13,13 @@
     ],
     "scripts": {
         "format": "cd ../.. && scripts/format libs/chart-core",
-        "build": "rollup -c rollup.config.js",
-        "dev": "rollup -cw rollup.config.js",
+        "build": "rollup -c",
+        "dev": "rollup -cw",
         "lint": "cd ../.. && scripts/lint libs/chart-core",
         "prepublishOnly": "npm run build",
         "test": "ava",
         "docs:parser": "jsdoc2md  --template docs/.tpl.hbs --files 'lib/dw/utils/parser.js' -g grouped  | sed '/\\*\\*Kind\\*\\*/d'  | sed '/\\*\\*Example\\*\\*/d' | sed '/## $/d' | sed 's/## \\([a-z]\\)/### \\1/' > docs/parser.md && node docs/.fix.js parser.md"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/datawrapper/chart-core.git"
-    },
-    "author": "",
-    "bugs": {
-        "url": "https://github.com/datawrapper/chart-core/issues"
-    },
-    "homepage": "https://github.com/datawrapper/chart-core#readme",
     "dependencies": {
         "@datawrapper/expr-eval": "^2.0.5",
         "@datawrapper/polyfills": "file:../polyfills",
