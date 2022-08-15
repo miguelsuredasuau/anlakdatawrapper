@@ -193,6 +193,17 @@
         folderNavEl.style.top = `${isSticky ? height + padding : padding}px`;
     }
 
+    // if the user opens the archive with a specific team or folder
+    // we make sure that this team stays on top of the sidebar
+    const moveTeamToTop = $currentFolder.teamId;
+
+    // if the initially opened folder is a private folder we
+    // move the entire "private" group above the "shared" group
+    const sortedFolderGroups =
+        moveTeamToTop || $currentFolder.virtual || $query.search
+            ? ['shared', 'private']
+            : ['private', 'shared'];
+
     onMount(() => {
         const chartId = getChartIdFromHash();
         if (chartId) {
@@ -499,6 +510,10 @@
             if (a.teamId === foreignTeam) return -1;
             if (b.teamId === foreignTeam) return 1;
         }
+        if (moveTeamToTop) {
+            if (a.teamId === moveTeamToTop) return -1;
+            if (b.teamId === moveTeamToTop) return 1;
+        }
         if ($user.activeTeam) {
             if (a.teamId === $user.activeTeam.id) return -1;
             if (b.teamId === $user.activeTeam.id) return 1;
@@ -556,37 +571,47 @@
                             {/each}
                         </CollapseGroup>
 
-                        <CollapseGroup className="shared" title={__('archive / section / shared')}>
-                            {#each sortedTeamFolders as teamFolder, i}
-                                {#if i}<hr class="my-3" />{/if}
-                                {#if foreignTeam && teamFolder.teamId === foreignTeam}
-                                    <MessageDisplay type="danger">
-                                        <p>
-                                            <strong>Heads up!</strong> You are not a member of team
-                                            <b>{teamFolder.name}</b>. You can only see it because
-                                            you have admin privileges! Please do not change anything
-                                            unless you know exactly what you're doing
-                                        </p>
-                                    </MessageDisplay>
-                                {/if}
-                                <Folder {__} folder={teamFolder} />
+                        {#each sortedFolderGroups as group}
+                            {#if group === 'shared'}
+                                <CollapseGroup
+                                    className="shared"
+                                    title={__('archive / section / shared')}
+                                >
+                                    {#each sortedTeamFolders as teamFolder, i}
+                                        {#if i}<hr class="my-3" />{/if}
+                                        {#if foreignTeam && teamFolder.teamId === foreignTeam}
+                                            <MessageDisplay type="danger">
+                                                <p>
+                                                    <strong>Heads up!</strong> You are not a member
+                                                    of team
+                                                    <b>{teamFolder.name}</b>. You can only see it
+                                                    because you have admin privileges! Please do not
+                                                    change anything unless you know exactly what
+                                                    you're doing
+                                                </p>
+                                            </MessageDisplay>
+                                        {/if}
+                                        <Folder {__} folder={teamFolder} />
+                                    {:else}
+                                        <div class="team-message">
+                                            <p class="pb-1">
+                                                {__('archive / section / shared / team-message')}
+                                            </p>
+                                            <a href="/account/teams">
+                                                {__('archive / section / shared / team-link')}
+                                            </a>
+                                        </div>
+                                    {/each}
+                                </CollapseGroup>
                             {:else}
-                                <div class="team-message">
-                                    <p class="pb-1">
-                                        {__('archive / section / shared / team-message')}
-                                    </p>
-                                    <a href="/account/teams">
-                                        {__('archive / section / shared / team-link')}
-                                    </a>
-                                </div>
-                            {/each}
-                        </CollapseGroup>
-                        <CollapseGroup
-                            className="private"
-                            title={__('archive / section / private')}
-                        >
-                            <Folder {__} folder={userFolder} />
-                        </CollapseGroup>
+                                <CollapseGroup
+                                    className="private"
+                                    title={__('archive / section / private')}
+                                >
+                                    <Folder {__} folder={userFolder} />
+                                </CollapseGroup>
+                            {/if}
+                        {/each}
                     </div>
                 </div>
                 <div class="column is-three-quarters">
