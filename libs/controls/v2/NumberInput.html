@@ -13,7 +13,7 @@
             />
         </div>
         {/if}
-        <div class="value">
+        <div class="value" class:disabled>
             <input
                 ref:input
                 style="width:{width};"
@@ -25,6 +25,15 @@
                 placeholder="{placeholder || ''}"
                 on:input="update()"
                 bind:value="value2"
+            />
+            <input
+                type="text"
+                style="width:{width};"
+                placeholder="{placeholder || ''}"
+                on:input="update()"
+                disabled="{disabled}"
+                value="{value !== 0 && !value ? '' : value * multiply_}"
+                on:focus="refs.input.focus()"
             />
             {#if unit_}
             <span class="unit">{unit_}</span>
@@ -58,17 +67,19 @@
         width: 100%;
     }
     input[type='number'] {
-        text-align: right;
         background: #fcfcfc;
-        -moz-appearance: textfield;
-        appearance: textfield;
+        margin: 0;
+    }
+    input[type='text'] {
+        background: #fcfcfc;
         margin: 0;
     }
     input[type='range'][disabled] {
         opacity: 0.6;
         cursor: default;
     }
-    input[type='number'][disabled] {
+    input[type='number'][disabled],
+    input[type='text'][disabled] {
         color: #999;
         background: #eee;
         border-color: #ddd;
@@ -82,13 +93,11 @@
     input[type='number']:hover {
         -moz-appearance: textfield-multiline;
         appearance: textfield-multiline;
-        text-align: center;
     }
     input[type='number'][disabled]:hover {
         -webkit-appearance: none;
         -moz-appearance: textfield;
         appearance: textfield;
-        text-align: right;
     }
     input[type='number']:hover::-webkit-inner-spin-button,
     input[type='number']:hover::-webkit-outer-spin-button {
@@ -99,6 +108,17 @@
     input[type='number'][disabled]:hover::-webkit-outer-spin-button {
         -webkit-appearance: unset;
         margin: 0;
+    }
+    .value input[type='number'] {
+        display: none;
+    }
+    .value:focus-within:not(.disabled) input[type='number'],
+    .value:hover:not(.disabled) input[type='number'] {
+        display: inline;
+    }
+    .value:focus-within:not(.disabled) input[type='text'],
+    .value:hover:not(.disabled) input[type='text'] {
+        display: none;
     }
 </style>
 

@@ -92,3 +92,15 @@ test('Updating the value via the input controls to 0', t => {
 
     t.is(app.get().value, 0);
 });
+
+test('Text input is rendered in addition to number input', t => {
+    new NumberInput({
+        target: t.context[0],
+        data: { value: 100 }
+    });
+
+    t.truthy(t.context.find('input[type=number]')[0]);
+    t.is(t.context.find('input[type=number]').val(), '100');
+    t.truthy(t.context.find('input[type=text]')[0]);
+    t.is(t.context.find('input[type=text]').val(), '100');
+});
