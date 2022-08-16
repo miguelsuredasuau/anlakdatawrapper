@@ -144,6 +144,11 @@ describe('PreviewResizer', () => {
     let result;
 
     beforeEach(() => {
+        window.dw = {
+            backend: {
+                __api_domain: 'http://api.datawrapper.mock'
+            }
+        };
         nock('http://api.datawrapper.mock').patch('/v3/charts/undefined').reply(200);
     });
 
@@ -233,29 +238,34 @@ describe('PreviewResizer', () => {
                 expect(toolbar).to.exist;
                 expect(result.queryByText('Size (px)')).to.exist;
                 expect(result.queryByText('Size (mm)')).not.to.exist;
-                const inputs = toolbar.querySelectorAll('input');
-                expect(inputs).to.have.length(2);
-                expect(inputs[0]).to.have.attribute('type', 'number');
-                expect(inputs[0]).to.have.value('550');
-                expect(inputs[1]).to.have.attribute('type', 'text');
-                expect(inputs[1]).to.have.attribute('disabled');
-                expect(inputs[1]).to.have.value('auto');
+
+                expect(result.queryByTestId('web-width')).to.exist;
+                expect(result.queryByTestId('web-height')).not.to.exist;
+
+                const controls = toolbar.querySelectorAll('.number-input');
+                expect(controls).to.have.length(2);
+
+                expect(controls[0]).to.have.attribute('data-uid', 'web-width');
+                expect(controls[1]).not.to.have.attribute('data-uid', 'web-height');
+
+                const inputHeight = controls[1].querySelector('input[type=text]');
+                expect(inputHeight).to.have.attribute('disabled');
+                expect(inputHeight).to.have.value('auto');
             });
 
             it('embed-height updated when iframe resize event fired', () => {
                 const toolbar = result.getByTestId('resizer');
-                const inputs = toolbar.querySelectorAll('input');
-
                 result.triggerFixedHeightChange(500);
                 const { publish } = result.stores['page/edit'].chart._value.metadata;
                 expect(publish).to.have.property('embed-height', 500);
 
-                expect(inputs).to.have.length(2);
-                expect(inputs[0]).to.have.attribute('type', 'number');
-                expect(inputs[0]).to.have.value('550');
-                expect(inputs[1]).to.have.attribute('type', 'text');
-                expect(inputs[1]).to.have.attribute('disabled');
-                expect(inputs[1]).to.have.value('auto');
+                const inputWidth = toolbar.querySelector(
+                    '.number-input[data-uid=web-width] input[type=number]'
+                );
+                expect(inputWidth).to.exist;
+                expect(inputWidth).to.have.value('550');
+
+                expect(result.queryByTestId('web-height')).not.to.exist;
             });
         });
 
@@ -273,14 +283,8 @@ describe('PreviewResizer', () => {
             });
 
             it('supportsFitHeight is ignored', () => {
-                const toolbar = result.getByTestId('resizer');
-                const inputs = toolbar.querySelectorAll('input');
-                expect(inputs).to.have.length(2);
-                expect(inputs[0]).to.have.attribute('type', 'number');
-                expect(inputs[0]).to.have.value('550');
-                expect(inputs[1]).to.have.attribute('type', 'text');
-                expect(inputs[1]).to.have.attribute('disabled');
-                expect(inputs[1]).to.have.value('auto');
+                expect(result.queryByTestId('web-width')).to.exist;
+                expect(result.queryByTestId('web-height')).not.to.exist;
             });
         });
 
@@ -751,19 +755,13 @@ describe('PreviewResizer', () => {
                 const toolbar = result.getByTestId('resizer');
                 expect(toolbar).to.exist;
                 expect(result.queryByText('Size (mm)')).to.exist;
-                const inputs = toolbar.querySelectorAll('input');
-                expect(inputs).to.have.length(2);
-                expect(inputs[0]).to.have.attribute('type', 'number');
-                expect(inputs[0]).to.have.value('80');
-                expect(inputs[1]).to.have.attribute('type', 'text');
-                expect(inputs[1]).to.have.attribute('disabled');
-                expect(inputs[1]).to.have.value('auto');
+                expect(result.queryByTestId('print-width')).to.exist;
+                expect(result.queryByTestId('print-height')).not.to.exist;
             });
 
             it('export-pdf.height updated when iframe resize event fired', () => {
                 const toolbar = result.getByTestId('resizer');
                 expect(toolbar).to.exist;
-                const inputs = toolbar.querySelectorAll('input');
 
                 result.triggerFixedHeightChange(500);
                 const { publish } = getStoreValue(result.stores['page/edit'].chart).metadata;
@@ -772,11 +770,10 @@ describe('PreviewResizer', () => {
                     Number(pxToMM(500).toFixed())
                 );
 
-                expect(inputs[0]).to.have.attribute('type', 'number');
+                const inputs = toolbar.querySelectorAll('input[type=number]');
                 expect(inputs[0]).to.have.value('80');
-                expect(inputs[1]).to.have.attribute('type', 'text');
+                expect(inputs[0]).not.to.have.attribute('disabled');
                 expect(inputs[1]).to.have.attribute('disabled');
-                expect(inputs[1]).to.have.value('auto');
             });
         });
 
@@ -797,12 +794,12 @@ describe('PreviewResizer', () => {
                 const toolbar = result.getByTestId('resizer');
                 expect(toolbar).to.exist;
                 expect(result.queryByText('Size (mm)')).to.exist;
-                const inputs = toolbar.querySelectorAll('input');
+                const inputs = toolbar.querySelectorAll('input[type=number]');
                 expect(inputs).to.have.length(2);
-                expect(inputs[0]).to.have.attribute('type', 'number');
                 expect(inputs[0]).to.have.value('80');
-                expect(inputs[1]).to.have.attribute('type', 'number');
+                expect(inputs[0]).not.to.have.attribute('disabled');
                 expect(inputs[1]).to.have.value('120');
+                expect(inputs[1]).not.to.have.attribute('disabled');
             });
         });
     });

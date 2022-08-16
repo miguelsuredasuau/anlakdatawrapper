@@ -130,6 +130,12 @@
                     ]
                 },
                 {
+                    url: '#numberinput',
+                    title: 'Number Input',
+                    view: sections.NumberInputSection,
+                    components: ['_partials/controls/NumberInput.svelte']
+                },
+                {
                     url: '#tagsinput',
                     title: 'Tags Input',
                     view: sections.TagsInputSection,

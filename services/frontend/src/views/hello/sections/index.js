@@ -13,6 +13,7 @@ export { default as CheckboxSection } from './controls/CheckboxSection.svelte';
 export { default as CodeMirrorInputSection } from './controls/CodeMirrorInputSection.svelte';
 export { default as FileInputSection } from './controls/FileInputSection.svelte';
 export { default as MarkdownInputSection } from './controls/MarkdownInputSection.svelte';
+export { default as NumberInputSection } from './controls/NumberInputSection.svelte';
 export { default as RadioInputSection } from './controls/RadioInputSection.svelte';
 export { default as SearchInputSection } from './controls/SearchInputSection.svelte';
 export { default as SetPasswordSection } from './controls/SetPasswordSection.svelte';

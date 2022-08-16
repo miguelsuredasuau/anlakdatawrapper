@@ -222,6 +222,7 @@
         <div class="field is-grouped">
             <div class="control">
                 <NumberInput
+                    uid="web-width"
                     class="is-small"
                     width="10ex"
                     spinner="true"
@@ -230,15 +231,10 @@
             </div>
             <div class="control">
                 {#if $isFixedHeight}
-                    <input
-                        class="input is-small"
-                        type="text"
-                        style="width:8ex"
-                        disabled
-                        value="auto"
-                    />
+                    <NumberInput class="is-small" disabled value="auto" />
                 {:else}
                     <NumberInput
+                        uid="web-height"
                         class="is-small"
                         spinner="true"
                         width="10ex"
@@ -252,6 +248,7 @@
         <div class="field is-grouped">
             <div class="control">
                 <NumberInput
+                    uid="print-width"
                     class="is-small"
                     spinner="true"
                     width="10ex"
@@ -261,15 +258,10 @@
             </div>
             <div class="control">
                 {#if $isFixedHeight}
-                    <input
-                        class="input is-small"
-                        type="text"
-                        style="width:8ex"
-                        disabled
-                        value="auto"
-                    />
+                    <NumberInput class="is-small" disabled value="auto" />
                 {:else}
                     <NumberInput
+                        uid="print-height"
                         class="is-small"
                         spinner="true"
                         width="10ex"
