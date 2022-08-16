@@ -231,7 +231,7 @@
             </div>
             <div class="control">
                 {#if $isFixedHeight}
-                    <NumberInput class="is-small" disabled value="auto" />
+                    <NumberInput class="is-small" disabled value="auto" width="8ex" />
                 {:else}
                     <NumberInput
                         uid="web-height"
@@ -258,7 +258,7 @@
             </div>
             <div class="control">
                 {#if $isFixedHeight}
-                    <NumberInput class="is-small" disabled value="auto" />
+                    <NumberInput class="is-small" disabled value="auto" width="8ex" />
                 {:else}
                     <NumberInput
                         uid="print-height"
