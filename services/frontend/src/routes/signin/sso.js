@@ -35,6 +35,8 @@ module.exports = {
             return sso;
         }
 
+        server.methods.registerView('signin/SSOError.svelte');
+
         server.route({
             method: ['GET'],
             path: `/sso/{teamId}`,
@@ -117,11 +119,15 @@ module.exports = {
                         }),
                         Joi.object({
                             state: Joi.string().required(),
-                            code: Joi.string().required()
+                            code: Joi.string().optional(),
+                            error: Joi.string().optional(),
+                            error_description: Joi.string().optional()
                         })
                     )
                 },
                 handler: async function (request, h) {
+                    const __ = server.methods.getTranslate(request);
+
                     function parseState(payload) {
                         let state = null;
 
@@ -151,6 +157,23 @@ module.exports = {
                         const { RelayState } = request.payload;
                         state = parseState(RelayState);
                     } else if (request.payload.state) {
+                        if (request.payload.error) {
+                            return h
+                                .view('signin/SSOError.svelte', {
+                                    htmlClass: 'has-background-white-bis',
+                                    props: {
+                                        statusCode: 401,
+                                        error: __('sso / error'),
+                                        message: __('sso / error / head'),
+                                        data: {
+                                            text: __('sso / error / text'),
+                                            providerError: `${request.payload.error} - ${request.payload.error_description}`
+                                        }
+                                    }
+                                })
+                                .code(401);
+                        }
+
                         state = parseState(request.payload.state);
                     }
 

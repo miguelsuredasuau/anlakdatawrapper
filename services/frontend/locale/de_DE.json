@@ -1164,5 +1164,8 @@
   "archive / folder / delete / confirm / yes": "Ja, löschen",
   "archive / chart / delete / confirm / yes": "Ja, löschen",
   "archive / folder / delete / confirm / no": "Nein",
-  "archive / chart / delete / confirm / no": "Nein"
+  "archive / chart / delete / confirm / no": "Nein",
+  "sso / error": "SSO-Versuch fehlgeschlagen",
+  "sso / error / head": "Der Identity-Provider deines Teams hat deinen Anmeldevorgang abgelehnt.",
+  "sso / error / text": "Datawrapper hat diese Fehlermeldung von deinem Identity-Provider erhalten:"
 }

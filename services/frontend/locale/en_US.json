@@ -1164,5 +1164,8 @@
   "archive / folder / delete / confirm / yes": "Yes, delete",
   "archive / chart / delete / confirm / yes": "Yes, delete",
   "archive / folder / delete / confirm / no": "No",
-  "archive / chart / delete / confirm / no": "No"
+  "archive / chart / delete / confirm / no": "No",
+  "sso / error": "SSO request failed",
+  "sso / error / head": "Your team's identity provider has rejected your sign-in request.",
+  "sso / error / text": "Datawrapper received this error message from your identity provider:"
 }
