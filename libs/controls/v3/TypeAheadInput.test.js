@@ -226,7 +226,7 @@ test('with no options matched by query', async t => {
     // dropdown is displayed with filtered options
     await fireEvent.focus(input);
     await fireEvent.input(input, { target: { value: 'xyz' } });
-    await delay(200); // input is debounced
+    await delay(500); // input is debounced
     t.falsy(queryByText('Apple'));
     t.falsy(queryByText('Banana'));
     t.falsy(queryByText('Pineapple'));

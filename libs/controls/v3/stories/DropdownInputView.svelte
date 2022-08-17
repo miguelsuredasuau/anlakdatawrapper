@@ -47,3 +47,23 @@
         <p>{@html lorem}</p>
     </div>
 </DropdownInput>
+
+<!-- svelte-ignore a11y-label-has-associated-control -->
+<label>Position below the button (default)</label>
+<DropdownInput />
+
+<!-- svelte-ignore a11y-label-has-associated-control -->
+<label>Positioned above the button</label>
+<DropdownInput position="top" />
+
+<!-- svelte-ignore a11y-label-has-associated-control -->
+<label>Aligned to the left of the button (default)</label>
+<DropdownInput />
+
+<!-- svelte-ignore a11y-label-has-associated-control -->
+<label>Aligned to the right of the button</label>
+<DropdownInput align="right" />
+
+<!-- svelte-ignore a11y-label-has-associated-control -->
+<label>Positioned above and aligned to the right of the button</label>
+<DropdownInput position="top" align="right" />

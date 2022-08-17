@@ -89,3 +89,43 @@ test.serial('dropdown can have data-uid', t => {
 
     t.is(t.context.querySelector('.dropdown-input-wrap').getAttribute('data-uid'), 'foobar');
 });
+
+test.serial('dropdown is positioned below the button by default', async t => {
+    new DropdownInput({
+        target: t.context,
+        props: {}
+    });
+
+    t.truthy(t.context.querySelector('.dropdown-input-position-bottom'));
+    t.falsy(t.context.querySelector('.dropdown-input-position-top'));
+});
+
+test.serial('dropdown can be positioned above the button', async t => {
+    new DropdownInput({
+        target: t.context,
+        props: { position: 'top' }
+    });
+
+    t.truthy(t.context.querySelector('.dropdown-input-position-top'));
+    t.falsy(t.context.querySelector('.dropdown-input-position-bottom'));
+});
+
+test.serial('dropdown is aligned to the left of the button by default', async t => {
+    new DropdownInput({
+        target: t.context,
+        props: {}
+    });
+
+    t.truthy(t.context.querySelector('.dropdown-input-align-left'));
+    t.falsy(t.context.querySelector('.dropdown-input-align-right'));
+});
+
+test.serial('dropdown can be aligned to the right the button', async t => {
+    new DropdownInput({
+        target: t.context,
+        props: { align: 'right' }
+    });
+
+    t.truthy(t.context.querySelector('.dropdown-input-align-right'));
+    t.falsy(t.context.querySelector('.dropdown-input-align-left'));
+});
