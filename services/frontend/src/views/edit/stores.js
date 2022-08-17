@@ -11,6 +11,7 @@ import coreMigrate from '@datawrapper/chart-core/lib/migrate';
 import reorderColumns from '@datawrapper/chart-core/lib/dw/dataset/reorderColumns.mjs';
 import applyChanges from '@datawrapper/chart-core/lib/dw/dataset/applyChanges.mjs';
 import addComputedColumns from '@datawrapper/chart-core/lib/dw/dataset/addComputedColumns.mjs';
+import populateVisAxes from '@datawrapper/chart-core/lib/dw/utils/populateVisAxes.mjs';
 import { SvelteSubject } from '../../utils/rxjs-store.mjs';
 import {
     distinctUntilChanged,
@@ -186,6 +187,31 @@ export function initStores({
         map(chart => chart.metadata.describe['computed-columns'] || []),
         distinctUntilChanged(isEqual)
     );
+    // read-only observable of user-preferences for axis column assignments
+    const userAxes$ = distinctChart$.pipe(
+        map(chart => chart.metadata.axes || {}),
+        distinctUntilChanged(isEqual)
+    );
+    // read-only observable of visualization axes definitions
+    const visAxes$ = visualization$.pipe(
+        map(vis => vis.axes || {}),
+        distinctUntilChanged(isEqual)
+    );
+    // readonly observable of "override keys", which allow chart metadata
+    // settings to influence the behavior in populateVisAxes()
+    const overrideKeys$ = combineLatest([distinctChart$, visAxes$]).pipe(
+        map(([chart, visAxes]) =>
+            Object.fromEntries(
+                Object.entries(visAxes)
+                    .filter(([, axis]) => axis.optional && axis.overrideOptionalKey)
+                    .map(([, axis]) => [
+                        axis.overrideOptionalKey,
+                        get(chart.metadata, axis.overrideOptionalKey, false)
+                    ])
+            )
+        ),
+        distinctUntilChanged(isEqual)
+    );
 
     // mock chart object with .get and .getMetadata accessor
     // methods, used in reorderColumns() etc.
@@ -200,9 +226,16 @@ export function initStores({
         }))
     );
 
-    const dataset$ = combineLatest([data$, dataOptions$, computedColumns$]).pipe(
+    const dataset$ = combineLatest([
+        data$,
+        dataOptions$,
+        userAxes$,
+        visAxes$,
+        overrideKeys$,
+        computedColumns$
+    ]).pipe(
         withLatestFrom(dwChart$),
-        map(([[data, options], chart]) => {
+        map(([[data, options, userAxes, visAxes, overrideKeys], chart]) => {
             const dataset = reorderColumns(
                 chart,
                 applyChanges(
@@ -223,6 +256,9 @@ export function initStores({
                 ignore[key] = !!columnFormat[key].ignore;
             });
             if (dataset.filterColumns) dataset.filterColumns(ignore);
+            // populate vis axes to generate 'virtual' columns in case
+            // of insufficient datasets (e.g. missing label column)
+            populateVisAxes({ dataset, userAxes, visAxes, overrideKeys });
             return dataset;
         })
     );
