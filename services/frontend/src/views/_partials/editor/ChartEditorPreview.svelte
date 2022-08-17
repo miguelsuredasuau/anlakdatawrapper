@@ -299,6 +299,10 @@
             const newMetadata = clone($chart.metadata);
             const visualizeDiff = objectDiff(oldMetadata.visualize, newMetadata.visualize);
 
+            // keep preview state in sync...
+            win.__dw.vis.chart().set('metadata', newMetadata);
+            await win.__dw.vis.chart().load($data || win.__dw.params.data);
+
             // When a chart can not be edited the annotations need to updated manually.
             // This is the case in the publish step.
             if (allowInlineEditing) {
@@ -312,9 +316,7 @@
                 !isEqual(oldMetadata.data.changes, newMetadata.data.changes) ||
                 force
             ) {
-                win.__dw.vis.chart().set('metadata', newMetadata);
-                win.__dw.vis.chart().load(win.__dw.params.data);
-                if ($data) await win.__dw.vis.chart().load($data);
+                // ...but only re-render if necessary
                 win.__dw.render();
             }
             if (allowInlineEditing) {
