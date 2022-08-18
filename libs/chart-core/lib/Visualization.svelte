@@ -440,11 +440,7 @@ Please make sure you called __(key) with a key of type "string".
                 ? `//${externalDataUrl}/${chart.id}.metadata.json`
                 : get(chart, 'metadata.data.external-metadata');
 
-        if (
-            !isPreview &&
-            externalJSON &&
-            get(chart, 'metadata.data.upload-method') === 'external-data'
-        ) {
+        if (externalJSON && get(chart, 'metadata.data.upload-method') === 'external-data') {
             try {
                 const now = new Date().getTime();
                 const ts = useDwCdn ? now - (now % 60000) : now;
@@ -476,7 +472,7 @@ Please make sure you called __(key) with a key of type "string".
 
         for (const [name, { url, value, load = true }] of Object.entries(assets)) {
             const isDataset = name === datasetName;
-            const useLiveData = !isPreview && chart.externalData;
+            const useLiveData = chart.externalData;
 
             if (!isDataset || !useLiveData) {
                 if (url) {
@@ -508,10 +504,7 @@ Please make sure you called __(key) with a key of type "string".
         vis.textDirection = textDirection;
 
         // load chart data and assets
-        await dwChart.load(
-            dwChart.asset(datasetName) || '',
-            isPreview ? undefined : chart.externalData
-        );
+        await dwChart.load(dwChart.asset(datasetName) || '', chart.externalData);
         dwChart.locales = locales;
         dwChart.vis(vis);
 

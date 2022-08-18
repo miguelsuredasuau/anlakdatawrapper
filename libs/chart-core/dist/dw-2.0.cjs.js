@@ -7422,7 +7422,9 @@ function getNestedObjectKeys(object) {
     return keys;
 }
 
-function populateVisAxes({ dataset, userAxes, visAxes, overrideKeys }) {
+function populateVisAxes({ dataset, visAxes, userAxes, overrideKeys }) {
+    userAxes = userAxes || {};
+    overrideKeys = overrideKeys || {};
     const usedColumns = {};
     const axes = {};
     const axesAsColumns = {};
