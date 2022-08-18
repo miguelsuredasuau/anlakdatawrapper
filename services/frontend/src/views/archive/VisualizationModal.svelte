@@ -7,8 +7,15 @@
     import { beforeUpdate, getContext, tick } from 'svelte';
 
     const user = getContext('user');
-    const { deleteChart, duplicateChart, openChart, closeChart, teams, visModalMetadata } =
-        getContext('page/archive');
+    const {
+        deleteChart,
+        duplicateChart,
+        openChart,
+        closeChart,
+        teams,
+        visModalMetadata,
+        visWorkflowPrefixes
+    } = getContext('page/archive');
     const { dayjs } = getContext('libraries');
     const { themeBgColors } = getContext('page/archive');
 
@@ -30,6 +37,8 @@
     let embedCodes;
     let selectedEmbedCode;
     let copyTextInput;
+
+    $: workflowPrefix = chart ? visWorkflowPrefixes[chart.type] : 'chart';
 
     async function loadSharingURL() {
         const displayURLs = await httpReq.get(`/v3/charts/${chart.id}/display-urls`);
@@ -178,7 +187,7 @@
 
                     <div class="block">
                         <a
-                            href="/chart/{chart.id}/edit"
+                            href="/{workflowPrefix}/{chart.id}/edit"
                             class="edit-chart button is-primary is-medium"
                             ><IconDisplay icon="edit" />
                             <span>{__('archive / edit')}</span></a
@@ -197,7 +206,7 @@
                             </li>
                             <li>
                                 <a
-                                    href="/chart/{chart.id}/publish"
+                                    href="/{workflowPrefix}/{chart.id}/publish"
                                     class="button is-ghost is-medium"
                                     ><IconDisplay icon="export-file" />
                                     <span>{__('archive / modal / re-publish')}</span></a
@@ -208,7 +217,7 @@
                                     <Dropdown up>
                                         <button
                                             slot="trigger"
-                                            href="/chart/{chart.id}/publish"
+                                            href="/{workflowPrefix}/{chart.id}/publish"
                                             class="button is-ghost is-medium"
                                         >
                                             <IconDisplay icon="source-code" />

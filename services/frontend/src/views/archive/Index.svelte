@@ -43,6 +43,7 @@
     export let foreignTeam;
     export let visBoxSublines;
     export let visModalMetadata;
+    export let visWorkflowPrefixes;
 
     /*
      * we're using a "page context" here to be able to make
@@ -82,7 +83,8 @@
         foreignTeam,
         teams,
         visBoxSublines,
-        visModalMetadata
+        visModalMetadata,
+        visWorkflowPrefixes
     });
 
     const virtualFolder = {

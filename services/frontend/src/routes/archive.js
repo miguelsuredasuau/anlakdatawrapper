@@ -211,6 +211,8 @@ module.exports = {
                 visModalMetadata.push(await func(request));
             }
 
+            const editWorkflows = keyBy(server.methods.getEditWorkflows(), d => d.id);
+
             return h.view('archive/Index.svelte', {
                 htmlClass: 'has-background-white-bis',
                 props: {
@@ -224,7 +226,13 @@ module.exports = {
                     minLastEditStep,
                     themeBgColors,
                     visBoxSublines: visBoxSublines.sort(byOrder),
-                    visModalMetadata: visModalMetadata.sort(byOrder)
+                    visModalMetadata: visModalMetadata.sort(byOrder),
+                    visWorkflowPrefixes: Object.fromEntries(
+                        Array.from(server.app.visualizations.values()).map(vis => [
+                            vis.id,
+                            editWorkflows[vis.workflow || 'chart'].prefix
+                        ])
+                    )
                 }
             });
         }

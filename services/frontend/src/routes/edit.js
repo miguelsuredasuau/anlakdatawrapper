@@ -42,6 +42,10 @@ module.exports = {
             });
         });
 
+        server.method('getEditWorkflows', () => {
+            return editWorkflows;
+        });
+
         server.method(
             'getLayoutControlGroups',
             async ({ request, teamSettings, chart, theme, productFeatures }) => {
