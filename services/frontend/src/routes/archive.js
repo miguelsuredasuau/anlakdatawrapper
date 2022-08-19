@@ -215,6 +215,9 @@ module.exports = {
 
             return h.view('archive/Index.svelte', {
                 htmlClass: 'has-background-white-bis',
+                analytics: {
+                    team: teamId
+                },
                 props: {
                     apiQuery: query,
                     charts,

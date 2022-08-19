@@ -1,3 +1,9 @@
+import chai from 'chai';
+import chaiDOM from 'chai-dom';
+import { JSDOM } from 'jsdom';
+
+chai.use(chaiDOM);
+
 const VIEW_REGEXP = /<script type="text\/javascript" src="\/lib\/csr\/(?<view>[\w/-]+\.svelte)\.js/;
 
 /**
@@ -62,4 +68,17 @@ export function parseSvelteProps(html) {
         return JSON.parse(JSON.parse(m.groups.json));
     }
     return null;
+}
+
+export function parseHTML(html) {
+    const { document } = new JSDOM(html).window;
+    return {
+        document,
+        $(selector) {
+            return document.querySelector(selector);
+        },
+        $$(selector) {
+            return document.querySelectorAll(selector);
+        }
+    };
 }

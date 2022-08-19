@@ -4,8 +4,10 @@
 
     import SettingsPageLayout from '_layout/SettingsPageLayout.svelte';
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
+    import { trackPageView } from '@datawrapper/shared/analytics.js';
 
     const request = getContext('request');
+    const user = getContext('user');
 
     export let __;
     export let settingsPages;
@@ -19,6 +21,7 @@
             curPage = null;
             await tick();
             window.history.replaceState({}, '', page.url);
+            trackPageView($user.id);
             curPage = page;
         } else {
             window.location.href = page.url;

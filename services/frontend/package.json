@@ -21,9 +21,9 @@
         "test:client-mocha-watch": "npm run test:client-mocha -- --watch",
         "test:client-rollup": "rollup -c rollup.test.config.js",
         "test:client-rollup-watch": "npm run test:client-rollup -- -w",
-        "test:server": "NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} mocha --config ./mocha-config-server.js --exit",
-        "test:server-rollup": "NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} npm run build:js",
-        "test:server-rollup-watch": "NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} npm run build:js -- -w",
+        "test:server": "DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} mocha --config ./mocha-config-server.js --exit",
+        "test:server-rollup": "DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} npm run build:js",
+        "test:server-rollup-watch": "DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} npm run build:js -- -w",
         "build:hello": "rm -Rf build/hello && TARGET=hello npm run build && TARGET=_partials/svelte2 npm run build && node scripts/build-hello.js"
     },
     "dependencies": {
@@ -34,7 +34,7 @@
         "@datawrapper/polyfills": "file:../../libs/polyfills",
         "@datawrapper/schemas": "file:../../libs/schemas",
         "@datawrapper/service-utils": "file:../../libs/service-utils",
-        "@datawrapper/shared": "^0.51.0",
+        "@datawrapper/shared": "^0.52.1",
         "@el3um4s/svelte-get-component-info": "^0.0.16",
         "@hapi/bell": "^12.2.0",
         "@hapi/boom": "^9.1.3",

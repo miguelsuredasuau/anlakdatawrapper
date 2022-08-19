@@ -11,6 +11,7 @@
     import escapeHtml from '@datawrapper/shared/escapeHtml.cjs';
     import httpReq from '@datawrapper/shared/httpReq';
     import dw from '@datawrapper/chart-core/dist/dw-2.0.cjs';
+    import { trackPageView } from '@datawrapper/shared/analytics.js';
 
     export let workflow;
     export let __;
@@ -75,6 +76,7 @@
         data,
         syncData,
         syncChart,
+        team,
         ...stores
     } = initStores({
         rawChart,
@@ -95,6 +97,7 @@
         onNextSave,
         theme,
         navigateTo,
+        team,
         ...stores
     });
 
@@ -264,6 +267,7 @@
                 // preseve initial URL hashes such as #refine
                 $request.path = newPath;
                 window.history.pushState({ id: step.id }, '', newPath);
+                trackPageView($user.isGuest ? 'guest' : $user.id, $team.id);
             }
         }
     }

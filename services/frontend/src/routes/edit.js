@@ -485,6 +485,9 @@ module.exports = {
 
                     return h.view('edit/Index.svelte', {
                         htmlClass: 'has-background-white-bis',
+                        analytics: {
+                            team: team ? team.id : null
+                        },
                         props: {
                             rawChart,
                             rawData: data,

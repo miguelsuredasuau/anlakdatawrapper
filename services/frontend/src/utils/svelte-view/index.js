@@ -151,8 +151,13 @@ class SvelteView {
                 });
 
                 const template = await getTemplate('base.ejs', { useCache: !DW_DEV_MODE });
+                const { user } = context.stores;
                 const output = ejs.render(template, {
                     HTML_CLASS: context.htmlClass || '',
+                    ANALYTICS: {
+                        uid: user.isGuest ? 'guest' : user.id,
+                        ...(context.analytics || {})
+                    },
                     SSR_HEAD: head,
                     SSR_CSS: css.code,
                     NODE_ENV: process.env.NODE_ENV,

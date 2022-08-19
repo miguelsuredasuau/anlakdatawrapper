@@ -14,6 +14,7 @@
     import httpReq from '@datawrapper/shared/httpReq';
     import decodeHtml from '@datawrapper/shared/decodeHtml';
     import isEqual from 'underscore/modules/isEqual.js';
+    import { trackPageView, trackEvent } from '@datawrapper/shared/analytics.js';
     import {
         currentFolder,
         folderTreeDropZone,
@@ -174,6 +175,7 @@
             const state = window.history.state || {};
             if (state.path !== path) {
                 window.history.pushState({ path }, '', path);
+                trackPageView($user.id, $currentFolder.teamId);
             }
             loadCharts();
         }
@@ -344,6 +346,7 @@
 
     async function duplicateChart(chart, openInNewTab = false) {
         const res = await httpReq.post(`/v3/charts/${chart.id}/copy`);
+        trackEvent('archive', 'chart-duplicate', chart.id);
         if (openInNewTab) {
             window.open(`/chart/${res.id}/visualize`, '_blank');
         }
@@ -363,6 +366,7 @@
             })
         ) {
             await httpReq.delete(`/v3/charts/${chart.id}`);
+            trackEvent('archive', 'chart-delete');
             $currentFolder.chartCount--;
             loadCharts();
             refreshFolders();
@@ -379,6 +383,7 @@
 
         try {
             await httpReq.patch('/v3/charts', { payload });
+            trackEvent('archive', 'chart-move');
             // "remove" charts from source folders counts
             chartsToMove.map(({ id }) => {
                 const chart = charts.list.find(c => c.id === id);
@@ -406,6 +411,7 @@
             if (pushState) {
                 const path = window.location.pathname + (window.location.search || '');
                 window.history.pushState({ chartId }, '', `${path}#/${chartId}`);
+                trackEvent('archive', 'chart-view', chartId);
             }
         } catch (error) {
             if (error.name === 'HttpReqError' && error.status === 404) {
@@ -442,6 +448,7 @@
                 parentId: destinationFolder.id,
                 teamId: destinationFolder.teamId || null
             });
+            trackEvent('archive', 'folder-move');
         } catch (err) {
             showConfirmationModal({
                 body: err.message,

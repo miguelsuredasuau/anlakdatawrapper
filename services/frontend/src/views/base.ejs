@@ -89,8 +89,7 @@
 
         <!-- This contains the contents of the <svelte:head> component, if
          the current page has one -->
-        <%- SSR_HEAD %>
-        <%- CORE_AFTER_HEAD %>
+        <%- SSR_HEAD %> <%- CORE_AFTER_HEAD %>
     </head>
     <body>
         <%- CORE_BEFORE_BODY %>
@@ -100,7 +99,8 @@
 
         <script>
             document.write(
-                '<script type="text/javascript" src="/lib/csr/<%= PAGE %>.js?sha=<%- GITHEAD %>"></s' + 'cript>'
+                '<script type="text/javascript" src="/lib/csr/<%= PAGE %>.js?sha=<%- GITHEAD %>"></s' +
+                    'cript>'
             );
         </script>
         <script async defer>
@@ -168,8 +168,7 @@
                 <% } %>
             });
         </script>
-        <%- CORE_AFTER_BODY %>
-        <% if (MATOMO) { %>
+        <%- CORE_AFTER_BODY %> <% if (MATOMO) { %>
         <!-- Matomo -->
         <script>
             var _paq = (window._paq = window._paq || []);
@@ -181,13 +180,17 @@
             _paq.push(['setDoNotTrack', true]);
             _paq.push(['trackPageView']);
             _paq.push(['enableLinkTracking']);
+            _paq.push(['setUserId', '<%= ANALYTICS.uid %>']);
+            <% if (ANALYTICS.team) { %>
+            _paq.push(['setCustomDimension', 1, '<%= ANALYTICS.team %>']);
+            <% } %>
             (function () {
                 var u = '<%= MATOMO.endpoint %>';
                 _paq.push(['setTrackerUrl', u + 'matomo.php']);
                 _paq.push(['setSiteId', '<%= MATOMO.idsite %>']);
             })();
         </script>
-        <script src="<%= MATOMO.endpoint %>/matomo.js"></script>
+        <script src="<%= `${MATOMO.endpoint}${MATOMO.endpoint.endsWith('/') ? '' : '/'}` %>matomo.js"></script>
         <!-- End Matomo Code -->
         <% } %>
     </body>

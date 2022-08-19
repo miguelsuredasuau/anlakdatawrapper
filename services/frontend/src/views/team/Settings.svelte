@@ -11,6 +11,7 @@
     import cloneDeep from 'lodash/cloneDeep';
     import debounce from 'lodash/debounce';
     import isEqual from 'lodash/isEqual';
+    import { trackPageView } from '@datawrapper/shared/analytics.js';
 
     const request = getContext('request');
     const user = getContext('user');
@@ -37,6 +38,7 @@
         curPage = null;
         await tick();
         window.history.replaceState({}, '', page.url);
+        trackPageView($user.id, team.id);
         curPage = page;
     }
 
