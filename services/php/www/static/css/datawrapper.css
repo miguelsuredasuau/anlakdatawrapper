@@ -3674,3 +3674,7 @@ button.btn-small > i.im {
   text-decoration: underline;
   color: #15607a;
 }
+.plain-link[disabled] {
+  pointer-events: none;
+  opacity: 0.5;
+}
