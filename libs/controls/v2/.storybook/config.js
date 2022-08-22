@@ -1,4 +1,4 @@
-import { addParameters, configure } from '@storybook/svelte';
+import { addParameters, configure } from '@datawrapper/storybook-svelte2';
 import localeEN from '../stories/static/locale.en.json';
 import localeDE from '../stories/static/locale.de.json';
 

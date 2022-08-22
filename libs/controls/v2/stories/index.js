@@ -1,7 +1,8 @@
 /* eslint-env node */
 // import fs from 'fs';
-import { storiesOf } from '@storybook/svelte';
+import { storiesOf } from '@datawrapper/storybook-svelte2';
 import { withKnobs, select } from '@storybook/addon-knobs';
+import { Store } from 'svelte/store';
 
 import './static/vendor/bootstrap/css/bootstrap.css';
 import './static/vendor/bootstrap/css/bootstrap-responsive.css';
@@ -364,7 +365,8 @@ addStory('TextAreaInput', TextAreaInputDocs, () => ({
 
 addStory('TooltipEditor', TooltipEditorDocs, () => ({
     Component: TooltipEditorView,
-    data: {}
+    data: {},
+    store: new Store({})
 }));
 
 addStory('TypeAheadInput', TypeAheadInputDocs, () => ({
