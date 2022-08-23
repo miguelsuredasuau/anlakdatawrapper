@@ -379,18 +379,27 @@
                 const categoryOrder = colorscale.categoryOrder || [];
                 let pIndex = 0;
                 return (
-                    valueAxisColumn
-                        ? uniq(valueAxisColumn.values().filter(v => v !== null && v !== undefined))
-                        : []
-                )
-                    .sort((a, b) => {
-                        return categoryOrder.indexOf(a) - categoryOrder.indexOf(b);
-                    })
-                    .map(id => ({
-                        id,
-                        label: colorscale.categoryLabels[id] || id,
-                        color: colorscale.map[id] ? colorscale.map[id] : palette[pIndex++]
-                    }));
+                    (
+                        valueAxisColumn
+                            ? uniq(
+                                  valueAxisColumn
+                                      .values()
+                                      .filter(v => v !== null && v !== undefined)
+                              )
+                            : []
+                    )
+                        // fallback to alphabetical sorting to match behavior in
+                        // @datawrapper/block-colorscale
+                        .sort()
+                        .sort((a, b) => {
+                            return categoryOrder.indexOf(a) - categoryOrder.indexOf(b);
+                        })
+                        .map(id => ({
+                            id,
+                            label: colorscale.categoryLabels[id] || id,
+                            color: colorscale.map[id] ? colorscale.map[id] : palette[pIndex++]
+                        }))
+                );
             },
             sizeControlDisabled({
                 valueAxisColumnType,
