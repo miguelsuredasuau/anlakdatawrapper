@@ -298,11 +298,62 @@ export function initStores({
         filter(() => !dataReadonly),
         filter(data => data),
         distinctUntilChanged(isEqual),
+        withLatestFrom(distinctChart$),
+        // no need to update the data for google spreadsheets and external data
+        filter(
+            ([, chart]) =>
+                !['google-spreadsheet', 'external-data'].includes(
+                    get(chart, 'metadata.data.upload-method', 'copy')
+                )
+        ),
+        map(([data]) => data),
         tap(() => hasUnsavedChanges.set(true)),
         debounceTime(1000),
         withLatestFrom(chartId$),
         map(([data, id]) => ({ id, data })),
         mergeMap(storeData),
+        shareReplay(1)
+    );
+
+    const syncExternalData = chartId => {
+        return from(httpReq.post(`/v3/charts/${chartId}/data/refresh`)).pipe(
+            switchMap(() => httpReq.get(`/v3/charts/${chartId}/data`)),
+            tap(externalData => data$.set(externalData)),
+            catchError(err => {
+                console.warn(err);
+                return of(false);
+            })
+        );
+    };
+
+    // Observable listening to changes of the upload-method.
+    // We subscribe to latestSavedChart$ instead of distinctChart$
+    // to make sure we are in sync with the version stored at the server.
+    const uploadMethod$ = latestSavedChart$.pipe(
+        map(chart => get(chart, 'metadata.data.upload-method')),
+        distinctUntilChanged(isEqual),
+        skip(1)
+    );
+    const googleSheet$ = latestSavedChart$.pipe(
+        map(chart => get(chart, `metadata.data.google-spreadsheet-src`)),
+        distinctUntilChanged(isEqual),
+        filter(source => source) // only emit if source is defined
+    );
+    const externalData$ = latestSavedChart$.pipe(
+        map(chart => get(chart, `metadata.data.external-data`)),
+        distinctUntilChanged(isEqual),
+        filter(source => source) // only emit if source is defined
+    );
+    const getExternalData$ = uploadMethod$.pipe(
+        switchMap(method => {
+            if (method === 'google-spreadsheet') {
+                return googleSheet$;
+            } else if (method === 'external-data') {
+                return externalData$;
+            }
+        }),
+        withLatestFrom(latestSavedChart$),
+        switchMap(([, chart]) => syncExternalData(chart.id)),
         shareReplay(1)
     );
 
@@ -363,6 +414,7 @@ export function initStores({
         saveSuccess,
         isDark,
         syncData: putData$,
+        syncExternalData: getExternalData$,
         syncChart: patchChart$
     };
 }

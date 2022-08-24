@@ -75,6 +75,7 @@
         hasUnsavedChanges,
         data,
         syncData,
+        syncExternalData,
         syncChart,
         team,
         ...stores
@@ -182,6 +183,7 @@
          * exception in httpReq: "Neither options.fetch nor window.fetch is defined".
          */
         storeSubscriptions.add(syncData.subscribe());
+        storeSubscriptions.add(syncExternalData.subscribe());
         storeSubscriptions.add(syncChart.subscribe());
 
         // mimic old dw setup
