@@ -180,7 +180,9 @@
             _paq.push(['setDoNotTrack', true]);
             _paq.push(['trackPageView']);
             _paq.push(['enableLinkTracking']);
+            <% if (ANALYTICS.uid !== 'guest') { %>
             _paq.push(['setUserId', '<%= ANALYTICS.uid %>']);
+            <% } %>
             <% if (ANALYTICS.team) { %>
             _paq.push(['setCustomDimension', 1, '<%= ANALYTICS.team %>']);
             <% } %>
