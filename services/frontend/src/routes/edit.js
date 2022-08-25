@@ -48,13 +48,14 @@ module.exports = {
 
         server.method(
             'getLayoutControlGroups',
-            async ({ request, teamSettings, chart, theme, productFeatures }) => {
+            async ({ chart, productFeatures, request, teamSettings, theme, user }) => {
                 const { controls } = await server.methods.getCustomData('edit/visualize/layout', {
-                    request,
                     chart,
-                    theme,
+                    productFeatures,
+                    request,
                     teamSettings,
-                    productFeatures
+                    theme,
+                    user
                 });
                 const visibleControls = controls.filter(c => c.visible === undefined || c.visible);
                 return [
@@ -137,16 +138,17 @@ module.exports = {
                             },
                             cloneDeep(team?.settings || {})
                         );
+                        const user = request.auth.artifacts;
                         const layoutControlsGroups = await server.methods.getLayoutControlGroups({
-                            request,
                             chart,
-                            theme,
+                            productFeatures,
+                            request,
                             teamSettings: { flags },
-                            productFeatures
+                            theme,
+                            user
                         });
 
                         const api = server.methods.createAPI(request);
-                        const user = request.auth.artifacts;
                         const isAdmin = user.isAdmin();
                         let themes = isAdmin
                             ? await Theme.findAll({ attributes: ['id', 'title', 'created_at'] })
