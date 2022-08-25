@@ -9,6 +9,12 @@ services:
       - MYSQL_PASSWORD=test
       - MYSQL_DATABASE=test
 
+  redis:
+    image: "redis:6.0.5-alpine3.12"
+    command: redis-server --appendonly yes
+    expose:
+      - "6379"
+
   opensearch-node1:
     image: "opensearchproject/opensearch:1.2.0"
     expose:
@@ -58,6 +64,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_started
       opensearch-setup:
         condition: service_started
     volumes:

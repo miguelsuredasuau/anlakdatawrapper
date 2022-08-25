@@ -62,5 +62,10 @@ module.exports = {
                 prefix: '/utils'
             }
         });
+        server.register(require('./worker'), {
+            routes: {
+                prefix: '/worker'
+            }
+        });
     }
 };

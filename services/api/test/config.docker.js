@@ -43,5 +43,12 @@ module.exports = {
             password: 'test',
             database: 'test'
         }
+    },
+    worker: {
+        queueNames: ['test'],
+        redis: {
+            host: 'redis',
+            port: 6379
+        }
     }
 };

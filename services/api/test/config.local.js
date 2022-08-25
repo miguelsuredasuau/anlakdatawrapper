@@ -45,5 +45,13 @@ module.exports = {
             password: process.env.DW_DATABASE_PASS,
             database: process.env.DW_DATABASE_NAME
         }
+    },
+    worker: {
+        queueNames: ['test'],
+        redis: {
+            host: 'localhost',
+            port: process.env['DW_REDIS_PORT'],
+            password: process.env['DW_REDIS_PASS']
+        }
     }
 };
