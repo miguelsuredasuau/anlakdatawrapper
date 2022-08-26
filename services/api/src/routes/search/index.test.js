@@ -55,10 +55,12 @@ test.after.always(async t => {
 });
 
 test('GET /search/charts searches in multiple fields', async t => {
+    const userObj = await createUser(t.context.server);
     const chartId = genRandomChartId();
     const charts = [
         {
             id: chartId,
+            author_id: userObj.user.id,
             title: 'apple',
             intro: 'banana',
             byline: 'lemon',
@@ -70,6 +72,7 @@ test('GET /search/charts searches in multiple fields', async t => {
         },
         {
             id: genRandomChartId(),
+            author_id: userObj.user.id,
             title: 'spam',
             created_at: new Date('2022-03-29T13:00:00.000Z'),
             deleted: false
@@ -79,10 +82,8 @@ test('GET /search/charts searches in multiple fields', async t => {
         await t.context.openSearchClient.index(charts);
 
         for (const query of ['apple', 'banana', 'lemon', 'strawberry', 'pear']) {
-            const res = await t.context.search(t.context.adminObj, {
+            const res = await t.context.search(userObj, {
                 query,
-                authorId: 'all',
-                orderBy: 'authorId',
                 order: 'ASC'
             });
             t.is(res.statusCode, 200);
@@ -91,6 +92,7 @@ test('GET /search/charts searches in multiple fields', async t => {
         }
     } finally {
         await t.context.openSearchClient.delete(charts);
+        await destroy(Object.values(userObj));
     }
 });
 
