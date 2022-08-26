@@ -9,6 +9,7 @@
     export let confirmButtonText = 'Confirm';
     export let backButtonText = 'Back';
     export let confirmButtonIcon = false;
+    export let uid;
 
     export function open() {
         isOpen = true;
@@ -76,7 +77,7 @@
 <svelte:window on:keydown={handleWindowKeydown} />
 
 {#if isOpen}
-    <div class="modal">
+    <div class="modal" data-uid={uid}>
         <div on:keyup|stopPropagation class="modal-body">
             <button type="button" class="close" on:click={dismiss} aria-label={backButtonText}>
                 <IconDisplay icon="close" size="20px" />
@@ -85,8 +86,14 @@
                 <h1 class="modal-title mb-4">{@html title}</h1>
                 <slot />
                 <div class="actions pt-4 mt-4">
-                    <button class="btn back" on:click={dismiss}>{@html backButtonText}</button>
-                    <button class="btn btn-danger" on:click={confirm}>
+                    <button class="btn back" data-uid={uid && `${uid}-back`} on:click={dismiss}>
+                        {@html backButtonText}
+                    </button>
+                    <button
+                        class="btn btn-danger"
+                        data-uid={uid && `${uid}-confirm`}
+                        on:click={confirm}
+                    >
                         {#if confirmButtonIcon}
                             <IconDisplay
                                 icon={confirmButtonIcon}
