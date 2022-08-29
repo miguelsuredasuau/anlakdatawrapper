@@ -8,6 +8,8 @@ import AlertDisplayDocs from '../AlertDisplay.mdx';
 import AlertDisplayView from './AlertDisplayView.svelte';
 import ConfirmationModalDocs from '../ConfirmationModal.mdx';
 import ConfirmationModalView from './ConfirmationModalView.svelte';
+import DropdownButtonDocs from '../DropdownButton.mdx';
+import DropdownButtonView from './DropdownButtonView.svelte';
 import DropdownControlDocs from '../DropdownControl.mdx';
 import DropdownControlView from './DropdownControlView.svelte';
 import DropdownInputDocs from '../DropdownInput.mdx';
@@ -70,6 +72,7 @@ export const ConfirmationModal = addStory(
     ConfirmationModalDocs,
     {}
 );
+export const DropdownButton = addStory('DropdownButton', DropdownButtonView, DropdownButtonDocs);
 export const DropdownControl = addStory(
     'DropdownControl',
     DropdownControlView,

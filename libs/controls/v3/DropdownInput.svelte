@@ -21,6 +21,13 @@
      */
     export let defaultContentPadding = true;
 
+    /**
+     * Whether this input itself controls alignment positioning of dropdown content.
+     * Can be unset if you want a parent component to take over control of alignment.
+     * @type {boolean}
+     */
+    export let selfAlignContent = true;
+
     let dropdownButtonEl;
 
     function handleButtonClick() {
@@ -52,6 +59,8 @@
 <style>
     .dropdown-input-wrap {
         display: inline-block;
+    }
+    .dropdown-input-wrap.self-align-content {
         position: relative;
     }
     .dropdown-input-btn {
@@ -107,6 +116,7 @@
 
 <div
     class="dropdown-input-wrap dropdown-input-position-{position} dropdown-input-align-{align}"
+    class:self-align-content={selfAlignContent}
     data-uid={uid}
 >
     <span

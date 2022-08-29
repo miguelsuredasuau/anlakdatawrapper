@@ -1,0 +1,41 @@
+# DropdownButton
+
+The DropdownButton component is for showing a button with several possible actions behind a dropdown toggle. Selecting a new option from dropdown does not immediately trigger action but it does change the bound `value`. Action is triggered when button is clicked. This component uses the DropdownInput component for the dropdown toggle and content.
+
+## Attributes
+
+-   `options`: list of options that will be available in the dropdown
+-   `disabled`: controls the disabled state of the button and dropdown trigger
+-   `align`: determines where dropdown content will be shown in relation to the dropdown button. Default is "right", which aligns content to the right side of dropdown button. Alternative value is "left", which will align content to the left side.
+-   `buttonClass`: gives ability to set a custom class on dropdown button. Eg "primary", "danger"
+
+```html
+<script>
+    import DropdownButton from '@datawrapper/controls/DropdownButton.svelte';
+
+    let actionValue = 'action-1';
+    let actionOptions = [
+        {
+            label: 'Action 1',
+            value: 'action-1'
+        },
+        {
+            label: 'Action 2',
+            value: 'action-2'
+        }
+    ];
+
+    function handleDropdonButtonClick(event) {
+        console.log('Value of clicked option: ', event.detail);
+    }
+</script>
+
+<DropdownButton
+    bind:value="{actionValue}"
+    options="{actionOptions}"
+    disabled="{true|false}"
+    align="{left|right}"
+    buttonClass="A button class, such as `primary`"
+    on:click="{handleDropdownButtonClick}"
+/>
+```
