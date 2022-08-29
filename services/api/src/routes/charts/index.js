@@ -369,8 +369,7 @@ async function getAllCharts(request) {
     if (query.search) {
         filters.push({
             [Op.or]: {
-                title: { [Op.like]: `%${query.search}%` },
-                keywords: { [Op.like]: `%${query.search}%` }
+                title: { [Op.like]: `%${query.search}%` }
             }
         });
     }
