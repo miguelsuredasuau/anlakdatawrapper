@@ -30,15 +30,6 @@
     let stylesLoaded = false;
     let dependenciesLoaded = false;
     let styleHolder;
-    const callbacks = [];
-    export let onDependencyCompleted = function (cb) {
-        callbacks.push(cb);
-    };
-    export let dependencyCompleted = function () {
-        for (const cb of callbacks) {
-            cb();
-        }
-    };
     // ensure styles are loaded before the vis is rendered to prevent flickering
     $: {
         if (typeof document !== 'undefined') {
@@ -73,10 +64,11 @@
             dependencyStates[script] = DEPENDENCY_STATE.finished;
         }
         if (dependencyStates[script] === DEPENDENCY_STATE.finished) {
-            dependencyCompleted();
+            window.datawrapper.dependencyCompleted();
         }
     }
-    onDependencyCompleted(function () {
+
+    window.datawrapper.onDependencyCompleted(function () {
         for (const script of dependencies) {
             if (dependencyStates[script] !== DEPENDENCY_STATE.finished) {
                 if (!dependencyStates[script]) {

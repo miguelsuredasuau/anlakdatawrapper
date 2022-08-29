@@ -7422,6 +7422,23 @@ function getNestedObjectKeys(object) {
     return keys;
 }
 
+/**
+ * Assign dataset columns to visualization axes. Non-optional columns
+ * will automatically be assigned based on a matching column type and
+ * column name (if the vis axis defined a regex).
+ *
+ * Optional axes can define a `overrideOptionalKey` which will turn
+ * it into a non-optional axis in case the specified metadata key
+ * contains a truthy value.
+ *
+ * @param {Dataset} dataset - the parsed dataset
+ * @param {object} visAxes - axis definitions from visualization
+ * @param {object} userAxes - user preferences for axis assignments
+ *                            (from chart.metadata.axis)
+ * @param {object} overrideKeys - map of all axes overrideOptionalKeys
+ *                                and the current metadata values
+ * @returns {object}
+ */
 function populateVisAxes({ dataset, visAxes, userAxes, overrideKeys }) {
     userAxes = userAxes || {};
     overrideKeys = overrideKeys || {};
