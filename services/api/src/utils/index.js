@@ -119,51 +119,6 @@ utils.loadChart = async function (id) {
     return chart;
 };
 
-utils.copyChartAssets = function (server) {
-    const { event, events } = server.app;
-    return async function (srcChart, chart, copyPublic = false) {
-        const assets = ['.csv', '.map.json', '.minimap.json', '.highlight.json'];
-        for (const filename of assets) {
-            try {
-                let stream;
-                try {
-                    stream = await events.emit(
-                        event.GET_CHART_ASSET,
-                        {
-                            chart: srcChart,
-                            filename:
-                                srcChart.id +
-                                (filename === '.csv' && copyPublic ? '.public.csv' : filename)
-                        },
-                        { filter: 'first' }
-                    );
-                } catch (error) {
-                    if (error.name === 'CodedError' && error.code === 'notFound') {
-                        // Do nothing when the chart asset was not found.
-                        continue;
-                    }
-                    throw error;
-                }
-
-                let data = '';
-
-                for await (const chunk of stream) {
-                    data += chunk;
-                }
-
-                await events.emit(event.PUT_CHART_ASSET, {
-                    chart,
-                    filename: chart.id + filename,
-                    data
-                });
-            } catch (ex) {
-                console.error(ex);
-                continue;
-            }
-        }
-    };
-};
-
 utils.getAdditionalMetadata = async (chart, { server }) => {
     const data = {};
     let additionalMetadata = await server.app.events.emit(

@@ -1,5 +1,4 @@
 const Boom = require('@hapi/boom');
-const CodedError = require('@datawrapper/service-utils/CodedError.js');
 const initGCTrap = require('@datawrapper/service-utils/gcTrap.js');
 const Crumb = require('@hapi/crumb');
 const Hapi = require('@hapi/hapi');
@@ -16,7 +15,7 @@ const { ApiEventEmitter, eventList } = require('./utils/events');
 const { addScope, translate, getTranslate } = require('@datawrapper/service-utils/l10n');
 const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
 const getGitRevision = require('@datawrapper/service-utils/getGitRevision');
-const { generateToken, loadChart, copyChartAssets } = require('./utils');
+const { generateToken, loadChart } = require('./utils');
 const {
     validateAPI,
     validateORM,
@@ -263,6 +262,7 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
     server.method('registerVisualization', registerVisualizations(server));
     server.method('registerFeatureFlag', registerFeatureFlag(server));
 
+    await server.register(require('./utils/chartAssets.js'));
     await server.register(require('@datawrapper/service-utils/computeFileHash'));
 
     server.method('getScopes', (admin = false) => {
@@ -280,7 +280,6 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
     });
     server.method('validateThemeData', validateThemeData);
     server.method('loadChart', loadChart);
-    server.method('copyChartAssets', copyChartAssets(server));
 
     if (DW_DEV_MODE) {
         server.register([require('@hapi/inert'), require('@hapi/vision')]);
@@ -302,40 +301,9 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
     }
 
     const { events, event } = server.app;
+
     const { general } = server.methods.config();
-    const { localChartAssetRoot } = general;
     const registeredEvents = events.eventNames();
-    const hasRegisteredDataPlugins =
-        registeredEvents.includes(event.GET_CHART_ASSET) &&
-        registeredEvents.includes(event.PUT_CHART_ASSET);
-
-    if (localChartAssetRoot === undefined && !hasRegisteredDataPlugins) {
-        server.logger.error(
-            '[Config] You need to configure `general.localChartAssetRoot` or install a plugin that implements chart asset storage.'
-        );
-        process.exit(1);
-    }
-
-    if (!hasRegisteredDataPlugins) {
-        events.on(event.GET_CHART_ASSET, async function ({ chart, filename }) {
-            const filePath = path.join(localChartAssetRoot, getDataPath(chart.createdAt), filename);
-            try {
-                await fs.access(filePath, fs.constants.R_OK);
-            } catch (e) {
-                throw new CodedError('notFound', 'The local chart asset was not found');
-            }
-            return fs.createReadStream(filePath);
-        });
-
-        events.on(event.PUT_CHART_ASSET, async function ({ chart, data, filename }) {
-            const outPath = path.join(localChartAssetRoot, getDataPath(chart.createdAt));
-
-            await fs.mkdir(outPath, { recursive: true });
-            await fs.writeFile(path.join(outPath, filename), data);
-            return { code: 204 };
-        });
-    }
-
     const hasRegisteredPublishPlugin = registeredEvents.includes(event.PUBLISH_CHART);
 
     if (general.localChartPublishRoot === undefined && !hasRegisteredPublishPlugin) {
@@ -459,12 +427,6 @@ function loadSchemaFromUrl(baseUrl) {
 
         return body;
     };
-}
-
-function getDataPath(date) {
-    const year = date.getUTCFullYear();
-    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
-    return `${year}${month}`;
 }
 
 module.exports = {

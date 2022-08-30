@@ -76,7 +76,6 @@ module.exports = server => {
 
 async function getChartAsset(request, h) {
     const { params, auth, query, server } = request;
-    const { events, event } = server.app;
     const chart = await server.methods.loadChart(params.id);
 
     const filename = params.asset;
@@ -116,11 +115,12 @@ async function getChartAsset(request, h) {
     }
 
     try {
-        const contentStream = await events.emit(
-            event.GET_CHART_ASSET,
-            { chart, filename },
-            { filter: 'first' }
-        );
+        const contentStream = await server.methods.getChartAsset({
+            chart,
+            filename,
+            asStream: true,
+            throwNotFound: true
+        });
 
         const contentType =
             chart.type === 'locator-map' && path.extname(filename) === '.csv'
@@ -154,7 +154,6 @@ function getAssetWhitelist(id) {
 
 async function writeChartAsset(request, h) {
     const { params, auth, server } = request;
-    const { events, event } = server.app;
     const user = auth.artifacts;
     const chart = await server.methods.loadChart(request.params.id);
 
@@ -171,18 +170,14 @@ async function writeChartAsset(request, h) {
     const filename = params.asset;
 
     try {
-        const { code } = await events.emit(
-            event.PUT_CHART_ASSET,
-            {
-                chart,
-                data:
-                    request.headers['content-type'] === 'application/json'
-                        ? JSON.stringify(request.payload)
-                        : request.payload,
-                filename
-            },
-            { filter: 'first' }
-        );
+        const { code } = await server.methods.putChartAsset({
+            chart,
+            data:
+                request.headers['content-type'] === 'application/json'
+                    ? JSON.stringify(request.payload)
+                    : request.payload,
+            filename
+        });
 
         // log chart/edit
         await request.server.methods.logAction(user.id, `chart/edit`, chart.id);
