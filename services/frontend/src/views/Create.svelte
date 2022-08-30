@@ -60,9 +60,9 @@
 
         if (!template) {
             httpReq.get(`/v3/visualizations/${chartData.type || 'd3-lines'}`).then(res => {
-                chartData.niceType = `<img style="vertical-align:middle;height:20px" alt="" src="/static/plugins/${
+                chartData.niceType = `<img style="vertical-align:middle;height:20px" alt="" src="/lib/plugins/${
                     res.__plugin
-                }/${res.id}.svg" /> ${res.__title || ''}`;
+                }/static/${res.id}.svg" /> ${res.__title || ''}`;
             });
 
             ds = await delimited({ csv: dataset }).dataset();

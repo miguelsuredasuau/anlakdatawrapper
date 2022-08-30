@@ -371,8 +371,8 @@ To avoid having to rewrite all our Svelte2 code at once the new frontend include
 <MainLayout title="Hello world">
     <Svelte2Wrapper
         id="plugin-team-integrations"
-        js="/static/plugins/team-integrations/team-integrations.js"
-        css="/static/plugins/team-integrations/team-integrations.css"
+        js="/lib/plugins/team-integrations/static/team-integrations.js"
+        css="/lib/plugins/team-integrations/static/team-integrations.css"
         bind:data />
 </MainLayout>
 ```
@@ -660,8 +660,8 @@ server.methods.registerChartAction(async ({ request, chart, theme }) => {
         order: 400,
         mod: {
             id: 'svelte/export-zip',
-            src: `/static/plugins/export-zip/export-zip.js?v=${jsHash}`,
-            css: `/static/plugins/export-zip/export-zip.css?v=${cssHash}`,
+            src: `/lib/plugins/export-zip/static/export-zip.js?v=${jsHash}`,
+            css: `/lib/plugins/export-zip/static/export-zip.css?v=${cssHash}`,
             data: {
                 answer: 42
             }

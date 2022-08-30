@@ -30,8 +30,8 @@
     <div class="box">
         <Svelte2Wrapper
             id="plugin-team-integrations"
-            js="/static/plugins/team-integrations/team-integrations.js"
-            css="/static/plugins/team-integrations/team-integrations.css"
+            js="/lib/plugins/team-integrations/static/team-integrations.js"
+            css="/lib/plugins/team-integrations/static/team-integrations.css"
             bind:data
         />
     </div>
