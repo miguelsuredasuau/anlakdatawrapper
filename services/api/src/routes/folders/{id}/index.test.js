@@ -1536,12 +1536,13 @@ test('PHP PUT /folders/{id} returns an error when setting the parent of a folder
 });
 
 test('PHP PUT /folders/{id} moves charts into a folder', async t => {
-    let folder, inaccessibleFolder, otherUserObj, charts;
+    let folder, inaccessibleFolder, otherUserObj, charts, teamObj;
     try {
+        teamObj = await createTeamWithUser(t.context.server, { role: 'member' });
         otherUserObj = await createUser(t.context.server);
         folder = await createFolder({
             name: 'test',
-            user_id: t.context.teamObj.user.id
+            user_id: teamObj.user.id
         });
         inaccessibleFolder = await createFolder({
             name: 'inaccessible',
@@ -1554,7 +1555,7 @@ test('PHP PUT /folders/{id} moves charts into a folder', async t => {
                 theme: 'theme1',
                 type: 'bar',
                 metadata: {},
-                author_id: t.context.teamObj.user.id
+                author_id: teamObj.user.id
             },
             {
                 id: genRandomChartId(),
@@ -1570,7 +1571,7 @@ test('PHP PUT /folders/{id} moves charts into a folder', async t => {
             method: 'PUT',
             headers: {
                 ...t.context.headers,
-                Authorization: `Bearer ${t.context.teamObj.token}`,
+                Authorization: `Bearer ${teamObj.token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -1585,7 +1586,13 @@ test('PHP PUT /folders/{id} moves charts into a folder', async t => {
         const chart2 = await findChartById(charts[1].id);
         t.is(chart2.in_folder, inaccessibleFolder.id);
     } finally {
-        await destroy(charts, folder, inaccessibleFolder, ...Object.values(otherUserObj));
+        await destroy(
+            charts,
+            folder,
+            inaccessibleFolder,
+            ...Object.values(otherUserObj),
+            ...Object.values(teamObj)
+        );
     }
 });
 

@@ -8,7 +8,7 @@ const { setup, createChart, destroy } = require('../../test/helpers/setup');
 
 test.before(async t => {
     const directory = path.join(os.tmpdir(), 'dw.api.test');
-    await fs.mkdir(directory);
+    await fs.mkdir(directory, { recursive: true });
     t.context.server = await setup({ usePlugins: false });
     Object.assign(t.context, { directory });
 });

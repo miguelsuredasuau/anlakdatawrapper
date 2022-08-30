@@ -119,7 +119,12 @@ function parseJSON(data) {
 }
 
 async function getChartData(request, h) {
-    const { params, query } = request;
+    const { params, query, server } = request;
+
+    const chart = await server.methods.loadChart(params.id);
+    if (!chart) {
+        return Boom.notFound();
+    }
 
     const csvFilename = `${params.id}.${query.published ? 'public.' : ''}csv`;
     const res = await request.server.inject({

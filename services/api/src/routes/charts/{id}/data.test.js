@@ -179,6 +179,17 @@ test('GET /charts/{id}/data returns JSON data with CSV headers when the data is 
     }
 });
 
+test('GET /charts/{id}/data returns an error if chart does not exist', async t => {
+    let userObj = {};
+    try {
+        userObj = await createUser(t.context.server, { role: 'editor', scopes: ['chart:read'] });
+        const res = await getData(t.context.server, userObj.session, { id: '00000' });
+        t.is(res.result.statusCode, 404);
+    } finally {
+        await destroy(Object.values(userObj));
+    }
+});
+
 test('PHP GET /charts/{id}/data returns chart data', async t => {
     let userObj = {};
     let chart;
