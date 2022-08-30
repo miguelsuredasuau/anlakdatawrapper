@@ -262,7 +262,6 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
     server.method('registerVisualization', registerVisualizations(server));
     server.method('registerFeatureFlag', registerFeatureFlag(server));
 
-    await server.register(require('./utils/chartAssets.js'));
     await server.register(require('@datawrapper/service-utils/computeFileHash'));
 
     server.method('getScopes', (admin = false) => {
@@ -299,6 +298,7 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
     if (usePlugins) {
         await server.register([require('./plugin-loader')], routeOptions);
     }
+    await server.register(require('./utils/chartAssets.js'));
 
     const { events, event } = server.app;
 
