@@ -5,7 +5,7 @@ describe('smoke', () => {
 
     before(async () => {
         await browser.logIP();
-        await browser.login('user@datawrapper.de', 'datawrapper');
+        await browser.login(process.env.DW_USER, process.env.DW_PASS);
     });
 
     after(async () => {

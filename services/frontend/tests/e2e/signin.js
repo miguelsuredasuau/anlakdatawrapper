@@ -42,8 +42,8 @@ describe('login and logout', () => {
     });
 
     it('logs the user in with valid credentials', async () => {
-        const email = 'user@datawrapper.de';
-        const password = 'datawrapper';
+        const email = process.env.DW_USER;
+        const password = process.env.DW_PASS;
         await visitSigninPage();
         if (dwConfig.frontend.signinProviders?.length) {
             await getEmailProviderButton().click();
