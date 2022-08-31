@@ -90,9 +90,6 @@ class DatawrapperHooks {
     // whenever a chart gets duplicated or forked
     const CHART_COPY = 'chart_copy';
 
-    // render something beneath the chart actions
-    const PUBLISH_AFTER_CHART_ACTIONS = 'publish_after_chart_actions';
-
     // a hook for providing new api actions
     const PROVIDE_API = 'provide_api';
 
