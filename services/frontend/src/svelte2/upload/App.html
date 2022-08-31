@@ -18,7 +18,7 @@
 
                 <ul class="import-methods" class:readonly>
                     {#each buttons as btn}
-                    <li on:click="btnAction(btn)" class="action {active==btn?'active':''}">
+                    <li on:click="btnAction(btn)" class="action {active==btn?'active':''}" data-uid="import-{btn.id}">
                         <label>
                             {#if btn.isFileUpload}
                             <input
