@@ -1,9 +1,9 @@
-const got = require('got');
-
 describe('smoke', () => {
+    let got;
     let chartId;
 
     before(async () => {
+        got = await browser.requireDeps('got');
         await browser.logIP();
         await browser.login(process.env.DW_USER, process.env.DW_PASS);
     });
