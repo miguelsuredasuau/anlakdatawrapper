@@ -11,12 +11,11 @@
     import RadioInput from '_partials/controls/RadioInput.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
-    const { locale } = getContext('page/edit');
+    const { locale, readonlyKeys } = getContext('page/edit');
 
     export let __;
     export let chart;
     export let teamSettings;
-    export let disabledFields = new Set();
 
     $: textDirection = $locale.textDirection;
 
@@ -55,9 +54,9 @@
             bind:value={$chart.metadata.describe['hide-title']}
         />
 
-        <FormFieldDisplay disabled={disabledFields.has('title')} compact label={__('Title')}>
+        <FormFieldDisplay disabled={$readonlyKeys.has('title')} compact label={__('Title')}>
             <TextInput
-                disabled={disabledFields.has('title')}
+                disabled={$readonlyKeys.has('title')}
                 bind:value={$chart.title}
                 expandable
                 uid="annotate-chart-title"
@@ -68,7 +67,7 @@
 
     <FormFieldDisplay compact label={__('Description')}>
         <TextAreaInput
-            disabled={disabledFields.has('metadata.describe.intro')}
+            disabled={$readonlyKeys.has('metadata.describe.intro')}
             bind:value={$chart.metadata.describe.intro}
             resize="vertical"
             {textDirection}
@@ -77,7 +76,8 @@
 
     <FormFieldDisplay compact label={__('Notes')}>
         <TextInput
-            disabled={disabledFields.has('metadata.annotate.notes')}
+            uid="notes"
+            disabled={$readonlyKeys.has('metadata.annotate.notes')}
             bind:value={$chart.metadata.annotate.notes}
             expandable
             {textDirection}
@@ -89,7 +89,7 @@
             <FormFieldDisplay compact label={__('Source name')}>
                 <TextInput
                     bind:value={$chart.metadata.describe['source-name']}
-                    disabled={disabledFields.has('metadata.describe.source-name')}
+                    disabled={$readonlyKeys.has('metadata.describe.source-name')}
                     autocomplete="off"
                     expandable
                     placeholder={__('name of the organisation')}
@@ -101,7 +101,7 @@
             <FormFieldDisplay compact label={__('Source URL')} error={sourceUrlError}>
                 <TextInput
                     bind:value={$chart.metadata.describe['source-url']}
-                    disabled={disabledFields.has('metadata.describe.source-url')}
+                    disabled={$readonlyKeys.has('metadata.describe.source-url')}
                     placeholder={__('URL of the dataset')}
                     error={!!sourceUrlError}
                     {textDirection}
@@ -114,7 +114,7 @@
             <TextInput
                 bind:value={$chart.metadata.describe.byline}
                 expandable
-                disabled={disabledFields.has('metadata.describe.byline')}
+                disabled={$readonlyKeys.has('metadata.describe.byline')}
                 placeholder={__('visualize / annotate / byline / placeholder')}
                 {textDirection}
             />
@@ -128,7 +128,7 @@
     >
         <TextAreaInput
             bind:value={$chart.metadata.describe['aria-description']}
-            disabled={disabledFields.has('metadata.describe.aria-description')}
+            disabled={$readonlyKeys.has('metadata.describe.aria-description')}
             placeholder={__('visualize / annotate / aria-description / placeholder')}
             resize="vertical"
             {textDirection}
@@ -152,7 +152,7 @@
                     <CheckboxInput
                         label={purifyHtml(field.title)}
                         bind:value={$chart.metadata.custom[field.key]}
-                        disabled={disabledFields.has(`metadata.custom.${field.key}`)}
+                        disabled={$readonlyKeys.has(`metadata.custom.${field.key}`)}
                     />
                 </HorizontalFormFieldDisplay>
             {:else}
@@ -164,13 +164,13 @@
                     {#if field.type == 'text'}
                         <TextInput
                             bind:value={$chart.metadata.custom[field.key]}
-                            disabled={disabledFields.has(`metadata.custom.${field.key}`)}
+                            disabled={$readonlyKeys.has(`metadata.custom.${field.key}`)}
                             {textDirection}
                         />
                     {:else if field.type == 'textArea'}
                         <TextAreaInput
                             bind:value={$chart.metadata.custom[field.key]}
-                            disabled={disabledFields.has(`metadata.custom.${field.key}`)}
+                            disabled={$readonlyKeys.has(`metadata.custom.${field.key}`)}
                             {textDirection}
                         />
                     {:else if field.type == 'radio'}
@@ -180,7 +180,7 @@
                                 .filter(d => d.trim())
                                 .map(value => ({ value, label: value }))}
                             bind:value={$chart.metadata.custom[field.key]}
-                            disabled={disabledFields.has(`metadata.custom.${field.key}`)}
+                            disabled={$readonlyKeys.has(`metadata.custom.${field.key}`)}
                             {textDirection}
                         />
                     {/if}

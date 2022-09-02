@@ -92,7 +92,8 @@ const chartListItem = Joi.object({
         .try(Joi.object(), Joi.array().length(0))
         .description('Custom fields')
         .allow(null)
-        .optional()
+        .optional(),
+    readonlyKeys: Joi.array().items(Joi.string())
 });
 
 const createUserPayload = [

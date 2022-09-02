@@ -1,33 +1,8 @@
 import chai from 'chai';
-import { getNestedObjectKeys, filterNestedObjectKeys, waitFor } from './index.js';
+import { filterNestedObjectKeys, waitFor } from './index.js';
 import clone from 'lodash/cloneDeep';
 
 const { expect } = chai;
-
-describe('getNestedObjectKeys', function () {
-    it('returns correct keys', function () {
-        const keys = getNestedObjectKeys({
-            answer: 42,
-            metadata: {
-                transpose: false,
-                'null-key': null,
-                describe: {
-                    intro: 'Intro',
-                    enabled: false
-                }
-            },
-            today: new Date()
-        });
-        expect(keys).to.have.same.members([
-            'answer',
-            'today',
-            'metadata.transpose',
-            'metadata.null-key',
-            'metadata.describe.intro',
-            'metadata.describe.enabled'
-        ]);
-    });
-});
 
 describe('filterNestedObjectKeys', function () {
     const srcObject = {

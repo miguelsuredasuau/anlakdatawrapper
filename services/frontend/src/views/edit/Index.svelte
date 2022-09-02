@@ -48,7 +48,7 @@
      * overwriting metadata. the corresponding ui elements
      * will be shown as disabled in the editor
      */
-    export let disabledFields = [];
+    export let rawReadonlyKeys = [];
 
     /**
      * admins may edit charts they otherwise don't have access
@@ -76,8 +76,10 @@
         data,
         syncData,
         syncExternalData,
+        syncExternalMetadata,
         syncChart,
         team,
+        readonlyKeys,
         ...stores
     } = initStores({
         rawChart,
@@ -86,7 +88,7 @@
         rawTheme,
         rawLocales,
         rawVisualizations: visualizations,
-        disabledFields,
+        rawReadonlyKeys,
         dataReadonly
     });
     setContext('page/edit', {
@@ -99,6 +101,7 @@
         theme,
         navigateTo,
         team,
+        readonlyKeys,
         ...stores
     });
 
@@ -147,7 +150,7 @@
             language: rawChart.language,
             dwChart,
             dataReadonly,
-            disabledFields: new Set(disabledFields),
+            readonlyKeys: $readonlyKeys,
             __
         }
     }));
@@ -184,6 +187,7 @@
          */
         storeSubscriptions.add(syncData.subscribe());
         storeSubscriptions.add(syncExternalData.subscribe());
+        storeSubscriptions.add(syncExternalMetadata.subscribe());
         storeSubscriptions.add(syncChart.subscribe());
 
         // mimic old dw setup

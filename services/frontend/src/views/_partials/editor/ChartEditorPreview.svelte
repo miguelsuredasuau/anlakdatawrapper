@@ -22,7 +22,8 @@
         isFixedHeight,
         onNextSave,
         theme,
-        visualization
+        visualization,
+        readonlyKeys
     } = getContext('page/edit');
 
     export let previewWidth;
@@ -33,14 +34,6 @@
      */
     export let allowInlineEditing = false;
     export let allowResizing = false;
-
-    /*
-     * when inline editing is activated we want to make sure that only
-     * attributes which are not controlled by external metadata are made
-     * inline editable. Therefor `disabledFields` contains a set of
-     * disabled attributes
-     */
-    export let disabledFields = new Set();
 
     /*
      * keep track of store subscriptions so we can unsubscribe when this component gets destroyed
@@ -79,10 +72,10 @@
     // default html tags allowed for inline-editing
     const DEFAULT_ALLOWED_HTML = '<a><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt>';
 
-    function activateInlineEditing(doc, disabledFields) {
+    function activateInlineEditing(doc, readonlyKeys) {
         // activate editing for standard fields
         EDITABLE_FIELDS.forEach(({ selector, key, allowedHTML, save, multiline = false }) => {
-            if (!disabledFields.has(key)) {
+            if (!readonlyKeys.has(key)) {
                 makeElementEditable({
                     el: doc.querySelector(selector),
                     save: save || getSaveForKey(key),
@@ -253,7 +246,7 @@
             const activateInlineEditingDebounced = debounce(async () => {
                 await iframePreview.waitForVis();
                 iframePreview.getContext((contentWindow, contentDocument) => {
-                    activateInlineEditing(contentDocument, disabledFields);
+                    activateInlineEditing(contentDocument, $readonlyKeys);
                 });
             }, 500);
             EDITABLE_FIELDS.forEach(({ key }) => {
@@ -284,7 +277,7 @@
     function onLoad() {
         if (allowInlineEditing) {
             iframePreview.getContext((contentWindow, contentDocument) => {
-                activateInlineEditing(contentDocument, disabledFields);
+                activateInlineEditing(contentDocument, $readonlyKeys);
             });
         }
     }
@@ -322,7 +315,7 @@
             if (allowInlineEditing) {
                 // re-enable inline editing since DOM elements may have
                 // been replaced due to re-rendering the vis
-                activateInlineEditing(doc, disabledFields);
+                activateInlineEditing(doc, $readonlyKeys);
             }
         });
     }

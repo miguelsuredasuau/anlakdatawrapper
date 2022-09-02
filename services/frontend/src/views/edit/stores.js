@@ -26,9 +26,10 @@ import {
     catchError,
     shareReplay,
     skip,
-    startWith
+    startWith,
+    pairwise
 } from 'rxjs/operators';
-import { of, from, combineLatest } from 'rxjs';
+import { of, from, combineLatest, merge } from 'rxjs';
 
 const ALLOWED_CHART_KEYS = [
     'title',
@@ -47,13 +48,14 @@ export function initStores({
     rawVisualizations,
     rawTeam,
     rawData,
-    disabledFields,
+    rawReadonlyKeys,
     dataReadonly
 }) {
     const chart$ = new SvelteSubject(rawChart);
     const data$ = new SvelteSubject(rawData);
     const team$ = of(rawTeam || { settings: {} }); // read-only
     const locales$ = of(rawLocales); // read-only
+    const readonlyKeys$ = new SvelteSubject(rawReadonlyKeys);
 
     // distinctChart$ only emits a value if a chart property (including nested properties) changes
     // It gives the guarantee that between two consecutive submissions
@@ -75,6 +77,11 @@ export function initStores({
      * store for dark mode state
      */
     const isDark = new writable(false);
+
+    const readonlyKeysSet$ = readonlyKeys$.pipe(
+        distinctUntilChanged(),
+        map(keys => new Set(keys))
+    );
 
     const patchChart = ({ id, patch }) => {
         return of({ id, patch }).pipe(
@@ -102,15 +109,16 @@ export function initStores({
             })
         );
     };
+
     // chart subject representing the last version that came from the server
     const latestSavedChart$ = new SvelteSubject(cloneDeep(rawChart));
     const patchChart$ = distinctChart$.pipe(
-        withLatestFrom(latestSavedChart$), // compare with version that was last saved
-        map(([newChart, oldChart]) => ({
+        withLatestFrom(latestSavedChart$, readonlyKeys$), // compare with version that was last saved
+        map(([newChart, oldChart, readonlyKeys]) => ({
             id: newChart.id,
             patch: filterNestedObjectKeys(
                 objectDiff(oldChart, newChart, ALLOWED_CHART_KEYS),
-                disabledFields
+                readonlyKeys
             )
         })),
         tap(({ patch }) => hasUnsavedChanges.set(Object.keys(patch).length > 0)),
@@ -324,13 +332,27 @@ export function initStores({
         );
     };
 
+    const syncExternalMetadata = chartId => {
+        return from(httpReq.post(`/v3/charts/${chartId}/data/refresh`)).pipe(
+            switchMap(() => httpReq.get(`/v3/charts/${chartId}`)),
+            withLatestFrom(chart$),
+            tap(([{ metadata, title, readonlyKeys }, oldChart]) => {
+                readonlyKeys$.set(readonlyKeys);
+                chart$.set({
+                    ...oldChart,
+                    title,
+                    metadata
+                });
+            })
+        );
+    };
+
     // Observable listening to changes of the upload-method.
     // We subscribe to latestSavedChart$ instead of distinctChart$
     // to make sure we are in sync with the version stored at the server.
     const uploadMethod$ = latestSavedChart$.pipe(
         map(chart => get(chart, 'metadata.data.upload-method')),
-        distinctUntilChanged(isEqual),
-        skip(1)
+        distinctUntilChanged(isEqual)
     );
     const googleSheet$ = latestSavedChart$.pipe(
         map(chart => get(chart, `metadata.data.google-spreadsheet-src`)),
@@ -343,6 +365,7 @@ export function initStores({
         filter(source => source) // only emit if source is defined
     );
     const getExternalData$ = uploadMethod$.pipe(
+        skip(1),
         switchMap(method => {
             if (method === 'google-spreadsheet') {
                 return googleSheet$;
@@ -353,6 +376,41 @@ export function initStores({
         withLatestFrom(latestSavedChart$),
         switchMap(([, chart]) => syncExternalData(chart.id)),
         shareReplay(1)
+    );
+    const externalMetadata$ = latestSavedChart$.pipe(
+        map(chart => get(chart, `metadata.data.external-metadata`)),
+        distinctUntilChanged(isEqual)
+    );
+
+    /*
+     * sync external metadata url changes and refresh
+     * the chart$ and readonlyKeys$
+     */
+    const getExternalMetadata$ = merge(
+        // ...either if the upload method changes
+        uploadMethod$.pipe(
+            pairwise(),
+            // but only if changed to or from 'external-data'
+            filter(([prevMethod, newMethod]) => {
+                return prevMethod === 'external-data' || newMethod === 'external-data';
+            }),
+            // also check that external metadata url is defined
+            withLatestFrom(externalMetadata$),
+            filter(([, externalMetadata]) => externalMetadata)
+        ),
+        // ...or if the external metadata has url changed
+        externalMetadata$.pipe(
+            // but only if current upload method is external-data
+            withLatestFrom(latestSavedChart$),
+            // note: we can't use uploadMethod$ here because this only emits
+            // if the user changed it since opening the page
+            filter(([, chart]) => get(chart, 'metadata.data.upload-method') === 'external-data')
+        )
+    ).pipe(
+        skip(1),
+        // then sync the chart object
+        withLatestFrom(chartId$),
+        switchMap(([, chartId]) => syncExternalMetadata(chartId))
     );
 
     /**
@@ -413,6 +471,8 @@ export function initStores({
         isDark,
         syncData: putData$,
         syncExternalData: getExternalData$,
-        syncChart: patchChart$
+        syncExternalMetadata: getExternalMetadata$,
+        syncChart: patchChart$,
+        readonlyKeys: readonlyKeysSet$
     };
 }

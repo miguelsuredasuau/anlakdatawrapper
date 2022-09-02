@@ -8,10 +8,9 @@
     export let __;
     export let dwChart;
     export let teamSettings;
-    export let disabledFields;
 </script>
 
 <div class="block">
-    <ChartDescription {chart} {teamSettings} {disabledFields} {__} />
+    <ChartDescription {chart} {teamSettings} {__} />
 </div>
 <Svelte2ChartControls controlsModule="Annotate" {dwChart} {teamSettings} {__} />

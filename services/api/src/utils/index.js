@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const fs = require('fs-extra');
 const get = require('lodash/get');
 const partition = require('lodash/partition');
+const assignDeep = require('assign-deep');
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 const prepareChart = require('@datawrapper/service-utils/prepareChart');
 const utils = {};
@@ -120,17 +121,19 @@ utils.loadChart = async function (id) {
 };
 
 utils.getAdditionalMetadata = async (chart, { server }) => {
-    const data = {};
-    let additionalMetadata = await server.app.events.emit(
-        server.app.event.ADDITIONAL_CHART_DATA,
-        {
-            chartId: chart.id,
-            forkedFromId: chart.forked_from
-        },
-        { filter: 'success' }
-    );
+    const data = { metadata: {} };
 
-    additionalMetadata = Object.assign({}, ...additionalMetadata);
+    const results = await server.app.events.emit(server.app.event.ADDITIONAL_CHART_DATA, {
+        chart,
+        chartId: chart.id,
+        forkedFromId: chart.forked_from
+    });
+
+    results
+        .filter(res => res.status === 'success')
+        .forEach(res => {
+            assignDeep(data, res.data);
+        });
 
     if (chart.forked_from && chart.is_fork) {
         const { Chart } = require('@datawrapper/orm/models');
@@ -141,7 +144,7 @@ utils.getAdditionalMetadata = async (chart, { server }) => {
         const basedOnBylineText = get(forkedFromChart, 'metadata.describe.byline', null);
 
         if (basedOnBylineText) {
-            let basedOnUrl = get(additionalMetadata, 'river.source_url', null);
+            let basedOnUrl = get(data.metadata, 'river.source_url', null);
 
             if (!basedOnUrl) {
                 let results = await server.app.events.emit(

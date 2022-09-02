@@ -43,7 +43,7 @@ async function renderPreviewResizer({
         rawTheme,
         rawTeam,
         rawVisualizations,
-        disabledFields: []
+        rawReadonlyKeys: []
     });
     const iframe = document.createElement('div');
 

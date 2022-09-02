@@ -515,7 +515,7 @@ module.exports = {
                                 'settings.showEditorNavInCmsMode',
                                 false
                             ),
-                            disabledFields,
+                            rawReadonlyKeys: disabledFields,
                             showAdminWarning,
                             dataReadonly: !(await chart.isDataEditableBy(
                                 user,

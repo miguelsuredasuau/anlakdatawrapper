@@ -61,7 +61,7 @@ const defaults = {
     rawTheme: {},
     rawLocales: [],
     rawVisualizations: baseVisualizations,
-    disabledFields: ['type', 'metadata.data.transpose'],
+    rawReadonlyKeys: ['type', 'metadata.data.transpose'],
     dontSendHttpReq: true
 };
 

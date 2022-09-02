@@ -30,7 +30,6 @@
     export let visualizations;
     export let workflow;
     export let teamSettings;
-    export let disabledFields;
     export let layoutControlsGroups;
     /**
      * all themes available to authenticated user
@@ -199,7 +198,6 @@
                                 {workflow}
                                 {visualizations}
                                 {teamSettings}
-                                {disabledFields}
                                 {layoutControlsGroups}
                             />
                         </div>
@@ -231,7 +229,6 @@
                         <ChartEditorPreview
                             bind:this={iframePreview}
                             bind:previewWidth
-                            {disabledFields}
                             allowInlineEditing
                             allowResizing
                             fixedHeight={$isFixedHeight}

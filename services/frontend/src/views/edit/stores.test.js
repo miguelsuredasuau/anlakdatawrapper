@@ -478,7 +478,7 @@ const rawLocales = [
     }
 ];
 
-const disabledFields = [];
+const rawReadonlyKeys = [];
 
 const dataReadonly = false;
 
@@ -495,7 +495,9 @@ let team;
 let syncChart;
 let syncData;
 let syncExternalData;
+let syncExternalMetadata;
 let subscriptions = [];
+
 let startSync = () => {
     throw Error('You need to call setupStoresForTest first');
 };
@@ -509,7 +511,7 @@ let startSync = () => {
  * @param themeDefault
  * @param teamDefault
  * @param localesDefault
- * @param disabledFieldsDefault
+ * @param readonlyKeysDefault
  * @param dataReadonlyDefault
  */
 const setupStoresForTest = ({
@@ -519,7 +521,7 @@ const setupStoresForTest = ({
     rawTheme: themeDefault = rawTheme,
     rawTeam: teamDefault = rawTeam,
     rawLocales: localesDefault = rawLocales,
-    disabledFields: disabledFieldsDefault = disabledFields,
+    rawReadonlyKeys: readonlyKeysDefault = rawReadonlyKeys,
     dataReadonly: dataReadonlyDefault = dataReadonly
 } = {}) => {
     ({
@@ -532,7 +534,8 @@ const setupStoresForTest = ({
         team,
         syncChart,
         syncData,
-        syncExternalData
+        syncExternalData,
+        syncExternalMetadata
     } = initStores({
         rawChart: chartDefault,
         rawData: dataDefault,
@@ -540,7 +543,7 @@ const setupStoresForTest = ({
         rawTheme: themeDefault,
         rawTeam: teamDefault,
         rawLocales: localesDefault,
-        disabledFields: disabledFieldsDefault,
+        rawReadonlyKeys: readonlyKeysDefault,
         dataReadonly: dataReadonlyDefault
     }));
 
@@ -551,6 +554,7 @@ const setupStoresForTest = ({
         subscriptions.push(syncChart.subscribe());
         subscriptions.push(syncData.subscribe());
         subscriptions.push(syncExternalData.subscribe());
+        subscriptions.push(syncExternalMetadata.subscribe());
     };
 };
 
