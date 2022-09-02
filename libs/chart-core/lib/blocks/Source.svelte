@@ -24,7 +24,7 @@
             on:click={handleClick}
             class="source"
             target="_blank"
-            rel="noopener noreferrer"
+            rel="nofollow noopener noreferrer"
             href={sourceUrl}
         >
             {@html purifyHtml(sourceName)}
