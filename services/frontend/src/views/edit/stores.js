@@ -11,6 +11,7 @@ import coreMigrate from '@datawrapper/chart-core/lib/migrate';
 import reorderColumns from '@datawrapper/chart-core/lib/dw/dataset/reorderColumns.mjs';
 import applyChanges from '@datawrapper/chart-core/lib/dw/dataset/applyChanges.mjs';
 import addComputedColumns from '@datawrapper/chart-core/lib/dw/dataset/addComputedColumns.mjs';
+import filterDatasetColumns from '@datawrapper/chart-core/lib/dw/utils/filterDatasetColumns.mjs';
 import populateVisAxes from '@datawrapper/chart-core/lib/dw/utils/populateVisAxes.mjs';
 import { SvelteSubject } from '../../utils/rxjs-store.mjs';
 import {
@@ -236,26 +237,23 @@ export function initStores({
     ]).pipe(
         withLatestFrom(dwChart$),
         map(([[data, options, userAxes, visAxes, overrideKeys], chart]) => {
-            const dataset = reorderColumns(
+            const dataset = filterDatasetColumns(
                 chart,
-                applyChanges(
+                reorderColumns(
                     chart,
-                    addComputedColumns(
+                    applyChanges(
                         chart,
-                        delimited({
-                            csv: data,
-                            transpose: options.transpose,
-                            firstRowIsHeader: options['horizontal-header']
-                        }).parse()
+                        addComputedColumns(
+                            chart,
+                            delimited({
+                                csv: data,
+                                transpose: options.transpose,
+                                firstRowIsHeader: options['horizontal-header']
+                            }).parse()
+                        )
                     )
                 )
             );
-            const columnFormat = get(options, 'column-format', {});
-            const ignore = {};
-            Object.keys(columnFormat).map(key => {
-                ignore[key] = !!columnFormat[key].ignore;
-            });
-            if (dataset.filterColumns) dataset.filterColumns(ignore);
             // populate vis axes to generate 'virtual' columns in case
             // of insufficient datasets (e.g. missing label column)
             populateVisAxes({ dataset, userAxes, visAxes, overrideKeys });

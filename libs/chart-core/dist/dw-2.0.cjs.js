@@ -7628,6 +7628,17 @@ function populateVisAxes({ dataset, visAxes, userAxes, overrideKeys }) {
     }
 }
 
+function filterDatasetColumns (chart, dataset) {
+    if (!dataset.filterColumns) return dataset;
+
+    const columnFormat = chart.getMetadata('data.column-format', {});
+    const ignore = Object.fromEntries(
+        Object.entries(columnFormat).map(([key, format]) => [key, !!format.ignore])
+    );
+    dataset.filterColumns(ignore);
+    return dataset;
+}
+
 /* globals dw */
 
 const base = function () {}.prototype;
@@ -7704,12 +7715,7 @@ extend(base, {
         // reset visualization cache to make sure
         // auto-populated columns get re-created
         me.__axisCache = undefined;
-        var columnFormat = get(chart.get(), 'metadata.data.column-format', {});
-        var ignore = {};
-        each(columnFormat, function (format, key) {
-            ignore[key] = !!format.ignore;
-        });
-        if (me.dataset.filterColumns) me.dataset.filterColumns(ignore);
+        filterDatasetColumns(chart, me.dataset);
 
         // set locale
         const { numeral } = me.libraries();
@@ -7762,6 +7768,8 @@ extend(base, {
 
         // update chart dataset to include "virtual" columns
         me.chart().dataset(dataset);
+        // filter hidden columns
+        filterDatasetColumns(me.chart(), dataset);
 
         me.__axisCache = {
             axes: axes,
