@@ -1,6 +1,6 @@
 import ColorblindCheck from './ColorblindCheck.svelte';
-import { renderWithContext, setConfig } from '../../../../test/helpers/clientUtils';
-import { loadLocales } from '../../../../test/helpers/setup-locales.mjs';
+import { renderWithContext, setConfig } from '../../../../tests/helpers/clientUtils';
+import { loadLocales } from '../../../../tests/helpers/setup-locales.mjs';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import sinon from 'sinon';

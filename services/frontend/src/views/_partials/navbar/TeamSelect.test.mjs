@@ -1,5 +1,5 @@
 import TeamSelect from './TeamSelect.svelte';
-import { renderWithContext } from '../../../../test/helpers/clientUtils';
+import { renderWithContext } from '../../../../tests/helpers/clientUtils';
 import { fireEvent, waitFor } from '@testing-library/svelte';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';

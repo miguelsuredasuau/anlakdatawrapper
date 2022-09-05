@@ -1,7 +1,7 @@
 import TypeaheadInput from './TypeaheadInput.svelte';
 import TypeaheadItemRenderer from '../../hello/sections/controls/TypeaheadItemRenderer.svelte';
 import { fireEvent } from '@testing-library/svelte';
-import { renderWithContext, setConfig, delay } from '../../../../test/helpers/clientUtils';
+import { renderWithContext, setConfig, delay } from '../../../../tests/helpers/clientUtils';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import sinon from 'sinon';

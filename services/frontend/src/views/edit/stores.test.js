@@ -5,7 +5,7 @@ import nock from 'nock';
 import FakeTimers from '@sinonjs/fake-timers';
 import sinon from 'sinon';
 import { tap } from 'rxjs/operators';
-import { subscribeOnce } from '../../../test/helpers/clientUtils';
+import { subscribeOnce } from '../../../tests/helpers/clientUtils';
 
 const rawChart = {
     publicId: 'rBHpV',

@@ -1,5 +1,5 @@
 import { createChart, createUser, destroy } from '../../../../api/test/helpers/setup.js';
-import { getSessionHeaders, parseSvelteProps } from '../../../test/helpers/serverUtils.mjs';
+import { getSessionHeaders, parseSvelteProps } from '../../../tests/helpers/serverUtils.mjs';
 
 describe('GET /preview/{chartId}', function () {
     let user1Obj = {};

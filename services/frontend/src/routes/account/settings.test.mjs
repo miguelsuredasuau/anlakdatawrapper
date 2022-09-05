@@ -3,7 +3,7 @@ import {
     getSessionHeaders,
     parseHTML,
     parseSvelteView
-} from '../../../test/helpers/serverUtils.mjs';
+} from '../../../tests/helpers/serverUtils.mjs';
 
 describe('GET /account/settings/', function () {
     let userObj = {};

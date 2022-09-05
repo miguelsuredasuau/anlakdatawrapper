@@ -8,7 +8,7 @@ import {
     clickOn,
     fireChangeEvent,
     changeValueTo
-} from '../../../../test/helpers/clientUtils';
+} from '../../../../tests/helpers/clientUtils';
 import chai, { expect } from 'chai';
 import { cloneDeep } from 'lodash';
 import assign from 'assign-deep';
@@ -186,7 +186,7 @@ describe('PreviewResizer', () => {
             });
 
             it('sets correct preview size', async () => {
-                await sleep(20);
+                await sleep(100);
                 expect(result.iframePreview.dimensions).to.deep.equal({
                     width: 550,
                     height: 420
@@ -203,7 +203,7 @@ describe('PreviewResizer', () => {
                 const { publish } = result.stores['page/edit'].chart._value.metadata;
                 expect(publish).to.have.property('embed-width', 320);
                 expect(publish).to.have.property('embed-height', 420);
-                await sleep(20);
+                await sleep(100);
                 expect(preview.dimensions).to.deep.equal({
                     width: 320,
                     height: 420
@@ -212,7 +212,7 @@ describe('PreviewResizer', () => {
                 const { publish: publish2 } = result.stores['page/edit'].chart._value.metadata;
                 expect(publish2).to.have.property('embed-width', 600);
                 expect(publish2).to.have.property('embed-height', 420);
-                await sleep(20);
+                await sleep(100);
                 expect(preview.dimensions).to.deep.equal({
                     width: 600,
                     height: 420
@@ -313,7 +313,7 @@ describe('PreviewResizer', () => {
             });
 
             it('sets correct preview size', async () => {
-                await sleep(20);
+                await sleep(100);
                 expect(result.iframePreview.dimensions).to.deep.equal({
                     width: 550,
                     height: 420
@@ -327,7 +327,7 @@ describe('PreviewResizer', () => {
                 });
 
                 it('sets correct preview size', async () => {
-                    await sleep(20);
+                    await sleep(100);
                     expect(result.iframePreview.dimensions).to.deep.equal({
                         width: 550,
                         height: null
@@ -467,7 +467,7 @@ describe('PreviewResizer', () => {
                 const inputs = toolbar.querySelectorAll('input[type=number]');
                 expect(inputs[0]).to.have.value('80');
                 expect(inputs[1]).to.have.value('120');
-                await sleep(20);
+                await sleep(100);
                 expect(result.iframePreview.dimensions).to.deep.equal({
                     width: mmToPx(80),
                     height: mmToPx(120)
@@ -561,7 +561,7 @@ describe('PreviewResizer', () => {
             });
 
             it('preview iframe is scaled', async () => {
-                await sleep(20);
+                await sleep(100);
                 expect(result.iframePreview.dimensions).to.deep.equal({
                     width: mmToPx(80 / scale),
                     height: mmToPx(120 / scale)
@@ -662,7 +662,7 @@ describe('PreviewResizer', () => {
                 });
 
                 it('preview size is updated correctly', async () => {
-                    await sleep(20);
+                    await sleep(200);
                     expect(result.iframePreview.dimensions).to.deep.equal({
                         width: inchToPx(10),
                         height: inchToPx(pxToInch(mmToPx(120)))
@@ -829,7 +829,7 @@ describe('PreviewResizer', () => {
             });
 
             it('sets correct size for iframe', async () => {
-                await sleep(20);
+                await sleep(100);
                 expect(result.iframePreview.dimensions).to.deep.equal({
                     width: 550,
                     height: 420
@@ -891,7 +891,7 @@ describe('PreviewResizer', () => {
             });
 
             it('sets correct size for iframe', async () => {
-                await sleep(20);
+                await sleep(100);
                 expect(result.iframePreview.dimensions).to.deep.equal({
                     width: 550,
                     height: 420
@@ -900,7 +900,7 @@ describe('PreviewResizer', () => {
 
             describe('theme changes to print theme', () => {
                 beforeEach(async () => {
-                    await sleep(20); // wait for initial iframePreview.set
+                    await sleep(100); // wait for initial iframePreview.set
                     nock('http://api.datawrapper.mock')
                         .get('/v3/themes/print-theme?extend=true')
                         .reply(200, {

@@ -3,7 +3,7 @@ import {
     getSessionHeaders,
     parseSvelteView,
     parseSvelteProps
-} from '../../test/helpers/serverUtils.mjs';
+} from '../../tests/helpers/serverUtils.mjs';
 
 describe('GET /create/chart', function () {
     let userObj = {};

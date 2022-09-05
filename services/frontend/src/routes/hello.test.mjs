@@ -4,7 +4,7 @@ import {
     getSessionHeaders,
     parseHTML,
     parseSvelteView
-} from '../../test/helpers/serverUtils.mjs';
+} from '../../tests/helpers/serverUtils.mjs';
 
 describe('GET /v2/hello/', function () {
     let userObj = {};

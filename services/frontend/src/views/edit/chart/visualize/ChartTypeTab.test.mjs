@@ -5,7 +5,7 @@ import {
     setConfig,
     trackStoreChanges,
     mockTranslations
-} from '../../../../../test/helpers/clientUtils';
+} from '../../../../../tests/helpers/clientUtils';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import sinonChai from 'sinon-chai';

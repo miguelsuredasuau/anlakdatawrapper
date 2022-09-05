@@ -1,7 +1,7 @@
 import FileInput from './FileInput.svelte';
 import { fireEvent, createEvent } from '@testing-library/svelte';
-import { renderWithContext, setConfig, delay } from '../../../../test/helpers/clientUtils';
-import { loadLocales } from '../../../../test/helpers/setup-locales.mjs';
+import { renderWithContext, setConfig, delay } from '../../../../tests/helpers/clientUtils';
+import { loadLocales } from '../../../../tests/helpers/setup-locales.mjs';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import sinon from 'sinon';

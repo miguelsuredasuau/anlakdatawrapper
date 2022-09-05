@@ -1,5 +1,5 @@
 import Changelog from './Changelog.svelte';
-import { renderWithContext, setConfig } from '../../../../test/helpers/clientUtils';
+import { renderWithContext, setConfig } from '../../../../tests/helpers/clientUtils';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 import { MockAgent, setGlobalDispatcher } from 'undici';

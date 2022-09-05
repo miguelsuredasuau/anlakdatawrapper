@@ -1,4 +1,4 @@
-export DW_CONFIG_PATH ?= /app/services/frontend/test/config.docker.js
+export DW_CONFIG_PATH ?= /app/services/frontend/tests/config.docker.js
 
 docker_compose := docker-compose -f docker-compose-test.yml
 

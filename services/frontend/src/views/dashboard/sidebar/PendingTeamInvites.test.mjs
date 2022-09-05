@@ -1,5 +1,5 @@
 import PendingTeamInvites from './PendingTeamInvites.svelte';
-import { renderWithContext, setConfig } from '../../../../test/helpers/clientUtils';
+import { renderWithContext, setConfig } from '../../../../tests/helpers/clientUtils';
 import { translate } from '@datawrapper/shared/l10n';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';

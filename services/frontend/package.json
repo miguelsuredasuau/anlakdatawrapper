@@ -21,9 +21,9 @@
         "test:client-mocha-watch": "npm run test:client-mocha -- --watch",
         "test:client-rollup": "rollup -c rollup.test.config.js",
         "test:client-rollup-watch": "npm run test:client-rollup -- -w",
-        "test:server": "DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} mocha --config ./mocha-config-server.js --exit",
-        "test:server-rollup": "DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} npm run build:js",
-        "test:server-rollup-watch": "DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-test/config.local.js} npm run build:js -- -w",
+        "test:server": "DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} mocha --config ./mocha-config-server.js --exit",
+        "test:server-rollup": "DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} npm run build:js",
+        "test:server-rollup-watch": "DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} npm run build:js -- -w",
         "build:hello": "rm -Rf build/hello && TARGET=hello npm run build && TARGET=_partials/svelte2 npm run build && node scripts/build-hello.js"
     },
     "dependencies": {

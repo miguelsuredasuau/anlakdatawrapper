@@ -4,7 +4,7 @@ import {
     getSessionHeaders,
     parseSvelteView,
     parseSvelteProps
-} from '../../test/helpers/serverUtils.mjs';
+} from '../../tests/helpers/serverUtils.mjs';
 
 describe('GET /chart/{chartId}/publish', function () {
     let chart;
