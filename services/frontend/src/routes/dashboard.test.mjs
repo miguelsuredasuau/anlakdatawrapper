@@ -31,7 +31,7 @@ describe('GET / (dashboard)', function () {
             const { $, $$ } = parseHTML(res.result);
 
             expect($('h2')).to.include.text('Welcome');
-            expect($$('a[href="/chart/create"]')).to.have.length(1);
+            expect($$('a[href="/create/chart"]')).to.have.length(2);
         });
     });
 

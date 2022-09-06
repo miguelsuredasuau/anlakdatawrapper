@@ -6,7 +6,7 @@
 <div class="content">
     <h2>{__('dashboard / welcome / title')}</h2>
 
-    <a class="button is-primary is-large" href="/chart/create">
+    <a class="button is-primary is-large" href="/create/chart">
         {__('dashboard / welcome / create')}
     </a>
 
