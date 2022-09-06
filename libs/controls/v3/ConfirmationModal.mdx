@@ -11,7 +11,7 @@ ConfirmationModal uses the Bootstrap Modal CSS.
     // or import directly via
     // import ConfirmationModal from '@datawrapper/controls/ConfirmationModal.svelte;
 
-    let refConfirmationModal;
+    let modalRef;
 
     function confirm() {
         console.log('confirmed!');
@@ -22,18 +22,17 @@ ConfirmationModal uses the Bootstrap Modal CSS.
     }
 </script>
 
-<button on:click="{refConfirmationModal.open()}">Request Confirmation</button>
+<button on:click="{modalRef.open()}">Request Confirmation</button>
 
 <ConfirmationModal
-    bind:this="{refConfirmationModal}"
+    bind:this="{modalRef}"
     confirmButtonText="Confirm"
     confirmButtonIcon="checkmark-bold"
     backButtonText="Cancel"
     title="Are you sure?"
-    on:confirm="{confirm}"
-    on:dismiss="{dismiss}"
+    on:confirm={confirm}
+    on:dismiss={dismiss}
 >
     <p>Are you sure you want to confirm this change?</p>
-    <ConfirmationModal
-/></ConfirmationModal>
+<ConfirmationModal/>
 ```

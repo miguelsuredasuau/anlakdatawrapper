@@ -1,0 +1,37 @@
+# ModalDisplay
+
+ModalDisplay is a generic modal component, useful for building more complex ones.
+Per default ModalDisplay is not visible and has a close button.
+
+It can receive two named slots, `content` to be placed on the main modal area, and `actions` to be placed on the modal footer.
+
+ModalDisplay uses the Bootstrap Modal CSS.
+
+```html
+<script>
+    import { ModalDisplay } from '@datawrapper/controls';
+    // or import directly via
+    // import ModalDisplay from '@datawrapper/controls/ModalDisplay.svelte;
+
+    let modalRef;
+
+    function onDismiss() {
+        console.log('dismissed!');
+    }
+</script>
+
+<button on:click={modalRef.open}>Open modal</button>
+
+<ModalDisplay
+    title="Simple modal"
+    bind:this={modalRef}
+    on:dismiss={onDismiss}
+>
+    <p slot="content">I'm a very simple modal :)</p>
+    <svelte:fragment slot="actions">
+        <button class="btn" on:click={modalRef.dismiss}>
+            Action
+        </button>
+    </svelte:fragment>
+</ModalDisplay>
+```

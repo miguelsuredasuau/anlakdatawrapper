@@ -4,6 +4,8 @@ import './static/css/datawrapper.css';
 import './static/vendor/font-awesome/css/font-awesome.min.css';
 import './static/vendor/iconicfont/css/iconmonstr-iconic-font.min.css';
 
+import ActionsModalDocs from '../ActionsModal.mdx';
+import ActionsModalView from './ActionsModalView.svelte';
 import AlertDisplayDocs from '../AlertDisplay.mdx';
 import AlertDisplayView from './AlertDisplayView.svelte';
 import ConfirmationModalDocs from '../ConfirmationModal.mdx';
@@ -18,6 +20,8 @@ import IconButtonDocs from '../IconButton.mdx';
 import IconButtonView from './IconButtonView.svelte';
 import IconDisplayDocs from '../IconDisplay.mdx';
 import IconDisplayView from './IconDisplayView.svelte';
+import ModalDisplayDocs from '../ModalDisplay.mdx';
+import ModalDisplayView from './ModalDisplayView.svelte';
 import MoreOptionsGroupDocs from '../MoreOptionsGroup.mdx';
 import MoreOptionsGroupView from './MoreOptionsGroupView.svelte';
 import NumberControlDocs from '../NumberControl.mdx';
@@ -65,6 +69,7 @@ const moreOptions = [
     return { value, label: value, id: value };
 });
 
+export const ActionsModal = addStory('ActionsModal', ActionsModalView, ActionsModalDocs, {});
 export const AlertDisplay = addStory('AlertDisplay', AlertDisplayView, AlertDisplayDocs, {});
 export const ConfirmationModal = addStory(
     'ConfirmationModal',
@@ -84,6 +89,7 @@ export const DropdownInput = addStory('DropdownInput', DropdownInputView, Dropdo
 });
 export const IconButton = addStory('IconButton', IconButtonView, IconButtonDocs, {});
 export const IconDisplay = addStory('IconDisplay', IconDisplayView, IconDisplayDocs, {});
+export const ModalDisplay = addStory('ModalDisplay', ModalDisplayView, ModalDisplayDocs, {});
 export const MoreOptionsGroup = addStory(
     'MoreOptionsGroup',
     MoreOptionsGroupView,

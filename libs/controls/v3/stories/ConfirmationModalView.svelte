@@ -1,11 +1,11 @@
 <script>
     import ConfirmationModal from '../ConfirmationModal.svelte';
 
-    let refConfirmationModal;
+    let modalRef;
 </script>
 
 <ConfirmationModal
-    bind:this={refConfirmationModal}
+    bind:this={modalRef}
     on:confirm={() => console.warn('Implement confirmation!')}
     on:dismiss={() => console.warn('Implement dismissal!')}
     isOpen
@@ -14,4 +14,4 @@
     <p>Some explanation text about the confirmation modal.</p>
 </ConfirmationModal>
 
-<button on:click={refConfirmationModal.open()}>Open modal</button>
+<button on:click={modalRef.open}>Open modal</button>

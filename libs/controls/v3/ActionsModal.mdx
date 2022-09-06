@@ -1,0 +1,33 @@
+# ActionsModal
+
+ConfirmationModal is useful for requesting an action from the user when they have one or two options on how to proceed.
+ConfirmationModal is built on top of the ModalDisplay component.
+
+```html
+<script>
+    import { ActionsModal } from '@datawrapper/controls';
+    // or import directly via
+    // import ActionsModal from '@datawrapper/controls/ActionsModal.svelte;
+
+    let modalRef;
+
+    function primaryAction() {
+        console.log('Do recommended action');
+    }
+
+    function secondaryAction() {
+        console.log('Do alternative action');
+    }
+</script>
+
+<ActionsModal
+    title="What do you want to do?"
+    bind:this={modalRef}
+    {primaryAction}
+    {secondaryAction}
+>
+    <p>What action do you want to perform?</p>
+</ActionsModal>
+
+<button on:click={modalRef.open}>Open modal</button>
+```
