@@ -18,7 +18,15 @@ const Folder = db.define(
     },
     {
         timestamps: false,
-        tableName: 'folder'
+        tableName: 'folder',
+        validate: {
+            notBothOrgAndUser() {
+                if (this.org_id != null && this.user_id != null) {
+                    // Use the equality not the identity operator to check for null or undefined.
+                    throw new Error('Folder must not have both org_id and user_id set');
+                }
+            }
+        }
     }
 );
 
