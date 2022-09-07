@@ -3,13 +3,15 @@ const { db } = require('../index');
 const merge = require('merge-deep');
 const { clone, pick } = require('underscore');
 
-/* make sure to keep in sync with services/php/lib/core/build/conf/datawrapper/Organization.php */
+/* make sure to keep in sync with services/php/lib/core/build/classes/datawrapper/Organization.php */
 const defaultSettings = {
     folders: 'expanded',
     default: {
         folder: null,
         locale: null
     },
+    webhook_url: '',
+    webhook_enabled: false,
     slack_webhook_url: '',
     slack_enabled: false,
     msteams_webhook_url: '',

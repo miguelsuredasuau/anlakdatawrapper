@@ -76,3 +76,10 @@ test('Team.countTeamAndOwnerProducts returns zeros when there are no products', 
     t.is(numTeamProducts, 0);
     t.is(numTeamOwnerProducts, 0);
 });
+
+test('Team.create fills webhook string fields of team settings with empty strings', async t => {
+    const team = await createTeam();
+    t.is(team.settings.webhook_url, '');
+    t.is(team.settings.slack_webhook_url, '');
+    t.is(team.settings.msteams_webhook_url, '');
+});
