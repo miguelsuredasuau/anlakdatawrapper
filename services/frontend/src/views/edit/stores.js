@@ -366,13 +366,8 @@ export function initStores({
     );
     const getExternalData$ = uploadMethod$.pipe(
         skip(1),
-        switchMap(method => {
-            if (method === 'google-spreadsheet') {
-                return googleSheet$;
-            } else if (method === 'external-data') {
-                return externalData$;
-            }
-        }),
+        filter(method => ['external-data', 'external-data'].includes(method)),
+        switchMap(method => (method === 'external-data' ? externalData$ : googleSheet$)),
         withLatestFrom(latestSavedChart$),
         switchMap(([, chart]) => syncExternalData(chart.id)),
         shareReplay(1)
@@ -390,6 +385,9 @@ export function initStores({
         // ...either if the upload method changes
         uploadMethod$.pipe(
             pairwise(),
+            // note: the first emission is the initial chart state, but we don't need to skip it,
+            // because the pairwise() above makes sure the pipeline only continues once there is
+            // at least two emissions, i.e. once the upload method changes from the initial state
             // but only if changed to or from 'external-data'
             filter(([prevMethod, newMethod]) => {
                 return prevMethod === 'external-data' || newMethod === 'external-data';
@@ -400,14 +398,15 @@ export function initStores({
         ),
         // ...or if the external metadata has url changed
         externalMetadata$.pipe(
-            // but only if current upload method is external-data
+            // skip the first emission, because it's the initial chart state
+            skip(1),
             withLatestFrom(latestSavedChart$),
+            // but only if current upload method is external-data
             // note: we can't use uploadMethod$ here because this only emits
             // if the user changed it since opening the page
             filter(([, chart]) => get(chart, 'metadata.data.upload-method') === 'external-data')
         )
     ).pipe(
-        skip(1),
         // then sync the chart object
         withLatestFrom(chartId$),
         switchMap(([, chartId]) => syncExternalMetadata(chartId))
