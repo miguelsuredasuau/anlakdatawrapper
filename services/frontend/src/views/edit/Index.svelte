@@ -256,7 +256,7 @@
                 return;
             }
         }
-        if (step.forceReload) {
+        if (step.forceReload && !urlPrefix.startsWith('/v2/')) {
             window.location.href = stepUrl;
             return;
         }
