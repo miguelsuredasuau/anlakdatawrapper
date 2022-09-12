@@ -302,230 +302,247 @@ module.exports = {
             }
         );
 
-        server.route({
-            method: 'GET',
-            path: '/{prefix}/{chartId}/{step?}',
-            options: {
-                validate: {
-                    params: Joi.object({
-                        prefix: Joi.string().valid('edit', 'chart', 'map', 'table'),
-                        chartId: Joi.string()
-                            .alphanum()
-                            .length(5)
-                            .required()
-                            .description('5 character long chart ID.'),
-                        step: Joi.string().alphanum()
-                    })
-                },
-                auth: 'guest',
-                async handler(request, h) {
-                    const { params } = request;
-                    const user = request.auth.artifacts;
-                    const chart = await getChart(params.chartId, request);
-
-                    const vis = server.app.visualizations.get(chart.type);
-                    if (!vis) {
-                        throw Boom.badRequest('Unknown chart type');
-                    }
-                    const workflow = editWorkflows.find(w => w.id === (vis.workflow || 'chart'));
-                    const __ = server.methods.getTranslate(request);
-
-                    let team = null;
-                    if (chart.organization_id) {
-                        team = await chart.getTeam();
-                    }
-
-                    const teamProducts = team ? await team.getProducts() : [];
-                    const products =
-                        teamProducts.length > 0 ? teamProducts : [await user.getActiveProduct()];
-
-                    const productFeatures = Object.fromEntries(
-                        [
-                            'enableCustomLayouts',
-                            'requireDatawrapperAttribution',
-                            'enableWebToPrint'
-                        ].map(key => [key, !!products.find(product => product.hasFeature(key))])
-                    );
-
-                    if (!workflow) {
-                        throw Boom.notImplemented('unknown workflow ' + vis.workflow);
-                    }
-                    // allowPrefix is set to 'chart' for d3-maps, for which we (for now) still want to allow access to the chart
-                    // upload & describe steps
-                    // TODO: remove this hack once new symbol map upload is live
-                    if (
-                        workflow.prefix &&
-                        ![workflow.prefix, workflow.allowPrefix].includes(params.prefix)
-                    ) {
-                        return h.redirect(`/${workflow.prefix}/${params.chartId}/${params.step}`);
-                    }
-
-                    // replace step references with registered steps from other
-                    // workflows, so that plugins can re-use core steps
-                    // shallow-clone step objects to retain original objects
-                    // for future requests
-                    const workflowSteps = workflow.steps
-                        .map(step => {
-                            if (step.ref) {
-                                if (editWorkflowSteps.has(step.ref)) {
-                                    const workflowStep = { ...editWorkflowSteps.get(step.ref) };
-                                    if (step.hide) workflowStep.hide = step.hide;
-                                    return workflowStep;
-                                }
-                                throw Boom.notImplemented(
-                                    'unknown workflow step reference: ' + step.ref
-                                );
-                            }
-                            return step;
-                        })
-                        .map(step => ({ ...step }));
-
-                    // for now we still let users access chart steps for maps, but these are hidden
-                    const visibleWorkflowSteps = workflowSteps.filter(step => !step.hide);
-
-                    if (params.step === 'edit') {
-                        // auto-redirect to correct step from lastEditStep
-                        return h.redirect(
-                            `/${workflow.prefix}/${params.chartId}/${
-                                visibleWorkflowSteps[Math.min(2, chart.last_edit_step)].id
-                            }`
-                        );
-                    }
-                    if (!workflowSteps.find(step => step.id === params.step)) {
-                        params.step = workflowSteps[0].id;
-                    }
-
-                    const api = server.methods.createAPI(request);
-
-                    // refresh external data...
-                    if (
-                        // ...if the upload method isn't copy-paste or file upload
-                        get(chart, 'metadata.data.upload-method') !== 'copy' ||
-                        // ...if the chart is in "print mode", which means we want to
-                        // synchronize the dataset from the "web mode" chart
-                        get(chart, 'metadata.custom.webToPrint.mode') === 'print'
-                    ) {
-                        await api(`/charts/${chart.id}/data/refresh`, {
-                            method: 'POST',
-                            json: false
-                        });
-                    }
-
-                    // load things from API
-                    const [theme, data] = await Promise.all([
-                        await api(`/themes/${chart.theme}?extend=true`),
-                        await api(`/charts/${chart.id}/data`, { json: false })
-                    ]);
-
-                    // evaluate data function for each step
-                    await Promise.all(
-                        workflowSteps
-                            .filter(step => typeof step.data === 'function')
-                            .map(async step => {
-                                step.data = await step.data({
-                                    request,
-                                    chart,
-                                    theme,
-                                    team,
-                                    productFeatures
-                                });
-                            })
-                    );
-
-                    const breadcrumbPath = [
-                        chart.organization_id
-                            ? {
-                                  title: (await Team.findByPk(chart.organization_id)).name,
-                                  url: `/archive/team/${chart.organization_id}`,
-                                  svgIcon: 'folder-shared'
-                              }
-                            : {
-                                  title: __('archive / my-archive'),
-                                  url: '/archive',
-                                  svgIcon: 'folder-user'
-                              }
-                    ];
-                    // compute breadcrumb path
-                    let folderId = chart.in_folder;
-                    while (folderId) {
-                        const folder = await Folder.findByPk(folderId);
-                        breadcrumbPath.splice(1, 0, {
-                            title: folder.name,
-                            url: `${breadcrumbPath[0].url}/${folder.id}`,
-                            svgIcon: 'folder'
-                        });
-                        folderId = folder.parentId;
-                    }
-
-                    const customViews = await server.methods.getCustomData('edit/customViews', {
-                        request,
-                        chart,
-                        user,
-                        productFeatures
-                    });
-
-                    const rawChart = await prepareChart(chart);
-
-                    const disabledFields = await applyExternalMetadata(api, rawChart);
-
-                    // check if this is an admin accessing a chart by someone else
-                    const showAdminWarning =
-                        user.isAdmin() &&
-                        user.id !== chart.author_id &&
-                        !(await user.hasActivatedTeam(chart.organization_id));
-
-                    const localeMeta = await loadLocaleMeta();
-                    const chartLocales = server.methods.config('general').locales;
-                    chartLocales.forEach(locale => {
-                        Object.assign(
-                            locale,
-                            localeMeta[locale.id.toLowerCase()] || { textDirection: 'ltr' }
-                        );
-                    });
-
-                    const mayAdministrateTeam = team && (await user.mayAdministrateTeam(team.id));
-
-                    return h.view('edit/Index.svelte', {
-                        htmlClass: 'has-background-white-bis',
-                        analytics: {
-                            team: team ? team.id : null
-                        },
-                        props: {
-                            rawChart,
-                            rawData: data,
-                            rawTeam: team,
-                            rawLocales: chartLocales,
-                            initUrlStep: params.step,
-                            urlPrefix: `/${params.prefix}`,
-                            breadcrumbPath,
-                            workflow: {
-                                ...workflow,
-                                steps: workflowSteps
-                            },
-                            rawTheme: theme,
-                            visualizations: Array.from(server.app.visualizations.values())
-                                .filter(
-                                    vis => !isDisabledVisualization(vis, team, mayAdministrateTeam)
-                                )
-                                .map(prepareVisualization)
-                                .sort(byOrder),
-                            customViews,
-                            showEditorNavInCmsMode: get(
-                                user.activeTeam,
-                                'settings.showEditorNavInCmsMode',
-                                false
-                            ),
-                            rawReadonlyKeys: disabledFields,
-                            showAdminWarning,
-                            dataReadonly: !(await chart.isDataEditableBy(
-                                user,
-                                request.auth.credentials.session
-                            ))
-                        }
-                    });
-                }
+        ['chart', 'map', 'table', 'edit'].map(prefix => {
+            editRoute(prefix);
+            if (prefix === 'edit') {
+                // add /v2/ alias for edit route
+                editRoute(prefix, true);
             }
         });
+
+        function editRoute(prefix, v2 = false) {
+            server.route({
+                method: 'GET',
+                path: `/${v2 ? 'v2/' : ''}${prefix}/{chartId}/{step?}`,
+                options: {
+                    validate: {
+                        params: Joi.object({
+                            chartId: Joi.string()
+                                .alphanum()
+                                .length(5)
+                                .required()
+                                .description('5 character long chart ID.'),
+                            step: Joi.string().alphanum()
+                        })
+                    },
+                    auth: 'guest',
+                    async handler(request, h) {
+                        const { params } = request;
+                        const user = request.auth.artifacts;
+                        const chart = await getChart(params.chartId, request);
+
+                        const vis = server.app.visualizations.get(chart.type);
+                        if (!vis) {
+                            throw Boom.badRequest('Unknown chart type');
+                        }
+                        const workflow = editWorkflows.find(
+                            w => w.id === (vis.workflow || 'chart')
+                        );
+                        const __ = server.methods.getTranslate(request);
+
+                        let team = null;
+                        if (chart.organization_id) {
+                            team = await chart.getTeam();
+                        }
+
+                        const teamProducts = team ? await team.getProducts() : [];
+                        const products =
+                            teamProducts.length > 0
+                                ? teamProducts
+                                : [await user.getActiveProduct()];
+
+                        const productFeatures = Object.fromEntries(
+                            [
+                                'enableCustomLayouts',
+                                'requireDatawrapperAttribution',
+                                'enableWebToPrint'
+                            ].map(key => [key, !!products.find(product => product.hasFeature(key))])
+                        );
+
+                        if (!workflow) {
+                            throw Boom.notImplemented('unknown workflow ' + vis.workflow);
+                        }
+                        // allowPrefix is set to 'chart' for d3-maps, for which we (for now) still want to allow access to the chart
+                        // upload & describe steps
+                        // TODO: remove this hack once new symbol map upload is live
+                        if (
+                            workflow.prefix &&
+                            ![workflow.prefix, workflow.allowPrefix].includes(prefix)
+                        ) {
+                            return h.redirect(
+                                `/${workflow.prefix}/${params.chartId}/${params.step}`
+                            );
+                        }
+
+                        // replace step references with registered steps from other
+                        // workflows, so that plugins can re-use core steps
+                        // shallow-clone step objects to retain original objects
+                        // for future requests
+                        const workflowSteps = workflow.steps
+                            .map(step => {
+                                if (step.ref) {
+                                    if (editWorkflowSteps.has(step.ref)) {
+                                        const workflowStep = { ...editWorkflowSteps.get(step.ref) };
+                                        if (step.hide) workflowStep.hide = step.hide;
+                                        return workflowStep;
+                                    }
+                                    throw Boom.notImplemented(
+                                        'unknown workflow step reference: ' + step.ref
+                                    );
+                                }
+                                return step;
+                            })
+                            .map(step => ({ ...step }));
+
+                        // for now we still let users access chart steps for maps, but these are hidden
+                        const visibleWorkflowSteps = workflowSteps.filter(step => !step.hide);
+
+                        if (params.step === 'edit') {
+                            // auto-redirect to correct step from lastEditStep
+                            return h.redirect(
+                                `/${workflow.prefix}/${params.chartId}/${
+                                    visibleWorkflowSteps[Math.min(2, chart.last_edit_step)].id
+                                }`
+                            );
+                        }
+                        if (!workflowSteps.find(step => step.id === params.step)) {
+                            params.step = workflowSteps[0].id;
+                        }
+
+                        const api = server.methods.createAPI(request);
+
+                        // refresh external data...
+                        if (
+                            // ...if the upload method isn't copy-paste or file upload
+                            get(chart, 'metadata.data.upload-method') !== 'copy' ||
+                            // ...if the chart is in "print mode", which means we want to
+                            // synchronize the dataset from the "web mode" chart
+                            get(chart, 'metadata.custom.webToPrint.mode') === 'print'
+                        ) {
+                            await api(`/charts/${chart.id}/data/refresh`, {
+                                method: 'POST',
+                                json: false
+                            });
+                        }
+
+                        // load things from API
+                        const [theme, data] = await Promise.all([
+                            await api(`/themes/${chart.theme}?extend=true`),
+                            await api(`/charts/${chart.id}/data`, { json: false })
+                        ]);
+
+                        // evaluate data function for each step
+                        await Promise.all(
+                            workflowSteps
+                                .filter(step => typeof step.data === 'function')
+                                .map(async step => {
+                                    step.data = await step.data({
+                                        request,
+                                        chart,
+                                        theme,
+                                        team,
+                                        productFeatures
+                                    });
+                                })
+                        );
+
+                        const breadcrumbPath = [
+                            chart.organization_id
+                                ? {
+                                      title: (await Team.findByPk(chart.organization_id)).name,
+                                      url: `/archive/team/${chart.organization_id}`,
+                                      svgIcon: 'folder-shared'
+                                  }
+                                : {
+                                      title: __('archive / my-archive'),
+                                      url: '/archive',
+                                      svgIcon: 'folder-user'
+                                  }
+                        ];
+                        // compute breadcrumb path
+                        let folderId = chart.in_folder;
+                        while (folderId) {
+                            const folder = await Folder.findByPk(folderId);
+                            breadcrumbPath.splice(1, 0, {
+                                title: folder.name,
+                                url: `${breadcrumbPath[0].url}/${folder.id}`,
+                                svgIcon: 'folder'
+                            });
+                            folderId = folder.parentId;
+                        }
+
+                        const customViews = await server.methods.getCustomData('edit/customViews', {
+                            request,
+                            chart,
+                            user,
+                            productFeatures
+                        });
+
+                        const rawChart = await prepareChart(chart);
+
+                        const disabledFields = await applyExternalMetadata(api, rawChart);
+
+                        // check if this is an admin accessing a chart by someone else
+                        const showAdminWarning =
+                            user.isAdmin() &&
+                            user.id !== chart.author_id &&
+                            !(await user.hasActivatedTeam(chart.organization_id));
+
+                        const localeMeta = await loadLocaleMeta();
+                        const chartLocales = server.methods.config('general').locales;
+                        chartLocales.forEach(locale => {
+                            Object.assign(
+                                locale,
+                                localeMeta[locale.id.toLowerCase()] || { textDirection: 'ltr' }
+                            );
+                        });
+
+                        const mayAdministrateTeam =
+                            team && (await user.mayAdministrateTeam(team.id));
+
+                        return h.view('edit/Index.svelte', {
+                            htmlClass: 'has-background-white-bis',
+                            analytics: {
+                                team: team ? team.id : null
+                            },
+                            props: {
+                                rawChart,
+                                rawData: data,
+                                rawTeam: team,
+                                rawLocales: chartLocales,
+                                initUrlStep: params.step,
+                                urlPrefix: `/${v2 ? 'v2/' : ''}${prefix}`,
+                                breadcrumbPath,
+                                workflow: {
+                                    ...workflow,
+                                    steps: workflowSteps
+                                },
+                                rawTheme: theme,
+                                visualizations: Array.from(server.app.visualizations.values())
+                                    .filter(
+                                        vis =>
+                                            !isDisabledVisualization(vis, team, mayAdministrateTeam)
+                                    )
+                                    .map(prepareVisualization)
+                                    .sort(byOrder),
+                                customViews,
+                                showEditorNavInCmsMode: get(
+                                    user.activeTeam,
+                                    'settings.showEditorNavInCmsMode',
+                                    false
+                                ),
+                                rawReadonlyKeys: disabledFields,
+                                showAdminWarning,
+                                dataReadonly: !(await chart.isDataEditableBy(
+                                    user,
+                                    request.auth.credentials.session
+                                ))
+                            }
+                        });
+                    }
+                }
+            });
+        }
 
         async function getChart(id, request) {
             const isAdmin = server.methods.isAdmin(request);
