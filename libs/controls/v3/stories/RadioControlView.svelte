@@ -4,6 +4,7 @@
     export let options;
 
     let value = 'red';
+    let changeValue = null;
 
     const helpOptions = options.map(o => ({ ...o, help: `help balloon for <b>${o.label}</b>` }));
     const tooltipOptions = options.map(o => ({ ...o, tooltip: `help text for ${o.label}` }));
@@ -44,3 +45,16 @@
     disabled="1"
     disabledMessage="This explains why the control is disabled. The message also has <b>support</b> for <a href='https://www.w3.org/html/'>HTML formatting</a>."
 />
+
+<RadioControl
+    {options}
+    label="on:change events"
+    bind:value
+    on:change={evt => (changeValue = evt.target.value)}
+/>
+{#if changeValue !== null}
+    <code>
+        <b>Event triggered:</b>
+        {changeValue}
+    </code>
+{/if}

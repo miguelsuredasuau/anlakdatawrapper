@@ -103,7 +103,7 @@
 
 <div class="control-group vis-option-group vis-option-type-checkbox" data-uid={uid}>
     <label class="checkbox" class:disabled class:faded>
-        <input type="checkbox" {disabled} bind:checked={value} />
+        <input type="checkbox" {disabled} bind:checked={value} on:change />
         <span class="css-ui" />
         {label}
     </label>

@@ -141,7 +141,7 @@
     <div class:inline class:indeterminate>
         {#each options as opt}
             <label title={opt.tooltip || ''} class:disabled class:has-help={opt.help}>
-                <input type="radio" value={opt.value} bind:group={value} {disabled} />
+                <input type="radio" value={opt.value} bind:group={value} {disabled} on:change />
                 <span class="css-ui" />&nbsp;<span class="inner-label">
                     {@html opt.label}
                 </span>
