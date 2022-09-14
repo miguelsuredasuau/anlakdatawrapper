@@ -29,25 +29,27 @@
                 colorOpen: false,
                 help: '',
                 wouldDelete: false,
-                dragging: false,
+                draggingIndex: null,
                 dragStartAt: 0,
                 gotIt: false,
-                focus: false,
+                focusIndex: null,
                 mouseOverGradient: false,
                 mouseX: 0,
                 undoStack: [],
                 redoStack: [],
-                uid: ''
+                uid: '',
+                // Used to prevent the color picker from showing up right after dragging a color stop.
+                preventSwatchClick: false
             };
         },
         computed: {
             presets({ themePresets, userPresets }) {
                 return themePresets.concat(userPresets);
             },
-            activeColors({ colors, dragging, wouldDelete }) {
+            activeColors({ colors, draggingIndex, wouldDelete }) {
                 return colors
-                    .filter(color => {
-                        return !wouldDelete || dragging !== color;
+                    .filter((color, index) => {
+                        return !wouldDelete || draggingIndex !== index;
                     })
                     .sort((a, b) => a.position - b.position);
             },
@@ -125,6 +127,9 @@
             },
             lightnessFixable({ isMonotone, isDiverging }) {
                 return isMonotone || isDiverging;
+            },
+            isDragging({ draggingIndex }) {
+                return draggingIndex !== null;
             }
         },
         helpers: {
@@ -234,7 +239,7 @@
         methods: {
             select(preset) {
                 this.set({
-                    dragging: false,
+                    draggingIndex: null,
                     wouldDelete: false,
                     colors:
                         typeof preset[0] === 'string'
@@ -350,8 +355,10 @@
                 this.set({ userPresets });
             },
             swatchClick(color, index) {
-                const { dragging, colorOpen } = this.get();
-                if (dragging) return;
+                const { isDragging, colorOpen, preventSwatchClick } = this.get();
+
+                if (isDragging || preventSwatchClick) return;
+
                 if (colorOpen) {
                     this.focus(color);
                     return this.closePicker();
@@ -371,11 +378,11 @@
                     editPosition: 0
                 });
             },
-            dragStart(event, item) {
+            dragStart(event, item, index) {
                 this.saveState();
                 const bbox = this.refs.gradient.getBoundingClientRect();
                 this.set({
-                    dragging: item,
+                    draggingIndex: index,
                     wouldDelete: false,
                     dragStartAt: new Date().getTime(),
                     dragStartPos: event.clientX,
@@ -385,53 +392,79 @@
                 });
             },
             handleMouseMove(event) {
-                const { dragging, colors, dragStartAt, dragStartPos, dragStartDelta, ticks } =
-                    this.get();
+                const {
+                    draggingIndex,
+                    isDragging,
+                    colors,
+                    dragStartAt,
+                    dragStartPos,
+                    dragStartDelta,
+                    ticks
+                } = this.get();
                 const delay = new Date().getTime() - dragStartAt;
                 const distance = Math.abs(dragStartPos - event.clientX);
+                const draggedColor = colors[draggingIndex];
 
-                if (dragging && (delay > 300 || distance > 5)) {
+                if (isDragging && draggedColor && (delay > 300 || distance > 5)) {
                     const bbox = this.refs.gradient.getBoundingClientRect();
-                    dragging.position = +(
+                    draggedColor.position = +(
                         dragStartDelta +
                         Math.max(0, Math.min(1, (event.clientX - bbox.left) / bbox.width))
                     ).toFixed(4);
                     const closest = ticks.sort(
-                        (a, b) => Math.abs(a - dragging.position) - Math.abs(b - dragging.position)
+                        (a, b) =>
+                            Math.abs(a - draggedColor.position) -
+                            Math.abs(b - draggedColor.position)
                     )[0];
-                    if (!event.shiftKey && Math.abs(closest - dragging.position) < 0.015)
-                        dragging.position = closest;
+                    if (!event.shiftKey && Math.abs(closest - draggedColor.position) < 0.015)
+                        draggedColor.position = closest;
                     const wouldDelete =
                         Math.abs(event.clientY - bbox.top) > 20 && colors.length > 2;
                     this.set({ colors, wouldDelete });
                 }
             },
             handleMouseUp(event) {
-                const { dragging, wouldDelete, dragStartPos, dragStartAt } = this.get();
+                const {
+                    draggingIndex,
+                    isDragging,
+                    colors,
+                    wouldDelete,
+                    dragStartPos,
+                    dragStartAt
+                } = this.get();
                 const delay = new Date().getTime() - dragStartAt;
                 const distance = Math.abs(dragStartPos - event.clientX);
-                if ((dragging && delay > 300) || distance > 5) {
-                    setTimeout(() => {
-                        this.set({ dragging: false, wouldDelete: false });
-                    });
+                let nextFocusIndex = draggingIndex;
+
+                this.set({ draggingIndex: null, wouldDelete: false });
+
+                if ((isDragging && delay > 300) || distance > 5) {
                     event.preventDefault();
-                    const { colors } = this.get();
+                    this.set({ preventSwatchClick: true });
+
+                    const draggedColor = colors[draggingIndex];
                     if (wouldDelete && colors.length > 2) {
                         // remove color
-                        colors.splice(colors.indexOf(dragging), 1);
+                        colors.splice(draggingIndex, 1);
                         this.set({ colors });
+                        nextFocusIndex = Math.min(draggingIndex, colors.length - 1);
+                    } else {
+                        this.sortColors();
+                        // color might have switched places after sorting
+                        nextFocusIndex = colors.indexOf(draggedColor);
                     }
-                    this.sortColors();
-                } else {
-                    this.set({ dragging: false, wouldDelete: false });
+
+                    setTimeout(() => {
+                        this.set({ preventSwatchClick: false });
+                    });
                 }
-                this.focus(dragging);
+                this.focus(colors[nextFocusIndex]);
             },
             focus(color) {
                 const { colors } = this.get();
                 const index = colors.indexOf(color);
                 if (index > -1) {
-                    this.set({ focus: color });
+                    this.set({ focusIndex: index });
                     this.refs.swatches.querySelector(`a:nth-child(${index + 1}) path`).focus();
                 }
             },
@@ -443,8 +476,8 @@
             },
             handleGradientClick(event) {
                 // add new color stop to gradient
-                const { dragging, scale, colors } = this.get();
-                if (!dragging) {
+                const { isDragging, scale, colors } = this.get();
+                if (!isDragging) {
                     const bbox = this.refs.gradient.getBoundingClientRect();
                     const position = Math.max(
                         0,
@@ -467,21 +500,23 @@
                 this.set({ mouseX: event.clientX - bbox.left });
             },
             handleKeyDown(event) {
-                const { focus, colors, width } = this.get();
-                if (focus && (event.keyCode === 37 || event.keyCode === 39)) {
-                    focus.position = +(
-                        focus.position +
+                const { focusIndex, colors, width } = this.get();
+                const hasFocus = focusIndex !== null;
+                const focusedColor = colors[focusIndex];
+                if (hasFocus && (event.keyCode === 37 || event.keyCode === 39)) {
+                    focusedColor.position = +(
+                        focusedColor.position +
                         (1 / width) * (event.shiftKey ? 10 : 1) * (event.keyCode === 37 ? -1 : 1)
                     ).toFixed(5);
                     this.set({ colors });
                 }
-                if (focus && event.keyCode === 46 && colors.length > 2) {
-                    colors.splice(colors.indexOf(focus), 1);
+                if (hasFocus && event.keyCode === 46 && colors.length > 2) {
+                    colors.splice(focusIndex, 1);
                     this.set({ colors });
                 }
-                if (focus && event.keyCode === 61) {
+                if (hasFocus && event.keyCode === 61) {
                     const { scale } = this.get();
-                    let i = colors.indexOf(focus);
+                    let i = focusIndex;
                     if (i === colors.length - 1) i--;
                     const insertAt = (colors[i].position + colors[i + 1].position) * 0.5;
                     const inserted = {
@@ -549,57 +584,69 @@
         margin-top: 10px;
         position: relative;
     }
+
     path.swatch {
         shape-rendering: crispEdges;
         cursor: move;
     }
+
     g.line {
         pointer-events: none;
     }
+
     g.line path {
         stroke: black;
         fill: none;
         shape-rendering: crispEdges;
         opacity: 0.3;
     }
+
     g.line text {
         text-anchor: middle;
         fill: black;
         font-weight: bold;
         opacity: 0.5;
     }
+
     path.swatch.delete {
         stroke-dasharray: 2, 2;
         fill-opacity: 0.25;
         shape-rendering: initial;
     }
+
     path.swatch:hover,
     path.swatch.focus {
         stroke: black !important;
     }
+
     path.tick {
         stroke: #aaa;
         fill: none;
         shape-rendering: crispEdges;
     }
+
     svg {
         overflow: visible;
         margin-left: 5px;
     }
+
     .picker-cont {
         position: absolute;
         top: 4px;
     }
+
     :global(.base-drop-btn .btn.btn-small) {
         border-left: 0;
         border-bottom-left-radius: 0;
         border-top-left-radius: 0;
     }
+
     :global(.base-drop-btn svg),
     :global(.base-dropdown-content svg) {
         position: relative;
         top: 3px;
     }
+
     :global(i.contrast-up),
     :global(i.contrast-down) {
         display: inline-block;
@@ -607,10 +654,12 @@
         position: relative;
         top: -1px;
     }
+
     :global(i.contrast-up) + span,
     :global(i.contrast-down) + span {
         font-weight: bold !important;
     }
+
     :global(i.contrast-up):before,
     :global(i.contrast-down):before {
         content: '';
@@ -624,6 +673,7 @@
         left: 6px;
         border-radius: 0 6px 6px 0;
     }
+
     :global(i.contrast-down):after,
     :global(i.contrast-up):after {
         content: '';
@@ -639,10 +689,12 @@
         left: 0px;
         border-radius: 6px 0 0 6px;
     }
+
     .btn-group .btn-small {
         padding-left: 9px;
         padding-right: 9px;
     }
+
     .btn-small .btn-help {
         display: none;
         position: absolute;
@@ -656,10 +708,12 @@
         padding: 4px 7px;
         max-width: 200px;
     }
+
     .btn-small:hover .btn-help {
         display: block;
         box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
     }
+
     .btn-small:hover .btn-help:before {
         content: ' ';
         display: block;
@@ -670,6 +724,7 @@
         left: 0;
         height: 10px;
     }
+
     ref:gradientdropdown :global(.btn .caret) {
         margin-top: 12px;
     }
@@ -717,8 +772,9 @@
         <!-- prettier-ignore -->
         {@html __('controls / gradient-editor / help', 'core')}
         <a href="#/closeHelp" on:click|preventDefault="closeHelp()"
-            ><i class="fa fa-check"></i> {__('controls / gradient-editor / got-it', 'core')}</a
-        >
+            ><i class="fa fa-check"></i>
+            {__('controls / gradient-editor / got-it', 'core')}
+        </a>
     </p>
     {/if}
     <div class="preview">
@@ -740,20 +796,20 @@
                 width="{width}"
                 height="26"
             />
-            {#if !dragging && mouseOverGradient}
+            {#if !isDragging && mouseOverGradient}
             <g class="line" transform="translate({Math.round(mouseX)+0.5},0)">
                 <path d="M-7,3 l7,7 l7,-7 v-12 h-14Z" />
                 <text y="4">+</text>
             </g>
             {/if}
-            <g ref:swatches class="swatches" on:focusout="set({focus:false})">
+            <g ref:swatches class="swatches" on:focusout="set({focusIndex:null})">
                 {#each colors as c,i}
-                <a xlink:href="#/color/{i}" draggable="{false}" on:focusin="set({focus:c})">
+                <a xlink:href="#/color/{i}" draggable="{false}" on:focusin="set({focusIndex:i})">
                     <path
                         on:mousedown|preventDefault="dragStart(event, c, i)"
                         class="swatch"
-                        class:focus="focus === c"
-                        class:delete="c === dragging && wouldDelete"
+                        class:focus="focusIndex === i"
+                        class:delete="i === draggingIndex && wouldDelete"
                         on:click|stopPropagation|preventDefault="swatchClick(c,i)"
                         tabindex="{i+1}"
                         d="M-7,3 l7,7 l7,-7 v-12 h-14Z"
