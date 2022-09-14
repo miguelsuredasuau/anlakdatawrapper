@@ -5,6 +5,7 @@
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import Step from './Step.svelte';
 
+    const user = getContext('user');
     const { hasUnsavedChanges, saveSuccess, saveError } = getContext('page/edit');
     const config = getContext('config');
     $: stickyHeaderThreshold = $config.stickyHeaderThreshold;
@@ -52,16 +53,22 @@
     class:is-sticky={false && innerHeight > stickyHeaderThreshold && innerWidth > 1200}
 >
     <div class="columns is-1 is-variable">
-        <div class="column is-narrow has-text-grey has-text-weight-medium">
-            {__(`editor / chart-breadcrumb / ${prefix === 'edit' ? 'map' : prefix}`)}
-            {__('editor / chart-breadcrumb / is-in-folder')}
-        </div>
-        <div class="column is-flex-grow-2">
-            <BreadcrumbsDisplay
-                path={breadcrumbPath}
-                className="has-text-grey has-text-weight-medium"
-            />
-        </div>
+        {#if !$user.isGuest}
+            <div class="column is-narrow has-text-grey has-text-weight-medium">
+                {__(`editor / chart-breadcrumb / ${prefix === 'edit' ? 'map' : prefix}`)}
+                {__('editor / chart-breadcrumb / is-in-folder')}
+            </div>
+            <div class="column is-flex-grow-2">
+                <BreadcrumbsDisplay
+                    path={breadcrumbPath}
+                    className="has-text-grey has-text-weight-medium"
+                />
+            </div>
+        {:else}
+            <div class="column is-narrow has-text-grey has-text-weight-medium">
+                {@html __('edit / header / guest-welcome')}
+            </div>
+        {/if}
         <div
             class="column is-size-7 has-text-grey has-text-right is-status-column is-flex is-align-items-center is-justify-content-flex-end"
         >
