@@ -23,6 +23,13 @@
 />
 <SelectButtonsControl
     labelWidth="120px"
+    options="{labelOptions}"
+    label="label-option labels"
+    bind:value
+    inline="{false}"
+/>
+<SelectButtonsControl
+    labelWidth="120px"
     options="{iconOptions}"
     label="icon labels"
     bind:value
@@ -39,7 +46,8 @@
 <script>
     import SelectButtonsControl from '../SelectButtonsControl.html';
 
-    const icons = ['bug', 'bolt', 'car'];
+    const faIcons = ['bug', 'bolt', 'car'];
+    const dwIcons = ['dw-map', 'dw-river', 'align-vertical-center'];
     const svg = ['M0,12 H24 v1 H0', 'M0,10 H24 v2.5 H0', 'M0,10 H24 v4 H0'];
 
     export default {
@@ -48,10 +56,19 @@
             return {};
         },
         computed: {
+            labelOptions({ options }) {
+                return options.map((o, i) => {
+                    return Object.assign({}, o, {
+                        label: `<i class="fa fa-fw fa-${faIcons[i]}"></i>`
+                    });
+                });
+            },
             iconOptions({ options }) {
                 return options.map((o, i) => {
                     return Object.assign({}, o, {
-                        label: `<i class="fa fa-fw fa-${icons[i]}"></i>`
+                        value: o.value,
+                        label: '',
+                        icon: dwIcons[i]
                     });
                 });
             },

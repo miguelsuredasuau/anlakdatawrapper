@@ -59,7 +59,7 @@
   "controls / custom-format / auto": "(automatisch)",
   "controls / gradient-editor / how-this-works": "Anleitung:",
   "controls / gradient-editor / got-it": "Alles klar",
-  "controls / gradient-editor / help": "Auf den Verlauf klicken um neue Farbmarker hinzuzufügen. Zum ändern der Farbe, den Marker anklicken und zum Löschen den Marker nach oben oder untern aus dem Verlauf herausziehen Click anywhere in the gradient to add new color stops.",
+  "controls / gradient-editor / help": "Auf den Verlauf klicken um neue Farbmarker hinzuzufügen. Zum Ändern der Farbe, den Marker anklicken und zum Löschen den Marker nach oben oder untern aus dem Verlauf herausziehen.",
   "controls / gradient-editor / reverse": "Umkehren",
   "controls / gradient-editor / import": "Farben importieren",
   "controls / gradient-editor / export": "Farben exportieren",
@@ -1164,5 +1164,8 @@
   "archive / folder / delete / confirm / yes": "Ja, löschen",
   "archive / chart / delete / confirm / yes": "Ja, löschen",
   "archive / folder / delete / confirm / no": "Nein",
-  "archive / chart / delete / confirm / no": "Nein"
+  "archive / chart / delete / confirm / no": "Nein",
+  "sso / error": "SSO-Versuch fehlgeschlagen",
+  "sso / error / head": "Der Identity-Provider deines Teams hat deinen Anmeldevorgang abgelehnt.",
+  "sso / error / text": "Datawrapper hat diese Fehlermeldung von deinem Identity-Provider erhalten:"
 }

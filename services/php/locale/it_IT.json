@@ -1164,5 +1164,8 @@
   "archive / folder / delete / confirm / yes": "",
   "archive / chart / delete / confirm / yes": "",
   "archive / folder / delete / confirm / no": "No",
-  "archive / chart / delete / confirm / no": "No"
+  "archive / chart / delete / confirm / no": "No",
+  "sso / error": "",
+  "sso / error / head": "",
+  "sso / error / text": ""
 }

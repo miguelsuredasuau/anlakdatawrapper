@@ -44,7 +44,6 @@
   "controls / color-scale / please-select-column": "请先选择一列",
   "controls / color-scale / interpolation": "插值",
   "controls / color-scale / interpolation / help": "插值控制如何将值分配给连续调色板（渐变）上的颜色。",
-  "controls / color-scale / interpolation / linear": "线性",
   "controls / color-scale / interpolation / discrete": "离散型",
   "controls / color-scale / breaks / count": "计数",
   "controls / color-scale / breaks / linear": "等距",
@@ -831,6 +830,7 @@
   "describe / column-format / trillion": "1万亿",
   "controls / annotations / duplicate": "注释重复",
   "standalone": "正常尺寸",
+  "controls / color-scale / interpolation / linear": "线性",
   "controls / color-scale / interpolation / quartiles": "四分位数",
   "controls / color-scale / interpolation / quintiles": "五分位数",
   "controls / color-scale / interpolation / deciles": "十分位数",
@@ -1164,5 +1164,8 @@
   "archive / folder / delete / confirm / yes": "",
   "archive / chart / delete / confirm / yes": "",
   "archive / folder / delete / confirm / no": "无",
-  "archive / chart / delete / confirm / no": "无"
+  "archive / chart / delete / confirm / no": "无",
+  "sso / error": "",
+  "sso / error / head": "",
+  "sso / error / text": ""
 }

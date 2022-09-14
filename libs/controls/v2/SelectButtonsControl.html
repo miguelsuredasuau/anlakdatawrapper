@@ -35,7 +35,11 @@
                     d="{option.svg}"
                 />
             </svg>
-            {/if}
+            {/if} {#if option.icon}<IconDisplay
+                icon="{option.icon}"
+                size="17px"
+                valign="middle"
+            />{/if}
         </ToggleButtonInput>
         {/each}
     </div>
@@ -45,9 +49,10 @@
 <script>
     import ControlGroup from './ControlGroup.html';
     import ToggleButtonInput from './ToggleButtonInput.html';
+    import IconDisplay from './IconDisplay.html';
 
     export default {
-        components: { ControlGroup, ToggleButtonInput },
+        components: { ControlGroup, ToggleButtonInput, IconDisplay },
         data() {
             return {
                 disabled: false,
