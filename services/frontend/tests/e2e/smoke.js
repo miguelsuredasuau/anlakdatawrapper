@@ -114,8 +114,6 @@ Ukraine conflict between Russia and Western Countries;2;30;2;52;14`
         const $modalConfirmButton = await $('.modal-content button.is-danger');
         await expect($modalConfirmButton).toBeDisplayed();
         await $modalConfirmButton.click(); // Confirm chart deletion.
-        await browser.pause(1000); // TODO Figure out a better way to wait for chart deletion.
-        const $archiveBoxCaptionNonExistent = await $(`figcaption=${chartTitle}`);
-        await expect($archiveBoxCaptionNonExistent).not.toBeDisplayed(); // Check that the visualization box disappeared.
+        await expect($(`figcaption=${chartTitle}`)).not.toBeExisting(); // Check that the visualization box disappeared.
     });
 });
