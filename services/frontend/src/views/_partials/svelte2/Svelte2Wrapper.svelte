@@ -2,6 +2,7 @@
     import { onMount, getContext, beforeUpdate, createEventDispatcher } from 'svelte';
     import dw from '@datawrapper/chart-core/dist/dw-2.0.cjs';
     import clone from 'lodash/cloneDeep';
+    import merge from 'lodash/merge';
     import isEqual from 'underscore/modules/isEqual.js';
     import { waitFor } from './shared';
 
@@ -55,8 +56,7 @@
 
     onMount(async () => {
         // mimic old dw setup
-        window.dw = {
-            ...dw,
+        window.dw = merge(window.dw, dw, {
             backend: {
                 __messages:
                     window && window.dw && window.dw.backend && window.dw.backend.__messages
@@ -75,7 +75,7 @@
                         ? window.dw.backend.hooks
                         : initHooks()
             }
-        };
+        });
         window.__svelte2wrapper = window.__svelte2wrapper || {};
         window.__svelte2wrapper[uid] = {
             data: prevData,

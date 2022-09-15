@@ -12,6 +12,7 @@
     import httpReq from '@datawrapper/shared/httpReq';
     import dw from '@datawrapper/chart-core/dist/dw-2.0.cjs';
     import { trackPageView } from '@datawrapper/shared/analytics.js';
+    import merge from 'lodash/merge';
 
     export let workflow;
     export let __;
@@ -191,8 +192,7 @@
         storeSubscriptions.add(syncChart.subscribe());
 
         // mimic old dw setup
-        window.dw = {
-            ...dw,
+        window.dw = merge(window.dw, dw, {
             backend: {
                 __messages: $messages,
                 __api_domain: $config.apiDomain,
@@ -202,7 +202,7 @@
                         ? window.dw.backend.hooks
                         : initHooks()
             }
-        };
+        });
 
         if (!initUrlStep && rawChart.lastEditStep) {
             activeStep = steps[Math.max(1, Math.min(steps.length - 1, rawChart.lastEditStep - 1))];
