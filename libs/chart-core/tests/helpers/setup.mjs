@@ -11,11 +11,16 @@ export function createBrowser() {
 
 export async function createPage(browser) {
     const page = await browser.newPage();
+    await page.setViewport({
+        width: 600,
+        height: 500,
+        deviceScaleFactor: 2
+    });
 
     await page.setContent(
         `<html>
     <body>
-        <div class="dw-chart">
+        <div class="dw-chart" id="__svelte-dw">
             <div class="dw-chart-body"></div>
         </div>
     </body>
@@ -25,6 +30,21 @@ export async function createPage(browser) {
     await page.addScriptTag({
         content: await readFile(join(pathToChartCore, 'dist/dw-2.0.min.js'), 'utf-8')
     });
+
+    // load emotion
+    await page.addScriptTag({
+        content: await readFile(
+            join(
+                pathToChartCore,
+                'node_modules',
+                '@emotion/css/create-instance',
+                'dist/emotion-css-create-instance.umd.min.js'
+            ),
+            'utf-8'
+        )
+    });
+
+    page.on('console', evt => process.stdout.write('CONSOLE: ' + evt.text() + '\n'));
 
     return page;
 }
@@ -51,10 +71,21 @@ const DEFAULT_THEME = {
 
 export async function render(page, props) {
     props.theme = props.theme || DEFAULT_THEME;
+    props.translations = props.translations || { 'en-US': {} };
+
+    const state = {
+        ...props
+    };
+
+    await page.addScriptTag({
+        content: `window.__DW_SVELTE_PROPS__ = ${JSON.stringify(state)};`
+    });
+
     return await page.evaluate(
         async ({ chart, dataset, visMeta, theme, flags, translations, textDirection }) => {
             /* eslint-env browser */
-            /* global dw */
+            /* global dw, createEmotion */
+
             const target = document.querySelector('.dw-chart-body');
             const container = document.querySelector('.dw-chart');
             const dwChart = dw
@@ -63,18 +94,22 @@ export async function render(page, props) {
                 .translations(translations)
                 .theme({ ...theme })
                 .flags({ isIframe: true, ...flags });
-
             const vis = dw.visualization(chart.type, target);
             vis.meta = visMeta;
             vis.lang = chart.language || 'en-US';
             vis.textDirection = textDirection || 'ltr';
-
             // load chart data and assets
+            if (!dwChart.emotion) {
+                dwChart.emotion = createEmotion({
+                    key: `datawrapper-${chart.id}`,
+                    container: document.head
+                });
+            }
+
             await dwChart.load(dataset);
             dwChart.locales = {};
             dwChart.vis(vis);
             dwChart.render(container);
-            return theme;
         },
         props
     );
