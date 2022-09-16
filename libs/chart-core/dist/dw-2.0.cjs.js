@@ -3465,7 +3465,10 @@ function delimited(opts) {
     return {
         dataset: function () {
             return loadAndParseCsv().catch(e => {
-                console.error('could not fetch datasource, returning an empty dataset', e);
+                console.error(
+                    `Could not fetch delimited data source for chart ${opts.chartId}, ` +
+                        `returning an empty dataset: ${e.message}`
+                );
                 return Dataset([]);
             });
         },
@@ -3723,7 +3726,10 @@ function json(opts) {
     return {
         dataset: function () {
             return loadAndParseJSON().catch(e => {
-                console.error('could not fetch datasource, returning an empty object', e);
+                console.error(
+                    `Could not fetch JSON data source for chart ${opts.chartId}, ` +
+                        `returning an empty object: ${e.message}`
+                );
                 return {};
             });
         },
@@ -7077,6 +7083,7 @@ function chart (attributes) {
         // loads the dataset and returns a deferred
         load(csv, externalData) {
             const dsopts = {
+                chartId: chart.get('id'),
                 firstRowIsHeader: chart.get('metadata.data.horizontal-header', true),
                 transpose: chart.get('metadata.data.transpose', false)
             };
