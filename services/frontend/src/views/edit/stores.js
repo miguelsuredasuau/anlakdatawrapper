@@ -366,7 +366,7 @@ export function initStores({
     );
     const getExternalData$ = uploadMethod$.pipe(
         skip(1),
-        filter(method => ['external-data', 'external-data'].includes(method)),
+        filter(method => ['external-data', 'google-spreadsheet'].includes(method)),
         switchMap(method => (method === 'external-data' ? externalData$ : googleSheet$)),
         withLatestFrom(latestSavedChart$),
         switchMap(([, chart]) => syncExternalData(chart.id)),
