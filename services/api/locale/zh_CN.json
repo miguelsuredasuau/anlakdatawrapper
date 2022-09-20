@@ -1167,5 +1167,6 @@
   "archive / chart / delete / confirm / no": "无",
   "sso / error": "",
   "sso / error / head": "",
-  "sso / error / text": ""
+  "sso / error / text": "",
+  "edit / header / guest-welcome": ""
 }
