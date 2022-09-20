@@ -1,0 +1,161 @@
+{
+    "id": "test",
+    "data": {
+        "style": {
+            "chart": {
+                "rangeAnnotations": {
+                    "color": "#888",
+                    "opacity": 0.1
+                },
+                "lineAnnotations": {
+                    "color": "#888",
+                    "opacity": 0.1
+                },
+                "grid": {
+                    "general": {
+                        "baseLine": {
+                            "aboveChart": true
+                        },
+                        "tickLines": {
+                            "aboveChart": true
+                        },
+                        "tickLabels": {
+                            "units": "first",
+                            "aboveChart": true
+                        }
+                    }
+                }
+            },
+            "body": {
+                "padding": "0px",
+                "background": "transparent"
+            }
+        },
+        "vis": {},
+        "colors": {
+            "picker": {
+                "controls": {
+                    "hue": true,
+                    "lightness": true,
+                    "saturation": true,
+                    "hexEditable": true
+                },
+                "rowCount": 6
+            },
+            "neutral": "#CCCCCC",
+            "palette": [
+                "#18a1cd",
+                "#1d81a2",
+                "#15607a",
+                "#00dca6",
+                "#09bb9f",
+                "#009076",
+                "#c4c4c4",
+                "#c71e1d",
+                "#fa8c00",
+                "#ffca76",
+                "#ffe59c"
+            ],
+            "negative": "#E31A1C",
+            "positive": "#85B4D4",
+            "gradients": [
+                ["#f0f9e8", "#b6e3bb", "#75c8c5", "#4ba8c9", "#2989bd", "#0a6aad", "#254b8c"],
+                ["#fcfcbe", "#fdc78d", "#fb8d67", "#e45563", "#ac337b", "#6b1f7b", "#2c1160"],
+                ["#f0f723", "#fbbf2b", "#f38a47", "#d8586a", "#ac2790", "#6703a5", "#0d0787"],
+                ["#fefaca", "#008b15"],
+                ["#feebe2", "#fcc5c0", "#fa9fb5", "#f768a1", "#c51b8a", "#7a0177"],
+                ["#ffffcc", "#c7e9b4", "#7fcdbb", "#41b6c4", "#2c7fb8", "#253494"],
+                ["#8c510a", "#d8b365", "#f6e8c3", "#f5f7ea", "#c7eae5", "#5ab4ac", "#01665e"],
+                ["#c51b7d", "#e9a3c9", "#fde0ef", "#faf6ea", "#e6f5d0", "#a1d76a", "#4d9221"],
+                ["#b2182b", "#ef8a62", "#fddbc7", "#f8f6e9", "#d1e5f0", "#67a9cf", "#2166ac"]
+            ],
+            "background": "#ffffff",
+            "categories": [
+                [
+                    "#F6D500",
+                    "#0B91A7",
+                    "#00CABD",
+                    "#C2C100",
+                    "#BA403E",
+                    "#EF7F36",
+                    "#2D4F84",
+                    "#85BDF4",
+                    "#9EF1BF",
+                    "#D3F3FD"
+                ],
+                [
+                    "#7fc97f",
+                    "#beaed4",
+                    "#fdc086",
+                    "#ffff99",
+                    "#386cb0",
+                    "#f0027f",
+                    "#bf5b17",
+                    "#666666"
+                ],
+                [
+                    "#fbb4ae",
+                    "#b3cde3",
+                    "#ccebc5",
+                    "#decbe4",
+                    "#fed9a6",
+                    "#ffffcc",
+                    "#e5d8bd",
+                    "#fddaec",
+                    "#f2f2f2"
+                ],
+                [
+                    "#a6cee3",
+                    "#1f78b4",
+                    "#b2df8a",
+                    "#33a02c",
+                    "#fb9a99",
+                    "#e31a1c",
+                    "#fdbf6f",
+                    "#ff7f00",
+                    "#cab2d6",
+                    "#6a3d9a",
+                    "#ffff99",
+                    "#b15928"
+                ]
+            ],
+            "bgBlendRatios": {
+                "value": 0
+            },
+            "chartContentBaseColor": "#181818"
+        },
+        "metadata": {
+            "publish": {
+                "blocks": {
+                    "logo": false,
+                    "embed": false,
+                    "download-pdf": false,
+                    "download-svg": false,
+                    "get-the-data": false,
+                    "download-image": false
+                }
+            }
+        },
+        "typography": {
+            "chart": {
+                "color": "#F81818",
+                "fontSize": 12,
+                "typeface": "Roboto,sans-serif"
+            },
+            "fontFamilies": {
+                "Roboto": [
+                    {
+                        "name": "Roboto Regular",
+                        "style": "normal",
+                        "weight": 400
+                    },
+                    {
+                        "name": "Roboto Light",
+                        "style": "normal",
+                        "weight": 300
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const assign = require('assign-deep');
-const { compileCSS } = require('./publish/compile-css.js');
+const { compileCSS } = require('@datawrapper/chart-core/lib/styles/compile-css.js');
 const deepmerge = require('deepmerge');
 const get = require('lodash/get');
 const { getSchemaJSON } = require('@datawrapper/schemas');

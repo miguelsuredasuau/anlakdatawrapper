@@ -3,9 +3,8 @@ const path = require('path');
 const less = require('less');
 const postcssLess = require('postcss-less');
 const pCSS = require('postcss');
+const noop = require('lodash/noop');
 
-/* needed for variable parsing, otherwise postcss logs annoying messages we don't care about */
-const { noop } = require('../index.js');
 const CSS_ELIMINATION_KEYWORD = '__UNDEFINED__';
 
 const postcss = pCSS([
@@ -175,7 +174,7 @@ async function findLessVariables(less, { files = [], paths } = {}) {
 
     /* Search for variables and other imports in all passed less files */
     for (const lessString of lessStyles) {
-        const { root } = pCSS([noop]).process(lessString, { syntax: postcssLess }).result;
+        const { root } = pCSS([noop]).process(lessString, { syntax: postcssLess }).result; // use noop for variable parsing to suppress annonying log messages from postcss
         const files = [];
 
         root.walkDecls(decl => matchLessVariable(decl.value));

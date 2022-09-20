@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const assign = require('assign-deep');
-const { compileFontCSS } = require('../../../utils/publish/compile-css.js');
+const { compileFontCSS } = require('@datawrapper/chart-core/lib/styles/compile-css.js');
 
 const { Theme, User, Team, Chart } = require('@datawrapper/orm/models');
 const { get, set, cloneDeep } = require('lodash');
