@@ -304,7 +304,7 @@ module.exports = {
 
         ['chart', 'map', 'table', 'edit'].map(prefix => {
             editRoute(prefix);
-            if (prefix === 'edit') {
+            if (prefix === 'edit' || prefix === 'map') {
                 // add /v2/ alias for edit route
                 editRoute(prefix, true);
             }
