@@ -541,12 +541,16 @@
                 this.set({ parserErrors });
             },
             async closeDidYouKnow() {
-                await patch('/v3/me/data', {
-                    payload: {
-                        'new-computed-columns-syntax': 1
-                    }
-                });
-                window.dw.backend.__userData['new-computed-columns-syntax'] = 1;
+                try {
+                    await patch('/v3/me/data', {
+                        payload: {
+                            'new-computed-columns-syntax': 1
+                        }
+                    });
+                    window.dw.backend.__userData['new-computed-columns-syntax'] = 1;
+                } catch (err) {
+                    console.error(err);
+                }
                 this.set({ didYouKnow: false });
             }
         },
