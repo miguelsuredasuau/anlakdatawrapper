@@ -12,6 +12,11 @@ module.exports = {
         const apiBase = `${apiUrl}/v3`;
 
         /**
+         * Returns the absolute URL of the API server (without the /v3 prefix).
+         */
+        server.method('getAPIUrl', () => apiUrl);
+
+        /**
          * Returns a wrapper around got for making authenticated API requests.
          *
          * @param {object} request - Hapi request object
