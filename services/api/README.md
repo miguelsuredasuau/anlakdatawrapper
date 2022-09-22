@@ -35,8 +35,9 @@ Server methods are a way to provide common utilities throughout the API server. 
     Logs an action to the `action` database table.
 -   `server.methods.registerVisualization`
     Registers a new visualization type usually handled by plugins like `plugin-d3-lines`.
--   `server.methods.validateThemeData`
-    Validate a theme against a schema.
+-   `server.methods.getSchemas`
+    Returns a Schemas object that provides methods to validate themes, teams etc and to load
+    a schema as JSON.
 -   `server.methods.registerFeatureFlag`
     Registers a new feature flag
 
@@ -167,4 +168,3 @@ test-run:  ## Run command specified by the variable 'cmd' in the testing node co
         -v "$$(pwd)/../../libs/orm:/app/node_modules/@datawrapper/orm:ro" \
 		node $(cmd)
 ```
-

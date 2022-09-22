@@ -10,7 +10,7 @@ const get = require('lodash/get');
 const path = require('path');
 const registerFeatureFlag = require('@datawrapper/service-utils/registerFeatureFlag');
 const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
-const schemas = require('@datawrapper/schemas');
+const Schemas = require('@datawrapper/schemas');
 const { ApiEventEmitter, eventList } = require('./utils/events');
 const { addScope, translate, getTranslate } = require('@datawrapper/service-utils/l10n');
 const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
@@ -272,12 +272,10 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
     server.method('translate', translate);
     server.method('getTranslate', getTranslate);
 
-    const { validateThemeData } = schemas.initialize({
-        getSchema: config.api.schemaBaseUrl
-            ? loadSchemaFromUrl(config.api.schemaBaseUrl)
-            : undefined
+    const schemas = new Schemas({
+        ...(config.api.schemaBaseUrl && { loadSchema: loadSchemaFromUrl(config.api.schemaBaseUrl) })
     });
-    server.method('validateThemeData', validateThemeData);
+    server.method('getSchemas', () => schemas);
     server.method('loadChart', loadChart);
 
     if (DW_DEV_MODE) {

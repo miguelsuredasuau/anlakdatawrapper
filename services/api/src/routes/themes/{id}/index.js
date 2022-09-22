@@ -199,7 +199,7 @@ module.exports = {
 
             if (server.methods.isAdmin(request)) {
                 try {
-                    await server.methods.validateThemeData(dataValues.data);
+                    await server.methods.getSchemas().validateThemeData(dataValues.data);
                     dataValues.errors = [];
                 } catch (err) {
                     if (err.name === 'ValidationError') {
@@ -221,7 +221,7 @@ module.exports = {
 
             if (bgColorLum >= 0.3) {
                 if (query.dark) {
-                    await convertToDarkMode({ theme, darkBg, origBg });
+                    await convertToDarkMode(server, { theme, darkBg, origBg });
                 }
             } else {
                 // this theme is dark already, prevent dark mode preview
@@ -246,11 +246,11 @@ module.exports = {
     }
 };
 
-async function convertToDarkMode({ theme, darkBg, origBg }) {
+async function convertToDarkMode(server, { theme, darkBg, origBg }) {
     // get dark mode settings
     const darkMode = mergeOverrides(theme, d => d.type === 'darkMode');
 
-    const themeColorKeys = await findDarkModeOverrideKeys(theme);
+    const themeColorKeys = await findDarkModeOverrideKeys(server, theme);
 
     themeColorKeys.forEach(({ path: key, noInvert, isHexColorAndOpacity }) => {
         const darkThemeVal = get(darkMode, key);

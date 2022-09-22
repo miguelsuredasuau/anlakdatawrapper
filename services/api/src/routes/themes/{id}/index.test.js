@@ -251,7 +251,7 @@ test('style.body.background overwritten with colors.background color where appri
 });
 
 test('findDarkModeOverrideKeys identifies keys within schema items of type link', async t => {
-    const colorKeys = await findDarkModeOverrideKeys();
+    const colorKeys = await findDarkModeOverrideKeys(t.context.server);
 
     const blocksColorKeys = colorKeys
         .map(d => d.path)
@@ -272,8 +272,8 @@ test('findDarkModeOverrideKeys identifies keys within schema items of type link'
 
 test('findDarkModeOverrideKeys finds keys nested in arrays', async t => {
     // test theme is valid
-    await t.context.server.methods.validateThemeData(darkModeTestTheme);
-    const colorKeys = await findDarkModeOverrideKeys({ data: darkModeTestTheme });
+    await t.context.server.methods.getSchemas().validateThemeData(darkModeTestTheme);
+    const colorKeys = await findDarkModeOverrideKeys(t.context.server, { data: darkModeTestTheme });
     const colorKeyPaths = colorKeys.map(d => d.path);
 
     [
@@ -295,7 +295,7 @@ test('findDarkModeOverrideKeys finds keys nested in arrays', async t => {
 });
 
 test('findDarkModeOverride keys identifies keys for items with unit hexColorAndOpacity', async t => {
-    const colorKeys = (await findDarkModeOverrideKeys()).map(d => d.path);
+    const colorKeys = (await findDarkModeOverrideKeys(t.context.server)).map(d => d.path);
     ['style.chart.rangeAnnotations', 'style.chart.lineAnnotations'].forEach(path => {
         t.is(colorKeys.includes(path), true);
     });

@@ -4,7 +4,6 @@ const assign = require('assign-deep');
 const { compileCSS } = require('@datawrapper/chart-core/lib/styles/compile-css.js');
 const deepmerge = require('deepmerge');
 const get = require('lodash/get');
-const { getSchemaJSON } = require('@datawrapper/schemas');
 
 module.exports.dropCache = async function ({ theme, themeCache, styleCache, visualizations }) {
     const descendants = await findDescendants(theme);
@@ -60,8 +59,8 @@ async function findDescendants(theme) {
     return descendants;
 }
 
-module.exports.findDarkModeOverrideKeys = async function (theme = {}) {
-    const themeSchema = await getSchemaJSON('themeData');
+module.exports.findDarkModeOverrideKeys = async function (server, theme = {}) {
+    const themeSchema = await server.methods.getSchemas().getSchemaJSON('themeData');
     const keepUnits = new Set(['hexColor', 'cssColor', 'cssBorder', 'hexColorAndOpacity']);
     const out = [];
     const refs = [];
@@ -140,7 +139,7 @@ module.exports.themeId = () =>
 
 module.exports.validateThemeData = async function (data, server) {
     try {
-        await server.methods.validateThemeData(data);
+        await server.methods.getSchemas().validateThemeData(data);
     } catch (err) {
         if (err.name === 'ValidationError') {
             throw Boom.badRequest(err.details.map(e => `- ${e.message}`).join('\n'));
