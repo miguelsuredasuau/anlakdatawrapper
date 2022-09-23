@@ -77,6 +77,7 @@ module.exports = {
                             order++;
                             adminPageLinks.push({
                                 ...page,
+                                data: null,
                                 order
                             });
                         }
