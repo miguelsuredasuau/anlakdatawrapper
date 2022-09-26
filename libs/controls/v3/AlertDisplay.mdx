@@ -1,18 +1,17 @@
 # AlertDisplay
 
-AlertDisplay is useful for showing the user some extra messages. There are currently 4 types:
-default, success, warning and error.  Per default AlertDisplay is not visible, has a close button
-and has no margin (exept margin-bottom:20px from bootstrap CSS).  AlertDisplay uses the Bootstart
-AlertDisplay CSS except for 'warning' where the color is slightly changed.  For **class** use the
-classes from the (spacing-helper
-documentation)[https://github.com/datawrapper/datawrapper/blob/master/assets/styles/datawrapper/common/spacing-helper.less].
+AlertDisplay is useful for showing messages to users. There are currently 4 types: `info`, `success`, `warning` and `error`. AlertDisplay uses Bootstrap's [alert CSS](https://getbootstrap.com/2.3.2/components.html#alerts) except for 'warning' where the color is slightly changed.
+
+Per default AlertDisplay is not visible, has a close button and has no margin (exept `margin-bottom:20px` from Bootstrap CSS).
+
+For **class** use the classes from the [spacing-helper documentation](https://github.com/datawrapper/code/blob/main/services/php/assets/styles/datawrapper/common/spacing-helper.less).
 
 ```html
 <AlertDisplay
-    type="success|warning|error"
-    closeable={true|false}
-    visible={true|false}
-    class="spacing-helper"
+    type="{info|success|warning|error}"
+    closeable="{true|false}"
+    visible="{true|false}"
+    class="mt-5"
 />
 
 <script>
