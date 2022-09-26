@@ -212,10 +212,16 @@
                         icon: '<i class="im im-sign-in"></i> ',
                         label: __('controls / gradient-editor / import', 'core'),
                         action() {
-                            const colors = window
-                                .prompt(__('controls / gradient-editor / import / text', 'core'))
-                                .trim()
-                                .split(/[, ]+/);
+                            let input = window.prompt(
+                                __('controls / gradient-editor / import / text', 'core')
+                            );
+                            input = input && input.trim();
+                            if (!input) return;
+                            const colors = input.split(/[, ]+/);
+                            if (!colors.length || !colors.every(c => chroma.valid(c))) {
+                                alert(__('controls / gradient-editor / import / invalid', 'core'));
+                                return;
+                            }
                             app.select(colors);
                         }
                     },
@@ -535,11 +541,28 @@
         oncreate() {
             setTimeout(() => {
                 if (window.dw && window.dw.backend && window.dw.backend.__userData) {
+                    const allUserPresets = JSON.parse(
+                        window.dw.backend.__userData['gradienteditor-presets'] || '[]'
+                    );
+                    // make sure we only include presets with valid colors.
+                    const userPresets = allUserPresets.filter(preset =>
+                        preset.every(({ color } = {}) => chroma.valid(color))
+                    );
+
+                    if (userPresets.length < allUserPresets.length) {
+                        console.warn(
+                            '[GradientEditor] Some user presets are invalid and not displayed.',
+                            {
+                                invalidPresets: allUserPresets.filter(
+                                    preset => !userPresets.includes(preset)
+                                )
+                            }
+                        );
+                    }
+
                     this.set({
                         gotIt: window.dw.backend.__userData['gradienteditor-help'] || false,
-                        userPresets: JSON.parse(
-                            window.dw.backend.__userData['gradienteditor-presets'] || '[]'
-                        )
+                        userPresets
                     });
                 }
                 const { presets, colors } = this.get();

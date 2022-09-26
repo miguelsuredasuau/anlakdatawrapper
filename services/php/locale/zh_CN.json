@@ -1168,5 +1168,6 @@
   "sso / error": "",
   "sso / error / head": "",
   "sso / error / text": "",
-  "edit / header / guest-welcome": ""
+  "edit / header / guest-welcome": "",
+  "controls / gradient-editor / import / invalid": ""
 }

@@ -1168,5 +1168,6 @@
   "sso / error": "",
   "sso / error / head": "",
   "sso / error / text": "",
-  "edit / header / guest-welcome": "Benvenuto in Datawrapper 🙂! <a href=\"https://academy.datawrapper.de/article/245-how-to-create-your-first-datawrapper-chart\">Scopri come creare il tuo primo grafico. </a>"
+  "edit / header / guest-welcome": "Benvenuto in Datawrapper 🙂! <a href=\"https://academy.datawrapper.de/article/245-how-to-create-your-first-datawrapper-chart\">Scopri come creare il tuo primo grafico. </a>",
+  "controls / gradient-editor / import / invalid": ""
 }

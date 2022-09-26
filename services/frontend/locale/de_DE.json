@@ -1168,5 +1168,6 @@
   "sso / error": "SSO-Versuch fehlgeschlagen",
   "sso / error / head": "Der Identity-Provider deines Teams hat deinen Anmeldevorgang abgelehnt.",
   "sso / error / text": "Datawrapper hat diese Fehlermeldung von deinem Identity-Provider erhalten:",
-  "edit / header / guest-welcome": "Willkommen bei Datawrapper 🙂! <a href=\"https://academy.datawrapper.de/article/245-how-to-create-your-first-datawrapper-chart\">Erfahre wie du dein erstes Diagramm erstellen kannst.</a>"
+  "edit / header / guest-welcome": "Willkommen bei Datawrapper 🙂! <a href=\"https://academy.datawrapper.de/article/245-how-to-create-your-first-datawrapper-chart\">Erfahre wie du dein erstes Diagramm erstellen kannst.</a>",
+  "controls / gradient-editor / import / invalid": "Ungültige Farbcodes. Bitte überprüfe deine Eingabe."
 }
