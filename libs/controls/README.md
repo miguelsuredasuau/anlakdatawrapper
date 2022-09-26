@@ -4,12 +4,11 @@
 
 A collection of Svelte controls used across Datawrapper.
 
-
 ## version 2.x: Svelte 2 controls
 
 The Svelte 2 controls we're currently using in the visualization editor. Live preview and documentation:
 
-https://docs.datawrapper.de/~repos/controls/master/v2/
+https://docs.datawrapper.de/~repos/controls/main/v2/
 
 To install and use the controls, run
 
@@ -30,7 +29,9 @@ cd v2 && npm install && npm run storybook
 ```
 
 ### Testing component with local Datawrapper app during development
+
 Execute the following steps to test changes of components in local Datawrapper app instance.
+
 ```bash
 cd libs/controls/v2
 npm link
@@ -43,7 +44,7 @@ npm run dev
 
 Live preview and documentation:
 
-https://docs.datawrapper.de/~repos/controls/master/v3/
+https://docs.datawrapper.de/~repos/controls/main/v3/
 
 To install and use the controls, run
 
