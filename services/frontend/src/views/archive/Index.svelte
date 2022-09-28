@@ -13,6 +13,7 @@
     import VisualizationModal from './VisualizationModal.svelte';
     import httpReq from '@datawrapper/shared/httpReq';
     import decodeHtml from '@datawrapper/shared/decodeHtml';
+    import debounce from 'underscore/modules/debounce.js';
     import isEqual from 'underscore/modules/isEqual.js';
     import { trackPageView, trackEvent } from '@datawrapper/shared/analytics.js';
     import {
@@ -276,7 +277,9 @@
         refreshFolders();
     }
 
-    async function loadCharts() {
+    // Debounce chart loading because it is triggered in an reactive statement
+    // and therefore has the potential to cause redundant API requests.
+    const loadCharts = debounce(async () => {
         const { groupBy, limit, offset, order, orderBy, search } = $query;
         const qs = $currentFolder.apiURL
             ? new URLSearchParams({
@@ -333,7 +336,7 @@
         } finally {
             $chartsLoading = false;
         }
-    }
+    });
 
     function refreshFolders() {
         folders = folders;
