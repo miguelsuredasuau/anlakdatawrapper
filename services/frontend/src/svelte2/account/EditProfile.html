@@ -19,8 +19,8 @@
             label="{ __('E-Mail') }"
             help="{changeEmail ? __('account / confirm-email-change') : ''}"
         >
-            <input disabled="{ !changeEmail }" bind:value="email" type="email" />
             {#if changeEmail}
+            <input bind:value="newEmail" type="email" />
             <button on:click="set({changeEmail: false})" class="btn btn-default">
                 { __( "Back") }
             </button>
@@ -29,7 +29,8 @@
                 "account / email") }
             </button>
             {:else}
-            <button on:click="set({changeEmail: true})" class="btn btn-save btn-default">
+            <input disabled="disabled" value="{email}" type="email" />
+            <button on:click="initChangeEmail()" class="btn btn-save btn-default">
                 { __( "account / email") }
             </button>
             {/if}
@@ -202,6 +203,7 @@
                 confirmEmail: '',
                 confirmPassword: '',
                 email: '',
+                newEmail: '',
                 savingEmail: false,
                 savingPassword: false,
                 showPasswordAsClearText: false,
@@ -227,8 +229,15 @@
             __
         },
         methods: {
+            initChangeEmail() {
+                const { email } = this.get();
+                this.set({
+                    changeEmail: true,
+                    newEmail: email
+                });
+            },
             async changeEmail() {
-                var { email } = this.get();
+                const { newEmail } = this.get();
 
                 this.set({ savingEmail: true });
 
@@ -236,14 +245,12 @@
                 const errors = [];
 
                 try {
-                    const res = await httpReq.patch('/v3/me', {
-                        payload: { email }
+                    await httpReq.patch('/v3/me', {
+                        payload: { email: newEmail }
                     });
                     messages.push(
                         'Your email has been changed successfully. You will receive an email with a confirmation link.'
                     );
-                    // for now, let's set it back to the previous email
-                    this.set({ email: res.email });
                 } catch (e) {
                     if (e.name === 'HttpReqError') {
                         const res = await e.response.json();

@@ -8,6 +8,7 @@
         "build:js": "NODE_OPTIONS=--max-old-space-size=8192 rollup -c",
         "build:css": "sass --no-source-map src/styles/index.scss static/datawrapper.css",
         "build:css-bulma-polyfill": "sass --no-source-map src/styles/index-bulma-polyfill.scss static/css/bulma-polyfill.css",
+        "build:svelte2": "cd src/svelte2 && npm run build",
         "watch": "npm run watch:js",
         "watch:js": "npm run build:js -- --watch",
         "watch:css": "npm run build:css -- --watch",
