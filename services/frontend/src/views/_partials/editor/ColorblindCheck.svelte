@@ -180,7 +180,7 @@
             res = { deuteranopia: 0, protanopia: 0, tritanopia: 0 };
         }
 
-        // testing = false;
+        testing = false;
         colorLookup = {};
     }
 
