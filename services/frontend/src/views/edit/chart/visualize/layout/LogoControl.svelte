@@ -17,6 +17,12 @@
 
     $: logoOptions = logos.map(({ id, title }) => ({ value: id, label: title }));
 
+    $: {
+        if (logos && logos.length && !logos.some(d => d.id === $logoId)) {
+            $logoId = logos[0].id;
+        }
+    }
+
     const logoId = chart.bindKey('metadata.publish.blocks.logo.id');
     const logoEnabled = chart.bindKey('metadata.publish.blocks.logo.enabled');
 </script>
