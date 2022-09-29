@@ -6,11 +6,28 @@ import { createHash } from 'crypto';
 import deepmerge from 'deepmerge';
 import { compileCSS } from '../../lib/styles/compile-css.js';
 import MemoryCache from '@datawrapper/service-utils/MemoryCache.js';
+import { setTimeout } from 'timers/promises';
 
 const pathToChartCore = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
-export function createBrowser() {
-    return puppeteer.launch();
+const emptyPage = `<html>
+        <body>
+            <div class="dw-chart" id="__svelte-dw">
+                <div id="chart" class="dw-chart-body"></div>
+            </div>
+        </body>
+    </html>`;
+
+/**
+ * Creates a new Puppeteer browser
+ * @param {Object} puppeteerOptions
+ * @param {boolean} puppeteerOptions.headless set to false to visually debug page
+ * @param {boolean} puppeteerOptions.devtools set to true to open page with devtools on
+ * @param {string[]} puppeteerOptions.args
+ * @returns {Browser}
+ */
+export function createBrowser(puppeteerOptions = {}) {
+    return puppeteer.launch(puppeteerOptions);
 }
 
 /**
@@ -18,25 +35,22 @@ export function createBrowser() {
  * render visualizations in it.
  *
  * @param {Browser} browser
+ * @param {Object} viewportOpts
+ * @param {number} viewportOpts.width
+ * @param {number} viewportOpts.height
+ * @param {number} viewportOpts.deviceScaleFactor
  * @returns {Promise} Promise that resolves when the page has been created
  */
-export async function createPage(browser) {
+export async function createPage(browser, viewportOpts = {}) {
     const page = await browser.newPage();
     await page.setViewport({
         width: 600,
         height: 500,
-        deviceScaleFactor: 2
+        deviceScaleFactor: 1,
+        ...viewportOpts
     });
 
-    await page.setContent(
-        `<html>
-    <body>
-        <div class="dw-chart" id="__svelte-dw">
-            <div id="chart" class="dw-chart-body"></div>
-        </div>
-    </body>
-</html>`
-    );
+    await page.setContent(emptyPage);
 
     await page.addScriptTag({
         content: await readFile(join(pathToChartCore, 'dist/dw-2.0.min.js'), 'utf-8')
@@ -55,8 +69,6 @@ export async function createPage(browser) {
         )
     });
 
-    page.on('console', evt => process.stdout.write('CONSOLE: ' + evt.text() + '\n'));
-
     return page;
 }
 
@@ -74,7 +86,7 @@ export async function createPage(browser) {
  * @param {Object} props.textDirection
  * @returns {Object[]} console log messages
  */
-export async function render(page, props) {
+export async function render(page, props, delay = 0) {
     const baseTheme = JSON.parse(
         await readFile(join(pathToChartCore, 'tests/helpers/data/theme.json'), 'utf-8')
     );
@@ -103,7 +115,6 @@ export async function render(page, props) {
         async ({ chart, dataset, visMeta, theme, flags, translations, textDirection }) => {
             /* eslint-env browser */
             /* global dw, createEmotion */
-
             const target = document.querySelector('.dw-chart-body');
             const container = document.querySelector('.dw-chart');
 
@@ -135,6 +146,8 @@ export async function render(page, props) {
         },
         props
     );
+
+    if (delay) await setTimeout(delay);
 
     return logs;
 }
