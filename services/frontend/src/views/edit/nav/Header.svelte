@@ -38,12 +38,6 @@
     .is-status-column {
         line-height: 1.3;
     }
-
-    @include desktop {
-        .is-status-column {
-            max-width: 28em;
-        }
-    }
 </style>
 
 <svelte:window bind:innerHeight bind:innerWidth />
@@ -58,28 +52,26 @@
                 {__(`editor / chart-breadcrumb / ${prefix === 'edit' ? 'map' : prefix}`)}
                 {__('editor / chart-breadcrumb / is-in-folder')}
             </div>
-            <div class="column is-flex-grow-2">
+            <div class="column">
                 <BreadcrumbsDisplay
                     path={breadcrumbPath}
                     className="has-text-grey has-text-weight-medium"
                 />
             </div>
         {:else}
-            <div class="column is-narrow has-text-grey has-text-weight-medium">
+            <div class="column has-text-grey has-text-weight-medium">
                 {@html __('edit / header / guest-welcome')}
             </div>
         {/if}
-        <div
-            class="column is-size-7 has-text-grey has-text-right is-status-column is-flex is-align-items-center is-justify-content-flex-end"
-        >
-            {#if $saveError}
-                <span class="has-text-danger"
-                    ><IconDisplay icon="warning" size="1.2em" valign="sub" />
-                    {@html __('edit / storing-changes / error')}</span
-                >
-            {:else if $hasUnsavedChanges}
-                <span
-                    ><IconDisplay
+        {#if $saveError}
+            <div class="column is-status-column is-4 has-text-danger">
+                <IconDisplay icon="warning" size="1.2em" valign="sub" />
+                {@html __('edit / storing-changes / error')}
+            </div>
+        {:else}
+            <div class="column is-status-column is-narrow has-text-right has-text-grey is-size-7">
+                {#if $hasUnsavedChanges}
+                    <IconDisplay
                         valign="sub"
                         icon="loading-spinner"
                         timing="steps(12)"
@@ -87,15 +79,15 @@
                         size="1.2em"
                         spin
                     />
-                    {__('edit / storing-changes')}…</span
-                >
-            {:else if $saveSuccess}
-                <span out:fade={{ delay: 0, duration: 500 }}>
-                    <span>{__('edit / stored-changes')}</span>
-                    <IconDisplay icon="checkmark-bold" />
-                </span>
-            {/if}
-        </div>
+                    {__('edit / storing-changes')}…
+                {:else if $saveSuccess}
+                    <span out:fade={{ delay: 0, duration: 500 }}>
+                        <span>{__('edit / stored-changes')}</span>
+                        <IconDisplay icon="checkmark-bold" />
+                    </span>
+                {/if}
+            </div>
+        {/if}
     </div>
 
     <div class="editor-step-nav">
