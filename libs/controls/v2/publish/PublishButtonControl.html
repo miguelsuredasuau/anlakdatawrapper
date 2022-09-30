@@ -62,7 +62,7 @@
                     valign="middle"
                     class="mr-1"
                 />
-                <span>{ __('publish / publishing-btn') }</span>
+                <span class="pl-1">{ __('publish / publishing-btn') }</span>
                 {:else}
                 <IconDisplay
                     {assetURL}
@@ -72,7 +72,7 @@
                     valign="middle"
                     class="mr-1"
                 />
-                <span>{ __('publish / republish-btn') }</span>
+                <span class="pl-1">{ __('publish / republish-btn') }</span>
                 {/if}
             </span>
             {:else}
@@ -265,10 +265,15 @@
         top: -5px;
     }
 
-    .button-publish.is-publishing {
+    .button-publish.is-publishing,
+    .button-republish {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .button-republish span {
+        text-align: left;
     }
 
     .button-wrapper {
