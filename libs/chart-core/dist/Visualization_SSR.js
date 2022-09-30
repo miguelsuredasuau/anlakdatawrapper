@@ -11160,7 +11160,7 @@ Please make sure you called __(key) with a key of type "string".
     const lightPalette = get$1(themeDataLight, "colors.palette", []);
     const lightBg = get$1(themeDataLight, "colors.background", "#ffffff");
     const darkBg = get$1(themeDataDark, "colors.background");
-    const themeColorMap = Object.fromEntries(lightPalette.map((light, i) => [light, darkPalette[i]]));
+    const themeColorMap = Object.fromEntries(lightPalette.map((light, i) => [light.toLowerCase(), darkPalette[i]]));
     return function (color, {
       forceInvert,
       noInvert
@@ -11168,6 +11168,7 @@ Please make sure you called __(key) with a key of type "string".
       const darkModeNoInvert = !vis.get("dark-mode-invert", true);
       if (noInvert || darkModeNoInvert && !forceInvert) return color;
       if (!chroma$1.valid(color)) return color;
+      color = color.toLowerCase();
 
       if (themeColorMap[color]) {
         // theme has a hard replacement color

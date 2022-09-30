@@ -695,7 +695,7 @@ Please make sure you called __(key) with a key of type "string".
         const darkBg = get(themeDataDark, 'colors.background');
 
         const themeColorMap = Object.fromEntries(
-            lightPalette.map((light, i) => [light, darkPalette[i]])
+            lightPalette.map((light, i) => [light.toLowerCase(), darkPalette[i]])
         );
 
         return function (color, { forceInvert, noInvert } = {}) {
@@ -703,6 +703,8 @@ Please make sure you called __(key) with a key of type "string".
             if (noInvert || (darkModeNoInvert && !forceInvert)) return color;
 
             if (!chroma.valid(color)) return color;
+
+            color = color.toLowerCase();
 
             if (themeColorMap[color]) {
                 // theme has a hard replacement color
