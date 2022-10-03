@@ -128,6 +128,7 @@ export async function render(page, props, delay = 0) {
                 .flags({ isIframe: true, ...flags });
 
             const vis = dw.visualization(chart.type, target);
+
             vis.meta = visMeta;
             vis.lang = chart.language || 'en-US';
             vis.textDirection = textDirection || 'ltr';
@@ -179,7 +180,7 @@ async function getCSS(props) {
     return styleCache.withCache(key, () => {
         return compileCSS({
             theme: { id: 'test', data: props.theme },
-            filePaths: ['../../lib/styles.less', props.visMeta.less]
+            filePaths: [join(pathToChartCore, 'lib/styles.less'), props.visMeta.less].filter(d => d)
         });
     });
 }
