@@ -113,7 +113,7 @@ export async function render(page, props, delay = 0) {
     });
 
     await page.evaluate(
-        async ({ chart, dataset, visMeta, theme, flags, translations, textDirection }) => {
+        async ({ chart, dataset, visMeta, theme, flags, translations, textDirection, assets }) => {
             /* eslint-env browser */
             /* global dw, createEmotion */
             const target = document.querySelector('.dw-chart-body');
@@ -127,6 +127,10 @@ export async function render(page, props, delay = 0) {
                 .translations(translations)
                 .theme({ ...theme })
                 .flags({ isIframe: true, ...flags });
+
+            if (assets) {
+                Object.entries(assets).forEach(([name, content]) => dwChart.asset(name, content));
+            }
 
             const vis = dw.visualization(chart.type, target);
 
@@ -208,6 +212,17 @@ export function getElementClasses(page, selector) {
  */
 export function getElementStyle(page, selector, style) {
     return page.$eval(selector, (node, style) => getComputedStyle(node)[style], style);
+}
+
+/**
+ * Returns the value of `attr` for the first element with given CSS `selector`.
+ * @param {Page} page
+ * @param {string} selector
+ * @param {string} attr element attribute, e.g. "title"
+ * @returns {string}
+ */
+export function getElementAttribute(page, selector, attr) {
+    return page.$eval(selector, (node, attr) => node.getAttribute(attr), attr);
 }
 
 /**
