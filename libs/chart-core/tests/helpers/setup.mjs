@@ -84,6 +84,7 @@ export async function createPage(browser, viewportOpts = {}) {
  * @param {Object} props.visMeta
  * @param {Object} props.flags
  * @param {Object} props.textDirection
+ * @param {number} delay further delay render promise (useful for debugging)
  * @returns {Object[]} console log messages
  */
 export async function render(page, props, delay = 0) {
@@ -144,6 +145,8 @@ export async function render(page, props, delay = 0) {
             dwChart.locales = {};
             dwChart.vis(vis);
             dwChart.render(container);
+
+            await vis.rendered();
         },
         props
     );
