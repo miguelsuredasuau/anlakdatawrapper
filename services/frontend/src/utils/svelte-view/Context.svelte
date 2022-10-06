@@ -5,6 +5,8 @@
     import debounce from 'lodash/debounce';
     import isEqual from 'lodash/isEqual';
     import cloneDeep from 'lodash/cloneDeep';
+    import { Subject, lastValueFrom } from 'rxjs';
+    import { take, tap } from 'rxjs/operators';
     import httpReq from '@datawrapper/shared/httpReq';
     import { loadScript } from '@datawrapper/shared/fetch';
     import { translate } from '@datawrapper/shared/l10n';
@@ -15,7 +17,6 @@
     import advancedFormat from 'dayjs/plugin/advancedFormat';
     import localizedFormat from 'dayjs/plugin/localizedFormat';
     import isoWeek from 'dayjs/plugin/isoWeek';
-    import { waitFor } from '../index.js';
 
     import de from 'dayjs/locale/de';
     import es from 'dayjs/locale/es';
@@ -108,23 +109,24 @@
         $request.hash = window.location.hash;
     }
 
+    let confirmationModal;
+    const confirmationResult = new Subject();
+
     setContext('main', {
         /**
          * displays a confirmation modal
          * @returns {boolean} - true if "yes" was selected, otherwise false
          */
         async showConfirmationModal(modalOptions) {
-            confirmationModalResult = 'pending';
             confirmationModal = modalOptions;
-            await waitFor(() => confirmationModalResult !== 'pending');
-            const confirmed = confirmationModalResult === 'confirm';
-            confirmationModalResult = confirmationModal = null;
-            return confirmed;
+            return lastValueFrom(
+                confirmationResult.pipe(
+                    take(1),
+                    tap(() => (confirmationModal = null))
+                )
+            );
         }
     });
-
-    let confirmationModal;
-    let confirmationModalResult;
 </script>
 
 <svelte:window on:hashchange={onHashChange} />
@@ -133,7 +135,7 @@
 {#if confirmationModal}
     <ConfirmationModalDisplay
         {...confirmationModal}
-        on:cancel={() => (confirmationModalResult = 'cancel')}
-        on:confirm={() => (confirmationModalResult = 'confirm')}
+        on:cancel={() => confirmationResult.next(false)}
+        on:confirm={() => confirmationResult.next(true)}
     />
 {/if}
