@@ -29,7 +29,7 @@
     },
     "dependencies": {
         "@datawrapper/chart-core": "file:../../libs/chart-core",
-        "@datawrapper/icons": "^1.23.0",
+        "@datawrapper/icons": "^1.25.0",
         "@datawrapper/locales": "file:../../libs/locales",
         "@datawrapper/orm": "file:../../libs/orm",
         "@datawrapper/polyfills": "file:../../libs/polyfills",

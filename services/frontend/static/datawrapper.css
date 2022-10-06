@@ -2848,14 +2848,14 @@ a.tag:hover {
   color: #333333;
   font-size: 1.5rem;
   font-weight: 500;
-  line-height: 1.125;
+  line-height: 1.27;
 }
 .title strong {
   color: inherit;
   font-weight: inherit;
 }
 .title:not(.is-spaced) + .subtitle {
-  margin-top: -1rem;
+  margin-top: -0.75rem;
 }
 .title.is-1 {
   font-size: 3rem;
@@ -2883,14 +2883,14 @@ a.tag:hover {
   color: #858585;
   font-size: 1rem;
   font-weight: 400;
-  line-height: 1.25;
+  line-height: 1.35;
 }
 .subtitle strong {
   color: #111111;
   font-weight: 500;
 }
 .subtitle:not(.is-spaced) + .title {
-  margin-top: -1rem;
+  margin-top: -0.75rem;
 }
 .subtitle.is-1 {
   font-size: 3rem;
@@ -10680,6 +10680,9 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   border-radius: 1px;
 }
 
+.control {
+  font-size: 1em;
+}
 .control.has-icons-left .icon, .control.has-icons-right .icon {
   color: #a7a7a7;
   width: 2.5em !important;

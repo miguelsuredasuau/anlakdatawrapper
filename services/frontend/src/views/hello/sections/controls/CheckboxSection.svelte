@@ -6,22 +6,35 @@
 
 <div class="section pl-0 pt-0">
     <h3 id="checkbox" class="title is-3">Checkboxes</h3>
-    <div class="level">
-        <div class="level-left">
-            <div class="level-item">
-                <CheckboxInput bind:value label="checkbox with label" />
+    <div class="columns">
+        <div class="column">
+            <div class="block">
+                <div class="label">Inline</div>
+                <div>
+                    <CheckboxInput bind:value label="checkbox with label" />
+
+                    <CheckboxInput bind:value disabled label="disabled checkbox" />
+
+                    <CheckboxInput bind:value label="with help" help="Help me!" />
+
+                    <CheckboxInput bind:value faded label="faded checkbox" />
+                </div>
             </div>
-            <div class="level-item">
-                <CheckboxInput bind:value disabled label="disabled checkbox" />
+            <div class="block">
+                <div class="label">Standalone</div>
+                <CheckboxInput bind:value standalone /><CheckboxInput
+                    bind:value
+                    standalone
+                /><CheckboxInput bind:value standalone />
             </div>
-            <div class="level-item">
-                <CheckboxInput bind:value label="with help" help="Help me!" />
-            </div>
-            <div class="level-item"><CheckboxInput bind:value faded label="faded checkbox" /></div>
+        </div>
+        <div class="column is-half">
+            <div class="label">Different sizes:</div>
+            {#each [7, 6, 5, 4, 3] as size}
+                <div class="is-size-{size}">
+                    <CheckboxInput bind:value label="Size {size}" />
+                </div>
+            {/each}
         </div>
     </div>
-    standalone: <CheckboxInput bind:value standalone /><CheckboxInput
-        bind:value
-        standalone
-    /><CheckboxInput bind:value standalone />
 </div>

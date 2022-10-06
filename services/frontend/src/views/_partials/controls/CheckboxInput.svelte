@@ -94,8 +94,11 @@
         border-color: $dw-grey;
         background: $dw-grey;
     }
-    label.checkbox + :global(label.checkbox) {
-        margin-left: 1em;
+    label.checkbox:not(:last-of-type) {
+        margin-right: 1em;
+    }
+    .checkbox-label {
+        margin-left: 0.25em;
     }
 </style>
 
@@ -109,5 +112,5 @@
         on:click
     />
     <span class="css-ui" />
-    {#if !standalone}{label}{/if}
+    {#if !standalone}<span class="checkbox-label">{label}</span>{/if}
 </label>

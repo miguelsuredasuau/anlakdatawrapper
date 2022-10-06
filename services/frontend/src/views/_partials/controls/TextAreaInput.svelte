@@ -32,6 +32,9 @@
      * server response etc.
      */
     export let loading = false;
+
+    let className;
+    export { className as class };
 </script>
 
 <style>
@@ -39,7 +42,7 @@
         margin: 0;
         width: 100%;
         box-sizing: border-box;
-        line-height: 20px !important;
+        line-height: 1.5em !important;
     }
 </style>
 
@@ -52,7 +55,7 @@
     style="width:{width}"
 >
     <textarea
-        class="input"
+        class="input {className}"
         bind:value
         aria-label={ariaLabel}
         style="height:{height};resize:{resize}"

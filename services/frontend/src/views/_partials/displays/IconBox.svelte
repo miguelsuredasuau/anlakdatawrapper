@@ -2,12 +2,16 @@
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     export let icon;
     export let iconColor = 'grey-light';
-    export let borderColor = 'var(--color-dw-grey-lighter)';
+    export let borderColor = null;
+
+    let className = '';
+    export { className as class };
+
     export let uid;
 </script>
 
 <style lang="scss">
-    @import '../../../styles/colors.scss';
+    @import '../../../styles/export.scss';
     .box {
         border: 1px solid $dw-grey-lighter;
         box-shadow: none;
@@ -16,9 +20,24 @@
         position: relative;
         top: -10px;
     }
+    .box.is-primary {
+        background-color: $primary;
+        border-color: transparent;
+
+        :global(:not(.button)) {
+            color: $primary-light;
+        }
+        :global(.icon) {
+            opacity: 0.5;
+        }
+    }
 </style>
 
-<div class="box" style="border-color: {borderColor}" data-uid={uid}>
+<div
+    class="box {className}"
+    style={borderColor ? `border-color: ${borderColor};` : null}
+    data-uid={uid}
+>
     <div class="has-text-{iconColor} is-size-2 is-pulled-right">
         <IconDisplay {icon} />
     </div>

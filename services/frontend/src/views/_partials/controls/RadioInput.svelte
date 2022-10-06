@@ -1,4 +1,9 @@
 <script>
+    function onChange() {
+        if (indeterminate) {
+            indeterminate = false;
+        }
+    }
     /**
      * array of available options as { value, label } pairs
      */
@@ -19,10 +24,18 @@
      * as block items
      */
     export let inline = true;
+
+    /**
+     * set to true to show a radio that's undecided
+     * about which value is selected
+     */
+    export let indeterminate = false;
 </script>
 
 <style lang="scss">
     @import '../../../styles/export.scss';
+
+    $dw-radio-border-width: 0.25em;
 
     input[type='radio'] {
         float: none;
@@ -41,8 +54,8 @@
             vertical-align: baseline;
             box-sizing: border-box;
             position: relative;
-            margin-right: 0.15rem;
-            top: 2px;
+            margin-right: 0.05em;
+            top: 0.15em;
             border: 1px solid $dw-grey-dark;
         }
     }
@@ -50,7 +63,7 @@
     input[type='radio']:checked + span.css-ui {
         background: white;
         border-color: $dw-scooter-light;
-        border-width: 4px;
+        border-width: $dw-radio-border-width;
     }
     input[type='radio']:focus + span.css-ui {
         border-color: $dw-scooter-light;
@@ -62,21 +75,29 @@
         cursor: default;
         opacity: 0.6;
     }
-    .indeterminate input[type='radio'] + span.css-ui {
-        border-color: fade($dw-scooter-light, 55%);
-        background: fade($dw-scooter-light, 55%);
-        border-width: 4px;
+
+    $indeterminate-dash-width: 0.15em;
+
+    .indeterminate {
+        input[type='radio'] + span.css-ui,
+        input[type='radio']:checked + span.css-ui {
+            border-color: rgba($dw-scooter-light, 40%);
+            background: rgba($dw-scooter-light, 40%);
+            border-width: $dw-radio-border-width * 2;
+        }
+
+        input[type='radio'] + span.css-ui:after {
+            content: '';
+            position: absolute;
+            display: block;
+            background: white;
+            left: calc(50% - 0.6ex);
+            top: calc(50% - ($indeterminate-dash-width * 0.5));
+            height: $indeterminate-dash-width;
+            width: 1.2ex;
+        }
     }
-    .indeterminate input[type='radio'] + span.css-ui:after {
-        content: '';
-        position: absolute;
-        display: block;
-        background: white;
-        left: calc(50% - 0.6ex);
-        top: calc(50% - 1px);
-        height: 2px;
-        width: 1.2ex;
-    }
+
     input[type='radio']:disabled:checked + span.css-ui {
         border-color: $dw-grey-dark;
         background: $dw-grey-dark;
@@ -90,13 +111,15 @@
     }
 </style>
 
-<div class="control" class:inline>
+<div class="control" class:inline class:indeterminate>
     {#each options as opt}
         <label class="radio" disabled={disabled || null}>
             <input
                 type="radio"
                 disabled={disabled || null}
                 on:change
+                on:change={onChange}
+                on:click={onChange}
                 bind:group={value}
                 value={opt.value}
             />
