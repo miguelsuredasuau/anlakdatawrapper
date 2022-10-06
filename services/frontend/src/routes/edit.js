@@ -9,7 +9,7 @@ const { Chart, User, Folder, Team, Theme } = require('@datawrapper/orm/models');
 const prepareChart = require('@datawrapper/service-utils/prepareChart');
 const assign = require('assign-deep');
 const prepareVisualization = require('@datawrapper/service-utils/prepareVisualization');
-const { loadLocaleMeta } = require('@datawrapper/service-utils/loadLocales');
+const { loadVendorLocales, loadLocaleMeta } = require('@datawrapper/service-utils/loadLocales');
 
 module.exports = {
     name: 'routes/edit',
@@ -496,6 +496,11 @@ module.exports = {
                                 localeMeta[locale.id.toLowerCase()] || { textDirection: 'ltr' }
                             );
                         });
+                        const chartLocaleIds = chartLocales.map(({ id }) => id);
+                        const vendorLocales = {
+                            dayjs: await loadVendorLocales('dayjs', chartLocaleIds),
+                            numeral: await loadVendorLocales('numeral', chartLocaleIds)
+                        };
 
                         const mayAdministrateTeam =
                             team && (await user.mayAdministrateTeam(team.id));
@@ -510,6 +515,7 @@ module.exports = {
                                 rawData: data,
                                 rawTeam: team,
                                 rawLocales: chartLocales,
+                                rawVendorLocales: vendorLocales,
                                 initUrlStep: params.step,
                                 urlPrefix: `/${v2 ? 'v2/' : ''}${prefix}`,
                                 breadcrumbPath,

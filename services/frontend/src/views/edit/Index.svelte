@@ -20,6 +20,7 @@
     export let rawChart; // the JSON chart object
     export let rawTeam; // the JSON team object
     export let rawLocales;
+    export let rawVendorLocales;
     export let visualizations;
     export let initUrlStep;
     export let urlPrefix;
@@ -88,6 +89,7 @@
         rawTeam,
         rawTheme,
         rawLocales,
+        rawVendorLocales,
         rawVisualizations: visualizations,
         rawReadonlyKeys,
         dataReadonly

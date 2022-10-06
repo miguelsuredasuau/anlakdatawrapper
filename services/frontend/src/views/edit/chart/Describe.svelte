@@ -4,10 +4,11 @@
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
     import { getContext } from 'svelte';
+    import numeral from 'numeral';
 
     const config = getContext('config');
 
-    const { data, navigateTo } = getContext('page/edit');
+    const { data, navigateTo, vendorLocales } = getContext('page/edit');
 
     export let __;
     export let dwChart;
@@ -15,7 +16,20 @@
     export let language;
     export let dataReadonly;
 
+    $: {
+        if ($vendorLocales.numeral) {
+            try {
+                numeral.register('locale', 'dw', $vendorLocales.numeral);
+            } catch (ex) {
+                numeral.locales.dw = $vendorLocales.numeral;
+            }
+            numeral.locale('dw');
+        }
+    }
+
     $: props = {
+        numeral,
+        dayjsLocale: $vendorLocales.dayjs,
         readonly: dataReadonly,
         chartData: $data,
         showLocaleSelect,

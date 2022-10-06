@@ -25,18 +25,21 @@ async function loadLocales() {
 
 async function loadVendorLocale(vendor, locale, team) {
     const locales = await loadLocales();
-    const tryLocales = getLocaleCodeOptions(locale);
-    for (let i = 0; i < tryLocales.length; i++) {
-        if (locales[vendor].has(tryLocales[i])) {
-            const localeBase = locales[vendor].get(tryLocales[i]);
-            return {
-                base: localeBase,
-                custom: get(team, `settings.locales.${vendor}.${locale.replace('_', '-')}`, {})
-            };
-        }
-    }
-    // no locale found at all
-    return 'null';
+    const localeSettings = getVendorLocaleSettings(vendor, locale, locales);
+    if (!localeSettings) return 'null';
+    return {
+        base: localeSettings,
+        custom: get(team, `settings.locales.${vendor}.${locale.replace('_', '-')}`, {})
+    };
+}
+
+async function loadVendorLocales(vendor, locales) {
+    const availableLocales = await loadLocales();
+    return Object.fromEntries(
+        locales
+            .map(locale => [locale, getVendorLocaleSettings(vendor, locale, availableLocales)])
+            .filter(([, settings]) => !!settings)
+    );
 }
 
 async function loadLocaleConfig(locale) {
@@ -62,9 +65,20 @@ function getLocaleCodeOptions(locale) {
     return tryLocales;
 }
 
+function getVendorLocaleSettings(vendor, locale, locales) {
+    const tryLocales = getLocaleCodeOptions(locale);
+    for (let i = 0; i < tryLocales.length; i++) {
+        if (locales[vendor].has(tryLocales[i])) {
+            return locales[vendor].get(tryLocales[i]);
+        }
+    }
+    return undefined;
+}
+
 module.exports = {
     loadLocaleMeta,
     loadLocales,
     loadLocaleConfig,
-    loadVendorLocale
+    loadVendorLocale,
+    loadVendorLocales
 };

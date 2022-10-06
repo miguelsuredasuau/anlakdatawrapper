@@ -14,6 +14,7 @@ import addComputedColumns from '@datawrapper/chart-core/lib/dw/dataset/addComput
 import filterDatasetColumns from '@datawrapper/chart-core/lib/dw/utils/filterDatasetColumns.mjs';
 import populateVisAxes from '@datawrapper/chart-core/lib/dw/utils/populateVisAxes.mjs';
 import { SvelteSubject } from '../../utils/rxjs-store.mjs';
+import assign from 'assign-deep';
 import {
     distinctUntilChanged,
     tap,
@@ -45,6 +46,7 @@ export function initStores({
     rawChart,
     rawTheme,
     rawLocales,
+    rawVendorLocales,
     rawVisualizations,
     rawTeam,
     rawData,
@@ -184,6 +186,20 @@ export function initStores({
     const locale$ = distinctChart$.pipe(
         map(chart => chart.language || 'en-US'),
         map(chartLocale => rawLocales.find(l => l.id === chartLocale))
+    );
+
+    const vendorLocales$ = combineLatest([locale$, team$]).pipe(
+        map(([{ id: locale = {} }, team]) => {
+            return Object.fromEntries(
+                Object.entries(rawVendorLocales).map(([vendor, locales]) => {
+                    const settings = locales[locale];
+                    if (!settings) return [vendor, null];
+                    const localeBase = eval(settings);
+                    const custom = get(team, `settings.locales.${vendor}.${locale}`, {});
+                    return [vendor, assign(localeBase, custom)];
+                })
+            );
+        })
     );
 
     // read-only dataset
@@ -461,6 +477,7 @@ export function initStores({
         visualization: visualization$,
         locale: locale$,
         locales: locales$,
+        vendorLocales: vendorLocales$,
         editorMode: editorMode$,
         isFixedHeight: isFixedHeight$,
         onNextSave,
