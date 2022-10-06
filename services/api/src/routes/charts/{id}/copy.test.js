@@ -1,13 +1,13 @@
 const test = require('ava');
+const defaultsDeep = require('lodash/defaultsDeep');
 const {
-    createTeamWithUser,
-    createUser,
-    destroy,
     setup,
     BASE_URL,
     createChart,
     getChart,
-    createGuestSession
+    createGuestSession,
+    withTeamWithUser,
+    withUser
 } = require('../../../../test/helpers/setup');
 const fetch = require('node-fetch');
 
@@ -16,10 +16,7 @@ test.before(async t => {
 });
 
 test('User can copy chart, attributes match', async t => {
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server);
-        const { user, session } = userObj;
+    return withUser(t.context.server, {}, async ({ user, session }) => {
         const headers = {
             cookie: `DW-SESSION=${session.id}; crumb=abc`,
             'X-CSRF-Token': 'abc',
@@ -59,21 +56,22 @@ test('User can copy chart, attributes match', async t => {
             headers
         });
 
-        const expectedAttributes = {
-            ...attributes,
-            metadata: {
-                ...attributes.metadata,
-                data: {},
-                publish: {},
-                describe: {
-                    intro: '',
-                    'source-name': '',
-                    'source-url': '',
-                    'aria-description': '',
-                    byline: ''
+        const expectedAttributes = defaultsDeep(
+            {
+                metadata: {
+                    data: {},
+                    publish: {},
+                    describe: {
+                        intro: '',
+                        'source-name': '',
+                        'source-url': '',
+                        'aria-description': '',
+                        byline: ''
+                    }
                 }
-            }
-        };
+            },
+            attributes
+        );
 
         t.is(copiedChart.statusCode, 201);
         t.is(copiedChart.result.authorId, user.id);
@@ -90,26 +88,13 @@ test('User can copy chart, attributes match', async t => {
                 t.deepEqual(copiedChart.result[attr], expectedAttributes[attr]);
             }
         }
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });
 
-test("User cannot copy charts they can't access", async t => {
-    let userObj, userObj2;
-    try {
-        userObj = await createUser(t.context.server);
-        userObj2 = await createUser(t.context.server);
-        const { session } = userObj;
+test('User can copy chart, sharing url is updated', async t => {
+    return withUser(t.context.server, {}, async ({ session }) => {
         const headers = {
             cookie: `DW-SESSION=${session.id}; crumb=abc`,
-            'X-CSRF-Token': 'abc',
-            referer: 'http://localhost'
-        };
-        const headers2 = {
-            cookie: `DW-SESSION=${userObj2.session.id}; crumb=abc`,
             'X-CSRF-Token': 'abc',
             referer: 'http://localhost'
         };
@@ -127,36 +112,159 @@ test("User cannot copy charts they can't access", async t => {
         };
 
         // create a new chart
-        const srcChart = await t.context.server.inject({
+        const {
+            result: { id: srcChartId, metadata: originalMetadata }
+        } = await t.context.server.inject({
             method: 'POST',
             url: '/v3/charts',
             headers,
             payload: attributes
         });
-        t.is(srcChart.statusCode, 201);
+
+        await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${srcChartId}`,
+            headers,
+            payload: {
+                metadata: defaultsDeep(
+                    {
+                        visualize: {
+                            sharing: {
+                                auto: false,
+                                url: `https://www.datawrapper.de/_/${srcChartId}`
+                            }
+                        }
+                    },
+                    originalMetadata
+                )
+            }
+        });
 
         // copy new chart
         const copiedChart = await t.context.server.inject({
             method: 'POST',
-            url: `/v3/charts/${srcChart.result.id}/copy`,
-            headers: headers2
+            url: `/v3/charts/${srcChartId}/copy`,
+            headers
         });
-        t.is(copiedChart.statusCode, 401);
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-        if (userObj2) {
-            await destroy(...Object.values(userObj2));
-        }
-    }
+
+        t.is(copiedChart.statusCode, 201);
+        t.is(
+            copiedChart.result.metadata.visualize.sharing.url,
+            `https://www.datawrapper.de/_/${copiedChart.result.id}`
+        );
+    });
+});
+
+test('User can copy chart, custom sharing url is preserved', async t => {
+    return withUser(t.context.server, {}, async ({ session }) => {
+        const headers = {
+            cookie: `DW-SESSION=${session.id}; crumb=abc`,
+            'X-CSRF-Token': 'abc',
+            referer: 'http://localhost'
+        };
+
+        const attributes = {
+            title: 'This is my chart',
+            theme: 'default',
+            language: 'en-IE',
+            externalData: 'https://static.dwcdn.net/data/12345.csv',
+            metadata: {
+                visualize: {
+                    basemap: 'us-counties'
+                }
+            }
+        };
+
+        // create a new chart
+        const {
+            result: { id: srcChartId, metadata: originalMetadata }
+        } = await t.context.server.inject({
+            method: 'POST',
+            url: '/v3/charts',
+            headers,
+            payload: attributes
+        });
+
+        await t.context.server.inject({
+            method: 'PATCH',
+            url: `/v3/charts/${srcChartId}`,
+            headers,
+            payload: {
+                metadata: defaultsDeep(
+                    {
+                        visualize: {
+                            sharing: {
+                                auto: false,
+                                url: 'custom url'
+                            }
+                        }
+                    },
+                    originalMetadata
+                )
+            }
+        });
+
+        // copy new chart
+        const copiedChart = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${srcChartId}/copy`,
+            headers
+        });
+
+        t.is(copiedChart.statusCode, 201);
+        t.is(copiedChart.result.metadata.visualize.sharing.url, 'custom url');
+    });
+});
+
+test("User cannot copy charts they can't access", async t => {
+    return withUser(t.context.server, {}, async userObj => {
+        return withUser(t.context.server, {}, async userObj2 => {
+            const { session } = userObj;
+            const headers = {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            };
+            const headers2 = {
+                cookie: `DW-SESSION=${userObj2.session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            };
+
+            const attributes = {
+                title: 'This is my chart',
+                theme: 'default',
+                language: 'en-IE',
+                externalData: 'https://static.dwcdn.net/data/12345.csv',
+                metadata: {
+                    visualize: {
+                        basemap: 'us-counties'
+                    }
+                }
+            };
+
+            // create a new chart
+            const srcChart = await t.context.server.inject({
+                method: 'POST',
+                url: '/v3/charts',
+                headers,
+                payload: attributes
+            });
+            t.is(srcChart.statusCode, 201);
+
+            // copy new chart
+            const copiedChart = await t.context.server.inject({
+                method: 'POST',
+                url: `/v3/charts/${srcChart.result.id}/copy`,
+                headers: headers2
+            });
+            t.is(copiedChart.statusCode, 401);
+        });
+    });
 });
 
 test("User can't copy unpublished charts they can't access, even if team allows it", async t => {
-    let userObj, teamObj;
-    try {
-        teamObj = await createTeamWithUser(t.context.server);
-        const { team, session } = teamObj;
+    return withTeamWithUser(t.context.server, {}, async ({ team, session }) => {
         // make sure team allows copying
         await team.update({
             settings: {
@@ -194,36 +302,27 @@ test("User can't copy unpublished charts they can't access, even if team allows 
         t.is(srcChart.statusCode, 201);
 
         // create different user
-        userObj = await createUser(t.context.server);
-        const headers2 = {
-            cookie: `DW-SESSION=${userObj.session.id}; crumb=abc`,
-            'X-CSRF-Token': 'abc',
-            referer: 'http://localhost'
-        };
+        await withUser(t.context.server, {}, async userObj => {
+            const headers2 = {
+                cookie: `DW-SESSION=${userObj.session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            };
 
-        // copy new chart
-        const copiedChart = await t.context.server.inject({
-            method: 'POST',
-            url: `/v3/charts/${srcChart.result.id}/copy`,
-            headers: headers2
+            // copy new chart
+            const copiedChart = await t.context.server.inject({
+                method: 'POST',
+                url: `/v3/charts/${srcChart.result.id}/copy`,
+                headers: headers2
+            });
+
+            t.is(copiedChart.statusCode, 404);
         });
-
-        t.is(copiedChart.statusCode, 404);
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
-    }
+    });
 });
 
 test("If team allows it, users and guests can copy published charts they can't access (edit in Datawrapper)", async t => {
-    let userObj, teamObj;
-    try {
-        teamObj = await createTeamWithUser(t.context.server);
-        const { team, session } = teamObj;
+    return withTeamWithUser(t.context.server, {}, async ({ team, session }) => {
         // make sure team allows copying
         await team.update({
             settings: {
@@ -269,24 +368,25 @@ test("If team allows it, users and guests can copy published charts they can't a
         t.is(publishChart.statusCode, 200);
 
         // create different user
-        userObj = await createUser(t.context.server);
-        const headers2 = {
-            cookie: `DW-SESSION=${userObj.session.id}; crumb=abc`,
-            'X-CSRF-Token': 'abc',
-            referer: 'http://localhost'
-        };
+        await withUser(t.context.server, {}, async userObj => {
+            const headers2 = {
+                cookie: `DW-SESSION=${userObj.session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            };
 
-        // copy new chart
-        const copiedChart = await t.context.server.inject({
-            method: 'POST',
-            url: `/v3/charts/${srcChart.result.id}/copy`,
-            headers: headers2
+            // copy new chart
+            const copiedChart = await t.context.server.inject({
+                method: 'POST',
+                url: `/v3/charts/${srcChart.result.id}/copy`,
+                headers: headers2
+            });
+
+            t.is(copiedChart.statusCode, 201);
+            t.is(copiedChart.result.forkedFrom, srcChart.result.id);
+            // title is identical
+            t.is(copiedChart.result.title, srcChart.result.title);
         });
-
-        t.is(copiedChart.statusCode, 201);
-        t.is(copiedChart.result.forkedFrom, srcChart.result.id);
-        // title is identical
-        t.is(copiedChart.result.title, srcChart.result.title);
 
         // try again as guests
         const guestSession = await createGuestSession(t.context.server);
@@ -303,22 +403,11 @@ test("If team allows it, users and guests can copy published charts they can't a
         t.is(copiedChart2.result.forkedFrom, srcChart.result.id);
         // title is identical
         t.is(copiedChart2.result.title, srcChart.result.title);
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
-    }
+    });
 });
 
 test('User can copy chart, assets match', async t => {
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server);
-        const { session } = userObj;
-
+    return withUser(t.context.server, {}, async ({ session }) => {
         const csv = `Col1,Col2
         10,20
         15,7`;
@@ -399,18 +488,11 @@ test('User can copy chart, assets match', async t => {
         });
 
         t.is(copiedBasemap.result, JSON.stringify(basemap));
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });
 
 test('Chart belonging to team duplicates to that team', async t => {
-    let teamObj;
-    try {
-        teamObj = await createTeamWithUser(t.context.server);
-        const { team, user, session } = teamObj;
+    return withTeamWithUser(t.context.server, {}, async ({ team, session, user }) => {
         const headers = {
             cookie: `DW-SESSION=${session.id}; crumb=abc`,
             'X-CSRF-Token': 'abc',
@@ -440,70 +522,56 @@ test('Chart belonging to team duplicates to that team', async t => {
         t.is(copiedChart.statusCode, 201);
         t.is(copiedChart.result.authorId, user.id);
         t.is(copiedChart.result.organizationId, team.id);
-    } finally {
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
-    }
+    });
 });
 
 test('Copies made by admins are stored in their personal root folder ', async t => {
-    let teamObj;
-    let adminObj;
-    try {
-        teamObj = await createTeamWithUser(t.context.server);
-        const { team, user, session: ownerSession } = teamObj;
-        adminObj = await createUser(t.context.server, { role: 'admin' });
-        const { user: adminUser, session: adminSession } = adminObj;
-        const userHeaders = {
-            cookie: `DW-SESSION=${ownerSession.id}; crumb=abc`,
-            'X-CSRF-Token': 'abc',
-            referer: 'http://localhost'
-        };
-        const adminHeaders = {
-            cookie: `DW-SESSION=${adminSession.id}; crumb=abc`,
-            'X-CSRF-Token': 'abc',
-            referer: 'http://localhost'
-        };
+    return withTeamWithUser(t.context.server, {}, async ({ team, session: ownerSession, user }) => {
+        return withUser(
+            t.context.server,
+            { role: 'admin' },
+            async ({ session: adminSession, user: adminUser }) => {
+                const userHeaders = {
+                    cookie: `DW-SESSION=${ownerSession.id}; crumb=abc`,
+                    'X-CSRF-Token': 'abc',
+                    referer: 'http://localhost'
+                };
+                const adminHeaders = {
+                    cookie: `DW-SESSION=${adminSession.id}; crumb=abc`,
+                    'X-CSRF-Token': 'abc',
+                    referer: 'http://localhost'
+                };
 
-        // user creates chart
-        const srcChart = await t.context.server.inject({
-            method: 'POST',
-            url: '/v3/charts',
-            headers: userHeaders,
-            payload: {
-                organizationId: team.id
+                // user creates chart
+                const srcChart = await t.context.server.inject({
+                    method: 'POST',
+                    url: '/v3/charts',
+                    headers: userHeaders,
+                    payload: {
+                        organizationId: team.id
+                    }
+                });
+
+                t.is(srcChart.result.organizationId, team.id);
+                t.is(srcChart.result.authorId, user.id);
+
+                // admin copies chart
+                const copiedChart = await t.context.server.inject({
+                    method: 'POST',
+                    url: `/v3/charts/${srcChart.result.id}/copy`,
+                    headers: adminHeaders
+                });
+
+                t.is(copiedChart.statusCode, 201);
+                t.is(copiedChart.result.authorId, adminUser.id);
+                t.is(copiedChart.result.organizationId, undefined);
             }
-        });
-
-        t.is(srcChart.result.organizationId, team.id);
-        t.is(srcChart.result.authorId, user.id);
-
-        // admin copies chart
-        const copiedChart = await t.context.server.inject({
-            method: 'POST',
-            url: `/v3/charts/${srcChart.result.id}/copy`,
-            headers: adminHeaders
-        });
-
-        t.is(copiedChart.statusCode, 201);
-        t.is(copiedChart.result.authorId, adminUser.id);
-        t.is(copiedChart.result.organizationId, undefined);
-    } finally {
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
-        if (adminObj) {
-            await destroy(...Object.values(adminObj));
-        }
-    }
+        );
+    });
 });
 
 test('PHP POST /charts/{id}/copy returns error for non existing chart copy', async t => {
-    let userObj = {};
-    try {
-        userObj = await createUser(t.context.server, { role: 'editor' });
-
+    return withUser(t.context.server, { role: 'editor' }, async userObj => {
         const res = await fetch(`${BASE_URL}/charts/00000/copy`, {
             method: 'POST',
             headers: {
@@ -518,17 +586,12 @@ test('PHP POST /charts/{id}/copy returns error for non existing chart copy', asy
 
         t.is(json.status, 'error');
         t.is(json.code, 'no-such-chart');
-    } finally {
-        await destroy(Object.values(userObj));
-    }
+    });
 });
 
 test('PHP POST /charts/{id}/copy creates a copy', async t => {
-    let userObj = {};
-    let chart = {};
-    try {
-        userObj = await createUser(t.context.server, { role: 'editor' });
-        chart = await createChart({
+    return withUser(t.context.server, { role: 'editor' }, async userObj => {
+        const chart = await createChart({
             title: 'Chart 1',
             organization_id: null,
             author_id: userObj.user.id,
@@ -569,53 +632,46 @@ test('PHP POST /charts/{id}/copy creates a copy', async t => {
         t.is(copy.title, 'Chart 1 (Copy)');
         t.is(copy.is_fork, false);
         t.is(copy.forked_from, chart.id);
-    } finally {
-        await destroy(Object.values(userObj));
-    }
+    });
 });
 
 test('PHP POST /charts/{id}/copy does not allow to copy from anyone', async t => {
-    let userObj = {};
-    let userObj2 = {};
-    let chart = {};
-    try {
-        userObj = await createUser(t.context.server, { role: 'editor' });
-        userObj2 = await createUser(t.context.server, { role: 'editor' });
-        chart = await createChart({
-            title: 'Chart 1',
-            organization_id: null,
-            author_id: userObj.user.id,
-            last_edit_step: 2
+    return withUser(t.context.server, { role: 'editor' }, async userObj => {
+        return withUser(t.context.server, { role: 'editor' }, async userObj2 => {
+            const chart = await createChart({
+                title: 'Chart 1',
+                organization_id: null,
+                author_id: userObj.user.id,
+                last_edit_step: 2
+            });
+
+            // upload chart data, otherwise PHP /copy fails
+            await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
+                method: 'PUT',
+                headers: {
+                    ...t.context.headers,
+                    Authorization: `Bearer ${userObj.token}`,
+                    'Content-Type': 'text/csv'
+                },
+                body: 'hello,world'
+            });
+
+            t.is(chart.title, 'Chart 1');
+
+            const res = await fetch(`${BASE_URL}/charts/${chart.id}/copy`, {
+                method: 'POST',
+                headers: {
+                    ...t.context.headers,
+                    Authorization: `Bearer ${userObj2.token}`
+                }
+            });
+
+            t.is(res.status, 200);
+
+            const json = await res.json();
+
+            t.is(json.status, 'error');
+            t.is(json.code, 'access-denied');
         });
-
-        // upload chart data, otherwise PHP /copy fails
-        await fetch(`${BASE_URL}/charts/${chart.id}/data`, {
-            method: 'PUT',
-            headers: {
-                ...t.context.headers,
-                Authorization: `Bearer ${userObj.token}`,
-                'Content-Type': 'text/csv'
-            },
-            body: 'hello,world'
-        });
-
-        t.is(chart.title, 'Chart 1');
-
-        const res = await fetch(`${BASE_URL}/charts/${chart.id}/copy`, {
-            method: 'POST',
-            headers: {
-                ...t.context.headers,
-                Authorization: `Bearer ${userObj2.token}`
-            }
-        });
-
-        t.is(res.status, 200);
-
-        const json = await res.json();
-
-        t.is(json.status, 'error');
-        t.is(json.code, 'access-denied');
-    } finally {
-        await destroy(Object.values(userObj), Object.values(userObj2));
-    }
+    });
 });

@@ -109,6 +109,15 @@ async function createUser(
     };
 }
 
+async function withUser(server, options, func) {
+    const userObj = await createUser(server, options);
+    try {
+        return await func(userObj);
+    } finally {
+        await destroy(...Object.values(userObj));
+    }
+}
+
 async function createSession(server, user) {
     const { Session } = require('@datawrapper/orm/models');
 
@@ -163,6 +172,15 @@ async function createTeam(props = {}) {
     });
 }
 
+async function withTeam(props, func) {
+    const team = await createTeam(props);
+    try {
+        return await func(team);
+    } finally {
+        await destroy(team);
+    }
+}
+
 async function createTeamWithUser(server, { role = 'owner', invite_token = '' } = {}) {
     const { UserTeam } = require('@datawrapper/orm/models');
     const teamPromise = createTeam();
@@ -188,9 +206,27 @@ async function createTeamWithUser(server, { role = 'owner', invite_token = '' } 
         return userObj;
     }
 
+    async function withTeamUser(role, userFunc) {
+        const userObj = await addUser(role);
+        try {
+            await userFunc(userObj);
+        } finally {
+            await destroy(...Object.values(userObj));
+        }
+    }
+
     session.scope = ALL_SCOPES;
 
-    return { team, user, session, token, addUser };
+    return { team, user, session, token, addUser, withTeamUser };
+}
+
+async function withTeamWithUser(server, options, func) {
+    const teamObj = await createTeamWithUser(server, options);
+    try {
+        return await func(teamObj);
+    } finally {
+        await destroy(...Object.values(teamObj));
+    }
 }
 
 const genRandomChartId = customAlphabet(
@@ -488,5 +524,8 @@ module.exports = {
     getPublicChart,
     getTheme,
     setup,
-    setUserData
+    setUserData,
+    withTeam,
+    withTeamWithUser,
+    withUser
 };

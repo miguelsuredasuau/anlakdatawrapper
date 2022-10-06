@@ -4,8 +4,13 @@ const { prepareChart } = require('../../../utils/index.js');
 const { translate } = require('@datawrapper/service-utils/l10n');
 const findChartId = require('@datawrapper/service-utils/findChartId');
 const { Team, ChartPublic, ReadonlyChart } = require('@datawrapper/orm/models');
-const clone = require('lodash/clone');
+const cloneDeep = require('lodash/cloneDeep');
 const createChart = require('@datawrapper/service-utils/createChart');
+
+// copy from plugins/social-sharing/src/v2/SharingSettings.html
+function getDirectChartUrl({ id }) {
+    return `https://www.datawrapper.de/_/${id}`;
+}
 
 module.exports = server => {
     const { event, events } = server.app;
@@ -53,8 +58,8 @@ module.exports = server => {
                 return Boom.badRequest('You cannot duplicate a forked chart.');
             }
 
-            const newChart = {
-                id: await findChartId(server),
+            const newChartId = await findChartId(server);
+            const newChartData = {
                 type: srcChart.type,
                 title: editInDatawrapper
                     ? srcChart.title
@@ -62,7 +67,7 @@ module.exports = server => {
                           scope: 'core',
                           language: auth.artifacts.language
                       })})`,
-                metadata: clone(srcChart.metadata),
+                metadata: cloneDeep(srcChart.metadata),
                 theme: srcChart.theme,
                 language: srcChart.language,
                 teamId: srcChart.organization_id,
@@ -76,11 +81,26 @@ module.exports = server => {
             };
 
             if (isAdmin || editInDatawrapper) {
-                newChart.teamId = null;
-                newChart.folderId = null;
+                newChartData.teamId = null;
+                newChartData.folderId = null;
             }
 
-            const chart = await createChart({ server, user, payload: newChart, session });
+            if (
+                !srcChart.metadata?.visualize?.sharing?.auto &&
+                srcChart.metadata?.visualize?.sharing?.url === getDirectChartUrl(srcChart)
+            ) {
+                newChartData.metadata.visualize.sharing.url = getDirectChartUrl({ id: newChartId });
+            }
+
+            const chart = await createChart(
+                {
+                    server,
+                    user,
+                    payload: newChartData,
+                    session
+                },
+                newChartId
+            );
             await server.methods.copyChartAssets(srcChart, chart);
 
             try {

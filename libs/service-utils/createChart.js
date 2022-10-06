@@ -38,10 +38,11 @@ const PAYLOAD_KEYS = new Set([
  * @param {object} options.payload.external_data    - chart id of source for forks
  * @param {object} options.payload.folderId          - folder id, will be checked and used to determine team
  * @param {object} options.payload.teamId            - team id will be used to determine defaults
+ * @param {string} [newChartId]         - when supplied, new chart is created with this ID instead of auto-generated one
  *
  * @returns {Chart} -- instance of new chart object
  */
-module.exports = async ({ server, user, payload = {}, session, token }) => {
+const createChart = async ({ server, user, payload = {}, session, token }, newChartId = null) => {
     const Chart = server.methods.getModel('chart');
     const Session = server.methods.getModel('session');
     const Theme = server.methods.getModel('theme');
@@ -109,7 +110,7 @@ module.exports = async ({ server, user, payload = {}, session, token }) => {
         }
     }
 
-    const id = await findChartId(server);
+    const id = newChartId ?? (await findChartId(server));
 
     const chart = await Chart.create({
         title: `[ ${__('Insert title here', { scope: 'core', language })} ]`,
@@ -205,3 +206,5 @@ module.exports = async ({ server, user, payload = {}, session, token }) => {
     await chart.save();
     return chart;
 };
+
+module.exports = createChart;
