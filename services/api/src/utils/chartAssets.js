@@ -46,6 +46,38 @@ module.exports = {
             });
         }
 
+        // better not include the new delete event in hasRegisteredDataPlugins,
+        // in case we forgot to implement it somewhere
+        if (!registeredEvents.includes(event.DELETE_CHART_ASSET)) {
+            events.on(event.DELETE_CHART_ASSET, async function ({ chart, filename }) {
+                const outPath = path.join(localChartAssetRoot, getDataPath(chart.createdAt));
+                const fullPath = path.join(outPath, filename);
+
+                const exists = await fs.pathExists(fullPath);
+
+                if (!exists) {
+                    return { code: 204 };
+                }
+
+                try {
+                    await fs.access(outPath, fs.constants.W_OK);
+                } catch (e) {
+                    throw new CodedError(
+                        'notWritable',
+                        'Need write access to containing directory.'
+                    );
+                }
+
+                try {
+                    await fs.remove(fullPath);
+                } catch (e) {
+                    throw new CodedError('deleteFailed', 'Failed to delete the asset');
+                }
+
+                return { code: 200 };
+            });
+        }
+
         /**
          * read an asset for a given chart
          *
@@ -121,9 +153,51 @@ module.exports = {
             }
         }
 
+        // mind the 's'
+        async function deleteChartAssets({ chart }) {
+            // for safety reasons assets can only be deleted for deleted charts
+            if (!chart.deleted) {
+                return [{ status: 'forbidden', data: { code: 403 } }];
+            }
+
+            const extensions = ['.csv', '.map.json', '.minimap.json', '.highlight.json'];
+            const codes = await Promise.all(
+                extensions.map(async extension => {
+                    try {
+                        const res = await events.emit(
+                            event.DELETE_CHART_ASSET,
+                            {
+                                chart,
+                                filename: chart.id + extension
+                            },
+                            { filter: 'first' }
+                        );
+                        return res.code;
+                    } catch (ex) {
+                        console.error(ex);
+                        return 500;
+                    }
+                })
+            );
+
+            // return either:
+            // - the first error code if there were errors
+            // - code 204 if no assets were deleted
+            // - code 200 in all other cases (if at least one asset was deleted)
+            const nonEmptyCodes = codes.filter(code => code !== 204);
+            if (!nonEmptyCodes.length) {
+                return { code: 204 };
+            }
+
+            return {
+                code: nonEmptyCodes.find(code => code >= 400) ?? 200
+            };
+        }
+
         server.method('getChartAsset', getChartAsset);
         server.method('putChartAsset', putChartAsset);
         server.method('copyChartAssets', copyChartAssets);
+        server.method('deleteChartAssets', deleteChartAssets);
     }
 };
 

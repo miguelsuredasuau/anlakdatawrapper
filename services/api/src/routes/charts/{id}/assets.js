@@ -72,6 +72,26 @@ module.exports = server => {
         },
         handler: writeChartAsset
     });
+
+    //DELETE /v3/charts/{id}/assets
+    server.route({
+        method: 'DELETE',
+        path: '/assets',
+        options: {
+            description: 'Delete all chart assets',
+            notes: `Deletes all chart assets. It is dedicated to clean up after tests.
+                    It should not be used anywhere else
+                    since we don't really delete things for security reasons.
+                    Only works for charts already marked as deleted.`,
+            auth: { access: { scope: ['chart:write'] } },
+            validate: {
+                params: Joi.object({
+                    id: Joi.string().length(5).required()
+                })
+            }
+        },
+        handler: deleteChartAssests
+    });
 };
 
 async function getChartAsset(request, h) {
@@ -181,6 +201,33 @@ async function writeChartAsset(request, h) {
 
         // log chart/edit
         await request.server.methods.logAction(user.id, `chart/edit`, chart.id);
+
+        return h.response().code(code);
+    } catch (error) {
+        request.logger.error(error.message);
+        return Boom.notFound();
+    }
+}
+
+async function deleteChartAssests(request, h) {
+    const { auth, server } = request;
+    const user = auth.artifacts;
+
+    const { Chart } = require('@datawrapper/orm/models');
+    const chart = await Chart.findByPk(request.params.id);
+    if (!chart) {
+        return Boom.notFound();
+    }
+
+    if (!chart.deleted || !user || user.role === 'guest' || !(await user.mayEditChart(chart))) {
+        return Boom.forbidden();
+    }
+
+    try {
+        const { code } = await server.methods.deleteChartAssets({ chart });
+
+        // log chart/assets/delete
+        await request.server.methods.logAction(user.id, 'chart/assets/delete', chart.id);
 
         return h.response().code(code);
     } catch (error) {

@@ -98,7 +98,8 @@ module.exports = async function () {
     // hourly remove login tokens older than 1h
     cron.schedule('0 * * * *', require('./tasks/remove-expired-login-tokens'));
 
-    cron.schedule('23 4 * * *', require('./tasks/run-smoke-removal'));
+    const runTestCleanup = require('./tasks/run-test-cleanup');
+    cron.schedule('23 14 * * * *', () => runTestCleanup().catch(logger.error));
 
     // plugins may define crons as well
 

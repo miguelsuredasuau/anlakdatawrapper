@@ -1,6 +1,6 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const { ChartPublic } = require('@datawrapper/orm/models');
+const { Chart, ChartPublic } = require('@datawrapper/orm/models');
 
 module.exports = server => {
     // POST /v3/charts/{id}/unpublish
@@ -28,7 +28,10 @@ async function unpublishChart(request, h) {
     const { params, auth, server } = request;
     const { events, event } = server.app;
     const user = auth.artifacts;
-    const chart = await server.methods.loadChart(params.id);
+
+    // Notice that we don't check whether the chart is deleted to allow unpublishing deleted charts,
+    // e.g. in e2e test cleanup cron job.
+    const chart = await Chart.findByPk(params.id);
 
     if (!chart || !(await chart.isPublishableBy(user))) {
         throw Boom.unauthorized();

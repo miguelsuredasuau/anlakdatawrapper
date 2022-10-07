@@ -282,6 +282,15 @@ function createChart(props = {}) {
     });
 }
 
+async function withChart(props, func) {
+    const chart = await createChart(props);
+    try {
+        return await func(chart);
+    } finally {
+        await destroy(chart);
+    }
+}
+
 async function createPublicChart(props = {}) {
     const chart = await createChart({
         last_edit_step: 5,
@@ -525,6 +534,7 @@ module.exports = {
     getTheme,
     setup,
     setUserData,
+    withChart,
     withTeam,
     withTeamWithUser,
     withUser
