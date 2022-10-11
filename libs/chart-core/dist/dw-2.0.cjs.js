@@ -7021,8 +7021,6 @@ function addComputedColumns(chart, dataset) {
     }
 }
 
-let visualization$1;
-
 /**
  * Chart
  * @module dw.chart
@@ -7034,6 +7032,7 @@ function chart (attributes) {
     let metricPrefix;
     let locale;
     let flags = {};
+    let visualization;
 
     const changeCallbacks = events();
     const datasetChangeCallbacks = events();
@@ -7067,7 +7066,7 @@ function chart (attributes) {
         },
 
         getElementBounds(element) {
-            const rootBounds = visualization$1.target().getBoundingClientRect();
+            const rootBounds = visualization.target().getBoundingClientRect();
             const elementBounds = element.getBoundingClientRect();
 
             return {
@@ -7145,11 +7144,11 @@ function chart (attributes) {
         // sets or gets the visualization
         vis(_vis) {
             if (arguments.length) {
-                visualization$1 = _vis;
-                visualization$1.chart(chart);
+                visualization = _vis;
+                visualization.chart(chart);
                 return chart;
             }
-            return visualization$1;
+            return visualization;
         },
 
         // returns true if the user has set any highlights
@@ -7212,14 +7211,14 @@ function chart (attributes) {
         },
 
         render(outerContainer) {
-            if (!visualization$1 || !theme || !dataset) {
+            if (!visualization || !theme || !dataset) {
                 throw new Error('cannot render the chart!');
             }
 
             const isIframe = flags.isIframe;
             const container = chart.vis().target();
 
-            visualization$1.chart(chart);
+            visualization.chart(chart);
 
             // compute chart dimensions
             const w = width(container);
@@ -7251,13 +7250,13 @@ function chart (attributes) {
             outerContainer.classList.toggle('is-mobile', outerContainer.clientWidth <= breakpoint);
 
             // really needed?
-            outerContainer.classList.add('vis-' + visualization$1.id);
+            outerContainer.classList.add('vis-' + visualization.id);
 
-            visualization$1.reset(container);
-            visualization$1.size(w, h);
-            visualization$1.__init();
+            visualization.reset(container);
+            visualization.size(w, h);
+            visualization.__init();
 
-            visualization$1.render(container);
+            visualization.render(container);
 
             if (isIframe) {
                 window.clearInterval(this.__resizingInterval);
@@ -7320,14 +7319,14 @@ function chart (attributes) {
 
         getHeightMode() {
             const themeFitChart =
-                get(visualization$1.theme(), 'vis.d3-pies.fitchart', false) &&
+                get(visualization.theme(), 'vis.d3-pies.fitchart', false) &&
                 ['d3-pies', 'd3-donuts', 'd3-multiple-pies', 'd3-multiple-donuts'].indexOf(
-                    visualization$1.meta.id
+                    visualization.meta.id
                 ) > -1;
             const urlParams = new URLSearchParams(window.location.search);
             const urlFitChart = !!urlParams.get('fitchart');
 
-            return themeFitChart || urlFitChart || visualization$1.meta.height !== 'fixed'
+            return themeFitChart || urlFitChart || visualization.meta.height !== 'fixed'
                 ? 'fit'
                 : 'fixed';
         },
