@@ -50,8 +50,8 @@
     const queryParameters = new URLSearchParams();
     $: {
         enforceFitHeight
-            ? queryParameters.set('fitheight', '1')
-            : queryParameters.delete('fitheight');
+            ? queryParameters.set('fitchart', '1')
+            : queryParameters.delete('fitchart');
         allowInlineEditing
             ? queryParameters.set('allowEditing', '1')
             : queryParameters.delete('allowEditing');
