@@ -248,6 +248,12 @@ module.exports = {
             });
         });
 
+        server.methods.registerViewComponent({
+            id: `edit/base`,
+            page: 'edit/Index.svelte',
+            view: `edit/Base.svelte`
+        });
+
         // register core layout controls
         server.methods.registerCustomData(
             'edit/visualize/layout',

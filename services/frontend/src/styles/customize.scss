@@ -109,8 +109,22 @@
         height: auto;
         border: 0;
         background-color: transparent;
+        // line-height: inherit;
         &:hover {
             background-color: transparent;
+        }
+        .icon {
+            &:first-child:last-child {
+                margin:0;
+            }
+            &:first-child:not(:last-child) {
+                margin-left: 0;
+                margin-right: .15em;
+            }
+            &:last-child:not(:first-child) {
+                margin-left: .15em;
+                margin-right: 0;
+            }
         }
     }
     .icon {

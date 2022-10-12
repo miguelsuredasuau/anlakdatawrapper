@@ -39,6 +39,10 @@
             margin-bottom: 0;
         }
     }
+    .toolbar-footer {
+        margin-top: 0.25rem;
+        margin-bottom: -0.5rem;
+    }
 </style>
 
 <div class="toolbar-item" data-uid={uid}>

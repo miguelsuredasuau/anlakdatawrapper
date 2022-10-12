@@ -28,7 +28,8 @@ import {
     shareReplay,
     skip,
     startWith,
-    pairwise
+    pairwise,
+    take
 } from 'rxjs/operators';
 import { of, from, combineLatest, merge } from 'rxjs';
 
@@ -53,24 +54,14 @@ export function initStores({
     rawReadonlyKeys,
     dataReadonly
 }) {
-    const chart$ = new SvelteSubject(rawChart);
+    const { chart$, distinctChart$ } = initChartStore(rawChart);
     const data$ = new SvelteSubject(rawData);
     const team$ = of(rawTeam || { settings: {} }); // read-only
     const locales$ = of(rawLocales); // read-only
     const readonlyKeys$ = new SvelteSubject(rawReadonlyKeys);
 
-    // distinctChart$ only emits a value if a chart property (including nested properties) changes
-    // It gives the guarantee that between two consecutive submissions
-    // chartA and chartB => isEqual(chartA, chartB) = false
-    const distinctChart$ = chart$.pipe(
-        map(cloneDeep), // clone so that isEqual has an effect (and doesn't compare the same object)
-        distinctUntilChanged(isEqual),
-        shareReplay(1)
-    );
-
     const chartId$ = distinctChart$.pipe(map(chart => chart.id));
 
-    const onNextSave = new Set();
     const hasUnsavedChanges = new writable(false);
     const saveError = new writable(false);
     const saveSuccess = new writable(false);
@@ -96,10 +87,6 @@ export function initStores({
                 hasUnsavedChanges.set(false);
                 saveSuccess.set(true);
                 saveError.set(false);
-                for (const method of onNextSave) {
-                    method();
-                    onNextSave.delete(method);
-                }
                 setTimeout(() => {
                     saveSuccess.set(false);
                 }, 1000);
@@ -286,6 +273,13 @@ export function initStores({
     ]).pipe(
         withLatestFrom(dwChart$),
         map(([[data, options, userAxes, visAxes, overrideKeys], chart]) => {
+            if (options && options.json) {
+                try {
+                    return JSON.parse(data);
+                } catch (err) {
+                    return { error: 'could not parse json data' };
+                }
+            }
             const dataset = filterDatasetColumns(
                 chart,
                 reorderColumns(
@@ -325,10 +319,6 @@ export function initStores({
                 hasUnsavedChanges.set(false);
                 saveSuccess.set(true);
                 saveError.set(false);
-                for (const method of onNextSave) {
-                    method();
-                    onNextSave.delete(method);
-                }
                 setTimeout(() => {
                     saveSuccess.set(false);
                 }, 1000);
@@ -453,6 +443,48 @@ export function initStores({
         switchMap(([, chartId]) => syncExternalMetadata(chartId))
     );
 
+    return {
+        chart: chart$,
+        data: data$,
+        tableDataset: tableDataset$,
+        team: team$,
+        theme: theme$,
+        dataset: dataset$,
+        visualization: visualization$,
+        locale: locale$,
+        locales: locales$,
+        vendorLocales: vendorLocales$,
+        editorMode: editorMode$,
+        isFixedHeight: isFixedHeight$,
+        onNextSave(handler) {
+            return merge(putData$, patchChart$)
+                .pipe(debounceTime(100), take(1), tap(handler))
+                .subscribe();
+        },
+        hasUnsavedChanges,
+        saveError,
+        saveSuccess,
+        isDark,
+        syncData: putData$,
+        syncExternalData: getExternalData$,
+        syncExternalMetadata: getExternalMetadata$,
+        syncChart: patchChart$,
+        readonlyKeys: readonlyKeysSet$
+    };
+}
+
+export function initChartStore(initialValue) {
+    const chart$ = new SvelteSubject(initialValue);
+
+    // distinctChart$ only emits a value if a chart property (including nested properties) changes
+    // It gives the guarantee that between two consecutive submissions
+    // chartA and chartB => isEqual(chartA, chartB) = false
+    const distinctChart$ = chart$.pipe(
+        map(cloneDeep), // clone so that isEqual has an effect (and doesn't compare the same object)
+        distinctUntilChanged(isEqual),
+        shareReplay(1)
+    );
+
     /**
      * Subscribe to changes of a certain key within the chart store
      *
@@ -460,13 +492,34 @@ export function initStores({
      * @param {function} handler
      * @returns {function} - to unsubscribe
      */
-    chart$.subscribeKey = (key, handler) => {
+    chart$.subscribeKey = (key, handler, debounce = 100) => {
         const sub = distinctChart$
             .pipe(
                 map(chart => get(chart, key)),
                 distinctUntilChanged(isEqual),
-                debounceTime(100),
+                debounceTime(debounce),
                 tap(handler)
+            )
+            .subscribe();
+        return () => sub.unsubscribe();
+    };
+
+    /**
+     * Like subscribeKey, but passes the previous value as
+     * second argument to the handler method
+     *
+     * @param {string} key
+     * @param {function} handler
+     * @returns {function} - to unsubscribe
+     */
+    chart$.observeKey = (key, handler, debounce = 100) => {
+        const sub = distinctChart$
+            .pipe(
+                map(chart => get(chart, key)),
+                distinctUntilChanged(isEqual),
+                pairwise(),
+                debounceTime(debounce),
+                tap(([prevVal, newVal]) => handler(newVal, prevVal))
             )
             .subscribe();
         return () => sub.unsubscribe();
@@ -493,28 +546,5 @@ export function initStores({
         return writableKey$;
     };
 
-    return {
-        chart: chart$,
-        data: data$,
-        team: team$,
-        theme: theme$,
-        tableDataset: tableDataset$,
-        dataset: dataset$,
-        visualization: visualization$,
-        locale: locale$,
-        locales: locales$,
-        vendorLocales: vendorLocales$,
-        editorMode: editorMode$,
-        isFixedHeight: isFixedHeight$,
-        onNextSave,
-        hasUnsavedChanges,
-        saveError,
-        saveSuccess,
-        isDark,
-        syncData: putData$,
-        syncExternalData: getExternalData$,
-        syncExternalMetadata: getExternalMetadata$,
-        syncChart: patchChart$,
-        readonlyKeys: readonlyKeysSet$
-    };
+    return { chart$, distinctChart$ };
 }

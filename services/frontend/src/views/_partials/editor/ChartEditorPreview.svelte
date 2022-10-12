@@ -8,8 +8,8 @@
     import sharedSet from '@datawrapper/shared/set';
     import get from '@datawrapper/shared/get';
     import { merge } from 'rxjs';
-    import { debounceTime, tap } from 'rxjs/operators';
-    import { getContext, onMount, onDestroy } from 'svelte';
+    import { debounceTime, skip, tap } from 'rxjs/operators';
+    import { getContext, onMount, onDestroy, createEventDispatcher } from 'svelte';
 
     import ChartPreviewIframeDisplay from '_partials/displays/ChartPreviewIframeDisplay.svelte';
 
@@ -39,6 +39,13 @@
      * keep track of store subscriptions so we can unsubscribe when this component gets destroyed
      */
     const storeSubscriptions = new Set();
+    const dispatch = createEventDispatcher();
+
+    /*
+     * allows editors to ignore additiona metadata props so that we're not triggering
+     * re-rendering of the preview
+     */
+    export let ignoreVisualizeMetadataProps = [];
 
     let iframePreview;
 
@@ -178,7 +185,7 @@
         'metadata.axes'
     ];
     function reloadPreview() {
-        onNextSave.add(() => {
+        onNextSave(() => {
             iframePreview.reload();
         });
     }
@@ -212,18 +219,12 @@
     onMount(async () => {
         storeSubscriptions.add(
             merge(...RELOAD.map(key => chart.bindKey(key)))
-                .pipe(
-                    debounceTime(100),
-                    tap(() => reloadPreview())
-                )
+                .pipe(debounceTime(100), skip(1), tap(reloadPreview))
                 .subscribe()
         );
         storeSubscriptions.add(
             merge(...UPDATE.map(key => chart.bindKey(key)))
-                .pipe(
-                    debounceTime(100),
-                    tap(() => updatePreview())
-                )
+                .pipe(debounceTime(100), tap(updatePreview))
                 .subscribe()
         );
         storeSubscriptions.add(
@@ -275,14 +276,13 @@
     });
 
     function onLoad() {
+        dispatch('load');
         if (allowInlineEditing) {
             iframePreview.getContext((contentWindow, contentDocument) => {
                 activateInlineEditing(contentDocument, $readonlyKeys);
             });
         }
     }
-
-    const IGNORE = ['text-annotations', 'range-annotations'];
 
     export async function rerender(force = false) {
         await iframePreview.waitForVis();
@@ -299,7 +299,7 @@
             // When a chart can not be edited the annotations need to updated manually.
             // This is the case in the publish step.
             if (allowInlineEditing) {
-                IGNORE.forEach(key => {
+                ignoreVisualizeMetadataProps.forEach(key => {
                     unset(visualizeDiff, key);
                 });
             }
@@ -330,6 +330,10 @@
 
     export function getIframeStyle() {
         return iframePreview.getIframeStyle.apply(iframePreview, arguments);
+    }
+
+    export function updateHeight() {
+        return iframePreview.updateHeight.apply(iframePreview, arguments);
     }
 
     function iframeGetContext() {

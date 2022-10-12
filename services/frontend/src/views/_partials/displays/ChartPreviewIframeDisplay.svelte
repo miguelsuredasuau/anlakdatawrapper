@@ -131,7 +131,8 @@
     export async function getContext(callback) {
         try {
             await waitFor(() => !loading);
-            callback(contentWindow, contentDocument);
+            if (callback) callback(contentWindow, contentDocument);
+            else return { contentWindow, contentDocument };
         } catch (e) {
             // ignore waitFor timeouts
             if (e.message !== 'waitFor timeout exceeded') throw e;
@@ -164,11 +165,27 @@
             if (chart && message['datawrapper-height'][chart.id]) {
                 reportedIframeSize = message['datawrapper-height'][chart.id];
                 dispatch('resize', {
+                    fixedHeight: true,
                     width: width,
                     height: reportedIframeSize
                 });
             }
         }
+    }
+
+    /**
+     * measure the height of the rendered chart and
+     * update the iframe height in case the visualization
+     * is fixed height
+     *
+     * @returns {number} the measured height
+     */
+    export async function updateHeight() {
+        const { contentDocument } = await getContext();
+        if (fixedHeight) {
+            reportedIframeSize = contentDocument.body.clientHeight;
+        }
+        return contentDocument.body.clientHeight;
     }
 
     $: {
@@ -321,7 +338,10 @@
         class:resizing
         class:fixed-height={fixedHeight}
         style="background:{background};width:{resizeWidth || width}px; height:{resizeHeight ||
-            height}px;border-color:{borderColor}; padding:{border}px"
+            height}px;border-color:{borderColor}; padding:{border}px; padding-bottom:{Math.max(
+            border - (allowInlineEditing ? 10 : 0),
+            0
+        )}px"
     >
         <iframe
             id="iframe-vis"

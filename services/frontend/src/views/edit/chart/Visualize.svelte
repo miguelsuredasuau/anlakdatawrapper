@@ -231,6 +231,7 @@
                             bind:previewWidth
                             allowInlineEditing
                             allowResizing
+                            ignoreVisualizeMetadataProps={['text-annotations', 'range-annotations']}
                             fixedHeight={$isFixedHeight}
                             on:resize={onPreviewResize}
                             on:message={onPreviewMessage}

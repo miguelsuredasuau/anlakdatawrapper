@@ -2,7 +2,7 @@
     .toolbar {
         justify-content: center;
         display: flex;
-        column-gap: 1rem;
+        column-gap: 0.875rem;
     }
 </style>
 

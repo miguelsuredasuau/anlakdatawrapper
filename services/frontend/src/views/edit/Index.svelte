@@ -14,6 +14,8 @@
     import dw from '@datawrapper/chart-core/dist/dw-2.0.cjs';
     import { trackPageView } from '@datawrapper/shared/analytics.js';
     import merge from 'lodash/merge';
+    import cloneDeep from 'lodash/cloneDeep';
+    import { SubscriptionCollection } from '../../utils/rxjs-store.mjs';
 
     export let workflow;
     export let __;
@@ -126,18 +128,23 @@
     dwChart.onNextSave = method => {
         if (typeof method === 'function') {
             if ($hasUnsavedChanges) {
-                onNextSave.add(method);
-                // in case we didn't save (e.g. nothing has changed)
-                // we remove this handler after 3 seconds
-                setTimeout(() => {
-                    onNextSave.delete(method);
-                }, 3000);
+                onNextSave(method);
             } else {
                 // call immediately
                 method();
             }
         }
     };
+
+    dwChart.observeDeep = (key, handler) => {
+        storeSubscriptions.add(chart.observeKey(key, handler));
+    };
+
+    dwChart.serialize = () => {
+        return cloneDeep($chart);
+    };
+
+    dwChart.isPassive = () => false;
 
     // update dwChart when our chart store changes
     // we can update dwChart here, but since the old UI
@@ -146,18 +153,22 @@
     $: dwChart.attributes($chart);
     $: dwChart.setDataset($dataset);
 
+    const baseProps = {
+        workflow,
+        visualizations,
+        language: rawChart.language,
+        dwChart,
+        dataReadonly,
+        readonlyKeys: $readonlyKeys,
+        __
+    };
+
     const steps = workflow.steps.map(step => ({
         ...step,
         title: __(step.title[0], step.title[1]),
         props: {
             ...step.data,
-            workflow,
-            visualizations,
-            language: rawChart.language,
-            dwChart,
-            dataReadonly,
-            readonlyKeys: $readonlyKeys,
-            __
+            ...baseProps
         }
     }));
 
@@ -179,7 +190,7 @@
     /*
      * keep track of store subscriptions so we can unsubscribe when this component gets destroyed
      */
-    const storeSubscriptions = new Set();
+    const storeSubscriptions = new SubscriptionCollection();
 
     onMount(async () => {
         /*
@@ -223,13 +234,7 @@
     });
 
     onDestroy(() => {
-        for (const subscription of storeSubscriptions) {
-            if (subscription.unsubscribe) {
-                subscription.unsubscribe(); // rxjs observable
-            } else {
-                subscription();
-            }
-        }
+        storeSubscriptions.unsubscribe();
     });
 
     export let breadcrumbPath = [];
@@ -328,23 +333,6 @@
     }
 </script>
 
-<style>
-    .is-invisible {
-        position: absolute;
-        pointer-events: none;
-        /*
-        just setting `visibility: hidden` is not enough as
-        child nodes of invisible elements somehow can still show
-        up. that's why we're also moving the element off screen
-        and clipping it to 1px
-        */
-        left: -10000px;
-        height: 1px;
-        width: 1px;
-        overflow: hidden;
-    }
-</style>
-
 <svelte:window
     on:popstate={onPopState}
     on:beforeunload={onBeforeUnload}
@@ -386,13 +374,19 @@
                 </MessageDisplay>
             </div>{/if}
         <!-- step content -->
-        {#each steps as step}
-            {#if step.view && stepLoaded[step.id]}
-                <div class:is-invisible={step.id !== activeStep.id}>
-                    <ViewComponent id={step.view} props={step.props} {__} />
-                </div>
-            {/if}
-        {/each}
+        <ViewComponent
+            id={workflow.baseView || 'edit/base'}
+            props={{ ...baseProps, step: activeStep.id }}
+            {__}
+        >
+            {#each steps as step}
+                {#if step.view && stepLoaded[step.id]}
+                    <div class:is-sr-only={step.id !== activeStep.id}>
+                        <ViewComponent id={step.view} props={step.props} {__} />
+                    </div>
+                {/if}
+            {/each}
+        </ViewComponent>
     </section>
 
     {#if customViews && customViews.belowEditor && customViews.belowEditor.length > 0}

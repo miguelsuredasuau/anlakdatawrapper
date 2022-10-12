@@ -10533,6 +10533,17 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .button.is-inline:hover {
   background-color: transparent;
 }
+.button.is-inline .icon:first-child:last-child {
+  margin: 0;
+}
+.button.is-inline .icon:first-child:not(:last-child) {
+  margin-left: 0;
+  margin-right: 0.15em;
+}
+.button.is-inline .icon:last-child:not(:first-child) {
+  margin-left: 0.15em;
+  margin-right: 0;
+}
 .button .icon svg {
   font-size: 1.429em;
 }

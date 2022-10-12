@@ -13,5 +13,5 @@
 </script>
 
 {#if component}
-    <svelte:component this={component} {...props} {__} on:change />
+    <svelte:component this={component} {...props} {__} on:change><slot /></svelte:component>
 {/if}

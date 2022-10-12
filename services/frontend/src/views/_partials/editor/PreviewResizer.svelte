@@ -7,16 +7,20 @@
     import get from '@datawrapper/shared/get';
     import { waitFor } from '../../../utils';
 
-    import { onMount, getContext } from 'svelte';
+    import { onMount, getContext, createEventDispatcher } from 'svelte';
     import { UNIT_IN, UNIT_MM, UNIT_PX, unitToPx, pxToUnit } from '@datawrapper/shared/units';
     import { merge } from 'rxjs';
     import { debounceTime, map, distinctUntilChanged } from 'rxjs/operators';
 
     const { chart, team, theme, editorMode, isFixedHeight } = getContext('page/edit');
 
+    const dispatch = createEventDispatcher();
+
     export let __;
     export let uid = null;
     export let iframePreview;
+
+    export let hideInputs = false;
 
     const DEFAULT_WIDTHS = [320, 400, 600];
     const SIZE_ICONS = ['mobile', 'tablet', 'desktop'];
@@ -118,11 +122,15 @@
             return;
         }
         [widthPx, heightPx] = getPixelDimensions();
-        await waitFor(() => iframePreview);
-        iframePreview.set({
-            width: widthPx,
-            height: $isFixedHeight ? null : heightPx
-        });
+        try {
+            await waitFor(() => iframePreview);
+            iframePreview.set({
+                width: widthPx,
+                height: $isFixedHeight ? null : heightPx
+            });
+        } catch (er) {
+            // do nothing
+        }
     }
 
     function saveNewFixedHeight(height) {
@@ -190,6 +198,7 @@
     }
 
     function setEmbedWidth(width) {
+        dispatch('setEmbedWidth', { width });
         $embedWidth = width;
     }
 
@@ -219,30 +228,32 @@
 <ToolbarItem title={`${__('chart-size')} (${$editorMode === 'web' ? UNIT_PX : $unitObs})`} {uid}>
     {#if $editorMode === 'web'}
         <!-- web ui -->
-        <div class="field is-grouped">
-            <div class="control">
-                <NumberInput
-                    uid="web-width"
-                    class="is-small"
-                    width="10ex"
-                    spinner="true"
-                    bind:value={$chart.metadata.publish['embed-width']}
-                />
-            </div>
-            <div class="control">
-                {#if $isFixedHeight}
-                    <NumberInput class="is-small" disabled value="auto" width="8ex" />
-                {:else}
+        {#if !hideInputs}
+            <div class="field is-grouped">
+                <div class="control">
                     <NumberInput
-                        uid="web-height"
+                        uid="web-width"
                         class="is-small"
-                        spinner="true"
                         width="10ex"
-                        bind:value={$chart.metadata.publish['embed-height']}
+                        spinner="true"
+                        bind:value={$chart.metadata.publish['embed-width']}
                     />
-                {/if}
+                </div>
+                <div class="control">
+                    {#if $isFixedHeight}
+                        <NumberInput class="is-small" disabled value="auto" width="8ex" />
+                    {:else}
+                        <NumberInput
+                            uid="web-height"
+                            class="is-small"
+                            spinner="true"
+                            width="10ex"
+                            bind:value={$chart.metadata.publish['embed-height']}
+                        />
+                    {/if}
+                </div>
             </div>
-        </div>
+        {/if}
     {:else}
         <!-- print ui -->
         <div class="field is-grouped">

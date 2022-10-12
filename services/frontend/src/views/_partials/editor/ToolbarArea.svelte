@@ -16,9 +16,9 @@
     .toolbar-area-body {
         border: 1px solid $border;
         border-radius: $radius;
-        padding: 0.75rem 1rem 1rem;
+        padding: 0.75rem 0.875rem 0.875rem;
         display: flex;
-        gap: 1rem;
+        gap: 0.875rem;
     }
 </style>
 

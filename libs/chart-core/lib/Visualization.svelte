@@ -641,6 +641,7 @@ Please make sure you called __(key) with a key of type "string".
             document.body.classList.toggle('static', isStyleStatic);
             document.body.classList.toggle('png-export', isStyleStatic);
             document.body.classList.toggle('transparent', isStyleTransparent);
+            document.body.classList.toggle('in-editor', isEditingAllowed);
 
             if (isStyleStatic) {
                 document.body.style['pointer-events'] = 'none';
