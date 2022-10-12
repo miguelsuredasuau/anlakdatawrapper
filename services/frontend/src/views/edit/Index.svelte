@@ -1,6 +1,7 @@
 <script type="text/javascript">
     import { getContext, onDestroy, onMount, setContext, tick } from 'svelte';
     import truncate from '@datawrapper/shared/truncate';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
     import MainLayout from '_layout/MainLayout.svelte';
     import { openedInsideIframe } from '_layout/stores';
     import ViewComponent from '_partials/ViewComponent.svelte';
@@ -349,7 +350,7 @@
     on:unload={onBeforeUnload}
 />
 
-<MainLayout title="{$chart.title} - [{$chart.id}] - {activeStep.title}">
+<MainLayout title="{purifyHtml($chart.title, '')} - [{$chart.id}] - {activeStep.title}">
     <section class="section pt-5">
         {#if !$openedInsideIframe || showEditorNavInCmsMode}
             <!-- step nav -->
