@@ -81,7 +81,7 @@
                     />
                     {__('edit / storing-changes')}…
                 {:else if $saveSuccess}
-                    <span out:fade={{ delay: 0, duration: 500 }}>
+                    <span out:fade={{ delay: 0, duration: 500 }} data-uid="chart-sync-success">
                         <span>{__('edit / stored-changes')}</span>
                         <IconDisplay icon="checkmark-bold" />
                     </span>

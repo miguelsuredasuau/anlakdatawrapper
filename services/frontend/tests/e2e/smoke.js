@@ -85,16 +85,17 @@ Ukraine conflict between Russia and Western Countries;2;30;2;52;14`
         await $annotatePublishStep.click(); // Go to the Publish step.
 
         // Publish
+        await browser.waitForChartSync();
         const $publishButton = await $('>>>.button-publish');
         await $publishButton.waitForDisplayed();
         await $publishButton.click();
+        await browser.waitForChartSync();
         const $publishUrl = await $('>>>#share-url');
         await $publishUrl.waitForDisplayed({ timeout: 20000 }); // Wait for publishing with increased timeout, because it can take long on staging.
         await expect($publishUrl).toHaveValueContaining('/1/');
         const publishUrl = await $publishUrl.getValue();
         const publishHtml = await got.get(publishUrl, { resolveBodyOnly: true }); // Get the published chart HTML.
-        expect(publishHtml).toContain(chartTitle); // Check that t published HTML page contains the rendered chart.
-        await browser.waitForChartSync();
+        await expect(publishHtml).toContain(chartTitle); // Check that the published HTML page contains the rendered chart.
 
         // Archive
         await browser.url('/archive/recently-published');
