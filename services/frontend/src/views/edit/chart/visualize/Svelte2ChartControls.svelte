@@ -82,7 +82,6 @@
         try {
             const newVis = await waitFor(() => dwVisualization(type));
             newVis.meta = $visualization;
-            // dwChart.setDataset($dataset);
             newVis.chart(dwChart);
             newVis.theme = () => $theme.data;
             vis = newVis;

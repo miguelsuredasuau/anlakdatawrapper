@@ -251,6 +251,31 @@ export function initStores({
         }))
     );
 
+    const tableDataset$ = combineLatest([
+        data$,
+        dataOptions$,
+        overrideKeys$,
+        computedColumns$
+    ]).pipe(
+        withLatestFrom(dwChart$),
+        map(([[data, options], chart]) => {
+            return reorderColumns(
+                chart,
+                applyChanges(
+                    chart,
+                    addComputedColumns(
+                        chart,
+                        delimited({
+                            csv: data,
+                            transpose: options.transpose,
+                            firstRowIsHeader: options['horizontal-header']
+                        }).parse()
+                    )
+                )
+            );
+        })
+    );
+
     const dataset$ = combineLatest([
         data$,
         dataOptions$,
@@ -473,6 +498,7 @@ export function initStores({
         data: data$,
         team: team$,
         theme: theme$,
+        tableDataset: tableDataset$,
         dataset: dataset$,
         visualization: visualization$,
         locale: locale$,

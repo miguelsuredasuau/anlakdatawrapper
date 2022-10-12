@@ -64,7 +64,6 @@
     /* global dw */
     import CheckboxControl from '@datawrapper/controls/CheckboxControl.html';
     import SelectControl from '@datawrapper/controls/SelectControl.html';
-    import throttle from 'lodash/throttle';
     import arrayToObject from '@datawrapper/shared/arrayToObject';
     import clone from '@datawrapper/shared/clone';
     import { __ } from '@datawrapper/shared/l10n';
@@ -198,21 +197,6 @@
         },
 
         oncreate() {
-            const updateTable = throttle(
-                () => {
-                    this.fire('updateTable');
-                },
-                100,
-                { leading: false }
-            );
-            const renderTable = throttle(
-                () => {
-                    this.fire('updateTable');
-                },
-                100,
-                { leading: false }
-            );
-
             const { column } = this.get();
 
             this.set({
@@ -250,9 +234,6 @@
                         }
                         columnFormats[column.name()] = clone(colFormat);
                         dwChart.set('metadata.data.column-format', columnFormats);
-                        if (dwChart.saveSoon) dwChart.saveSoon();
-                        if (!oldFormat || oldFormat.type !== colFormat.type) updateTable();
-                        else renderTable();
                     }
                 }
             });

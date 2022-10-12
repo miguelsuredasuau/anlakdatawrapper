@@ -73,6 +73,7 @@
     const {
         chart,
         theme,
+        tableDataset,
         dataset,
         onNextSave,
         hasUnsavedChanges,
@@ -99,6 +100,7 @@
         chart,
         customViews,
         data,
+        tableDataset,
         dataset,
         hasUnsavedChanges,
         onNextSave,

@@ -3,8 +3,6 @@
 <script>
     import HOT from 'Handsontable';
     import getCellRenderer from './getCellRenderer';
-    import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
-    // import cellHeaderClick from './cellHeaderClick';
     import clone from '@datawrapper/shared/clone';
 
     let app = null;
@@ -58,41 +56,29 @@
                 }, 300);
             },
             update() {
-                const { data, transpose, firstRowIsHeader, skipRows, hot } = this.get();
+                const { data, hot, tableDataset } = this.get();
 
                 if (!data) return;
 
                 // get chart
                 const { dw_chart: dwChart } = this.store.get();
 
-                // pass dataset through chart to apply changes and computed columns
-                const ds = dwChart
-                    .dataset(
-                        delimited({
-                            csv: data,
-                            transpose,
-                            firstRowIsHeader,
-                            skipRows
-                        }).parse()
-                    )
-                    .dataset();
-
-                this.set({ columnOrder: ds.columnOrder() });
+                this.set({ columnOrder: tableDataset.columnOrder() });
 
                 // construct HoT data array
                 const hotData = [[]];
-                ds.eachColumn(c => hotData[0].push(c.title()));
+                tableDataset.eachColumn(c => hotData[0].push(c.title()));
 
-                ds.eachRow(r => {
+                tableDataset.eachRow(r => {
                     const row = [];
-                    ds.eachColumn(col => row.push(col.raw(r)));
+                    tableDataset.eachColumn(col => row.push(col.raw(r)));
                     hotData.push(row);
                 });
 
                 // pass data to hot
                 hot.loadData(hotData);
 
-                const cellRenderer = getCellRenderer(this, dwChart, ds, HOT, {});
+                const cellRenderer = getCellRenderer(this, dwChart, tableDataset, HOT, {});
 
                 hot.updateSettings({
                     cells: (row, col) => {
@@ -100,7 +86,9 @@
                         return {
                             readOnly:
                                 readonly ||
-                                (ds.hasColumn(col) && ds.column(col).isComputed && row === 0),
+                                (tableDataset.hasColumn(col) &&
+                                    tableDataset.column(col).isComputed &&
+                                    row === 0),
                             renderer: cellRenderer
                         };
                     },
@@ -108,7 +96,6 @@
                 });
 
                 this.set({
-                    ds,
                     hasChanges: clone(dwChart.get('metadata.data.changes', [])).length > 0
                 });
 
@@ -117,15 +104,14 @@
                 hot.render();
             },
             dataChanged(cells) {
-                const { hot } = this.get();
-                let changed = false;
+                const { hot, tableDataset } = this.get();
                 const chart = this.store.get().dw_chart;
                 cells.forEach(([row, col, oldValue, newValue]) => {
                     if (oldValue !== newValue) {
                         const { transpose } = this.get();
                         const changes = clone(chart.get('metadata.data.changes', []));
                         row = hot.toPhysicalRow(row);
-                        col = chart.dataset().columnOrder()[col];
+                        col = tableDataset.columnOrder()[col];
                         if (transpose) {
                             // swap row and col
                             const tmp = row;
@@ -141,15 +127,8 @@
                             time: new Date().getTime()
                         });
                         chart.set('metadata.data.changes', changes);
-                        changed = true;
                     }
                 });
-                if (changed) {
-                    setTimeout(() => {
-                        this.update();
-                        // chart.save();
-                    }, 100);
-                }
             },
             columnMoved(srcColumns, tgtIndex) {
                 const { hot } = this.get();
@@ -175,7 +154,6 @@
                         );
                     }, 10);
                 });
-                this.update();
             },
             updateHeight() {
                 const h = this.refs.hot
@@ -188,7 +166,7 @@
                 // 1. only a single column is selected, and
                 // 2. the range starts at the first row, and
                 // 3. the range extends through he last row
-                const { hot, ds } = this.get();
+                const { hot, tableDataset } = this.get();
 
                 if (c === c2 && r === 0 && r2 === hot.countRows() - 1) {
                     // const chart = this.store.get('dw_chart');
@@ -203,7 +181,10 @@
                         );
                         if (cell) sel.push(+cell.dataset.column);
                     }
-                    this.set({ multiSelection: sel.map(i => ds.column(i)), activeColumn: null });
+                    this.set({
+                        multiSelection: sel.map(i => tableDataset.column(i)),
+                        activeColumn: null
+                    });
                     return;
                 }
                 this.set({ activeColumn: null, multiSelection: false });
@@ -216,7 +197,6 @@
                         th.removeEventListener('click', topLeftCornerClick);
                         th.addEventListener('click', topLeftCornerClick);
                     });
-                    // const cellHeaderClickHandler = cellHeaderClick(app);
                     this.refs.hot.querySelectorAll('.htCore thead th+th').forEach(th => {
                         th.removeEventListener('click', cellHeaderClick);
                         th.addEventListener('click', cellHeaderClick);
@@ -236,7 +216,7 @@
             HOT.hooks.once('afterRender', () => this.initCustomEvents());
 
             this.refs.hot.getRootNode().addEventListener('keyup', evt => {
-                const { activeColumn, ds } = this.get();
+                const { activeColumn, tableDataset } = this.get();
                 if (!activeColumn) return;
 
                 if (
@@ -248,15 +228,20 @@
                 if (evt.key === 'ArrowRight' || evt.key === 'ArrowLeft') {
                     evt.preventDefault();
                     evt.stopPropagation();
-                    const currentIndex = ds.indexOf(activeColumn.name());
+                    const currentIndex = tableDataset.indexOf(activeColumn.name());
                     if (evt.key === 'ArrowRight') {
                         // select next column
-                        this.set({ activeColumn: ds.column((currentIndex + 1) % ds.numColumns()) });
+                        this.set({
+                            activeColumn: tableDataset.column(
+                                (currentIndex + 1) % tableDataset.numColumns()
+                            )
+                        });
                     } else {
                         // select prev column
                         this.set({
-                            activeColumn: ds.column(
-                                (currentIndex - 1 + ds.numColumns()) % ds.numColumns()
+                            activeColumn: tableDataset.column(
+                                (currentIndex - 1 + tableDataset.numColumns()) %
+                                    tableDataset.numColumns()
                             )
                         });
                     }
@@ -321,18 +306,18 @@
                     return (a, b) => a[0] - b[0];
                 },
                 afterGetColHeader: (col, th) => {
-                    const { activeColumn, ds } = this.get();
-                    if (!ds || !ds.hasColumn(col)) return;
+                    const { activeColumn, tableDataset } = this.get();
+                    if (!tableDataset || !tableDataset.hasColumn(col)) return;
                     if (
                         (col === 0 || col) &&
                         activeColumn &&
-                        ds.column(col).name() === activeColumn.name()
+                        tableDataset.column(col).name() === activeColumn.name()
                     ) {
                         th.classList.add('selected');
                     }
 
                     if (col === 0 || col) {
-                        if (this.getColumnFormat(ds.column(col).name()).ignore) {
+                        if (this.getColumnFormat(tableDataset.column(col).name()).ignore) {
                             th.classList.add('ignored');
                         } else {
                             th.classList.remove('ignored');
@@ -356,20 +341,16 @@
             const hot = current.hot;
             if (!hot) return;
 
-            if (changed.data) {
-                this.update();
-            }
-            if (changed.firstRowIsHeader && previous && previous.firstRowIsHeader !== undefined) {
-                this.update();
-            }
             if (changed.hot) {
+                this.update();
+            }
+            if (changed.tableDataset) {
                 this.update();
             }
             if (changed.search && previous) {
                 this.doSearch();
                 this.set({ searchIndex: 0 });
             }
-
             if (changed.searchResults) {
                 hot.render();
             }
@@ -415,10 +396,10 @@
         const colIndex = +app.refs.hot.querySelector(
             `.htCore tbody tr:first-child td:nth-child(${thIndex + 1})`
         ).dataset.column;
-        const { dw_chart: dwChart } = app.store.get();
-        const { activeColumn, hot } = app.get();
-        if (dwChart.dataset().hasColumn(colIndex)) {
-            const newActive = dwChart.dataset().column(+colIndex);
+        const { activeColumn, hot, tableDataset } = app.get();
+
+        if (tableDataset.hasColumn(colIndex)) {
+            const newActive = tableDataset.column(+colIndex);
             // set active column (or unset if it's already set)
             if (activeColumn && activeColumn.name() === newActive.name()) {
                 evt.target.parentNode.classList.remove('selected');
@@ -435,7 +416,6 @@
         evt.preventDefault();
         const { transpose } = app.get();
         app.set({ transpose: !transpose });
-        app.update();
     }
 </script>
 

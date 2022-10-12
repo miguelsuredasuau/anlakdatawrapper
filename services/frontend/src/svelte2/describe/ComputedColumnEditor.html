@@ -209,7 +209,6 @@
     import HelpDisplay from '@datawrapper/controls/HelpDisplay.html';
     import { patch } from '@datawrapper/shared/httpReq';
 
-    let updateTable = () => {};
     /* globals dw */
 
     function formatRows(rows) {
@@ -474,8 +473,6 @@
                 });
                 dwChart.set('metadata.describe.computed-columns', customCols);
                 dwChart.set('metadata.data.changes', newChanges);
-                dwChart.saveSoon();
-                this.fire('updateTable');
                 this.fire('unselect');
             },
             copyFormulaToData() {
@@ -496,7 +493,7 @@
             },
             setFormula(formula, name, origName) {
                 if (formula === undefined) return;
-                const { dw_chart: dwChart } = this.store.get();
+                const { dw_chart: dwChart, tableDataset } = this.store.get();
                 // try out formula first
                 const { cm } = this.get();
                 this.set({ formula });
@@ -521,15 +518,11 @@
                     dwChart.set('metadata.describe.computed-columns', customCols);
                     // check for errors later
                     this.set({ checking: true });
-                    if (dwChart.saveSoon) dwChart.saveSoon();
-                    this.store.set({
-                        dwChart
-                    });
-                    updateTable();
                 } else {
+                    this.set({ checking: false });
                     let column;
                     try {
-                        column = dwChart.dataset().column(name);
+                        column = tableDataset.column(name);
                     } catch (e) {
                         console.error(`Failed to load column "${name}"`);
                     }
@@ -641,8 +634,6 @@
 
             this.set({ cm });
 
-            updateTable = debounce(() => app.fire('updateTable'), 1500);
-
             let changeNameTimer;
             const changeName = newName => {
                 clearTimeout(changeNameTimer);
@@ -672,8 +663,6 @@
                     column.name(newName);
                     dwChart.set('metadata.describe.computed-columns', computedColumns);
                     this.store.set({ dwChart });
-                    if (dwChart.saveSoon) dwChart.saveSoon();
-                    updateTable();
                 }, 1500);
             };
 
@@ -766,12 +755,14 @@
                 cm.setOption('mode', 'simplemode');
             }
 
+            const setFormulaThrottled = debounce((formula, name, origName) => {
+                this.setFormula(formula, name, origName);
+            }, 1500);
+
             cm.on('change', cm => {
                 const { column } = app.get();
-                // update internal state
-                // app.set({ formula: cm.getValue() });
-                // update chart + table
-                this.setFormula(cm.getValue(), column.name(), column.origName());
+                this.set({ checking: true });
+                setFormulaThrottled(cm.getValue(), column.name(), column.origName());
             });
         }
     };

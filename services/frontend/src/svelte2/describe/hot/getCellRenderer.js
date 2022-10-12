@@ -1,6 +1,12 @@
 import purifyHtml from '@datawrapper/shared/purifyHtml';
 import { columnFormatter } from '@datawrapper/shared/columnFormatter';
 
+function dataCellChanged(col, row, { changes = [], transpose }) {
+    const r = transpose ? 'column' : 'row';
+    const c = transpose ? 'row' : 'column';
+    return !!changes.find(change => col === change[c] && row === change[r]);
+}
+
 /**
  * getCellRenderer defines what classes are set on each HOT cell
  */
@@ -60,7 +66,6 @@ export default function (app, chart, dataset, Handsontable) {
             td.classList.add('active');
         }
         const rowPosition = Handsontable.hooks.run(instance, 'modifyRow', row);
-        // const rowPosition = row; // instance.getPlugin('columnSorting').untranslateRow(row);
         searchResults.forEach(res => {
             if (res.row === rowPosition && res.col === col) {
                 td.classList.add('htSearchResult');
@@ -89,10 +94,12 @@ export default function (app, chart, dataset, Handsontable) {
         }
         if (cellProperties.readOnly) td.classList.add('readOnly');
 
-        if (chart.dataCellChanged(col, row)) {
+        const dataOptions = chart.getMetadata('data');
+        const columnInOrder = dataset.columnOrder()[col];
+        if (dataCellChanged(columnInOrder, row, dataOptions)) {
             td.classList.add('changed');
         }
+
         HtmlCellRender(instance, td, row, col, prop, value, cellProperties);
-        // Reflect.apply(HtmlCellRender, this, arguments);
     };
 }

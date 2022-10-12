@@ -8,7 +8,7 @@
 
     const config = getContext('config');
 
-    const { data, navigateTo, vendorLocales } = getContext('page/edit');
+    const { data, navigateTo, tableDataset, vendorLocales } = getContext('page/edit');
 
     export let __;
     export let dwChart;
@@ -54,6 +54,7 @@
         data={props}
         storeData={{
             dw_chart: dwChart,
+            tableDataset: $tableDataset,
             language,
             locales: $config.chartLocales.map(({ id, title }) => ({ value: id, label: title }))
         }}
