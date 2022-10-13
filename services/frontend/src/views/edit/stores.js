@@ -457,8 +457,8 @@ export function initStores({
         editorMode: editorMode$,
         isFixedHeight: isFixedHeight$,
         onNextSave(handler) {
-            return merge(putData$, patchChart$)
-                .pipe(debounceTime(100), take(1), tap(handler))
+            return merge(putData$, patchChart$, of(true))
+                .pipe(debounceTime(100), skip(1), take(1), tap(handler))
                 .subscribe();
         },
         hasUnsavedChanges,
