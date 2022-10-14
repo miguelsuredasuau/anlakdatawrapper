@@ -226,6 +226,15 @@ export function getElementAttribute(page, selector, attr) {
 }
 
 /**
+ * Returns the innerHTML property for all elements with given CSS `selector`.
+ * @param {Page} page
+ * @param {string} selector
+ * @returns {string[]} innerHTML
+ */
+export function getElementsInnerHtml(page, selector) {
+    return page.$$eval(selector, nodes => nodes.map(node => node.innerHTML));
+}
+/**
  * Takes a screenshot of `t.context.page` and saves it in directory `path`.
  */
 export async function takeTestScreenshot(t, path) {
