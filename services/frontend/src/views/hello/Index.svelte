@@ -260,12 +260,6 @@
     });
 </script>
 
-<style type="text/css">
-    /* :global(html) {
-        background: var(--color-dw-white-bis);
-    } */
-</style>
-
 <MainLayout title="Hello world">
     <section class="section" class:has-background-white-bis={!whiteBg}>
         <div class="container">

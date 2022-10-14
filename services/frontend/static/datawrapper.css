@@ -2886,8 +2886,8 @@ a.tag:hover {
   line-height: 1.35;
 }
 .subtitle strong {
-  color: #111111;
-  font-weight: 500;
+  color: #4f4f4f;
+  font-weight: 700;
 }
 .subtitle:not(.is-spaced) + .title {
   margin-top: -0.75rem;

@@ -22,7 +22,17 @@
         visible = false;
     }
 
-    export let placement = 'right'; // only left and right
+    export let placement = 'right'; // only left and right, and "auto"
+
+    let innerWidth;
+
+    let element;
+    $: autoPlacement =
+        placement === 'auto' && element
+            ? element.getBoundingClientRect().x > innerWidth * 0.66
+                ? 'left'
+                : 'right'
+            : placement;
 
     const randomId = Math.ceil(Math.random() * 1e5).toString(36);
 </script>
@@ -127,12 +137,15 @@
     }
 </style>
 
+<svelte:window bind:innerWidth />
+
 <div
+    bind:this={element}
     class="sidehelp {helpClass}"
     class:compact
     class:floating={float}
     class:upgrade={type === 'upgrade'}
-    class:open-to-left={placement === 'left'}
+    class:open-to-left={autoPlacement === 'left'}
     on:mouseenter={handleHelpMouseenter}
     on:mouseleave={handleHelpMouseleave}
     data-uid={uid}
