@@ -35,6 +35,8 @@
 
     export let allowInlineEditing = false;
 
+    export let previewId = null;
+
     $: embedWidth = get(chart, 'metadata.publish.embed-width', 550);
     $: embedHeight = get(chart, 'metadata.publish.embed-height', 450);
     $: width = customWidth || embedWidth;
@@ -55,6 +57,9 @@
         allowInlineEditing
             ? queryParameters.set('allowEditing', '1')
             : queryParameters.delete('allowEditing');
+        previewId
+            ? queryParameters.set('previewId', previewId)
+            : queryParameters.delete('previewId');
     }
 
     $: src = customSrc || `/preview/${chart.id}${queryParameters ? `?${queryParameters}` : ''}`;
@@ -162,6 +167,10 @@
         dispatch('message', message);
         if (resizing) return;
         if (typeof message['datawrapper-height'] !== 'undefined' && fixedHeight) {
+            if (previewId && message['datawrapper-height'].previewId !== previewId) {
+                // message coming from a different preview iframe
+                return;
+            }
             if (chart && message['datawrapper-height'][chart.id]) {
                 reportedIframeSize = message['datawrapper-height'][chart.id];
                 dispatch('resize', {

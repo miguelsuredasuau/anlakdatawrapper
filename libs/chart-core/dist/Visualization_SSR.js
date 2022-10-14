@@ -10641,6 +10641,9 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     isEditingAllowed = false
   } = $$props;
   let {
+    previewId = null
+  } = $$props;
+  let {
     frontendDomain = "app.datawrapper.de"
   } = $$props; // .dw-chart-body
 
@@ -10650,7 +10653,8 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
 
   const flags = {
     isIframe,
-    isEditingAllowed
+    isEditingAllowed,
+    previewId
   };
   let useFallbackImage = false;
   const FLAG_TYPES = {
@@ -10662,7 +10666,8 @@ const Visualization = create_ssr_component(($$result, $$props, $$bindings, $$slo
     fitchart: Boolean,
     fitheight: Boolean,
     theme: String,
-    search: String
+    search: String,
+    previewId: String
   };
   const datasetName = `dataset.${get$1(chart.metadata, "data.json") ? "json" : "csv"}`; // apply core metadata migrations
 
@@ -11213,6 +11218,7 @@ Please make sure you called __(key) with a key of type "string".
   if ($$props.forceLogo === void 0 && $$bindings.forceLogo && forceLogo !== void 0) $$bindings.forceLogo(forceLogo);
   if ($$props.logoId === void 0 && $$bindings.logoId && logoId !== void 0) $$bindings.logoId(logoId);
   if ($$props.isEditingAllowed === void 0 && $$bindings.isEditingAllowed && isEditingAllowed !== void 0) $$bindings.isEditingAllowed(isEditingAllowed);
+  if ($$props.previewId === void 0 && $$bindings.previewId && previewId !== void 0) $$bindings.previewId(previewId);
   if ($$props.frontendDomain === void 0 && $$bindings.frontendDomain && frontendDomain !== void 0) $$bindings.frontendDomain(frontendDomain);
 
   {

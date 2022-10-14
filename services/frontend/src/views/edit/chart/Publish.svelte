@@ -128,7 +128,7 @@
                 class:sticky={isSticky}
                 class:sticky-header={$headerProps.isSticky}
             >
-                <ChartEditorPreview bind:this={iframePreview} />
+                <ChartEditorPreview bind:this={iframePreview} previewId="publish" />
             </div>
         </div>
     </div>

@@ -70,7 +70,10 @@
         const reset = { width: null };
         if (event.detail.height) {
             reset.height = null;
-            dwChart.set('metadata.publish.embed-height', event.detail.height);
+            dwChart.set(
+                'metadata.publish.embed-height',
+                event.detail.height - 10 // subtract 10px since the preview is editable
+            );
         }
         iframePreview.set(reset);
     }
@@ -233,6 +236,7 @@
                             allowResizing
                             ignoreVisualizeMetadataProps={['text-annotations', 'range-annotations']}
                             fixedHeight={$isFixedHeight}
+                            previewId="visualize"
                             on:resize={onPreviewResize}
                             on:message={onPreviewMessage}
                             on:render={measureBodyHeight}

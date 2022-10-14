@@ -34,6 +34,7 @@
     export let logoId = null;
 
     export let isEditingAllowed = false;
+    export let previewId = null;
 
     $: customCSS = purifyHtml(get(chart, 'metadata.publish.custom-css', ''), '');
 
@@ -83,6 +84,7 @@
     {forceLogo}
     {logoId}
     {isEditingAllowed}
+    {previewId}
     {outerContainer}
     {textDirection}
 />

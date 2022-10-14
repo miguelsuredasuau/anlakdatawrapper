@@ -34,6 +34,7 @@
      */
     export let allowInlineEditing = false;
     export let allowResizing = false;
+    export let previewId = null;
 
     /*
      * keep track of store subscriptions so we can unsubscribe when this component gets destroyed
@@ -352,6 +353,7 @@
     isDark={$isDark}
     resizable={allowResizing && $editorMode === 'web'}
     {allowInlineEditing}
+    {previewId}
     theme={$theme}
     on:message
     on:load={onLoad}

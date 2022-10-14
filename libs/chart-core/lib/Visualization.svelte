@@ -64,13 +64,14 @@
     export let forceLogo = 'auto';
     export let logoId = null;
     export let isEditingAllowed = false;
+    export let previewId = null;
 
     export let frontendDomain = 'app.datawrapper.de';
 
     // .dw-chart-body
     let target, dwChart, vis;
     let postEvent = () => {};
-    const flags = { isIframe, isEditingAllowed };
+    const flags = { isIframe, isEditingAllowed, previewId };
 
     let useFallbackImage = false;
 
@@ -83,7 +84,8 @@
         fitchart: Boolean,
         fitheight: Boolean,
         theme: String,
-        search: String
+        search: String,
+        previewId: String
     };
 
     const datasetName = `dataset.${get(chart.metadata, 'data.json') ? 'json' : 'csv'}`;

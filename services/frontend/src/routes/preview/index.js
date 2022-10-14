@@ -117,7 +117,8 @@ module.exports = {
                         logo: Joi.string().optional().valid('auto', 'on', 'off').default('auto'),
                         logoId: logoId().optional(),
                         dark: Joi.boolean().default(false).allow('auto'),
-                        allowEditing: fakeBoolean()
+                        allowEditing: fakeBoolean(),
+                        previewId: Joi.string().optional()
                     })
                 }
             },
@@ -156,7 +157,8 @@ module.exports = {
                         };
                         return acc;
                     }, {}),
-                    frontendDomain: config.frontend.domain
+                    frontendDomain: config.frontend.domain,
+                    previewId: request.query.previewId
                 });
 
                 const css = props.styles;
