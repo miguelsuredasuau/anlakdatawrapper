@@ -24,6 +24,8 @@ import ColorControlView from './ColorControlView.html';
 import ColorControlDocs from '../ColorControl.md';
 import ColorCategoryInputView from './ColorCategoryInputView.html';
 import ColorCategoryInputDocs from '../ColorCategoryInput.md';
+import ColorLegendEditorView from './ColorLegendEditorView.html';
+import ColorLegendEditorDocs from '../ColorLegendEditor.md';
 import ColorPickerInputView from './ColorPickerInputView.html';
 import ColorPickerInputPaletteConfigView from './ColorPickerInputPaletteConfigView.html';
 import ColorPickerInputPaletteGroupsView from './ColorPickerInputPaletteGroupsView.html';
@@ -60,8 +62,6 @@ import HistogramDisplayView from './HistogramDisplayView.html';
 import HistogramDisplayDocs from '../HistogramDisplay.md';
 import IconDisplayView from './IconDisplayView.html';
 import IconDisplayDocs from '../IconDisplay.md';
-import LegendEditorView from './LegendEditorView.html';
-import LegendEditorDocs from '../LegendEditor.md';
 import ListInputView from './ListInputView.html';
 import ListInputDocs from '../ListInput.md';
 import MoreOptionsGroupView from './MoreOptionsGroupView.html';
@@ -178,6 +178,11 @@ addStory('ColorCategoryInput', ColorCategoryInputDocs, () => ({
     data: { options }
 }));
 
+addStory('ColorLegendEditor', ColorLegendEditorDocs, () => ({
+    Component: ColorLegendEditorView,
+    data: {}
+}));
+
 addStory('ConfirmationModal', ConfirmationModalDocs, () => ({
     Component: ConfirmationModalView,
     data: { options }
@@ -249,11 +254,6 @@ addStory('HistogramDisplay', HistogramDisplayDocs, () => ({
 addStory('IconDisplay', IconDisplayDocs, () => ({
     Component: IconDisplayView,
     data: { options }
-}));
-
-addStory('LegendEditor', LegendEditorDocs, () => ({
-    Component: LegendEditorView,
-    data: {}
 }));
 
 addStory('ListInput', ListInputDocs, () => ({

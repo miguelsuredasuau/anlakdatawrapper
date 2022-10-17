@@ -9,7 +9,7 @@
     {column}
 />
 
-<LegendEditor
+<ColorLegendEditor
     title="show legend"
     {colorscale}
     bind:value="value"
@@ -43,7 +43,7 @@
 
 <script>
     import ColorScaleEditor from '../ColorScaleEditor.html';
-    import LegendEditor from '../LegendEditor.html';
+    import ColorLegendEditor from '../ColorLegendEditor.html';
     import CheckboxControl from '../CheckboxControl.html';
     import SelectControl from '../SelectControl.html';
     import Column from '@datawrapper/chart-core/lib/dw/dataset/column';
@@ -88,7 +88,7 @@
     ];
 
     export default {
-        components: { ColorScaleEditor, CheckboxControl, SelectControl, LegendEditor },
+        components: { ColorScaleEditor, CheckboxControl, SelectControl, ColorLegendEditor },
         data() {
             return {
                 customize: true,
