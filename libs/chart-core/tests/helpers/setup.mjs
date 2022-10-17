@@ -215,7 +215,7 @@ export function getElementStyle(page, selector, style) {
 }
 
 /**
- * Returns the value of `attr` for the first element with given CSS `selector`.
+ * Returns the value of `attr` for the first element matching the given CSS `selector`.
  * @param {Page} page
  * @param {string} selector
  * @param {string} attr element attribute, e.g. "title"
@@ -226,7 +226,18 @@ export function getElementAttribute(page, selector, attr) {
 }
 
 /**
- * Returns the innerHTML property for all elements with given CSS `selector`.
+ * Returns the value of `attr` for all elements matching the given CSS `selector`.
+ * @param {Page} page
+ * @param {string} selector
+ * @param {string} attr element attribute, e.g. "title"
+ * @returns {string}
+ */
+export function getElementsAttribute(page, selector, attr) {
+    return page.$$eval(selector, (nodes, attr) => nodes.map(node => node.getAttribute(attr)), attr);
+}
+
+/**
+ * Returns the innerHTML property for all elements matching the given CSS `selector`.
  * @param {Page} page
  * @param {string} selector
  * @returns {string[]} innerHTML
