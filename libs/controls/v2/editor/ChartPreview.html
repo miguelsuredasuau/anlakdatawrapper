@@ -286,8 +286,8 @@ TODO for later:
 
                 if (typeof message['datawrapper-height'] !== 'undefined') {
                     var h;
-
                     for (var chartId in message['datawrapper-height']) {
+                        if (chartId === 'previewId') continue;
                         h = message['datawrapper-height'][chartId];
                     }
 
