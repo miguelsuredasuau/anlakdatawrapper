@@ -3681,9 +3681,7 @@ function getDelimiterPatterns(delimiter, quoteChar) {
             quoteChar +
             '|' +
             // Standard fields.
-            '([^' +
-            quoteChar +
-            '\\' +
+            '([^\\' +
             delimiter +
             '\\r\\n]*))',
         'gi'
