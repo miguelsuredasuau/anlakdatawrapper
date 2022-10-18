@@ -29,12 +29,12 @@
         "@datawrapper/orm": "file:libs/orm",
         "@datawrapper/service-utils": "file:libs/service-utils",
         "@tivac/eslint-plugin-svelte": "^3.0.1",
-        "@typescript-eslint/eslint-plugin": "^5.39.0",
-        "@typescript-eslint/parser": "^5.39.0",
+        "@typescript-eslint/eslint-plugin": "^5.40.1",
+        "@typescript-eslint/parser": "^5.40.1",
         "arg": "^5.0.1",
         "chalk": "^4.1.2",
         "dotenv": "^10.0.0",
-        "eslint": "^8.18.0",
+        "eslint": "^8.25.0",
         "eslint-plugin-compat": "^4.0.2",
         "eslint-plugin-html": "^6.2.0",
         "eslint-plugin-svelte3-security": "file:libs/eslint-plugin-svelte3-security",
@@ -54,7 +54,8 @@
         "rollup-plugin-svelte": "^5.1.0",
         "rollup-plugin-uglify": "^6.0.4",
         "shellcheck": "^1.1.0",
-        "svelte": "^3.42.6"
+        "svelte": "^3.42.6",
+        "typescript": "^4.8.4"
     },
     "prettier": {
         "arrowParens": "avoid",
@@ -70,7 +71,7 @@
             "prettier --check",
             "eslint"
         ],
-        "*.{js,cjs,mjs}": [
+        "*.{js,ts,cjs,mjs}": [
             "prettier --write",
             "eslint"
         ],
