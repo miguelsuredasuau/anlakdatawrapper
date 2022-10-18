@@ -153,8 +153,10 @@
         iframePreview.getContext((contentWindow, contentDocument) => {
             const chartBody = contentDocument.querySelector('.dw-chart-body');
             if (chartBody && chartBody.getBoundingClientRect) {
-                const chartBodyHeight = chartBody.getBoundingClientRect().height;
-                $chart.metadata.publish['chart-height'] = Math.ceil(chartBodyHeight);
+                const chartBodyHeight = Math.ceil(chartBody.getBoundingClientRect().height);
+                if ($chart.metadata.publish['chart-height'] !== chartBodyHeight) {
+                    $chart.metadata.publish['chart-height'] = chartBodyHeight;
+                }
             }
         });
     }

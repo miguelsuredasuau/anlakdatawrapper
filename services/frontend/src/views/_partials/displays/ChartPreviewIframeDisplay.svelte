@@ -158,13 +158,12 @@
         contentDocument = iframe.contentDocument;
         loading = false;
         dispatch('load');
-        await waitForVis();
-        dispatch('render');
     }
 
     function onMessage(event) {
         const message = event.data;
         dispatch('message', message);
+        if (message === 'datawrapper:vis:rendered') dispatch('render');
         if (resizing) return;
         if (typeof message['datawrapper-height'] !== 'undefined' && fixedHeight) {
             if (previewId && message['datawrapper-height'].previewId !== previewId) {
