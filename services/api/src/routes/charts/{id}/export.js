@@ -252,6 +252,7 @@ async function exportChart(request, h) {
                 user,
                 key: `export-${payload.format}`,
                 priority: 5,
+                maxSecondsInQueue: 10,
                 data: payload,
                 auth,
                 logger
