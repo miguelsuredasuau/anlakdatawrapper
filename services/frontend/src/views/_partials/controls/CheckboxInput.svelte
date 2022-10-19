@@ -94,7 +94,12 @@
         border-color: $dw-grey;
         background: $dw-grey;
     }
-    label.checkbox:not(:last-of-type) {
+
+    .checkbox {
+        margin: 0 0 0.15em 0;
+    }
+
+    .checkbox:not(:last-of-type) {
         margin-right: 1em;
     }
     .checkbox-label {

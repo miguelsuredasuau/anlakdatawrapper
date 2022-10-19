@@ -54,7 +54,6 @@
             vertical-align: baseline;
             box-sizing: border-box;
             position: relative;
-            margin-right: 0.05em;
             top: 0.15em;
             border: 1px solid $dw-grey-dark;
         }
@@ -103,11 +102,20 @@
         background: $dw-grey-dark;
     }
 
-    .control:not(.inline) label.radio {
+    .radio {
+        margin: 0 0 0.15em 0;
+    }
+
+    .radio:not(:last-of-type) {
+        margin-right: 1em;
+    }
+
+    .control:not(.inline) .radio {
         display: block;
     }
-    .control:not(.inline) .radio + .radio {
-        margin-left: 0;
+
+    .radio-label {
+        margin-left: 0.25em;
     }
 </style>
 
@@ -123,7 +131,8 @@
                 bind:group={value}
                 value={opt.value}
             />
-            <span class="css-ui" />&nbsp;{opt.label}
+            <span class="css-ui" />
+            <span class="radio-label">{opt.label}</span>
         </label>
     {/each}
 </div>

@@ -6,7 +6,7 @@
 
     export let __;
 
-    const options = [1, 2, 3].map(i => ({ value: i, label: `Item ${i}` }));
+    const options = [1, 2, 3, 4, 5].map(i => ({ value: i, label: `Item ${i}` }));
 
     let radioValue = 1;
 </script>
@@ -115,15 +115,21 @@
                     tooltip="You need to set labelPadding to 'off' in case of checkbox and radio inputs."
                     {compact}
                 >
-                    <CheckboxInput label="Foo" />
-                    <CheckboxInput label="Bar" />
+                    {#each options as option}
+                        <CheckboxInput label={option.label} value={radioValue === option.value} />
+                    {/each}
                 </HorizontalFormFieldDisplay>
 
-                <HorizontalFormFieldDisplay {__} label="radio" labelPadding="none" {compact}>
+                <HorizontalFormFieldDisplay
+                    {__}
+                    label="radio (inline)"
+                    labelPadding="none"
+                    {compact}
+                >
                     <RadioInput bind:value={radioValue} {options} />
                 </HorizontalFormFieldDisplay>
 
-                <HorizontalFormFieldDisplay {__} label="radio block" labelPadding="none" {compact}>
+                <HorizontalFormFieldDisplay {__} label="radio" labelPadding="none" {compact}>
                     <RadioInput bind:value={radioValue} {options} inline={false} />
                 </HorizontalFormFieldDisplay>
             </div>
