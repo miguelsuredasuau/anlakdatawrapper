@@ -4,22 +4,24 @@ This repository contains the `frontend` service for Datawrapper. It is intended 
 
 ## Usage
 
-We use rollup to compile our Svelte views. The compiled files are stored in `build/view`, from where
-they are loaded by the frontend routes (see the [Svelte view adapter](src/utils/svelte-view)).
+We use rollup to compile our Svelte views. The compiled files are stored in `build/views`. Example:
 
-Therefore, before you start the frontend service, you must run either
+- `build/views/dashboard/Index.svelte.js` is a view compiled for client-side rendering; it is served
+  by the [src/routes/lib.js](/lib/csr/{file*}) route.
+- `build/views/dashboard/Index.svelte.ssr.js` is a view compiled for server-side rendering; it is
+  loaded in the `/dashboard` route using our [Svelte view adapter](src/utils/svelte-view/index.js)).
+
+Therefore, before you start the frontend service, you must compile the views either one time:
 
 ```shell
 npm run build
 ```
 
-or
+or automatically when the Svelte files change:
 
 ```shell
 npm run watch
 ```
-
-if you want to automatically recompile the views when they change.
 
 ## Development
 

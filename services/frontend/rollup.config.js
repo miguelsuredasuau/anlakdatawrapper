@@ -147,7 +147,7 @@ function createInput(view, viewComponents, mode) {
             amd: {
                 id: view.endsWith('.svelte') ? 'App' : null // view
             },
-            file: `build/views/${view}.${mode}.js`
+            file: `build/views/${view}${mode === 'ssr' ? '.ssr' : ''}.js`
         },
         plugins: [
             replace({

@@ -99,7 +99,7 @@ const { getInfo } = require('@el3um4s/svelte-get-component-info');
     await fs.mkdirp(path.join(outDir, 'lib/csr/_partials'));
 
     const bundle = await fs.readFile(
-        path.join(__dirname, '../build/views/hello/Index.svelte.csr.js'),
+        path.join(__dirname, '../build/views/hello/Index.svelte.js'),
         'utf-8'
     );
     const bundleRel = bundle
@@ -145,20 +145,20 @@ const { getInfo } = require('@el3um4s/svelte-get-component-info');
         ),
         fs.writeFile(path.join(outDir, 'lib/csr/hello/Index.svelte.js'), bundleRel),
         fs.copy(
-            path.join(__dirname, '../build/views/hello/Index.svelte.csr.js.map'),
+            path.join(__dirname, '../build/views/hello/Index.svelte.js.map'),
             path.join(outDir, 'lib/csr/hello/Index.svelte.js.map')
         ),
         fs.copy(
             path.join(
                 __dirname,
-                '../build/views/_partials/svelte2/Svelte2Wrapper.element.svelte.csr.js'
+                '../build/views/_partials/svelte2/Svelte2Wrapper.element.svelte.js'
             ),
             path.join(outDir, 'lib/csr/_partials/svelte2/Svelte2Wrapper.element.svelte.js')
         ),
         fs.copy(
             path.join(
                 __dirname,
-                '../build/views/_partials/svelte2/Svelte2Wrapper.element.svelte.csr.js.map'
+                '../build/views/_partials/svelte2/Svelte2Wrapper.element.svelte.js.map'
             ),
             path.join(outDir, 'lib/csr/_partials/svelte2/Svelte2Wrapper.element.svelte.js.map')
         )

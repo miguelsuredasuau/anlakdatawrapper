@@ -39,8 +39,8 @@ function getTemplate(file, { useCache = true }) {
 }
 
 const VIEW_FILE_TYPES = new Map([
-    ['csr', '.csr.js'],
-    ['csrMap', '.csr.js.map'],
+    ['csr', '.js'],
+    ['csrMap', '.js.map'],
     ['ssr', '.ssr.js']
 ]);
 
@@ -93,8 +93,8 @@ function watchViews(wsClients) {
     const chokidar = require('chokidar');
     // watch build/views directory for changes
     chokidar.watch(buildViewDir).on('all', (event, filename) => {
-        if (event === 'change' && filename.endsWith('.svelte.csr.js')) {
-            const page = relative(buildViewDir, filename).replace('.csr.js', '');
+        if (event === 'change' && filename.endsWith('.svelte.js')) {
+            const page = relative(buildViewDir, filename).replace('.js', '');
             // Wait a bit more to make sure both csr/ssr have been compiled. Perhaps this isn't
             // necessary (if rollup always builds csr after ssr has been built).
             setTimeout(() => {

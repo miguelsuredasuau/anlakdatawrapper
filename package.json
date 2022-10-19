@@ -28,6 +28,7 @@
         "@datawrapper/eslint-plugin-svelte3": "^4.1.1",
         "@datawrapper/orm": "file:libs/orm",
         "@datawrapper/service-utils": "file:libs/service-utils",
+        "@sentry/cli": "^2.7.0",
         "@tivac/eslint-plugin-svelte": "^3.0.1",
         "@typescript-eslint/eslint-plugin": "^5.40.1",
         "@typescript-eslint/parser": "^5.40.1",
