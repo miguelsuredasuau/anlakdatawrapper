@@ -87,6 +87,38 @@ test('Guests not allowed to export PNG', async t => {
     t.is(res.statusCode, 401);
 });
 
+test('POST /export/{format} returns an error thrown by CHART_EXPORT', async t => {
+    const chart = await createChart();
+
+    function mockChartExportListener({ data }) {
+        if (data.id === chart.id) {
+            throw new CodedError('teapot', 'Test CHART_EXPORT error');
+        }
+    }
+
+    const { events, event } = t.context.server.app;
+    events.on(event.CHART_EXPORT, mockChartExportListener);
+
+    try {
+        // Start an asynchronous export.
+        const res = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${chart.id}/export/png`,
+            headers: {
+                cookie: `DW-SESSION=${t.context.auth.credentials.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {}
+        });
+        t.is(res.statusCode, 418);
+        t.is(res.result.message, 'Test CHART_EXPORT error');
+    } finally {
+        events.off(event.CHART_EXPORT, mockChartExportListener);
+        await destroy(chart);
+    }
+});
+
 test('POST /export/{format}/async/{exportId} streams the result of CHART_EXPORT once it finishes', async t => {
     const CHART_EXPORT_SLEEP_MS = 50;
 

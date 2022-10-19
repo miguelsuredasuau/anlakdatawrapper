@@ -245,8 +245,9 @@ async function exportChart(request, h) {
     }
 
     try {
-        const result = (
-            await events.emit(event.CHART_EXPORT, {
+        const result = await events.emit(
+            event.CHART_EXPORT,
+            {
                 chart,
                 user,
                 key: `export-${payload.format}`,
@@ -254,8 +255,9 @@ async function exportChart(request, h) {
                 data: payload,
                 auth,
                 logger
-            })
-        ).find(res => res.status === 'success' && res.data);
+            },
+            { filter: 'first' }
+        );
 
         if (!result) return Boom.badRequest();
 
@@ -315,18 +317,18 @@ async function handleAsyncExportResult(request, h) {
         logger.error(error);
         return Boom.badImplementation();
     } else {
-        const result = (await events.emit(event.CHART_EXPORT_STREAM, status.result)).find(
-            res => res.status === 'success' && res.data
-        );
+        const result = await events.emit(event.CHART_EXPORT_STREAM, status.result, {
+            filter: 'first'
+        });
         if (!result) {
             return Boom.badImplementation();
         }
-        return streamExportResult({ h, params, query, result: result });
+        return streamExportResult({ h, params, query, result });
     }
 }
 
 function streamExportResult({ h, query, params, result }) {
-    const { stream, type } = result.data;
+    const { stream, type } = result;
 
     if (query.download || params.format === 'zip') {
         return h
