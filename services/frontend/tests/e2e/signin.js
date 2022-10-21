@@ -56,7 +56,7 @@ describe('login and logout', () => {
 
         // Then it logs the user out and sets the ref parameter.
         await browser.url('/archive/recently-edited');
-        const $dropdown = await $('.nav-item-more'); // TODO Use `[data-uid="settings"]` once staging supports it.
+        const $dropdown = await $('[data-uid="settings"]');
         await expect($dropdown).toBeDisplayed();
         await $dropdown.click();
         const $logout = await $('a[href="#/logout"]');
