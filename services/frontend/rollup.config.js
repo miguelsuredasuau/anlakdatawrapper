@@ -65,6 +65,7 @@ async function inspectApp() {
             info() {},
             warn() {}
         },
+        cache() {},
         method() {},
         methods: new Proxy(
             {

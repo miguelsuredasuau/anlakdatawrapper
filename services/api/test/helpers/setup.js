@@ -77,7 +77,7 @@ async function createGuestSession(server) {
 
 async function createUser(
     server,
-    { role = 'editor', pwd = PASSWORD_HASH, scopes = ALL_SCOPES, language = 'en-US' } = {}
+    { role = 'editor', pwd = PASSWORD_HASH, scopes = ALL_SCOPES, language = 'en-US', id } = {}
 ) {
     const { AccessToken, User } = require('@datawrapper/orm/models');
     const credentials = getCredentials();
@@ -86,7 +86,8 @@ async function createUser(
         email: credentials.email,
         pwd,
         role,
-        language
+        language,
+        ...(id ? { id } : false)
     });
 
     const session = await createSession(server, user);
