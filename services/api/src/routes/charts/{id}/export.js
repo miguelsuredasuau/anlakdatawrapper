@@ -245,7 +245,7 @@ async function exportChart(request, h) {
     }
 
     try {
-        const result = await events.emit(
+        const results = await events.emit(
             event.CHART_EXPORT,
             {
                 chart,
@@ -257,10 +257,12 @@ async function exportChart(request, h) {
                 auth,
                 logger
             },
-            { filter: 'first' }
+            { filter: res => res.status === 'success' && res.data }
         );
 
-        if (!result) return Boom.badRequest();
+        if (!results.length) return Boom.badRequest();
+
+        const result = results[0].data;
 
         await request.server.methods.logAction(user.id, `chart/export/${params.format}`, params.id);
 
@@ -318,12 +320,13 @@ async function handleAsyncExportResult(request, h) {
         logger.error(error);
         return Boom.badImplementation();
     } else {
-        const result = await events.emit(event.CHART_EXPORT_STREAM, status.result, {
-            filter: 'first'
+        const results = await events.emit(event.CHART_EXPORT_STREAM, status.result, {
+            filter: res => res.status === 'success' && res.data
         });
-        if (!result) {
+        if (!results.length) {
             return Boom.badImplementation();
         }
+        const result = results[0].data;
         return streamExportResult({ h, params, query, result });
     }
 }
