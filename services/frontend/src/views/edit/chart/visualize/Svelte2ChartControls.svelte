@@ -6,7 +6,6 @@
     import { onMount, tick, getContext } from 'svelte';
     import isEqual from 'lodash/isEqual';
     import clone from 'lodash/cloneDeep';
-    import { loadScript } from '@datawrapper/shared/fetch.js';
     import get from 'lodash/get';
     import set from 'lodash/set';
     import assign from 'assign-deep';
@@ -66,9 +65,10 @@
 
         await applyDefaultsAndMigration();
 
-        // load script that registers visualzation
+        // load script that registers visualization
+        window.dw = window.dw || {};
         window.dw.visualization = dwVisualization;
-        await loadScript(
+        await dynamicImport(
             `/lib/plugins/${visualization.__plugin}/static/${type}.js?sha=${visualization.__visHash}`
         );
         // create visualization instance
@@ -124,7 +124,11 @@
      * @param filename - the file to import
      */
     function dynamicImport(filename) {
-        return eval(`import('${filename}')`);
+        const url =
+            typeof __dirname === 'undefined'
+                ? filename // Client-side rendering
+                : filename.replace(/^\/lib\/plugins\//, `${__dirname}/../../../../../plugins/`); // Server-side rendering
+        return eval(`import('${url}')`);
     }
 
     /*

@@ -515,7 +515,7 @@ Please make sure you called __(key) with a key of type "string".
 
         // initialize emotion instance
         if (!dwChart.emotion) {
-            dwChart.emotion = createEmotion.default({
+            dwChart.emotion = createEmotion({
                 key: `datawrapper-${chart.id}`,
                 container: isIframe ? document.head : styleHolder
             });
