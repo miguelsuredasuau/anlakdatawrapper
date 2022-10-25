@@ -193,7 +193,9 @@ async function editUser(request, h) {
         // see if there already is an existing user with that email address
         const existingUser = await User.findOne({ where: { email: payload.email } });
         if (existingUser) {
-            return Boom.conflict('email-already-exists');
+            return Boom.conflict('Email already exists', {
+                type: 'account / change-email / email-already-exists'
+            });
         }
     }
 
@@ -239,8 +241,11 @@ async function editUser(request, h) {
         }
         if (payload.password) {
             if (!payload.oldPassword) {
-                return Boom.unauthorized(
-                    'You need to provide the current password in order to change it.'
+                // Joi validation already catches empty old password, so this code branch is just a
+                // safety check that can never be reached as long as Joi is configured correctly.
+                return Boom.forbidden(
+                    'You need to provide the current password in order to change it.',
+                    { type: 'account / change-password / missing-old-password' }
                 );
             }
             // compare old password to current password
@@ -251,7 +256,9 @@ async function editUser(request, h) {
             });
 
             if (!isValid) {
-                return Boom.unauthorized('The old password is wrong');
+                return Boom.forbidden('The old password is wrong', {
+                    type: 'account / change-password / wrong-old-password'
+                });
             }
             data.pwd = await hashPassword(payload.password);
             requiresSessionInvalidation = true;
@@ -324,7 +331,9 @@ async function deleteUser(request, h) {
     });
 
     if (teams > 0) {
-        return Boom.conflict('delete-or-transfer-teams-first');
+        return Boom.conflict('team-conflict', {
+            type: 'account / delete / team-conflict'
+        });
     }
 
     await User.update(

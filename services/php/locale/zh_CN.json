@@ -307,8 +307,8 @@
   "team-create / slug": "团队ID：",
   "team-create / help": "选择您的团队将显示的名称。您可以稍后更改。",
   "team-create / slug-help": "此ID将用于内部Datawrapper小组URL。",
-  "account / change-email / error / email-already-exists": "此电子邮件地址已被其他用户使用。",
-  "account / change-email / error / invalid-email": "您输入的电子邮件地址无效。请检查拼写是否正确。",
+  "account / change-email / email-already-exists": "此电子邮件地址已被其他用户使用。",
+  "validation-error / string.email": "您输入的电子邮件地址无效。请检查拼写是否正确。",
   "teams / p": "所有成员均可以访问共享的图表存档，并且可以编辑彼此的图表。",
   "teams / name": "团队名称",
   "teams / name / help": "这就是您的团队在Datawrapper中的显示方式。",
@@ -1169,5 +1169,14 @@
   "sso / error / head": "",
   "sso / error / text": "",
   "edit / header / guest-welcome": "",
-  "controls / gradient-editor / import / invalid": ""
+  "controls / gradient-editor / import / invalid": "",
+  "team / change-settings / error / bad-request": "",
+  "team / change-settings / error / unknown": "",
+  "account / change-email / unknown-error": "",
+  "account / change-password / unknown-error": "",
+  "account / change-password / missing-old-password": "",
+  "account / change-password / wrong-old-password": "",
+  "account / delete / unknown-error": "",
+  "validation-error / string.empty": "",
+  "validation-error": ""
 }

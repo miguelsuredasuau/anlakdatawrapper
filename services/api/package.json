@@ -88,7 +88,8 @@
             "src/**/*.test.*",
             "test/**/*.test.*"
         ],
-        "snapshotDir": "test/__snapshots__"
+        "snapshotDir": "test/__snapshots__",
+        "timeout": "20s"
     },
     "optionalDependencies": {
         "fsevents": "^2.3.2"

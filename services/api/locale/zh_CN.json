@@ -1169,5 +1169,12 @@
   "sso / error / head": "",
   "sso / error / text": "",
   "edit / header / guest-welcome": "",
-  "controls / gradient-editor / import / invalid": ""
+  "controls / gradient-editor / import / invalid": "",
+  "team / change-settings / error / bad-request": "",
+  "team / change-settings / error / unknown": "",
+  "account / change-email / error / unknown": "",
+  "account / change-password / error / unknown": "",
+  "account / change-password / error / missing-old-password": "",
+  "account / change-password / error / wrong-old-password": "",
+  "account / delete / error / unknown": ""
 }

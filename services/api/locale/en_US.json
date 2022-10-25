@@ -1169,5 +1169,12 @@
   "sso / error / head": "Your team's identity provider has rejected your sign-in request.",
   "sso / error / text": "Datawrapper received this error message from your identity provider:",
   "edit / header / guest-welcome": "Welcome to Datawrapper 🙂! <a href=\"https://academy.datawrapper.de/article/245-how-to-create-your-first-datawrapper-chart\">Learn how to create your first chart.</a>",
-  "controls / gradient-editor / import / invalid": "Invalid colors. Please check your input."
+  "controls / gradient-editor / import / invalid": "Invalid colors. Please check your input.",
+  "team / change-settings / error / bad-request": "Attempted to save incorrect team settings: ",
+  "team / change-settings / error / unknown": "An error occurred while trying to save team settings: ",
+  "account / change-email / error / unknown": "An unknown error occurred while trying to change the email address",
+  "account / change-password / error / unknown": "An unknown error occurred while trying to change the password",
+  "account / change-password / error / missing-old-password": "You need to provide the current password in order to change it",
+  "account / change-password / error / wrong-old-password": "The old password is wrong",
+  "account / delete / error / unknown": "An unknown error occurred while trying to delete the account"
 }

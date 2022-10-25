@@ -12,16 +12,19 @@
 
 <div class="row edit-account" style="margin-top: { messages && messages.length ? 0 : 20 }px;">
     <div class="span6">
-        {#if changeEmail && errors.length}
-        <div class="alert alert-warning">{@html errors.join('')}</div>
+        {#if changeEmail && error}
+        <div class="alert alert-danger">
+            {@html __(error.translationKey || 'account / change-email / unknown-error')}
+        </div>
         {/if}
         <FormBlock
             label="{ __('E-Mail') }"
             help="{changeEmail ? __('account / confirm-email-change') : ''}"
+            error="{changeEmailFormBlockError}"
         >
             {#if changeEmail}
             <input bind:value="newEmail" type="email" />
-            <button on:click="set({changeEmail: false})" class="btn btn-default">
+            <button on:click="set({changeEmail: false, error: null})" class="btn btn-default">
                 { __( "Back") }
             </button>
             <button on:click="changeEmail()" class="btn btn-save btn-primary">
@@ -39,7 +42,10 @@
         {#if !changePassword}
         <FormBlock label="{ __('Password') }" help="">
             <input disabled value="abcdefgh" type="password" />
-            <button on:click="set({changePassword: true})" class="btn btn-save btn-default">
+            <button
+                on:click="set({changePassword: true, error: null})"
+                class="btn btn-save btn-default"
+            >
                 { __("account / password") }
             </button>
         </FormBlock>
@@ -47,17 +53,15 @@
         <h3>
             { __("account / password") }
             <button
-                on:click="set({changePassword: false})"
+                on:click="set({changePassword: false, error: null})"
                 class="btn btn-save btn-default btn-back"
             >
                 { __("Back") }
             </button>
         </h3>
-        {#if changePassword && errors && errors.length }
-        <div class="alert">
-            {#each errors as message}
-            <p>{@html message }</p>
-            {/each}
+        {#if changePassword && error}
+        <div class="alert alert-danger">
+            {@html __(error.translationKey || 'account / change-password / unknown-error')}
         </div>
         {/if}
         <FormBlock
@@ -125,9 +129,14 @@
             </ul>
             <p>{ __("account / delete / charts-stay-online") }</p>
 
+            {#if error}
+            <div class="alert alert-danger">
+                {@html __(error.translationKey || 'account / delete / unknown-error')}
+            </div>
+            {/if}
             <FormBlock
                 label="{ __('Please enter your password to confirm the deletion request:') }"
-                error="{errors && errors.length ? errors.join('. ') : false}"
+                error="{deleteAccountFormBlockError}"
             >
                 <input type="email" bind:value="confirmEmail" placeholder="{ __('E-Mail') }" />
                 <input
@@ -138,7 +147,7 @@
             </FormBlock>
             <p class="lead">{@html __("account / delete / really-really") }</p>
             <div class="control-group">
-                <button on:click="set({deleteAccount2: false})" class="btn btn-info">
+                <button on:click="set({deleteAccount2: false, error: null})" class="btn btn-info">
                     <i class="fa fa-chevron-left"></i>&nbsp; { __("No, I changed my mind..") }
                 </button>
                 <button on:click="deleteAccount()" class="btn btn-danger">
@@ -149,7 +158,10 @@
         </div>
         {:elseif deleteAccount}
         <h3><i class="fa fa-times"></i> { __("account / confirm-account-deletion") }</h3>
-        <button on:click="set({deleteAccount: false})" class="btn btn-back btn-primary">
+        <button
+            on:click="set({deleteAccount: false, error: null})"
+            class="btn btn-back btn-primary"
+        >
             <i class="fa fa-chevron-left"></i>
             &nbsp; { __("account / confirm-account-deletion / no") }
         </button>
@@ -157,14 +169,18 @@
         { __("account / or") }
 
         <button
-            on:click="set({deleteAccount: false, deleteAccount2: true})"
+            on:click="set({deleteAccount: false, deleteAccount2: true, error: null})"
             class="btn btn-default"
         >
             <i class="fa fa-times"></i> &nbsp; { __("account / confirm-account-deletion / yes") }
         </button>
         {:else}
         <FormBlock label="Delete account" help="">
-            <button class="btn btn-danger" on:click="set({deleteAccount: true})" href="#">
+            <button
+                class="btn btn-danger"
+                on:click="set({deleteAccount: true, error: null})"
+                href="#"
+            >
                 { __("account / delete") }
             </button>
         </FormBlock>
@@ -207,7 +223,7 @@
                 savingEmail: false,
                 savingPassword: false,
                 showPasswordAsClearText: false,
-                errors: [],
+                error: null,
                 groups: [
                     {
                         title: 'Account settings',
@@ -228,6 +244,34 @@
         helpers: {
             __
         },
+        computed: {
+            changeEmailFormBlockError({ changeEmail, error }) {
+                return (
+                    changeEmail &&
+                    error &&
+                    error.details &&
+                    error.details
+                        .filter(({ path }) => path === 'email')
+                        .map(({ translationKey }) =>
+                            __(translationKey || 'account / change-email / unknown-error')
+                        )
+                        .join('. ')
+                );
+            },
+            deleteAccountFormBlockError({ deleteAccount2, error }) {
+                return (
+                    deleteAccount2 &&
+                    error &&
+                    error.details &&
+                    error.details
+                        .filter(({ path }) => ['email', 'password'].includes(path))
+                        .map(({ translationKey }) =>
+                            __(translationKey || 'account / delete / unknown-error')
+                        )
+                        .join('. ')
+                );
+            }
+        },
         methods: {
             initChangeEmail() {
                 const { email } = this.get();
@@ -241,44 +285,22 @@
 
                 this.set({ savingEmail: true });
 
-                const messages = [];
-                const errors = [];
-
                 try {
                     await httpReq.patch('/v3/me', {
                         payload: { email: newEmail }
                     });
-                    messages.push(
-                        'Your email has been changed successfully. You will receive an email with a confirmation link.'
-                    );
-                } catch (e) {
-                    if (e.name === 'HttpReqError') {
-                        const res = await e.response.json();
-                        if (res.message === 'Invalid request payload input') {
-                            errors.push(__('account / change-email / error / invalid-email'));
-                        } else {
-                            errors.push(
-                                res.message
-                                    ? __(`account / change-email / error / ${res.message}`)
-                                    : e.message
-                            );
-                        }
-                    } else {
-                        errors.push('Unknown error: ' + e);
-                    }
+                    this.set({
+                        changeEmail: false,
+                        messages: [
+                            'Your email has been changed successfully. You will receive an email with a confirmation link.'
+                        ],
+                        error: null
+                    });
+                } catch (error) {
+                    this.set({ error });
                 }
 
                 this.set({ savingEmail: false });
-
-                if (!errors.length) {
-                    this.set({
-                        changeEmail: false,
-                        messages,
-                        errors: []
-                    });
-                } else {
-                    this.set({ errors });
-                }
             },
             async changePassword() {
                 const { currentPassword, newPassword, email } = this.get();
@@ -290,8 +312,6 @@
                     oldPassword: currentPassword
                 };
 
-                const errors = [];
-
                 try {
                     await httpReq.patch('/v3/me', { payload });
                     const params = new URLSearchParams();
@@ -299,37 +319,22 @@
                     params.append('email', email);
                     params.append('passwordChanged', 'true');
                     window.location.href = `/signin?${params}`;
-                } catch (e) {
-                    if (e.name === 'HttpReqError') {
-                        const res = await e.response.json();
-                        errors.push(res.message || e.message);
-                    } else {
-                        errors.push('Unknown error: ' + e);
-                    }
-                }
-
-                if (errors.length === 0) {
                     this.set({
                         changePassword: false,
                         currentPassword: '',
                         newPassword: '',
-                        errors: []
+                        error: null
                     });
-                } else {
-                    this.set({
-                        errors
-                    });
+                } catch (error) {
+                    this.set({ error });
                 }
-                this.set({
-                    savingPassword: false
-                });
+
+                this.set({ savingPassword: false });
             },
             async deleteAccount() {
                 const { confirmPassword, confirmEmail } = this.get();
 
                 this.set({ deletingAccount: true });
-
-                const errors = [];
 
                 try {
                     await httpReq.delete('/v3/me', {
@@ -338,26 +343,15 @@
                             email: confirmEmail
                         }
                     });
-                } catch (e) {
-                    if (e.name === 'HttpReqError') {
-                        const res = await e.response.json();
-
-                        if (res.message === 'delete-or-transfer-teams-first') {
-                            errors.push(__('account / delete / team-conflict'));
-                        } else {
-                            errors.push(res.message || e.message);
-                        }
-                    } else {
-                        errors.push('Unknown error: ' + e);
-                    }
-                }
-
-                this.set({ deletingAccount: false });
-
-                if (!errors.length) {
-                    this.set({ deleteAccount2: false, deleteAccount3: true });
-                } else {
-                    this.set({ errors });
+                    this.set({
+                        deleteAccount2: false,
+                        deleteAccount3: true
+                    });
+                } catch (error) {
+                    this.set({
+                        error,
+                        deletingAccount: false
+                    });
                 }
             }
         },

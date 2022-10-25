@@ -307,8 +307,8 @@
   "team-create / slug": "Team-ID:",
   "team-create / help": "Unter diesem Namen wird dein Team angezeigt. Du kannst den Namen später noch ändern.",
   "team-create / slug-help": "Die ID wird für interne Datawrapper Team-URLs benutzt",
-  "account / change-email / error / email-already-exists": "Diese E-Mail-Adresse wird bereits von einem anderen Benutzer verwendet.",
-  "account / change-email / error / invalid-email": "Die eingegebene E-Mail-Adresse ist ungültig. Bitte überprüfe dass alles richtig geschrieben ist.",
+  "account / change-email / email-already-exists": "Diese E-Mail-Adresse wird bereits von einem anderen Benutzer verwendet.",
+  "validation-error / string.email": "Die eingegebene E-Mail-Adresse ist ungültig. Bitte überprüfe dass alles richtig geschrieben ist.",
   "teams / p": "Teammitglieder können auf das geteilte Archiv zugreifen und die darin liegenden Grafiken bearbeiten. ",
   "teams / name": "Teamname",
   "teams / name / help": "Mit diesem Namen wird dein Team in Datawrapper identifiziert.",
@@ -1169,5 +1169,14 @@
   "sso / error / head": "Der Identity-Provider deines Teams hat deinen Anmeldevorgang abgelehnt.",
   "sso / error / text": "Datawrapper hat diese Fehlermeldung von deinem Identity-Provider erhalten:",
   "edit / header / guest-welcome": "Willkommen bei Datawrapper 🙂! <a href=\"https://academy.datawrapper.de/article/245-how-to-create-your-first-datawrapper-chart\">Erfahre wie du dein erstes Diagramm erstellen kannst.</a>",
-  "controls / gradient-editor / import / invalid": "Ungültige Farbcodes. Bitte überprüfe deine Eingabe."
+  "controls / gradient-editor / import / invalid": "Ungültige Farbcodes. Bitte überprüfe deine Eingabe.",
+  "team / change-settings / error / bad-request": "",
+  "team / change-settings / error / unknown": "",
+  "account / change-email / unknown-error": "",
+  "account / change-password / unknown-error": "",
+  "account / change-password / missing-old-password": "",
+  "account / change-password / wrong-old-password": "",
+  "account / delete / unknown-error": "",
+  "validation-error / string.empty": "",
+  "validation-error": ""
 }

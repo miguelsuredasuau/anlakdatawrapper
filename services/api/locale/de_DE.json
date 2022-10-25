@@ -1169,5 +1169,12 @@
   "sso / error / head": "Der Identity-Provider deines Teams hat deinen Anmeldevorgang abgelehnt.",
   "sso / error / text": "Datawrapper hat diese Fehlermeldung von deinem Identity-Provider erhalten:",
   "edit / header / guest-welcome": "Willkommen bei Datawrapper 🙂! <a href=\"https://academy.datawrapper.de/article/245-how-to-create-your-first-datawrapper-chart\">Erfahre wie du dein erstes Diagramm erstellen kannst.</a>",
-  "controls / gradient-editor / import / invalid": "Ungültige Farbcodes. Bitte überprüfe deine Eingabe."
+  "controls / gradient-editor / import / invalid": "Ungültige Farbcodes. Bitte überprüfe deine Eingabe.",
+  "team / change-settings / error / bad-request": "",
+  "team / change-settings / error / unknown": "",
+  "account / change-email / error / unknown": "",
+  "account / change-password / error / unknown": "",
+  "account / change-password / error / missing-old-password": "",
+  "account / change-password / error / wrong-old-password": "",
+  "account / delete / error / unknown": ""
 }

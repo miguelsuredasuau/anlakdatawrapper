@@ -124,8 +124,21 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
                 credentials: true
             },
             validate: {
-                async failAction(request, h, err) {
-                    throw Boom.badRequest('Invalid request payload input: ' + err.message);
+                /**
+                 * Adds Joi validation details to the Boom error object.
+                 *
+                 * This allows us to later return the details to the client in `onPreResponse`.
+                 */
+                async failAction(_request, _h, err) {
+                    throw Boom.badRequest('Invalid request payload input: ' + err.message, {
+                        ...(err.isJoi && {
+                            type: 'validation-error',
+                            details: err.details.map(({ path, type }) => ({
+                                path: path.join('.'),
+                                type
+                            }))
+                        })
+                    });
                 }
             }
         }
@@ -247,6 +260,25 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
     );
 
     server.validator(Joi);
+
+    /**
+     * Adds additional properties 'type' and 'details' to hapi's error JSON responses.
+     *
+     * We use these properties to provide translated error messages in the frontend.
+     *
+     * @see HttpReqError
+     * @see https://github.com/hapijs/hapi/blob/master/API.md#error-transformation
+     */
+    server.ext('onPreResponse', ({ response }, h) => {
+        if (response?.isBoom) {
+            for (const key of ['type', 'details']) {
+                if (response.data?.[key]) {
+                    response.output.payload[key] = response.data[key];
+                }
+            }
+        }
+        return h.continue;
+    });
 
     server.app.event = eventList;
     server.app.events = new ApiEventEmitter({ logger: server.logger, eventList });

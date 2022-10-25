@@ -307,8 +307,8 @@
   "team-create / slug": "ID del equipo:",
   "team-create / help": "Elige el nombre que se mostrará en tu equipo. Puedes cambiarlo más tarde.",
   "team-create / slug-help": "La ID se usará para las URL internas del equipo de Datawrapper.",
-  "account / change-email / error / email-already-exists": "Esa dirección de correo electrónico ya está siendo utilizada por otro usuario.",
-  "account / change-email / error / invalid-email": "La dirección de correo electrónico que has introducido no es válida. Comprueba que la ortografía sea correcta.",
+  "account / change-email / email-already-exists": "Esa dirección de correo electrónico ya está siendo utilizada por otro usuario.",
+  "validation-error / string.email": "La dirección de correo electrónico que has introducido no es válida. Comprueba que la ortografía sea correcta.",
   "teams / p": "Todos los miembros tienen acceso al archivo de gráficos compartidos y pueden editar los gráficos de los demás.",
   "teams / name": "Nombre del equipo",
   "teams / name / help": "Así es como se mostrará tu equipo en Datawrapper.",
@@ -1169,5 +1169,14 @@
   "sso / error / head": "",
   "sso / error / text": "",
   "edit / header / guest-welcome": "Bienvenido a Datawrapper 🙂! <a href=\"https://academy.datawrapper.de/article/245-how-to-create-your-first-datawrapper-chart\">Aprende a crear tu primer gráfico.</a>",
-  "controls / gradient-editor / import / invalid": ""
+  "controls / gradient-editor / import / invalid": "",
+  "team / change-settings / error / bad-request": "",
+  "team / change-settings / error / unknown": "",
+  "account / change-email / unknown-error": "",
+  "account / change-password / unknown-error": "",
+  "account / change-password / missing-old-password": "",
+  "account / change-password / wrong-old-password": "",
+  "account / delete / unknown-error": "",
+  "validation-error / string.empty": "",
+  "validation-error": ""
 }

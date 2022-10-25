@@ -1,11 +1,5 @@
 const test = require('ava');
-const {
-    createTeamWithUser,
-    createUser,
-    destroy,
-    setup,
-    createSession
-} = require('../../../test/helpers/setup');
+const { createSession, setup, withUser, withTeamWithUser } = require('../../../test/helpers/setup');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
@@ -15,11 +9,7 @@ test.before(async t => {
 });
 
 test('User cannot change password without old password', async t => {
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server);
-        const { session, user } = userObj;
-
+    return withUser(t.context.server, {}, async ({ session, user }) => {
         const patchMe = async payload =>
             t.context.server.inject({
                 method: 'PATCH',
@@ -35,7 +25,7 @@ test('User cannot change password without old password', async t => {
         const oldPwdHash = user.pwd;
         // try to change without password
         let res = await patchMe({ password: 'new-password' });
-        t.is(res.statusCode, 401);
+        t.is(res.statusCode, 403);
 
         // check that password hash is still the same
         await user.reload();
@@ -43,7 +33,7 @@ test('User cannot change password without old password', async t => {
 
         // try to change with false password
         res = await patchMe({ password: 'new-password', oldPassword: 'I dont know' });
-        t.is(res.statusCode, 401);
+        t.is(res.statusCode, 403);
 
         // check that password hash is still the same
         await user.reload();
@@ -56,20 +46,13 @@ test('User cannot change password without old password', async t => {
         // check that password hash is still the same
         await user.reload();
         t.not(user.pwd, oldPwdHash);
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });
 
 test('User cannot change password without old password (legacy)', async t => {
-    const { legacyHash, server } = t.context;
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server);
+    return withUser(t.context.server, {}, async ({ session, user }) => {
+        const { legacyHash, server } = t.context;
         const { authSalt, secretAuthSalt } = server.methods.config('api');
-        const { session, user } = userObj;
 
         const patchMe = async payload =>
             t.context.server.inject({
@@ -93,22 +76,15 @@ test('User cannot change password without old password (legacy)', async t => {
             password: 'new-password',
             oldPassword: 'wrong-legacy-password'
         });
-        t.is(res.statusCode, 401);
+        t.is(res.statusCode, 403);
 
         res = await patchMe({ password: 'new-password', oldPassword: 'legacy-password' });
         t.is(res.statusCode, 200);
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });
 
 test('Password change leads to invalidation of all sessions', async t => {
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server);
-        const { session, user } = userObj;
+    return withUser(t.context.server, {}, async ({ session, user }) => {
         const { Session } = require('@datawrapper/orm/models');
 
         // create some more sessions for the user
@@ -130,19 +106,11 @@ test('Password change leads to invalidation of all sessions', async t => {
         // all sessions have been deleted
         const sessions = await Session.findAll({ where: { user_id: user.id } });
         t.is(sessions.length, 0);
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });
 
 test('User can delete their account and are logged out', async t => {
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server);
-        const { user, session } = userObj;
-
+    return withUser(t.context.server, {}, async ({ session, user }) => {
         const res1 = await t.context.server.inject({
             method: 'DELETE',
             url: '/v3/me',
@@ -168,19 +136,12 @@ test('User can delete their account and are logged out', async t => {
         });
 
         t.is(res2.statusCode, 401);
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });
 
 test('User cannot delete their account while owning team', async t => {
-    let teamObj;
-    try {
-        teamObj = await createTeamWithUser(t.context.server, { role: 'owner' });
-        const { user, team, session } = teamObj;
-
+    const options = { role: 'owner' };
+    return withTeamWithUser(t.context.server, options, async ({ session, team, user }) => {
         const res1 = await t.context.server.inject({
             method: 'DELETE',
             url: '/v3/me',
@@ -224,19 +185,11 @@ test('User cannot delete their account while owning team', async t => {
         });
 
         t.is(res3.statusCode, 204);
-    } finally {
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
-    }
+    });
 });
 
 test('User can delete their account if only admin of a team', async t => {
-    let teamObj;
-    try {
-        teamObj = await createTeamWithUser(t.context.server, { role: 'admin' });
-        const { user, session } = teamObj;
-
+    return withTeamWithUser(t.context.server, { role: 'admin' }, async ({ session, user }) => {
         const res = await t.context.server.inject({
             method: 'DELETE',
             url: '/v3/me',
@@ -252,18 +205,11 @@ test('User can delete their account if only admin of a team', async t => {
         });
 
         t.is(res.statusCode, 204);
-    } finally {
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
-    }
+    });
 });
 
 test('User can set their name to valid characters', async t => {
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server);
-        const { user, session } = userObj;
+    return withUser(t.context.server, {}, async ({ session, user }) => {
         const name = 'François T. 张伟 Ἁγνή-Æðelwine 🥶';
 
         const res = await t.context.server.inject({
@@ -282,18 +228,11 @@ test('User can set their name to valid characters', async t => {
         t.is(res.statusCode, 200);
         await user.reload();
         t.is(user.name, name);
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });
 
 test('User cannot set their name to invalid characters', async t => {
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server);
-        const { user, session } = userObj;
+    return withUser(t.context.server, {}, async ({ session, user }) => {
         const oldUserName = user.name;
 
         const res = await t.context.server.inject({
@@ -312,22 +251,15 @@ test('User cannot set their name to invalid characters', async t => {
         t.is(res.statusCode, 400);
         await user.reload();
         t.is(user.name, oldUserName);
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });
 
 test('A guest user can update their language', async t => {
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server, {
-            role: 'guest',
-            scopes: ['user:read', 'user:write']
-        });
-        const { session } = userObj;
-
+    const userOptions = {
+        role: 'guest',
+        scopes: ['user:read', 'user:write']
+    };
+    return withUser(t.context.server, userOptions, async ({ session }) => {
         const res = await t.context.server.inject({
             method: 'PATCH',
             url: '/v3/me',
@@ -343,22 +275,15 @@ test('A guest user can update their language', async t => {
 
         t.is(res.statusCode, 200);
         t.is(res.result.language, 'de-DE');
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });
 
 test('A guest user cannot update their language to an invalid language', async t => {
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server, {
-            role: 'guest',
-            scopes: ['user:read', 'user:write']
-        });
-        const { session } = userObj;
-
+    const userOptions = {
+        role: 'guest',
+        scopes: ['user:read', 'user:write']
+    };
+    return withUser(t.context.server, userOptions, async ({ session }) => {
         const res = await t.context.server.inject({
             method: 'PATCH',
             url: '/v3/me',
@@ -373,9 +298,5 @@ test('A guest user cannot update their language to an invalid language', async t
         });
 
         t.is(res.statusCode, 400);
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });

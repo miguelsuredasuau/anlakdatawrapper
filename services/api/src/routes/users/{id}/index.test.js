@@ -1,11 +1,12 @@
 const test = require('ava');
 const { decamelize } = require('humps');
 const {
-    createTeamWithUser,
     createUser,
     destroy,
     getCredentials,
-    setup
+    setup,
+    withUser,
+    withTeamWithUser
 } = require('../../../../test/helpers/setup');
 
 test.before(async t => {
@@ -22,11 +23,7 @@ test('GET /users/:id - should include teams when fetched as admin', async t => {
     /* create admin user to fetch different user with team */
     const { session } = t.context.adminObj;
 
-    let teamObj;
-    try {
-        /* create a team with user to fetch */
-        teamObj = await createTeamWithUser(t.context.server);
-
+    return withTeamWithUser(t.context.server, {}, async teamObj => {
         const res = await t.context.server.inject({
             method: 'GET',
             url: `/v3/users/${teamObj.user.id}`,
@@ -39,11 +36,7 @@ test('GET /users/:id - should include teams when fetched as admin', async t => {
         t.is(res.result.teams[0].id, teamObj.team.id);
         t.is(res.result.teams[0].name, teamObj.team.name);
         t.is(res.result.teams[0].url, `/v3/teams/${teamObj.team.id}`);
-    } finally {
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
-    }
+    });
 });
 
 test('Users endpoints should return 404 if no user was found', async t => {
@@ -98,12 +91,7 @@ test('Users endpoints should return products for admins', async t => {
 });
 
 test("Users can't change protected fields using PATCH", async t => {
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server);
-        const { session } = userObj;
-        let { user } = userObj;
-
+    return withUser(t.context.server, {}, async ({ session, user }) => {
         const forbiddenFields = {
             customerId: 12345,
             oauthSignin: 'blub',
@@ -147,21 +135,12 @@ test("Users can't change protected fields using PATCH", async t => {
         for (const f in protectedFields) {
             t.not(user[decamelize(f)], protectedFields[f]);
         }
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });
 
 test('Users can change allowed fields', async t => {
     const { Action } = require('@datawrapper/orm/models');
-    let userObj;
-    try {
-        userObj = await createUser(t.context.server);
-        const { session } = userObj;
-        let { user } = userObj;
-
+    return withUser(t.context.server, {}, async ({ session, user }) => {
         const oldEmail = user.email;
 
         const allowedFields = {
@@ -199,57 +178,39 @@ test('Users can change allowed fields', async t => {
         t.truthy(details.token);
         t.is(user.name, allowedFields.name);
         t.is(user.language, allowedFields.language);
-    } finally {
-        if (userObj) {
-            await destroy(...Object.values(userObj));
-        }
-    }
+    });
 });
 
 test('User cannot change email if it already exists', async t => {
-    let userObj1;
-    let userObj2;
-    try {
-        userObj1 = await createUser(t.context.server);
-        const { user: user1, session } = userObj1;
-        userObj2 = await createUser(t.context.server);
-        const { user: user2 } = userObj2;
+    return withUser(t.context.server, {}, async ({ session, user: user1 }) => {
+        return withUser(t.context.server, {}, async ({ user: user2 }) => {
+            const { result, statusCode } = await t.context.server.inject({
+                method: 'PATCH',
+                url: `/v3/users/${user1.id}`,
+                headers: {
+                    cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                    'X-CSRF-Token': 'abc',
+                    referer: 'http://localhost',
+                    'Content-Type': 'application/json'
+                },
+                payload: {
+                    email: user2.email
+                }
+            });
 
-        const { result, statusCode } = await t.context.server.inject({
-            method: 'PATCH',
-            url: `/v3/users/${user1.id}`,
-            headers: {
-                cookie: `DW-SESSION=${session.id}; crumb=abc`,
-                'X-CSRF-Token': 'abc',
-                referer: 'http://localhost',
-                'Content-Type': 'application/json'
-            },
-            payload: {
-                email: user2.email
-            }
+            t.is(statusCode, 409);
+            t.is(result.type, 'account / change-email / email-already-exists');
+            t.is(result.message, 'Email already exists');
         });
-
-        t.is(statusCode, 409);
-        t.is(result.message, 'email-already-exists');
-    } finally {
-        if (userObj1) {
-            await destroy(...Object.values(userObj1));
-        }
-        if (userObj2) {
-            await destroy(...Object.values(userObj2));
-        }
-    }
+    });
 });
 
 test('GET /users/:id - should not include unaccepted team invites', async t => {
     /* create admin user to fetch different user with team */
     const { session } = t.context.adminObj;
 
-    let teamObj;
-    try {
-        /* create a team invite with user to fetch */
-        teamObj = await createTeamWithUser(t.context.server, { invite_token: 'abcdefg' });
-
+    const options = { invite_token: 'abcdefg' };
+    return withTeamWithUser(t.context.server, options, async teamObj => {
         const res = await t.context.server.inject({
             method: 'GET',
             url: `/v3/users/${teamObj.user.id}`,
@@ -259,9 +220,5 @@ test('GET /users/:id - should not include unaccepted team invites', async t => {
         });
 
         t.is(res.result.teams.length, 0);
-    } finally {
-        if (teamObj) {
-            await destroy(...Object.values(teamObj));
-        }
-    }
+    });
 });
