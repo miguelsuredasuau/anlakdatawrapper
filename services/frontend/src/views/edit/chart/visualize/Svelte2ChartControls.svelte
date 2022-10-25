@@ -57,7 +57,13 @@
     }
 
     async function loadControls(visualization) {
-        if (!visualization || !visualization.id || typeof window === 'undefined') {
+        if (
+            !visualization ||
+            !visualization.id ||
+            typeof window === 'undefined' ||
+            typeof __dirname !== 'undefined'
+        ) {
+            // TODO Do a better check if we're in SSR than checking if __dirname is defined.
             return;
         }
         const type = visualization.id;
@@ -66,9 +72,7 @@
         await applyDefaultsAndMigration();
 
         // load script that registers visualization
-        window.dw = window.dw || {};
         window.dw.visualization = dwVisualization;
-        global.dw = window.dw; // Allows the imported script to call `dw.visualization.register()`.
         await dynamicImport(
             `/lib/plugins/${visualization.__plugin}/static/${type}.js?sha=${visualization.__visHash}`
         );
