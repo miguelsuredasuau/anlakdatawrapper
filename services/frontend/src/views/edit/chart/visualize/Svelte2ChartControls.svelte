@@ -68,6 +68,7 @@
         // load script that registers visualization
         window.dw = window.dw || {};
         window.dw.visualization = dwVisualization;
+        global.dw = window.dw; // Allows the imported script to call `dw.visualization.register()`.
         await dynamicImport(
             `/lib/plugins/${visualization.__plugin}/static/${type}.js?sha=${visualization.__visHash}`
         );
