@@ -18,7 +18,12 @@
 </script>
 
 {#if logo.url}
-    <a href={logo.url} title={logo.linkTitle || logo.url} target="_blank" rel="noopener noreferrer">
+    <a
+        href={logo.url}
+        title={logo.linkTitle || logo.url}
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+    >
         <LogoInner {logo} {purifyHtml} {theme} />
     </a>
 {:else}
