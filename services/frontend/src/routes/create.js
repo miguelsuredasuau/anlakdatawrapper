@@ -100,8 +100,6 @@ module.exports = {
             }
         });
 
-        server.methods.registerView('Create.svelte');
-
         const additionalFields = {
             description: 'metadata.describe.intro',
             aria_description: 'metadata.describe.aria-description',

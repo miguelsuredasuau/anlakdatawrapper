@@ -35,8 +35,6 @@ module.exports = {
             return sso;
         }
 
-        server.methods.registerView('signin/SSOError.svelte');
-
         server.route({
             method: ['GET'],
             path: `/sso/{teamId}`,

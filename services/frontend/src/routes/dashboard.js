@@ -11,7 +11,6 @@ module.exports = {
     name: 'routes/dashboard',
     version: '1.0.0',
     register: async server => {
-        server.methods.registerView('dashboard/Index.svelte');
         const config = server.methods.config('frontend');
 
         const sidebarBoxFunctions = [];
@@ -21,37 +20,6 @@ module.exports = {
         });
 
         const numCharts = 9;
-
-        const sidebarBoxViews = [
-            {
-                id: 'dashboard/sidebar/active-team',
-                view: 'dashboard/sidebar/ActiveTeam.svelte'
-            },
-            {
-                id: 'dashboard/sidebar/email-activation',
-                view: 'dashboard/sidebar/EmailActivation.svelte'
-            },
-            {
-                id: 'dashboard/sidebar/email-setup',
-                view: 'dashboard/sidebar/EmailSetup.svelte'
-            },
-            {
-                id: 'dashboard/sidebar/pending-invites',
-                view: 'dashboard/sidebar/PendingTeamInvites.svelte'
-            },
-            {
-                id: 'dashboard/sidebar/changelog',
-                view: 'dashboard/sidebar/Changelog.svelte'
-            }
-        ];
-
-        sidebarBoxViews.forEach(({ id, view }) => {
-            server.methods.registerViewComponent({
-                id,
-                page: 'dashboard/Index.svelte',
-                view
-            });
-        });
 
         server.methods.registerDashboardSidebarBoxes(async request => {
             const user = request.auth.artifacts;

@@ -3,8 +3,6 @@ const Joi = require('joi');
 module.exports = {
     name: 'routes/web-components',
     register: async server => {
-        server.methods.registerView('web-components/Index.svelte');
-
         server.route({
             method: 'GET',
             path: '/',

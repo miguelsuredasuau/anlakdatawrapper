@@ -7,17 +7,11 @@ const ejs = require('ejs');
 const jsesc = require('jsesc');
 const { join, relative } = require('path');
 const { readFile } = require('fs').promises;
-const { readFileSync } = require('fs');
 
 const baseViewDir = join(__dirname, '../../views');
 const buildViewDir = join(__dirname, '../../../build/views');
 
-const views = new Set();
-const viewComponents = new Map();
-
 const templateCache = new MemoryCache();
-const viewCache = new MemoryCache();
-const ssrFuncCache = new MemoryCache();
 
 /**
  * Global window for dompurify, because we bundle it without jsdom to make the bundles smaller.
@@ -25,92 +19,48 @@ const ssrFuncCache = new MemoryCache();
 global.window = new JSDOM('').window;
 
 /**
- * Registers a view with rollup.
+ * Read a template file (e.g. base.ejs).
+ *
+ * @param {string} file - File path
+ * @param {Object} opt - Options
+ * @param {boolean} [opt.useCache=true] - Use an in-memory cache of the template content
  */
-function registerView(page) {
-    views.add(page);
-}
-
-/**
- * Registers a view component with rollup.
- */
-function registerViewComponent({ id, page, view }) {
-    viewComponents.set(id, { id, page, view });
-}
-
 function getTemplate(file, { useCache = true }) {
     return templateCache.withCache(file, () => readFile(join(baseViewDir, file), 'utf-8'), {
         useCache
     });
 }
 
-const VIEW_FILE_TYPES = new Map([
-    ['csr', '.js'],
-    ['csrMap', '.js.map'],
-    ['ssr', '.ssr.js']
-]);
-
 /**
- * Reads a view file compiled by rollup.
+ * Loads a view SSR module from a file compiled by rollup.
  *
- * Used also by the '/libs' route to serve compiled views.
- *
- * @param {string} page - View name, for example 'Create.svelte'.
- * @param {string} type - File type. Allowed values: 'csr', 'csrMap', 'ssr'.
+ * @param {string} page - View name; for example 'Create.svelte'
  */
-function getView(page, type) {
-    return viewCache.withCache(page + ':' + type, () => {
-        const build = join(buildViewDir, page);
-        const ext = VIEW_FILE_TYPES.get(type);
-        if (!ext) {
-            throw new Error(`Invalid view file type ${type}`);
-        }
-        try {
-            return readFileSync(build + ext, 'utf-8');
-        } catch (e) {
-            if (e.code === 'ENOENT') {
-                let message = `Compiled view files for \`${page}\` were not found`;
-                if (views.has(page)) {
-                    message += ', but the view has been registered. ';
-                    message += 'Have you run `npm run build` in `services/frontend`?';
-                } else {
-                    message += ' and the view has not been registered. ';
-                    message += `Have you called \`server.methods.registerView('${page}')\` in your code?`;
-                }
-                throw new Error(message);
-            }
-            throw e;
-        }
-    });
+function requireViewSSR(page) {
+    return require(join(buildViewDir, page + '.ssr.js'));
 }
 
 /**
- * Create executable SSR function for passed `page` and `ssr` code string.
+ * Invalidates module cache for passed view.
  *
- * @param {string} page - View name, for example 'Create.svelte'.
- * @param {string} ssr - SSR code as a string.
- * @returns {Function}
+ * @param {string} page - View name; for example 'Create.svelte'
  */
-function getSSRFunc(page, ssr) {
-    return ssrFuncCache.withCache(page, () => new Function(ssr + ';return App'));
+function invalidateViewSSR(page) {
+    delete require.cache[require.resolve(join(buildViewDir, page + '.ssr.js'))];
 }
 
+/**
+ * Watches the build/views dir for changes and then invalidates view caches and notifies browser.
+ */
 function watchViews(wsClients) {
     const chokidar = require('chokidar');
-    // watch build/views directory for changes
-    chokidar.watch(buildViewDir).on('all', (event, filename) => {
-        if (event === 'change' && filename.endsWith('.svelte.js')) {
-            const page = relative(buildViewDir, filename).replace('.js', '');
-            // Wait a bit more to make sure both csr/ssr have been compiled. Perhaps this isn't
-            // necessary (if rollup always builds csr after ssr has been built).
-            setTimeout(() => {
-                // invalidate the view and ssr func caches
-                VIEW_FILE_TYPES.forEach((ext, type) => viewCache.drop(page + ':' + type));
-                ssrFuncCache.drop(page);
-                process.stdout.write(`Invalidated csr/ssr cache for ${page}\n`);
-                // notify page
-                wsClients.forEach(ws => ws.send(JSON.stringify({ page })));
-            }, 300);
+    chokidar.watch(buildViewDir).on('all', (event, path) => {
+        if (event === 'change' && path.endsWith('.svelte.ssr.js')) {
+            const relPath = relative(buildViewDir, path);
+            const page = relPath.replace(/\.ssr\.js$/, '');
+            invalidateViewSSR(page);
+            process.stdout.write(`Invalidated view SSR cache for ${page}\n`);
+            wsClients.forEach(ws => ws.send(JSON.stringify({ page })));
         }
     });
 }
@@ -126,9 +76,9 @@ class SvelteView {
             const DW_DEV_MODE = this.server.methods.isDevMode();
             const config = this.server.methods.config();
 
-            let ssr;
+            let app;
             try {
-                ssr = await getView(page, 'ssr');
+                app = requireViewSSR(page);
             } catch (e) {
                 this.server.log(['sentry'], e);
                 const template = await getTemplate('error.ejs', { useCache: !DW_DEV_MODE });
@@ -140,7 +90,6 @@ class SvelteView {
                 });
                 return output;
             }
-            const ssrFunc = await getSSRFunc(page, ssr);
 
             for (const key in context.stores) {
                 // resolve store values in case they are async
@@ -148,77 +97,55 @@ class SvelteView {
             }
             context.props.stores = context.stores;
 
-            try {
-                const { css, html, head } = ssrFunc().render(context.props);
+            const { css, html, head } = app.render(context.props);
 
-                // remove stores that we already have in client-side cache
-                Object.keys(context.storeCached).forEach(key => {
-                    context.props.stores[key] = {};
-                });
+            // remove stores that we already have in client-side cache
+            Object.keys(context.storeCached).forEach(key => {
+                context.props.stores[key] = {};
+            });
 
-                const template = await getTemplate('base.ejs', { useCache: !DW_DEV_MODE });
-                const { user } = context.stores;
-                const output = ejs.render(template, {
-                    HTML_CLASS: context.htmlClass || '',
-                    ANALYTICS: {
-                        uid: user.isGuest ? 'guest' : user.id,
-                        ...(context.analytics || {})
-                    },
-                    SSR_HEAD: head,
-                    SSR_CSS: css.code,
-                    NODE_ENV: process.env.NODE_ENV,
-                    SSR_HTML: html,
-                    GITHEAD: this.server.app.GITHEAD,
-                    PAGE: page,
-                    PAGE_PROPS: jsesc(JSON.stringify(context.props), {
-                        isScriptContext: true,
-                        json: true,
-                        wrap: true
-                    }),
-                    DW_DEV_MODE,
-                    STORE_HASHES: jsesc(JSON.stringify(context.storeHashes), {
-                        isScriptContext: true,
-                        json: true,
-                        wrap: true
-                    }),
-                    DW_DOMAIN: config.api.domain,
-                    MATOMO:
-                        config.frontend.matomo && !context.disableMatomo
-                            ? config.frontend.matomo
-                            : null,
-                    SENTRY: (config.frontend.sentry && config.frontend.sentry.clientSide) || null,
-                    FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico',
-                    CORE_BEFORE_HEAD: await this.server.methods.getCustomHTML(
-                        'core/beforeHead',
-                        {}
-                    ),
-                    CORE_AFTER_HEAD: await this.server.methods.getCustomHTML('core/afterHead', {}),
-                    CORE_BEFORE_BODY: await this.server.methods.getCustomHTML(
-                        'core/beforeBody',
-                        {}
-                    ),
-                    CORE_AFTER_BODY: await this.server.methods.getCustomHTML('core/afterBody', {})
-                });
-                return output;
-            } catch (err) {
-                const errLines = err.stack.split('\n');
-                const errLine = errLines.find(d => d.includes('at eval (eval at runtime'));
-
-                if (errLine) {
-                    const [, line] = errLine.match(/<anonymous>:(\d+):(\d+)/);
-                    const lines = ssr.split('\n');
-                    console.error('Error near:\n');
-                    console.error(lines.slice(+line - 3, +line + 4)); // before line
-                }
-                throw err;
-            }
+            const template = await getTemplate('base.ejs', { useCache: !DW_DEV_MODE });
+            const { user } = context.stores;
+            const output = ejs.render(template, {
+                HTML_CLASS: context.htmlClass || '',
+                ANALYTICS: {
+                    uid: user.isGuest ? 'guest' : user.id,
+                    ...(context.analytics || {})
+                },
+                SSR_HEAD: head,
+                SSR_CSS: css.code,
+                NODE_ENV: process.env.NODE_ENV,
+                SSR_HTML: html,
+                GITHEAD: this.server.app.GITHEAD,
+                PAGE: page,
+                PAGE_PROPS: jsesc(JSON.stringify(context.props), {
+                    isScriptContext: true,
+                    json: true,
+                    wrap: true
+                }),
+                DW_DEV_MODE,
+                STORE_HASHES: jsesc(JSON.stringify(context.storeHashes), {
+                    isScriptContext: true,
+                    json: true,
+                    wrap: true
+                }),
+                DW_DOMAIN: config.api.domain,
+                MATOMO:
+                    config.frontend.matomo && !context.disableMatomo
+                        ? config.frontend.matomo
+                        : null,
+                SENTRY: (config.frontend.sentry && config.frontend.sentry.clientSide) || null,
+                FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico',
+                CORE_BEFORE_HEAD: await this.server.methods.getCustomHTML('core/beforeHead', {}),
+                CORE_AFTER_HEAD: await this.server.methods.getCustomHTML('core/afterHead', {}),
+                CORE_BEFORE_BODY: await this.server.methods.getCustomHTML('core/beforeBody', {}),
+                CORE_AFTER_BODY: await this.server.methods.getCustomHTML('core/afterBody', {})
+            });
+            return output;
         };
     }
     context(request) {
         return context(request);
-    }
-    cacheAllViews() {
-        views.forEach(page => VIEW_FILE_TYPES.forEach((ext, type) => getView(page, type)));
     }
 }
 
@@ -227,20 +154,6 @@ module.exports = {
     version: '1.0.0',
     async register(server) {
         server.app.SvelteView = new SvelteView(server);
-
-        server.method('getView', getView);
-        server.method('registerView', registerView);
-        server.method('registerViewComponent', registerViewComponent);
-
-        // Cache all views in memory right after the server starts to prevent a situation that:
-        // 1. We start the frontend server.
-        // 2. Then sometime later we run `npm run build`.
-        // 3. And then a user requests a view that has not been cached yet at the very moment that
-        //    rollup is compiling that view. In this case the reading of the compiled view file
-        //    could fail, because maybe the file is temporarily deleted or only partially written.
-        server.events.on('start', () => {
-            server.app.SvelteView.cacheAllViews();
-        });
 
         if (server.methods.isDevMode()) {
             const wsClients = new Set();

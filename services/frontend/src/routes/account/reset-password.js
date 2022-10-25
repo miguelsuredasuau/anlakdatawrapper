@@ -7,8 +7,6 @@ module.exports = {
     register: async server => {
         const User = server.methods.getModel('user');
 
-        server.methods.registerView('account/ResetPassword.svelte');
-
         server.route({
             method: 'GET',
             path: '/{token}',

@@ -13,8 +13,5 @@ module.exports = {
                 return h.view('plugins/my-new-plugin/HelloWorld.svelte', { props });
             }
         });
-
-        // pre-compile Svelte view on frontend server statup
-        server.methods.registerView('plugins/my-new-plugin/HelloWorld.svelte');
     }
 };

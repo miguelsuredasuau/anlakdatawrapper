@@ -150,8 +150,6 @@ module.exports = {
             );
         });
 
-        server.methods.registerView('account/Settings.svelte');
-
         server.route({
             method: 'GET',
             path: '/{pageId?}',

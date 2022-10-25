@@ -73,8 +73,5 @@ module.exports = {
                 prefix: '/v2/web-components'
             }
         });
-
-        server.methods.registerView('Error.svelte');
-        server.methods.registerView('_partials/svelte2/Svelte2Wrapper.element.svelte');
     }
 };

@@ -48,8 +48,6 @@ module.exports = {
             }
         });
 
-        server.methods.registerView('signin/Index.svelte');
-
         await server.register(require('./oauth'), {});
         await server.register(require('./sso'), {});
     }

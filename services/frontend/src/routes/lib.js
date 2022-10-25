@@ -1,8 +1,8 @@
-const path = require('path');
-const fs = require('fs-extra');
-const chartCore = require('@datawrapper/chart-core');
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
+const chartCore = require('@datawrapper/chart-core');
+const fs = require('fs-extra');
+const path = require('path');
 const { allScopes } = require('@datawrapper/service-utils/l10n');
 
 const ALLOWED_EXTS = [
@@ -234,51 +234,14 @@ module.exports = {
                     auth: false,
                     validate: {
                         params: Joi.object({
-                            file: Joi.string()
-                                .required()
-                                .pattern(/\.(js|map)$/)
+                            file: FILE_SCHEMA
                         })
                     }
                 },
-                async handler(request, h) {
-                    const { file } = request.params;
-                    const { anonymous } = request.query;
-                    const isJS = file.endsWith('.js');
-                    const isSvelte = file.includes('.svelte.js');
-                    const isJSMap = file.endsWith('.js.map');
-                    const page = isSvelte
-                        ? file.replace(/\.svelte\.js(\.map)?/, '.svelte')
-                        : isJS
-                        ? file
-                        : `${file}.js`;
-                    // check that view is inside /src/views
-                    const pathViews = path.resolve(__dirname, '../views');
-                    const relPath = path.relative(pathViews, path.resolve(pathViews, page));
-                    if (relPath.startsWith('..')) {
-                        return Boom.forbidden();
+                handler: {
+                    directory: {
+                        path: 'build/views'
                     }
-                    let code;
-                    try {
-                        if (isJSMap) {
-                            code = (await server.methods.getView(page, 'csrMap')).replace(
-                                /\/\/# sourceMappingURL=.*\.js\.map/,
-                                `//# sourceMappingURL=/lib/csr/${page}.js.map`
-                            );
-                        } else {
-                            code = await server.methods.getView(page, 'csr');
-                        }
-                    } catch (e) {
-                        return Boom.notFound();
-                    }
-                    return h
-                        .response(
-                            anonymous
-                                ? code
-                                      .replace('define("App",', 'define(')
-                                      .replace("define('App',", 'define(')
-                                : code
-                        )
-                        .header('Content-Type', 'application/javascript');
                 }
             }
         ]);

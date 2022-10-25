@@ -6,8 +6,6 @@ module.exports = {
     async register(server) {
         const User = server.methods.getModel('user');
 
-        server.methods.registerView('account/Invite.svelte');
-
         server.route({
             method: 'GET',
             path: '/{token}',

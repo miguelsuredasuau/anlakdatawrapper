@@ -1,28 +1,23 @@
 const alias = require('@rollup/plugin-alias');
 const commonjs = require('@rollup/plugin-commonjs');
+const fastGlob = require('fast-glob');
 const json = require('@rollup/plugin-json');
 const replace = require('@rollup/plugin-replace');
 const svelte = require('rollup-plugin-svelte');
 const sveltePreprocess = require('svelte-preprocess');
 const { default: resolve } = require('@rollup/plugin-node-resolve');
 const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
-const { join } = require('path');
+const { join, relative } = require('path');
+const { readFile } = require('fs/promises');
 const { terser } = require('rollup-plugin-terser');
 
 const configPath = findConfigPath();
-const config = require(configPath);
 
-let production = !process.env.ROLLUP_WATCH;
-let sourcemap;
-let modes;
-if (process.env.NODE_ENV === 'test') {
-    production = false;
-    sourcemap = false;
-    modes = ['ssr'];
-} else {
-    sourcemap = true;
-    modes = ['ssr', 'csr'];
-}
+const sourceDir = 'src/views';
+const outputDir = process.env.OUTPUT_DIR || 'build/views';
+
+const production = !process.env.ROLLUP_WATCH;
+const modes = process.env.NODE_ENV === 'test' ? ['ssr'] : ['ssr', 'csr'];
 
 function onwarn(warning, handler) {
     if (
@@ -36,91 +31,16 @@ function onwarn(warning, handler) {
 }
 
 /**
- * Figure out which views and view components exist in all frontend routes and plugins.
+ * Creates a rollup input object for passed views.
  *
- * This function creates a fake Hapi server and then registers all frontend routes and plugins with
- * this fake server. The server doesn't do anything other than collect which views and view
- * components the routes and plugins tried to register:
- * - Views are collected by spying on `server.methods.registerView()`.
- * - View components are collected by spying on `server.methods.registerViewComponent()`.
- *
- * @returns {Object} res - Result
- * @returns {string[]} res.views - Array of view names
- * @returns {Object[]} res.viewComponents - Array of view component objects
+ * @param {Object} opt - Options
+ * @param {string[]} opt.views - View names
+ * @param {string} opt.mode - Pass "csr" to compile the component for server-side rendering or "ssr" for server-side rendering
+ * @param {Object} [opt.replacements={}] - Values to replace in all view files
+ * @return {Object} Rollup input object
  */
-async function inspectApp() {
-    const views = [];
-    const viewComponents = [];
-
-    const server = {
-        app: {
-            event: {},
-            events: {
-                emit() {}
-            }
-        },
-        logger: {
-            error() {},
-            info() {},
-            warn() {}
-        },
-        cache() {},
-        method() {},
-        methods: new Proxy(
-            {
-                config(key) {
-                    return key ? config[key] : config;
-                },
-                isDevMode() {
-                    return true;
-                },
-                createAPI() {
-                    return async function () {};
-                },
-                registerView(view) {
-                    views.push(view);
-                },
-                registerViewComponent(viewComponent) {
-                    viewComponents.push(viewComponent);
-                }
-            },
-            {
-                /**
-                 * Allows calling a method of any name. The method will always return undefined.
-                 */
-                get(target, prop) {
-                    if (target[prop]) {
-                        return Reflect.get(...arguments);
-                    }
-                    return function () {};
-                }
-            }
-        ),
-        async register({ plugin, register, options }) {
-            const registerFunc = plugin?.register || register;
-            await registerFunc(server, options);
-        },
-        route() {}
-    };
-
-    const ORM = require('@datawrapper/orm');
-    await ORM.create(config);
-
-    await server.register(require('./src/routes/index.js'));
-    await server.register(require('./src/utils/plugin-loader.js'));
-
-    return { views, viewComponents };
-}
-
-/**
- * Create a rollup input object for passed `view` component.
- *
- * @param {string} view - Path to a view component .svelte file.
- * @param {Object[]} viewComponents - Array of view component objects
- * @param {string} mode - Should the component be compiled for server-side or client-side use? Accepted values: "ssr" or "csr".
- * @return {Object} Rollup input object.
- */
-function createInput(view, viewComponents, mode) {
+function createViewInput({ views, mode, replacements = {} }) {
+    const ext = mode === 'ssr' ? '.ssr.js' : '.js';
     return {
         external: [
             '/lib/codemirror/lib/codemirror',
@@ -139,38 +59,58 @@ function createInput(view, viewComponents, mode) {
             '/lib/codemirror/keymap/sublime',
             '/lib/jsonlint/jsonlint.js'
         ],
-        input: join('src/utils/svelte-view/View.svelte'),
+        input: views.map(view => join(sourceDir, view.replace(/\.svelte$/, '.view.svelte'))),
         output: {
-            sourcemap,
-            format: mode === 'ssr' || view.endsWith('.element.svelte') ? 'iife' : 'amd',
-            name: 'App',
+            dir: outputDir,
+            sourcemap: mode !== 'ssr',
+            format: mode === 'ssr' ? 'cjs' : 'amd',
             amd: {
-                id: view.endsWith('.svelte') ? 'App' : null // view
+                forceJsExtensionForImports: true
             },
-            file: `build/views/${view}${mode === 'ssr' ? '.ssr' : ''}.js`
+            exports: 'default',
+            /**
+             * This function makes sure build/views has the same structure as src/views.
+             *
+             * Because by default rollup writes all output files in one flat directory.
+             */
+            entryFileNames({ facadeModuleId, isEntry }) {
+                if (isEntry) {
+                    const relPath = relative(__dirname, facadeModuleId);
+
+                    const viewMatch = new RegExp(`^${sourceDir}/(?<path>.+)\\.view\\.svelte`).exec(
+                        relPath
+                    );
+                    if (viewMatch) {
+                        return viewMatch.groups['path'] + '.svelte' + ext;
+                    }
+
+                    const pluginViewMatch = relPath.match(
+                        /^..\/..\/plugins\/(?<plugin>[^/]+)\/src\/frontend\/views\/(?<path>.+)\.view\.svelte/
+                    );
+                    if (pluginViewMatch) {
+                        return join(
+                            '_plugins',
+                            pluginViewMatch.groups['plugin'],
+                            pluginViewMatch.groups['path'] + '.svelte' + ext
+                        );
+                    }
+                }
+                return `[name]${ext}`;
+            },
+            chunkFileNames: `_chunks/${!production ? '[name]-' : ''}[hash]${ext}`
         },
         plugins: [
             replace({
-                values: {
-                    __view__: join('../../views', view),
-                    IMPORT_VIEW_COMPONENTS: viewComponents
-                        .map(({ id, view }, i) => {
-                            const viewVar = `view_component_${i}`;
-                            const viewPath = join('../../views', view);
-                            return [
-                                `import ${viewVar} from '${viewPath}';`,
-                                `viewComponents.set('${id}', ${viewVar});`
-                            ].join('\n');
-                        })
-                        .join('\n')
-                },
-                preventAssignment: true
+                values: replacements,
+                preventAssignment: true,
+                delimiters: ['', '']
             }),
             alias({
                 entries: {
-                    _layout: join(__dirname, 'src/views/_layout'),
-                    _partials: join(__dirname, 'src/views/_partials'),
-                    _plugins: join(__dirname, 'src/views/_plugins'),
+                    _layout: join(__dirname, join(sourceDir, '_layout')),
+                    _partials: join(__dirname, join(sourceDir, '_partials')),
+                    _plugins: join(__dirname, join(sourceDir, '_plugins')),
+                    _utils: join(__dirname, join(sourceDir, '..', 'utils')),
                     ...(mode === 'ssr' && {
                         '@datawrapper/shared/decodeHtml.js':
                             '@datawrapper/shared/decodeHtml.ssr.js',
@@ -186,8 +126,48 @@ function createInput(view, viewComponents, mode) {
                     dev: !production,
                     generate: mode === 'ssr' ? 'ssr' : 'dom',
                     hydratable: true,
+                    accessors: true
+                },
+                preprocess: sveltePreprocess(),
+                emitCss: false
+            }),
+            resolve({
+                browser: true,
+                dedupe: ['svelte']
+            }),
+            commonjs(),
+            production && mode !== 'ssr' && terser()
+        ],
+        onwarn
+    };
+}
+
+/**
+ * Creates a rollup input object for passed custom element.
+ *
+ * @param {Object} opt - Options
+ * @param {string} opt.customElement - Custom element name
+ * @param {string} opt.mode - Pass "csr" to compile the component for server-side rendering or "ssr" for server-side rendering
+ * @return {Object} Rollup input object
+ */
+function createCustomElementInput({ customElement, mode }) {
+    const ext = mode === 'ssr' ? '.ssr.js' : '.js';
+    return {
+        input: join(sourceDir, customElement),
+        output: {
+            file: join(outputDir, customElement + ext),
+            sourcemap: mode !== 'ssr',
+            format: 'iife',
+            name: 'App'
+        },
+        plugins: [
+            svelte({
+                compilerOptions: {
+                    dev: !production,
+                    generate: mode === 'ssr' ? 'ssr' : 'dom',
+                    hydratable: true,
                     accessors: true,
-                    customElement: view.endsWith('.element.svelte')
+                    customElement: true
                 },
                 preprocess: sveltePreprocess(),
                 emitCss: false
@@ -205,22 +185,91 @@ function createInput(view, viewComponents, mode) {
                     return undefined;
                 }
             }),
-            production && terser()
+            production && mode !== 'ssr' && terser(),
+            commonjs()
         ],
         onwarn
     };
 }
 
-module.exports = inspectApp().then(({ views, viewComponents }) =>
-    views
-        .filter(view => !process.env.TARGET || view.startsWith(process.env.TARGET))
-        .flatMap(view =>
-            modes.map(ssr =>
-                createInput(
-                    view,
-                    viewComponents.filter(c => c.page === view),
-                    ssr
-                )
-            )
-        )
-);
+async function main() {
+    // Find all views by searching for *.view.svelte files.
+    const views = (await fastGlob(join(sourceDir, '**/*.view.svelte')))
+        .map(path => relative(sourceDir, path).replace(/\.view\.svelte$/, '.svelte'))
+        .filter(view => !process.env.TARGET || view.startsWith(process.env.TARGET));
+
+    // Find all custom elements by searching for *.element.svelte files.
+    const customElements = (await fastGlob(join(sourceDir, '**/*.element.svelte')))
+        .map(path => relative(sourceDir, path))
+        .filter(
+            customElement => !process.env.TARGET || customElement.startsWith(process.env.TARGET)
+        );
+
+    // Find all view components by reading plugin.json files.
+    const config = require(configPath);
+    const pluginRoot = config.general.localPluginRoot || join(process.cwd(), '../plugins');
+    const viewComponents = [];
+    for (const pluginName of Object.keys(config.plugins || [])) {
+        let pluginJSONData;
+        try {
+            pluginJSONData = await readFile(join(pluginRoot, pluginName, 'plugin.json'));
+        } catch (e) {
+            if (e.code === 'ENOENT') {
+                // Skip the plugin, because it has no plugin.json file.
+                continue;
+            }
+            throw e;
+        }
+        const pluginJSON = JSON.parse(pluginJSONData);
+        if (Array.isArray(pluginJSON?.viewComponents)) {
+            viewComponents.push(...pluginJSON.viewComponents);
+        }
+    }
+
+    // Inject view component import statements into view files.
+    const viewComponentReplacements = Object.fromEntries(
+        views.map(view => [
+            `// ROLLUP IMPORT VIEW COMPONENTS ${view}`,
+            viewComponents
+                .filter(({ page }) => page === view)
+                .map(({ id, view }, i) => {
+                    const viewVar = `view_component_${i}`;
+                    const viewPath = join('../../views', view);
+                    return [
+                        `import ${viewVar} from '${viewPath}';`,
+                        `viewComponents.set('${id}', ${viewVar});`
+                    ].join('\n');
+                })
+                .join('\n')
+        ])
+    );
+
+    // Create rollup inputs.
+    const inputs = [];
+    for (const mode of modes) {
+        // Create rollup inputs for views.
+        if (views.length) {
+            inputs.push(
+                createViewInput({
+                    views,
+                    mode,
+                    replacements: viewComponentReplacements
+                })
+            );
+        }
+        // Create rollup inputs for custom elements.
+        if (customElements.length) {
+            for (const customElement of customElements) {
+                inputs.push(
+                    createCustomElementInput({
+                        customElement,
+                        mode
+                    })
+                );
+            }
+        }
+    }
+    return inputs;
+}
+
+module.exports = main().then();

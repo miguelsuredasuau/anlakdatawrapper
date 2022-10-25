@@ -4,7 +4,7 @@ import { JSDOM } from 'jsdom';
 
 chai.use(chaiDOM);
 
-const VIEW_REGEXP = /<script type="text\/javascript" src="\/lib\/csr\/(?<view>[\w/-]+\.svelte)\.js/;
+const VIEW_REGEXP = /require\(\['\/lib\/csr\/(?<view>[\w/-]+\.svelte)\.js/;
 
 /**
  * Create a HTTP headers object for session authentication of passed `userObj`.

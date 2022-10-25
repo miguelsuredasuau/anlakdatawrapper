@@ -6,8 +6,6 @@ module.exports = {
     name: 'datawrapper-invite',
     version: '1.0.0',
     async register(server) {
-        server.methods.registerView('account/DatawrapperInvite.svelte');
-
         server.route({
             method: 'GET',
             path: '/{token}',

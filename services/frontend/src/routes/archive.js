@@ -12,8 +12,6 @@ module.exports = {
     register: async server => {
         const config = server.methods.config();
 
-        server.methods.registerView('archive/Index.svelte');
-
         const Folder = server.methods.getModel('folder');
         const Team = server.methods.getModel('team');
         const Chart = server.methods.getModel('chart');

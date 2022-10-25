@@ -1,13 +1,15 @@
 # Datawrapper Frontend
 
-This repository contains the `frontend` service for Datawrapper. It is intended to be run together with other Datawrapper components.
+This directory contains the `frontend` service for Datawrapper. It is a Hapi server that serves the
+[Datawrapper web app](https://app.datawrapper.de/). It returns server-side rendered Svelte
+components (called _views_), which are then hydrated on the client side.
 
 ## Usage
 
 We use rollup to compile our Svelte views. The compiled files are stored in `build/views`. Example:
 
 - `build/views/dashboard/Index.svelte.js` is a view compiled for client-side rendering; it is served
-  by the [src/routes/lib.js](/lib/csr/{file*}) route.
+  by the [/lib/csr/{file*}](src/routes/lib.js) route.
 - `build/views/dashboard/Index.svelte.ssr.js` is a view compiled for server-side rendering; it is
   loaded in the `/dashboard` route using our [Svelte view adapter](src/utils/svelte-view/index.js)).
 
@@ -20,7 +22,7 @@ npm run build
 or automatically when the Svelte files change:
 
 ```shell
-npm run watch
+npm run dev
 ```
 
 ## Development
@@ -51,7 +53,7 @@ To run all unit tests against a locally running Datawrapper instance, run:
 npm test
 ```
 
-Or you can run the tests in a docker compose stack that starts its own database and api:
+Or you can run the tests in a docker compose environment that starts its own database and api:
 
 ```shell
 make test
@@ -103,7 +105,7 @@ Example setup: [src/views/archive/Index.test.mjs](src/views/archive/Index.test.m
 
 ### Server-side unit tests
 
-These unit tests test the frontend hapi server and its routes. They require a running database and
+These unit tests test the frontend Hapi server and its routes. They require a running database and
 api. Therefore, you have to run them either against a locally running Datawrapper instance:
 
 ```shell
@@ -136,12 +138,14 @@ or:
 npm run test:server-rollup-watch
 ```
 
-## Quick introduction to the new Svelte views
+## Views
 
-In routes we can use Svelte-templates like this:
+Views are Svelte components that render whole pages of the app. They live inside `src/view`. They
+are served by Hapi server routes using the `h.view()` method, which uses our [Svelte view
+adapter](src/utils/svelte-view/index.js). Example:
 
 ```js
-// e.g., src/routes/hello-world.js
+// src/routes/hello-world.js
 server.route({
     path: '/',
     method: 'GET',
@@ -152,20 +156,39 @@ server.route({
 });
 ```
 
-The views are simple Svelte3 components that live inside `src/views`
-
 ```svelte
 <!-- src/views/HelloWorld.svelte -->
 <script>
     export let name = 'world';
 
     function knock() {
-        name = 'Who\\'s there?';
+        name = "Who's there?";
     }
 </script>
 
 <h1 on:click="{knock}">Hello {name}</h1>
 ```
+
+There also needs to be a `.view.svelte` boilerplate component that rollup will use as the entry
+point. It wraps the view in [Context](src/utils/svelte-view/Context.svelte), which provides stores,
+common libraries, translations and [view components](#view-components).
+
+```svelte
+<script>
+    import Context from '_utils/svelte-view/Context.svelte';
+    import View from './HelloWorld.svelte';
+
+    export let stores;
+
+    const viewComponents = new Map();
+
+    // ROLLUP IMPORT VIEW COMPONENTS HelloWorld.svelte
+</script>
+
+<Context view={View} {stores} {viewComponents} {...$$restProps} />
+```
+
+### Authentication
 
 You can use the following authentication strategies to specify who can access the route:
 
@@ -174,7 +197,7 @@ You can use the following authentication strategies to specify who can access th
 - `'guest'` - a valid session is needed (including guest sessions)
 - `false` - no restrictions
 
-```jsx
+```js
 server.route({
     path: '/users-only',
     method: 'GET',
@@ -187,20 +210,21 @@ server.route({
 
 ### Server-side rendering + client-side hydration
 
-Each view is compiled twice, so we can render it server-side and then „hydrate“ it client-side. The client-side code is served via `/lib/csr/{file}.svelte.js`.
+All views are compiled by rollup during `npm run build` or `npm run dev`. The compiled files are
+stored in `build/views`. Each view is compiled twice: for server-side and client-side
+rendering. Example:
 
-### View registration
-
-Rollup needs to know which Svelte views exist in the whole frontend and plugins, so that it knows
-which files it should compile. We use `server.methods.registerView()` and
-`server.methods.registerViewComponent()` to register a view or view component with rollup and
-therefore have it compiled when `npm run build` or `npm run watch` runs.
+- `build/views/dashboard/Index.svelte.js` is a view compiled for client-side rendering; it is served
+  by the [/lib/csr/{file*}](src/routes/lib.js) route.
+- `build/views/dashboard/Index.svelte.ssr.js` is a view compiled for server-side rendering; it is
+  loaded in the `/dashboard` route using our [Svelte view adapter](src/utils/svelte-view/index.js)).
 
 ### Layouts
 
-Views want to re-use "layouts". I decided to move all of this logic into Svelte, for maximum flexibility. Meaning, the view component is always the "root" component which imports as many layout components as it wants. Also layouts can "extend" other layouts etc.
+Layouts are reusable components that views can import. Layouts define slots. into which views can
+put their content. Layouts can also extend other layouts. Example:
 
-```html
+```svelte
 <!-- src/views/HelloWorld.svelte -->
 <script>
     import AdminPageLayout from 'layouts/AdminPageLayout.svelte';
@@ -231,9 +255,12 @@ Svelte views can now use these stores like regular Svelte stores:
 <p>{__('team / invite / intro')}</p>
 ```
 
-## Plugins!
+## Plugins
 
-Plugins can hook into the frontend service and add their own views or view components. To do so a plugin needs to do two things: provide a `frontend.js` (or `frontend.cjs`, the plugin `package.json` has `type` set to `module`) that acts as hapi plugin interface (similar to our api plugins), and store Svelte views into `src/frontend/views/`.
+Plugins can hook into the frontend service and add their own views or [view
+components](#view-components). To do so a plugin needs to do two things: provide a `frontend.js` (or
+`frontend.cjs`, the plugin `package.json` has `type` set to `module`) that acts as Hapi plugin
+interface (similar to our api plugins), and store Svelte views into `src/frontend/views/`.
 
 Example plugin `frontend.cjs`
 
@@ -289,7 +316,9 @@ This works because of two changes:
 
 ### Server-side event hooks
 
-Frontend plugins can not only define routes but also use our event hook system to modify the frontend server. Here's an example of a plugin using a hook to add an entry to the admin pages navigation:
+Frontend plugins can not only define routes but also use our event hook system to modify the
+frontend server. Here's an example of a plugin using a hook to add an entry to the admin pages
+navigation:
 
 ```jsx
 // admin-users/frontend.cjs
@@ -314,13 +343,92 @@ module.exports = {
             //...
 ```
 
-This is the exact system we’re using in our API server, but I’m open to adjustments.
-Frontend plugins
+This is the same event system we use in our API server.
+
+### View componennts
+
+View components can be used to dynamically load plugin-provided Svelte components into core
+views. Imagine a situation where a core view (e.g. the publish step) wants to allow a plugin to add
+new functionality (e.g. the PDF export). Since the Publish step's Svelte component "doesn't know"
+about the PDF export, we can't just import its Svelte source files. But we can use view components.
+
+A view component needs to be defined in plugin's `plugin.json` file:
+
+```
+{
+    ...
+    "viewComponents": [
+        {
+            // the id we want to identify the component by
+            "id": "publish/export-pdf",
+            // the view in which the component should be imported
+            "page": "edit/Index.svelte",
+            // the Svelte source of the view component
+            "view": "_plugins/export-pdf/ExportPDFUI.svelte"
+        }
+    ]
+}
+
+Then a core view can dynamically import the view component using the `ViewComponent` partial:
+
+```svelte
+<script>
+    import ViewComponent from '_partials/ViewComponent.svelte';
+</script>
+
+<ViewComponent id="publish/export-pdf" {props} {__} />
+```
+
+Internally, the view component import statements are injected into the core view Svelte files by
+rollup before it compiles the files. Then the imported view components are store in the
+`viewComponents` context, from which they're loaded by
+[ViewComponent](src/views/_partials/ViewComponent.svelte). Search the project for
+`ROLLUP IMPORT VIEW COMPONENTS` to find the relevant code.
+
+See [our dashboard](src/views/dashboard/Index.svelte) for a live example.
+
+### Client-side event hooks
+
+Sometimes a view component provided by a plugin needs to react to client-side events, e.g. to
+perform an action once the user publishes a chart. To achieve this, two things need to happen:
+
+1. The view index to which the view component is registered to needs to dispatch the event:
+
+    ```svelte
+    <-- src/views/edit/Index.svelte -->
+    <script>
+    import { getContext } from 'svelte';
+    const contextEvents = getContext('events');
+
+    function onPublish(event) {
+        contextEvents.dispatch('custom-event', event.detail);
+    }
+    </script>
+
+    <PublishStep on:publish={onPublish} />
+    ```
+
+2. Then the view component can listen to these events, no matter where it's loaded:
+
+    ```svelte
+    <!-- plugins/foo/src/frontend/views/Custom.svelte -->
+    <script>
+        import { onMount, getContext } from 'svelte';
+        const contextEvents = getContext('events');
+
+        onMount(() => {
+            contextEvents.on('custom-event', event => {
+                console.log('custom event happened', event.detail);
+            });
+        });
+    </script>
+    ```
+
 ### Translations
 
 To use (dynamic) translations in Svelte views you need to load the `messages` context. Unfortunately Svelte won't trigger DOM updates unless we define our own reactive `__()` method in each view, or pass it around.
 
-```html
+```svelte
 <script type="text/javascript">
     import MainLayout from '_layout/MainLayout.svelte';
 
@@ -339,7 +447,7 @@ Behind the scenes, `translate` is using the `messages` store which contains all 
 
 If you don't want to pass around the `__` method you can also define your own reactive version anywhere you want:
 
-```html
+```svelte
 <script>
     import { getContext } from 'svelte';
     const messages = getContext('messages');
@@ -470,31 +578,6 @@ server.methods.registerAdminPage(request => {
 
 Note that for admin pages without a `url` there won't be an automatic menu item. Instead, the menu will highlight the entry based on a common prefix (e.g. `/admin/teams`).
 
-### `registerViewComponent`
-
-View components can be used to dynamically load plugin-provided Svelte components into core routes. Imagine a situation where a core route (e.g. the publish step) wants to allow plugin to add new functionality (e.g. the PDF export). Since the Publish steps Svelte source "doesn't know" about the PDF export, we can't just import its Svelte source files.
-
-```js
-server.methods.registerViewComponent({
-    // the id we want to idenntiy the component by
-    id: 'publish/export-pdf',
-    // the page in which the component should be imported
-    page: 'edit/Index.svelte',
-    // the components Svelte source
-    view: '_plugins/export-pdf/ExportPDFUI.svelte'
-});
-```
-
-The core route can then dynamically import the view component during runtime using the `ViewComponent` element:
-
-```svelte
-<ViewComponent id="publish/export-pdf" {props} {__} />
-```
-
-Internally, the view component import statements are [injected](src/utils/svelte-view/rollup-runtime.js#L97-L102) into the core `View.svelte` before it's being compiled, and then stored in the `viewComponents` context from which it's being [loaded by `ViewComponent.svelte`](src/views/_partials/ViewComponent.svelte#L13).
-
-See [our dashboard](src/views/dashboard/Index.svelte) for a live example.
-
 ### `registerCustomData(key, handler)`
 
 Plugins may "inject" custom data into routes that support this.
@@ -561,17 +644,26 @@ Please be aware that this opens a door for possible XSS attacks! **User-defined 
 
 ### `registerDashboardSidebarBoxes` (dashboard)
 
-Register one or many boxes to be shown in our dashboard sidebar
+Register one or many boxes to be shown in our dashboard sidebar.
+
+First you need to register the view component in `plugin.json`:
+
+```
+{
+    ...
+    viewComponents: [
+        {
+            id: 'helloworld/name',
+            page: 'dashboard/Index.svelte',
+            view: '_plugins/hello-world/PrintName.svelte'
+        }
+    ]
+}
+```
+
+Then register the box controller:
 
 ```js
-// first you need to register the view component
-server.methods.registerViewComponent({
-    id: 'helloworld/name',
-    page: 'dashboard/Index.svelte',
-    view: '_plugins/hello-world/PrintName.svelte'
-});
-
-// then register the box controller
 server.methods.registerDashboardSidebarBoxes(async request => {
     return [
         {
@@ -646,7 +738,6 @@ server.methods.registerDemoDatasets(({ request, chart }) => {
         data: 'Label,Group,Value\nHello,World,1234'
     }];
 });
-
 ```
 
 ### `registerChartAction` (chart editor)
@@ -669,40 +760,5 @@ server.methods.registerChartAction(async ({ request, chart, theme }) => {
             }
         }
     }
-});
-
-```
-
-## Client-side event hooks
-
-Sometimes a view component provided by a plugin needs to react to client-side events, e.g. to perform an action once the user publishes a chart. To achieve this, two things need to happen:
-
-1. the view index to which the view component is registered to needs to dispatch the event:
-
-```svelte
-<-- in src/views/edit/Index.svelte -->
-<script>
-import { getContext } from 'svelte';
-const contextEvents = getContext('events');
-
-function onPublish(event) {
-    contextEvents.dispatch('custom-event', event.detail);
-}
-</script>
-
-<PublishStep on:publish={onPublish} />
-```
-
-The view component can then listen to these events, no matter where it's being loaded:
-
-```jsx
-// in plugins/foo/src/frontend/views/Custom.svelte
-import { onMount, getContext } from 'svelte';
-const contextEvents = getContext('events');
-
-onMount(() => {
-    contextEvents.on('custom-event', event => {
-        console.log('custom event happened', event.detail);
-    });
 });
 ```

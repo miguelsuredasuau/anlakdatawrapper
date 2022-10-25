@@ -5,8 +5,6 @@ module.exports = {
     name: 'routes/admin',
     version: '1.0.0',
     register: async server => {
-        server.methods.registerView('admin/Index.svelte');
-
         server.route({
             method: 'GET',
             path: '/{page*}',

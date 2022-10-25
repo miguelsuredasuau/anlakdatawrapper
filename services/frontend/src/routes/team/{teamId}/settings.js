@@ -184,8 +184,6 @@ module.exports = {
             };
         });
 
-        server.methods.registerView('team/Settings.svelte');
-
         server.route({
             method: 'GET',
             path: '/{pageId}',

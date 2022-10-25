@@ -15,11 +15,7 @@ module.exports = {
     name: 'routes/edit',
     version: '1.0.0',
     register: async server => {
-        server.methods.registerView('edit/Index.svelte');
-
-        //
         // allow plugins to register additional workflows
-        //
         const editWorkflows = [];
         const editWorkflowSteps = new Map();
         const defaultWorkflowOptions = {
@@ -222,36 +218,6 @@ module.exports = {
                     }
                 }
             ]
-        });
-
-        // register view components
-        const viewComponents = [
-            // chart workflow steps
-            { id: 'upload', view: 'Upload' },
-            { id: 'describe', view: 'Describe' },
-            { id: 'visualize', view: 'Visualize' },
-            { id: 'publish', view: 'Publish' },
-            // core layout tab controls
-            { id: 'visualize/layout/darkMode', view: 'visualize/layout/DarkModeControl' },
-            { id: 'visualize/layout/embed', view: 'visualize/layout/EmbedControl' },
-            { id: 'visualize/layout/data', view: 'visualize/layout/GetTheDataControl' },
-            { id: 'visualize/layout/logo', view: 'visualize/layout/LogoControl' },
-            { id: 'visualize/layout/theme', view: 'visualize/layout/ThemeControl' },
-            { id: 'visualize/layout/locale', view: 'visualize/layout/LocaleControl' }
-        ];
-
-        viewComponents.forEach(({ id, view }) => {
-            server.methods.registerViewComponent({
-                id: `edit/chart/${id}`,
-                page: 'edit/Index.svelte',
-                view: `edit/chart/${view}.svelte`
-            });
-        });
-
-        server.methods.registerViewComponent({
-            id: `edit/base`,
-            page: 'edit/Index.svelte',
-            view: `edit/Base.svelte`
         });
 
         // register core layout controls
