@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher, beforeUpdate } from 'svelte';
-    import debounce from 'lodash/debounce';
+    import debounce from 'lodash/debounce.js';
     import IconDisplay from './IconDisplay.svelte';
 
     const dispatch = createEventDispatcher();
