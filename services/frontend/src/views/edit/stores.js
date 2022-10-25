@@ -1,10 +1,10 @@
 import { writable } from 'svelte/store';
 import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
-import httpReq from '@datawrapper/shared/httpReq';
-import objectDiff from '@datawrapper/shared/objectDiff';
-import get from '@datawrapper/shared/get';
-import set from '@datawrapper/shared/set';
+import httpReq from '@datawrapper/shared/httpReq.js';
+import objectDiff from '@datawrapper/shared/objectDiff.js';
+import get from '@datawrapper/shared/get.js';
+import set from '@datawrapper/shared/set.js';
 import { filterNestedObjectKeys } from '../../utils';
 import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited.mjs';
 import coreMigrate from '@datawrapper/chart-core/lib/migrate';

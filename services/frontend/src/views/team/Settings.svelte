@@ -1,13 +1,13 @@
 <script>
     import { getContext, tick } from 'svelte';
     import flatten from 'lodash/flatten';
-    import truncate from '@datawrapper/shared/truncate';
+    import truncate from '@datawrapper/shared/truncate.js';
 
     import SettingsPageLayout from '_layout/SettingsPageLayout.svelte';
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import ViewComponent from '_partials/ViewComponent.svelte';
-    import httpReq from '@datawrapper/shared/httpReq';
+    import httpReq from '@datawrapper/shared/httpReq.js';
     import cloneDeep from 'lodash/cloneDeep';
     import debounce from 'lodash/debounce';
     import isEqual from 'lodash/isEqual';

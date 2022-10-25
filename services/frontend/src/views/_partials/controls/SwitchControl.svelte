@@ -2,7 +2,7 @@
     import { createEventDispatcher } from 'svelte';
     import { slide } from 'svelte/transition';
     import HelpDisplay from '../displays/HelpDisplay.svelte';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
 
     const dispatch = createEventDispatcher();
 

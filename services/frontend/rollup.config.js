@@ -1,5 +1,3 @@
-'use strict';
-
 const alias = require('@rollup/plugin-alias');
 const commonjs = require('@rollup/plugin-commonjs');
 const json = require('@rollup/plugin-json');
@@ -14,10 +12,11 @@ const { terser } = require('rollup-plugin-terser');
 const configPath = findConfigPath();
 const config = require(configPath);
 
-const production = !process.env.ROLLUP_WATCH;
+let production = !process.env.ROLLUP_WATCH;
 let sourcemap;
 let modes;
 if (process.env.NODE_ENV === 'test') {
+    production = false;
     sourcemap = false;
     modes = ['ssr'];
 } else {
@@ -173,7 +172,11 @@ function createInput(view, viewComponents, mode) {
                     _partials: join(__dirname, 'src/views/_partials'),
                     _plugins: join(__dirname, 'src/views/_plugins'),
                     ...(mode === 'ssr' && {
-                        '@datawrapper/shared/decodeHtml': '@datawrapper/shared/decodeHtml.ssr'
+                        '@datawrapper/shared/decodeHtml.js':
+                            '@datawrapper/shared/decodeHtml.ssr.js',
+                        // Bundle dompurify without jsdom to decrease bundle size. Then load jsdom
+                        // in svelte-view/index.js.
+                        'isomorphic-dompurify': 'dompurify'
                     })
                 }
             }),
@@ -190,10 +193,18 @@ function createInput(view, viewComponents, mode) {
                 emitCss: false
             }),
             resolve({
-                browser: true,
+                browser: mode === 'csr',
                 dedupe: ['svelte']
             }),
-            commonjs(),
+            commonjs({
+                requireReturnsDefault(module) {
+                    // Fix DOMPurify.addHook() not being defined due to `getAugmentedNamespace()`.
+                    if (module.endsWith('/node_modules/dompurify/dist/purify.es.js')) {
+                        return true; // Return the default export without checking if it actually exists.
+                    }
+                    return undefined;
+                }
+            }),
             production && terser()
         ],
         onwarn

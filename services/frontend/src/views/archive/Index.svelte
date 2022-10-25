@@ -11,8 +11,8 @@
     import SubFolderGrid from './SubFolderGrid.svelte';
     import VisualizationGrid from './VisualizationGrid.svelte';
     import VisualizationModal from './VisualizationModal.svelte';
-    import httpReq from '@datawrapper/shared/httpReq';
-    import decodeHtml from '@datawrapper/shared/decodeHtml';
+    import httpReq from '@datawrapper/shared/httpReq.js';
+    import decodeHtml from '@datawrapper/shared/decodeHtml.js';
     import debounce from 'underscore/modules/debounce.js';
     import isEqual from 'underscore/modules/isEqual.js';
     import { trackPageView, trackEvent } from '@datawrapper/shared/analytics.js';

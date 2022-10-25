@@ -1,7 +1,7 @@
 <script>
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import ToolbarItem from '_partials/editor/ToolbarItem.svelte';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import { onMount } from 'svelte';
     import { uniq } from 'underscore';
     import chroma from 'chroma-js';

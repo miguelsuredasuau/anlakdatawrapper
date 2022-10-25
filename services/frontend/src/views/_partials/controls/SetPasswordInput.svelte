@@ -1,5 +1,5 @@
 <script>
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
 
     let showPassword = false;
     let help = '';

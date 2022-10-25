@@ -1,7 +1,7 @@
 <script>
     import Visualization from './Visualization.svelte';
-    import get from '@datawrapper/shared/get';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import get from '@datawrapper/shared/get.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import { onMount } from 'svelte';
 
     export let chart = {};

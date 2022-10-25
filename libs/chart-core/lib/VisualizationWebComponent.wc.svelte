@@ -2,7 +2,7 @@
 
 <script>
     import Visualization from './Visualization.svelte';
-    import { loadScript } from '@datawrapper/shared/fetch';
+    import { loadScript } from '@datawrapper/shared/fetch.js';
     const DEPENDENCY_STATE = {
         loading: 'loading',
         finished: 'finished'

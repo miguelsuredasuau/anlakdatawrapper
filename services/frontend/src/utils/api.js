@@ -84,7 +84,7 @@ function createAPI(request, apiBase, sessionID) {
             }
             throw e;
         }
-        return json ? JSON.parse(res.body) : res.body;
+        return json && res.body ? JSON.parse(res.body) : res.body;
     };
 }
 

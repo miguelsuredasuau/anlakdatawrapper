@@ -1,13 +1,37 @@
-/* eslint-env node */
-
-import path from 'path';
 import alias from '@rollup/plugin-alias';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import replace from '@rollup/plugin-replace';
-import svelte from 'rollup-plugin-svelte';
 import babel from 'rollup-plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
+import path from 'path';
+import postcss from 'rollup-plugin-postcss';
+import replace from '@rollup/plugin-replace';
+import resolve from '@rollup/plugin-node-resolve';
+import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
+
+const NODE_BUILTINS = [
+    'assert',
+    'buffer',
+    'child_process',
+    'crypto',
+    'events',
+    'fs',
+    'http',
+    'https',
+    'net',
+    'os',
+    'punycode',
+    'punycode/', // Fixes missing global variable name `punycode/`.
+    'stream',
+    'string_decoder',
+    'tls',
+    'tty',
+    'url',
+    'util',
+    'vm',
+    'zlib',
+    'path'
+];
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -30,38 +54,44 @@ function onwarn(warning, warn) {
 
 module.exports = [
     {
-        /* Svelte Visualization Component as web component */
+        // Svelte Visualization Component as web component
         input: path.resolve(__dirname, 'web-component.js'),
         plugins: [
-            /*
-             * why are there two svelte calls here?
-             *
-             * svelte's customElement will make svelte components render as web components
-             * or "custom elements". however, due to the way svelte is built, it will try
-             * to make_every_single svelte component that is embedded its own custom element.
-             * however chart-core and chart components assume to exist in the same context with the
-             * same styles, DOM access etc. . so we need to make svelte render our 'entrypoint'
-             * in "custom-element-mode" but all other embedded svelte components in "traditional"
-             * mode - hence the two configurations with 'include' and 'exclude' rules.
-             */
-
+            // Why are there two svelte calls here?
+            //
+            // Svelte's customElement will make svelte components render as web components or
+            // "custom elements". however, due to the way svelte is built, it will try to
+            // make_every_single svelte component that is embedded its own custom element.  however
+            // chart-core and chart components assume to exist in the same context with the same
+            // styles, DOM access etc. . so we need to make svelte render our 'entrypoint' in
+            // "custom-element-mode" but all other embedded svelte components in "traditional" mode
+            // - hence the two configurations with 'include' and 'exclude' rules.
             svelte({
-                customElement: true,
+                compilerOptions: {
+                    customElement: true
+                },
                 include: /\.wc\.svelte$/
             }),
             svelte({
-                customElement: false,
+                compilerOptions: {
+                    customElement: false
+                },
                 exclude: /\.wc\.svelte$/,
-                css: css => {
-                    css.write(path.resolve(__dirname, 'dist', 'web-component.css'));
-                }
+                emitCss: true
             }),
-
-            // for @emotion/css
+            postcss({
+                extract: true,
+                sourceMap: true
+            }),
             replace({
-                'process.env.NODE_ENV': JSON.stringify('production')
+                values: {
+                    'process.env.NODE_ENV': JSON.stringify('production') // for @emotion/css
+                },
+                preventAssignment: true
             }),
-            resolve(),
+            resolve({
+                browser: true
+            }),
             commonjs(),
             production &&
                 babel({
@@ -85,18 +115,24 @@ module.exports = [
         }
     },
     {
-        /* Client side Svelte Visualization Component */
+        // Client side Svelte Visualization Component
         input: path.resolve(__dirname, 'main.mjs'),
         plugins: [
-            svelte({ hydratable: true }),
-            // for @emotion/css
+            svelte({
+                compilerOptions: {
+                    hydratable: true
+                },
+                emitCss: false
+            }),
             replace({
                 values: {
-                    'process.env.NODE_ENV': JSON.stringify('production')
+                    'process.env.NODE_ENV': JSON.stringify('production') // for @emotion/css
                 },
                 preventAssignment: true
             }),
-            resolve(),
+            resolve({
+                browser: true
+            }),
             commonjs(),
             production &&
                 babel({
@@ -114,19 +150,35 @@ module.exports = [
         }
     },
     {
-        /* Server side rendered Svelte Visualization Component */
+        // Server side rendered Svelte Visualization Component
         input: path.resolve(__dirname, 'lib/Visualization.svelte'),
         plugins: [
-            svelte({ generate: 'ssr', hydratable: true }),
-            // for @emotion/css
+            json(), // Required to load `node_modules/jsdom/package.json`.
+            svelte({
+                compilerOptions: {
+                    generate: 'ssr',
+                    hydratable: true
+                },
+                emitCss: false
+            }),
             replace({
                 values: {
-                    'process.env.NODE_ENV': JSON.stringify('production')
+                    'process.env.NODE_ENV': JSON.stringify('production') // for @emotion/css
                 },
                 preventAssignment: true
             }),
-            resolve(),
-            commonjs(),
+            resolve({
+                preferBuiltins: true // Hides warning `preferring built-in module 'punycode/'` and `string_decoder`.
+            }),
+            commonjs({
+                dynamicRequireTargets: [
+                    'node_modules/jsdom/lib/jsdom/living/xhr/xhr-sync-worker.js' // Fixes `Cannot find module './xhr-sync-worker.js'` in runtime.
+                ],
+                ignore: [
+                    ...NODE_BUILTINS,
+                    'canvas' // Canvas is an optional dependency of jsdom that we don't need.
+                ]
+            }),
             babel({
                 ...babelConfig,
                 presets: [['@babel/env', { targets: { node: true } }]]
@@ -179,7 +231,9 @@ module.exports = [
     {
         input: path.resolve(__dirname, 'lib/dw/index.mjs'),
         plugins: [
-            resolve(),
+            resolve({
+                browser: true
+            }),
             commonjs(),
             replace({
                 values: {

@@ -31,7 +31,10 @@ export default {
                 _layout: join(__dirname, 'src/views/_layout'),
                 _partials: join(__dirname, 'src/views/_partials'),
                 '@datawrapper/shared/decodeHtml': '@datawrapper/shared/decodeHtml.ssr',
-                '@datawrapper/shared/httpReq': '@datawrapper/shared/httpReq.ssr'
+                '@datawrapper/shared/httpReq': '@datawrapper/shared/httpReq.ssr',
+                // Bundle dompurify without jsdom to decrease bundle size. Then load jsdom
+                // in svelte-view/index.js.
+                'isomorphic-dompurify': 'dompurify'
             }
         }),
         svelte({

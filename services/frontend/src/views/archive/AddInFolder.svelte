@@ -2,7 +2,7 @@
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import Dropdown from '_partials/Dropdown.svelte';
 
-    import httpReq from '@datawrapper/shared/httpReq';
+    import httpReq from '@datawrapper/shared/httpReq.js';
     import { getContext } from 'svelte';
     import { currentFolder } from './stores';
 

@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher, onMount, tick } from 'svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
-    import clone from '@datawrapper/shared/clone';
+    import clone from '@datawrapper/shared/clone.js';
     import isEqual from 'lodash/isEqual';
     import uniq from 'lodash/uniq';
     const dispatch = createEventDispatcher();

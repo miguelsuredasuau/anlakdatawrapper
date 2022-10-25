@@ -3,7 +3,7 @@
     import Dropdown from '_partials/Dropdown.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import ViewComponent from '_partials/ViewComponent.svelte';
-    import httpReq from '@datawrapper/shared/httpReq';
+    import httpReq from '@datawrapper/shared/httpReq.js';
     import { beforeUpdate, getContext, tick } from 'svelte';
 
     const user = getContext('user');

@@ -1,6 +1,6 @@
 <script>
     import HorizontalFormFieldDisplay from '_partials/displays/HorizontalFormFieldDisplay.svelte';
-    import get from '@datawrapper/shared/get';
+    import get from '@datawrapper/shared/get.js';
     import SelectInput from '_partials/controls/SelectInput.svelte';
     import SwitchControl from '_partials/controls/SwitchControl.svelte';
     import { getContext } from 'svelte';

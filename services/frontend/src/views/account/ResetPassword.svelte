@@ -1,6 +1,6 @@
 <script>
-    import httpReq from '@datawrapper/shared/httpReq';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import httpReq from '@datawrapper/shared/httpReq.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import SignInPageLayout from '_layout/SignInPageLayout.svelte';
     import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
     import SetPasswordInput from '_partials/controls/SetPasswordInput.svelte';

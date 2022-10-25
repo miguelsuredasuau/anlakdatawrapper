@@ -75,19 +75,16 @@ async function createGuestSession(server) {
     return res.result['DW-SESSION'];
 }
 
-async function createUser(
-    server,
-    { role = 'editor', pwd = PASSWORD_HASH, scopes = ALL_SCOPES, language = 'en-US', id } = {}
-) {
+async function createUser(server, { scopes = ALL_SCOPES, ...props } = {}) {
     const { AccessToken, User } = require('@datawrapper/orm/models');
     const credentials = getCredentials();
     const user = await User.create({
         name: `name-${credentials.email.split('@').shift()}`,
         email: credentials.email,
-        pwd,
-        role,
-        language,
-        ...(id ? { id } : false)
+        pwd: PASSWORD_HASH,
+        role: 'editor',
+        language: 'en-US',
+        ...props
     });
 
     const session = await createSession(server, user);

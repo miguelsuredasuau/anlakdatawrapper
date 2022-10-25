@@ -7,9 +7,9 @@
     import cloneDeep from 'lodash/cloneDeep';
     import { Subject, lastValueFrom } from 'rxjs';
     import { take, tap } from 'rxjs/operators';
-    import httpReq from '@datawrapper/shared/httpReq';
-    import { loadScript } from '@datawrapper/shared/fetch';
-    import { translate } from '@datawrapper/shared/l10n';
+    import httpReq from '@datawrapper/shared/httpReq.js';
+    import { loadScript } from '@datawrapper/shared/fetch.js';
+    import { translate } from '@datawrapper/shared/l10n.js';
     import ConfirmationModalDisplay from '_partials/displays/ConfirmationModalDisplay.svelte';
 
     import dayjs from 'dayjs';

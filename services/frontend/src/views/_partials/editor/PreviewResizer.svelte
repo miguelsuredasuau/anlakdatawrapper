@@ -4,11 +4,11 @@
     import NumberInput from '_partials/controls/NumberInput.svelte';
     import RadioInput from '_partials/controls/RadioInput.svelte';
     import SelectInput from '_partials/controls/SelectInput.svelte';
-    import get from '@datawrapper/shared/get';
+    import get from '@datawrapper/shared/get.js';
     import { waitFor } from '../../../utils';
 
     import { onMount, getContext, createEventDispatcher } from 'svelte';
-    import { UNIT_IN, UNIT_MM, UNIT_PX, unitToPx, pxToUnit } from '@datawrapper/shared/units';
+    import { UNIT_IN, UNIT_MM, UNIT_PX, unitToPx, pxToUnit } from '@datawrapper/shared/units.js';
     import { merge } from 'rxjs';
     import { debounceTime, map, distinctUntilChanged } from 'rxjs/operators';
 

@@ -3,7 +3,7 @@
     import { onMount, getContext } from 'svelte';
     import Parser from 'rss-parser/dist/rss-parser';
     import IconBox from '_partials/displays/IconBox.svelte';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
 
     const allowedTags =
         '<a><figure><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt><img><ul><li>';

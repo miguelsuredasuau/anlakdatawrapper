@@ -3,7 +3,7 @@
 <script>
     import { onMount, onDestroy, createEventDispatcher } from 'svelte';
     import { get_current_component as getCurrentComponent } from 'svelte/internal';
-    import { loadScript } from '@datawrapper/shared/fetch';
+    import { loadScript } from '@datawrapper/shared/fetch.js';
     import { waitFor } from './shared';
 
     const svelteDispatch = createEventDispatcher();

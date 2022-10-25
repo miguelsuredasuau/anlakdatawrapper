@@ -9,13 +9,13 @@
     const msg = getContext('messages');
     export let __;
 
-    import get from '@datawrapper/shared/get';
+    import get from '@datawrapper/shared/get.js';
     import dayjs from 'dayjs';
-    import httpReq from '@datawrapper/shared/httpReq';
-    import { autoTickFormatDate } from '@datawrapper/shared/autoTickFormat';
+    import httpReq from '@datawrapper/shared/httpReq.js';
+    import { autoTickFormatDate } from '@datawrapper/shared/autoTickFormat.js';
     import delimited from '@datawrapper/chart-core/lib/dw/dataset/delimited';
     import SignInPageLayout from '_layout/SignInPageLayout.svelte';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
 
     let loggedIn = false;
     let ds;

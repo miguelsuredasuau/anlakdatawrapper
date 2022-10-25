@@ -3,7 +3,7 @@
     import TypeaheadInput from '_partials/controls/TypeaheadInput.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import TypeaheadItemRenderer from './TypeaheadItemRenderer.svelte';
-    import httpReq from '@datawrapper/shared/httpReq';
+    import httpReq from '@datawrapper/shared/httpReq.js';
     import uniq from 'lodash/uniq';
 
     let countries = [];

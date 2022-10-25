@@ -1,8 +1,8 @@
 <script>
     import { getContext } from 'svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
-    import truncate from '@datawrapper/shared/truncate';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import truncate from '@datawrapper/shared/truncate.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
 
     const request = getContext('request');
 

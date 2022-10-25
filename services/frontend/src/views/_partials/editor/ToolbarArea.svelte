@@ -1,5 +1,5 @@
 <script>
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     export let title = null;
 </script>
 

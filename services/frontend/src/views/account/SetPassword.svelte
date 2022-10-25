@@ -1,7 +1,7 @@
 <script>
     import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
     import SetPasswordInput from '_partials/controls/SetPasswordInput.svelte';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import { createEventDispatcher } from 'svelte';
 
     import { getContext } from 'svelte';

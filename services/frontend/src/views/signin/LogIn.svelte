@@ -1,6 +1,6 @@
 <script>
-    import httpReq from '@datawrapper/shared/httpReq';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import httpReq from '@datawrapper/shared/httpReq.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
     import ProviderButtons from './ProviderButtons.svelte';

@@ -1,3 +1,4 @@
+import fetch from 'node-fetch';
 import sinon from 'sinon';
 import { JSDOM } from 'jsdom';
 
@@ -15,7 +16,9 @@ Object.getOwnPropertyNames(window)
     .forEach(prop =>
         Object.defineProperty(global, prop, {
             configurable: true,
-            set: () => {},
+            set: val => {
+                window[prop] = val;
+            },
             get: () => window[prop]
         })
     );
@@ -67,3 +70,5 @@ document.createRange = () => {
 };
 
 window.history.replaceState = sinon.fake();
+
+window.fetch = fetch;

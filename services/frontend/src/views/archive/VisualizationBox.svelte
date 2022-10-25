@@ -3,10 +3,10 @@
     import Dropdown from '../_partials/Dropdown.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import ViewComponent from '_partials/ViewComponent.svelte';
-    import decodeHtml from '@datawrapper/shared/decodeHtml';
-    import httpReq from '@datawrapper/shared/httpReq';
+    import decodeHtml from '@datawrapper/shared/decodeHtml.js';
+    import httpReq from '@datawrapper/shared/httpReq.js';
     import range from 'lodash/range';
-    import truncate from '@datawrapper/shared/truncate';
+    import truncate from '@datawrapper/shared/truncate.js';
     import { getContext, tick } from 'svelte';
     import { selectAll } from './shared';
     import { selectedCharts, query } from './stores';

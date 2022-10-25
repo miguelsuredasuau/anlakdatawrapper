@@ -1,8 +1,8 @@
 <script>
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { getContext } from 'svelte';
-    import { patch } from '@datawrapper/shared/httpReq';
-    import truncate from '@datawrapper/shared/truncate';
+    import { patch } from '@datawrapper/shared/httpReq.js';
+    import truncate from '@datawrapper/shared/truncate.js';
 
     export let __;
 

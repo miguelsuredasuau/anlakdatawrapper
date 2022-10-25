@@ -1,8 +1,8 @@
 <script>
     import FeatureIntroductionDisplay from '_partials/displays/FeatureIntroductionDisplay.svelte';
     import SwitchControl from '_partials/controls/SwitchControl.svelte';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
-    import get from '@datawrapper/shared/get';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
+    import get from '@datawrapper/shared/get.js';
     import { getContext } from 'svelte';
 
     const { chart, theme } = getContext('page/edit');

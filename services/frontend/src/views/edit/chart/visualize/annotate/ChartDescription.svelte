@@ -1,8 +1,8 @@
 <script>
     import { getContext } from 'svelte';
-    import { isAllowedSourceUrl } from '@datawrapper/shared/validation';
-    import get from '@datawrapper/shared/get';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import { isAllowedSourceUrl } from '@datawrapper/shared/validation.js';
+    import get from '@datawrapper/shared/get.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import HorizontalFormFieldDisplay from '_partials/displays/HorizontalFormFieldDisplay.svelte';
     import FormFieldDisplay from '_partials/displays/FormFieldDisplay.svelte';
     import TextInput from '_partials/controls/TextInput.svelte';

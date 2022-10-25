@@ -1,6 +1,6 @@
-import get from '@datawrapper/shared/get';
-import set from '@datawrapper/shared/set';
-import arrayToObject from '@datawrapper/shared/arrayToObject';
+import get from '@datawrapper/shared/get.js';
+import set from '@datawrapper/shared/set.js';
+import arrayToObject from '@datawrapper/shared/arrayToObject.js';
 
 export default [
     metadata => {

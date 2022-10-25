@@ -1,7 +1,7 @@
 <script>
     import FormFieldDisplay from './FormFieldDisplay.svelte';
     import HelpDisplay from './HelpDisplay.svelte';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import { getContext } from 'svelte';
 
     const msg = getContext('messages');

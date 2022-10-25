@@ -3,10 +3,10 @@
     import debounce from 'lodash/debounce';
     import unset from 'lodash/unset';
     import isEqual from 'lodash/isEqual';
-    import objectDiff from '@datawrapper/shared/objectDiff';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
-    import sharedSet from '@datawrapper/shared/set';
-    import get from '@datawrapper/shared/get';
+    import objectDiff from '@datawrapper/shared/objectDiff.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
+    import sharedSet from '@datawrapper/shared/set.js';
+    import get from '@datawrapper/shared/get.js';
     import { merge } from 'rxjs';
     import { debounceTime, skip, tap } from 'rxjs/operators';
     import { getContext, onMount, onDestroy, createEventDispatcher } from 'svelte';

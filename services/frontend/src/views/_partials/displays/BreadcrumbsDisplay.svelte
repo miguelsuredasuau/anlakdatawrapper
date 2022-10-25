@@ -1,6 +1,6 @@
 <script>
     import IconDisplay from './IconDisplay.svelte';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
 
     export let path = [];
     export let className = null;

@@ -1,5 +1,5 @@
 <script>
-    import estimateTextWidth from '@datawrapper/shared/estimateTextWidth';
+    import estimateTextWidth from '@datawrapper/shared/estimateTextWidth.js';
 
     export let props;
     const { get, purifyHtml } = props;

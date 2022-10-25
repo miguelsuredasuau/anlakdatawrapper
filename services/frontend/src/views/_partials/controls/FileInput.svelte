@@ -1,6 +1,6 @@
 <script>
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
-    import truncate from '@datawrapper/shared/truncate';
+    import truncate from '@datawrapper/shared/truncate.js';
     import { createEventDispatcher } from 'svelte';
 
     const dispatch = createEventDispatcher();

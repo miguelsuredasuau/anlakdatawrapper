@@ -2,11 +2,11 @@
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import dwVisualization from '@datawrapper/chart-core/lib/dw/visualization';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import { onMount, tick, getContext } from 'svelte';
     import isEqual from 'lodash/isEqual';
     import clone from 'lodash/cloneDeep';
-    import { loadScript } from '@datawrapper/shared/fetch';
+    import { loadScript } from '@datawrapper/shared/fetch.js';
     import get from 'lodash/get';
     import set from 'lodash/set';
     import assign from 'assign-deep';

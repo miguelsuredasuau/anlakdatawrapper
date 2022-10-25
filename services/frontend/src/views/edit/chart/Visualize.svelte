@@ -20,7 +20,7 @@
     import { onMount, getContext } from 'svelte';
     import { fade } from 'svelte/transition';
     import { headerProps } from '_layout/stores';
-    import get from '@datawrapper/shared/get';
+    import get from '@datawrapper/shared/get.js';
 
     // load stores from context
     const { chart, customViews, isFixedHeight, navigateTo } = getContext('page/edit');

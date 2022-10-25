@@ -1,5 +1,5 @@
-import purifyHtml from '@datawrapper/shared/purifyHtml';
-import { columnFormatter } from '@datawrapper/shared/columnFormatter';
+import purifyHtml from '@datawrapper/shared/purifyHtml.js';
+import { columnFormatter } from '@datawrapper/shared/columnFormatter.js';
 
 function dataCellChanged(col, row, { changes = [], transpose }) {
     const r = transpose ? 'column' : 'row';

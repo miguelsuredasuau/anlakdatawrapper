@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher } from 'svelte';
     import { fade } from 'svelte/transition';
-    import get from '@datawrapper/shared/get';
+    import get from '@datawrapper/shared/get.js';
     import chroma from 'chroma-js';
     import { waitFor } from '../../../utils';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';

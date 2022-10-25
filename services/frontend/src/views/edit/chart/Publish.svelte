@@ -1,5 +1,5 @@
 <script>
-    import { loadScript } from '@datawrapper/shared/fetch';
+    import { loadScript } from '@datawrapper/shared/fetch.js';
     import ChartEditorPreview from '_partials/editor/ChartEditorPreview.svelte';
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import { getContext, onMount } from 'svelte';

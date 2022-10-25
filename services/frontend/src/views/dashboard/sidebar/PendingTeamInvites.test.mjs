@@ -1,6 +1,6 @@
 import PendingTeamInvites from './PendingTeamInvites.svelte';
 import { renderWithContext, setConfig } from '../../../../tests/helpers/clientUtils';
-import { translate } from '@datawrapper/shared/l10n';
+import { translate } from '@datawrapper/shared/l10n.js';
 import chai, { expect } from 'chai';
 import chaiDom from 'chai-dom';
 

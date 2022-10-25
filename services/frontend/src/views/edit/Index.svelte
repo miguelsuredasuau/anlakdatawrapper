@@ -1,7 +1,7 @@
 <script type="text/javascript">
     import { getContext, onDestroy, onMount, setContext, tick } from 'svelte';
-    import truncate from '@datawrapper/shared/truncate';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import truncate from '@datawrapper/shared/truncate.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import MainLayout from '_layout/MainLayout.svelte';
     import { openedInsideIframe } from '_layout/stores';
     import ViewComponent from '_partials/ViewComponent.svelte';
@@ -9,8 +9,8 @@
     import Header from './nav/Header.svelte';
     import { initStores } from './stores';
     import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
-    import escapeHtml from '@datawrapper/shared/escapeHtml.cjs';
-    import httpReq from '@datawrapper/shared/httpReq';
+    import escapeHtml from '@datawrapper/shared/escapeHtml.js';
+    import httpReq from '@datawrapper/shared/httpReq.js';
     import dw from '@datawrapper/chart-core/dist/dw-2.0.cjs';
     import { trackPageView } from '@datawrapper/shared/analytics.js';
     import merge from 'lodash/merge';

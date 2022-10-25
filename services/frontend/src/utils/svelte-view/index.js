@@ -1,6 +1,7 @@
 'use strict';
 
 const MemoryCache = require('@datawrapper/service-utils/MemoryCache');
+const { JSDOM } = require('jsdom');
 const context = require('./context');
 const ejs = require('ejs');
 const jsesc = require('jsesc');
@@ -17,6 +18,11 @@ const viewComponents = new Map();
 const templateCache = new MemoryCache();
 const viewCache = new MemoryCache();
 const ssrFuncCache = new MemoryCache();
+
+/**
+ * Global window for dompurify, because we bundle it without jsdom to make the bundles smaller.
+ */
+global.window = new JSDOM('').window;
 
 /**
  * Registers a view with rollup.

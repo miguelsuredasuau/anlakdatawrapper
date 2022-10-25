@@ -2,8 +2,8 @@
     import { createEventDispatcher, beforeUpdate, getContext } from 'svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import debounce from 'lodash/debounce';
-    import decodeHtml from '@datawrapper/shared/decodeHtml';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import decodeHtml from '@datawrapper/shared/decodeHtml.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
 
     const msg = getContext('messages');
     function createTranslate(msg, messages) {

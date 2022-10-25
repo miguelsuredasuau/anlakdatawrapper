@@ -1,11 +1,10 @@
-/* eslint-env node, es6 */
-import path from 'path';
-import less from 'less';
-import svelte from 'rollup-plugin-svelte';
-import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
+import less from 'less';
+import path from 'path';
 import replace from '@rollup/plugin-replace';
+import resolve from '@rollup/plugin-node-resolve';
+import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -66,7 +65,16 @@ function build(appId, opts) {
         },
         plugins: [
             replace({
-                __view__: `./${view}.html`
+                values: {
+                    __view__: `./${view}.html`,
+                    // Bundle dompurify without jsdom to decrease bundle size. Then load jsdom in
+                    // svelte-view/index.js. Use plugin 'replace' instead 'alias', otherwise the
+                    // build crashes with `Package subpath './package.json' is not defined by
+                    // "exports" in .../parse5/package.json`, due to the old version of the 'svelte'
+                    // plugin that we use.
+                    'isomorphic-dompurify': 'dompurify'
+                },
+                preventAssignment: true
             }),
             svelte({
                 dev: !production,
@@ -77,7 +85,7 @@ function build(appId, opts) {
                 store: true,
                 preprocess: {
                     style: ({ content, attributes }) => {
-                        if (attributes.lang !== 'less') return;
+                        if (attributes.lang !== 'less') return Promise.resolve();
                         return new Promise((resolve, reject) => {
                             less.render(
                                 content,
@@ -87,8 +95,10 @@ function build(appId, opts) {
                                     sourceMap: !production
                                 },
                                 (err, result) => {
-                                    if (err) return reject(err);
-
+                                    if (err) {
+                                        reject(err);
+                                        return;
+                                    }
                                     resolve({
                                         code: result.css.toString(),
                                         ...(!production ? { map: result.map.toString() } : {})
@@ -104,13 +114,14 @@ function build(appId, opts) {
             commonjs(),
             json(),
 
-            /* hack to fix recursion problem caused by transpiling twice
-             * https://github.com/rollup/rollup-plugin-babel/issues/252#issuecomment-421541785
-             */
+            // Hack to fix recursion problem caused by transpiling twice.
+            // See https://github.com/rollup/rollup-plugin-babel/issues/252#issuecomment-421541785
             replace({
+                values: {
+                    '_typeof2(Symbol.iterator)': 'typeof Symbol.iterator',
+                    '_typeof2(obj);': 'typeof obj;'
+                },
                 delimiters: ['', ''],
-                '_typeof2(Symbol.iterator)': 'typeof Symbol.iterator',
-                '_typeof2(obj);': 'typeof obj;',
                 preventAssignment: true
             }),
             production && terser()

@@ -2,7 +2,7 @@ import { configure, render, fireEvent } from '@testing-library/svelte';
 import Context from '../../src/utils/svelte-view/Context.svelte';
 import { getLocale } from './setup-locales.mjs';
 import cloneDeep from 'lodash/cloneDeep';
-import objectDiff from '@datawrapper/shared/objectDiff';
+import objectDiff from '@datawrapper/shared/objectDiff.js';
 import { get as getStoreValue } from 'svelte/store';
 import get from 'lodash/get';
 import set from 'lodash/set';

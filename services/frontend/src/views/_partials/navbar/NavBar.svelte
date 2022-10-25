@@ -2,8 +2,8 @@
     import { getContext } from 'svelte';
     import VisArchive from './VisArchive.svelte';
     import TeamSelect from './TeamSelect.svelte';
-    import { post, patch } from '@datawrapper/shared/httpReq';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import { post, patch } from '@datawrapper/shared/httpReq.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import NavBarIcon from './NavBarIcon.svelte';
 

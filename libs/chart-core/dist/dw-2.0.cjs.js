@@ -1,11 +1,13 @@
 'use strict';
 
+var DOMPurify = require('isomorphic-dompurify');
 var isPlainObject = require('lodash/isPlainObject.js');
 var isEqual$1 = require('lodash/isEqual.js');
 var numeral = require('numeral');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
+var DOMPurify__default = /*#__PURE__*/_interopDefaultLegacy(DOMPurify);
 var isPlainObject__default = /*#__PURE__*/_interopDefaultLegacy(isPlainObject);
 var isEqual__default = /*#__PURE__*/_interopDefaultLegacy(isEqual$1);
 var numeral__default = /*#__PURE__*/_interopDefaultLegacy(numeral);
@@ -62,13 +64,13 @@ var delimited$1 = {
 };
 
 // Current version.
-var VERSION = '1.13.1';
+var VERSION = '1.13.4';
 
 // Establish the root object, `window` (`self`) in the browser, `global`
 // on the server, or `this` in some virtual machines. We use `self`
 // instead of `window` for `WebWorker` support.
-var root = typeof self == 'object' && self.self === self && self ||
-          typeof global == 'object' && global.global === global && global ||
+var root = (typeof self == 'object' && self.self === self && self) ||
+          (typeof global == 'object' && global.global === global && global) ||
           Function('return this')() ||
           {};
 
@@ -136,7 +138,7 @@ function restArguments(func, startIndex) {
 // Is a given variable an object?
 function isObject(obj) {
   var type = typeof obj;
-  return type === 'function' || type === 'object' && !!obj;
+  return type === 'function' || (type === 'object' && !!obj);
 }
 
 // Is a given value equal to null?
@@ -298,7 +300,7 @@ function emulatedSet(keys) {
   var hash = {};
   for (var l = keys.length, i = 0; i < l; ++i) hash[keys[i]] = true;
   return {
-    contains: function(key) { return hash[key]; },
+    contains: function(key) { return hash[key] === true; },
     push: function(key) {
       hash[key] = true;
       return keys.push(key);
@@ -313,7 +315,7 @@ function collectNonEnumProps(obj, keys) {
   keys = emulatedSet(keys);
   var nonEnumIdx = nonEnumerableProps.length;
   var constructor = obj.constructor;
-  var proto = isFunction$1(constructor) && constructor.prototype || ObjProto;
+  var proto = (isFunction$1(constructor) && constructor.prototype) || ObjProto;
 
   // Constructor is a special case.
   var prop = 'constructor';
@@ -1516,7 +1518,7 @@ function where(obj, attrs) {
 function max$1(obj, iteratee, context) {
   var result = -Infinity, lastComputed = -Infinity,
       value, computed;
-  if (iteratee == null || typeof iteratee == 'number' && typeof obj[0] != 'object' && obj != null) {
+  if (iteratee == null || (typeof iteratee == 'number' && typeof obj[0] != 'object' && obj != null)) {
     obj = isArrayLike(obj) ? obj : values(obj);
     for (var i = 0, length = obj.length; i < length; i++) {
       value = obj[i];
@@ -1528,7 +1530,7 @@ function max$1(obj, iteratee, context) {
     iteratee = cb(iteratee, context);
     each(obj, function(v, index, list) {
       computed = iteratee(v, index, list);
-      if (computed > lastComputed || computed === -Infinity && result === -Infinity) {
+      if (computed > lastComputed || (computed === -Infinity && result === -Infinity)) {
         result = v;
         lastComputed = computed;
       }
@@ -1541,7 +1543,7 @@ function max$1(obj, iteratee, context) {
 function min$1(obj, iteratee, context) {
   var result = Infinity, lastComputed = Infinity,
       value, computed;
-  if (iteratee == null || typeof iteratee == 'number' && typeof obj[0] != 'object' && obj != null) {
+  if (iteratee == null || (typeof iteratee == 'number' && typeof obj[0] != 'object' && obj != null)) {
     obj = isArrayLike(obj) ? obj : values(obj);
     for (var i = 0, length = obj.length; i < length; i++) {
       value = obj[i];
@@ -1553,13 +1555,26 @@ function min$1(obj, iteratee, context) {
     iteratee = cb(iteratee, context);
     each(obj, function(v, index, list) {
       computed = iteratee(v, index, list);
-      if (computed < lastComputed || computed === Infinity && result === Infinity) {
+      if (computed < lastComputed || (computed === Infinity && result === Infinity)) {
         result = v;
         lastComputed = computed;
       }
     });
   }
   return result;
+}
+
+// Safely create a real, live array from anything iterable.
+var reStrSymbol = /[^\ud800-\udfff]|[\ud800-\udbff][\udc00-\udfff]|[\ud800-\udfff]/g;
+function toArray(obj) {
+  if (!obj) return [];
+  if (isArray(obj)) return slice.call(obj);
+  if (isString(obj)) {
+    // Keep surrogate pair characters together.
+    return obj.match(reStrSymbol);
+  }
+  if (isArrayLike(obj)) return map(obj, identity);
+  return values(obj);
 }
 
 // Sample **n** random values from a collection using the modern version of the
@@ -1571,7 +1586,7 @@ function sample(obj, n, guard) {
     if (!isArrayLike(obj)) obj = values(obj);
     return obj[random$1(obj.length - 1)];
   }
-  var sample = isArrayLike(obj) ? clone$1(obj) : values(obj);
+  var sample = toArray(obj);
   var length = getLength(sample);
   n = Math.max(Math.min(n, length), 0);
   var last = length - 1;
@@ -1647,19 +1662,6 @@ var countBy = group(function(result, value, key) {
 var partition = group(function(result, value, pass) {
   result[pass ? 0 : 1].push(value);
 }, true);
-
-// Safely create a real, live array from anything iterable.
-var reStrSymbol = /[^\ud800-\udfff]|[\ud800-\udbff][\udc00-\udfff]|[\ud800-\udfff]/g;
-function toArray(obj) {
-  if (!obj) return [];
-  if (isArray(obj)) return slice.call(obj);
-  if (isString(obj)) {
-    // Keep surrogate pair characters together.
-    return obj.match(reStrSymbol);
-  }
-  if (isArrayLike(obj)) return map(obj, identity);
-  return values(obj);
-}
 
 // Return the number of elements in a collection.
 function size(obj) {
@@ -1821,7 +1823,7 @@ function intersection(array) {
 // Complement of zip. Unzip accepts an array of arrays and groups
 // each array's elements on shared indices.
 function unzip(array) {
-  var length = array && max$1(array, getLength).length || 0;
+  var length = (array && max$1(array, getLength).length) || 0;
   var result = Array(length);
 
   for (var index = 0; index < length; index++) {
@@ -3001,98 +3003,55 @@ var columnTypes = {
     date
 };
 
-const TAGS = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
-const COMMENTS_AND_PHP_TAGS = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
-const defaultAllowed = '<a><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt>';
-
+const DEFAULT_ALLOWED = [
+    'a',
+    'span',
+    'b',
+    'br',
+    'i',
+    'strong',
+    'sup',
+    'sub',
+    'strike',
+    'u',
+    'em',
+    'tt'
+];
 /**
- * Remove all non-whitelisted html tags from the given string
+ * Set default TARGET and REL for A tags.
+ *
+ * Don't overwrite target="_self".
+ */
+DOMPurify__default["default"].addHook('afterSanitizeElements', function (el) {
+    if (el.nodeName.toLowerCase() === 'a') {
+        if (el.getAttribute('target') !== '_self') {
+            el.setAttribute('target', '_blank');
+        }
+        el.setAttribute('rel', 'nofollow noopener noreferrer');
+    }
+});
+/**
+ * Remove all HTML tags from given `input` string, except `allowed` tags.
  *
  * @exports purifyHTML
  * @kind function
  *
- * @param {string} input - dirty html input
- * @param {string} allowed - list of allowed tags, defaults to `<a><b><br><br/><i><strong><sup><sub><strike><u><em><tt>`
- * @return {string} - the cleaned html output
+ * @param {string} input - dirty HTML input
+ * @param {string} [string[]] - list of allowed tags; see DEFAULT_ALLOWED for the default value
+ * @return {string} - the cleaned HTML output
  */
-function purifyHTML(input, allowed) {
-    /*
-     * written by Kevin van Zonneveld et.al.
-     * taken from https://github.com/kvz/phpjs/blob/master/functions/strings/strip_tags.js
-     */
-    if (input === null) return null;
-    if (input === undefined) return undefined;
-    input = String(input);
-    // pass if neither < or > exist in string
-    if (input.indexOf('<') < 0 && input.indexOf('>') < 0) {
+function purifyHTML(input, allowed = DEFAULT_ALLOWED) {
+    if (!input) {
         return input;
     }
-    input = stripTags(input, allowed);
-    // remove all event attributes
-    if (typeof document === 'undefined') return input;
-    var d = document.createElement('div');
-
-    d.innerHTML = `<span>${input}</span>`;
-    // strip tags again, because `document.createElement()` closes unclosed tags and therefore
-    // creates new elements that might not be allowed
-    d.innerHTML = stripTags(
-        d.innerHTML,
-        allowed && !allowed.includes('<span>') ? allowed + '<span>' : allowed || undefined
-    );
-    var sel = d.childNodes[0].querySelectorAll('*');
-    for (var i = 0; i < sel.length; i++) {
-        if (sel[i].nodeName.toLowerCase() === 'a') {
-            // special treatment for <a> elements
-            if (sel[i].getAttribute('target') !== '_self') sel[i].setAttribute('target', '_blank');
-            sel[i].setAttribute('rel', 'nofollow noopener noreferrer');
-            const hrefNormalized = (sel[i].getAttribute('href') || '')
-                .toLowerCase()
-                // remove invalid uri characters
-                .replace(/[^a-z0-9 -/:?=]/g, '')
-                .trim();
-            if (
-                hrefNormalized.startsWith('javascript:') ||
-                hrefNormalized.startsWith('vbscript:') ||
-                hrefNormalized.startsWith('data:')
-            ) {
-                // remove entire href to be safe
-                sel[i].setAttribute('href', '');
-            }
-        }
-        const removeAttrs = [];
-        for (var j = 0; j < sel[i].attributes.length; j++) {
-            var attrib = sel[i].attributes[j];
-            if (attrib.specified) {
-                if (attrib.name.substr(0, 2) === 'on') removeAttrs.push(attrib.name);
-            }
-        }
-        removeAttrs.forEach(attr => sel[i].removeAttribute(attr));
+    if (typeof allowed === 'string') {
+        allowed = Array.from(allowed.toLowerCase().matchAll(/<([a-z][a-z0-9]*)>/g)).map(m => m[1]);
     }
-    return d.childNodes[0].innerHTML;
-}
-
-function stripTags(input, allowed) {
-    // making sure the allowed arg is a string containing only tags in lowercase (<a><b><c>)
-    allowed = (
-        ((allowed !== undefined ? allowed || '' : defaultAllowed) + '')
-            .toLowerCase()
-            .match(/<[a-z][a-z0-9]*>/g) || []
-    ).join('');
-
-    var before = input;
-    var after = input;
-    // recursively remove tags to ensure that the returned string doesn't contain forbidden tags after previous passes (e.g. '<<bait/>switch/>')
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-        before = after;
-        after = before.replace(COMMENTS_AND_PHP_TAGS, '').replace(TAGS, function ($0, $1) {
-            return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
-        });
-        // return once no more tags are removed
-        if (before === after) {
-            return after;
-        }
-    }
+    return DOMPurify__default["default"].sanitize(input, {
+        ALLOWED_TAGS: allowed,
+        ADD_ATTR: ['target'],
+        FORCE_BODY: true // Makes sure that top-level SCRIPT tags are kept if explicitly allowed.
+    });
 }
 
 /*
@@ -3758,13 +3717,10 @@ Dataset.json = json;
  * @returns {number}
  */
 function tailLength(value) {
-    return Math.max(
-        0,
-        String(value - Math.floor(value))
-            .replace(/00000*[0-9]+$/, '')
-            .replace(/33333*[0-9]+$/, '')
-            .replace(/99999*[0-9]+$/, '').length - 2
-    );
+    return Math.max(0, String(value - Math.floor(value))
+        .replace(/00000*[0-9]+$/, '')
+        .replace(/33333*[0-9]+$/, '')
+        .replace(/99999*[0-9]+$/, '').length - 2);
 }
 
 /**
@@ -3810,32 +3766,30 @@ function significantDimension(values, tolerance = 0.1) {
     const uniqValues = uniq(values.filter(isFinite$1));
     const totalUniq = uniqValues.length;
     let check, diff;
-
     const accepted = Math.floor(totalUniq * (1 - tolerance));
-
     if (uniqValues.length < 3) {
         // special case if there are only 2 unique values
-        return Math.round(
-            uniqValues.reduce(function (acc, cur) {
-                if (!cur) return acc;
-                const exp = Math.log(Math.abs(cur)) / Math.LN10;
-                if (exp < 8 && exp > -3) {
-                    // use tail length for normal numbers
-                    return acc + Math.min(3, tailLength(uniqValues[0]));
-                } else {
-                    return acc + (exp > 0 ? (exp - 1) * -1 : exp * -1);
-                }
-            }, 0) / uniqValues.length
-        );
+        return Math.round(uniqValues.reduce(function (acc, cur) {
+            if (!cur)
+                return acc;
+            const exp = Math.log(Math.abs(cur)) / Math.LN10;
+            if (exp < 8 && exp > -3) {
+                // use tail length for normal numbers
+                return acc + Math.min(3, tailLength(uniqValues[0]));
+            }
+            else {
+                return acc + (exp > 0 ? (exp - 1) * -1 : exp * -1);
+            }
+        }, 0) / uniqValues.length);
     }
-
     if (uniq(uniqValues.map(currentRound)).length > accepted) {
         // we seem to have enough precision, but maybe it's too much?
         check = function () {
             return uniq(result).length === totalUniq;
         };
         diff = -1;
-    } else {
+    }
+    else {
         // if we end up here it means we're loosing too much information
         // due to rounding, we need to increase precision
         check = function () {
@@ -3851,8 +3805,10 @@ function significantDimension(values, tolerance = 0.1) {
     if (maxIter < 10) {
         console.warn('maximum iteration reached', values, result, decimals);
     }
-    if (diff < 0) decimals += 2;
-    else decimals--;
+    if (diff < 0)
+        decimals += 2;
+    else
+        decimals--;
     /* rounds to the current number of decimals */
     function currentRound(v) {
         return round(v, decimals);
@@ -3917,10 +3873,12 @@ function equalish(a, b) {
  * @returns {*} - the cloned thing
  */
 function clone(o) {
-    if (!o || typeof o !== 'object') return o;
+    if (!o || typeof o !== 'object')
+        return o;
     try {
         return JSON.parse(JSON.stringify(o));
-    } catch (e) {
+    }
+    catch (e) {
         return o;
     }
 }
@@ -6527,12 +6485,13 @@ var utils = /*#__PURE__*/Object.freeze({
  * get(someObject, 'missing.key', false) // returns false
  */
 function get(object, key = null, _default = null) {
-    if (!key) return object;
+    if (!key)
+        return object;
     const keys = Array.isArray(key) ? key : key.split('.');
     let pt = object;
-
     for (let i = 0; i < keys.length; i++) {
-        if (pt === null || pt === undefined) break; // break out of the loop
+        if (pt === null || pt === undefined)
+            break; // break out of the loop
         // move one more level in
         pt = pt[keys[i]];
     }
@@ -6557,7 +6516,6 @@ function set(object, key, value) {
     const keys = Array.isArray(key) ? key : key.split('.');
     const lastKey = keys.pop();
     let pt = object;
-
     // resolve property until the parent dict
     keys.forEach(key => {
         if (pt[key] === undefined || pt[key] === null) {
@@ -6565,7 +6523,6 @@ function set(object, key, value) {
         }
         pt = pt[key];
     });
-
     // check if new value is set
     if (JSON.stringify(pt[lastKey]) !== JSON.stringify(value)) {
         pt[lastKey] = value;
@@ -6597,7 +6554,6 @@ function set(object, key, value) {
 function objectDiff(source, target, allowedKeys = null) {
     return diffKeys(source, target, allowedKeys ? new Set(allowedKeys) : null);
 }
-
 /**
  * @param {object} source - the source object
  * @param {object} target - the target object
@@ -6609,21 +6565,24 @@ function diffKeys(source, target, allowedKeys = null) {
     const patch = {};
     Object.keys(target).forEach(targetKey => {
         if (!isEqual__default["default"](target[targetKey], source[targetKey])) {
-            if (allowedKeys && !allowedKeys.has(targetKey)) return;
+            if (allowedKeys && !allowedKeys.has(targetKey))
+                return;
             if (isPlainObject__default["default"](target[targetKey]) && isPlainObject__default["default"](source[targetKey])) {
                 // iterate one level down
                 const childPatch = diffKeys(source[targetKey], target[targetKey]);
                 if (Object.keys(childPatch).length) {
                     patch[targetKey] = childPatch;
                 }
-            } else {
+            }
+            else {
                 patch[targetKey] = target[targetKey];
             }
         }
     });
     // also look for removed keys and set them null
     Object.keys(source).forEach(sourceKey => {
-        if (allowedKeys && !allowedKeys.has(sourceKey)) return;
+        if (allowedKeys && !allowedKeys.has(sourceKey))
+            return;
         if (target[sourceKey] === undefined) {
             patch[sourceKey] = null;
         }
@@ -7286,7 +7245,7 @@ function chart (attributes) {
                     {
                         'datawrapper-height': {
                             [chart.get().id]: desiredHeight,
-                            previewId
+                            ...(previewId ? { previewId } : {})
                         }
                     },
                     '*'

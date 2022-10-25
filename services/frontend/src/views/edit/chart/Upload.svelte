@@ -1,5 +1,5 @@
 <script>
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import Svelte2Wrapper from '_partials/svelte2/Svelte2Wrapper.svelte';
     import MessageDisplay from '_partials/displays/MessageDisplay.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';

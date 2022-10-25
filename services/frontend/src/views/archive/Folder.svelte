@@ -4,7 +4,7 @@
     import { onMount, getContext, beforeUpdate, tick } from 'svelte';
     import { currentFolder, folderTreeDropZone } from './stores';
     import { byName, selectAll } from './shared';
-    import truncate from '@datawrapper/shared/truncate';
+    import truncate from '@datawrapper/shared/truncate.js';
 
     const user = getContext('user');
     const { deleteFolder, patchFolder, foreignTeam } = getContext('page/archive');

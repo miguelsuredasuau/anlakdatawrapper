@@ -1,7 +1,7 @@
 <script>
     import HelpDisplay from './HelpDisplay.svelte';
     import { getContext } from 'svelte';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
 
     const msg = getContext('messages');
 

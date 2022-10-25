@@ -1,4 +1,10 @@
-import { createChart, createUser, destroy } from '../../../api/test/helpers/setup.js';
+import {
+    addUserToTeam,
+    createChart,
+    createTeam,
+    createUser,
+    destroy
+} from '../../../api/test/helpers/setup.js';
 import {
     createAPIForUser,
     getSessionHeaders,
@@ -61,7 +67,7 @@ describe('GET / (dashboard)', function () {
             await destroy(chart, ...Object.values(userObj));
         });
 
-        it('shows recently edited chart', async function () {
+        it('shows recently edited chart and purifies HTML', async function () {
             const res = await this.server.inject({
                 method: 'GET',
                 url: `/`,
@@ -75,7 +81,60 @@ describe('GET / (dashboard)', function () {
 
             expect($('h2')).to.include.text('Recently edited');
             expect($$('figure')).to.have.length(1);
-            expect($('figcaption')).to.have.trimmed.text('Testchart');
+            expect($('figcaption')).to.have.html('Testchart');
+        });
+    });
+
+    describe('pending invites', function () {
+        let ownerObj = {};
+        let memberObj = {};
+        let team;
+
+        before(async function () {
+            ownerObj = await createUser(this.server, {
+                name: 'A. <script>alert(1)</script> <b>Mallory</b>',
+                email: ''
+            });
+            team = await createTeam({
+                name: "Mallory's <script>alert(1)</script> <b>Team</b>"
+            });
+            await addUserToTeam(ownerObj.user, team, 'owner');
+            memberObj = await createUser(this.server);
+
+            const api = createAPIForUser(this.server, ownerObj);
+            try {
+                await api(`/teams/${team.id}/invites`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: memberObj.user.email,
+                        role: 'member'
+                    })
+                });
+            } catch (e) {
+                console.error(e.response);
+                throw e;
+            }
+        });
+
+        after(async function () {
+            await destroy(team, ...Object.values(memberObj), ...Object.values(ownerObj));
+        });
+
+        it('shows pending invites and sanitizes user name and team name', async function () {
+            const res = await this.server.inject({
+                method: 'GET',
+                url: `/`,
+                headers: getSessionHeaders(memberObj)
+            });
+            expect(res.statusCode).to.equal(200);
+            const view = parseSvelteView(res.result);
+            expect(view).to.equal('dashboard/Index.svelte');
+
+            const { $ } = parseHTML(res.result);
+
+            expect($('.box h3')).to.include.text('Pending invitation');
+            expect($('.invite-msg')).to.contain.html('<tt>"A.  Mallory"</tt>');
+            expect($('.invite-msg')).to.contain.html('<b>"Mallory\'s  Team"</b>');
         });
     });
 });

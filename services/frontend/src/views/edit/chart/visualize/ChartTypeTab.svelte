@@ -1,6 +1,6 @@
 <script>
-    import get from '@datawrapper/shared/get';
-    import purifySvg from '@datawrapper/shared/purifySvg';
+    import get from '@datawrapper/shared/get.js';
+    import purifySvg from '@datawrapper/shared/purifySvg.js';
     import { getContext } from 'svelte';
 
     const { chart, visualization } = getContext('page/edit');

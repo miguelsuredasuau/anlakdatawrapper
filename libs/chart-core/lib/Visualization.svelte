@@ -26,7 +26,7 @@
     import set from '@datawrapper/shared/set.js';
     import { loadScript, loadStylesheet } from '@datawrapper/shared/fetch.js';
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
-    import invertColor from '@datawrapper/shared/invertColor.cjs';
+    import invertColor from '@datawrapper/shared/invertColor.js';
     import { getBrowser } from '@datawrapper/polyfills/src/getBrowser';
     import { clean, isTransparentColor, parseFlagsFromURL } from './shared.mjs';
     import { isObject } from 'underscore';

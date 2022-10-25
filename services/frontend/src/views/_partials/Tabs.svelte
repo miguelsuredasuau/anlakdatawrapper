@@ -1,7 +1,7 @@
 <script>
     import { createEventDispatcher } from 'svelte';
     import IconDisplay from './displays/IconDisplay.svelte';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
 
     const dispatch = createEventDispatcher();
 

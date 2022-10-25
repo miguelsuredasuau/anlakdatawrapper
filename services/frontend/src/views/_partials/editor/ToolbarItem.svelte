@@ -1,6 +1,6 @@
 <script>
     import HelpDisplay from '_partials/displays/HelpDisplay.svelte';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     export let title = null;
 
     export let tooltip = null;

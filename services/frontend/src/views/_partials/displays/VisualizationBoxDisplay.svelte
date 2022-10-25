@@ -1,5 +1,5 @@
 <script>
-    import decodeHtml from '@datawrapper/shared/decodeHtml';
+    import decodeHtml from '@datawrapper/shared/decodeHtml.js';
     import { getContext, createEventDispatcher } from 'svelte';
     const config = getContext('config');
     const dispatch = createEventDispatcher();

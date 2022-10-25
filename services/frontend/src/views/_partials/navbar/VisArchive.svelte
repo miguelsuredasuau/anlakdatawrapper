@@ -1,9 +1,9 @@
 <script>
     import { onMount, getContext } from 'svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
-    import httpReq from '@datawrapper/shared/httpReq';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
-    import truncate from '@datawrapper/shared/truncate';
+    import httpReq from '@datawrapper/shared/httpReq.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
+    import truncate from '@datawrapper/shared/truncate.js';
     import NavBarIcon from './NavBarIcon.svelte';
 
     const request = getContext('request');

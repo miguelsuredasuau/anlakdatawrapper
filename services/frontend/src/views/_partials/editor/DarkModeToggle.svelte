@@ -2,7 +2,7 @@
     import ToolbarItem from './ToolbarItem.svelte';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
     import { createEventDispatcher, getContext } from 'svelte';
-    import get from '@datawrapper/shared/get';
+    import get from '@datawrapper/shared/get.js';
 
     const { isDark, chart, theme } = getContext('page/edit');
     const dispatch = createEventDispatcher();

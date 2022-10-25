@@ -1,11 +1,11 @@
 <script>
-    import httpReq from '@datawrapper/shared/httpReq';
-    import purifyHtml from '@datawrapper/shared/purifyHtml';
+    import httpReq from '@datawrapper/shared/httpReq.js';
+    import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import NotificationDisplay from '_partials/displays/NotificationDisplay.svelte';
     import LoadingSpinnerDisplay from '_partials/displays/LoadingSpinnerDisplay.svelte';
     import SetPasswordInput from '_partials/controls/SetPasswordInput.svelte';
     import ProviderButtons from './ProviderButtons.svelte';
-    import { trackEvent } from '@datawrapper/shared/analytics';
+    import { trackEvent } from '@datawrapper/shared/analytics.js';
     import { isValidEmail } from './utils';
 
     export let __;
