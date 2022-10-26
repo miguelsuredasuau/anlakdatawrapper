@@ -20,6 +20,7 @@ const NODE_BUILTINS = [
     'https',
     'net',
     'os',
+    'perf_hooks',
     'punycode',
     'punycode/', // Fixes missing global variable name `punycode/`.
     'stream',

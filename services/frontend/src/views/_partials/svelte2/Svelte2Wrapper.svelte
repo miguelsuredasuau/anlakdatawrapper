@@ -1,6 +1,6 @@
 <script>
     import { onMount, getContext, beforeUpdate, createEventDispatcher } from 'svelte';
-    import dw from '@datawrapper/chart-core/dist/dw-2.0.cjs';
+    import dw from '@datawrapper/chart-core/lib/dw/index.mjs';
     import clone from 'lodash/cloneDeep';
     import merge from 'lodash/merge';
     import isEqual from 'underscore/modules/isEqual.js';

@@ -11,7 +11,7 @@
     import ChartCoreChart from '@datawrapper/chart-core/lib/dw/chart.mjs';
     import escapeHtml from '@datawrapper/shared/escapeHtml.js';
     import httpReq from '@datawrapper/shared/httpReq.js';
-    import dw from '@datawrapper/chart-core/dist/dw-2.0.cjs';
+    import dw from '@datawrapper/chart-core/lib/dw/index.mjs';
     import { trackPageView } from '@datawrapper/shared/analytics.js';
     import merge from 'lodash/merge';
     import cloneDeep from 'lodash/cloneDeep';

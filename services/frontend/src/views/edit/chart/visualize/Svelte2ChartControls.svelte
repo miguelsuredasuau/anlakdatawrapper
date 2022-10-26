@@ -57,13 +57,7 @@
     }
 
     async function loadControls(visualization) {
-        if (
-            !visualization ||
-            !visualization.id ||
-            typeof window === 'undefined' ||
-            typeof __dirname !== 'undefined'
-        ) {
-            // TODO Do a better check if we're in SSR than checking if __dirname is defined.
+        if (!visualization || !visualization.id || typeof document === 'undefined') {
             return;
         }
         const type = visualization.id;
