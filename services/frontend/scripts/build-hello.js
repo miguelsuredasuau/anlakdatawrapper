@@ -132,14 +132,6 @@ const { getInfo } = require('@el3um4s/svelte-get-component-info');
             path.join(outDir, 'lib/requirejs')
         ),
         fs.copy(
-            path.dirname(require.resolve('codemirror/package.json')),
-            path.join(outDir, 'lib/codemirror')
-        ),
-        fs.copy(
-            path.dirname(require.resolve('jsonlint/web/jsonlint.js')),
-            path.join(outDir, 'lib/jsonlint')
-        ),
-        fs.copy(
             path.resolve(path.dirname(require.resolve('@datawrapper/icons/package.json')), 'build'),
             path.join(outDir, 'lib/icons')
         ),

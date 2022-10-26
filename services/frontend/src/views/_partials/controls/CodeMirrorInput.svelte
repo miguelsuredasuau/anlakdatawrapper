@@ -61,36 +61,36 @@
         const opts = getCodeMirrorOptions();
 
         // Dynamically load CodeMirror at runtime:
-        const CodeMirror = await import('/lib/codemirror/lib/codemirror');
+        const CodeMirror = await import('codemirror/lib/codemirror');
 
-        await import('/lib/codemirror/mode/javascript/javascript');
-        await import('/lib/codemirror/mode/css/css');
-        await import('/lib/codemirror/addon/search/searchcursor');
-        await import('/lib/codemirror/addon/comment/comment');
-        await import(`/lib/codemirror/keymap/sublime`);
+        await import('codemirror/mode/javascript/javascript');
+        await import('codemirror/mode/css/css');
+        await import('codemirror/addon/search/searchcursor');
+        await import('codemirror/addon/comment/comment');
+        await import(`codemirror/keymap/sublime`);
 
         if (opts.foldGutter) {
-            await import('/lib/codemirror/addon/fold/foldgutter');
-            await import('/lib/codemirror/addon/fold/brace-fold');
+            await import('codemirror/addon/fold/foldgutter');
+            await import('codemirror/addon/fold/brace-fold');
         }
 
         if (opts.lint) {
-            await import('/lib/jsonlint/jsonlint.js');
-            await import('/lib/codemirror/addon/lint/json-lint');
-            await import('/lib/codemirror/addon/lint/lint');
+            window.jsonlint = await import('jsonlint-mod');
+            await import('codemirror/addon/lint/json-lint');
+            await import('codemirror/addon/lint/lint');
         }
 
         if (opts.search) {
-            await import('/lib/codemirror/addon/search/search');
-            await import('/lib/codemirror/addon/search/jump-to-line');
+            await import('codemirror/addon/search/search');
+            await import('codemirror/addon/search/jump-to-line');
         }
 
         if (opts.matchBrackets) {
-            await import('/lib/codemirror/addon/edit/matchbrackets');
+            await import('codemirror/addon/edit/matchbrackets');
         }
 
         if (opts.autoCloseBrackets) {
-            await import('/lib/codemirror/addon/edit/closebrackets');
+            await import('codemirror/addon/edit/closebrackets');
         }
 
         // Initialize CodeMirror instance for each of the editors:

@@ -110,23 +110,6 @@ module.exports = {
                 }
             },
             {
-                path: '/jsonlint/{file*}',
-                method: 'GET',
-                config: {
-                    auth: false,
-                    validate: {
-                        params: Joi.object({
-                            file: FILE_SCHEMA
-                        })
-                    }
-                },
-                handler: {
-                    directory: {
-                        path: path.dirname(require.resolve('jsonlint/web/jsonlint.js'))
-                    }
-                }
-            },
-            {
                 path: '/icons/{file*}',
                 method: 'GET',
                 config: {

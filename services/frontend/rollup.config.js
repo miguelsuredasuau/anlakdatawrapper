@@ -42,23 +42,6 @@ function onwarn(warning, handler) {
 function createViewInput({ views, mode, replacements = {} }) {
     const ext = mode === 'ssr' ? '.ssr.js' : '.js';
     return {
-        external: [
-            '/lib/codemirror/lib/codemirror',
-            '/lib/codemirror/mode/javascript/javascript',
-            '/lib/codemirror/mode/css/css',
-            '/lib/codemirror/addon/search/searchcursor',
-            '/lib/codemirror/addon/comment/comment',
-            '/lib/codemirror/addon/fold/foldgutter',
-            '/lib/codemirror/addon/fold/brace-fold',
-            '/lib/codemirror/addon/lint/json-lint',
-            '/lib/codemirror/addon/lint/lint',
-            '/lib/codemirror/addon/search/search',
-            '/lib/codemirror/addon/search/jump-to-line',
-            '/lib/codemirror/addon/edit/matchbrackets',
-            '/lib/codemirror/addon/edit/closebrackets',
-            '/lib/codemirror/keymap/sublime',
-            '/lib/jsonlint/jsonlint.js'
-        ],
         input: views.map(view => join(sourceDir, view.replace(/\.svelte$/, '.view.svelte'))),
         output: {
             dir: outputDir,
