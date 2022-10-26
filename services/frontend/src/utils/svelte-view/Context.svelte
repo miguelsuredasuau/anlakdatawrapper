@@ -27,6 +27,15 @@
     export let stores = {};
     export let viewComponents = {};
 
+    export let csrRoot = '';
+    export let libRoot = '';
+    export let vendorRoot = '';
+
+    // export URL roots as context
+    setContext('csrRoot', csrRoot);
+    setContext('libRoot', libRoot);
+    setContext('vendorRoot', vendorRoot);
+
     // prepare dayjs library
     const dayjsLocales = {
         de,
@@ -98,7 +107,7 @@
 
     onMount(async () => {
         await loadScript(
-            `/lib/csr/_partials/svelte2/Svelte2Wrapper.element.svelte.js?sha=${$config.GITHEAD}`
+            `${csrRoot}_partials/svelte2/Svelte2Wrapper.element.svelte.js?sha=${$config.GITHEAD}`
         );
         if (window.location.hash) {
             $request.hash = window.location.hash;

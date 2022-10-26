@@ -25,7 +25,7 @@
         "test:server": "DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} mocha --config ./mocha-config-server.js --exit",
         "test:server-rollup": "NODE_OPTIONS=--max-old-space-size=8192 DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} rollup -c",
         "test:server-rollup-watch": "NODE_OPTIONS=--max-old-space-size=8192 DW_DEV_MODE=1 NODE_ENV=test DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} rollup --watch",
-        "build:hello": "rm -Rf build/hello && TARGET=hello rollup -c && TARGET=_partials/svelte2 rollup -c && node scripts/build-hello.js"
+        "build:hello": "rm -Rf build/hello && TARGET=hello OUTPUT_DIR=build/hello rollup -c && TARGET=_partials/svelte2 OUTPUT_DIR=build/hello rollup -c && ./scripts/build-hello.js"
     },
     "dependencies": {
         "@datawrapper/chart-core": "file:../../libs/chart-core",

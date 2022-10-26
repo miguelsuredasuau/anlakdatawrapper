@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const path = require('path');
 const fs = require('fs-extra');
 const chartCore = require('@datawrapper/chart-core');
@@ -13,8 +15,7 @@ const { getInfo } = require('@el3um4s/svelte-get-component-info');
         },
         events: { on: noop },
         method: noop,
-        // eslint-disable-next-line
-        log: console.log,
+        log: console.log, // eslint-disable-line no-console
         methods: {
             config() {
                 return {
@@ -85,31 +86,16 @@ const { getInfo } = require('@el3um4s/svelte-get-component-info');
             magicNumber: 42,
             componentInfos,
             icons
-        }
+        },
+        csrRoot: '',
+        libRoot: 'lib/',
+        vendorRoot: 'lib/vendor/'
     });
-    const relativeRefs = html
-        .replace(/: '\/lib\//g, ": 'lib/")
-        .replace(/href="\/static\/vendor\//g, 'href="lib/vendor/')
-        .replace(/src="\/lib\//g, 'src="lib/')
-        .replace(/href="\/lib\//g, 'href="lib/');
-
-    const outDir = path.join(__dirname, '../build/hello');
-    await fs.mkdirp(outDir);
-    await fs.mkdirp(path.join(outDir, 'lib/csr/hello'));
-    await fs.mkdirp(path.join(outDir, 'lib/csr/_partials'));
-
-    const bundle = await fs.readFile(
-        path.join(__dirname, '../build/views/hello/Index.svelte.js'),
-        'utf-8'
-    );
-    const bundleRel = bundle
-        .replace(/\/lib\/csr\//g, 'lib/csr/')
-        .replace(/@import '\/lib\/codemirror/g, "@import 'lib/codemirror")
-        .replace(/\/lib\/icons\//g, 'lib/icons/');
 
     // write libs
+    const outDir = path.join(__dirname, '../build/hello');
     await Promise.all([
-        fs.writeFile(path.join(outDir, 'index.html'), relativeRefs),
+        fs.writeFile(path.join(outDir, 'index.html'), html),
         fs.copy(path.join(__dirname, '..', 'static'), path.join(outDir, 'lib/static')),
         fs.copy(chartCore.path.dist, path.join(outDir, 'lib/chart-core')),
         fs.copy(
@@ -134,25 +120,6 @@ const { getInfo } = require('@el3um4s/svelte-get-component-info');
         fs.copy(
             path.resolve(path.dirname(require.resolve('@datawrapper/icons/package.json')), 'build'),
             path.join(outDir, 'lib/icons')
-        ),
-        fs.writeFile(path.join(outDir, 'lib/csr/hello/Index.svelte.js'), bundleRel),
-        fs.copy(
-            path.join(__dirname, '../build/views/hello/Index.svelte.js.map'),
-            path.join(outDir, 'lib/csr/hello/Index.svelte.js.map')
-        ),
-        fs.copy(
-            path.join(
-                __dirname,
-                '../build/views/_partials/svelte2/Svelte2Wrapper.element.svelte.js'
-            ),
-            path.join(outDir, 'lib/csr/_partials/svelte2/Svelte2Wrapper.element.svelte.js')
-        ),
-        fs.copy(
-            path.join(
-                __dirname,
-                '../build/views/_partials/svelte2/Svelte2Wrapper.element.svelte.js.map'
-            ),
-            path.join(outDir, 'lib/csr/_partials/svelte2/Svelte2Wrapper.element.svelte.js.map')
         )
     ]);
 })();

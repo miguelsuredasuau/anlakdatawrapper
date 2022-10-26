@@ -1,4 +1,5 @@
 <script>
+    import { getContext } from 'svelte';
     export let icon = 'api';
     export let size = false;
     export let color = 'currentColor';
@@ -10,6 +11,8 @@
     export let spin = false;
     export let timing = 'linear';
     export let duration = '2s';
+
+    const libRoot = getContext('libRoot');
 
     const iconsVersion = '1.12.0'; // @todo: read from package.json
 </script>
@@ -51,7 +54,7 @@
     <svg class="svg-{icon}-dims" class:crisp style={size ? `font-size:${size};` : ''}>
         <use
             style="fill: {color}"
-            xlink:href="/lib/icons/symbol/svg/sprite.symbol.svg?v={iconsVersion}#{icon}"
+            xlink:href="{libRoot}icons/symbol/svg/sprite.symbol.svg?v={iconsVersion}#{icon}"
         />
     </svg>
 </span>

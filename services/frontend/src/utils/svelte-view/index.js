@@ -72,9 +72,21 @@ class SvelteView {
     compile(t, compileOpts) {
         const page = relative(baseViewDir, compileOpts.filename);
 
-        return async context => {
+        return async ({
+            stores = {},
+            storeCached = {},
+            storeHashes = {},
+            props = {},
+            htmlClass = '',
+            csrRoot = '/lib/csr/',
+            libRoot = '/lib/',
+            vendorRoot = '/static/vendor/',
+            analytics = {},
+            disableMatomo = false
+        } = {}) => {
             const DW_DEV_MODE = this.server.methods.isDevMode();
             const config = this.server.methods.config();
+            const favicon = config.frontend.favicon || libRoot + 'static/img/favicon.ico';
 
             let app;
             try {
@@ -83,7 +95,7 @@ class SvelteView {
                 this.server.log(['sentry'], e);
                 const template = await getTemplate('error.ejs', { useCache: !DW_DEV_MODE });
                 const output = ejs.render(template, {
-                    FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico',
+                    FAVICON: favicon,
                     TITLE: 'Template error',
                     HEADING: 'Template error',
                     BODY: DW_DEV_MODE ? `<p>${e.message}</p>` : ''
@@ -91,26 +103,33 @@ class SvelteView {
                 return output;
             }
 
-            for (const key in context.stores) {
+            for (const key in stores) {
                 // resolve store values in case they are async
-                context.stores[key] = await Promise.resolve(context.stores[key]);
+                stores[key] = await Promise.resolve(stores[key]);
             }
-            context.props.stores = context.stores;
+            props.stores = stores;
 
-            const { css, html, head } = app.render(context.props);
+            props.csrRoot = csrRoot;
+            props.libRoot = libRoot;
+            props.vendorRoot = vendorRoot;
+
+            const { css, html, head } = app.render(props);
 
             // remove stores that we already have in client-side cache
-            Object.keys(context.storeCached).forEach(key => {
-                context.props.stores[key] = {};
+            Object.keys(storeCached).forEach(key => {
+                props.stores[key] = {};
             });
 
             const template = await getTemplate('base.ejs', { useCache: !DW_DEV_MODE });
-            const { user } = context.stores;
+            const { user } = stores;
             const output = ejs.render(template, {
-                HTML_CLASS: context.htmlClass || '',
+                HTML_CLASS: htmlClass,
+                CSR_ROOT: csrRoot,
+                LIB_ROOT: libRoot,
+                VENDOR_ROOT: vendorRoot,
                 ANALYTICS: {
                     uid: user.isGuest ? 'guest' : user.id,
-                    ...(context.analytics || {})
+                    ...analytics
                 },
                 SSR_HEAD: head,
                 SSR_CSS: css.code,
@@ -118,24 +137,21 @@ class SvelteView {
                 SSR_HTML: html,
                 GITHEAD: this.server.app.GITHEAD,
                 PAGE: page,
-                PAGE_PROPS: jsesc(JSON.stringify(context.props), {
+                PAGE_PROPS: jsesc(JSON.stringify(props), {
                     isScriptContext: true,
                     json: true,
                     wrap: true
                 }),
                 DW_DEV_MODE,
-                STORE_HASHES: jsesc(JSON.stringify(context.storeHashes), {
+                STORE_HASHES: jsesc(JSON.stringify(storeHashes), {
                     isScriptContext: true,
                     json: true,
                     wrap: true
                 }),
                 DW_DOMAIN: config.api.domain,
-                MATOMO:
-                    config.frontend.matomo && !context.disableMatomo
-                        ? config.frontend.matomo
-                        : null,
+                MATOMO: config.frontend.matomo && !disableMatomo ? config.frontend.matomo : null,
                 SENTRY: (config.frontend.sentry && config.frontend.sentry.clientSide) || null,
-                FAVICON: config.frontend.favicon || '/lib/static/img/favicon.ico',
+                FAVICON: favicon,
                 CORE_BEFORE_HEAD: await this.server.methods.getCustomHTML('core/beforeHead', {}),
                 CORE_AFTER_HEAD: await this.server.methods.getCustomHTML('core/afterHead', {}),
                 CORE_BEFORE_BODY: await this.server.methods.getCustomHTML('core/beforeBody', {}),
