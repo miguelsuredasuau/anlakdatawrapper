@@ -148,6 +148,7 @@
                         this.fire('resetSort');
                         hot.selectCell(
                             0,
+                            -1,
                             insertAt,
                             hot.countRows() - 1,
                             insertAt + elements.length - 1
@@ -161,45 +162,54 @@
                     .getBoundingClientRect().height;
                 this.refs.hot.style.height = Math.min(500, h + 10) + 'px';
             },
-            checkRange(r, c, r2, c2) {
-                // check if
-                // 1. only a single column is selected, and
-                // 2. the range starts at the first row, and
-                // 3. the range extends through he last row
-                const { hot, tableDataset } = this.get();
+            updateColumnSelection() {
+                const { activeColumn, multiSelection, hot } = this.get();
+                const newSelection = this.getSelectedColumns();
 
-                if (c === c2 && r === 0 && r2 === hot.countRows() - 1) {
-                    // const chart = this.store.get('dw_chart');
-                    // this.set({activeColumn: chart.dataset().column(c)});
-                    return;
-                }
-                if (c !== c2 && r === 0 && r2 === hot.countRows() - 1) {
-                    const sel = [];
-                    for (let i = Math.min(c, c2); i <= Math.max(c, c2); i++) {
-                        const cell = this.refs.hot.querySelector(
-                            `#data-preview .htCore tbody tr:first-child td:nth-child(${i + 2})`
-                        );
-                        if (cell) sel.push(+cell.dataset.column);
+                // toggle selection of single column
+                if (newSelection.length === 1) {
+                    const [newActive] = newSelection;
+                    if (activeColumn && activeColumn.name() === newActive.name()) {
+                        app.set({ activeColumn: null, multiSelection: false });
+                        hot.deselectCell();
+                    } else {
+                        app.set({ activeColumn: newActive, multiSelection: false });
                     }
-                    this.set({
-                        multiSelection: sel.map(i => tableDataset.column(i)),
-                        activeColumn: null
-                    });
                     return;
                 }
-                this.set({ activeColumn: null, multiSelection: false });
+
+                // toggle selection of multiple columns
+                if (newSelection.length > 1) {
+                    if (multiSelection) {
+                        app.set({ activeColumn: null, multiSelection: false });
+                        hot.deselectCell();
+                    } else {
+                        app.set({ activeColumn: null, multiSelection: newSelection });
+                    }
+                    return;
+                }
+
+                // no columns selected
+                app.set({ activeColumn: null, multiSelection: false });
+            },
+            getSelectedColumns() {
+                const { tableDataset, hot } = this.get();
+                const [[r1, c1, r2, c2]] = hot.getSelected();
+                const sel = [];
+                if (Math.abs(r1 - r2) === tableDataset.numRows()) {
+                    for (let i = Math.min(c1, c2); i <= Math.max(c1, c2); i++) {
+                        sel.push(tableDataset.column(i));
+                    }
+                }
+                return sel;
             },
             initCustomEvents() {
                 // wait a bit to make sure HoT is rendered
                 setTimeout(() => {
-                    // catch click events on A,B,C,D... header row
+                    // catch click events on 'transpose' cell
                     this.refs.hot.querySelectorAll('.htCore thead th:first-child').forEach(th => {
                         th.removeEventListener('click', topLeftCornerClick);
                         th.addEventListener('click', topLeftCornerClick);
-                    });
-                    this.refs.hot.querySelectorAll('.htCore thead th+th').forEach(th => {
-                        th.removeEventListener('click', cellHeaderClick);
-                        th.addEventListener('click', cellHeaderClick);
                     });
                 }, 500);
             },
@@ -253,14 +263,12 @@
                 data: [],
                 rowHeaders: i => {
                     const ti = HOT.hooks.run(hot, 'modifyRow', i);
-                    // const ti = hot.getPlugin('ColumnSorting').translateRow(i);
                     return ti + 1;
                 },
                 colHeaders: true,
                 fixedRowsTop: 1,
                 fixedColumnsLeft: this.get().fixedColumnsLeft,
                 filters: true,
-                // dropdownMenu: true,
                 startRows: 13,
                 startCols: 8,
                 fillHandle: false,
@@ -269,6 +277,7 @@
                 manualColumnMove: true,
                 selectionMode: 'range',
                 autoColumnSize: { useHeaders: true, syncLimit: 5 },
+                activeHeaderClassName: 'selected',
 
                 // // sorting
                 sortIndicator: true,
@@ -306,22 +315,23 @@
                     return (a, b) => a[0] - b[0];
                 },
                 afterGetColHeader: (col, th) => {
-                    const { activeColumn, tableDataset } = this.get();
+                    const { tableDataset, activeColumn, multiSelection } = this.get();
                     if (!tableDataset || !tableDataset.hasColumn(col)) return;
-                    if (
-                        (col === 0 || col) &&
-                        activeColumn &&
-                        tableDataset.column(col).name() === activeColumn.name()
-                    ) {
+
+                    const columnName = tableDataset.column(col).name();
+                    const isSelected = activeColumn && activeColumn.name() === columnName;
+                    const isInMultiSelection =
+                        multiSelection &&
+                        multiSelection.find(column => column.name() === columnName);
+
+                    // apply header styling for selected columns
+                    if (isSelected || isInMultiSelection) {
                         th.classList.add('selected');
                     }
 
-                    if (col === 0 || col) {
-                        if (this.getColumnFormat(tableDataset.column(col).name()).ignore) {
-                            th.classList.add('ignored');
-                        } else {
-                            th.classList.remove('ignored');
-                        }
+                    // apply header styling for hidden columns
+                    if (this.getColumnFormat(columnName).ignore) {
+                        th.classList.add('ignored');
                     }
                 },
                 // // search
@@ -334,7 +344,7 @@
             HOT.hooks.add('afterSetDataAtCell', a => this.dataChanged(a));
             HOT.hooks.add('afterColumnMove', (a, b) => this.columnMoved(a, b));
             HOT.hooks.add('afterRender', () => this.updateHeight());
-            HOT.hooks.add('afterSelection', (r, c, r2, c2) => this.checkRange(r, c, r2, c2));
+            HOT.hooks.add('beforeOnCellMouseUp', () => this.updateColumnSelection());
         },
 
         onstate({ changed, current, previous }) {
@@ -378,39 +388,6 @@
             }
         }
     };
-
-    function cellHeaderClick(evt) {
-        const th = this;
-        // reset the HoT selection
-        // find out which data column we're in
-        const k = th.parentNode.children.length;
-        let thIndex = -1;
-        // (stupid HTMLCollection has no indexOf)
-        for (let i = 0; i < k; i++) {
-            if (th.parentNode.children.item(i) === th) {
-                thIndex = i;
-                break;
-            }
-        }
-        // find column index
-        const colIndex = +app.refs.hot.querySelector(
-            `.htCore tbody tr:first-child td:nth-child(${thIndex + 1})`
-        ).dataset.column;
-        const { activeColumn, hot, tableDataset } = app.get();
-
-        if (tableDataset.hasColumn(colIndex)) {
-            const newActive = tableDataset.column(+colIndex);
-            // set active column (or unset if it's already set)
-            if (activeColumn && activeColumn.name() === newActive.name()) {
-                evt.target.parentNode.classList.remove('selected');
-                app.set({ activeColumn: false });
-                hot.deselectCell();
-            } else {
-                evt.target.parentNode.classList.add('selected');
-                app.set({ activeColumn: newActive });
-            }
-        }
-    }
 
     function topLeftCornerClick(evt) {
         evt.preventDefault();
@@ -534,16 +511,13 @@
                         left: ~'calc(50% - 6px)';
                     }
                 }
+                &:hover {
+                    background: #ddd;
+                }
                 &.selected {
                     background: #18a1cd;
                     color: white;
                     font-weight: bold;
-                }
-                &:hover {
-                    background: #ddd;
-                }
-                &.selected:hover {
-                    background: #18a1cd;
                 }
             }
             tr th + th div:after {

@@ -2,33 +2,9 @@
     <div class="columns is-variable is-5-widescreen is-8-fullhd">
         <div class="column is-4 is-3-widescreen">
             <div class="sidebar">
-                {#if activeColumn} {#if customColumn}
-
-                <ComputedColumnEditor
-                    ref:ccEd
-                    on:unselect="set({activeColumn:false})"
-                    bind:column="customColumn"
-                    bind:columns
-                />
-
-                <button on:click="force(event, true)" class="btn">
-                    {__('describe / edit-format')}
-                </button>
-
-                {:elseif columnFormat}
-
-                <CustomColumnFormat bind:column="columnFormat" bind:columns="normalColumns" />
-
-                {#if columnFormat.isComputed}
-                <button class="btn" on:click="force(event, false)">
-                    <i class="fa fa-chevron-left"></i> {__('describe / edit-formula')}
-                </button>
-                {/if} {/if} {#if activeColumn.type() == 'number'}
-                <Histogram bind:values="activeValues" bind:format="activeFormat" />
-                {/if} {:elseif multiSelection}
-
+                <!-- 1. Multiple columns selected: -->
+                {#if multiSelection}
                 <h3 class="first">{__('describe / show-hide-multi')}</h3>
-
                 <ul class="unstyled">
                     <li style="margin-bottom: 5px">
                         <button class="btn" on:click="hideMultiple(multiSelection, false)">
@@ -42,18 +18,44 @@
                     </li>
                 </ul>
 
+                <!-- 2. Single column selected: -->
+                {:elseif activeColumn}
+
+                <!-- 2.a Computed column: -->
+                {#if customColumn}
+                <ComputedColumnEditor
+                    ref:ccEd
+                    on:unselect="set({activeColumn:false})"
+                    bind:column="customColumn"
+                    bind:columns
+                />
+
+                <button on:click="force(event, true)" class="btn">
+                    {__('describe / edit-format')}
+                </button>
+
+                <!-- 2.b Column format: -->
+                {:elseif columnFormat}
+                <CustomColumnFormat bind:column="columnFormat" bind:columns="normalColumns" />
+                {#if columnFormat.isComputed}
+                <button class="btn" on:click="force(event, false)">
+                    <i class="fa fa-chevron-left"></i> {__('describe / edit-formula')}
+                </button>
+                {/if} {/if}
+
+                <!-- 2.c Number column (histogram): -->
+                {#if activeColumn.type() == 'number'}
+                <Histogram bind:values="activeValues" bind:format="activeFormat" />
+                {/if}
+
+                <!-- 3. Default sidebar: -->
                 {:else}
-
                 <h3 class="first">{ __(`Make sure the data looks right`) }</h3>
-
                 <p>{@html __(`describe / data-looks-right`) }</p>
-
                 <CheckboxControl label="{ __("First row as label") }" bind:value="firstRowIsHeader"
                 /> {#if showLocaleSelect}
                 <h4 class="mt-5">{__(`describe / locale-select / hed`)}</h4>
-
                 <p>{@html __(`describe / locale-select / body`)}</p>
-
                 <LocaleSelectInput />
                 {/if} {/if}
 
@@ -333,7 +335,10 @@
 
                 // Update active column
                 const updateActiveColumn = this.store.on('state', ({ current }) => {
-                    this.set({ activeColumn: current.tableDataset.column(columnName) });
+                    this.set({
+                        activeColumn: current.tableDataset.column(columnName),
+                        multiSelection: false
+                    });
                     updateActiveColumn.cancel();
                 });
 
@@ -362,7 +367,7 @@
                     }
                 });
                 chart.setMetadata('data.column-format', colFmt);
-                this.set({ multiSelection: false });
+                this.set({ multiSelection: false, activeColumn: null });
             },
             afterRender() {
                 // called once the hot is done rendering
@@ -439,8 +444,13 @@
                     }
                 }
             });
+
+            // Reset selection when data is transposed:
             if (changed.transpose) {
-                this.set({ activeColumn: false });
+                this.set({
+                    activeColumn: null,
+                    multiSelection: false
+                });
             }
         }
     };
