@@ -1,4 +1,6 @@
 <script>
+    import IconDisplay from '../displays/IconDisplay.svelte';
+
     /**
      * the checkbox label
      */
@@ -37,8 +39,7 @@
     label.faded {
         color: $dw-grey-dark;
     }
-
-    label.faded .css-ui {
+    label.faded .checkbox-icon {
         opacity: 0.5;
     }
     input[type='checkbox'] {
@@ -49,56 +50,40 @@
         display: inline-block;
         vertical-align: sub;
     }
-    input[type='checkbox'] + span.css-ui {
+    input[type='checkbox'] + .checkbox-icon {
         display: inline-block;
-        width: 1em;
-        height: 1em;
+        width: 1.25em;
+        height: 1.25em;
         border-radius: 2px;
         border: 1px solid $dw-grey;
         vertical-align: baseline;
         position: relative;
-        top: 2px;
-
-        .standalone & {
-            top: 0;
-            margin-left: 0;
-        }
+        font-size: 0.8em;
+        line-height: 1;
+        top: -0.15em;
+        text-align: center;
     }
-    input[type='checkbox']:checked + span.css-ui {
+    input[type='checkbox']:checked + .checkbox-icon {
         background: $dw-scooter-light;
         border-color: $dw-scooter-light;
     }
-    input[type='checkbox']:checked + span.css-ui:after {
-        position: absolute;
-        display: block;
-        color: white;
-        left: 0.15em;
-        top: 0.4em;
-        font-weight: bold;
-        content: '\e023';
-        font-family: 'iconmonstr-iconic-font';
-        font-size: 0.65em;
-        line-height: 0.8em;
-    }
-    input[type='checkbox']:focus + span.css-ui {
+    input[type='checkbox']:focus + .checkbox-icon {
         border-color: $dw-scooter-light;
         box-shadow: 0 0 1px 1px fade($dw-scooter-light, 55%);
     }
-    input[type='checkbox']:disabled + span.css-ui {
+    input[type='checkbox']:disabled + .checkbox-icon {
         background: $dw-grey-dark;
         border-color: $dw-grey;
         cursor: default;
         opacity: 0.6;
     }
-    input[type='checkbox']:disabled:checked + span.css-ui {
+    input[type='checkbox']:disabled:checked + .checkbox-icon {
         border-color: $dw-grey;
         background: $dw-grey;
     }
-
     .checkbox {
         margin: 0 0 0.15em 0;
     }
-
     .checkbox:not(:last-of-type) {
         margin-right: 1em;
     }
@@ -116,6 +101,8 @@
         on:change
         on:click
     />
-    <span class="css-ui" />
+    <span class="checkbox-icon">
+        <IconDisplay icon="checkmark-bold" color="white" valign="top" />
+    </span>
     {#if !standalone}<span class="checkbox-label">{label}</span>{/if}
 </label>
