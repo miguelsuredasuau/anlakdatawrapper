@@ -82,6 +82,12 @@
     export let searchingMsg = null;
 
     /**
+     * number of milliseconds to delay firing the 'input' event after the user has last changed the
+     * `searchQuery` value
+     */
+    export let delay = 200;
+
+    /**
      * matches contains the list of items matching
      * the entered search query
      */
@@ -111,9 +117,8 @@
     let open = false;
 
     /**
-     * debounced 'input' event handler, fires 200ms
-     * after the user has last changed the searchQuery
-     * value
+     * debounced 'input' event handler, fires `delay` milliseconds after the user has last changed
+     * the `searchQuery` value
      */
     let lastRunSig = null;
     const handleInput = debounce(async function () {
@@ -135,7 +140,7 @@
         open = true;
         selectedIndex = 0;
         searching = false;
-    }, 200);
+    }, delay);
 
     /**
      *

@@ -81,6 +81,8 @@ describe('TypeaheadInput', () => {
     });
 
     describe('typeahead with options', function () {
+        const INPUT_DELAY = 100;
+        const BUFFER = 50;
         let result;
 
         beforeEach(async () => {
@@ -92,7 +94,8 @@ describe('TypeaheadInput', () => {
                     { value: 'fruit-2', label: 'Banana' },
                     { value: 'fruit-3', label: 'Pineapple' },
                     { value: 'fruit-4', label: 'Mango' }
-                ]
+                ],
+                delay: INPUT_DELAY
             });
         });
 
@@ -111,8 +114,8 @@ describe('TypeaheadInput', () => {
 
             await fireEvent.input(input, { target: { value: 'ap' } });
 
-            // search waits 200ms before happening
-            await delay(200);
+            // wait for debounced 'input' event
+            await delay(INPUT_DELAY + BUFFER);
 
             const ddItem1 = ddDiv.querySelector('.dropdown-item:nth-child(1)');
             expect(ddItem1).to.exist;
@@ -148,8 +151,8 @@ describe('TypeaheadInput', () => {
 
             await fireEvent.input(input, { target: { value: 'xydgdj' } });
 
-            // search waits 200ms before happening
-            await delay(200);
+            // wait for debounced 'input' event
+            await delay(INPUT_DELAY + BUFFER);
 
             const ddItem1 = ddDiv.querySelector('div.dropdown-item:nth-child(1)');
             expect(ddItem1).to.exist;
@@ -164,6 +167,8 @@ describe('TypeaheadInput', () => {
     });
 
     describe('typeahead keyboard nav', function () {
+        const INPUT_DELAY = 100;
+        const BUFFER = 50;
         let result;
 
         beforeEach(async () => {
@@ -174,7 +179,8 @@ describe('TypeaheadInput', () => {
                     { value: 'v2', label: 'Bar' },
                     { value: 'v3', label: 'Foo 2' },
                     { value: 'v4', label: 'Foo 3' }
-                ]
+                ],
+                delay: INPUT_DELAY
             });
         });
 
@@ -185,7 +191,8 @@ describe('TypeaheadInput', () => {
             await fireEvent.focus(input);
             await fireEvent.input(input, { target: { value: 'foo' } });
 
-            await delay(200);
+            // wait for debounced 'input' event
+            await delay(INPUT_DELAY + BUFFER);
 
             const dd = outerDiv.querySelector('.dropdown-menu');
             expect(dd).to.exist;
@@ -212,17 +219,21 @@ describe('TypeaheadInput', () => {
     });
 
     describe('typeahead custom async search function', function () {
+        const SEARCH_DELAY = 200;
+        const INPUT_DELAY = 100;
+        const BUFFER = 50;
         let result;
 
         const customSearchFunc = sinon.spy(async () => {
-            await delay(300);
+            await delay(SEARCH_DELAY);
             return [{ value: 'foo', label: 'Bar' }];
         });
 
         beforeEach(async () => {
             result = await renderWithContext(TypeaheadInput, {
                 uid: 'test',
-                search: customSearchFunc
+                search: customSearchFunc,
+                delay: INPUT_DELAY
             });
         });
 
@@ -235,10 +246,16 @@ describe('TypeaheadInput', () => {
 
             const control = outerDiv.querySelector('.control');
             expect(control).not.to.have.class('is-loading');
-            await delay(300);
+
+            // wait for debounced 'input' event
+            await delay(INPUT_DELAY + BUFFER);
+
             expect(customSearchFunc.calledOnceWith('x')).to.equal(true);
             expect(control).to.have.class('is-loading');
-            await delay(310);
+
+            // wait for debounced 'input' event
+            await delay(SEARCH_DELAY + BUFFER);
+
             expect(control).not.to.have.class('is-loading');
 
             const item1 = outerDiv.querySelector('.dropdown-menu .dropdown-item:nth-child(1)');
@@ -250,6 +267,8 @@ describe('TypeaheadInput', () => {
     });
 
     describe('typeahead with custom item renderer', function () {
+        const INPUT_DELAY = 100;
+        const BUFFER = 50;
         let result;
 
         beforeEach(async () => {
@@ -269,7 +288,8 @@ describe('TypeaheadInput', () => {
                         value: 'fr',
                         label: 'France'
                     }
-                ]
+                ],
+                delay: INPUT_DELAY
             });
         });
 
@@ -280,7 +300,8 @@ describe('TypeaheadInput', () => {
             await fireEvent.focus(input);
             await fireEvent.input(input, { target: { value: 'anc' } });
 
-            await delay(200);
+            // wait for debounced 'input' event
+            await delay(INPUT_DELAY + BUFFER);
 
             const item1 = outerDiv.querySelector('.dropdown-menu .dropdown-item');
             expect(item1).to.exist;
