@@ -3072,7 +3072,7 @@ function purifyHTML(input, allowed = DEFAULT_ALLOWED) {
 /**
  * @class dw.Column
  */
-function Column(name, rows, type) {
+function Column(name_, rows, type) {
     function notEmpty(d) {
         return d !== null && d !== undefined && d !== '';
     }
@@ -3111,6 +3111,7 @@ function Column(name, rows, type) {
 
     type = type ? columnTypes[type](sample) : guessType(sample);
 
+    let name = purifyHTML(name_);
     let origName = name;
     let valueRange, sum, mean, median;
     const origRows = rows.slice(0);
@@ -3121,28 +3122,28 @@ function Column(name, rows, type) {
         // column name (used for reference in chart metadata)
         name() {
             if (arguments.length >= 1) {
-                name = arguments[0];
+                name = purifyHTML(arguments[0]);
                 if (arguments.length === 2) {
-                    origName = arguments[1];
+                    origName = purifyHTML(arguments[1]);
                 } else {
                     origName = name;
                 }
                 return column;
             }
-            return purifyHTML(name);
+            return name;
         },
 
         origName() {
-            return purifyHTML(origName);
+            return origName;
         },
 
         // column title (used for presentation)
         title() {
             if (arguments.length) {
-                title = arguments[0];
+                title = purifyHTML(arguments[0]);
                 return column;
             }
-            return purifyHTML(title || name);
+            return title || name;
         },
 
         /**
