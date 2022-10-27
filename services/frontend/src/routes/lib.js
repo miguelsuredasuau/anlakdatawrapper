@@ -209,23 +209,6 @@ module.exports = {
                         return Boom.serverUnavailable('api responding with ' + err);
                     }
                 }
-            },
-            {
-                path: '/csr/{file*}',
-                method: 'GET',
-                config: {
-                    auth: false,
-                    validate: {
-                        params: Joi.object({
-                            file: FILE_SCHEMA
-                        })
-                    }
-                },
-                handler: {
-                    directory: {
-                        path: 'build/views'
-                    }
-                }
             }
         ]);
     }
