@@ -10,6 +10,8 @@
     export let workflow;
     export let __;
 
+    export let afterChartTypeSelector = '';
+
     const transpose = chart.bindKey('metadata.data.transpose');
     const chartType = chart.bindKey('type');
 
@@ -132,3 +134,4 @@
         {__('visualize / transpose-button')}
     </button>
 </p>
+{@html afterChartTypeSelector}

@@ -155,6 +155,10 @@ module.exports = {
                                 server.methods.config('general').defaultThemes || [];
                             themes = themes.filter(({ id }) => !defaultThemes.includes(id));
                         }
+                        const afterChartTypeSelector = await server.methods.getCustomHTML(
+                            'edit/visualize/afterChartTypeSelector',
+                            { request }
+                        );
 
                         return {
                             themes,
@@ -164,7 +168,8 @@ module.exports = {
                                 controls,
                                 previewWidths,
                                 customFields
-                            }
+                            },
+                            afterChartTypeSelector
                         };
                     }
                 },

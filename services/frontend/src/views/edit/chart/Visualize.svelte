@@ -35,6 +35,7 @@
      * all themes available to authenticated user
      */
     export let themes;
+    export let afterChartTypeSelector = '';
 
     let iframePreview;
 
@@ -204,6 +205,7 @@
                                 {visualizations}
                                 {teamSettings}
                                 {layoutControlsGroups}
+                                {afterChartTypeSelector}
                             />
                         </div>
                     {/if}
