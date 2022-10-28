@@ -3003,6 +3003,7 @@ var columnTypes = {
     date
 };
 
+const cache = new Map();
 const DEFAULT_ALLOWED = [
     'a',
     'span',
@@ -3044,14 +3045,28 @@ function purifyHTML(input, allowed = DEFAULT_ALLOWED) {
     if (!input) {
         return input;
     }
+    const allowedKey = JSON.stringify(Array.isArray(allowed) ? allowed.sort() : allowed);
+    const inputKey = JSON.stringify(input);
     if (typeof allowed === 'string') {
-        allowed = Array.from(allowed.toLowerCase().matchAll(/<([a-z][a-z0-9]*)>/g)).map(m => m[1]);
+        if (cache.has(allowedKey)) {
+            allowed = cache.get(allowedKey);
+        }
+        else {
+            allowed = Array.from(allowed.toLowerCase().matchAll(/<([a-z][a-z0-9]*)>/g)).map(m => m[1]);
+            cache.set(allowedKey, allowed);
+        }
     }
-    return DOMPurify__default["default"].sanitize(input, {
+    const key = `${inputKey}-${allowedKey}`;
+    if (cache.has(key)) {
+        return cache.get(key);
+    }
+    const result = DOMPurify__default["default"].sanitize(input, {
         ALLOWED_TAGS: allowed,
         ADD_ATTR: ['target'],
         FORCE_BODY: true // Makes sure that top-level SCRIPT tags are kept if explicitly allowed.
     });
+    cache.set(key, result);
+    return result;
 }
 
 /*
