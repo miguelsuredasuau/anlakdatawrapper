@@ -1,15 +1,35 @@
 'use strict';
 
-var DOMPurify = require('isomorphic-dompurify');
+var purifyHtml = require('@datawrapper/shared/purifyHtml.js');
+var significantDimension_js = require('@datawrapper/shared/significantDimension.js');
+var tailLength_js = require('@datawrapper/shared/tailLength.js');
+var round_js = require('@datawrapper/shared/round.js');
+var smartRound_js = require('@datawrapper/shared/smartRound.js');
+var equalish_js = require('@datawrapper/shared/equalish.js');
+var clone$1 = require('@datawrapper/shared/clone.js');
 var isPlainObject = require('lodash/isPlainObject.js');
-var isEqual$1 = require('lodash/isEqual.js');
+var get$1 = require('@datawrapper/shared/get.js');
+var set = require('@datawrapper/shared/set.js');
+var objectDiff = require('@datawrapper/shared/objectDiff.js');
+var PostEvent = require('@datawrapper/shared/postEvent.js');
+var columnNameToVariable = require('@datawrapper/shared/columnNameToVariable.js');
 var numeral = require('numeral');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var DOMPurify__default = /*#__PURE__*/_interopDefaultLegacy(DOMPurify);
+var purifyHtml__default = /*#__PURE__*/_interopDefaultLegacy(purifyHtml);
+var significantDimension_js__default = /*#__PURE__*/_interopDefaultLegacy(significantDimension_js);
+var tailLength_js__default = /*#__PURE__*/_interopDefaultLegacy(tailLength_js);
+var round_js__default = /*#__PURE__*/_interopDefaultLegacy(round_js);
+var smartRound_js__default = /*#__PURE__*/_interopDefaultLegacy(smartRound_js);
+var equalish_js__default = /*#__PURE__*/_interopDefaultLegacy(equalish_js);
+var clone__default = /*#__PURE__*/_interopDefaultLegacy(clone$1);
 var isPlainObject__default = /*#__PURE__*/_interopDefaultLegacy(isPlainObject);
-var isEqual__default = /*#__PURE__*/_interopDefaultLegacy(isEqual$1);
+var get__default = /*#__PURE__*/_interopDefaultLegacy(get$1);
+var set__default = /*#__PURE__*/_interopDefaultLegacy(set);
+var objectDiff__default = /*#__PURE__*/_interopDefaultLegacy(objectDiff);
+var PostEvent__default = /*#__PURE__*/_interopDefaultLegacy(PostEvent);
+var columnNameToVariable__default = /*#__PURE__*/_interopDefaultLegacy(columnNameToVariable);
 var numeral__default = /*#__PURE__*/_interopDefaultLegacy(numeral);
 
 function guessDelimiterFromLocale(numeral) {
@@ -678,7 +698,7 @@ function create(prototype, props) {
 }
 
 // Create a (shallow-cloned) duplicate of an object.
-function clone$1(obj) {
+function clone(obj) {
   if (!isObject(obj)) return obj;
   return isArray(obj) ? obj.slice() : extend({}, obj);
 }
@@ -718,7 +738,7 @@ function deepGet(obj, path) {
 // If any property in `path` does not exist or if the value is
 // `undefined`, return `defaultValue` instead.
 // The `path` is normalized through `_.toPath`.
-function get$1(object, path, defaultValue) {
+function get(object, path, defaultValue) {
   var value = deepGet(object, toPath(path));
   return isUndefined(value) ? defaultValue : value;
 }
@@ -828,7 +848,7 @@ function noop(){}
 function propertyOf(obj) {
   if (obj == null) return noop;
   return function(path) {
-    return get$1(obj, path);
+    return get(obj, path);
   };
 }
 
@@ -1972,9 +1992,9 @@ var allExports = /*#__PURE__*/Object.freeze({
     assign: extendOwn,
     defaults: defaults,
     create: create,
-    clone: clone$1,
+    clone: clone,
     tap: tap,
-    get: get$1,
+    get: get,
     has: has,
     mapObject: mapObject,
     identity: identity,
@@ -3003,72 +3023,6 @@ var columnTypes = {
     date
 };
 
-const cache = new Map();
-const DEFAULT_ALLOWED = [
-    'a',
-    'span',
-    'b',
-    'br',
-    'i',
-    'strong',
-    'sup',
-    'sub',
-    'strike',
-    'u',
-    'em',
-    'tt'
-];
-/**
- * Set default TARGET and REL for A tags.
- *
- * Don't overwrite target="_self".
- */
-DOMPurify__default["default"].addHook('afterSanitizeElements', function (el) {
-    if (el.nodeName.toLowerCase() === 'a') {
-        if (el.getAttribute('target') !== '_self') {
-            el.setAttribute('target', '_blank');
-        }
-        el.setAttribute('rel', 'nofollow noopener noreferrer');
-    }
-});
-/**
- * Remove all HTML tags from given `input` string, except `allowed` tags.
- *
- * @exports purifyHTML
- * @kind function
- *
- * @param {string} input - dirty HTML input
- * @param {string} [string[]] - list of allowed tags; see DEFAULT_ALLOWED for the default value
- * @return {string} - the cleaned HTML output
- */
-function purifyHTML(input, allowed = DEFAULT_ALLOWED) {
-    if (!input) {
-        return input;
-    }
-    const allowedKey = JSON.stringify(Array.isArray(allowed) ? allowed.sort() : allowed);
-    const inputKey = JSON.stringify(input);
-    if (typeof allowed === 'string') {
-        if (cache.has(allowedKey)) {
-            allowed = cache.get(allowedKey);
-        }
-        else {
-            allowed = Array.from(allowed.toLowerCase().matchAll(/<([a-z][a-z0-9]*)>/g)).map(m => m[1]);
-            cache.set(allowedKey, allowed);
-        }
-    }
-    const key = `${inputKey}-${allowedKey}`;
-    if (cache.has(key)) {
-        return cache.get(key);
-    }
-    const result = DOMPurify__default["default"].sanitize(input, {
-        ALLOWED_TAGS: allowed,
-        ADD_ATTR: ['target'],
-        FORCE_BODY: true // Makes sure that top-level SCRIPT tags are kept if explicitly allowed.
-    });
-    cache.set(key, result);
-    return result;
-}
-
 /*
  * column abstracts the functionality of each column
  * of a dataset. A column has a type (text|number|date).
@@ -3126,7 +3080,7 @@ function Column(name_, rows, type) {
 
     type = type ? columnTypes[type](sample) : guessType(sample);
 
-    let name = purifyHTML(name_);
+    let name = purifyHtml__default["default"](name_);
     let origName = name;
     let valueRange, sum, mean, median;
     const origRows = rows.slice(0);
@@ -3137,9 +3091,9 @@ function Column(name_, rows, type) {
         // column name (used for reference in chart metadata)
         name() {
             if (arguments.length >= 1) {
-                name = purifyHTML(arguments[0]);
+                name = purifyHtml__default["default"](arguments[0]);
                 if (arguments.length === 2) {
-                    origName = purifyHTML(arguments[1]);
+                    origName = purifyHtml__default["default"](arguments[1]);
                 } else {
                     origName = name;
                 }
@@ -3155,7 +3109,7 @@ function Column(name_, rows, type) {
         // column title (used for presentation)
         title() {
             if (arguments.length) {
-                title = purifyHTML(arguments[0]);
+                title = purifyHtml__default["default"](arguments[0]);
                 return column;
             }
             return title || name;
@@ -3176,7 +3130,7 @@ function Column(name_, rows, type) {
             if (!arguments.length) return undefined;
             var r = unfiltered ? origRows : rows;
             if (i < 0) i += r.length;
-            return type.parse(isDate(r[i]) || isNumber(r[i]) ? r[i] : purifyHTML(r[i]));
+            return type.parse(isDate(r[i]) || isNumber(r[i]) ? r[i] : purifyHtml__default["default"](r[i]));
         },
 
         /**
@@ -3203,7 +3157,7 @@ function Column(name_, rows, type) {
         values(unfiltered) {
             var r = unfiltered ? origRows : rows;
             r = map(r, function (d) {
-                return isDate(d) || isNumber(d) ? d : purifyHTML(d);
+                return isDate(d) || isNumber(d) ? d : purifyHtml__default["default"](d);
             });
             return map(r, type.parse);
         },
@@ -3220,12 +3174,12 @@ function Column(name_, rows, type) {
         // access to raw values
         raw(i, val) {
             if (!arguments.length)
-                return rows.map(d => (isDate(d) || isNumber(d) ? d : purifyHTML(d)));
+                return rows.map(d => (isDate(d) || isNumber(d) ? d : purifyHtml__default["default"](d)));
             if (arguments.length === 2) {
                 rows[i] = val;
                 return column;
             }
-            return isDate(rows[i]) || isNumber(rows[i]) ? rows[i] : purifyHTML(rows[i]);
+            return isDate(rows[i]) || isNumber(rows[i]) ? rows[i] : purifyHtml__default["default"](rows[i]);
         },
 
         /**
@@ -3713,191 +3667,6 @@ function json(opts) {
 }
 
 Dataset.json = json;
-
-/**
- * returns the length of the "tail" of a number, meaning the
- * number of meaningful decimal places
- *
- * @exports tailLength
- * @kind function
- *
- * @example
- * // returns 3
- * tailLength(3.123)
- *
- * @example
- * // returns 2
- * tailLength(3.12999999)
- *
- * @param {number} value
- * @returns {number}
- */
-function tailLength(value) {
-    return Math.max(0, String(value - Math.floor(value))
-        .replace(/00000*[0-9]+$/, '')
-        .replace(/33333*[0-9]+$/, '')
-        .replace(/99999*[0-9]+$/, '').length - 2);
-}
-
-/**
- * rounds a value to a certain number of decimals
- *
- * @exports round
- * @kind function
- *
- * @example
- * import round from '@datawrapper/shared/round';
- * round(1.2345); // 1
- * round(1.2345, 2); // 1.23
- * round(12345, -2); // 12300
- *
- * @param {number} value - the value to be rounded
- * @param {number} decimals - the number of decimals
- * @returns {number} - rounded value
- */
-function round(value, decimals = 0) {
-    const base = Math.pow(10, decimals);
-    return Math.round(value * base) / base;
-}
-
-/**
- * computes the significant dimension for a list of numbers
- * That's the number of decimals to which we can round the numbers
- * without loosing information
- *
- * @exports significantDimension
- * @kind function
- *
- * @example
- * import {significantDimension} from '@datawrapper/shared/significantDimension';
- * significantDimension([0,10,20,30]); // -1
- *
- * @param {number[]} values - list of input numbers
- * @param {number} tolerance - percent of input values that we allow to "collide"
- * @returns {number} - number of significant dimensions (= the number of decimals)
- */
-function significantDimension(values, tolerance = 0.1) {
-    let result = [];
-    let decimals = 0;
-    const uniqValues = uniq(values.filter(isFinite$1));
-    const totalUniq = uniqValues.length;
-    let check, diff;
-    const accepted = Math.floor(totalUniq * (1 - tolerance));
-    if (uniqValues.length < 3) {
-        // special case if there are only 2 unique values
-        return Math.round(uniqValues.reduce(function (acc, cur) {
-            if (!cur)
-                return acc;
-            const exp = Math.log(Math.abs(cur)) / Math.LN10;
-            if (exp < 8 && exp > -3) {
-                // use tail length for normal numbers
-                return acc + Math.min(3, tailLength(uniqValues[0]));
-            }
-            else {
-                return acc + (exp > 0 ? (exp - 1) * -1 : exp * -1);
-            }
-        }, 0) / uniqValues.length);
-    }
-    if (uniq(uniqValues.map(currentRound)).length > accepted) {
-        // we seem to have enough precision, but maybe it's too much?
-        check = function () {
-            return uniq(result).length === totalUniq;
-        };
-        diff = -1;
-    }
-    else {
-        // if we end up here it means we're loosing too much information
-        // due to rounding, we need to increase precision
-        check = function () {
-            return uniq(result).length <= accepted;
-        };
-        diff = +1;
-    }
-    let maxIter = 100;
-    do {
-        result = uniqValues.map(currentRound);
-        decimals += diff;
-    } while (check() && maxIter-- > 0);
-    if (maxIter < 10) {
-        console.warn('maximum iteration reached', values, result, decimals);
-    }
-    if (diff < 0)
-        decimals += 2;
-    else
-        decimals--;
-    /* rounds to the current number of decimals */
-    function currentRound(v) {
-        return round(v, decimals);
-    }
-    return decimals;
-}
-
-/**
- * rounds an array of numbers to the least number of decimals
- * without loosing any information due to the rounding
- *
- * @exports smartRound
- * @kind function
- *
- * @example
- * import {smartRound} from '@datawrapper/shared/smartRound';
- * smartRound([9, 10.5714, 12.1428, 13.7142]); // [9, 11, 12, 14]
- * smartRound([9, 10.5714, 12.1428, 12.4142]); // [9, 10.6, 12.1, 12.4]
- *
- * @param {array} values - the numbers to be rounded
- * @param {number} addPrecision - force more precision (=numbers of decimals) to the rounding
- * @param {number} tolerance - the percent of uniq input values that we can tolerate to lose after rounding
- * @returns the rounded values
- */
-function smartRound(values, addPrecision = 0, tolerance = 0.1) {
-    let dim = significantDimension(values, tolerance);
-    dim += addPrecision;
-    return values.map(v => round(v, dim));
-}
-
-/**
- * returns true if two numeric values are close enough
- *
- * @exports equalish
- * @kind function
- *
- * @param {number} a
- * @param {number} b
- *
- * @example
- * // returns true
- * equalish(0.333333, 1/3)
- *
- * @example
- * // returns false
- * equalish(0.333, 1/3)
- *
- * @export
- * @returns {boolean}
- */
-function equalish(a, b) {
-    return Math.abs(a - b) < 1e-6;
-}
-
-/**
- * Clones an object
- *
- * @exports clone
- * @kind function
- *
- * @param {*} object - the thing that should be cloned
- * @returns {*} - the cloned thing
- */
-function clone(o) {
-    if (!o || typeof o !== 'object')
-        return o;
-    try {
-        return JSON.parse(JSON.stringify(o));
-    }
-    catch (e) {
-        return o;
-    }
-}
 
 function outerHeight(element, withMargin = false) {
     if (!element) return null;
@@ -6339,7 +6108,7 @@ const ALLOWED_TAGS =
  */
 function htmlTemplate(template) {
     const evaluateTemplate = templateParser(template);
-    return context => purifyHTML(evaluateTemplate(context), ALLOWED_TAGS);
+    return context => purifyHtml__default["default"](evaluateTemplate(context), ALLOWED_TAGS);
 }
 
 /*
@@ -6450,13 +6219,13 @@ function domReady(callback) {
 
 var utils = /*#__PURE__*/Object.freeze({
     __proto__: null,
-    purifyHtml: purifyHTML,
-    significantDimension: significantDimension,
-    tailLength: tailLength,
-    round: round,
-    smartRound: smartRound,
-    equalish: equalish,
-    clone: clone,
+    purifyHtml: purifyHtml__default["default"],
+    significantDimension: significantDimension_js__default["default"],
+    tailLength: tailLength_js__default["default"],
+    round: round_js__default["default"],
+    smartRound: smartRound_js__default["default"],
+    equalish: equalish_js__default["default"],
+    clone: clone__default["default"],
     delimited: delimited$1,
     getNonChartHeight: getNonChartHeight,
     outerHeight: outerHeight,
@@ -6477,165 +6246,6 @@ var utils = /*#__PURE__*/Object.freeze({
     remove: remove,
     domReady: domReady
 });
-
-/**
- * Safely access object properties without throwing nasty
- * `cannot access X of undefined` errors if a property along the
- * way doesn't exist.
- *
- * @exports get
- * @kind function
- *
- *
- * @param object - the object which properties you want to acccess
- * @param {String|String[]} key - path to the property as a dot-separated string or array of strings
- * @param {*} _default - the fallback value to be returned if key doesn't exist
- *
- * @returns the value
- *
- * @example
- * import get from '@datawrapper/shared/get';
- * const someObject = { key: { list: ['a', 'b', 'c']}};
- * get(someObject, 'key.list[2]') // returns 'c'
- * get(someObject, 'missing.key') // returns undefined
- * get(someObject, 'missing.key', false) // returns false
- */
-function get(object, key = null, _default = null) {
-    if (!key)
-        return object;
-    const keys = Array.isArray(key) ? key : key.split('.');
-    let pt = object;
-    for (let i = 0; i < keys.length; i++) {
-        if (pt === null || pt === undefined)
-            break; // break out of the loop
-        // move one more level in
-        pt = pt[keys[i]];
-    }
-    return pt === undefined || pt === null ? _default : pt;
-}
-
-/**
- * safely set object properties without throwing nasty
- * `cannot access X of undefined` errors if a property along the
- * way doesn't exist.
- *
- * @exports set
- * @kind function
- *
- * @param object - the object which properties you want to acccess
- * @param {String|String[]} key - path to the property as a dot-separated string or array of strings
- * @param {*} value - the value to be set
- *
- * @returns the value
- */
-function set(object, key, value) {
-    const keys = Array.isArray(key) ? key : key.split('.');
-    const lastKey = keys.pop();
-    let pt = object;
-    // resolve property until the parent dict
-    keys.forEach(key => {
-        if (pt[key] === undefined || pt[key] === null) {
-            pt[key] = {};
-        }
-        pt = pt[key];
-    });
-    // check if new value is set
-    if (JSON.stringify(pt[lastKey]) !== JSON.stringify(value)) {
-        pt[lastKey] = value;
-        return true;
-    }
-    return false;
-}
-
-/**
- * Recursively compares two objects and returns the
- * "merge patch" object which can be deep-assigned to
- * the source to create the target
- *
- * @exports objectDiff
- * @kind function
- *
- * @example
- * import objectDiff from '@datawrapper/shared/objectDiff';
- * objectDiff({ foo: 1, bar: 'hello' }, { foo: 1, bar: 'world' });
- * // returns { bar: 'world' }
- *
- * @param {object} source - the original object
- * @param {object} target - the changed object
- * @param {array} allowedKeys - if given, the diff will
- *     ignore any first-level keys not in this array
- *
- * @returns {object} - the merge patch
- */
-function objectDiff(source, target, allowedKeys = null) {
-    return diffKeys(source, target, allowedKeys ? new Set(allowedKeys) : null);
-}
-/**
- * @param {object} source - the source object
- * @param {object} target - the target object
- * @param {Set|null} allowedKeys - Set
- *
- * @returns {object} - the merge patch
- */
-function diffKeys(source, target, allowedKeys = null) {
-    const patch = {};
-    Object.keys(target).forEach(targetKey => {
-        if (!isEqual__default["default"](target[targetKey], source[targetKey])) {
-            if (allowedKeys && !allowedKeys.has(targetKey))
-                return;
-            if (isPlainObject__default["default"](target[targetKey]) && isPlainObject__default["default"](source[targetKey])) {
-                // iterate one level down
-                const childPatch = diffKeys(source[targetKey], target[targetKey]);
-                if (Object.keys(childPatch).length) {
-                    patch[targetKey] = childPatch;
-                }
-            }
-            else {
-                patch[targetKey] = target[targetKey];
-            }
-        }
-    });
-    // also look for removed keys and set them null
-    Object.keys(source).forEach(sourceKey => {
-        if (allowedKeys && !allowedKeys.has(sourceKey))
-            return;
-        if (target[sourceKey] === undefined) {
-            patch[sourceKey] = null;
-        }
-    });
-    return patch;
-}
-
-/**
- * Use this function to post event messages out of Datawrapper iframe and
- * web component embeds to the parent website.
- *
- * @exports postEvent
- * @kind function
- *
- * @param {string} chartId - the chart id each message should be signed with
- * @param {boolean} isIframe - render context (`true`: iframe, `false`: web component)
- * @returns {function}
- *
- * @example
- * import genPostEvent from '@datawrapper/shared/postEvent';
- * const postEvent = genPostEvent(chart.get('id'), true);
- * postEvent('bar.click', { value: 123 });
- */
-function postEvent(chartId, isIframe) {
-    const host = isIframe ? window.parent : window;
-    return function (event, data) {
-        if (host && host.postMessage) {
-            const evt = {
-                source: 'datawrapper',
-                chartId,
-                type: event,
-                data
-            };
-            host.postMessage(evt, '*');
-        }
-    };
-}
 
 /*
  * simple event callbacks, mimicing the $.Callbacks API
@@ -6708,36 +6318,6 @@ function applyChanges(chart, dataset) {
     return dataset;
 }
 
-/**
- * converts a column name to a variable name that can be used in the custom
- * column editor. variable names can't contain spaces and special characters
- * and are also converted to lowercase.
- *
- * @exports columnNameToVariable
- * @kind function
- *
- * @example
- * import columnNameToVariable from '@datawrapper/shared/columnNameToVariable';
- *
- * columnNameToVariable('GDP (per cap.)') // gdp_per_cap
- *
- * @param {string} name -- name of the column
- * @returns {string} -- variable name
- */
-function columnNameToVariable(name) {
-    return name
-        .toString()
-        .toLowerCase()
-        .replace(/\s+/g, '_') // Replace spaces with _
-        .replace(/[^\w-]+/g, '') // Remove all non-word chars
-        .replace(/-/g, '_') // Replace multiple - with single -
-        .replace(/__+/g, '_') // Replace multiple - with single -
-        .replace(/^_+/, '') // Trim - from start of text
-        .replace(/_+$/, '') // Trim - from end of text
-        .replace(/^(\d)/, '_$1') // If first char is a number, prefix with _
-        .replace(/^(and|or|in|true|false)$/, '$1_'); // avoid reserved keywords
-}
-
 function toISOStringSafe(date) {
     try {
         return date.toISOString();
@@ -6769,7 +6349,7 @@ function addComputedColumns(chart, dataset) {
 
     dataset.eachColumn(function (col) {
         if (col.isComputed) return;
-        columnNameToVar[col.name()] = columnNameToVariable(col.name());
+        columnNameToVar[col.name()] = columnNameToVariable__default["default"](col.name());
         if (col.type() === 'number') {
             const [min, max] = col.range();
             colAggregates[col.name()] = {
@@ -6787,7 +6367,7 @@ function addComputedColumns(chart, dataset) {
 
     // initialize meta objects for each computed column
     const vNamesToVar = virtualColumns.reduce((acc, val, idx) => {
-        const key = columnNameToVariable(val.name);
+        const key = columnNameToVariable__default["default"](val.name);
         return acc.set(key, {
             name: val.name,
             index: dataset.numColumns() + idx,
@@ -6801,7 +6381,7 @@ function addComputedColumns(chart, dataset) {
 
     // parse formulas to detect cross-column dependencies
     virtualColumns.forEach(({ formula, name }) => {
-        const col = vNamesToVar.get(columnNameToVariable(name));
+        const col = vNamesToVar.get(columnNameToVariable__default["default"](name));
         if (formula.trim()) {
             try {
                 col.expr = parser.parse(formula.trim());
@@ -6958,7 +6538,7 @@ function addComputedColumns(chart, dataset) {
             }
             return value;
         });
-        columnNameToVar[name] = columnNameToVariable(name);
+        columnNameToVar[name] = columnNameToVariable__default["default"](name);
         // apply values to rows so they can be used in formulas
         values.forEach((val, i) => {
             data[i][name] = val;
@@ -7020,15 +6600,15 @@ function chart (attributes) {
          * @function chart.get
          */
         get(key, _default) {
-            return get(attributes, key, _default);
+            return get__default["default"](attributes, key, _default);
         },
 
         getMetadata(key, _default) {
-            return get(attributes, `metadata.${key}`, _default);
+            return get__default["default"](attributes, `metadata.${key}`, _default);
         },
 
         set(key, value) {
-            if (set(attributes, key, value)) {
+            if (set__default["default"](attributes, key, value)) {
                 changeCallbacks.fire(chart, key, value);
             }
             return this;
@@ -7171,7 +6751,7 @@ function chart (attributes) {
         createPostEvent() {
             const chartId = chart.get('id');
             const { isIframe } = flags;
-            return postEvent(chartId, isIframe);
+            return PostEvent__default["default"](chartId, isIframe);
         },
 
         // sets or gets the flags
@@ -7219,7 +6799,7 @@ function chart (attributes) {
             });
 
             // set mobile class
-            const breakpoint = get(theme, `vis.${chart.type}.mobileBreakpoint`, 450);
+            const breakpoint = get__default["default"](theme, `vis.${chart.type}.mobileBreakpoint`, 450);
             outerContainer.classList.toggle('is-mobile', outerContainer.clientWidth <= breakpoint);
 
             // really needed?
@@ -7295,7 +6875,7 @@ function chart (attributes) {
 
         getHeightMode() {
             const themeFitChart =
-                get(visualization.theme(), 'vis.d3-pies.fitchart', false) &&
+                get__default["default"](visualization.theme(), 'vis.d3-pies.fitchart', false) &&
                 ['d3-pies', 'd3-donuts', 'd3-multiple-pies', 'd3-multiple-donuts'].indexOf(
                     visualization.meta.id
                 ) > -1;
@@ -7309,11 +6889,11 @@ function chart (attributes) {
 
         attributes(attrs) {
             if (arguments.length) {
-                const diff = objectDiff(attributes, attrs);
+                const diff = objectDiff__default["default"](attributes, attrs);
                 attributes = attrs;
                 // fire onChange callbacks
                 getNestedObjectKeys(diff).forEach(key => {
-                    changeCallbacks.fire(chart, key, get(attrs, key));
+                    changeCallbacks.fire(chart, key, get__default["default"](attrs, key));
                 });
                 return chart;
             }
@@ -7685,7 +7265,7 @@ extend(base, {
      * short-cut for this.chart.get('metadata.visualize.*')
      */
     get(str, _default) {
-        return get(this.chart().get(), 'metadata.visualize' + (str ? '.' + str : ''), _default);
+        return get__default["default"](this.chart().get(), 'metadata.visualize' + (str ? '.' + str : ''), _default);
     },
 
     chart(chart) {
@@ -7717,8 +7297,8 @@ extend(base, {
 
     axes(returnAsColumns, noCache) {
         const me = this;
-        const userAxes = get(me.chart().get(), 'metadata.axes', {});
-        const visAxes = clone(me.meta.axes);
+        const userAxes = get__default["default"](me.chart().get(), 'metadata.axes', {});
+        const visAxes = clone__default["default"](me.meta.axes);
 
         const overrideKeys = Object.fromEntries(
             Object.entries(visAxes)
@@ -7751,7 +7331,7 @@ extend(base, {
         me.__axisCache = {
             axes: axes,
             axesAsColumns: axesAsColumns,
-            userAxes: clone(userAxes),
+            userAxes: clone__default["default"](userAxes),
             overrideKeys,
             transpose: me.chart().getMetadata('data.transpose')
         };
@@ -7907,7 +7487,7 @@ function visualization(id, target) {
         return parents.reverse();
     }
 
-    const vis = clone$1(base);
+    const vis = clone(base);
 
     const parents = getParents(__vis[id]);
     parents.push({ id, vis: __vis[id] });

@@ -46,15 +46,7 @@
     <ul class="chart-actions">
         {#each sortedChartActions as action} {#if action}
         <li
-            class="
-                action action-{action.id}
-                {action.class||''}
-                {action.id
-                ==
-                active_action
-                ?
-                'active':''}
-            "
+            class="action action-{action.id} {action.class||''} {action.id == active_action ? 'active':''}"
         >
             <a
                 on:click|preventDefault="select(action)"

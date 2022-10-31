@@ -151,9 +151,7 @@
                 icon="globe"
                 bind:value={geocodingValue}
             />
-            <pre
-                style="white-space: pre-wrap; max-height:200px"
-                class="mt-2">{geocodingValue
+            <pre style="white-space: pre-wrap; max-height:200px" class="mt-2">{geocodingValue
                     ? JSON.stringify(geocodingValue, null, 3)
                     : 'null'}</pre>
         </div>

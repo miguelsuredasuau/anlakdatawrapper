@@ -6,7 +6,7 @@ const { compileFontCSS } = require('@datawrapper/chart-core/lib/styles/compile-c
 const { Theme, User, Team, Chart } = require('@datawrapper/orm/models');
 const { get, set, cloneDeep } = require('lodash');
 const chroma = require('chroma-js');
-const invertColor = require('@datawrapper/shared/invertColor.js').default;
+const invertColor = require('@datawrapper/shared/invertColor.js');
 const {
     findDarkModeOverrideKeys,
     dropCache,

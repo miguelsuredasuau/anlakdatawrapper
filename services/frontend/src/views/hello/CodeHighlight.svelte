@@ -18,6 +18,6 @@
     {@html purifyHtml(atomOneDark, '<style>')}
 </svelte:head>
 
-<pre
-    class="p-1"
-    data-language="html"><code class="hljs">{@html purifyHtml(highlighted, '<span>')}</code></pre>
+<pre class="p-1" data-language="html"><code class="hljs"
+        >{@html purifyHtml(highlighted, '<span>')}</code
+    ></pre>

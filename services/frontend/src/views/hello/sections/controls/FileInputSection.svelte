@@ -32,8 +32,7 @@
                 {showInfo}
                 bind:value={valueSingle}
             />
-            <pre
-                class="mt-2">{valueSingle
+            <pre class="mt-2">{valueSingle
                     ? JSON.stringify(serialize(valueSingle), null, 2)
                     : null}</pre>
         </div>
@@ -46,15 +45,13 @@
                 multiple
                 bind:value={valueMultiple}
             />
-            <pre
-                class="mt-2">{valueMultiple
+            <pre class="mt-2">{valueMultiple
                     ? JSON.stringify(valueMultiple.map(serialize), null, 2)
                     : null}</pre>
         </div>
         <div class="column">
             <FileInput {__} label="Select folder" {showInfo} folder bind:value={valueFolder} />
-            <pre
-                class="mt-2">{valueFolder
+            <pre class="mt-2">{valueFolder
                     ? JSON.stringify(valueFolder.map(serialize), null, 2)
                     : null}</pre>
         </div>

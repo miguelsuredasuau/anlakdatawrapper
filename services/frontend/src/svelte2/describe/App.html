@@ -102,19 +102,11 @@
                                 <a on:click="sort(event, col.name(), true)" href="#/{col.name()}">
                                     <i
                                         on:click="sort(event, col.name(), true)"
-                                        class="
-                                            fa
-                                            fa-sort-{col.type()=='text'?'alpha':'amount'}-asc
-                                            fa-fw
-                                        "
+                                        class="fa fa-sort-{col.type()=='text'?'alpha':'amount'}-asc fa-fw"
                                     ></i>
                                     <i
                                         on:click="sort(event, col.name(), false)"
-                                        class="
-                                            fa
-                                            fa-sort-{col.type()=='text'?'alpha':'amount'}-desc
-                                            fa-fw
-                                        "
+                                        class="fa fa-sort-{col.type()=='text'?'alpha':'amount'}-desc fa-fw"
                                     ></i
                                     >&nbsp;&nbsp;&nbsp;{col.title()}</a
                                 >
