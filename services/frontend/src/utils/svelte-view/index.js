@@ -50,17 +50,23 @@ function invalidateViewSSR(page) {
 }
 
 /**
- * Watches the build/views dir for changes and then invalidates view caches and notifies browser.
+ * Watches the build/views dir for changes and then invalidates SSR cache and notifies browser.
  */
 function watchViews(wsClients) {
     const chokidar = require('chokidar');
+    const pathRegExp = RegExp(`^${buildViewDir}/(?<page>.+\\.svelte)(?<ssr>(\\.ssr)?)\\.js$`);
     chokidar.watch(buildViewDir).on('all', (event, path) => {
-        if (event === 'change' && path.endsWith('.svelte.ssr.js')) {
-            const relPath = relative(buildViewDir, path);
-            const page = relPath.replace(/\.ssr\.js$/, '');
-            invalidateViewSSR(page);
-            process.stdout.write(`Invalidated view SSR cache for ${page}\n`);
-            wsClients.forEach(ws => ws.send(JSON.stringify({ page })));
+        if (event === 'change') {
+            const m = pathRegExp.exec(path);
+            if (m) {
+                const page = m.groups['page'];
+                const ssr = m.groups['ssr'];
+                process.stdout.write(`${ssr ? 'SSR' : 'CSR'} view ${page} changed\n`);
+                if (ssr) {
+                    invalidateViewSSR(page);
+                }
+                wsClients.forEach(ws => ws.send(JSON.stringify({ page })));
+            }
         }
     });
 }

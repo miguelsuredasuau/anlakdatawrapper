@@ -17,7 +17,7 @@ const sourceDir = 'src/views';
 const outputDir = process.env.OUTPUT_DIR || 'build/views';
 
 const production = !process.env.ROLLUP_WATCH;
-const modes = process.env.NODE_ENV === 'test' ? ['ssr'] : ['ssr', 'csr'];
+const modes = process.env.NODE_ENV === 'test' ? ['ssr'] : ['csr', 'ssr'];
 
 function onwarn(warning, handler) {
     if (
