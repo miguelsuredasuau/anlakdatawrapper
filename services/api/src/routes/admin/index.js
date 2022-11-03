@@ -14,6 +14,12 @@ module.exports = {
             }
         });
 
+        server.register(require('./render-network'), {
+            routes: {
+                prefix: '/render-network'
+            }
+        });
+
         server.register(require('./themes'), {
             routes: {
                 prefix: '/themes'
