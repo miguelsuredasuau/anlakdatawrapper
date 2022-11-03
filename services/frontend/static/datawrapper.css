@@ -10318,11 +10318,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .button:not(.is-white, .is-light, .is-ghost, .is-text, .is-outlined, .is-inline):before {
   content: "";
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 100%;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
   border-radius: 4px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
