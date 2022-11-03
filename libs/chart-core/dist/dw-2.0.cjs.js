@@ -3041,7 +3041,7 @@ var columnTypes = {
 /**
  * @class dw.Column
  */
-function Column(name_, rows, type) {
+function Column(name_, rows, type, allowedTags) {
     function notEmpty(d) {
         return d !== null && d !== undefined && d !== '';
     }
@@ -3109,7 +3109,7 @@ function Column(name_, rows, type) {
         // column title (used for presentation)
         title() {
             if (arguments.length) {
-                title = purifyHtml__default["default"](arguments[0]);
+                title = purifyHtml__default["default"](arguments[0], allowedTags);
                 return column;
             }
             return title || name;
@@ -3130,7 +3130,9 @@ function Column(name_, rows, type) {
             if (!arguments.length) return undefined;
             var r = unfiltered ? origRows : rows;
             if (i < 0) i += r.length;
-            return type.parse(isDate(r[i]) || isNumber(r[i]) ? r[i] : purifyHtml__default["default"](r[i]));
+            return type.parse(
+                isDate(r[i]) || isNumber(r[i]) ? r[i] : purifyHtml__default["default"](r[i], allowedTags)
+            );
         },
 
         /**
@@ -3157,7 +3159,7 @@ function Column(name_, rows, type) {
         values(unfiltered) {
             var r = unfiltered ? origRows : rows;
             r = map(r, function (d) {
-                return isDate(d) || isNumber(d) ? d : purifyHtml__default["default"](d);
+                return isDate(d) || isNumber(d) ? d : purifyHtml__default["default"](d, allowedTags);
             });
             return map(r, type.parse);
         },
@@ -3174,12 +3176,14 @@ function Column(name_, rows, type) {
         // access to raw values
         raw(i, val) {
             if (!arguments.length)
-                return rows.map(d => (isDate(d) || isNumber(d) ? d : purifyHtml__default["default"](d)));
+                return rows.map(d => (isDate(d) || isNumber(d) ? d : purifyHtml__default["default"](d, allowedTags)));
             if (arguments.length === 2) {
                 rows[i] = val;
                 return column;
             }
-            return isDate(rows[i]) || isNumber(rows[i]) ? rows[i] : purifyHtml__default["default"](rows[i]);
+            return isDate(rows[i]) || isNumber(rows[i])
+                ? rows[i]
+                : purifyHtml__default["default"](rows[i], allowedTags);
         },
 
         /**
@@ -3365,6 +3369,20 @@ function d3Ascending(a, b) {
  * dataset source for delimited files (CSV, TSV, ...)
  */
 
+/**
+ * Parses a separator-delimited string (e.g. CSV)
+ *
+ * @param {object} opts
+ * @param {string} opts.csv - the CSV string to be parsed
+ * @param {string} opts.delimiter - defaults to 'auto'
+ * @param {string} opts.quoteChar
+ * @param {number} opts.skipRows - number of initial rows to skip
+ * @param {*} opts.emptyValue
+ * @param {boolean} opts.transpose
+ * @param {boolean} opts.firstRowIsHeader
+ * @param {string} opts.allowedTags - list of HTML tags that will not get filtered out by purifyHTML
+ * @return {Dataset}
+ */
 function delimited(opts) {
     function loadAndParseCsv() {
         if (opts.url) {
@@ -3556,7 +3574,7 @@ class DelimitedParser {
                     suffix = suffix === '' ? 1 : suffix + 1;
                 }
                 columnNames[col + suffix] = true;
-                return Column(col + suffix, data);
+                return Column(col + suffix, data, undefined, opts.allowedTags);
             });
         }
 
