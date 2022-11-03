@@ -12,18 +12,7 @@
                 <th class="{item.className ? item.className : ''}">
                     {#if item.orderBy}
                     <a
-                        class="
-                            sortable
-                            {isActive(item)
-                            ?
-                            isAscending
-                            ?
-                            'sortable-asc'
-                            :
-                            'sortable-desc'
-                            :
-                            ''}
-                        "
+                        class="sortable {isActive(item) ? isAscending ? 'sortable-asc' : 'sortable-desc' : ''}"
                         href="{`?orderBy=${item.orderBy}`}"
                         on:click="sort(event, item.orderBy)"
                     >

@@ -8,25 +8,7 @@
     <label class="switch-outer" class:disabled>
         <button on:click="toggle()" class="switch">
             <input
-                class="
-                    {disabled
-                    &&
-                    disabledState
-                    ==
-                    'on'
-                    ?
-                    'disabled-force-checked'
-                    :
-                    disabled
-                    &&
-                    disabledState
-                    ==
-                    'off'
-                    ?
-                    'disabled-force-unchecked'
-                    :
-                    ''}
-                "
+                class="{disabled && disabledState == 'on' ? 'disabled-force-checked' : disabled && disabledState == 'off' ? 'disabled-force-unchecked' : ''}"
                 disabled="{disabled}"
                 checked="{effectiveValue}"
                 bind:indeterminate
