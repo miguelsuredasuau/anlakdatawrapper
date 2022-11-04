@@ -53,7 +53,7 @@ module.exports = async function getEmbedCodes({
             preferred: preferred === 'responsive',
             title: __('publish / embed / responsive'),
             ...getTemplate(
-                `<iframe title="%chart_title%" aria-label="%chart_type%" id="datawrapper-chart-%chart_id%" src="%chart_url%" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="%chart_height%"></iframe><script type="text/javascript">%embed_js%</script>`
+                `<iframe title="%chart_title%" aria-label="%chart_type%" id="datawrapper-chart-%chart_id%" src="%chart_url%" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="%chart_height%" data-external="1"></iframe><script type="text/javascript">%embed_js%</script>`
             )
         },
         // standard iframe
@@ -62,7 +62,7 @@ module.exports = async function getEmbedCodes({
             preferred: preferred === 'iframe',
             title: __('publish / embed / iframe'),
             ...getTemplate(
-                `<iframe title="%chart_title%" aria-label="%chart_type%" id="datawrapper-chart-%chart_id%" src="%chart_url%" scrolling="no" frameborder="0" style="border: none;" width="%chart_width%" height="%chart_height%"></iframe>`
+                `<iframe title="%chart_title%" aria-label="%chart_type%" id="datawrapper-chart-%chart_id%" src="%chart_url%" scrolling="no" frameborder="0" style="border: none;" width="%chart_width%" height="%chart_height%" data-external="1"></iframe>`
             )
         }
     ];
