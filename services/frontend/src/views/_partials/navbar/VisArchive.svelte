@@ -102,7 +102,7 @@
                             <img width="40" src={item.thumbnails.plain} alt="" class="mr-2" />
                         </div>
                         <div class="column">
-                            {truncate(purifyHtml(item.title, ''), 30, 20)}
+                            {truncate(purifyHtml(item.title, []), 30, 20)}
                         </div>
                     </div>
                 </a>

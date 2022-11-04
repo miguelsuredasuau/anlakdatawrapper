@@ -340,7 +340,7 @@
     on:unload={onBeforeUnload}
 />
 
-<MainLayout title="{purifyHtml($chart.title, '')} - [{$chart.id}] - {activeStep.title}">
+<MainLayout title="{purifyHtml($chart.title, [])} - [{$chart.id}] - {activeStep.title}">
     <section class="section pt-5">
         {#if !$openedInsideIframe || showEditorNavInCmsMode}
             <!-- step nav -->

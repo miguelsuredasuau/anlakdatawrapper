@@ -5,8 +5,24 @@
     import IconBox from '_partials/displays/IconBox.svelte';
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
 
-    const allowedTags =
-        '<a><figure><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt><img><ul><li>';
+    const allowedTags = [
+        'a',
+        'figure',
+        'span',
+        'b',
+        'br',
+        'i',
+        'strong',
+        'sup',
+        'sub',
+        'strike',
+        'u',
+        'em',
+        'tt',
+        'img',
+        'ul',
+        'li'
+    ];
     const { dayjs } = getContext('libraries');
 
     export let __;

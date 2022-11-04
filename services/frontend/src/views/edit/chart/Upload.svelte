@@ -43,4 +43,4 @@
     />
 </div>
 
-{@html purifyHtml(uploadAfterContent, '<script>')}
+{@html purifyHtml(uploadAfterContent, ['script'])}

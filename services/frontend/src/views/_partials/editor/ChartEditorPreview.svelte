@@ -50,6 +50,22 @@
 
     let iframePreview;
 
+    // default html tags allowed for inline-editing
+    const DEFAULT_ALLOWED_HTML = [
+        'a',
+        'span',
+        'b',
+        'br',
+        'i',
+        'strong',
+        'sup',
+        'sub',
+        'strike',
+        'u',
+        'em',
+        'tt'
+    ];
+
     const EDITABLE_FIELDS = [
         {
             key: 'title',
@@ -59,16 +75,30 @@
         {
             key: 'metadata.describe.intro',
             selector: '.description-block .block-inner',
-            allowedHTML:
-                DEFAULT_ALLOWED_HTML +
-                '<summary><details><table><thead><tbody><tfoot><caption><colgroup><col><tr><td><th>',
+            allowedHTML: [
+                ...DEFAULT_ALLOWED_HTML,
+                ...[
+                    'summary',
+                    'details',
+                    'table',
+                    'thead',
+                    'tbody',
+                    'tfoot',
+                    'caption',
+                    'colgroup',
+                    'col',
+                    'tr',
+                    'td',
+                    'th'
+                ]
+            ],
             multiline: true
         },
         {
             key: 'metadata.annotate.notes',
             selector: '.notes-block .block-inner',
             multiline: true,
-            allowedHTML: DEFAULT_ALLOWED_HTML + '<summary><details>'
+            allowedHTML: [].concat(DEFAULT_ALLOWED_HTML, ['summary', 'details'])
         },
         {
             key: 'metadata.describe.byline',
@@ -76,9 +106,6 @@
             allowedHTML: DEFAULT_ALLOWED_HTML
         }
     ];
-
-    // default html tags allowed for inline-editing
-    const DEFAULT_ALLOWED_HTML = '<a><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt>';
 
     function activateInlineEditing(doc, readonlyKeys) {
         // activate editing for standard fields

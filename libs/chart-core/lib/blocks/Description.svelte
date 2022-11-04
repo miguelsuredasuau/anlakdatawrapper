@@ -4,8 +4,20 @@
     export let props;
     const { get } = props;
     $: chart = props.chart;
-    const allowedTags =
-        '<table><thead><tbody><tfoot><caption><colgroup><col><tr><td><th><details><summary>';
+    const allowedTags = [
+        'table',
+        'thead',
+        'tbody',
+        'tfoot',
+        'caption',
+        'colgroup',
+        'col',
+        'tr',
+        'td',
+        'th',
+        'details',
+        'summary'
+    ];
 
     // internal props
     $: description = get(chart, 'metadata.describe.intro');

@@ -36,7 +36,7 @@
     export let isEditingAllowed = false;
     export let previewId = null;
 
-    $: customCSS = purifyHtml(get(chart, 'metadata.publish.custom-css', ''), '');
+    $: customCSS = purifyHtml(get(chart, 'metadata.publish.custom-css', ''), []);
 
     window.__dwUpdate = newAttrs => {
         Object.assign(chart, newAttrs.chart);
@@ -56,9 +56,9 @@
 </script>
 
 <svelte:head>
-    <title>{purifyHtml(chart.title, '')}</title>
+    <title>{purifyHtml(chart.title, [])}</title>
     <meta name="description" content={get(chart, 'metadata.describe.intro')} />
-    {@html purifyHtml(`<${'style'}>${customCSS}</style>`, `<${'style'}>`)}
+    {@html purifyHtml(`<style>${customCSS}</style>`, ['style'])}
 </svelte:head>
 
 <Visualization

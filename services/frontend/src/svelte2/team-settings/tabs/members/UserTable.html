@@ -172,7 +172,7 @@
                 const userEmail = user ? user.name || user.email || user.id : 'non-existent';
                 const ownerEmail = owner ? owner.name || owner.email || owner.id : 'non-existent';
                 return __('teams / change-owner-confirmation / message', 'core', {
-                    member: `<b>${purifyHtml(userEmail, '')}</b>`,
+                    member: `<b>${purifyHtml(userEmail, [])}</b>`,
                     team: `<b>${team.name}</b>`,
                     message: isTeamOwner
                         ? __('teams / change-owner-confirmation / owner-message')

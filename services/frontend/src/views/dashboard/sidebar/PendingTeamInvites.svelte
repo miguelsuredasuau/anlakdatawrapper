@@ -8,7 +8,7 @@
     export let uid;
 
     function getUserDisplay({ name, url }) {
-        const userName = truncate(purifyHtml(name, ''), 15, 15);
+        const userName = truncate(purifyHtml(name, []), 15, 15);
         if (!url) {
             return userName;
         }
@@ -21,7 +21,7 @@
     }
 
     function getMessage(team, user) {
-        const teamName = truncate(purifyHtml(team, ''));
+        const teamName = truncate(purifyHtml(team, []));
         return __('dashboard / checks / pending-team-invites / invite', 'core', {
             team_name: teamName,
             user: getUserDisplay(user)

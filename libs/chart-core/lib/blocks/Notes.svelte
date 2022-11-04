@@ -6,4 +6,4 @@
     $: chart = props.chart;
 </script>
 
-{@html clean(get(chart, 'metadata.annotate.notes'), '<details><summary>')}
+{@html clean(get(chart, 'metadata.annotate.notes'), ['details', 'summary'])}

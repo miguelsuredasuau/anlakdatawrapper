@@ -356,7 +356,7 @@
                             >
                                 {@html purifyHtml(
                                     highlightQuery(decodeHtml(match.label), searchQuery),
-                                    '<mark>'
+                                    ['mark']
                                 )}
                             </a>
                         {/if}

@@ -48,7 +48,7 @@
 
 <a
     class="dw-data-link"
-    aria-label="{__(caption)}: {purifyHtml(chart.title, '')}"
+    aria-label="{__(caption)}: {purifyHtml(chart.title, [])}"
     target={externalData ? '_blank' : '_self'}
     href={externalData || 'javascript:void(0)'}
     on:click={handleClick}

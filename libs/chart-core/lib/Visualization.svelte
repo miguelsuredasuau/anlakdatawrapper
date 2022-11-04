@@ -98,11 +98,33 @@
         set(chart, 'metadata.publish.blocks', get(theme.data, 'metadata.publish.blocks'));
     }
 
-    const allowedAriaDescriptionTags =
-        '<a><span><b><br><br/><i><strong><sup><sub><strike><u><em><tt><table><thead><tbody><tfoot><caption><colgroup><col><tr><td><th>';
+    const allowedAriaDescriptionTags = [
+        'a',
+        'span',
+        'b',
+        'br',
+        'i',
+        'strong',
+        'sup',
+        'sub',
+        'strike',
+        'u',
+        'em',
+        'tt',
+        'table',
+        'thead',
+        'tbody',
+        'tfoot',
+        'caption',
+        'colgroup',
+        'col',
+        'tr',
+        'td',
+        'th'
+    ];
     $: ariaDescription = get(chart, 'metadata.describe.aria-description', '');
 
-    $: customCSS = purifyHtml(get(chart, 'metadata.publish.custom-css', ''), '');
+    $: customCSS = purifyHtml(get(chart, 'metadata.publish.custom-css', ''), []);
 
     const coreBlocks = [
         {
