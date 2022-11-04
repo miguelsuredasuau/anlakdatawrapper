@@ -35,7 +35,7 @@
         "@datawrapper/polyfills": "file:../../libs/polyfills",
         "@datawrapper/schemas": "file:../../libs/schemas",
         "@datawrapper/service-utils": "file:../../libs/service-utils",
-        "@datawrapper/shared": "^1.5.1",
+        "@datawrapper/shared": "^1.5.3",
         "@el3um4s/svelte-get-component-info": "^0.0.16",
         "@hapi/bell": "^12.2.0",
         "@hapi/boom": "^9.1.3",
