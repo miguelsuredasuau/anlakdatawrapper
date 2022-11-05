@@ -24,8 +24,6 @@
      */
     export let loading = false;
 
-    export let allowedTags = ALLOWED_TAGS;
-
     const ALLOWED_TAGS = [
         'a',
         'abbr',
@@ -88,6 +86,8 @@
         'ul',
         'wbr'
     ];
+
+    export let allowedTags = ALLOWED_TAGS;
 
     $: html = snarkdown(value);
     let opened = true;
