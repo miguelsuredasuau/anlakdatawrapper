@@ -80,7 +80,7 @@ module.exports = server => {
                 last_edit_step: 3
             };
 
-            if (isAdmin || editInDatawrapper) {
+            if ((isAdmin && srcChart.author_id !== user.id) || editInDatawrapper) {
                 newChartData.teamId = null;
                 newChartData.folderId = null;
             }

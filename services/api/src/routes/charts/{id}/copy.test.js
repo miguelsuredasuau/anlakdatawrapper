@@ -4,6 +4,7 @@ const {
     setup,
     BASE_URL,
     createChart,
+    createFolder,
     getChart,
     createGuestSession,
     withTeamWithUser,
@@ -522,6 +523,106 @@ test('Chart belonging to team duplicates to that team', async t => {
         t.is(copiedChart.statusCode, 201);
         t.is(copiedChart.result.authorId, user.id);
         t.is(copiedChart.result.organizationId, team.id);
+    });
+});
+
+test('Copies made by users are kept in same folder', async t => {
+    return withUser(t.context.server, {}, async ({ session, user }) => {
+        const folder = await createFolder({ user_id: user.id });
+        const csv = `Col1,Col2\n10,20\n15,7`;
+
+        // create a new chart
+        const srcChart = await t.context.server.inject({
+            method: 'POST',
+            url: '/v3/charts',
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {
+                folderId: folder.id
+            }
+        });
+
+        // write chart data
+        const writeData = await t.context.server.inject({
+            method: 'PUT',
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost',
+                'Content-Type': 'text/csv'
+            },
+            url: `/v3/charts/${srcChart.result.id}/data`,
+            payload: csv
+        });
+
+        t.is(writeData.statusCode, 204);
+
+        // copy new chart
+        const copiedChart = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${srcChart.result.id}/copy`,
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            }
+        });
+
+        t.is(copiedChart.statusCode, 201);
+        t.is(copiedChart.result.folderId, folder.id);
+    });
+});
+
+test('Copies made by admins of their own charts are kept in same folder', async t => {
+    return withUser(t.context.server, { role: 'admin' }, async ({ session, user }) => {
+        const folder = await createFolder({ user_id: user.id });
+        const csv = `Col1,Col2\n10,20\n15,7`;
+
+        // create a new chart
+        const srcChart = await t.context.server.inject({
+            method: 'POST',
+            url: '/v3/charts',
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            },
+            payload: {
+                folderId: folder.id
+            }
+        });
+
+        // write chart data
+        const writeData = await t.context.server.inject({
+            method: 'PUT',
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost',
+                'Content-Type': 'text/csv'
+            },
+            url: `/v3/charts/${srcChart.result.id}/data`,
+            payload: csv
+        });
+
+        t.is(writeData.statusCode, 204);
+
+        // copy new chart
+        const copiedChart = await t.context.server.inject({
+            method: 'POST',
+            url: `/v3/charts/${srcChart.result.id}/copy`,
+            headers: {
+                cookie: `DW-SESSION=${session.id}; crumb=abc`,
+                'X-CSRF-Token': 'abc',
+                referer: 'http://localhost'
+            }
+        });
+
+        t.is(copiedChart.statusCode, 201);
+        t.is(copiedChart.result.folderId, folder.id);
     });
 });
 
