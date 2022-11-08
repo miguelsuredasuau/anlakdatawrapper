@@ -104,7 +104,10 @@ test('owners can invite a maximum number of users equal to MAX_TEAM_INVITES', as
 
         for (let i = 1; i <= maxInvites + 1; i++) {
             const { res, user } = await inviteUser(t.context, teamObj, `user-${i}@test1.com`);
-            t.is(res.statusCode, i > maxInvites ? 400 : 201);
+            t.is(res.statusCode, i > maxInvites ? 406 : 201);
+            if (res.payload && i > maxInvites) {
+                t.is(JSON.parse(res.payload).data.maxTeamInvites, maxInvites);
+            }
             if (user) users.push(user);
             if (i > maxInvites) {
                 t.is(user, null);
@@ -131,7 +134,10 @@ test('owners cannot invite more than MAX_TEAM_INVITES by deleting invite', async
         for (var i = 0; i < 10; i++) {
             const { res, user } = await inviteUser(t.context, teamObj, `user-${i}@test2.com`);
             users.push(user);
-            t.is(res.statusCode, i >= maxInvites * 2 ? 400 : 201);
+            t.is(res.statusCode, i >= maxInvites * 2 ? 406 : 201);
+            if (res.payload && i >= maxInvites * 2) {
+                t.is(JSON.parse(res.payload).data.maxTeamInvites, maxInvites);
+            }
 
             if (res.statusCode === 201) {
                 await t.context.server.inject({
