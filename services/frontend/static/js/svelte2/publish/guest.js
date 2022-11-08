@@ -1,10 +1,3296 @@
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define("svelte/publish/guest",t):(e="undefined"!=typeof globalThis?globalThis:e||self)["publish/guest"]=t()}(this,(function(){"use strict";function e(){}function t(e,t){for(var n in t)e[n]=t[n];return e}function n(e,t){e.appendChild(t)}function r(e,t,n){e.insertBefore(t,n)}function o(e){e.parentNode.removeChild(e)}function i(e,t){for(;e.nextSibling&&e.nextSibling!==t;)e.parentNode.removeChild(e.nextSibling)}function a(e){return document.createElement(e)}function s(e){return document.createTextNode(e)}function c(e,t,n,r){e.addEventListener(t,n,r)}function l(e,t,n,r){e.removeEventListener(t,n,r)}function u(e,t,n){e.style.setProperty(t,n)}function d(e,t,n){e.classList[n?"add":"remove"](t)}function p(){return Object.create(null)}function f(e,t){return e!=e?t==t:e!==t||e&&"object"==typeof e||"function"==typeof e}function m(e,t){return e!=e?t==t:e!==t}function h(e,t){var n=e in this._handlers&&this._handlers[e].slice();if(n)for(var r=0;r<n.length;r+=1){var o=n[r];if(!o.__calling)try{o.__calling=!0,o.call(this,t)}finally{o.__calling=!1}}}function g(e){e._lock=!0,_(e._beforecreate),_(e._oncreate),_(e._aftercreate),e._lock=!1}function y(){return this._state}function v(e,t){e._handlers=p(),e._slots=p(),e._bind=t._bind,e._staged={},e.options=t,e.root=t.root||e,e.store=t.store||e.root.store,t.root||(e._beforecreate=[],e._oncreate=[],e._aftercreate=[])}function b(e,t){var n=this._handlers[e]||(this._handlers[e]=[]);return n.push(t),{cancel:function(){var e=n.indexOf(t);~e&&n.splice(e,1)}}}function _(e){for(;e&&e.length;)e.shift()()}var w={destroy:function(t){this.destroy=e,this.fire("destroy"),this.set=e,this._fragment.d(!1!==t),this._fragment=null,this._state={}},get:y,fire:h,on:b,set:function(e){this._set(t({},e)),this.root._lock||g(this.root)},_recompute:e,_set:function(e){var n=this._state,r={},o=!1;for(var i in e=t(this._staged,e),this._staged={},e)this._differs(e[i],n[i])&&(r[i]=o=!0);o&&(this._state=t(t({},n),e),this._recompute(r,this._state),this._bind&&this._bind(r,this._state),this._fragment&&(this.fire("state",{changed:r,current:this._state,previous:n}),this._fragment.p(r,this._state),this.fire("update",{changed:r,current:this._state,previous:n})))},_stage:function(e){t(this._staged,e)},_mount:function(e,t){this._fragment[this._fragment.i?"i":"m"](e,t||null)},_differs:f},T="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:{};function E(e){if(e.__esModule)return e;var t=Object.defineProperty({},"__esModule",{value:!0});return Object.keys(e).forEach((function(n){var r=Object.getOwnPropertyDescriptor(e,n);Object.defineProperty(t,n,r.get?r:{enumerable:!0,get:function(){return e[n]}})})),t}var N={};
-/*! @license DOMPurify 2.4.0 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/2.4.0/LICENSE */function A(e){return(A="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e})(e)}function x(e,t){return(x=Object.setPrototypeOf||function(e,t){return e.__proto__=t,e})(e,t)}function k(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],(function(){}))),!0}catch(e){return!1}}function O(e,t,n){return(O=k()?Reflect.construct:function(e,t,n){var r=[null];r.push.apply(r,t);var o=new(Function.bind.apply(e,r));return n&&x(o,n.prototype),o}).apply(null,arguments)}function S(e){return function(e){if(Array.isArray(e))return C(e)}(e)||function(e){if("undefined"!=typeof Symbol&&null!=e[Symbol.iterator]||null!=e["@@iterator"])return Array.from(e)}(e)||function(e,t){if(!e)return;if("string"==typeof e)return C(e,t);var n=Object.prototype.toString.call(e).slice(8,-1);"Object"===n&&e.constructor&&(n=e.constructor.name);if("Map"===n||"Set"===n)return Array.from(e);if("Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))return C(e,t)}(e)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function C(e,t){(null==t||t>e.length)&&(t=e.length);for(var n=0,r=new Array(t);n<t;n++)r[n]=e[n];return r}var M=Object.hasOwnProperty,D=Object.setPrototypeOf,L=Object.isFrozen,R=Object.getPrototypeOf,I=Object.getOwnPropertyDescriptor,j=Object.freeze,H=Object.seal,U=Object.create,P="undefined"!=typeof Reflect&&Reflect,F=P.apply,z=P.construct;F||(F=function(e,t,n){return e.apply(t,n)}),j||(j=function(e){return e}),H||(H=function(e){return e}),z||(z=function(e,t){return O(e,S(t))});var B,G=Q(Array.prototype.forEach),q=Q(Array.prototype.pop),W=Q(Array.prototype.push),$=Q(String.prototype.toLowerCase),V=Q(String.prototype.match),Y=Q(String.prototype.replace),K=Q(String.prototype.indexOf),J=Q(String.prototype.trim),X=Q(RegExp.prototype.test),Z=(B=TypeError,function(){for(var e=arguments.length,t=new Array(e),n=0;n<e;n++)t[n]=arguments[n];return z(B,t)});function Q(e){return function(t){for(var n=arguments.length,r=new Array(n>1?n-1:0),o=1;o<n;o++)r[o-1]=arguments[o];return F(e,t,r)}}function ee(e,t,n){n=n||$,D&&D(e,null);for(var r=t.length;r--;){var o=t[r];if("string"==typeof o){var i=n(o);i!==o&&(L(t)||(t[r]=i),o=i)}e[o]=!0}return e}function te(e){var t,n=U(null);for(t in e)F(M,e,[t])&&(n[t]=e[t]);return n}function ne(e,t){for(;null!==e;){var n=I(e,t);if(n){if(n.get)return Q(n.get);if("function"==typeof n.value)return Q(n.value)}e=R(e)}return function(e){return console.warn("fallback value for",e),null}}var re=j(["a","abbr","acronym","address","area","article","aside","audio","b","bdi","bdo","big","blink","blockquote","body","br","button","canvas","caption","center","cite","code","col","colgroup","content","data","datalist","dd","decorator","del","details","dfn","dialog","dir","div","dl","dt","element","em","fieldset","figcaption","figure","font","footer","form","h1","h2","h3","h4","h5","h6","head","header","hgroup","hr","html","i","img","input","ins","kbd","label","legend","li","main","map","mark","marquee","menu","menuitem","meter","nav","nobr","ol","optgroup","option","output","p","picture","pre","progress","q","rp","rt","ruby","s","samp","section","select","shadow","small","source","spacer","span","strike","strong","style","sub","summary","sup","table","tbody","td","template","textarea","tfoot","th","thead","time","tr","track","tt","u","ul","var","video","wbr"]),oe=j(["svg","a","altglyph","altglyphdef","altglyphitem","animatecolor","animatemotion","animatetransform","circle","clippath","defs","desc","ellipse","filter","font","g","glyph","glyphref","hkern","image","line","lineargradient","marker","mask","metadata","mpath","path","pattern","polygon","polyline","radialgradient","rect","stop","style","switch","symbol","text","textpath","title","tref","tspan","view","vkern"]),ie=j(["feBlend","feColorMatrix","feComponentTransfer","feComposite","feConvolveMatrix","feDiffuseLighting","feDisplacementMap","feDistantLight","feFlood","feFuncA","feFuncB","feFuncG","feFuncR","feGaussianBlur","feImage","feMerge","feMergeNode","feMorphology","feOffset","fePointLight","feSpecularLighting","feSpotLight","feTile","feTurbulence"]),ae=j(["animate","color-profile","cursor","discard","fedropshadow","font-face","font-face-format","font-face-name","font-face-src","font-face-uri","foreignobject","hatch","hatchpath","mesh","meshgradient","meshpatch","meshrow","missing-glyph","script","set","solidcolor","unknown","use"]),se=j(["math","menclose","merror","mfenced","mfrac","mglyph","mi","mlabeledtr","mmultiscripts","mn","mo","mover","mpadded","mphantom","mroot","mrow","ms","mspace","msqrt","mstyle","msub","msup","msubsup","mtable","mtd","mtext","mtr","munder","munderover"]),ce=j(["maction","maligngroup","malignmark","mlongdiv","mscarries","mscarry","msgroup","mstack","msline","msrow","semantics","annotation","annotation-xml","mprescripts","none"]),le=j(["#text"]),ue=j(["accept","action","align","alt","autocapitalize","autocomplete","autopictureinpicture","autoplay","background","bgcolor","border","capture","cellpadding","cellspacing","checked","cite","class","clear","color","cols","colspan","controls","controlslist","coords","crossorigin","datetime","decoding","default","dir","disabled","disablepictureinpicture","disableremoteplayback","download","draggable","enctype","enterkeyhint","face","for","headers","height","hidden","high","href","hreflang","id","inputmode","integrity","ismap","kind","label","lang","list","loading","loop","low","max","maxlength","media","method","min","minlength","multiple","muted","name","nonce","noshade","novalidate","nowrap","open","optimum","pattern","placeholder","playsinline","poster","preload","pubdate","radiogroup","readonly","rel","required","rev","reversed","role","rows","rowspan","spellcheck","scope","selected","shape","size","sizes","span","srclang","start","src","srcset","step","style","summary","tabindex","title","translate","type","usemap","valign","value","width","xmlns","slot"]),de=j(["accent-height","accumulate","additive","alignment-baseline","ascent","attributename","attributetype","azimuth","basefrequency","baseline-shift","begin","bias","by","class","clip","clippathunits","clip-path","clip-rule","color","color-interpolation","color-interpolation-filters","color-profile","color-rendering","cx","cy","d","dx","dy","diffuseconstant","direction","display","divisor","dur","edgemode","elevation","end","fill","fill-opacity","fill-rule","filter","filterunits","flood-color","flood-opacity","font-family","font-size","font-size-adjust","font-stretch","font-style","font-variant","font-weight","fx","fy","g1","g2","glyph-name","glyphref","gradientunits","gradienttransform","height","href","id","image-rendering","in","in2","k","k1","k2","k3","k4","kerning","keypoints","keysplines","keytimes","lang","lengthadjust","letter-spacing","kernelmatrix","kernelunitlength","lighting-color","local","marker-end","marker-mid","marker-start","markerheight","markerunits","markerwidth","maskcontentunits","maskunits","max","mask","media","method","mode","min","name","numoctaves","offset","operator","opacity","order","orient","orientation","origin","overflow","paint-order","path","pathlength","patterncontentunits","patterntransform","patternunits","points","preservealpha","preserveaspectratio","primitiveunits","r","rx","ry","radius","refx","refy","repeatcount","repeatdur","restart","result","rotate","scale","seed","shape-rendering","specularconstant","specularexponent","spreadmethod","startoffset","stddeviation","stitchtiles","stop-color","stop-opacity","stroke-dasharray","stroke-dashoffset","stroke-linecap","stroke-linejoin","stroke-miterlimit","stroke-opacity","stroke","stroke-width","style","surfacescale","systemlanguage","tabindex","targetx","targety","transform","transform-origin","text-anchor","text-decoration","text-rendering","textlength","type","u1","u2","unicode","values","viewbox","visibility","version","vert-adv-y","vert-origin-x","vert-origin-y","width","word-spacing","wrap","writing-mode","xchannelselector","ychannelselector","x","x1","x2","xmlns","y","y1","y2","z","zoomandpan"]),pe=j(["accent","accentunder","align","bevelled","close","columnsalign","columnlines","columnspan","denomalign","depth","dir","display","displaystyle","encoding","fence","frame","height","href","id","largeop","length","linethickness","lspace","lquote","mathbackground","mathcolor","mathsize","mathvariant","maxsize","minsize","movablelimits","notation","numalign","open","rowalign","rowlines","rowspacing","rowspan","rspace","rquote","scriptlevel","scriptminsize","scriptsizemultiplier","selection","separator","separators","stretchy","subscriptshift","supscriptshift","symmetric","voffset","width","xmlns"]),fe=j(["xlink:href","xml:id","xlink:title","xml:space","xmlns:xlink"]),me=H(/\{\{[\w\W]*|[\w\W]*\}\}/gm),he=H(/<%[\w\W]*|[\w\W]*%>/gm),ge=H(/^data-[\-\w.\u00B7-\uFFFF]/),ye=H(/^aria-[\-\w]+$/),ve=H(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i),be=H(/^(?:\w+script|data):/i),_e=H(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g),we=H(/^html$/i),Te=function(){return"undefined"==typeof window?null:window},Ee=function(e,t){if("object"!==A(e)||"function"!=typeof e.createPolicy)return null;var n=null;t.currentScript&&t.currentScript.hasAttribute("data-tt-policy-suffix")&&(n=t.currentScript.getAttribute("data-tt-policy-suffix"));var r="dompurify"+(n?"#"+n:"");try{return e.createPolicy(r,{createHTML:function(e){return e},createScriptURL:function(e){return e}})}catch(e){return console.warn("TrustedTypes policy "+r+" could not be created."),null}};var Ne=function e(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:Te(),n=function(t){return e(t)};if(n.version="2.4.0",n.removed=[],!t||!t.document||9!==t.document.nodeType)return n.isSupported=!1,n;var r=t.document,o=t.document,i=t.DocumentFragment,a=t.HTMLTemplateElement,s=t.Node,c=t.Element,l=t.NodeFilter,u=t.NamedNodeMap,d=void 0===u?t.NamedNodeMap||t.MozNamedAttrMap:u,p=t.HTMLFormElement,f=t.DOMParser,m=t.trustedTypes,h=c.prototype,g=ne(h,"cloneNode"),y=ne(h,"nextSibling"),v=ne(h,"childNodes"),b=ne(h,"parentNode");if("function"==typeof a){var _=o.createElement("template");_.content&&_.content.ownerDocument&&(o=_.content.ownerDocument)}var w=Ee(m,r),T=w?w.createHTML(""):"",E=o,N=E.implementation,x=E.createNodeIterator,k=E.createDocumentFragment,O=E.getElementsByTagName,C=r.importNode,M={};try{M=te(o).documentMode?o.documentMode:{}}catch(e){}var D={};n.isSupported="function"==typeof b&&N&&void 0!==N.createHTMLDocument&&9!==M;var L,R,I=me,H=he,U=ge,P=ye,F=be,z=_e,B=ve,Q=null,Ne=ee({},[].concat(S(re),S(oe),S(ie),S(se),S(le))),Ae=null,xe=ee({},[].concat(S(ue),S(de),S(pe),S(fe))),ke=Object.seal(Object.create(null,{tagNameCheck:{writable:!0,configurable:!1,enumerable:!0,value:null},attributeNameCheck:{writable:!0,configurable:!1,enumerable:!0,value:null},allowCustomizedBuiltInElements:{writable:!0,configurable:!1,enumerable:!0,value:!1}})),Oe=null,Se=null,Ce=!0,Me=!0,De=!1,Le=!1,Re=!1,Ie=!1,je=!1,He=!1,Ue=!1,Pe=!1,Fe=!0,ze=!1,Be="user-content-",Ge=!0,qe=!1,We={},$e=null,Ve=ee({},["annotation-xml","audio","colgroup","desc","foreignobject","head","iframe","math","mi","mn","mo","ms","mtext","noembed","noframes","noscript","plaintext","script","style","svg","template","thead","title","video","xmp"]),Ye=null,Ke=ee({},["audio","video","img","source","image","track"]),Je=null,Xe=ee({},["alt","class","for","id","label","name","pattern","placeholder","role","summary","title","value","style","xmlns"]),Ze="http://www.w3.org/1998/Math/MathML",Qe="http://www.w3.org/2000/svg",et="http://www.w3.org/1999/xhtml",tt=et,nt=!1,rt=["application/xhtml+xml","text/html"],ot="text/html",it=null,at=o.createElement("form"),st=function(e){return e instanceof RegExp||e instanceof Function},ct=function(e){it&&it===e||(e&&"object"===A(e)||(e={}),e=te(e),L=L=-1===rt.indexOf(e.PARSER_MEDIA_TYPE)?ot:e.PARSER_MEDIA_TYPE,R="application/xhtml+xml"===L?function(e){return e}:$,Q="ALLOWED_TAGS"in e?ee({},e.ALLOWED_TAGS,R):Ne,Ae="ALLOWED_ATTR"in e?ee({},e.ALLOWED_ATTR,R):xe,Je="ADD_URI_SAFE_ATTR"in e?ee(te(Xe),e.ADD_URI_SAFE_ATTR,R):Xe,Ye="ADD_DATA_URI_TAGS"in e?ee(te(Ke),e.ADD_DATA_URI_TAGS,R):Ke,$e="FORBID_CONTENTS"in e?ee({},e.FORBID_CONTENTS,R):Ve,Oe="FORBID_TAGS"in e?ee({},e.FORBID_TAGS,R):{},Se="FORBID_ATTR"in e?ee({},e.FORBID_ATTR,R):{},We="USE_PROFILES"in e&&e.USE_PROFILES,Ce=!1!==e.ALLOW_ARIA_ATTR,Me=!1!==e.ALLOW_DATA_ATTR,De=e.ALLOW_UNKNOWN_PROTOCOLS||!1,Le=e.SAFE_FOR_TEMPLATES||!1,Re=e.WHOLE_DOCUMENT||!1,He=e.RETURN_DOM||!1,Ue=e.RETURN_DOM_FRAGMENT||!1,Pe=e.RETURN_TRUSTED_TYPE||!1,je=e.FORCE_BODY||!1,Fe=!1!==e.SANITIZE_DOM,ze=e.SANITIZE_NAMED_PROPS||!1,Ge=!1!==e.KEEP_CONTENT,qe=e.IN_PLACE||!1,B=e.ALLOWED_URI_REGEXP||B,tt=e.NAMESPACE||et,e.CUSTOM_ELEMENT_HANDLING&&st(e.CUSTOM_ELEMENT_HANDLING.tagNameCheck)&&(ke.tagNameCheck=e.CUSTOM_ELEMENT_HANDLING.tagNameCheck),e.CUSTOM_ELEMENT_HANDLING&&st(e.CUSTOM_ELEMENT_HANDLING.attributeNameCheck)&&(ke.attributeNameCheck=e.CUSTOM_ELEMENT_HANDLING.attributeNameCheck),e.CUSTOM_ELEMENT_HANDLING&&"boolean"==typeof e.CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements&&(ke.allowCustomizedBuiltInElements=e.CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements),Le&&(Me=!1),Ue&&(He=!0),We&&(Q=ee({},S(le)),Ae=[],!0===We.html&&(ee(Q,re),ee(Ae,ue)),!0===We.svg&&(ee(Q,oe),ee(Ae,de),ee(Ae,fe)),!0===We.svgFilters&&(ee(Q,ie),ee(Ae,de),ee(Ae,fe)),!0===We.mathMl&&(ee(Q,se),ee(Ae,pe),ee(Ae,fe))),e.ADD_TAGS&&(Q===Ne&&(Q=te(Q)),ee(Q,e.ADD_TAGS,R)),e.ADD_ATTR&&(Ae===xe&&(Ae=te(Ae)),ee(Ae,e.ADD_ATTR,R)),e.ADD_URI_SAFE_ATTR&&ee(Je,e.ADD_URI_SAFE_ATTR,R),e.FORBID_CONTENTS&&($e===Ve&&($e=te($e)),ee($e,e.FORBID_CONTENTS,R)),Ge&&(Q["#text"]=!0),Re&&ee(Q,["html","head","body"]),Q.table&&(ee(Q,["tbody"]),delete Oe.tbody),j&&j(e),it=e)},lt=ee({},["mi","mo","mn","ms","mtext"]),ut=ee({},["foreignobject","desc","title","annotation-xml"]),dt=ee({},["title","style","font","a","script"]),pt=ee({},oe);ee(pt,ie),ee(pt,ae);var ft=ee({},se);ee(ft,ce);var mt=function(e){var t=b(e);t&&t.tagName||(t={namespaceURI:et,tagName:"template"});var n=$(e.tagName),r=$(t.tagName);return e.namespaceURI===Qe?t.namespaceURI===et?"svg"===n:t.namespaceURI===Ze?"svg"===n&&("annotation-xml"===r||lt[r]):Boolean(pt[n]):e.namespaceURI===Ze?t.namespaceURI===et?"math"===n:t.namespaceURI===Qe?"math"===n&&ut[r]:Boolean(ft[n]):e.namespaceURI===et&&(!(t.namespaceURI===Qe&&!ut[r])&&(!(t.namespaceURI===Ze&&!lt[r])&&(!ft[n]&&(dt[n]||!pt[n]))))},ht=function(e){W(n.removed,{element:e});try{e.parentNode.removeChild(e)}catch(t){try{e.outerHTML=T}catch(t){e.remove()}}},gt=function(e,t){try{W(n.removed,{attribute:t.getAttributeNode(e),from:t})}catch(e){W(n.removed,{attribute:null,from:t})}if(t.removeAttribute(e),"is"===e&&!Ae[e])if(He||Ue)try{ht(t)}catch(e){}else try{t.setAttribute(e,"")}catch(e){}},yt=function(e){var t,n;if(je)e="<remove></remove>"+e;else{var r=V(e,/^[\r\n\t ]+/);n=r&&r[0]}"application/xhtml+xml"===L&&(e='<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>'+e+"</body></html>");var i=w?w.createHTML(e):e;if(tt===et)try{t=(new f).parseFromString(i,L)}catch(e){}if(!t||!t.documentElement){t=N.createDocument(tt,"template",null);try{t.documentElement.innerHTML=nt?"":i}catch(e){}}var a=t.body||t.documentElement;return e&&n&&a.insertBefore(o.createTextNode(n),a.childNodes[0]||null),tt===et?O.call(t,Re?"html":"body")[0]:Re?t.documentElement:a},vt=function(e){return x.call(e.ownerDocument||e,e,l.SHOW_ELEMENT|l.SHOW_COMMENT|l.SHOW_TEXT,null,!1)},bt=function(e){return e instanceof p&&("string"!=typeof e.nodeName||"string"!=typeof e.textContent||"function"!=typeof e.removeChild||!(e.attributes instanceof d)||"function"!=typeof e.removeAttribute||"function"!=typeof e.setAttribute||"string"!=typeof e.namespaceURI||"function"!=typeof e.insertBefore)},_t=function(e){return"object"===A(s)?e instanceof s:e&&"object"===A(e)&&"number"==typeof e.nodeType&&"string"==typeof e.nodeName},wt=function(e,t,r){D[e]&&G(D[e],(function(e){e.call(n,t,r,it)}))},Tt=function(e){var t;if(wt("beforeSanitizeElements",e,null),bt(e))return ht(e),!0;if(X(/[\u0080-\uFFFF]/,e.nodeName))return ht(e),!0;var r=R(e.nodeName);if(wt("uponSanitizeElement",e,{tagName:r,allowedTags:Q}),e.hasChildNodes()&&!_t(e.firstElementChild)&&(!_t(e.content)||!_t(e.content.firstElementChild))&&X(/<[/\w]/g,e.innerHTML)&&X(/<[/\w]/g,e.textContent))return ht(e),!0;if("select"===r&&X(/<template/i,e.innerHTML))return ht(e),!0;if(!Q[r]||Oe[r]){if(!Oe[r]&&Nt(r)){if(ke.tagNameCheck instanceof RegExp&&X(ke.tagNameCheck,r))return!1;if(ke.tagNameCheck instanceof Function&&ke.tagNameCheck(r))return!1}if(Ge&&!$e[r]){var o=b(e)||e.parentNode,i=v(e)||e.childNodes;if(i&&o)for(var a=i.length-1;a>=0;--a)o.insertBefore(g(i[a],!0),y(e))}return ht(e),!0}return e instanceof c&&!mt(e)?(ht(e),!0):"noscript"!==r&&"noembed"!==r||!X(/<\/no(script|embed)/i,e.innerHTML)?(Le&&3===e.nodeType&&(t=e.textContent,t=Y(t,I," "),t=Y(t,H," "),e.textContent!==t&&(W(n.removed,{element:e.cloneNode()}),e.textContent=t)),wt("afterSanitizeElements",e,null),!1):(ht(e),!0)},Et=function(e,t,n){if(Fe&&("id"===t||"name"===t)&&(n in o||n in at))return!1;if(Me&&!Se[t]&&X(U,t));else if(Ce&&X(P,t));else if(!Ae[t]||Se[t]){if(!(Nt(e)&&(ke.tagNameCheck instanceof RegExp&&X(ke.tagNameCheck,e)||ke.tagNameCheck instanceof Function&&ke.tagNameCheck(e))&&(ke.attributeNameCheck instanceof RegExp&&X(ke.attributeNameCheck,t)||ke.attributeNameCheck instanceof Function&&ke.attributeNameCheck(t))||"is"===t&&ke.allowCustomizedBuiltInElements&&(ke.tagNameCheck instanceof RegExp&&X(ke.tagNameCheck,n)||ke.tagNameCheck instanceof Function&&ke.tagNameCheck(n))))return!1}else if(Je[t]);else if(X(B,Y(n,z,"")));else if("src"!==t&&"xlink:href"!==t&&"href"!==t||"script"===e||0!==K(n,"data:")||!Ye[e]){if(De&&!X(F,Y(n,z,"")));else if(n)return!1}else;return!0},Nt=function(e){return e.indexOf("-")>0},At=function(e){var t,r,o,i;wt("beforeSanitizeAttributes",e,null);var a=e.attributes;if(a){var s={attrName:"",attrValue:"",keepAttr:!0,allowedAttributes:Ae};for(i=a.length;i--;){var c=t=a[i],l=c.name,u=c.namespaceURI;if(r="value"===l?t.value:J(t.value),o=R(l),s.attrName=o,s.attrValue=r,s.keepAttr=!0,s.forceKeepAttr=void 0,wt("uponSanitizeAttribute",e,s),r=s.attrValue,!s.forceKeepAttr&&(gt(l,e),s.keepAttr))if(X(/\/>/i,r))gt(l,e);else{Le&&(r=Y(r,I," "),r=Y(r,H," "));var d=R(e.nodeName);if(Et(d,o,r)){if(!ze||"id"!==o&&"name"!==o||(gt(l,e),r=Be+r),w&&"object"===A(m)&&"function"==typeof m.getAttributeType)if(u);else switch(m.getAttributeType(d,o)){case"TrustedHTML":r=w.createHTML(r);break;case"TrustedScriptURL":r=w.createScriptURL(r)}try{u?e.setAttributeNS(u,l,r):e.setAttribute(l,r),q(n.removed)}catch(e){}}}}wt("afterSanitizeAttributes",e,null)}},xt=function e(t){var n,r=vt(t);for(wt("beforeSanitizeShadowDOM",t,null);n=r.nextNode();)wt("uponSanitizeShadowNode",n,null),Tt(n)||(n.content instanceof i&&e(n.content),At(n));wt("afterSanitizeShadowDOM",t,null)};return n.sanitize=function(e){var o,a,c,l,u,d=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};if((nt=!e)&&(e="\x3c!--\x3e"),"string"!=typeof e&&!_t(e)){if("function"!=typeof e.toString)throw Z("toString is not a function");if("string"!=typeof(e=e.toString()))throw Z("dirty is not a string, aborting")}if(!n.isSupported){if("object"===A(t.toStaticHTML)||"function"==typeof t.toStaticHTML){if("string"==typeof e)return t.toStaticHTML(e);if(_t(e))return t.toStaticHTML(e.outerHTML)}return e}if(Ie||ct(d),n.removed=[],"string"==typeof e&&(qe=!1),qe){if(e.nodeName){var p=R(e.nodeName);if(!Q[p]||Oe[p])throw Z("root node is forbidden and cannot be sanitized in-place")}}else if(e instanceof s)1===(a=(o=yt("\x3c!----\x3e")).ownerDocument.importNode(e,!0)).nodeType&&"BODY"===a.nodeName||"HTML"===a.nodeName?o=a:o.appendChild(a);else{if(!He&&!Le&&!Re&&-1===e.indexOf("<"))return w&&Pe?w.createHTML(e):e;if(!(o=yt(e)))return He?null:Pe?T:""}o&&je&&ht(o.firstChild);for(var f=vt(qe?e:o);c=f.nextNode();)3===c.nodeType&&c===l||Tt(c)||(c.content instanceof i&&xt(c.content),At(c),l=c);if(l=null,qe)return e;if(He){if(Ue)for(u=k.call(o.ownerDocument);o.firstChild;)u.appendChild(o.firstChild);else u=o;return Ae.shadowroot&&(u=C.call(r,u,!0)),u}var m=Re?o.outerHTML:o.innerHTML;return Re&&Q["!doctype"]&&o.ownerDocument&&o.ownerDocument.doctype&&o.ownerDocument.doctype.name&&X(we,o.ownerDocument.doctype.name)&&(m="<!DOCTYPE "+o.ownerDocument.doctype.name+">\n"+m),Le&&(m=Y(m,I," "),m=Y(m,H," ")),w&&Pe?w.createHTML(m):m},n.setConfig=function(e){ct(e),Ie=!0},n.clearConfig=function(){it=null,Ie=!1},n.isValidAttribute=function(e,t,n){it||ct({});var r=R(e),o=R(t);return Et(r,o,n)},n.addHook=function(e,t){"function"==typeof t&&(D[e]=D[e]||[],W(D[e],t))},n.removeHook=function(e){if(D[e])return q(D[e])},n.removeHooks=function(e){D[e]&&(D[e]=[])},n.removeAllHooks=function(){D={}},n}(),Ae=E(Object.freeze({__proto__:null,default:Ne})),xe={};Object.defineProperty(xe,"__esModule",{value:!0}),xe.createPermanentMemoizer=void 0;xe.createPermanentMemoizer=(e,t,{maxsize:n}={})=>{let r=new Map;return{get:o=>{const i=e(o);if(r.has(i))return r.get(i);const a=t(o);return n&&r.size>=n&&(r=new Map),r.set(i,a),a}}};const ke=(T&&T.__importDefault||function(e){return e&&e.__esModule?e:{default:e}})(Ae),Oe=xe,Se=["a","span","b","br","i","strong","sup","sub","strike","u","em","tt"].sort();ke.default.addHook("afterSanitizeElements",(function(e){"a"===e.nodeName.toLowerCase()&&("_self"!==e.getAttribute("target")&&e.setAttribute("target","_blank"),e.setAttribute("rel","nofollow noopener noreferrer"))}));const Ce=(0,Oe.createPermanentMemoizer)(e=>String(e),e=>{const t={ALLOWED_TAGS:void 0===e?Se:"string"==typeof e?e.toLowerCase().slice(1,-1).split("><"):e,ADD_ATTR:["target"],FORCE_BODY:!0};return(0,Oe.createPermanentMemoizer)(e=>e,e=>ke.default.sanitize(e,t),{maxsize:1e5})},{maxsize:1e5});var Me=function(e,t){return e?Ce.get(t).get(e):e},De=T&&T.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(N,"__esModule",{value:!0}),N.keyExists=He=N.__=N.translate=void 0;const Le=De(Me),Re={};function Ie(e="core"){"chart"===e?window.__dw&&window.__dw.vis&&window.__dw.vis.meta&&(Re[e]=window.__dw.vis.meta.locale||{}):dw.backend.__messages&&(Re[e]="core"===e?dw.backend.__messages.core:Object.assign({},dw.backend.__messages.core,dw.backend.__messages[e]))}function je(e,t="core",n,...r){let o=function(e,t,n){try{return n[t][e]||e}catch(t){return e}}(e,t,n);if((e=>"string"==typeof e[0])(r)){o=function(e,t=[]){return e.replace(/\$(\d)/g,(e,n)=>void 0===t[+n]?e:(0,Le.default)(t[+n],""))}(o,r)}else o=function(e,t={}){return Object.entries(t).forEach(([t,n])=>{e=e.replace(new RegExp(`%${t}%|%${t}(?!\\w)`,"g"),""+n)}),e}(o,r[0]);return(0,Le.default)(o,"<p><h1><h2><h3><h4><h5><h6><blockquote><ol><ul><li><pre><hr><br><a><em><i><strong><b><code><img><table><tr><th><td><small><span><div><sup><sub><tt>")}N.translate=je;var He=N.__=function(e,t="core",...n){return e=e.trim(),Re[t]||Ie(t),Re[t][e]?je(e,t,Re,...n):"MISSING:"+e};N.keyExists=function(e,t="core"){return Re[t]||Ie(t),!!Re[t][e]};var Ue={exports:{}};
-/*!
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define('svelte/publish/guest', factory) :
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, global['publish/guest'] = factory());
+}(this, (function () { 'use strict';
+
+	function noop() {}
+
+	function assign(tar, src) {
+		for (var k in src) tar[k] = src[k];
+		return tar;
+	}
+
+	function addLoc(element, file, line, column, char) {
+		element.__svelte_meta = {
+			loc: { file, line, column, char }
+		};
+	}
+
+	function append(target, node) {
+		target.appendChild(node);
+	}
+
+	function insert(target, node, anchor) {
+		target.insertBefore(node, anchor);
+	}
+
+	function detachNode(node) {
+		node.parentNode.removeChild(node);
+	}
+
+	function detachBetween(before, after) {
+		while (before.nextSibling && before.nextSibling !== after) {
+			before.parentNode.removeChild(before.nextSibling);
+		}
+	}
+
+	function detachBefore(after) {
+		while (after.previousSibling) {
+			after.parentNode.removeChild(after.previousSibling);
+		}
+	}
+
+	function reinsertChildren(parent, target) {
+		while (parent.firstChild) target.appendChild(parent.firstChild);
+	}
+
+	function reinsertAfter(before, target) {
+		while (before.nextSibling) target.appendChild(before.nextSibling);
+	}
+
+	function createFragment() {
+		return document.createDocumentFragment();
+	}
+
+	function createElement(name) {
+		return document.createElement(name);
+	}
+
+	function createText(data) {
+		return document.createTextNode(data);
+	}
+
+	function createComment() {
+		return document.createComment('');
+	}
+
+	function addListener(node, event, handler, options) {
+		node.addEventListener(event, handler, options);
+	}
+
+	function removeListener(node, event, handler, options) {
+		node.removeEventListener(event, handler, options);
+	}
+
+	function setAttribute(node, attribute, value) {
+		if (value == null) node.removeAttribute(attribute);
+		else node.setAttribute(attribute, value);
+	}
+
+	function setData(text, data) {
+		text.data = '' + data;
+	}
+
+	function setStyle(node, key, value) {
+		node.style.setProperty(key, value);
+	}
+
+	function toggleClass(element, name, toggle) {
+		element.classList[toggle ? 'add' : 'remove'](name);
+	}
+
+	function blankObject() {
+		return Object.create(null);
+	}
+
+	function destroy(detach) {
+		this.destroy = noop;
+		this.fire('destroy');
+		this.set = noop;
+
+		this._fragment.d(detach !== false);
+		this._fragment = null;
+		this._state = {};
+	}
+
+	function destroyDev(detach) {
+		destroy.call(this, detach);
+		this.destroy = function() {
+			console.warn('Component was already destroyed');
+		};
+	}
+
+	function _differs(a, b) {
+		return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
+	}
+
+	function _differsImmutable(a, b) {
+		return a != a ? b == b : a !== b;
+	}
+
+	function fire(eventName, data) {
+		var handlers =
+			eventName in this._handlers && this._handlers[eventName].slice();
+		if (!handlers) return;
+
+		for (var i = 0; i < handlers.length; i += 1) {
+			var handler = handlers[i];
+
+			if (!handler.__calling) {
+				try {
+					handler.__calling = true;
+					handler.call(this, data);
+				} finally {
+					handler.__calling = false;
+				}
+			}
+		}
+	}
+
+	function flush(component) {
+		component._lock = true;
+		callAll(component._beforecreate);
+		callAll(component._oncreate);
+		callAll(component._aftercreate);
+		component._lock = false;
+	}
+
+	function get() {
+		return this._state;
+	}
+
+	function init(component, options) {
+		component._handlers = blankObject();
+		component._slots = blankObject();
+		component._bind = options._bind;
+		component._staged = {};
+
+		component.options = options;
+		component.root = options.root || component;
+		component.store = options.store || component.root.store;
+
+		if (!options.root) {
+			component._beforecreate = [];
+			component._oncreate = [];
+			component._aftercreate = [];
+		}
+	}
+
+	function on(eventName, handler) {
+		var handlers = this._handlers[eventName] || (this._handlers[eventName] = []);
+		handlers.push(handler);
+
+		return {
+			cancel: function() {
+				var index = handlers.indexOf(handler);
+				if (~index) handlers.splice(index, 1);
+			}
+		};
+	}
+
+	function set(newState) {
+		this._set(assign({}, newState));
+		if (this.root._lock) return;
+		flush(this.root);
+	}
+
+	function _set(newState) {
+		var oldState = this._state,
+			changed = {},
+			dirty = false;
+
+		newState = assign(this._staged, newState);
+		this._staged = {};
+
+		for (var key in newState) {
+			if (this._differs(newState[key], oldState[key])) changed[key] = dirty = true;
+		}
+		if (!dirty) return;
+
+		this._state = assign(assign({}, oldState), newState);
+		this._recompute(changed, this._state);
+		if (this._bind) this._bind(changed, this._state);
+
+		if (this._fragment) {
+			this.fire("state", { changed: changed, current: this._state, previous: oldState });
+			this._fragment.p(changed, this._state);
+			this.fire("update", { changed: changed, current: this._state, previous: oldState });
+		}
+	}
+
+	function _stage(newState) {
+		assign(this._staged, newState);
+	}
+
+	function setDev(newState) {
+		if (typeof newState !== 'object') {
+			throw new Error(
+				this._debugName + '.set was called without an object of data key-values to update.'
+			);
+		}
+
+		this._checkReadOnly(newState);
+		set.call(this, newState);
+	}
+
+	function callAll(fns) {
+		while (fns && fns.length) fns.shift()();
+	}
+
+	function _mount(target, anchor) {
+		this._fragment[this._fragment.i ? 'i' : 'm'](target, anchor || null);
+	}
+
+	var protoDev = {
+		destroy: destroyDev,
+		get,
+		fire,
+		on,
+		set: setDev,
+		_recompute: noop,
+		_set,
+		_stage,
+		_mount,
+		_differs
+	};
+
+	/*! @license DOMPurify 2.4.0 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/2.4.0/LICENSE */
+
+	function _typeof(obj) {
+	  "@babel/helpers - typeof";
+
+	  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+	    return typeof obj;
+	  } : function (obj) {
+	    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+	  }, _typeof(obj);
+	}
+
+	function _setPrototypeOf(o, p) {
+	  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+	    o.__proto__ = p;
+	    return o;
+	  };
+
+	  return _setPrototypeOf(o, p);
+	}
+
+	function _isNativeReflectConstruct() {
+	  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+	  if (Reflect.construct.sham) return false;
+	  if (typeof Proxy === "function") return true;
+
+	  try {
+	    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+	    return true;
+	  } catch (e) {
+	    return false;
+	  }
+	}
+
+	function _construct(Parent, args, Class) {
+	  if (_isNativeReflectConstruct()) {
+	    _construct = Reflect.construct;
+	  } else {
+	    _construct = function _construct(Parent, args, Class) {
+	      var a = [null];
+	      a.push.apply(a, args);
+	      var Constructor = Function.bind.apply(Parent, a);
+	      var instance = new Constructor();
+	      if (Class) _setPrototypeOf(instance, Class.prototype);
+	      return instance;
+	    };
+	  }
+
+	  return _construct.apply(null, arguments);
+	}
+
+	function _toConsumableArray(arr) {
+	  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+	}
+
+	function _arrayWithoutHoles(arr) {
+	  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+	}
+
+	function _iterableToArray(iter) {
+	  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+	}
+
+	function _unsupportedIterableToArray(o, minLen) {
+	  if (!o) return;
+	  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+	  var n = Object.prototype.toString.call(o).slice(8, -1);
+	  if (n === "Object" && o.constructor) n = o.constructor.name;
+	  if (n === "Map" || n === "Set") return Array.from(o);
+	  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+	}
+
+	function _arrayLikeToArray(arr, len) {
+	  if (len == null || len > arr.length) len = arr.length;
+
+	  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+	  return arr2;
+	}
+
+	function _nonIterableSpread() {
+	  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+	}
+
+	var hasOwnProperty = Object.hasOwnProperty,
+	    setPrototypeOf = Object.setPrototypeOf,
+	    isFrozen = Object.isFrozen,
+	    getPrototypeOf = Object.getPrototypeOf,
+	    getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+	var freeze = Object.freeze,
+	    seal = Object.seal,
+	    create = Object.create; // eslint-disable-line import/no-mutable-exports
+
+	var _ref = typeof Reflect !== 'undefined' && Reflect,
+	    apply = _ref.apply,
+	    construct = _ref.construct;
+
+	if (!apply) {
+	  apply = function apply(fun, thisValue, args) {
+	    return fun.apply(thisValue, args);
+	  };
+	}
+
+	if (!freeze) {
+	  freeze = function freeze(x) {
+	    return x;
+	  };
+	}
+
+	if (!seal) {
+	  seal = function seal(x) {
+	    return x;
+	  };
+	}
+
+	if (!construct) {
+	  construct = function construct(Func, args) {
+	    return _construct(Func, _toConsumableArray(args));
+	  };
+	}
+
+	var arrayForEach = unapply(Array.prototype.forEach);
+	var arrayPop = unapply(Array.prototype.pop);
+	var arrayPush = unapply(Array.prototype.push);
+	var stringToLowerCase = unapply(String.prototype.toLowerCase);
+	var stringMatch = unapply(String.prototype.match);
+	var stringReplace = unapply(String.prototype.replace);
+	var stringIndexOf = unapply(String.prototype.indexOf);
+	var stringTrim = unapply(String.prototype.trim);
+	var regExpTest = unapply(RegExp.prototype.test);
+	var typeErrorCreate = unconstruct(TypeError);
+	function unapply(func) {
+	  return function (thisArg) {
+	    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	      args[_key - 1] = arguments[_key];
+	    }
+
+	    return apply(func, thisArg, args);
+	  };
+	}
+	function unconstruct(func) {
+	  return function () {
+	    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	      args[_key2] = arguments[_key2];
+	    }
+
+	    return construct(func, args);
+	  };
+	}
+	/* Add properties to a lookup table */
+
+	function addToSet(set, array, transformCaseFunc) {
+	  transformCaseFunc = transformCaseFunc ? transformCaseFunc : stringToLowerCase;
+
+	  if (setPrototypeOf) {
+	    // Make 'in' and truthy checks like Boolean(set.constructor)
+	    // independent of any properties defined on Object.prototype.
+	    // Prevent prototype setters from intercepting set as a this value.
+	    setPrototypeOf(set, null);
+	  }
+
+	  var l = array.length;
+
+	  while (l--) {
+	    var element = array[l];
+
+	    if (typeof element === 'string') {
+	      var lcElement = transformCaseFunc(element);
+
+	      if (lcElement !== element) {
+	        // Config presets (e.g. tags.js, attrs.js) are immutable.
+	        if (!isFrozen(array)) {
+	          array[l] = lcElement;
+	        }
+
+	        element = lcElement;
+	      }
+	    }
+
+	    set[element] = true;
+	  }
+
+	  return set;
+	}
+	/* Shallow clone an object */
+
+	function clone(object) {
+	  var newObject = create(null);
+	  var property;
+
+	  for (property in object) {
+	    if (apply(hasOwnProperty, object, [property])) {
+	      newObject[property] = object[property];
+	    }
+	  }
+
+	  return newObject;
+	}
+	/* IE10 doesn't support __lookupGetter__ so lets'
+	 * simulate it. It also automatically checks
+	 * if the prop is function or getter and behaves
+	 * accordingly. */
+
+	function lookupGetter(object, prop) {
+	  while (object !== null) {
+	    var desc = getOwnPropertyDescriptor(object, prop);
+
+	    if (desc) {
+	      if (desc.get) {
+	        return unapply(desc.get);
+	      }
+
+	      if (typeof desc.value === 'function') {
+	        return unapply(desc.value);
+	      }
+	    }
+
+	    object = getPrototypeOf(object);
+	  }
+
+	  function fallbackValue(element) {
+	    console.warn('fallback value for', element);
+	    return null;
+	  }
+
+	  return fallbackValue;
+	}
+
+	var html$1 = freeze(['a', 'abbr', 'acronym', 'address', 'area', 'article', 'aside', 'audio', 'b', 'bdi', 'bdo', 'big', 'blink', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'content', 'data', 'datalist', 'dd', 'decorator', 'del', 'details', 'dfn', 'dialog', 'dir', 'div', 'dl', 'dt', 'element', 'em', 'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'img', 'input', 'ins', 'kbd', 'label', 'legend', 'li', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meter', 'nav', 'nobr', 'ol', 'optgroup', 'option', 'output', 'p', 'picture', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'section', 'select', 'shadow', 'small', 'source', 'spacer', 'span', 'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr']); // SVG
+
+	var svg$1 = freeze(['svg', 'a', 'altglyph', 'altglyphdef', 'altglyphitem', 'animatecolor', 'animatemotion', 'animatetransform', 'circle', 'clippath', 'defs', 'desc', 'ellipse', 'filter', 'font', 'g', 'glyph', 'glyphref', 'hkern', 'image', 'line', 'lineargradient', 'marker', 'mask', 'metadata', 'mpath', 'path', 'pattern', 'polygon', 'polyline', 'radialgradient', 'rect', 'stop', 'style', 'switch', 'symbol', 'text', 'textpath', 'title', 'tref', 'tspan', 'view', 'vkern']);
+	var svgFilters = freeze(['feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feDistantLight', 'feFlood', 'feFuncA', 'feFuncB', 'feFuncG', 'feFuncR', 'feGaussianBlur', 'feImage', 'feMerge', 'feMergeNode', 'feMorphology', 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotLight', 'feTile', 'feTurbulence']); // List of SVG elements that are disallowed by default.
+	// We still need to know them so that we can do namespace
+	// checks properly in case one wants to add them to
+	// allow-list.
+
+	var svgDisallowed = freeze(['animate', 'color-profile', 'cursor', 'discard', 'fedropshadow', 'font-face', 'font-face-format', 'font-face-name', 'font-face-src', 'font-face-uri', 'foreignobject', 'hatch', 'hatchpath', 'mesh', 'meshgradient', 'meshpatch', 'meshrow', 'missing-glyph', 'script', 'set', 'solidcolor', 'unknown', 'use']);
+	var mathMl$1 = freeze(['math', 'menclose', 'merror', 'mfenced', 'mfrac', 'mglyph', 'mi', 'mlabeledtr', 'mmultiscripts', 'mn', 'mo', 'mover', 'mpadded', 'mphantom', 'mroot', 'mrow', 'ms', 'mspace', 'msqrt', 'mstyle', 'msub', 'msup', 'msubsup', 'mtable', 'mtd', 'mtext', 'mtr', 'munder', 'munderover']); // Similarly to SVG, we want to know all MathML elements,
+	// even those that we disallow by default.
+
+	var mathMlDisallowed = freeze(['maction', 'maligngroup', 'malignmark', 'mlongdiv', 'mscarries', 'mscarry', 'msgroup', 'mstack', 'msline', 'msrow', 'semantics', 'annotation', 'annotation-xml', 'mprescripts', 'none']);
+	var text = freeze(['#text']);
+
+	var html = freeze(['accept', 'action', 'align', 'alt', 'autocapitalize', 'autocomplete', 'autopictureinpicture', 'autoplay', 'background', 'bgcolor', 'border', 'capture', 'cellpadding', 'cellspacing', 'checked', 'cite', 'class', 'clear', 'color', 'cols', 'colspan', 'controls', 'controlslist', 'coords', 'crossorigin', 'datetime', 'decoding', 'default', 'dir', 'disabled', 'disablepictureinpicture', 'disableremoteplayback', 'download', 'draggable', 'enctype', 'enterkeyhint', 'face', 'for', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'id', 'inputmode', 'integrity', 'ismap', 'kind', 'label', 'lang', 'list', 'loading', 'loop', 'low', 'max', 'maxlength', 'media', 'method', 'min', 'minlength', 'multiple', 'muted', 'name', 'nonce', 'noshade', 'novalidate', 'nowrap', 'open', 'optimum', 'pattern', 'placeholder', 'playsinline', 'poster', 'preload', 'pubdate', 'radiogroup', 'readonly', 'rel', 'required', 'rev', 'reversed', 'role', 'rows', 'rowspan', 'spellcheck', 'scope', 'selected', 'shape', 'size', 'sizes', 'span', 'srclang', 'start', 'src', 'srcset', 'step', 'style', 'summary', 'tabindex', 'title', 'translate', 'type', 'usemap', 'valign', 'value', 'width', 'xmlns', 'slot']);
+	var svg = freeze(['accent-height', 'accumulate', 'additive', 'alignment-baseline', 'ascent', 'attributename', 'attributetype', 'azimuth', 'basefrequency', 'baseline-shift', 'begin', 'bias', 'by', 'class', 'clip', 'clippathunits', 'clip-path', 'clip-rule', 'color', 'color-interpolation', 'color-interpolation-filters', 'color-profile', 'color-rendering', 'cx', 'cy', 'd', 'dx', 'dy', 'diffuseconstant', 'direction', 'display', 'divisor', 'dur', 'edgemode', 'elevation', 'end', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'filterunits', 'flood-color', 'flood-opacity', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'fx', 'fy', 'g1', 'g2', 'glyph-name', 'glyphref', 'gradientunits', 'gradienttransform', 'height', 'href', 'id', 'image-rendering', 'in', 'in2', 'k', 'k1', 'k2', 'k3', 'k4', 'kerning', 'keypoints', 'keysplines', 'keytimes', 'lang', 'lengthadjust', 'letter-spacing', 'kernelmatrix', 'kernelunitlength', 'lighting-color', 'local', 'marker-end', 'marker-mid', 'marker-start', 'markerheight', 'markerunits', 'markerwidth', 'maskcontentunits', 'maskunits', 'max', 'mask', 'media', 'method', 'mode', 'min', 'name', 'numoctaves', 'offset', 'operator', 'opacity', 'order', 'orient', 'orientation', 'origin', 'overflow', 'paint-order', 'path', 'pathlength', 'patterncontentunits', 'patterntransform', 'patternunits', 'points', 'preservealpha', 'preserveaspectratio', 'primitiveunits', 'r', 'rx', 'ry', 'radius', 'refx', 'refy', 'repeatcount', 'repeatdur', 'restart', 'result', 'rotate', 'scale', 'seed', 'shape-rendering', 'specularconstant', 'specularexponent', 'spreadmethod', 'startoffset', 'stddeviation', 'stitchtiles', 'stop-color', 'stop-opacity', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke', 'stroke-width', 'style', 'surfacescale', 'systemlanguage', 'tabindex', 'targetx', 'targety', 'transform', 'transform-origin', 'text-anchor', 'text-decoration', 'text-rendering', 'textlength', 'type', 'u1', 'u2', 'unicode', 'values', 'viewbox', 'visibility', 'version', 'vert-adv-y', 'vert-origin-x', 'vert-origin-y', 'width', 'word-spacing', 'wrap', 'writing-mode', 'xchannelselector', 'ychannelselector', 'x', 'x1', 'x2', 'xmlns', 'y', 'y1', 'y2', 'z', 'zoomandpan']);
+	var mathMl = freeze(['accent', 'accentunder', 'align', 'bevelled', 'close', 'columnsalign', 'columnlines', 'columnspan', 'denomalign', 'depth', 'dir', 'display', 'displaystyle', 'encoding', 'fence', 'frame', 'height', 'href', 'id', 'largeop', 'length', 'linethickness', 'lspace', 'lquote', 'mathbackground', 'mathcolor', 'mathsize', 'mathvariant', 'maxsize', 'minsize', 'movablelimits', 'notation', 'numalign', 'open', 'rowalign', 'rowlines', 'rowspacing', 'rowspan', 'rspace', 'rquote', 'scriptlevel', 'scriptminsize', 'scriptsizemultiplier', 'selection', 'separator', 'separators', 'stretchy', 'subscriptshift', 'supscriptshift', 'symmetric', 'voffset', 'width', 'xmlns']);
+	var xml = freeze(['xlink:href', 'xml:id', 'xlink:title', 'xml:space', 'xmlns:xlink']);
+
+	var MUSTACHE_EXPR = seal(/\{\{[\w\W]*|[\w\W]*\}\}/gm); // Specify template detection regex for SAFE_FOR_TEMPLATES mode
+
+	var ERB_EXPR = seal(/<%[\w\W]*|[\w\W]*%>/gm);
+	var DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]/); // eslint-disable-line no-useless-escape
+
+	var ARIA_ATTR = seal(/^aria-[\-\w]+$/); // eslint-disable-line no-useless-escape
+
+	var IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i // eslint-disable-line no-useless-escape
+	);
+	var IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
+	var ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g // eslint-disable-line no-control-regex
+	);
+	var DOCTYPE_NAME = seal(/^html$/i);
+
+	var getGlobal = function getGlobal() {
+	  return typeof window === 'undefined' ? null : window;
+	};
+	/**
+	 * Creates a no-op policy for internal use only.
+	 * Don't export this function outside this module!
+	 * @param {?TrustedTypePolicyFactory} trustedTypes The policy factory.
+	 * @param {Document} document The document object (to determine policy name suffix)
+	 * @return {?TrustedTypePolicy} The policy created (or null, if Trusted Types
+	 * are not supported).
+	 */
+
+
+	var _createTrustedTypesPolicy = function _createTrustedTypesPolicy(trustedTypes, document) {
+	  if (_typeof(trustedTypes) !== 'object' || typeof trustedTypes.createPolicy !== 'function') {
+	    return null;
+	  } // Allow the callers to control the unique policy name
+	  // by adding a data-tt-policy-suffix to the script element with the DOMPurify.
+	  // Policy creation with duplicate names throws in Trusted Types.
+
+
+	  var suffix = null;
+	  var ATTR_NAME = 'data-tt-policy-suffix';
+
+	  if (document.currentScript && document.currentScript.hasAttribute(ATTR_NAME)) {
+	    suffix = document.currentScript.getAttribute(ATTR_NAME);
+	  }
+
+	  var policyName = 'dompurify' + (suffix ? '#' + suffix : '');
+
+	  try {
+	    return trustedTypes.createPolicy(policyName, {
+	      createHTML: function createHTML(html) {
+	        return html;
+	      },
+	      createScriptURL: function createScriptURL(scriptUrl) {
+	        return scriptUrl;
+	      }
+	    });
+	  } catch (_) {
+	    // Policy creation failed (most likely another DOMPurify script has
+	    // already run). Skip creating the policy, as this will only cause errors
+	    // if TT are enforced.
+	    console.warn('TrustedTypes policy ' + policyName + ' could not be created.');
+	    return null;
+	  }
+	};
+
+	function createDOMPurify() {
+	  var window = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getGlobal();
+
+	  var DOMPurify = function DOMPurify(root) {
+	    return createDOMPurify(root);
+	  };
+	  /**
+	   * Version label, exposed for easier checks
+	   * if DOMPurify is up to date or not
+	   */
+
+
+	  DOMPurify.version = '2.4.0';
+	  /**
+	   * Array of elements that DOMPurify removed during sanitation.
+	   * Empty if nothing was removed.
+	   */
+
+	  DOMPurify.removed = [];
+
+	  if (!window || !window.document || window.document.nodeType !== 9) {
+	    // Not running in a browser, provide a factory function
+	    // so that you can pass your own Window
+	    DOMPurify.isSupported = false;
+	    return DOMPurify;
+	  }
+
+	  var originalDocument = window.document;
+	  var document = window.document;
+	  var DocumentFragment = window.DocumentFragment,
+	      HTMLTemplateElement = window.HTMLTemplateElement,
+	      Node = window.Node,
+	      Element = window.Element,
+	      NodeFilter = window.NodeFilter,
+	      _window$NamedNodeMap = window.NamedNodeMap,
+	      NamedNodeMap = _window$NamedNodeMap === void 0 ? window.NamedNodeMap || window.MozNamedAttrMap : _window$NamedNodeMap,
+	      HTMLFormElement = window.HTMLFormElement,
+	      DOMParser = window.DOMParser,
+	      trustedTypes = window.trustedTypes;
+	  var ElementPrototype = Element.prototype;
+	  var cloneNode = lookupGetter(ElementPrototype, 'cloneNode');
+	  var getNextSibling = lookupGetter(ElementPrototype, 'nextSibling');
+	  var getChildNodes = lookupGetter(ElementPrototype, 'childNodes');
+	  var getParentNode = lookupGetter(ElementPrototype, 'parentNode'); // As per issue #47, the web-components registry is inherited by a
+	  // new document created via createHTMLDocument. As per the spec
+	  // (http://w3c.github.io/webcomponents/spec/custom/#creating-and-passing-registries)
+	  // a new empty registry is used when creating a template contents owner
+	  // document, so we use that as our parent document to ensure nothing
+	  // is inherited.
+
+	  if (typeof HTMLTemplateElement === 'function') {
+	    var template = document.createElement('template');
+
+	    if (template.content && template.content.ownerDocument) {
+	      document = template.content.ownerDocument;
+	    }
+	  }
+
+	  var trustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, originalDocument);
+
+	  var emptyHTML = trustedTypesPolicy ? trustedTypesPolicy.createHTML('') : '';
+	  var _document = document,
+	      implementation = _document.implementation,
+	      createNodeIterator = _document.createNodeIterator,
+	      createDocumentFragment = _document.createDocumentFragment,
+	      getElementsByTagName = _document.getElementsByTagName;
+	  var importNode = originalDocument.importNode;
+	  var documentMode = {};
+
+	  try {
+	    documentMode = clone(document).documentMode ? document.documentMode : {};
+	  } catch (_) {}
+
+	  var hooks = {};
+	  /**
+	   * Expose whether this browser supports running the full DOMPurify.
+	   */
+
+	  DOMPurify.isSupported = typeof getParentNode === 'function' && implementation && typeof implementation.createHTMLDocument !== 'undefined' && documentMode !== 9;
+	  var MUSTACHE_EXPR$1 = MUSTACHE_EXPR,
+	      ERB_EXPR$1 = ERB_EXPR,
+	      DATA_ATTR$1 = DATA_ATTR,
+	      ARIA_ATTR$1 = ARIA_ATTR,
+	      IS_SCRIPT_OR_DATA$1 = IS_SCRIPT_OR_DATA,
+	      ATTR_WHITESPACE$1 = ATTR_WHITESPACE;
+	  var IS_ALLOWED_URI$1 = IS_ALLOWED_URI;
+	  /**
+	   * We consider the elements and attributes below to be safe. Ideally
+	   * don't add any new ones but feel free to remove unwanted ones.
+	   */
+
+	  /* allowed element names */
+
+	  var ALLOWED_TAGS = null;
+	  var DEFAULT_ALLOWED_TAGS = addToSet({}, [].concat(_toConsumableArray(html$1), _toConsumableArray(svg$1), _toConsumableArray(svgFilters), _toConsumableArray(mathMl$1), _toConsumableArray(text)));
+	  /* Allowed attribute names */
+
+	  var ALLOWED_ATTR = null;
+	  var DEFAULT_ALLOWED_ATTR = addToSet({}, [].concat(_toConsumableArray(html), _toConsumableArray(svg), _toConsumableArray(mathMl), _toConsumableArray(xml)));
+	  /*
+	   * Configure how DOMPUrify should handle custom elements and their attributes as well as customized built-in elements.
+	   * @property {RegExp|Function|null} tagNameCheck one of [null, regexPattern, predicate]. Default: `null` (disallow any custom elements)
+	   * @property {RegExp|Function|null} attributeNameCheck one of [null, regexPattern, predicate]. Default: `null` (disallow any attributes not on the allow list)
+	   * @property {boolean} allowCustomizedBuiltInElements allow custom elements derived from built-ins if they pass CUSTOM_ELEMENT_HANDLING.tagNameCheck. Default: `false`.
+	   */
+
+	  var CUSTOM_ELEMENT_HANDLING = Object.seal(Object.create(null, {
+	    tagNameCheck: {
+	      writable: true,
+	      configurable: false,
+	      enumerable: true,
+	      value: null
+	    },
+	    attributeNameCheck: {
+	      writable: true,
+	      configurable: false,
+	      enumerable: true,
+	      value: null
+	    },
+	    allowCustomizedBuiltInElements: {
+	      writable: true,
+	      configurable: false,
+	      enumerable: true,
+	      value: false
+	    }
+	  }));
+	  /* Explicitly forbidden tags (overrides ALLOWED_TAGS/ADD_TAGS) */
+
+	  var FORBID_TAGS = null;
+	  /* Explicitly forbidden attributes (overrides ALLOWED_ATTR/ADD_ATTR) */
+
+	  var FORBID_ATTR = null;
+	  /* Decide if ARIA attributes are okay */
+
+	  var ALLOW_ARIA_ATTR = true;
+	  /* Decide if custom data attributes are okay */
+
+	  var ALLOW_DATA_ATTR = true;
+	  /* Decide if unknown protocols are okay */
+
+	  var ALLOW_UNKNOWN_PROTOCOLS = false;
+	  /* Output should be safe for common template engines.
+	   * This means, DOMPurify removes data attributes, mustaches and ERB
+	   */
+
+	  var SAFE_FOR_TEMPLATES = false;
+	  /* Decide if document with <html>... should be returned */
+
+	  var WHOLE_DOCUMENT = false;
+	  /* Track whether config is already set on this instance of DOMPurify. */
+
+	  var SET_CONFIG = false;
+	  /* Decide if all elements (e.g. style, script) must be children of
+	   * document.body. By default, browsers might move them to document.head */
+
+	  var FORCE_BODY = false;
+	  /* Decide if a DOM `HTMLBodyElement` should be returned, instead of a html
+	   * string (or a TrustedHTML object if Trusted Types are supported).
+	   * If `WHOLE_DOCUMENT` is enabled a `HTMLHtmlElement` will be returned instead
+	   */
+
+	  var RETURN_DOM = false;
+	  /* Decide if a DOM `DocumentFragment` should be returned, instead of a html
+	   * string  (or a TrustedHTML object if Trusted Types are supported) */
+
+	  var RETURN_DOM_FRAGMENT = false;
+	  /* Try to return a Trusted Type object instead of a string, return a string in
+	   * case Trusted Types are not supported  */
+
+	  var RETURN_TRUSTED_TYPE = false;
+	  /* Output should be free from DOM clobbering attacks?
+	   * This sanitizes markups named with colliding, clobberable built-in DOM APIs.
+	   */
+
+	  var SANITIZE_DOM = true;
+	  /* Achieve full DOM Clobbering protection by isolating the namespace of named
+	   * properties and JS variables, mitigating attacks that abuse the HTML/DOM spec rules.
+	   *
+	   * HTML/DOM spec rules that enable DOM Clobbering:
+	   *   - Named Access on Window (§7.3.3)
+	   *   - DOM Tree Accessors (§3.1.5)
+	   *   - Form Element Parent-Child Relations (§4.10.3)
+	   *   - Iframe srcdoc / Nested WindowProxies (§4.8.5)
+	   *   - HTMLCollection (§4.2.10.2)
+	   *
+	   * Namespace isolation is implemented by prefixing `id` and `name` attributes
+	   * with a constant string, i.e., `user-content-`
+	   */
+
+	  var SANITIZE_NAMED_PROPS = false;
+	  var SANITIZE_NAMED_PROPS_PREFIX = 'user-content-';
+	  /* Keep element content when removing element? */
+
+	  var KEEP_CONTENT = true;
+	  /* If a `Node` is passed to sanitize(), then performs sanitization in-place instead
+	   * of importing it into a new Document and returning a sanitized copy */
+
+	  var IN_PLACE = false;
+	  /* Allow usage of profiles like html, svg and mathMl */
+
+	  var USE_PROFILES = {};
+	  /* Tags to ignore content of when KEEP_CONTENT is true */
+
+	  var FORBID_CONTENTS = null;
+	  var DEFAULT_FORBID_CONTENTS = addToSet({}, ['annotation-xml', 'audio', 'colgroup', 'desc', 'foreignobject', 'head', 'iframe', 'math', 'mi', 'mn', 'mo', 'ms', 'mtext', 'noembed', 'noframes', 'noscript', 'plaintext', 'script', 'style', 'svg', 'template', 'thead', 'title', 'video', 'xmp']);
+	  /* Tags that are safe for data: URIs */
+
+	  var DATA_URI_TAGS = null;
+	  var DEFAULT_DATA_URI_TAGS = addToSet({}, ['audio', 'video', 'img', 'source', 'image', 'track']);
+	  /* Attributes safe for values like "javascript:" */
+
+	  var URI_SAFE_ATTRIBUTES = null;
+	  var DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, ['alt', 'class', 'for', 'id', 'label', 'name', 'pattern', 'placeholder', 'role', 'summary', 'title', 'value', 'style', 'xmlns']);
+	  var MATHML_NAMESPACE = 'http://www.w3.org/1998/Math/MathML';
+	  var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+	  var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+	  /* Document namespace */
+
+	  var NAMESPACE = HTML_NAMESPACE;
+	  var IS_EMPTY_INPUT = false;
+	  /* Parsing of strict XHTML documents */
+
+	  var PARSER_MEDIA_TYPE;
+	  var SUPPORTED_PARSER_MEDIA_TYPES = ['application/xhtml+xml', 'text/html'];
+	  var DEFAULT_PARSER_MEDIA_TYPE = 'text/html';
+	  var transformCaseFunc;
+	  /* Keep a reference to config to pass to hooks */
+
+	  var CONFIG = null;
+	  /* Ideally, do not touch anything below this line */
+
+	  /* ______________________________________________ */
+
+	  var formElement = document.createElement('form');
+
+	  var isRegexOrFunction = function isRegexOrFunction(testValue) {
+	    return testValue instanceof RegExp || testValue instanceof Function;
+	  };
+	  /**
+	   * _parseConfig
+	   *
+	   * @param  {Object} cfg optional config literal
+	   */
+	  // eslint-disable-next-line complexity
+
+
+	  var _parseConfig = function _parseConfig(cfg) {
+	    if (CONFIG && CONFIG === cfg) {
+	      return;
+	    }
+	    /* Shield configuration object from tampering */
+
+
+	    if (!cfg || _typeof(cfg) !== 'object') {
+	      cfg = {};
+	    }
+	    /* Shield configuration object from prototype pollution */
+
+
+	    cfg = clone(cfg);
+	    PARSER_MEDIA_TYPE = // eslint-disable-next-line unicorn/prefer-includes
+	    SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? PARSER_MEDIA_TYPE = DEFAULT_PARSER_MEDIA_TYPE : PARSER_MEDIA_TYPE = cfg.PARSER_MEDIA_TYPE; // HTML tags and attributes are not case-sensitive, converting to lowercase. Keeping XHTML as is.
+
+	    transformCaseFunc = PARSER_MEDIA_TYPE === 'application/xhtml+xml' ? function (x) {
+	      return x;
+	    } : stringToLowerCase;
+	    /* Set configuration parameters */
+
+	    ALLOWED_TAGS = 'ALLOWED_TAGS' in cfg ? addToSet({}, cfg.ALLOWED_TAGS, transformCaseFunc) : DEFAULT_ALLOWED_TAGS;
+	    ALLOWED_ATTR = 'ALLOWED_ATTR' in cfg ? addToSet({}, cfg.ALLOWED_ATTR, transformCaseFunc) : DEFAULT_ALLOWED_ATTR;
+	    URI_SAFE_ATTRIBUTES = 'ADD_URI_SAFE_ATTR' in cfg ? addToSet(clone(DEFAULT_URI_SAFE_ATTRIBUTES), // eslint-disable-line indent
+	    cfg.ADD_URI_SAFE_ATTR, // eslint-disable-line indent
+	    transformCaseFunc // eslint-disable-line indent
+	    ) // eslint-disable-line indent
+	    : DEFAULT_URI_SAFE_ATTRIBUTES;
+	    DATA_URI_TAGS = 'ADD_DATA_URI_TAGS' in cfg ? addToSet(clone(DEFAULT_DATA_URI_TAGS), // eslint-disable-line indent
+	    cfg.ADD_DATA_URI_TAGS, // eslint-disable-line indent
+	    transformCaseFunc // eslint-disable-line indent
+	    ) // eslint-disable-line indent
+	    : DEFAULT_DATA_URI_TAGS;
+	    FORBID_CONTENTS = 'FORBID_CONTENTS' in cfg ? addToSet({}, cfg.FORBID_CONTENTS, transformCaseFunc) : DEFAULT_FORBID_CONTENTS;
+	    FORBID_TAGS = 'FORBID_TAGS' in cfg ? addToSet({}, cfg.FORBID_TAGS, transformCaseFunc) : {};
+	    FORBID_ATTR = 'FORBID_ATTR' in cfg ? addToSet({}, cfg.FORBID_ATTR, transformCaseFunc) : {};
+	    USE_PROFILES = 'USE_PROFILES' in cfg ? cfg.USE_PROFILES : false;
+	    ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false; // Default true
+
+	    ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false; // Default true
+
+	    ALLOW_UNKNOWN_PROTOCOLS = cfg.ALLOW_UNKNOWN_PROTOCOLS || false; // Default false
+
+	    SAFE_FOR_TEMPLATES = cfg.SAFE_FOR_TEMPLATES || false; // Default false
+
+	    WHOLE_DOCUMENT = cfg.WHOLE_DOCUMENT || false; // Default false
+
+	    RETURN_DOM = cfg.RETURN_DOM || false; // Default false
+
+	    RETURN_DOM_FRAGMENT = cfg.RETURN_DOM_FRAGMENT || false; // Default false
+
+	    RETURN_TRUSTED_TYPE = cfg.RETURN_TRUSTED_TYPE || false; // Default false
+
+	    FORCE_BODY = cfg.FORCE_BODY || false; // Default false
+
+	    SANITIZE_DOM = cfg.SANITIZE_DOM !== false; // Default true
+
+	    SANITIZE_NAMED_PROPS = cfg.SANITIZE_NAMED_PROPS || false; // Default false
+
+	    KEEP_CONTENT = cfg.KEEP_CONTENT !== false; // Default true
+
+	    IN_PLACE = cfg.IN_PLACE || false; // Default false
+
+	    IS_ALLOWED_URI$1 = cfg.ALLOWED_URI_REGEXP || IS_ALLOWED_URI$1;
+	    NAMESPACE = cfg.NAMESPACE || HTML_NAMESPACE;
+
+	    if (cfg.CUSTOM_ELEMENT_HANDLING && isRegexOrFunction(cfg.CUSTOM_ELEMENT_HANDLING.tagNameCheck)) {
+	      CUSTOM_ELEMENT_HANDLING.tagNameCheck = cfg.CUSTOM_ELEMENT_HANDLING.tagNameCheck;
+	    }
+
+	    if (cfg.CUSTOM_ELEMENT_HANDLING && isRegexOrFunction(cfg.CUSTOM_ELEMENT_HANDLING.attributeNameCheck)) {
+	      CUSTOM_ELEMENT_HANDLING.attributeNameCheck = cfg.CUSTOM_ELEMENT_HANDLING.attributeNameCheck;
+	    }
+
+	    if (cfg.CUSTOM_ELEMENT_HANDLING && typeof cfg.CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements === 'boolean') {
+	      CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = cfg.CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements;
+	    }
+
+	    if (SAFE_FOR_TEMPLATES) {
+	      ALLOW_DATA_ATTR = false;
+	    }
+
+	    if (RETURN_DOM_FRAGMENT) {
+	      RETURN_DOM = true;
+	    }
+	    /* Parse profile info */
+
+
+	    if (USE_PROFILES) {
+	      ALLOWED_TAGS = addToSet({}, _toConsumableArray(text));
+	      ALLOWED_ATTR = [];
+
+	      if (USE_PROFILES.html === true) {
+	        addToSet(ALLOWED_TAGS, html$1);
+	        addToSet(ALLOWED_ATTR, html);
+	      }
+
+	      if (USE_PROFILES.svg === true) {
+	        addToSet(ALLOWED_TAGS, svg$1);
+	        addToSet(ALLOWED_ATTR, svg);
+	        addToSet(ALLOWED_ATTR, xml);
+	      }
+
+	      if (USE_PROFILES.svgFilters === true) {
+	        addToSet(ALLOWED_TAGS, svgFilters);
+	        addToSet(ALLOWED_ATTR, svg);
+	        addToSet(ALLOWED_ATTR, xml);
+	      }
+
+	      if (USE_PROFILES.mathMl === true) {
+	        addToSet(ALLOWED_TAGS, mathMl$1);
+	        addToSet(ALLOWED_ATTR, mathMl);
+	        addToSet(ALLOWED_ATTR, xml);
+	      }
+	    }
+	    /* Merge configuration parameters */
+
+
+	    if (cfg.ADD_TAGS) {
+	      if (ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) {
+	        ALLOWED_TAGS = clone(ALLOWED_TAGS);
+	      }
+
+	      addToSet(ALLOWED_TAGS, cfg.ADD_TAGS, transformCaseFunc);
+	    }
+
+	    if (cfg.ADD_ATTR) {
+	      if (ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) {
+	        ALLOWED_ATTR = clone(ALLOWED_ATTR);
+	      }
+
+	      addToSet(ALLOWED_ATTR, cfg.ADD_ATTR, transformCaseFunc);
+	    }
+
+	    if (cfg.ADD_URI_SAFE_ATTR) {
+	      addToSet(URI_SAFE_ATTRIBUTES, cfg.ADD_URI_SAFE_ATTR, transformCaseFunc);
+	    }
+
+	    if (cfg.FORBID_CONTENTS) {
+	      if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) {
+	        FORBID_CONTENTS = clone(FORBID_CONTENTS);
+	      }
+
+	      addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS, transformCaseFunc);
+	    }
+	    /* Add #text in case KEEP_CONTENT is set to true */
+
+
+	    if (KEEP_CONTENT) {
+	      ALLOWED_TAGS['#text'] = true;
+	    }
+	    /* Add html, head and body to ALLOWED_TAGS in case WHOLE_DOCUMENT is true */
+
+
+	    if (WHOLE_DOCUMENT) {
+	      addToSet(ALLOWED_TAGS, ['html', 'head', 'body']);
+	    }
+	    /* Add tbody to ALLOWED_TAGS in case tables are permitted, see #286, #365 */
+
+
+	    if (ALLOWED_TAGS.table) {
+	      addToSet(ALLOWED_TAGS, ['tbody']);
+	      delete FORBID_TAGS.tbody;
+	    } // Prevent further manipulation of configuration.
+	    // Not available in IE8, Safari 5, etc.
+
+
+	    if (freeze) {
+	      freeze(cfg);
+	    }
+
+	    CONFIG = cfg;
+	  };
+
+	  var MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, ['mi', 'mo', 'mn', 'ms', 'mtext']);
+	  var HTML_INTEGRATION_POINTS = addToSet({}, ['foreignobject', 'desc', 'title', 'annotation-xml']); // Certain elements are allowed in both SVG and HTML
+	  // namespace. We need to specify them explicitly
+	  // so that they don't get erroneously deleted from
+	  // HTML namespace.
+
+	  var COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, ['title', 'style', 'font', 'a', 'script']);
+	  /* Keep track of all possible SVG and MathML tags
+	   * so that we can perform the namespace checks
+	   * correctly. */
+
+	  var ALL_SVG_TAGS = addToSet({}, svg$1);
+	  addToSet(ALL_SVG_TAGS, svgFilters);
+	  addToSet(ALL_SVG_TAGS, svgDisallowed);
+	  var ALL_MATHML_TAGS = addToSet({}, mathMl$1);
+	  addToSet(ALL_MATHML_TAGS, mathMlDisallowed);
+	  /**
+	   *
+	   *
+	   * @param  {Element} element a DOM element whose namespace is being checked
+	   * @returns {boolean} Return false if the element has a
+	   *  namespace that a spec-compliant parser would never
+	   *  return. Return true otherwise.
+	   */
+
+	  var _checkValidNamespace = function _checkValidNamespace(element) {
+	    var parent = getParentNode(element); // In JSDOM, if we're inside shadow DOM, then parentNode
+	    // can be null. We just simulate parent in this case.
+
+	    if (!parent || !parent.tagName) {
+	      parent = {
+	        namespaceURI: HTML_NAMESPACE,
+	        tagName: 'template'
+	      };
+	    }
+
+	    var tagName = stringToLowerCase(element.tagName);
+	    var parentTagName = stringToLowerCase(parent.tagName);
+
+	    if (element.namespaceURI === SVG_NAMESPACE) {
+	      // The only way to switch from HTML namespace to SVG
+	      // is via <svg>. If it happens via any other tag, then
+	      // it should be killed.
+	      if (parent.namespaceURI === HTML_NAMESPACE) {
+	        return tagName === 'svg';
+	      } // The only way to switch from MathML to SVG is via
+	      // svg if parent is either <annotation-xml> or MathML
+	      // text integration points.
+
+
+	      if (parent.namespaceURI === MATHML_NAMESPACE) {
+	        return tagName === 'svg' && (parentTagName === 'annotation-xml' || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
+	      } // We only allow elements that are defined in SVG
+	      // spec. All others are disallowed in SVG namespace.
+
+
+	      return Boolean(ALL_SVG_TAGS[tagName]);
+	    }
+
+	    if (element.namespaceURI === MATHML_NAMESPACE) {
+	      // The only way to switch from HTML namespace to MathML
+	      // is via <math>. If it happens via any other tag, then
+	      // it should be killed.
+	      if (parent.namespaceURI === HTML_NAMESPACE) {
+	        return tagName === 'math';
+	      } // The only way to switch from SVG to MathML is via
+	      // <math> and HTML integration points
+
+
+	      if (parent.namespaceURI === SVG_NAMESPACE) {
+	        return tagName === 'math' && HTML_INTEGRATION_POINTS[parentTagName];
+	      } // We only allow elements that are defined in MathML
+	      // spec. All others are disallowed in MathML namespace.
+
+
+	      return Boolean(ALL_MATHML_TAGS[tagName]);
+	    }
+
+	    if (element.namespaceURI === HTML_NAMESPACE) {
+	      // The only way to switch from SVG to HTML is via
+	      // HTML integration points, and from MathML to HTML
+	      // is via MathML text integration points
+	      if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) {
+	        return false;
+	      }
+
+	      if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) {
+	        return false;
+	      } // We disallow tags that are specific for MathML
+	      // or SVG and should never appear in HTML namespace
+
+
+	      return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
+	    } // The code should never reach this place (this means
+	    // that the element somehow got namespace that is not
+	    // HTML, SVG or MathML). Return false just in case.
+
+
+	    return false;
+	  };
+	  /**
+	   * _forceRemove
+	   *
+	   * @param  {Node} node a DOM node
+	   */
+
+
+	  var _forceRemove = function _forceRemove(node) {
+	    arrayPush(DOMPurify.removed, {
+	      element: node
+	    });
+
+	    try {
+	      // eslint-disable-next-line unicorn/prefer-dom-node-remove
+	      node.parentNode.removeChild(node);
+	    } catch (_) {
+	      try {
+	        node.outerHTML = emptyHTML;
+	      } catch (_) {
+	        node.remove();
+	      }
+	    }
+	  };
+	  /**
+	   * _removeAttribute
+	   *
+	   * @param  {String} name an Attribute name
+	   * @param  {Node} node a DOM node
+	   */
+
+
+	  var _removeAttribute = function _removeAttribute(name, node) {
+	    try {
+	      arrayPush(DOMPurify.removed, {
+	        attribute: node.getAttributeNode(name),
+	        from: node
+	      });
+	    } catch (_) {
+	      arrayPush(DOMPurify.removed, {
+	        attribute: null,
+	        from: node
+	      });
+	    }
+
+	    node.removeAttribute(name); // We void attribute values for unremovable "is"" attributes
+
+	    if (name === 'is' && !ALLOWED_ATTR[name]) {
+	      if (RETURN_DOM || RETURN_DOM_FRAGMENT) {
+	        try {
+	          _forceRemove(node);
+	        } catch (_) {}
+	      } else {
+	        try {
+	          node.setAttribute(name, '');
+	        } catch (_) {}
+	      }
+	    }
+	  };
+	  /**
+	   * _initDocument
+	   *
+	   * @param  {String} dirty a string of dirty markup
+	   * @return {Document} a DOM, filled with the dirty markup
+	   */
+
+
+	  var _initDocument = function _initDocument(dirty) {
+	    /* Create a HTML document */
+	    var doc;
+	    var leadingWhitespace;
+
+	    if (FORCE_BODY) {
+	      dirty = '<remove></remove>' + dirty;
+	    } else {
+	      /* If FORCE_BODY isn't used, leading whitespace needs to be preserved manually */
+	      var matches = stringMatch(dirty, /^[\r\n\t ]+/);
+	      leadingWhitespace = matches && matches[0];
+	    }
+
+	    if (PARSER_MEDIA_TYPE === 'application/xhtml+xml') {
+	      // Root of XHTML doc must contain xmlns declaration (see https://www.w3.org/TR/xhtml1/normative.html#strict)
+	      dirty = '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>' + dirty + '</body></html>';
+	    }
+
+	    var dirtyPayload = trustedTypesPolicy ? trustedTypesPolicy.createHTML(dirty) : dirty;
+	    /*
+	     * Use the DOMParser API by default, fallback later if needs be
+	     * DOMParser not work for svg when has multiple root element.
+	     */
+
+	    if (NAMESPACE === HTML_NAMESPACE) {
+	      try {
+	        doc = new DOMParser().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
+	      } catch (_) {}
+	    }
+	    /* Use createHTMLDocument in case DOMParser is not available */
+
+
+	    if (!doc || !doc.documentElement) {
+	      doc = implementation.createDocument(NAMESPACE, 'template', null);
+
+	      try {
+	        doc.documentElement.innerHTML = IS_EMPTY_INPUT ? '' : dirtyPayload;
+	      } catch (_) {// Syntax error if dirtyPayload is invalid xml
+	      }
+	    }
+
+	    var body = doc.body || doc.documentElement;
+
+	    if (dirty && leadingWhitespace) {
+	      body.insertBefore(document.createTextNode(leadingWhitespace), body.childNodes[0] || null);
+	    }
+	    /* Work on whole document or just its body */
+
+
+	    if (NAMESPACE === HTML_NAMESPACE) {
+	      return getElementsByTagName.call(doc, WHOLE_DOCUMENT ? 'html' : 'body')[0];
+	    }
+
+	    return WHOLE_DOCUMENT ? doc.documentElement : body;
+	  };
+	  /**
+	   * _createIterator
+	   *
+	   * @param  {Document} root document/fragment to create iterator for
+	   * @return {Iterator} iterator instance
+	   */
+
+
+	  var _createIterator = function _createIterator(root) {
+	    return createNodeIterator.call(root.ownerDocument || root, root, // eslint-disable-next-line no-bitwise
+	    NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT, null, false);
+	  };
+	  /**
+	   * _isClobbered
+	   *
+	   * @param  {Node} elm element to check for clobbering attacks
+	   * @return {Boolean} true if clobbered, false if safe
+	   */
+
+
+	  var _isClobbered = function _isClobbered(elm) {
+	    return elm instanceof HTMLFormElement && (typeof elm.nodeName !== 'string' || typeof elm.textContent !== 'string' || typeof elm.removeChild !== 'function' || !(elm.attributes instanceof NamedNodeMap) || typeof elm.removeAttribute !== 'function' || typeof elm.setAttribute !== 'function' || typeof elm.namespaceURI !== 'string' || typeof elm.insertBefore !== 'function');
+	  };
+	  /**
+	   * _isNode
+	   *
+	   * @param  {Node} obj object to check whether it's a DOM node
+	   * @return {Boolean} true is object is a DOM node
+	   */
+
+
+	  var _isNode = function _isNode(object) {
+	    return _typeof(Node) === 'object' ? object instanceof Node : object && _typeof(object) === 'object' && typeof object.nodeType === 'number' && typeof object.nodeName === 'string';
+	  };
+	  /**
+	   * _executeHook
+	   * Execute user configurable hooks
+	   *
+	   * @param  {String} entryPoint  Name of the hook's entry point
+	   * @param  {Node} currentNode node to work on with the hook
+	   * @param  {Object} data additional hook parameters
+	   */
+
+
+	  var _executeHook = function _executeHook(entryPoint, currentNode, data) {
+	    if (!hooks[entryPoint]) {
+	      return;
+	    }
+
+	    arrayForEach(hooks[entryPoint], function (hook) {
+	      hook.call(DOMPurify, currentNode, data, CONFIG);
+	    });
+	  };
+	  /**
+	   * _sanitizeElements
+	   *
+	   * @protect nodeName
+	   * @protect textContent
+	   * @protect removeChild
+	   *
+	   * @param   {Node} currentNode to check for permission to exist
+	   * @return  {Boolean} true if node was killed, false if left alive
+	   */
+
+
+	  var _sanitizeElements = function _sanitizeElements(currentNode) {
+	    var content;
+	    /* Execute a hook if present */
+
+	    _executeHook('beforeSanitizeElements', currentNode, null);
+	    /* Check if element is clobbered or can clobber */
+
+
+	    if (_isClobbered(currentNode)) {
+	      _forceRemove(currentNode);
+
+	      return true;
+	    }
+	    /* Check if tagname contains Unicode */
+
+
+	    if (regExpTest(/[\u0080-\uFFFF]/, currentNode.nodeName)) {
+	      _forceRemove(currentNode);
+
+	      return true;
+	    }
+	    /* Now let's check the element's type and name */
+
+
+	    var tagName = transformCaseFunc(currentNode.nodeName);
+	    /* Execute a hook if present */
+
+	    _executeHook('uponSanitizeElement', currentNode, {
+	      tagName: tagName,
+	      allowedTags: ALLOWED_TAGS
+	    });
+	    /* Detect mXSS attempts abusing namespace confusion */
+
+
+	    if (currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && (!_isNode(currentNode.content) || !_isNode(currentNode.content.firstElementChild)) && regExpTest(/<[/\w]/g, currentNode.innerHTML) && regExpTest(/<[/\w]/g, currentNode.textContent)) {
+	      _forceRemove(currentNode);
+
+	      return true;
+	    }
+	    /* Mitigate a problem with templates inside select */
+
+
+	    if (tagName === 'select' && regExpTest(/<template/i, currentNode.innerHTML)) {
+	      _forceRemove(currentNode);
+
+	      return true;
+	    }
+	    /* Remove element if anything forbids its presence */
+
+
+	    if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
+	      /* Check if we have a custom element to handle */
+	      if (!FORBID_TAGS[tagName] && _basicCustomElementTest(tagName)) {
+	        if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) return false;
+	        if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName)) return false;
+	      }
+	      /* Keep content except for bad-listed elements */
+
+
+	      if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
+	        var parentNode = getParentNode(currentNode) || currentNode.parentNode;
+	        var childNodes = getChildNodes(currentNode) || currentNode.childNodes;
+
+	        if (childNodes && parentNode) {
+	          var childCount = childNodes.length;
+
+	          for (var i = childCount - 1; i >= 0; --i) {
+	            parentNode.insertBefore(cloneNode(childNodes[i], true), getNextSibling(currentNode));
+	          }
+	        }
+	      }
+
+	      _forceRemove(currentNode);
+
+	      return true;
+	    }
+	    /* Check whether element has a valid namespace */
+
+
+	    if (currentNode instanceof Element && !_checkValidNamespace(currentNode)) {
+	      _forceRemove(currentNode);
+
+	      return true;
+	    }
+
+	    if ((tagName === 'noscript' || tagName === 'noembed') && regExpTest(/<\/no(script|embed)/i, currentNode.innerHTML)) {
+	      _forceRemove(currentNode);
+
+	      return true;
+	    }
+	    /* Sanitize element content to be template-safe */
+
+
+	    if (SAFE_FOR_TEMPLATES && currentNode.nodeType === 3) {
+	      /* Get the element's text content */
+	      content = currentNode.textContent;
+	      content = stringReplace(content, MUSTACHE_EXPR$1, ' ');
+	      content = stringReplace(content, ERB_EXPR$1, ' ');
+
+	      if (currentNode.textContent !== content) {
+	        arrayPush(DOMPurify.removed, {
+	          element: currentNode.cloneNode()
+	        });
+	        currentNode.textContent = content;
+	      }
+	    }
+	    /* Execute a hook if present */
+
+
+	    _executeHook('afterSanitizeElements', currentNode, null);
+
+	    return false;
+	  };
+	  /**
+	   * _isValidAttribute
+	   *
+	   * @param  {string} lcTag Lowercase tag name of containing element.
+	   * @param  {string} lcName Lowercase attribute name.
+	   * @param  {string} value Attribute value.
+	   * @return {Boolean} Returns true if `value` is valid, otherwise false.
+	   */
+	  // eslint-disable-next-line complexity
+
+
+	  var _isValidAttribute = function _isValidAttribute(lcTag, lcName, value) {
+	    /* Make sure attribute cannot clobber */
+	    if (SANITIZE_DOM && (lcName === 'id' || lcName === 'name') && (value in document || value in formElement)) {
+	      return false;
+	    }
+	    /* Allow valid data-* attributes: At least one character after "-"
+	        (https://html.spec.whatwg.org/multipage/dom.html#embedding-custom-non-visible-data-with-the-data-*-attributes)
+	        XML-compatible (https://html.spec.whatwg.org/multipage/infrastructure.html#xml-compatible and http://www.w3.org/TR/xml/#d0e804)
+	        We don't need to check the value; it's always URI safe. */
+
+
+	    if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR$1, lcName)) ; else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName)) ; else if (!ALLOWED_ATTR[lcName] || FORBID_ATTR[lcName]) {
+	      if ( // First condition does a very basic check if a) it's basically a valid custom element tagname AND
+	      // b) if the tagName passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
+	      // and c) if the attribute name passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.attributeNameCheck
+	      _basicCustomElementTest(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName)) || // Alternative, second condition checks if it's an `is`-attribute, AND
+	      // the value passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
+	      lcName === 'is' && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value))) ; else {
+	        return false;
+	      }
+	      /* Check value is safe. First, is attr inert? If so, is safe */
+
+	    } else if (URI_SAFE_ATTRIBUTES[lcName]) ; else if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, ''))) ; else if ((lcName === 'src' || lcName === 'xlink:href' || lcName === 'href') && lcTag !== 'script' && stringIndexOf(value, 'data:') === 0 && DATA_URI_TAGS[lcTag]) ; else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, ''))) ; else if (!value) ; else {
+	      return false;
+	    }
+
+	    return true;
+	  };
+	  /**
+	   * _basicCustomElementCheck
+	   * checks if at least one dash is included in tagName, and it's not the first char
+	   * for more sophisticated checking see https://github.com/sindresorhus/validate-element-name
+	   * @param {string} tagName name of the tag of the node to sanitize
+	   */
+
+
+	  var _basicCustomElementTest = function _basicCustomElementTest(tagName) {
+	    return tagName.indexOf('-') > 0;
+	  };
+	  /**
+	   * _sanitizeAttributes
+	   *
+	   * @protect attributes
+	   * @protect nodeName
+	   * @protect removeAttribute
+	   * @protect setAttribute
+	   *
+	   * @param  {Node} currentNode to sanitize
+	   */
+
+
+	  var _sanitizeAttributes = function _sanitizeAttributes(currentNode) {
+	    var attr;
+	    var value;
+	    var lcName;
+	    var l;
+	    /* Execute a hook if present */
+
+	    _executeHook('beforeSanitizeAttributes', currentNode, null);
+
+	    var attributes = currentNode.attributes;
+	    /* Check if we have attributes; if not we might have a text node */
+
+	    if (!attributes) {
+	      return;
+	    }
+
+	    var hookEvent = {
+	      attrName: '',
+	      attrValue: '',
+	      keepAttr: true,
+	      allowedAttributes: ALLOWED_ATTR
+	    };
+	    l = attributes.length;
+	    /* Go backwards over all attributes; safely remove bad ones */
+
+	    while (l--) {
+	      attr = attributes[l];
+	      var _attr = attr,
+	          name = _attr.name,
+	          namespaceURI = _attr.namespaceURI;
+	      value = name === 'value' ? attr.value : stringTrim(attr.value);
+	      lcName = transformCaseFunc(name);
+	      /* Execute a hook if present */
+
+	      hookEvent.attrName = lcName;
+	      hookEvent.attrValue = value;
+	      hookEvent.keepAttr = true;
+	      hookEvent.forceKeepAttr = undefined; // Allows developers to see this is a property they can set
+
+	      _executeHook('uponSanitizeAttribute', currentNode, hookEvent);
+
+	      value = hookEvent.attrValue;
+	      /* Did the hooks approve of the attribute? */
+
+	      if (hookEvent.forceKeepAttr) {
+	        continue;
+	      }
+	      /* Remove attribute */
+
+
+	      _removeAttribute(name, currentNode);
+	      /* Did the hooks approve of the attribute? */
+
+
+	      if (!hookEvent.keepAttr) {
+	        continue;
+	      }
+	      /* Work around a security issue in jQuery 3.0 */
+
+
+	      if (regExpTest(/\/>/i, value)) {
+	        _removeAttribute(name, currentNode);
+
+	        continue;
+	      }
+	      /* Sanitize attribute content to be template-safe */
+
+
+	      if (SAFE_FOR_TEMPLATES) {
+	        value = stringReplace(value, MUSTACHE_EXPR$1, ' ');
+	        value = stringReplace(value, ERB_EXPR$1, ' ');
+	      }
+	      /* Is `value` valid for this attribute? */
+
+
+	      var lcTag = transformCaseFunc(currentNode.nodeName);
+
+	      if (!_isValidAttribute(lcTag, lcName, value)) {
+	        continue;
+	      }
+	      /* Full DOM Clobbering protection via namespace isolation,
+	       * Prefix id and name attributes with `user-content-`
+	       */
+
+
+	      if (SANITIZE_NAMED_PROPS && (lcName === 'id' || lcName === 'name')) {
+	        // Remove the attribute with this value
+	        _removeAttribute(name, currentNode); // Prefix the value and later re-create the attribute with the sanitized value
+
+
+	        value = SANITIZE_NAMED_PROPS_PREFIX + value;
+	      }
+	      /* Handle attributes that require Trusted Types */
+
+
+	      if (trustedTypesPolicy && _typeof(trustedTypes) === 'object' && typeof trustedTypes.getAttributeType === 'function') {
+	        if (namespaceURI) ; else {
+	          switch (trustedTypes.getAttributeType(lcTag, lcName)) {
+	            case 'TrustedHTML':
+	              value = trustedTypesPolicy.createHTML(value);
+	              break;
+
+	            case 'TrustedScriptURL':
+	              value = trustedTypesPolicy.createScriptURL(value);
+	              break;
+	          }
+	        }
+	      }
+	      /* Handle invalid data-* attribute set by try-catching it */
+
+
+	      try {
+	        if (namespaceURI) {
+	          currentNode.setAttributeNS(namespaceURI, name, value);
+	        } else {
+	          /* Fallback to setAttribute() for browser-unrecognized namespaces e.g. "x-schema". */
+	          currentNode.setAttribute(name, value);
+	        }
+
+	        arrayPop(DOMPurify.removed);
+	      } catch (_) {}
+	    }
+	    /* Execute a hook if present */
+
+
+	    _executeHook('afterSanitizeAttributes', currentNode, null);
+	  };
+	  /**
+	   * _sanitizeShadowDOM
+	   *
+	   * @param  {DocumentFragment} fragment to iterate over recursively
+	   */
+
+
+	  var _sanitizeShadowDOM = function _sanitizeShadowDOM(fragment) {
+	    var shadowNode;
+
+	    var shadowIterator = _createIterator(fragment);
+	    /* Execute a hook if present */
+
+
+	    _executeHook('beforeSanitizeShadowDOM', fragment, null);
+
+	    while (shadowNode = shadowIterator.nextNode()) {
+	      /* Execute a hook if present */
+	      _executeHook('uponSanitizeShadowNode', shadowNode, null);
+	      /* Sanitize tags and elements */
+
+
+	      if (_sanitizeElements(shadowNode)) {
+	        continue;
+	      }
+	      /* Deep shadow DOM detected */
+
+
+	      if (shadowNode.content instanceof DocumentFragment) {
+	        _sanitizeShadowDOM(shadowNode.content);
+	      }
+	      /* Check attributes, sanitize if necessary */
+
+
+	      _sanitizeAttributes(shadowNode);
+	    }
+	    /* Execute a hook if present */
+
+
+	    _executeHook('afterSanitizeShadowDOM', fragment, null);
+	  };
+	  /**
+	   * Sanitize
+	   * Public method providing core sanitation functionality
+	   *
+	   * @param {String|Node} dirty string or DOM node
+	   * @param {Object} configuration object
+	   */
+	  // eslint-disable-next-line complexity
+
+
+	  DOMPurify.sanitize = function (dirty) {
+	    var cfg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	    var body;
+	    var importedNode;
+	    var currentNode;
+	    var oldNode;
+	    var returnNode;
+	    /* Make sure we have a string to sanitize.
+	      DO NOT return early, as this will return the wrong type if
+	      the user has requested a DOM object rather than a string */
+
+	    IS_EMPTY_INPUT = !dirty;
+
+	    if (IS_EMPTY_INPUT) {
+	      dirty = '<!-->';
+	    }
+	    /* Stringify, in case dirty is an object */
+
+
+	    if (typeof dirty !== 'string' && !_isNode(dirty)) {
+	      // eslint-disable-next-line no-negated-condition
+	      if (typeof dirty.toString !== 'function') {
+	        throw typeErrorCreate('toString is not a function');
+	      } else {
+	        dirty = dirty.toString();
+
+	        if (typeof dirty !== 'string') {
+	          throw typeErrorCreate('dirty is not a string, aborting');
+	        }
+	      }
+	    }
+	    /* Check we can run. Otherwise fall back or ignore */
+
+
+	    if (!DOMPurify.isSupported) {
+	      if (_typeof(window.toStaticHTML) === 'object' || typeof window.toStaticHTML === 'function') {
+	        if (typeof dirty === 'string') {
+	          return window.toStaticHTML(dirty);
+	        }
+
+	        if (_isNode(dirty)) {
+	          return window.toStaticHTML(dirty.outerHTML);
+	        }
+	      }
+
+	      return dirty;
+	    }
+	    /* Assign config vars */
+
+
+	    if (!SET_CONFIG) {
+	      _parseConfig(cfg);
+	    }
+	    /* Clean up removed elements */
+
+
+	    DOMPurify.removed = [];
+	    /* Check if dirty is correctly typed for IN_PLACE */
+
+	    if (typeof dirty === 'string') {
+	      IN_PLACE = false;
+	    }
+
+	    if (IN_PLACE) {
+	      /* Do some early pre-sanitization to avoid unsafe root nodes */
+	      if (dirty.nodeName) {
+	        var tagName = transformCaseFunc(dirty.nodeName);
+
+	        if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
+	          throw typeErrorCreate('root node is forbidden and cannot be sanitized in-place');
+	        }
+	      }
+	    } else if (dirty instanceof Node) {
+	      /* If dirty is a DOM element, append to an empty document to avoid
+	         elements being stripped by the parser */
+	      body = _initDocument('<!---->');
+	      importedNode = body.ownerDocument.importNode(dirty, true);
+
+	      if (importedNode.nodeType === 1 && importedNode.nodeName === 'BODY') {
+	        /* Node is already a body, use as is */
+	        body = importedNode;
+	      } else if (importedNode.nodeName === 'HTML') {
+	        body = importedNode;
+	      } else {
+	        // eslint-disable-next-line unicorn/prefer-dom-node-append
+	        body.appendChild(importedNode);
+	      }
+	    } else {
+	      /* Exit directly if we have nothing to do */
+	      if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && // eslint-disable-next-line unicorn/prefer-includes
+	      dirty.indexOf('<') === -1) {
+	        return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(dirty) : dirty;
+	      }
+	      /* Initialize the document to work on */
+
+
+	      body = _initDocument(dirty);
+	      /* Check we have a DOM node from the data */
+
+	      if (!body) {
+	        return RETURN_DOM ? null : RETURN_TRUSTED_TYPE ? emptyHTML : '';
+	      }
+	    }
+	    /* Remove first element node (ours) if FORCE_BODY is set */
+
+
+	    if (body && FORCE_BODY) {
+	      _forceRemove(body.firstChild);
+	    }
+	    /* Get node iterator */
+
+
+	    var nodeIterator = _createIterator(IN_PLACE ? dirty : body);
+	    /* Now start iterating over the created document */
+
+
+	    while (currentNode = nodeIterator.nextNode()) {
+	      /* Fix IE's strange behavior with manipulated textNodes #89 */
+	      if (currentNode.nodeType === 3 && currentNode === oldNode) {
+	        continue;
+	      }
+	      /* Sanitize tags and elements */
+
+
+	      if (_sanitizeElements(currentNode)) {
+	        continue;
+	      }
+	      /* Shadow DOM detected, sanitize it */
+
+
+	      if (currentNode.content instanceof DocumentFragment) {
+	        _sanitizeShadowDOM(currentNode.content);
+	      }
+	      /* Check attributes, sanitize if necessary */
+
+
+	      _sanitizeAttributes(currentNode);
+
+	      oldNode = currentNode;
+	    }
+
+	    oldNode = null;
+	    /* If we sanitized `dirty` in-place, return it. */
+
+	    if (IN_PLACE) {
+	      return dirty;
+	    }
+	    /* Return sanitized string or DOM */
+
+
+	    if (RETURN_DOM) {
+	      if (RETURN_DOM_FRAGMENT) {
+	        returnNode = createDocumentFragment.call(body.ownerDocument);
+
+	        while (body.firstChild) {
+	          // eslint-disable-next-line unicorn/prefer-dom-node-append
+	          returnNode.appendChild(body.firstChild);
+	        }
+	      } else {
+	        returnNode = body;
+	      }
+
+	      if (ALLOWED_ATTR.shadowroot) {
+	        /*
+	          AdoptNode() is not used because internal state is not reset
+	          (e.g. the past names map of a HTMLFormElement), this is safe
+	          in theory but we would rather not risk another attack vector.
+	          The state that is cloned by importNode() is explicitly defined
+	          by the specs.
+	        */
+	        returnNode = importNode.call(originalDocument, returnNode, true);
+	      }
+
+	      return returnNode;
+	    }
+
+	    var serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
+	    /* Serialize doctype if allowed */
+
+	    if (WHOLE_DOCUMENT && ALLOWED_TAGS['!doctype'] && body.ownerDocument && body.ownerDocument.doctype && body.ownerDocument.doctype.name && regExpTest(DOCTYPE_NAME, body.ownerDocument.doctype.name)) {
+	      serializedHTML = '<!DOCTYPE ' + body.ownerDocument.doctype.name + '>\n' + serializedHTML;
+	    }
+	    /* Sanitize final string template-safe */
+
+
+	    if (SAFE_FOR_TEMPLATES) {
+	      serializedHTML = stringReplace(serializedHTML, MUSTACHE_EXPR$1, ' ');
+	      serializedHTML = stringReplace(serializedHTML, ERB_EXPR$1, ' ');
+	    }
+
+	    return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(serializedHTML) : serializedHTML;
+	  };
+	  /**
+	   * Public method to set the configuration once
+	   * setConfig
+	   *
+	   * @param {Object} cfg configuration object
+	   */
+
+
+	  DOMPurify.setConfig = function (cfg) {
+	    _parseConfig(cfg);
+
+	    SET_CONFIG = true;
+	  };
+	  /**
+	   * Public method to remove the configuration
+	   * clearConfig
+	   *
+	   */
+
+
+	  DOMPurify.clearConfig = function () {
+	    CONFIG = null;
+	    SET_CONFIG = false;
+	  };
+	  /**
+	   * Public method to check if an attribute value is valid.
+	   * Uses last set config, if any. Otherwise, uses config defaults.
+	   * isValidAttribute
+	   *
+	   * @param  {string} tag Tag name of containing element.
+	   * @param  {string} attr Attribute name.
+	   * @param  {string} value Attribute value.
+	   * @return {Boolean} Returns true if `value` is valid. Otherwise, returns false.
+	   */
+
+
+	  DOMPurify.isValidAttribute = function (tag, attr, value) {
+	    /* Initialize shared config vars if necessary. */
+	    if (!CONFIG) {
+	      _parseConfig({});
+	    }
+
+	    var lcTag = transformCaseFunc(tag);
+	    var lcName = transformCaseFunc(attr);
+	    return _isValidAttribute(lcTag, lcName, value);
+	  };
+	  /**
+	   * AddHook
+	   * Public method to add DOMPurify hooks
+	   *
+	   * @param {String} entryPoint entry point for the hook to add
+	   * @param {Function} hookFunction function to execute
+	   */
+
+
+	  DOMPurify.addHook = function (entryPoint, hookFunction) {
+	    if (typeof hookFunction !== 'function') {
+	      return;
+	    }
+
+	    hooks[entryPoint] = hooks[entryPoint] || [];
+	    arrayPush(hooks[entryPoint], hookFunction);
+	  };
+	  /**
+	   * RemoveHook
+	   * Public method to remove a DOMPurify hook at a given entryPoint
+	   * (pops it from the stack of hooks if more are present)
+	   *
+	   * @param {String} entryPoint entry point for the hook to remove
+	   * @return {Function} removed(popped) hook
+	   */
+
+
+	  DOMPurify.removeHook = function (entryPoint) {
+	    if (hooks[entryPoint]) {
+	      return arrayPop(hooks[entryPoint]);
+	    }
+	  };
+	  /**
+	   * RemoveHooks
+	   * Public method to remove all DOMPurify hooks at a given entryPoint
+	   *
+	   * @param  {String} entryPoint entry point for the hooks to remove
+	   */
+
+
+	  DOMPurify.removeHooks = function (entryPoint) {
+	    if (hooks[entryPoint]) {
+	      hooks[entryPoint] = [];
+	    }
+	  };
+	  /**
+	   * RemoveAllHooks
+	   * Public method to remove all DOMPurify hooks
+	   *
+	   */
+
+
+	  DOMPurify.removeAllHooks = function () {
+	    hooks = {};
+	  };
+
+	  return DOMPurify;
+	}
+
+	var purify = createDOMPurify();
+
+	const DEFAULT_ALLOWED = [
+	    'a',
+	    'span',
+	    'b',
+	    'br',
+	    'i',
+	    'strong',
+	    'sup',
+	    'sub',
+	    'strike',
+	    'u',
+	    'em',
+	    'tt'
+	];
+
+	/**
+	 * Set default TARGET and REL for A tags.
+	 *
+	 * Don't overwrite target="_self".
+	 */
+	purify.addHook('afterSanitizeElements', function (el) {
+	    if (el.nodeName.toLowerCase() === 'a') {
+	        if (el.getAttribute('target') !== '_self') {
+	            el.setAttribute('target', '_blank');
+	        }
+	        el.setAttribute('rel', 'nofollow noopener noreferrer');
+	    }
+	});
+
+	/**
+	 * Remove all HTML tags from given `input` string, except `allowed` tags.
+	 *
+	 * @exports purifyHTML
+	 * @kind function
+	 *
+	 * @param {string} input - dirty HTML input
+	 * @param {string} [string[]] - list of allowed tags; see DEFAULT_ALLOWED for the default value
+	 * @return {string} - the cleaned HTML output
+	 */
+	function purifyHTML(input, allowed = DEFAULT_ALLOWED) {
+	    if (!input) {
+	        return input;
+	    }
+	    if (typeof allowed === 'string') {
+	        allowed = Array.from(allowed.toLowerCase().matchAll(/<([a-z][a-z0-9]*)>/g)).map(m => m[1]);
+	    }
+	    return purify.sanitize(input, {
+	        ALLOWED_TAGS: allowed,
+	        ADD_ATTR: ['target'],
+	        FORCE_BODY: true // Makes sure that top-level SCRIPT tags are kept if explicitly allowed.
+	    });
+	}
+
+	const ALLOWED_HTML =
+	    '<p><h1><h2><h3><h4><h5><h6><blockquote><ol><ul><li><pre><hr><br>' + // Block elements (Markdown official)
+	    '<a><em><i><strong><b><code><img>' + // Inline elements (Markdown official)
+	    '<table><tr><th><td>' + // Tables
+	    '<small><span><div><sup><sub><tt>'; // Additional tags to support advanced customization
+
+	const __messages = {};
+
+	function initMessages(scope = 'core') {
+	    /* globals dw */
+
+	    // let's check if we're in a chart
+	    if (scope === 'chart') {
+	        if (window.__dw && window.__dw.vis && window.__dw.vis.meta) {
+	            // use in-chart translations
+	            __messages[scope] = window.__dw.vis.meta.locale || {};
+	        }
+	    } else {
+	        // use backend translations
+	        __messages[scope] =
+	            scope === 'core'
+	                ? dw.backend.__messages.core
+	                : Object.assign({}, dw.backend.__messages.core, dw.backend.__messages[scope]);
+	    }
+	}
+
+	function getText(key, scope, messages) {
+	    try {
+	        const msg = messages[scope];
+	        return msg[key] || key;
+	    } catch (e) {
+	        return key;
+	    }
+	}
+
+	/**
+	 * Replaces named placeholders marked with %, such as %name% or %id.
+	 */
+	function replaceNamedPlaceholders(text, replacements = {}) {
+	    Object.entries(replacements).forEach(([k, v]) => {
+	        text = text.replace(new RegExp(`%${k}%|%${k}(?!\\w)`, 'g'), v);
+	    });
+	    return text;
+	}
+
+	/**
+	 * Replaces numbered placeholders marked with $, such as $0, $1 etc.
+	 */
+	function replaceNumberedPlaceholders(text, replacements = []) {
+	    return text.replace(/\$(\d)/g, (m, i) => {
+	        if (replacements[+i] === undefined) return m;
+	        return purifyHTML(replacements[+i], '');
+	    });
+	}
+
+	/**
+	 * Translates a message key, replaces placeholders within translated strings, and sanitizes the
+	 * result of the translation so that it can be safely used in HTML.
+	 *
+	 * @param {string} key -- the key to be translated, e.g. "signup / hed"
+	 * @param {string} scope -- the translation scope, e.g. "core" or a plugin name
+	 * @param {object} messages -- translation strings in the format of { scope: { key: value }}
+	 * @param {string|object} replacements -- replacements for placeholders in the translations strings
+	 * @returns {string} -- the translated text
+	 */
+	function translate(key, scope = 'core', messages, ...replacements) {
+	    let text = getText(key, scope, messages);
+	    if (typeof replacements[0] === 'string') {
+	        // use legacy, parameterized string replacements ($0, $1, etc.)
+	        text = replaceNumberedPlaceholders(text, replacements);
+	    } else {
+	        // use object for string replacement (i.e. %key% for { key: 'value' })
+	        text = replaceNamedPlaceholders(text, replacements[0]);
+	    }
+	    return purifyHTML(text, ALLOWED_HTML);
+	}
+
+	/**
+	 * Helper for finding a translation key based on a globally accessible dictionary (to be used
+	 * e.g. in visualization plugins and legacy Svelte 2 code).
+	 *
+	 * Translates a message key, replaces placeholders within translated strings, and sanitizes the
+	 * result of the translation so that it can be safely used in HTML.
+	 *
+	 * For the client-side translation to work we are pulling the translations from the global
+	 * `window.dw.backend.__messages` object. plugins that need client-side translations must set
+	 * `"svelte": true` in their plugin.json.
+	 *
+	 * @param {string} key -- the key to be translated, e.g. "signup / hed"
+	 * @param {string} scope -- the translation scope, e.g. "core" or a plugin name
+	 * @param {string|object} replacements -- replacements for placeholders in the translations strings
+	 * @returns {string} -- the translated text
+	 */
+	function __(key, scope = 'core', ...replacements) {
+	    key = key.trim();
+	    if (!__messages[scope]) initMessages(scope);
+	    if (!__messages[scope][key]) return 'MISSING:' + key;
+	    return translate(key, scope, __messages, ...replacements);
+	}
+
+	var js_cookie = {exports: {}};
+
+	/*!
 	 * JavaScript Cookie v2.2.1
 	 * https://github.com/js-cookie/js-cookie
 	 *
 	 * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
 	 * Released under the MIT license
-	 */!function(e,t){var n;n=function(){function e(){for(var e=0,t={};e<arguments.length;e++){var n=arguments[e];for(var r in n)t[r]=n[r]}return t}function t(e){return e.replace(/(%[0-9A-Z]{2})+/g,decodeURIComponent)}return function n(r){function o(){}function i(t,n,i){if("undefined"!=typeof document){"number"==typeof(i=e({path:"/"},o.defaults,i)).expires&&(i.expires=new Date(1*new Date+864e5*i.expires)),i.expires=i.expires?i.expires.toUTCString():"";try{var a=JSON.stringify(n);/^[\{\[]/.test(a)&&(n=a)}catch(e){}n=r.write?r.write(n,t):encodeURIComponent(String(n)).replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g,decodeURIComponent),t=encodeURIComponent(String(t)).replace(/%(23|24|26|2B|5E|60|7C)/g,decodeURIComponent).replace(/[\(\)]/g,escape);var s="";for(var c in i)i[c]&&(s+="; "+c,!0!==i[c]&&(s+="="+i[c].split(";")[0]));return document.cookie=t+"="+n+s}}function a(e,n){if("undefined"!=typeof document){for(var o={},i=document.cookie?document.cookie.split("; "):[],a=0;a<i.length;a++){var s=i[a].split("="),c=s.slice(1).join("=");n||'"'!==c.charAt(0)||(c=c.slice(1,-1));try{var l=t(s[0]);if(c=(r.read||r)(c,l)||t(c),n)try{c=JSON.parse(c)}catch(e){}if(o[l]=c,e===l)break}catch(e){}}return e?o[e]:o}}return o.set=i,o.get=function(e){return a(e,!1)},o.getJSON=function(e){return a(e,!0)},o.remove=function(t,n){i(t,"",e(n,{expires:-1}))},o.defaults={},o.withConverter=n,o}((function(){}))},e.exports=n()}(Ue);var Pe={};Object.defineProperty(Pe,"__esModule",{value:!0}),Pe.getValueOrDefault=void 0;Pe.getValueOrDefault=(e,t,n)=>e&&t(e)?e:n();var Fe=T&&T.__awaiter||function(e,t,n,r){return new(n||(n=Promise))((function(o,i){function a(e){try{c(r.next(e))}catch(e){i(e)}}function s(e){try{c(r.throw(e))}catch(e){i(e)}}function c(e){var t;e.done?o(e.value):(t=e.value,t instanceof n?t:new n((function(e){e(t)}))).then(a,s)}c((r=r.apply(e,t||[])).next())}))},ze=T&&T.__rest||function(e,t){var n={};for(var r in e)Object.prototype.hasOwnProperty.call(e,r)&&t.indexOf(r)<0&&(n[r]=e[r]);if(null!=e&&"function"==typeof Object.getOwnPropertySymbols){var o=0;for(r=Object.getOwnPropertySymbols(e);o<r.length;o++)t.indexOf(r[o])<0&&Object.prototype.propertyIsEnumerable.call(e,r[o])&&(n[r[o]]=e[r[o]])}return n};const Be=(T&&T.__importDefault||function(e){return e&&e.__esModule?e:{default:e}})(Ue.exports),Ge=Pe,qe=N,We=new Set(["get","head","options","trace"]);function $e(e,t={}){var{fetch:n,baseUrl:r}=t,o=ze(t,["fetch","baseUrl"]);const i=(0,Ge.getValueOrDefault)(n,()=>!0,()=>{try{const e=window.fetch;if(!e)throw new Error;return e}catch(e){throw new Error("Neither options.fetch nor window.fetch is defined.")}}),a=(0,Ge.getValueOrDefault)(r,()=>!0,()=>{const e=window.dw.backend.__api_domain;if(!e)throw new Error("Neither options.baseUrl nor window.dw is defined.");return e.startsWith("http")?e:"//"+e}),s=Object.assign(Object.assign({payload:null,raw:!1,method:"GET",mode:"cors",credentials:"include"},o),{headers:Object.assign({"Content-Type":"application/json"},o.headers)}),{payload:c,raw:l}=s,u=ze(s,["payload","raw"]),d=`${a.replace(/\/$/,"")}/${e.replace(/^\//,"")}`;let p;if(c&&(u.body=JSON.stringify(c)),u.headers["Content-Type"].startsWith("multipart/")&&delete u.headers["Content-Type"],u.disableCSRF||We.has(u.method.toLowerCase()))p=i(d,u);else{const e=Be.default.get("crumb");e?(u.headers["X-CSRF-Token"]=e,p=i(d,u)):p=$e("/v3/me",{fetch:i,baseUrl:a}).then(()=>{const e=Be.default.get("crumb");e&&(u.headers["X-CSRF-Token"]=e)}).catch(()=>{}).then(()=>Fe(this,void 0,void 0,(function*(){return yield i(d,u)})))}return p.then(e=>{if(l)return e;if(!e.ok)return e.json().then(t=>{throw new Ye(e,t)});if(204===e.status||!e.headers.get("content-type"))return e;const t=(e.headers.get("content-type")||"").split(";")[0];return"application/json"===t?e.json():"image/png"===t||"application/pdf"===t?e.blob():e.text()})}function Ve(e){return(t,n)=>{if(n&&n.method)throw new Error(`Setting option.method is not allowed in httpReq.${e.toLowerCase()}()`);return $e(t,Object.assign(Object.assign({},n),{method:e}))}}$e.get=Ve("GET"),$e.patch=Ve("PATCH"),$e.put=Ve("PUT"),$e.post=Ve("POST"),$e.head=Ve("HEAD"),$e.delete=Ve("DELETE");class Ye extends Error{constructor(e,t){super(),this.name="HttpReqError",this.status=e.status,this.statusText=e.statusText,this.message=`[${e.status}] ${e.statusText}`,this.response=e,this.response.json=()=>Promise.resolve(t),t&&(this.type=t.type,this.type&&(0,qe.keyExists)(this.type)&&(this.translationKey=this.type),this.details=t.details,Array.isArray(this.details)&&this.details.forEach(e=>{if(e&&e.type){const t=[this.type,e.type].join(" / ");(0,qe.keyExists)(t)&&(e.translationKey=t)}}))}}$e.HttpReqError=Ye;var Ke=$e;function Je(e,t){var i,s,c,l=e._slotted.labelExtra;return{c(){i=a("label"),s=a("noscript"),i.className="control-label svelte-150khnx"},m(e,o){r(e,i,o),n(i,s),s.insertAdjacentHTML("beforebegin",t.label),l&&(n(i,c||(c=document.createComment(""))),n(i,l))},p(e,t){e.label&&(!function(e){for(;e.previousSibling;)e.parentNode.removeChild(e.previousSibling)}(s),s.insertAdjacentHTML("beforebegin",t.label))},d(e){e&&o(i),l&&function(e,t){for(;e.nextSibling;)t.appendChild(e.nextSibling)}(c,l)}}}function Xe(e,t){var n;return{c(){(n=a("div")).className="help success svelte-150khnx"},m(e,o){r(e,n,o),n.innerHTML=t.success},p(e,t){e.success&&(n.innerHTML=t.success)},d(e){e&&o(n)}}}function Ze(e,t){var n;return{c(){(n=a("div")).className="help error svelte-150khnx"},m(e,o){r(e,n,o),n.innerHTML=t.error},p(e,t){e.error&&(n.innerHTML=t.error)},d(e){e&&o(n)}}}function Qe(e,t){var n;return{c(){(n=a("div")).className="help svelte-150khnx"},m(e,o){r(e,n,o),n.innerHTML=t.help},p(e,t){e.help&&(n.innerHTML=t.help)},d(e){e&&o(n)}}}function et(e){var i,c,l,p,f,m,h,g,y,b,_,w,T,E;v(this,e),this._state=t({label:"",help:"",compact:!1,class:"",error:!1,success:!1,width:"auto",uid:""},e.data),this._intro=!0,this._slotted=e.slots||{},this._fragment=(i=this,c=this._state,b=i._slotted.default,_=c.label&&Je(i,c),w=c.success&&Xe(0,c),T=c.error&&Ze(0,c),E=!c.success&&!c.error&&c.help&&Qe(0,c),{c(){l=a("div"),_&&_.c(),p=s("\n    "),f=a("div"),m=s("\n    "),w&&w.c(),h=s(" "),T&&T.c(),g=s(" "),E&&E.c(),f.className="form-controls svelte-150khnx",l.className=y="form-block "+c.class+" svelte-150khnx",u(l,"width",c.width),l.dataset.uid=c.uid,d(l,"compact",c.compact),d(l,"success",c.success),d(l,"error",c.error)},m(e,t){r(e,l,t),_&&_.m(l,null),n(l,p),n(l,f),b&&n(f,b),n(l,m),w&&w.m(l,null),n(l,h),T&&T.m(l,null),n(l,g),E&&E.m(l,null)},p(e,t){t.label?_?_.p(e,t):((_=Je(i,t)).c(),_.m(l,p)):_&&(_.d(1),_=null),t.success?w?w.p(e,t):((w=Xe(0,t)).c(),w.m(l,h)):w&&(w.d(1),w=null),t.error?T?T.p(e,t):((T=Ze(0,t)).c(),T.m(l,g)):T&&(T.d(1),T=null),t.success||t.error||!t.help?E&&(E.d(1),E=null):E?E.p(e,t):((E=Qe(0,t)).c(),E.m(l,null)),e.class&&y!==(y="form-block "+t.class+" svelte-150khnx")&&(l.className=y),e.width&&u(l,"width",t.width),e.uid&&(l.dataset.uid=t.uid),(e.class||e.compact)&&d(l,"compact",t.compact),(e.class||e.success)&&d(l,"success",t.success),(e.class||e.error)&&d(l,"error",t.error)},d(e){e&&o(l),_&&_.d(),b&&function(e,t){for(;e.firstChild;)t.appendChild(e.firstChild)}(f,b),w&&w.d(),T&&T.d(),E&&E.d()}}),e.target&&(this._fragment.c(),this._mount(e.target,e.anchor))}t(et.prototype,w);var tt={};Object.defineProperty(tt,"__esModule",{value:!0}),tt.trackPageView=nt=tt.trackEvent=void 0;var nt=tt.trackEvent=function(e,t,n,r){window._paq&&window._paq.push(["trackEvent",e,t,n,r])};let rt=void 0;tt.trackPageView=function(e,t){window._paq&&(rt&&window._paq.push(["setReferrerUrl",rt]),window._paq.push(["setCustomUrl",window.location.pathname]),window._paq.push(["setDocumentTitle",window.document.title]),e&&"guest"!==e&&window._paq.push(["setUserId",e]),t&&window._paq.push(["setCustomDimension",1,t]),window._paq.push(["trackPageView"]),rt=window.location.pathname)};var ot={async createAccount(e){this.set({signedUp:!0}),nt("Chart Editor","send-embed-code");try{await Ke.post("/v3/auth/signup",{payload:{email:e,invitation:!0,chartId:this.store.get().id}}),window.location.reload()}catch(e){if("HttpReqError"===e.name){const t=await e.response.json();this.set({error:t.message||e})}else this.set({error:"Unknown error: "+e})}},navigateTo(e){const{navigateTo:t}=this.get();t({id:e})}};function it(t,n){var i,c,l,u=He("publish / guest / h1"),d=He("publish / guest / p");return{c(){i=a("h2"),c=s("\n\n            "),l=a("p")},m(e,t){r(e,i,t),i.innerHTML=u,r(e,c,t),r(e,l,t),l.innerHTML=d},p:e,d(e){e&&(o(i),o(c),o(l))}}}function at(e,t){var n,s;return{c(){n=a("noscript"),s=a("noscript")},m(e,o){r(e,n,o),n.insertAdjacentHTML("afterend",t.guestAboveInvite),r(e,s,o)},p(e,t){e.guestAboveInvite&&(i(n,s),n.insertAdjacentHTML("afterend",t.guestAboveInvite))},d(e){e&&(i(n,s),o(n),o(s))}}}function st(e,t){var i,c;return{c(){i=a("div"),c=s(t.error),i.className="mt-2 alert alert-warning"},m(e,t){r(e,i,t),n(i,c)},p(e,t){e.error&&function(e,t){e.data=""+t}(c,t.error)},d(e){e&&o(i)}}}function ct(e){v(this,e),this._state=t({error:"",email:"",guestAboveInvite:"",guestBelowInvite:"",signedUp:!1},e.data),this._intro=!0,this._fragment=function(e,t){var d,p,f,m,h,g,y,v,b,_,w,T,E,N,A,x,k,O,S,C,M,D,L=!1,R=He("publish / guest / cta"),I=He("publish / guest / back");function j(e){return e.guestAboveInvite?at:it}var H=j(t),U=H(e,t);function P(){L=!0,e.set({email:g.value}),L=!1}function F(n){e.createAccount(t.email)}var z={label:He("publish / guest / e-mail"),help:He("publish / guest / example-email")},B=new et({root:e.root,store:e.store,slots:{default:document.createDocumentFragment()},data:z});function G(t){t.preventDefault(),e.navigateTo("visualize")}var q=t.error&&st(e,t);return{c(){var e,n,r;d=a("div"),p=a("div"),f=a("div"),U.c(),m=s("\n\n        "),h=a("div"),g=a("input"),y=s("\n\n                "),v=a("button"),b=a("i"),w=s("\n                      "),T=a("noscript"),B._fragment.c(),E=s("\n\n        "),N=a("noscript"),A=a("noscript"),x=s("\n\n        "),k=a("div"),O=a("a"),S=a("i"),C=s(" "),M=a("noscript"),D=s("\n\n            "),q&&q.c(),u(f,"margin-bottom","20px"),c(g,"input",P),e=g,n="type",null==(r="email")?e.removeAttribute(n):e.setAttribute(n,r),g.className="input-xlarge",b.className=_="fa "+(t.signedUp?"fa-circle-o-notch fa-spin":"fa-envelope"),c(v,"click",F),v.className="btn btn-save btn-primary",u(v,"white-space","nowrap"),u(v,"margin-left","10px"),u(h,"display","flex"),S.className="icon-chevron-left",c(O,"click",G),O.href="visualize",O.className="btn btn-save btn-default btn-back",u(k,"margin-top","30px"),p.className="span5",d.className="row publish-signup"},m(e,o){r(e,d,o),n(d,p),n(p,f),U.m(f,null),n(p,m),n(B._slotted.default,h),n(h,g),g.value=t.email,n(h,y),n(h,v),n(v,b),n(v,w),n(v,T),T.insertAdjacentHTML("afterend",R),B._mount(p,null),n(p,E),n(p,N),N.insertAdjacentHTML("afterend",t.guestBelowInvite),n(p,A),n(p,x),n(p,k),n(k,O),n(O,S),n(O,C),n(O,M),M.insertAdjacentHTML("afterend",I),n(k,D),q&&q.m(k,null)},p(n,r){H===(H=j(t=r))&&U?U.p(n,t):(U.d(1),(U=H(e,t)).c(),U.m(f,null)),!L&&n.email&&(g.value=t.email),n.signedUp&&_!==(_="fa "+(t.signedUp?"fa-circle-o-notch fa-spin":"fa-envelope"))&&(b.className=_),n.guestBelowInvite&&(i(N,A),N.insertAdjacentHTML("afterend",t.guestBelowInvite)),t.error?q?q.p(n,t):((q=st(e,t)).c(),q.m(k,null)):q&&(q.d(1),q=null)},d(e){e&&o(d),U.d(),l(g,"input",P),l(v,"click",F),B.destroy(),l(O,"click",G),q&&q.d()}}}(this,this._state),e.target&&(this._fragment.c(),this._mount(e.target,e.anchor),g(this))}function lt(e,n){this._handlers={},this._dependents=[],this._computed=p(),this._sortedComputedProperties=[],this._state=t({},e),this._differs=n&&n.immutable?m:f}t(ct.prototype,w),t(ct.prototype,ot),t(lt.prototype,{_add(e,t){this._dependents.push({component:e,props:t})},_init(e){const t={};for(let n=0;n<e.length;n+=1){const r=e[n];t["$"+r]=this._state[r]}return t},_remove(e){let t=this._dependents.length;for(;t--;)if(this._dependents[t].component===e)return void this._dependents.splice(t,1)},_set(e,n){const r=this._state;this._state=t(t({},r),e);for(let e=0;e<this._sortedComputedProperties.length;e+=1)this._sortedComputedProperties[e].update(this._state,n);this.fire("state",{changed:n,previous:r,current:this._state}),this._dependents.filter(e=>{const t={};let r=!1;for(let o=0;o<e.props.length;o+=1){const i=e.props[o];i in n&&(t["$"+i]=this._state[i],r=!0)}if(r)return e.component._stage(t),!0}).forEach(e=>{e.component.set({})}),this.fire("update",{changed:n,previous:r,current:this._state})},_sortComputedProperties(){const e=this._computed,t=this._sortedComputedProperties=[],n=p();let r;function o(i){const a=e[i];a&&(a.deps.forEach(e=>{if(e===r)throw new Error(`Cyclical dependency detected between ${e} <-> ${i}`);o(e)}),n[i]||(n[i]=!0,t.push(a)))}for(const e in this._computed)o(r=e)},compute(e,n,r){let o;const i={deps:n,update:(t,i,a)=>{const s=n.map(e=>(e in i&&(a=!0),t[e]));if(a){const n=r.apply(null,s);this._differs(n,o)&&(o=n,i[e]=!0,t[e]=o)}}};this._computed[e]=i,this._sortComputedProperties();const a=t({},this._state),s={};i.update(a,s,!0),this._set(a,s)},fire:h,get:y,on:b,set(e){const t=this._state,n=this._changed={};let r=!1;for(const o in e){if(this._computed[o])throw new Error(`'${o}' is a read-only computed property`);this._differs(e[o],t[o])&&(n[o]=r=!0)}r&&this._set(e,n)}});return{App:ct,store:new lt({})}}));
+	 */
+
+	(function (module, exports) {
+	(function (factory) {
+		var registeredInModuleLoader;
+		{
+			module.exports = factory();
+			registeredInModuleLoader = true;
+		}
+		if (!registeredInModuleLoader) {
+			var OldCookies = window.Cookies;
+			var api = window.Cookies = factory();
+			api.noConflict = function () {
+				window.Cookies = OldCookies;
+				return api;
+			};
+		}
+	}(function () {
+		function extend () {
+			var i = 0;
+			var result = {};
+			for (; i < arguments.length; i++) {
+				var attributes = arguments[ i ];
+				for (var key in attributes) {
+					result[key] = attributes[key];
+				}
+			}
+			return result;
+		}
+
+		function decode (s) {
+			return s.replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent);
+		}
+
+		function init (converter) {
+			function api() {}
+
+			function set (key, value, attributes) {
+				if (typeof document === 'undefined') {
+					return;
+				}
+
+				attributes = extend({
+					path: '/'
+				}, api.defaults, attributes);
+
+				if (typeof attributes.expires === 'number') {
+					attributes.expires = new Date(new Date() * 1 + attributes.expires * 864e+5);
+				}
+
+				// We're using "expires" because "max-age" is not supported by IE
+				attributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';
+
+				try {
+					var result = JSON.stringify(value);
+					if (/^[\{\[]/.test(result)) {
+						value = result;
+					}
+				} catch (e) {}
+
+				value = converter.write ?
+					converter.write(value, key) :
+					encodeURIComponent(String(value))
+						.replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+
+				key = encodeURIComponent(String(key))
+					.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent)
+					.replace(/[\(\)]/g, escape);
+
+				var stringifiedAttributes = '';
+				for (var attributeName in attributes) {
+					if (!attributes[attributeName]) {
+						continue;
+					}
+					stringifiedAttributes += '; ' + attributeName;
+					if (attributes[attributeName] === true) {
+						continue;
+					}
+
+					// Considers RFC 6265 section 5.2:
+					// ...
+					// 3.  If the remaining unparsed-attributes contains a %x3B (";")
+					//     character:
+					// Consume the characters of the unparsed-attributes up to,
+					// not including, the first %x3B (";") character.
+					// ...
+					stringifiedAttributes += '=' + attributes[attributeName].split(';')[0];
+				}
+
+				return (document.cookie = key + '=' + value + stringifiedAttributes);
+			}
+
+			function get (key, json) {
+				if (typeof document === 'undefined') {
+					return;
+				}
+
+				var jar = {};
+				// To prevent the for loop in the first place assign an empty array
+				// in case there are no cookies at all.
+				var cookies = document.cookie ? document.cookie.split('; ') : [];
+				var i = 0;
+
+				for (; i < cookies.length; i++) {
+					var parts = cookies[i].split('=');
+					var cookie = parts.slice(1).join('=');
+
+					if (!json && cookie.charAt(0) === '"') {
+						cookie = cookie.slice(1, -1);
+					}
+
+					try {
+						var name = decode(parts[0]);
+						cookie = (converter.read || converter)(cookie, name) ||
+							decode(cookie);
+
+						if (json) {
+							try {
+								cookie = JSON.parse(cookie);
+							} catch (e) {}
+						}
+
+						jar[name] = cookie;
+
+						if (key === name) {
+							break;
+						}
+					} catch (e) {}
+				}
+
+				return key ? jar[key] : jar;
+			}
+
+			api.set = set;
+			api.get = function (key) {
+				return get(key, false /* read as raw */);
+			};
+			api.getJSON = function (key) {
+				return get(key, true /* read as json */);
+			};
+			api.remove = function (key, attributes) {
+				set(key, '', extend(attributes, {
+					expires: -1
+				}));
+			};
+
+			api.defaults = {};
+
+			api.withConverter = init;
+
+			return api;
+		}
+
+		return init(function () {});
+	}));
+	}(js_cookie));
+
+	var Cookies = js_cookie.exports;
+
+	const CSRF_COOKIE_NAME = 'crumb';
+	const CSRF_TOKEN_HEADER = 'X-CSRF-Token';
+	const CSRF_SAFE_METHODS = new Set(['get', 'head', 'options', 'trace']); // according to RFC7231
+
+	/**
+	 * The response body is automatically parsed according
+	 * to the response content type.
+	 *
+	 * @exports httpReq
+	 * @kind function
+	 *
+	 * @param {string} path               - the url path that gets appended to baseUrl
+	 * @param {object} options.body       - raw body to be send with req
+	 * @param {object} options.payload    - raw JSON payload to be send with req (will overwrite options.body)
+	 * @param {boolean} options.raw       - disable parsing of response body, returns raw response
+	 * @param {string} options.baseUrl    - base for url, defaults to dw api domain
+	 * @param {string} options.disableCSFR    - set to true to disable CSFR cookies
+	 * @param {*} options                 - see documentation for window.fetch for additional options
+	 *
+	 * @returns {Promise} promise of parsed response body or raw response
+	 *
+	 * @example
+	 *  import httpReq from '@datawrapper/shared/httpReq';
+	 *  let res = await httpReq('/v3/charts', {
+	 *      method: 'post',
+	 *      payload: {
+	 *          title: 'My new chart'
+	 *      }
+	 *  });
+	 *  import { post } from '@datawrapper/shared/httpReq';
+	 *  res = await post('/v3/charts', {
+	 *      payload: {
+	 *          title: 'My new chart'
+	 *      }
+	 *  });
+	 *  // send raw csv
+	 *  await httpReq.put(`/v3/charts/${chartId}/data`, {
+	 *       body: csvData,
+	 *       headers: {
+	 *           'Content-Type': 'text/csv'
+	 *       }
+	 *   });
+	 */
+	function httpReq(path, options = {}) {
+	    if (!options.fetch) {
+	        try {
+	            options.fetch = window.fetch;
+	        } catch (e) {
+	            throw new Error('Neither options.fetch nor window.fetch is defined.');
+	        }
+	    }
+	    if (!options.baseUrl) {
+	        try {
+	            options.baseUrl = window.dw.backend.__api_domain.startsWith('http')
+	                ? window.dw.backend.__api_domain
+	                : `//${window.dw.backend.__api_domain}`;
+	        } catch (e) {
+	            throw new Error('Neither options.baseUrl nor window.dw is defined.');
+	        }
+	    }
+	    const { payload, baseUrl, fetch, raw, ...opts } = {
+	        payload: null,
+	        raw: false,
+	        method: 'GET',
+	        mode: 'cors',
+	        credentials: 'include',
+	        ...options,
+	        headers: {
+	            'Content-Type': 'application/json',
+	            ...options.headers
+	        }
+	    };
+	    const url = `${baseUrl.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+	    if (payload) {
+	        // overwrite body
+	        opts.body = JSON.stringify(payload);
+	    }
+	    if (opts.headers['Content-Type'].startsWith('multipart/')) {
+	        // removing 'Content-Type' will ensure that fetch
+	        // sets the correct content type and boundary parameter
+	        delete opts.headers['Content-Type'];
+	    }
+
+	    let promise;
+	    if (!opts.disableCSFR && !CSRF_SAFE_METHODS.has(opts.method.toLowerCase())) {
+	        const csrfCookieValue = Cookies.get(CSRF_COOKIE_NAME);
+	        if (csrfCookieValue) {
+	            opts.headers[CSRF_TOKEN_HEADER] = csrfCookieValue;
+	            promise = fetch(url, opts);
+	        } else {
+	            promise = httpReq('/v3/me', { fetch, baseUrl })
+	                .then(() => {
+	                    const csrfCookieValue = Cookies.get(CSRF_COOKIE_NAME);
+	                    if (csrfCookieValue) {
+	                        opts.headers[CSRF_TOKEN_HEADER] = csrfCookieValue;
+	                    }
+	                })
+	                .catch(() => {}) // Ignore errors from /v3/me. It probably means the user is not logged in.
+	                .then(() => fetch(url, opts));
+	        }
+	    } else {
+	        promise = fetch(url, opts);
+	    }
+	    // The variable `promise` and the repeated `fetch(url, opts)` could be replaced with `await
+	    // httpReq('/v3/me'...)`, but then we would need to configure babel to transform async/await for
+	    // all repositories that use @datawrapper/shared.
+
+	    return promise.then(res => {
+	        if (raw) return res;
+	        if (!res.ok) throw new HttpReqError(res);
+	        if (res.status === 204 || !res.headers.get('content-type')) return res; // no content
+	        // trim away the ;charset=utf-8 from content-type
+	        const contentType = res.headers.get('content-type').split(';')[0];
+	        if (contentType === 'application/json') {
+	            return res.json();
+	        }
+	        if (contentType === 'image/png' || contentType === 'application/pdf') {
+	            return res.blob();
+	        }
+	        // default to text for all other content types
+	        return res.text();
+	    });
+	}
+
+	/**
+	 * Like `httpReq` but with fixed http method GET
+	 * @see {@link httpReq}
+	 *
+	 * @exports httpReq.get
+	 * @kind function
+	 */
+	(httpReq.get = httpReqVerb('GET'));
+
+	/**
+	 * Like `httpReq` but with fixed http method PATCH
+	 * @see {@link httpReq}
+	 *
+	 * @exports httpReq.patch
+	 * @kind function
+	 */
+	(httpReq.patch = httpReqVerb('PATCH'));
+
+	/**
+	 * Like `httpReq` but with fixed http method PUT
+	 * @see {@link httpReq}
+	 *
+	 * @exports httpReq.put
+	 * @kind function
+	 */
+	(httpReq.put = httpReqVerb('PUT'));
+
+	/**
+	 * Like `httpReq` but with fixed http method POST
+	 * @see {@link httpReq}
+	 *
+	 * @exports httpReq.post
+	 * @kind function
+	 */
+	const post = (httpReq.post = httpReqVerb('POST'));
+
+	/**
+	 * Like `httpReq` but with fixed http method HEAD
+	 * @see {@link httpReq}
+	 *
+	 * @exports httpReq.head
+	 * @kind function
+	 */
+	(httpReq.head = httpReqVerb('HEAD'));
+
+	/**
+	 * Like `httpReq` but with fixed http method DELETE
+	 * @see {@link httpReq}
+	 *
+	 * @exports httpReq.delete
+	 * @kind function
+	 */
+	httpReq.delete = httpReqVerb('DELETE');
+
+	function httpReqVerb(method) {
+	    return (path, options) => {
+	        if (options && options.method) {
+	            throw new Error(
+	                `Setting option.method is not allowed in httpReq.${method.toLowerCase()}()`
+	            );
+	        }
+	        return httpReq(path, { ...options, method });
+	    };
+	}
+
+	class HttpReqError extends Error {
+	    constructor(res) {
+	        super();
+	        this.name = 'HttpReqError';
+	        this.status = res.status;
+	        this.statusText = res.statusText;
+	        this.message = `[${res.status}] ${res.statusText}`;
+	        this.response = res;
+	    }
+	}
+
+	/* node_modules/@datawrapper/controls/FormBlock.html generated by Svelte v2.16.1 */
+
+	function data$1() {
+	    return {
+	        label: '',
+	        help: '',
+	        compact: false,
+	        class: '',
+	        error: false,
+	        success: false,
+	        width: 'auto',
+	        uid: ''
+	    };
+	}
+	const file$1 = "node_modules/datawrapper/controls/FormBlock.html";
+
+	function create_main_fragment$1(component, ctx) {
+		var div1, text0, div0, slot_content_default = component._slotted.default, text1, text2, text3, div1_class_value;
+
+		var if_block0 = (ctx.label) && create_if_block_3(component, ctx);
+
+		var if_block1 = (ctx.success) && create_if_block_2(component, ctx);
+
+		var if_block2 = (ctx.error) && create_if_block_1$1(component, ctx);
+
+		var if_block3 = (!ctx.success && !ctx.error && ctx.help) && create_if_block$1(component, ctx);
+
+		return {
+			c: function create() {
+				div1 = createElement("div");
+				if (if_block0) if_block0.c();
+				text0 = createText("\n    ");
+				div0 = createElement("div");
+				text1 = createText("\n    ");
+				if (if_block1) if_block1.c();
+				text2 = createText(" ");
+				if (if_block2) if_block2.c();
+				text3 = createText(" ");
+				if (if_block3) if_block3.c();
+				div0.className = "form-controls svelte-150khnx";
+				addLoc(div0, file$1, 11, 4, 248);
+				div1.className = div1_class_value = "form-block " + ctx.class + " svelte-150khnx";
+				setStyle(div1, "width", ctx.width);
+				div1.dataset.uid = ctx.uid;
+				toggleClass(div1, "compact", ctx.compact);
+				toggleClass(div1, "success", ctx.success);
+				toggleClass(div1, "error", ctx.error);
+				addLoc(div1, file$1, 0, 0, 0);
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, div1, anchor);
+				if (if_block0) if_block0.m(div1, null);
+				append(div1, text0);
+				append(div1, div0);
+
+				if (slot_content_default) {
+					append(div0, slot_content_default);
+				}
+
+				append(div1, text1);
+				if (if_block1) if_block1.m(div1, null);
+				append(div1, text2);
+				if (if_block2) if_block2.m(div1, null);
+				append(div1, text3);
+				if (if_block3) if_block3.m(div1, null);
+			},
+
+			p: function update(changed, ctx) {
+				if (ctx.label) {
+					if (if_block0) {
+						if_block0.p(changed, ctx);
+					} else {
+						if_block0 = create_if_block_3(component, ctx);
+						if_block0.c();
+						if_block0.m(div1, text0);
+					}
+				} else if (if_block0) {
+					if_block0.d(1);
+					if_block0 = null;
+				}
+
+				if (ctx.success) {
+					if (if_block1) {
+						if_block1.p(changed, ctx);
+					} else {
+						if_block1 = create_if_block_2(component, ctx);
+						if_block1.c();
+						if_block1.m(div1, text2);
+					}
+				} else if (if_block1) {
+					if_block1.d(1);
+					if_block1 = null;
+				}
+
+				if (ctx.error) {
+					if (if_block2) {
+						if_block2.p(changed, ctx);
+					} else {
+						if_block2 = create_if_block_1$1(component, ctx);
+						if_block2.c();
+						if_block2.m(div1, text3);
+					}
+				} else if (if_block2) {
+					if_block2.d(1);
+					if_block2 = null;
+				}
+
+				if (!ctx.success && !ctx.error && ctx.help) {
+					if (if_block3) {
+						if_block3.p(changed, ctx);
+					} else {
+						if_block3 = create_if_block$1(component, ctx);
+						if_block3.c();
+						if_block3.m(div1, null);
+					}
+				} else if (if_block3) {
+					if_block3.d(1);
+					if_block3 = null;
+				}
+
+				if ((changed.class) && div1_class_value !== (div1_class_value = "form-block " + ctx.class + " svelte-150khnx")) {
+					div1.className = div1_class_value;
+				}
+
+				if (changed.width) {
+					setStyle(div1, "width", ctx.width);
+				}
+
+				if (changed.uid) {
+					div1.dataset.uid = ctx.uid;
+				}
+
+				if ((changed.class || changed.compact)) {
+					toggleClass(div1, "compact", ctx.compact);
+				}
+
+				if ((changed.class || changed.success)) {
+					toggleClass(div1, "success", ctx.success);
+				}
+
+				if ((changed.class || changed.error)) {
+					toggleClass(div1, "error", ctx.error);
+				}
+			},
+
+			d: function destroy(detach) {
+				if (detach) {
+					detachNode(div1);
+				}
+
+				if (if_block0) if_block0.d();
+
+				if (slot_content_default) {
+					reinsertChildren(div0, slot_content_default);
+				}
+
+				if (if_block1) if_block1.d();
+				if (if_block2) if_block2.d();
+				if (if_block3) if_block3.d();
+			}
+		};
+	}
+
+	// (9:4) {#if label}
+	function create_if_block_3(component, ctx) {
+		var label, raw_after, slot_content_labelExtra = component._slotted.labelExtra, slot_content_labelExtra_before;
+
+		return {
+			c: function create() {
+				label = createElement("label");
+				raw_after = createElement('noscript');
+				label.className = "control-label svelte-150khnx";
+				addLoc(label, file$1, 9, 4, 157);
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, label, anchor);
+				append(label, raw_after);
+				raw_after.insertAdjacentHTML("beforebegin", ctx.label);
+
+				if (slot_content_labelExtra) {
+					append(label, slot_content_labelExtra_before || (slot_content_labelExtra_before = createComment()));
+					append(label, slot_content_labelExtra);
+				}
+			},
+
+			p: function update(changed, ctx) {
+				if (changed.label) {
+					detachBefore(raw_after);
+					raw_after.insertAdjacentHTML("beforebegin", ctx.label);
+				}
+			},
+
+			d: function destroy(detach) {
+				if (detach) {
+					detachNode(label);
+				}
+
+				if (slot_content_labelExtra) {
+					reinsertAfter(slot_content_labelExtra_before, slot_content_labelExtra);
+				}
+			}
+		};
+	}
+
+	// (15:4) {#if success}
+	function create_if_block_2(component, ctx) {
+		var div;
+
+		return {
+			c: function create() {
+				div = createElement("div");
+				div.className = "help success svelte-150khnx";
+				addLoc(div, file$1, 15, 4, 326);
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, div, anchor);
+				div.innerHTML = ctx.success;
+			},
+
+			p: function update(changed, ctx) {
+				if (changed.success) {
+					div.innerHTML = ctx.success;
+				}
+			},
+
+			d: function destroy(detach) {
+				if (detach) {
+					detachNode(div);
+				}
+			}
+		};
+	}
+
+	// (17:10) {#if error}
+	function create_if_block_1$1(component, ctx) {
+		var div;
+
+		return {
+			c: function create() {
+				div = createElement("div");
+				div.className = "help error svelte-150khnx";
+				addLoc(div, file$1, 17, 4, 400);
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, div, anchor);
+				div.innerHTML = ctx.error;
+			},
+
+			p: function update(changed, ctx) {
+				if (changed.error) {
+					div.innerHTML = ctx.error;
+				}
+			},
+
+			d: function destroy(detach) {
+				if (detach) {
+					detachNode(div);
+				}
+			}
+		};
+	}
+
+	// (19:10) {#if !success && !error && help}
+	function create_if_block$1(component, ctx) {
+		var div;
+
+		return {
+			c: function create() {
+				div = createElement("div");
+				div.className = "help svelte-150khnx";
+				addLoc(div, file$1, 19, 4, 491);
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, div, anchor);
+				div.innerHTML = ctx.help;
+			},
+
+			p: function update(changed, ctx) {
+				if (changed.help) {
+					div.innerHTML = ctx.help;
+				}
+			},
+
+			d: function destroy(detach) {
+				if (detach) {
+					detachNode(div);
+				}
+			}
+		};
+	}
+
+	function FormBlock(options) {
+		this._debugName = '<FormBlock>';
+		if (!options || (!options.target && !options.root)) {
+			throw new Error("'target' is a required option");
+		}
+
+		init(this, options);
+		this._state = assign(data$1(), options.data);
+		if (!('class' in this._state)) console.warn("<FormBlock> was created without expected data property 'class'");
+		if (!('width' in this._state)) console.warn("<FormBlock> was created without expected data property 'width'");
+		if (!('uid' in this._state)) console.warn("<FormBlock> was created without expected data property 'uid'");
+		if (!('label' in this._state)) console.warn("<FormBlock> was created without expected data property 'label'");
+		if (!('success' in this._state)) console.warn("<FormBlock> was created without expected data property 'success'");
+		if (!('error' in this._state)) console.warn("<FormBlock> was created without expected data property 'error'");
+		if (!('help' in this._state)) console.warn("<FormBlock> was created without expected data property 'help'");
+		this._intro = true;
+
+		this._slotted = options.slots || {};
+
+		this._fragment = create_main_fragment$1(this, this._state);
+
+		if (options.target) {
+			if (options.hydrate) throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+			this._fragment.c();
+			this._mount(options.target, options.anchor);
+		}
+	}
+
+	assign(FormBlock.prototype, protoDev);
+
+	FormBlock.prototype._checkReadOnly = function _checkReadOnly(newState) {
+	};
+
+	/**
+	 * tracks a custom event in Matomo
+	 *
+	 *
+	 * @param {string} category - the event category
+	 * @param {string} category - the event action
+	 * @param {string} category - the event name
+	 * @param {string|number} category - the event value, optional
+	 */
+	function trackEvent(category, action, name, value) {
+	    if (window._paq) {
+	        window._paq.push(['trackEvent', category, action, name, value]);
+	    }
+	}
+
+	/* publish/guest/Guest.html generated by Svelte v2.16.1 */
+
+
+
+	function data() {
+	    return {
+	        error: '',
+	        email: '',
+	        guestAboveInvite: '',
+	        guestBelowInvite: '',
+	        signedUp: false
+	    };
+	}
+	var methods = {
+	    async createAccount(email) {
+	        this.set({ signedUp: true });
+	        trackEvent('Chart Editor', 'send-embed-code');
+	        try {
+	            await post('/v3/auth/signup', {
+	                payload: {
+	                    email,
+	                    invitation: true,
+	                    chartId: this.store.get().id
+	                }
+	            });
+	            window.location.reload();
+	        } catch (e) {
+	            if (e.name === 'HttpReqError') {
+	                const res = await e.response.json();
+	                this.set({ error: res.message || e });
+	            } else {
+	                this.set({ error: `Unknown error: ${e}` });
+	            }
+	        }
+	    },
+	    navigateTo(stepId) {
+	        const { navigateTo } = this.get();
+	        navigateTo({ id: stepId });
+	    }
+	};
+
+	const file = "publish/guest/Guest.html";
+
+	function create_main_fragment(component, ctx) {
+		var div4, div3, div0, text0, div1, input, input_updating = false, text1, button, i0, i0_class_value, text2, raw0_value = __('publish / guest / cta'), raw0_before, text3, raw1_before, raw1_after, text4, div2, a, i1, text5, raw2_value = __('publish / guest / back'), raw2_before, text6;
+
+		function select_block_type(ctx) {
+			if (ctx.guestAboveInvite) return create_if_block_1;
+			return create_else_block;
+		}
+
+		var current_block_type = select_block_type(ctx);
+		var if_block0 = current_block_type(component, ctx);
+
+		function input_input_handler() {
+			input_updating = true;
+			component.set({ email: input.value });
+			input_updating = false;
+		}
+
+		function click_handler(event) {
+			component.createAccount(ctx.email);
+		}
+
+		var formblock_initial_data = { label: __('publish / guest / e-mail'), help: __('publish / guest / example-email') };
+		var formblock = new FormBlock({
+			root: component.root,
+			store: component.store,
+			slots: { default: createFragment() },
+			data: formblock_initial_data
+		});
+
+		function click_handler_1(event) {
+			event.preventDefault();
+			component.navigateTo('visualize');
+		}
+
+		var if_block1 = (ctx.error) && create_if_block(component, ctx);
+
+		return {
+			c: function create() {
+				div4 = createElement("div");
+				div3 = createElement("div");
+				div0 = createElement("div");
+				if_block0.c();
+				text0 = createText("\n\n        ");
+				div1 = createElement("div");
+				input = createElement("input");
+				text1 = createText("\n\n                ");
+				button = createElement("button");
+				i0 = createElement("i");
+				text2 = createText("\n                      ");
+				raw0_before = createElement('noscript');
+				formblock._fragment.c();
+				text3 = createText("\n\n        ");
+				raw1_before = createElement('noscript');
+				raw1_after = createElement('noscript');
+				text4 = createText("\n\n        ");
+				div2 = createElement("div");
+				a = createElement("a");
+				i1 = createElement("i");
+				text5 = createText(" ");
+				raw2_before = createElement('noscript');
+				text6 = createText("\n\n            ");
+				if (if_block1) if_block1.c();
+				setStyle(div0, "margin-bottom", "20px");
+				addLoc(div0, file, 2, 8, 65);
+				addListener(input, "input", input_input_handler);
+				setAttribute(input, "type", "email");
+				input.className = "input-xlarge";
+				addLoc(input, file, 15, 16, 512);
+				i0.className = i0_class_value = "fa " + (ctx.signedUp ? 'fa-circle-o-notch fa-spin': 'fa-envelope');
+				addLoc(i0, file, 22, 20, 810);
+				addListener(button, "click", click_handler);
+				button.className = "btn btn-save btn-primary";
+				setStyle(button, "white-space", "nowrap");
+				setStyle(button, "margin-left", "10px");
+				addLoc(button, file, 17, 16, 592);
+				setStyle(div1, "display", "flex");
+				addLoc(div1, file, 14, 12, 468);
+				i1.className = "icon-chevron-left";
+				addLoc(i1, file, 36, 16, 1290);
+				addListener(a, "click", click_handler_1);
+				a.href = "visualize";
+				a.className = "btn btn-save btn-default btn-back";
+				addLoc(a, file, 31, 12, 1100);
+				setStyle(div2, "margin-top", "30px");
+				addLoc(div2, file, 30, 8, 1057);
+				div3.className = "span5";
+				addLoc(div3, file, 1, 4, 37);
+				div4.className = "row publish-signup";
+				addLoc(div4, file, 0, 0, 0);
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, div4, anchor);
+				append(div4, div3);
+				append(div3, div0);
+				if_block0.m(div0, null);
+				append(div3, text0);
+				append(formblock._slotted.default, div1);
+				append(div1, input);
+
+				input.value = ctx.email;
+
+				append(div1, text1);
+				append(div1, button);
+				append(button, i0);
+				append(button, text2);
+				append(button, raw0_before);
+				raw0_before.insertAdjacentHTML("afterend", raw0_value);
+				formblock._mount(div3, null);
+				append(div3, text3);
+				append(div3, raw1_before);
+				raw1_before.insertAdjacentHTML("afterend", ctx.guestBelowInvite);
+				append(div3, raw1_after);
+				append(div3, text4);
+				append(div3, div2);
+				append(div2, a);
+				append(a, i1);
+				append(a, text5);
+				append(a, raw2_before);
+				raw2_before.insertAdjacentHTML("afterend", raw2_value);
+				append(div2, text6);
+				if (if_block1) if_block1.m(div2, null);
+			},
+
+			p: function update(changed, _ctx) {
+				ctx = _ctx;
+				if (current_block_type === (current_block_type = select_block_type(ctx)) && if_block0) {
+					if_block0.p(changed, ctx);
+				} else {
+					if_block0.d(1);
+					if_block0 = current_block_type(component, ctx);
+					if_block0.c();
+					if_block0.m(div0, null);
+				}
+
+				if (!input_updating && changed.email) input.value = ctx.email;
+				if ((changed.signedUp) && i0_class_value !== (i0_class_value = "fa " + (ctx.signedUp ? 'fa-circle-o-notch fa-spin': 'fa-envelope'))) {
+					i0.className = i0_class_value;
+				}
+
+				if (changed.guestBelowInvite) {
+					detachBetween(raw1_before, raw1_after);
+					raw1_before.insertAdjacentHTML("afterend", ctx.guestBelowInvite);
+				}
+
+				if (ctx.error) {
+					if (if_block1) {
+						if_block1.p(changed, ctx);
+					} else {
+						if_block1 = create_if_block(component, ctx);
+						if_block1.c();
+						if_block1.m(div2, null);
+					}
+				} else if (if_block1) {
+					if_block1.d(1);
+					if_block1 = null;
+				}
+			},
+
+			d: function destroy(detach) {
+				if (detach) {
+					detachNode(div4);
+				}
+
+				if_block0.d();
+				removeListener(input, "input", input_input_handler);
+				removeListener(button, "click", click_handler);
+				formblock.destroy();
+				removeListener(a, "click", click_handler_1);
+				if (if_block1) if_block1.d();
+			}
+		};
+	}
+
+	// (4:60) {:else}
+	function create_else_block(component, ctx) {
+		var h2, raw0_value = __('publish / guest / h1'), text, p, raw1_value = __('publish / guest / p');
+
+		return {
+			c: function create() {
+				h2 = createElement("h2");
+				text = createText("\n\n            ");
+				p = createElement("p");
+				addLoc(h2, file, 4, 12, 179);
+				addLoc(p, file, 6, 12, 236);
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, h2, anchor);
+				h2.innerHTML = raw0_value;
+				insert(target, text, anchor);
+				insert(target, p, anchor);
+				p.innerHTML = raw1_value;
+			},
+
+			p: noop,
+
+			d: function destroy(detach) {
+				if (detach) {
+					detachNode(h2);
+					detachNode(text);
+					detachNode(p);
+				}
+			}
+		};
+	}
+
+	// (4:12) {#if guestAboveInvite}
+	function create_if_block_1(component, ctx) {
+		var raw_before, raw_after;
+
+		return {
+			c: function create() {
+				raw_before = createElement('noscript');
+				raw_after = createElement('noscript');
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, raw_before, anchor);
+				raw_before.insertAdjacentHTML("afterend", ctx.guestAboveInvite);
+				insert(target, raw_after, anchor);
+			},
+
+			p: function update(changed, ctx) {
+				if (changed.guestAboveInvite) {
+					detachBetween(raw_before, raw_after);
+					raw_before.insertAdjacentHTML("afterend", ctx.guestAboveInvite);
+				}
+			},
+
+			d: function destroy(detach) {
+				if (detach) {
+					detachBetween(raw_before, raw_after);
+					detachNode(raw_before);
+					detachNode(raw_after);
+				}
+			}
+		};
+	}
+
+	// (40:12) {#if error}
+	function create_if_block(component, ctx) {
+		var div, text;
+
+		return {
+			c: function create() {
+				div = createElement("div");
+				text = createText(ctx.error);
+				div.className = "mt-2 alert alert-warning";
+				addLoc(div, file, 40, 12, 1415);
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, div, anchor);
+				append(div, text);
+			},
+
+			p: function update(changed, ctx) {
+				if (changed.error) {
+					setData(text, ctx.error);
+				}
+			},
+
+			d: function destroy(detach) {
+				if (detach) {
+					detachNode(div);
+				}
+			}
+		};
+	}
+
+	function Guest(options) {
+		this._debugName = '<Guest>';
+		if (!options || (!options.target && !options.root)) {
+			throw new Error("'target' is a required option");
+		}
+
+		init(this, options);
+		this._state = assign(data(), options.data);
+		if (!('guestAboveInvite' in this._state)) console.warn("<Guest> was created without expected data property 'guestAboveInvite'");
+		if (!('email' in this._state)) console.warn("<Guest> was created without expected data property 'email'");
+		if (!('signedUp' in this._state)) console.warn("<Guest> was created without expected data property 'signedUp'");
+		if (!('guestBelowInvite' in this._state)) console.warn("<Guest> was created without expected data property 'guestBelowInvite'");
+		if (!('error' in this._state)) console.warn("<Guest> was created without expected data property 'error'");
+		this._intro = true;
+
+		this._fragment = create_main_fragment(this, this._state);
+
+		if (options.target) {
+			if (options.hydrate) throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+			this._fragment.c();
+			this._mount(options.target, options.anchor);
+
+			flush(this);
+		}
+	}
+
+	assign(Guest.prototype, protoDev);
+	assign(Guest.prototype, methods);
+
+	Guest.prototype._checkReadOnly = function _checkReadOnly(newState) {
+	};
+
+	function Store(state, options) {
+		this._handlers = {};
+		this._dependents = [];
+
+		this._computed = blankObject();
+		this._sortedComputedProperties = [];
+
+		this._state = assign({}, state);
+		this._differs = options && options.immutable ? _differsImmutable : _differs;
+	}
+
+	assign(Store.prototype, {
+		_add(component, props) {
+			this._dependents.push({
+				component: component,
+				props: props
+			});
+		},
+
+		_init(props) {
+			const state = {};
+			for (let i = 0; i < props.length; i += 1) {
+				const prop = props[i];
+				state['$' + prop] = this._state[prop];
+			}
+			return state;
+		},
+
+		_remove(component) {
+			let i = this._dependents.length;
+			while (i--) {
+				if (this._dependents[i].component === component) {
+					this._dependents.splice(i, 1);
+					return;
+				}
+			}
+		},
+
+		_set(newState, changed) {
+			const previous = this._state;
+			this._state = assign(assign({}, previous), newState);
+
+			for (let i = 0; i < this._sortedComputedProperties.length; i += 1) {
+				this._sortedComputedProperties[i].update(this._state, changed);
+			}
+
+			this.fire('state', {
+				changed,
+				previous,
+				current: this._state
+			});
+
+			this._dependents
+				.filter(dependent => {
+					const componentState = {};
+					let dirty = false;
+
+					for (let j = 0; j < dependent.props.length; j += 1) {
+						const prop = dependent.props[j];
+						if (prop in changed) {
+							componentState['$' + prop] = this._state[prop];
+							dirty = true;
+						}
+					}
+
+					if (dirty) {
+						dependent.component._stage(componentState);
+						return true;
+					}
+				})
+				.forEach(dependent => {
+					dependent.component.set({});
+				});
+
+			this.fire('update', {
+				changed,
+				previous,
+				current: this._state
+			});
+		},
+
+		_sortComputedProperties() {
+			const computed = this._computed;
+			const sorted = this._sortedComputedProperties = [];
+			const visited = blankObject();
+			let currentKey;
+
+			function visit(key) {
+				const c = computed[key];
+
+				if (c) {
+					c.deps.forEach(dep => {
+						if (dep === currentKey) {
+							throw new Error(`Cyclical dependency detected between ${dep} <-> ${key}`);
+						}
+
+						visit(dep);
+					});
+
+					if (!visited[key]) {
+						visited[key] = true;
+						sorted.push(c);
+					}
+				}
+			}
+
+			for (const key in this._computed) {
+				visit(currentKey = key);
+			}
+		},
+
+		compute(key, deps, fn) {
+			let value;
+
+			const c = {
+				deps,
+				update: (state, changed, dirty) => {
+					const values = deps.map(dep => {
+						if (dep in changed) dirty = true;
+						return state[dep];
+					});
+
+					if (dirty) {
+						const newValue = fn.apply(null, values);
+						if (this._differs(newValue, value)) {
+							value = newValue;
+							changed[key] = true;
+							state[key] = value;
+						}
+					}
+				}
+			};
+
+			this._computed[key] = c;
+			this._sortComputedProperties();
+
+			const state = assign({}, this._state);
+			const changed = {};
+			c.update(state, changed, true);
+			this._set(state, changed);
+		},
+
+		fire,
+
+		get,
+
+		on,
+
+		set(newState) {
+			const oldState = this._state;
+			const changed = this._changed = {};
+			let dirty = false;
+
+			for (const key in newState) {
+				if (this._computed[key]) throw new Error(`'${key}' is a read-only computed property`);
+				if (this._differs(newState[key], oldState[key])) changed[key] = dirty = true;
+			}
+			if (!dirty) return;
+
+			this._set(newState, changed);
+		}
+	});
+
+	const store = new Store({});
+	var main = { App: Guest, store };
+
+	return main;
+
+})));
 //# sourceMappingURL=guest.js.map

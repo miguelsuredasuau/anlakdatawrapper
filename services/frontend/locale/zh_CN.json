@@ -947,7 +947,7 @@
   "describe / table / delete-row": "删除行",
   "upload / file / success": "数据已成功上传",
   "upload / text / label": "<strong>复制并粘贴</strong>您的数据（包括标题行/列）：",
-  "upload / text / placeholder": "将数据粘贴到此处或直接粘贴到表中 ➝",
+  "upload / text / placeholder": "将数据粘贴到此处或直接粘贴到表中 →",
   "upload / text / help": "您还可以将其<strong>直接粘贴到表中</strong>。",
   "upload / file / read-failed": "无法读取文件。",
   "upload / random / before-button": "没有数据集？请在表中填充",
@@ -1178,5 +1178,7 @@
   "account / change-password / wrong-old-password": "",
   "account / delete / unknown-error": "",
   "validation-error / string.empty": "",
-  "validation-error": ""
+  "validation-error": "",
+  "teams / total-pending / 1": "",
+  "teams / total-pending": ""
 }

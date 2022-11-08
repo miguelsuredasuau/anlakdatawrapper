@@ -947,7 +947,7 @@
   "describe / table / delete-row": "Supprimer la ligne",
   "upload / file / success": "Données téléversées avec succès",
   "upload / text / label": "<strong>Copiez et collez</strong> vos données (y compris la ligne/colonne de titre) :",
-  "upload / text / placeholder": "Collez vos données ici ou directement dans le tableau ➝",
+  "upload / text / placeholder": "Collez vos données ici ou directement dans le tableau →",
   "upload / text / help": "Vous pouvez aussi le coller <strong>directement dans le tableau</strong>.",
   "upload / file / read-failed": "Échec de la lecture du fichier.",
   "upload / random / before-button": "Vous n'avez pas d'ensemble de données ? Remplissez le tableau avec",
@@ -1178,5 +1178,7 @@
   "account / change-password / wrong-old-password": "",
   "account / delete / unknown-error": "",
   "validation-error / string.empty": "",
-  "validation-error": ""
+  "validation-error": "",
+  "teams / total-pending / 1": "",
+  "teams / total-pending": ""
 }

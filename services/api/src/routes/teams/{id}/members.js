@@ -219,7 +219,7 @@ async function getTeamMembers(request) {
                 charts: user.charts.length,
                 isAdmin: user.role === 'admin' || user.role === 'sysadmin',
                 role: user_team.team_role,
-                isNewUser: token ? user.activate_token === token : undefined,
+                invitePending: !!token,
                 url: `/v3/users/${user.id}`
             };
         }),

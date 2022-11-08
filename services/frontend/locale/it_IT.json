@@ -947,7 +947,7 @@
   "describe / table / delete-row": "Elimina riga",
   "upload / file / success": "Dati caricati correttamente",
   "upload / text / label": "<strong>Copia e incolla</strong> i dati (incluse riga/colonna di intestazione):",
-  "upload / text / placeholder": "Incolla i dati qui o direttamente nella tabella ➝",
+  "upload / text / placeholder": "Incolla i dati qui o direttamente nella tabella →",
   "upload / text / help": "Puoi anche incollarli <strong>direttamente nella tabella</strong>.",
   "upload / file / read-failed": "Impossibile leggere il file.",
   "upload / random / before-button": "Non hai un dataset? Riempi la tabella con",
@@ -1178,5 +1178,7 @@
   "account / change-password / wrong-old-password": "",
   "account / delete / unknown-error": "",
   "validation-error / string.empty": "",
-  "validation-error": ""
+  "validation-error": "",
+  "teams / total-pending / 1": "",
+  "teams / total-pending": ""
 }

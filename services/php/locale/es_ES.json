@@ -947,7 +947,7 @@
   "describe / table / delete-row": "Eliminar fila",
   "upload / file / success": "Datos cargados correctamente",
   "upload / text / label": "<strong>Copia y pega</strong> tus datos (incluidos los encabezados de filas y columnas):",
-  "upload / text / placeholder": "Pega tus datos aquí o directamente en la tabla ➝",
+  "upload / text / placeholder": "Pega tus datos aquí o directamente en la tabla →",
   "upload / text / help": "También puedes pegarlo <strong>directamente en la tabla</strong>.",
   "upload / file / read-failed": "Error al leer el archivo.",
   "upload / random / before-button": "¿No tienes un conjunto de datos? Rellena la tabla con",
@@ -1178,5 +1178,7 @@
   "account / change-password / wrong-old-password": "",
   "account / delete / unknown-error": "",
   "validation-error / string.empty": "",
-  "validation-error": ""
+  "validation-error": "",
+  "teams / total-pending / 1": "",
+  "teams / total-pending": ""
 }

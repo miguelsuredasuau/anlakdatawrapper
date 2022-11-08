@@ -335,7 +335,7 @@
   "teams / remove": "Remove",
   "teams / role": "Permission level",
   "teams / role / p": "Select the permission level you want to grant this user.",
-  "teams / invite-pending": "(invite pending)",
+  "teams / invite-pending": "(invite not yet accepted)",
   "teams / actions": "Actions",
   "teams / status": "Role",
   "teams / permissions / h1": "Permission levels:",
@@ -947,7 +947,7 @@
   "describe / table / delete-row": "Delete row",
   "upload / file / success": "Data uploaded successfully",
   "upload / text / label": "<strong>Copy & paste</strong> your data (including header row/column):",
-  "upload / text / placeholder": "Paste your data here or directly into the table ➝",
+  "upload / text / placeholder": "Paste your data here or directly into the table →",
   "upload / text / help": "You can also paste it <strong>directly into the table</strong>.",
   "upload / file / read-failed": "Failed to read the file.",
   "upload / random / before-button": "Don’t have a dataset? Fill the table with",
@@ -1178,5 +1178,7 @@
   "account / change-password / wrong-old-password": "The old password is wrong",
   "account / delete / unknown-error": "An unknown error occurred while trying to delete the account",
   "validation-error / string.empty": "The value must not be empty.",
-  "validation-error": "The form is invalid."
+  "validation-error": "The form is invalid.",
+  "teams / total-pending / 1": "One additional member has a pending invite.",
+  "teams / total-pending": "%i% additional members have pending invites."
 }

@@ -1,27 +1,38 @@
 <p>
-    {#if numUsers === 1} { __('teams / total / 1') } {:elseif numUsers > 1}
-    <!-- prettier-ignroe -->
-    { __('teams / total', 'core', { i: numUsers }) } {/if} { @html numChartsCaption }
+    <!-- prettier-ignore -->
+    {#if numUsers === 1}
+        { __('teams / total / 1') }
+    {:elseif numUsers > 1}
+        { __('teams / total', 'core', { i: numUsers }) }
+    {/if}
+    { @html numChartsCaption }
+    {#if numUsersPending === 1 }
+        { __('teams / total-pending / 1') }
+    {:elseif numUsersPending > 1}
+        { __('teams / total-pending', 'core', { i: numUsersPending }) }
+    {/if}
 </p>
 
 {#if sortedUsers.length}
 <TableDisplay columnHeaders="{userHeaders}">
     {#each sortedUsers as user, i}
-    <tr>
-        <td>{ user.email }</td>
+    <tr class:invite-pending="user.invitePending">
+        <td>
+            { user.email } {#if user.invitePending}
+            <div class="invite-pending-note">{ __('teams / invite-pending' ) }</div>
+            {/if}
+        </td>
         {#if isAdmin}
         <td>
             <a href="/admin/chart/by/user/{user.id}">{ user.id }</a>
         </td>
         {/if}
-        <td>{ user.charts }</td>
+        <td>{#if user.invitePending} - {:else} { user.charts } {/if}</td>
         <td>
             {#if editId === user.id }
             <SelectInput bind:value="user.role" width="200px" options="{roles}" />
             <p class="mini-help">{ __('teams / role / p' ) }</p>
-            {:else} {@html role(user.role) } {#if user.token}
-            <i>{ __('teams / invite-pending' ) } </i>
-            {/if} {/if}
+            {:else} {@html role(user.role) } {/if}
         </td>
         <td>
             {#if (isAdmin && !isTeamOwner) || (isTeamOwner && user.id !== userId) || (user.role !==
@@ -139,7 +150,10 @@
                 return userHeaders;
             },
             numUsers({ sortedUsers }) {
-                return sortedUsers.length;
+                return sortedUsers.filter(user => !user.invitePending).length;
+            },
+            numUsersPending({ sortedUsers }) {
+                return sortedUsers.filter(user => user.invitePending).length;
             },
             numCharts({ users }) {
                 let total = 0;
@@ -263,5 +277,13 @@
 <style>
     .confirmation-warning {
         white-space: pre-line;
+    }
+    .invite-pending {
+        background-color: var(--color-dw-white-ter);
+        color: #707070;
+    }
+    .invite-pending-note {
+        color: var(--color-dw-grey-dark);
+        font-size: 90%;
     }
 </style>
