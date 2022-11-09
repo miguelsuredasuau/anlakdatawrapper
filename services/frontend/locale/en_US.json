@@ -1180,5 +1180,7 @@
   "validation-error / string.empty": "The value must not be empty.",
   "validation-error": "The form is invalid.",
   "teams / total-pending / 1": "One additional member has a pending invite.",
-  "teams / total-pending": "%i% additional members have pending invites."
+  "teams / total-pending": "%i% additional members have pending invites.",
+  "teams / total / 1 / with-period": "This team has one member.",
+  "teams / total / with-period": "This team has %i% members."
 }

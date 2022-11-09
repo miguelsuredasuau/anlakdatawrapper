@@ -1,10 +1,6 @@
 <p>
     <!-- prettier-ignore -->
-    {#if numUsers === 1}
-        { __('teams / total / 1') }
-    {:elseif numUsers > 1}
-        { __('teams / total', 'core', { i: numUsers }) }
-    {/if}
+    { @html numUsersCaption }
     { @html numChartsCaption }
     {#if numUsersPending === 1 }
         { __('teams / total-pending / 1') }
@@ -154,6 +150,17 @@
             },
             numUsersPending({ sortedUsers }) {
                 return sortedUsers.filter(user => user.invitePending).length;
+            },
+            numUsersCaption({ numUsers, numCharts }) {
+                const withPeriod = numCharts === 0;
+                if (numUsers === 1) {
+                    return __(`teams / total / 1${withPeriod ? ' / with-period' : ''}`);
+                } else if (numUsers > 1) {
+                    return __(`teams / total${withPeriod ? ' / with-period' : ''}`, 'core', {
+                        i: numUsers
+                    });
+                }
+                return '';
             },
             numCharts({ users }) {
                 let total = 0;

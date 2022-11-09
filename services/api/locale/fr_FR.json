@@ -1180,5 +1180,7 @@
   "validation-error / string.empty": "",
   "validation-error": "",
   "teams / total-pending / 1": "",
-  "teams / total-pending": ""
+  "teams / total-pending": "",
+  "teams / total / 1 / with-period": "Cette équipe comporte un membre.",
+  "teams / total / with-period": "Cette équipe comporte %i% membres"
 }
