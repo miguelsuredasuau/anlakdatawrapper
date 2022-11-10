@@ -267,10 +267,6 @@
 <style>
     .iframe-wrapper {
         transform-origin: top left;
-        pointer-events: none;
-    }
-    #iframe-vis {
-        pointer-events: all;
     }
 
     .iframe-border {
