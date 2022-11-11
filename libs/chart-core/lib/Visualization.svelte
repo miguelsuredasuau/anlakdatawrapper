@@ -786,6 +786,18 @@ Please make sure you called __(key) with a key of type "string".
         <p style="opacity:0.6;padding:1ex; text-align:center">
             {__('fallback-image-note')}
         </p>
+    {:else}
+        <noscript>
+            <img
+                style="max-width: 100%"
+                src="../plain.png"
+                aria-hidden="true"
+                alt="fallback image"
+            />
+            <p style="opacity:0.6;padding:1ex; text-align:center">
+                {__('fallback-image-note')}
+            </p>
+        </noscript>
     {/if}
 </div>
 

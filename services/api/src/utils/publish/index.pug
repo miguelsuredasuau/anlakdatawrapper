@@ -7,12 +7,16 @@ html(lang=CHART_LANGUAGE)
     meta(name="color-scheme", content="light dark")
     link(rel="stylesheet", id="css-light", media="(prefers-color-scheme: light)", href!=CSS)
     link(rel="stylesheet", id="css-dark", media="(prefers-color-scheme: dark)", href!=CSS_DARK)
-    style(id="hide-all").
-      * { opacity: 0 }
     | !{CHART_HEAD}
     | !{CHART_HEAD}
     | !{CHART_HEAD}
     | !{CHART_AFTER_HEAD_HTML}
+
+    script.
+      var st = document.createElement('style');
+      st.innerHTML = '* { opacity: 0 }';
+      st.setAttribute('id', 'hide-all');
+      document.head.appendChild(st);
 
   body
     div(class="dw-chart chart" class=CHART_CLASS id="__svelte-dw")
