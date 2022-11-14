@@ -128,9 +128,7 @@
             </svg>
         </div>
         <p>
-            {@html clean(
-                embed.text || 'You can copy and paste this <b>code to embed</b> the visualization:'
-            )}
+            {@html clean(embed.text || __('embed / caption'))}
         </p>
 
         <div class="actions">
