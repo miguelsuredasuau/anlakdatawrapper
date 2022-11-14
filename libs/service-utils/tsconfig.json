@@ -1,5 +1,6 @@
 {
     "extends": "@tsconfig/node18-strictest/tsconfig.json",
+    "include": ["src/**/*", "types/**/*"],
     "compilerOptions": {
         "outDir": "dist",
         "typeRoots": ["./node_modules/@types", "./types"],
