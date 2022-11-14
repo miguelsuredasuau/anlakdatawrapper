@@ -390,8 +390,10 @@
             // "remove" charts from source folders counts
             chartsToMove.map(({ id }) => {
                 const chart = charts.list.find(c => c.id === id);
-                const srcFolder = folders[chart.folderId || chart.organizationId || '$user'];
-                srcFolder.chartCount--;
+                if (chart) {
+                    const srcFolder = folders[chart.folderId || chart.organizationId || '$user'];
+                    srcFolder.chartCount--;
+                }
             });
             loadCharts(true);
             // add charts to target folder
@@ -469,11 +471,11 @@
     }
 
     async function handleDrop(destinationFolder) {
-        if (draggedObject.type === 'folder') {
+        if (draggedObject && draggedObject.type === 'folder') {
             await moveFolder(draggedObject.object, destinationFolder);
         }
 
-        if (draggedObject.type === 'charts') {
+        if (draggedObject && draggedObject.type === 'charts') {
             await moveCharts(draggedObject.object, destinationFolder);
         }
 
