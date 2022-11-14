@@ -36,33 +36,48 @@
 
 <style lang="scss">
     @import '../../../styles/colors.scss';
-    label.faded {
+
+    .checkbox {
+        white-space: nowrap;
+        margin-bottom: 0.5em;
+        line-height: 1.3;
+    }
+
+    .checkbox:not(:last-of-type) {
+        margin-right: 1em;
+    }
+
+    .is-faded {
         color: $dw-grey-dark;
     }
-    label.faded .checkbox-icon {
+    .is-faded .checkbox-icon {
         opacity: 0.5;
     }
-    input[type='checkbox'] {
-        float: none;
-        opacity: 0 !important;
-        pointer-events: none;
-        position: absolute;
+
+    .checkbox-label {
         display: inline-block;
-        vertical-align: sub;
+        white-space: normal;
+        margin-left: 0.25em;
     }
-    input[type='checkbox'] + .checkbox-icon {
+    .checkbox-icon {
         display: inline-block;
+        position: relative;
+        top: 0.15em;
         width: 1.25em;
         height: 1.25em;
         border-radius: 2px;
         border: 1px solid $dw-grey;
-        vertical-align: baseline;
-        position: relative;
         font-size: 0.8em;
-        line-height: 1;
-        top: -0.15em;
         text-align: center;
+        vertical-align: top;
     }
+    input[type='checkbox'] {
+        opacity: 0 !important; // hide default checkbox
+        pointer-events: none;
+        position: absolute;
+        display: inline-block;
+    }
+
     input[type='checkbox']:checked + .checkbox-icon {
         background: $dw-scooter-light;
         border-color: $dw-scooter-light;
@@ -72,27 +87,18 @@
         box-shadow: 0 0 1px 1px fade($dw-scooter-light, 55%);
     }
     input[type='checkbox']:disabled + .checkbox-icon {
-        background: $dw-grey-dark;
         border-color: $dw-grey;
-        cursor: default;
+        background: $dw-grey-lighter;
+        cursor: inherit;
         opacity: 0.6;
     }
     input[type='checkbox']:disabled:checked + .checkbox-icon {
         border-color: $dw-grey;
         background: $dw-grey;
     }
-    .checkbox {
-        margin: 0 0 0.15em 0;
-    }
-    .checkbox:not(:last-of-type) {
-        margin-right: 1em;
-    }
-    .checkbox-label {
-        margin-left: 0.25em;
-    }
 </style>
 
-<label class="checkbox" disabled={disabled || null} class:faded data-uid={uid}>
+<label class="checkbox" class:is-faded={faded} disabled={disabled || null} data-uid={uid}>
     <input
         type="checkbox"
         aria-label={label || null}
@@ -102,7 +108,9 @@
         on:click
     />
     <span class="checkbox-icon">
-        <IconDisplay icon="checkmark-bold" color="white" valign="top" />
+        {#if value}
+            <IconDisplay icon="checkmark-bold" color="white" valign="top" />
+        {/if}
     </span>
     {#if !standalone}<span class="checkbox-label">{label}</span>{/if}
 </label>

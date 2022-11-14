@@ -18,6 +18,11 @@
                     <CheckboxInput bind:value label="with help" help="Help me!" />
 
                     <CheckboxInput bind:value faded label="faded checkbox" />
+
+                    <CheckboxInput
+                        bind:value
+                        label="This checkbox has a very long label to illustrate line wrapping: Lorem ipsum dolor sit amet"
+                    />
                 </div>
             </div>
             <div class="block">
