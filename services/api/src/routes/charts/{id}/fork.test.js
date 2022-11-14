@@ -334,8 +334,8 @@ test('POST /charts/{id}/fork forks an unprotected chart and the attributes match
             ...attributes,
             theme: 'default',
             language: 'en-US',
-            isFork: undefined,
-            forkable: undefined, // not returned from API,
+            isFork: false,
+            forkable: undefined, // not returned in API response
             metadata: assignDeep(cloneDeep(defaultMetadata), {
                 ...attributes.metadata,
                 describe: {
