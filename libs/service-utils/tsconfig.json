@@ -1,0 +1,12 @@
+{
+    "extends": "@tsconfig/node18-strictest/tsconfig.json",
+    "compilerOptions": {
+        "outDir": "dist",
+        "typeRoots": ["./node_modules/@types", "./types"],
+        "declaration": true,
+        "allowSyntheticDefaultImports": true,
+        "allowJs": true,
+        "checkJs": false,
+        "esModuleInterop": true
+    }
+}
