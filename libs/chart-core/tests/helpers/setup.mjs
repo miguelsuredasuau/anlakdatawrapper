@@ -119,7 +119,12 @@ export async function render(page, props, delay = 0) {
             const target = document.querySelector('.dw-chart-body');
             const container = document.querySelector('.dw-chart');
 
-            container.setAttribute('class', `dw-chart chart theme-test vis-${chart.type}`);
+            container.setAttribute(
+                'class',
+                `dw-chart chart theme-test vis-${chart.type} ${
+                    textDirection === 'rtl' ? 'dir-rtl' : ''
+                }`
+            );
 
             const dwChart = dw
                 .chart(chart)
