@@ -1,7 +1,6 @@
 const Boom = require('@hapi/boom');
 const get = require('lodash/get');
-const { translate } = require('@datawrapper/service-utils/l10n');
-const prepareVisualization = require('@datawrapper/service-utils/prepareVisualization');
+const { prepareVisualization, translate } = require('@datawrapper/service-utils');
 
 module.exports = {
     name: 'routes/visualizations/{id}',

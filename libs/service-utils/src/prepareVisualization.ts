@@ -28,6 +28,6 @@ const INCLUDE_PROPERTIES = [
 /**
  * Prepares a visualization before it gets sent to client, so that only public props are exposed.
  */
-export = function prepareVisualization(visualization: Visualization): Partial<Visualization> {
+export function prepareVisualization(visualization: Visualization): Partial<Visualization> {
     return pick(visualization, INCLUDE_PROPERTIES);
-};
+}

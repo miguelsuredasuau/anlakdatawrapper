@@ -1,5 +1,5 @@
 const ORM = require('../../index');
-const { requireConfig } = require('@datawrapper/service-utils/findConfig');
+const { requireConfig } = require('@datawrapper/backend-utils');
 
 const config = requireConfig();
 

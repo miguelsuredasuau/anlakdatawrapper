@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
-const CodedError = require('@datawrapper/service-utils/CodedError.js');
+const { CodedError } = require('@datawrapper/backend-utils');
 
 module.exports = {
     name: 'utils/chart-assets',

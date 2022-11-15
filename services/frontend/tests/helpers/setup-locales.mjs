@@ -1,7 +1,7 @@
 // load translations
 import path from 'path';
 import fs from 'fs-extra';
-import { addScope, allScopes } from '@datawrapper/service-utils/l10n';
+import { addLocalizationScope, allLocalizationScopes } from '@datawrapper/service-utils';
 
 /**
  * loads locales so they are available in frontend tests.
@@ -30,12 +30,12 @@ async function loadLocalesForScope(scope, localePath) {
                 );
             }
         }
-        addScope(scope, locales);
+        addLocalizationScope(scope, locales);
     } catch (e) {
         console.error('error loading locales for scope ' + scope, e);
     }
 }
 
 export function getLocale(language = 'en-US') {
-    return allScopes(language);
+    return allLocalizationScopes(language);
 }

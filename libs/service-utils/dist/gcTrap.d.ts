@@ -1,2 +1,1 @@
-declare const _default: () => void;
-export = _default;
+export declare function initGCTrap(): void;

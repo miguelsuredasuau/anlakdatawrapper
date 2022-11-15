@@ -2,6 +2,8 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getTranslate = exports.getUserLanguage = exports.allLocalizationScopes = exports.translate = exports.addLocalizationScope = exports.getLocalizationScope = void 0;
 const assign_deep_1 = __importDefault(require("assign-deep"));
 const escapeHtml_1 = __importDefault(require("@datawrapper/shared/escapeHtml"));
 const get_1 = __importDefault(require("lodash/get"));
@@ -12,7 +14,7 @@ const scopes = {
 };
 const defaultLanguage = 'en_US';
 const DW_DEV_MODE = !!JSON.parse(process.env['DW_DEV_MODE'] || 'false');
-function getScope(scope, locale = defaultLanguage) {
+function getLocalizationScope(scope, locale = defaultLanguage) {
     if (!scopes[scope]) {
         throw new Error(`Unknown localization scope "${scope}"`);
     }
@@ -31,7 +33,8 @@ function getScope(scope, locale = defaultLanguage) {
     // console.error(`l10n: Unknown locale "${locale}" for scope "${scope}"`);
     return {};
 }
-function addScope(scope, messages) {
+exports.getLocalizationScope = getLocalizationScope;
+function addLocalizationScope(scope, messages) {
     if (scope === 'chart') {
         Object.entries(messages).forEach(([key, value]) => {
             messages[key.replace('-', '_')] = value;
@@ -45,6 +48,7 @@ function addScope(scope, messages) {
         scopes[scope] = (0, assign_deep_1.default)(scopes[scope], messages);
     }
 }
+exports.addLocalizationScope = addLocalizationScope;
 /**
  * Replaces named placeholders marked with %, such as %name% or %id.
  *
@@ -56,16 +60,16 @@ function replaceNamedPlaceholders(text, replacements = {}) {
     });
     return text;
 }
-function getText(key, { scope = 'core', language = defaultLanguage }) {
+function getLocalizationText(key, { scope = 'core', language = defaultLanguage }) {
     try {
-        const messages = getScope(scope, language);
+        const messages = getLocalizationScope(scope, language);
         if (messages[key]) {
             return messages[key];
         }
         if (DW_DEV_MODE) {
             return 'MISSING ' + key;
         }
-        const fallback = getScope(scope, defaultLanguage);
+        const fallback = getLocalizationScope(scope, defaultLanguage);
         return fallback[key] || key;
     }
     catch (e) {
@@ -73,16 +77,17 @@ function getText(key, { scope = 'core', language = defaultLanguage }) {
     }
 }
 function translate(key, { scope, language, replacements }) {
-    const text = getText(key, { scope, language });
+    const text = getLocalizationText(key, { scope, language });
     return replaceNamedPlaceholders(text, replacements);
 }
-function allScopes(locale = defaultLanguage) {
+exports.translate = translate;
+function allLocalizationScopes(locale = defaultLanguage) {
     const out = {};
     Object.keys(scopes).forEach(scope => {
-        out[scope] = Object.assign({}, getScope(scope, locale));
+        out[scope] = Object.assign({}, getLocalizationScope(scope, locale));
         if (locale !== defaultLanguage) {
             // fill in empty keys with default language
-            const fallback = getScope(scope, defaultLanguage);
+            const fallback = getLocalizationScope(scope, defaultLanguage);
             Object.keys(out[scope]).forEach(key => {
                 if (!out[scope][key] && fallback[key]) {
                     out[scope][key] = DW_DEV_MODE
@@ -94,20 +99,15 @@ function allScopes(locale = defaultLanguage) {
     });
     return out;
 }
+exports.allLocalizationScopes = allLocalizationScopes;
 function getUserLanguage(auth) {
     return auth.isAuthenticated && auth.artifacts && auth.artifacts.id
         ? auth.artifacts.language
         : (0, get_1.default)(auth.credentials, 'data.data.dw-lang') || 'en-US';
 }
+exports.getUserLanguage = getUserLanguage;
 function getTranslate(request) {
     const language = getUserLanguage(request.auth);
     return (key, scope = 'core', replacements) => translate(key, { scope, language, replacements });
 }
-module.exports = {
-    getScope,
-    addScope,
-    allScopes,
-    translate,
-    getUserLanguage,
-    getTranslate
-};
+exports.getTranslate = getTranslate;

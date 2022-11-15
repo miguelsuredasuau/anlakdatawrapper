@@ -1,4 +1,4 @@
-const { translate } = require('@datawrapper/service-utils/l10n');
+const { translate } = require('@datawrapper/service-utils');
 const get = require('lodash/get');
 const sanitizeHtml = require('sanitize-html');
 const fs = require('fs-extra');

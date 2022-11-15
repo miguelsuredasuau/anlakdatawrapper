@@ -43,7 +43,7 @@ async function safeUnlink(path: string): Promise<void> {
     }
 }
 
-export = {
+export const fsUtils = {
     hasAccess,
     isSymbolicLink,
     safeUnlink

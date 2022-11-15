@@ -1,5 +1,7 @@
 "use strict";
-module.exports = {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.defaultChartMetadata = void 0;
+exports.defaultChartMetadata = {
     data: {
         changes: [],
         transpose: false,

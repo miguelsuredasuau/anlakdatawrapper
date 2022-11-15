@@ -6,10 +6,13 @@ const cloneDeep = require('lodash/cloneDeep');
 const { getNestedObjectKeys, byOrder } = require('../utils');
 const { Op } = require('@datawrapper/orm').db;
 const { Chart, User, Folder, Team, Theme } = require('@datawrapper/orm/models');
-const prepareChart = require('@datawrapper/service-utils/prepareChart');
+const {
+    loadLocaleMeta,
+    loadVendorLocales,
+    prepareChart,
+    prepareVisualization
+} = require('@datawrapper/service-utils');
 const assign = require('assign-deep');
-const prepareVisualization = require('@datawrapper/service-utils/prepareVisualization');
-const { loadVendorLocales, loadLocaleMeta } = require('@datawrapper/service-utils/loadLocales');
 
 module.exports = {
     name: 'routes/edit',

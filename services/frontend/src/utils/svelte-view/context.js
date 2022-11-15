@@ -1,4 +1,4 @@
-const { allScopes } = require('@datawrapper/service-utils/l10n');
+const { allLocalizationScopes } = require('@datawrapper/service-utils');
 const crypto = require('crypto');
 
 const clientSideStoreCache = new Set(['messages']);
@@ -74,7 +74,7 @@ module.exports = async function (request) {
                           language: userLang
                       },
             userData,
-            messages: allScopes(userLang || 'en-US')
+            messages: allLocalizationScopes(userLang || 'en-US')
         },
         storeHashes: {},
         storeCached: {}

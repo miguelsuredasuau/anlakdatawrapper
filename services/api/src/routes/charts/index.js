@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const createChart = require('@datawrapper/service-utils/createChart');
+const { createChart } = require('@datawrapper/service-utils');
 const set = require('lodash/set');
 const { Op } = require('@datawrapper/orm').db;
 const { decamelizeKeys, decamelize } = require('humps');

@@ -1,5 +1,10 @@
 "use strict";
-module.exports = class MemoryCache {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MemoryCache = void 0;
+/**
+ * Simple in-memory cache interface using a Map as storage.
+ */
+class MemoryCache {
     cache;
     constructor() {
         this.cache = new Map();
@@ -40,4 +45,5 @@ module.exports = class MemoryCache {
         }
         return value;
     }
-};
+}
+exports.MemoryCache = MemoryCache;

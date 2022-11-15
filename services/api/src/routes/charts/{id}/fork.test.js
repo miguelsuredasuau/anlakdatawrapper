@@ -1,6 +1,6 @@
 const assignDeep = require('assign-deep');
 const cloneDeep = require('lodash/cloneDeep');
-const defaultMetadata = require('@datawrapper/service-utils/defaultChartMetadata');
+const { defaultChartMetadata } = require('@datawrapper/service-utils');
 const fetch = require('node-fetch');
 const test = require('ava');
 const {
@@ -215,7 +215,7 @@ test('POST /charts/{id}/fork forks a fork-protected chart and the attributes mat
             language: 'en-US',
             isFork: true,
             forkable: undefined, // not returned from API,
-            metadata: assignDeep(cloneDeep(defaultMetadata), {
+            metadata: assignDeep(cloneDeep(defaultChartMetadata), {
                 ...attributes.metadata,
                 describe: {
                     intro: '',
@@ -336,7 +336,7 @@ test('POST /charts/{id}/fork forks an unprotected chart and the attributes match
             language: 'en-US',
             isFork: false,
             forkable: undefined, // not returned in API response
-            metadata: assignDeep(cloneDeep(defaultMetadata), {
+            metadata: assignDeep(cloneDeep(defaultChartMetadata), {
                 ...attributes.metadata,
                 describe: {
                     intro: '',

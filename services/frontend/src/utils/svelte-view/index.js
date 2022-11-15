@@ -1,6 +1,6 @@
 'use strict';
 
-const MemoryCache = require('@datawrapper/service-utils/MemoryCache');
+const { MemoryCache } = require('@datawrapper/service-utils');
 const { JSDOM } = require('jsdom');
 const context = require('./context');
 const ejs = require('ejs');

@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const promises_1 = __importDefault(require("fs/promises"));
-const fsUtils_1 = __importDefault(require("./fsUtils"));
+const fsUtils_1 = require("./fsUtils");
 const path_1 = __importDefault(require("path"));
 const ava_1 = __importDefault(require("ava"));
 const tmp_1 = __importDefault(require("tmp"));
@@ -14,7 +14,7 @@ const prefix = 'dw-service-utils-test-';
     let tmpFile;
     try {
         tmpFile = tmp_1.default.fileSync({ prefix });
-        t.true(await fsUtils_1.default.hasAccess(tmpFile.name, fs_1.default.constants.W_OK));
+        t.true(await fsUtils_1.fsUtils.hasAccess(tmpFile.name, fs_1.default.constants.W_OK));
     }
     finally {
         if (tmpFile) {
@@ -26,7 +26,7 @@ const prefix = 'dw-service-utils-test-';
     let tmpFile;
     try {
         tmpFile = tmp_1.default.fileSync({ prefix, mode: 0o400 });
-        t.false(await fsUtils_1.default.hasAccess(tmpFile.name, fs_1.default.constants.W_OK));
+        t.false(await fsUtils_1.fsUtils.hasAccess(tmpFile.name, fs_1.default.constants.W_OK));
     }
     finally {
         if (tmpFile) {
@@ -35,7 +35,7 @@ const prefix = 'dw-service-utils-test-';
     }
 });
 (0, ava_1.default)('hasAccess returns false if the path does not exist', async (t) => {
-    t.false(await fsUtils_1.default.hasAccess('spam.txt'));
+    t.false(await fsUtils_1.fsUtils.hasAccess('spam.txt'));
 });
 (0, ava_1.default)('isSymbolicLink returns true if the path is a symlink', async (t) => {
     let tmpDir;
@@ -45,7 +45,7 @@ const prefix = 'dw-service-utils-test-';
         await promises_1.default.writeFile(targetPath, '');
         const linkPath = path_1.default.join(tmpDir.name, 'link.txt');
         await promises_1.default.symlink(targetPath, linkPath);
-        t.true(await fsUtils_1.default.isSymbolicLink(linkPath));
+        t.true(await fsUtils_1.fsUtils.isSymbolicLink(linkPath));
     }
     finally {
         if (tmpDir) {
@@ -57,7 +57,7 @@ const prefix = 'dw-service-utils-test-';
     let tmpFile;
     try {
         tmpFile = tmp_1.default.fileSync({ prefix });
-        t.false(await fsUtils_1.default.isSymbolicLink(tmpFile.name));
+        t.false(await fsUtils_1.fsUtils.isSymbolicLink(tmpFile.name));
     }
     finally {
         if (tmpFile) {
@@ -66,14 +66,14 @@ const prefix = 'dw-service-utils-test-';
     }
 });
 (0, ava_1.default)('isSymbolicLink returns false if the path does not exist', async (t) => {
-    t.false(await fsUtils_1.default.isSymbolicLink('spam.txt'));
+    t.false(await fsUtils_1.fsUtils.isSymbolicLink('spam.txt'));
 });
 (0, ava_1.default)('safeUnlink removes the path if it exists', async (t) => {
     let tmpFile;
     try {
         tmpFile = tmp_1.default.fileSync({ prefix });
         t.true(fs_1.default.existsSync(tmpFile.name));
-        await fsUtils_1.default.safeUnlink(tmpFile.name);
+        await fsUtils_1.fsUtils.safeUnlink(tmpFile.name);
         t.false(fs_1.default.existsSync(tmpFile.name));
     }
     finally {
@@ -83,6 +83,6 @@ const prefix = 'dw-service-utils-test-';
     }
 });
 (0, ava_1.default)('safeUnlink does nothing if the path does not exist', async (t) => {
-    await fsUtils_1.default.safeUnlink('spam.txt');
+    await fsUtils_1.fsUtils.safeUnlink('spam.txt');
     t.pass();
 });

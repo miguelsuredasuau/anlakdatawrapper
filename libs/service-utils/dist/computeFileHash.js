@@ -2,16 +2,18 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.computeFileHashPlugin = void 0;
 const path_1 = __importDefault(require("path"));
 const crypto_1 = __importDefault(require("crypto"));
 const fs_1 = __importDefault(require("fs"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
-const MemoryCache_1 = __importDefault(require("./MemoryCache"));
-module.exports = {
+const MemoryCache_1 = require("./MemoryCache");
+exports.computeFileHashPlugin = {
     name: 'utils/computeFileHash',
     version: '1.0.0',
     async register(server) {
-        const fileHashCache = new MemoryCache_1.default();
+        const fileHashCache = new MemoryCache_1.MemoryCache();
         /**
          * computes the hash for one file
          *

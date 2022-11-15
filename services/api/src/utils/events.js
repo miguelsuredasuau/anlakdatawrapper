@@ -1,4 +1,4 @@
-const ApiEventEmitter = require('@datawrapper/service-utils/eventEmitter');
+const { ServiceEventEmitter: ApiEventEmitter } = require('@datawrapper/backend-utils');
 
 const eventList = {
     CHART_EXPORT: 'CHART_EXPORT',

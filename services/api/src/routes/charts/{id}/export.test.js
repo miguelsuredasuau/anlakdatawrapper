@@ -1,4 +1,4 @@
-const CodedError = require('@datawrapper/service-utils/CodedError.js');
+const { CodedError } = require('@datawrapper/backend-utils');
 const test = require('ava');
 const { Readable } = require('stream');
 const { createChart, createUser, destroy, setup } = require('../../../../test/helpers/setup');

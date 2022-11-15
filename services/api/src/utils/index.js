@@ -8,7 +8,7 @@ const get = require('lodash/get');
 const partition = require('lodash/partition');
 const assignDeep = require('assign-deep');
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-const prepareChart = require('@datawrapper/service-utils/prepareChart');
+const { prepareChart } = require('@datawrapper/service-utils');
 const utils = {};
 
 /**

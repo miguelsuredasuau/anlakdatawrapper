@@ -12,7 +12,7 @@ const generateToken = customAlphabet(
     25
 );
 
-module.exports = function createAuth(
+exports.createAuth = function createAuth(
     { AccessToken, User, Session, Chart, Team },
     { includeTeams } = {}
 ) {

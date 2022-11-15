@@ -1,6 +1,6 @@
 import type { Metadata } from '@datawrapper/shared/chartTypes';
 
-export = {
+export const defaultChartMetadata = {
     data: {
         changes: [],
         transpose: false,

@@ -1,8 +1,8 @@
 import Boom from '@hapi/boom';
 import assignDeep from 'assign-deep';
 import cloneDeep from 'lodash/cloneDeep';
-import defaultMetadata from './defaultChartMetadata';
-import findChartId from './findChartId';
+import { defaultChartMetadata } from './defaultChartMetadata';
+import { findChartId } from './findChartId';
 import get from 'lodash/get';
 import pick from 'lodash/pick';
 import { decamelizeKeys } from 'humps';
@@ -68,7 +68,7 @@ const ALLOWED_PAYLOAD_KEYS: (keyof AllowedPayload)[] = [
  *
  * @returns {Chart} -- instance of new chart object
  */
-export = async function createChart(
+export async function createChart(
     {
         server,
         user,
@@ -157,7 +157,7 @@ export = async function createChart(
         type: defaults.type,
         language: user.language.replace('_', '-'),
         ...decamelizeKeys(allowedPayload),
-        metadata: cloneDeep(defaultMetadata),
+        metadata: cloneDeep(defaultChartMetadata),
         author_id: user.id,
         id
     });
@@ -249,4 +249,4 @@ export = async function createChart(
 
     await chart.save();
     return chart;
-};
+}

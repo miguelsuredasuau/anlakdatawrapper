@@ -1,7 +1,7 @@
 import type { FeatureFlag } from './featureFlagTypes';
 import type { Server } from './serverTypes';
 
-export = function registerFeatureFlag(server: Server) {
+export function registerFeatureFlag(server: Server) {
     server.app.featureFlags = new Map<string, FeatureFlag>();
 
     function registerFeatureFlag(id: string, attributes: Omit<FeatureFlag, 'id'>) {
@@ -58,4 +58,4 @@ export = function registerFeatureFlag(server: Server) {
     });
 
     return registerFeatureFlag;
-};
+}

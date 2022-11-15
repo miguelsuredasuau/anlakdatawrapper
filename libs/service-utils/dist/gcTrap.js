@@ -1,5 +1,7 @@
 "use strict";
 /* eslint-disable no-console */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.initGCTrap = void 0;
 function purge() {
     let available = false;
     if (typeof global.gc === 'function') {
@@ -19,8 +21,9 @@ function purge() {
         console.log('After GC:', process.memoryUsage());
     }
 }
-module.exports = function init() {
+function initGCTrap() {
     // use SIGALRM because it's an ancient C timer,
     // which is almost certainly not used in nodeJS
     process.on('SIGALRM', purge.bind(null));
-};
+}
+exports.initGCTrap = initGCTrap;

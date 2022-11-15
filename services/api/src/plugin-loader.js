@@ -3,7 +3,7 @@ const path = require('path');
 const models = require('@datawrapper/orm/models');
 const get = require('lodash/get');
 const { promisify } = require('util');
-const { addScope } = require('@datawrapper/service-utils/l10n');
+const { addLocalizationScope } = require('@datawrapper/service-utils');
 const readFile = promisify(fs.readFile);
 const readDir = promisify(fs.readdir);
 
@@ -77,7 +77,7 @@ module.exports = {
                             if (file === 'chart-translations.json') {
                                 // chart translations are special because they need to be passed
                                 // to the chart-core so they are availabe in rendered charts
-                                addScope(
+                                addLocalizationScope(
                                     'chart',
                                     JSON.parse(await readFile(path.join(localePath, file)))
                                 );
@@ -87,7 +87,7 @@ module.exports = {
                                 );
                             }
                         }
-                        addScope(name, options.locales);
+                        addLocalizationScope(name, options.locales);
                     } catch (error) {
                         server.logger.debug(`Error while loading translations for ${name}`, error);
                     }

@@ -24,7 +24,10 @@ const defaultLanguage = 'en_US';
 
 const DW_DEV_MODE = !!JSON.parse(process.env['DW_DEV_MODE'] || 'false');
 
-function getScope(scope: keyof Scopes, locale: string = defaultLanguage): Messages {
+export function getLocalizationScope(
+    scope: keyof Scopes,
+    locale: string = defaultLanguage
+): Messages {
     if (!scopes[scope]) {
         throw new Error(`Unknown localization scope "${scope}"`);
     }
@@ -46,7 +49,7 @@ function getScope(scope: keyof Scopes, locale: string = defaultLanguage): Messag
     return {};
 }
 
-function addScope(scope: keyof Scopes, messages: Scope) {
+export function addLocalizationScope(scope: keyof Scopes, messages: Scope) {
     if (scope === 'chart') {
         Object.entries(messages).forEach(([key, value]) => {
             messages[key.replace('-', '_')] = value;
@@ -73,26 +76,26 @@ function replaceNamedPlaceholders(text: string, replacements: Record<string, str
     return text;
 }
 
-function getText(
+function getLocalizationText(
     key: string,
     { scope = 'core', language = defaultLanguage }: { scope: keyof Scopes; language: string }
 ): string {
     try {
-        const messages = getScope(scope, language);
+        const messages = getLocalizationScope(scope, language);
         if (messages[key]) {
             return messages[key] as string;
         }
         if (DW_DEV_MODE) {
             return 'MISSING ' + key;
         }
-        const fallback = getScope(scope, defaultLanguage);
+        const fallback = getLocalizationScope(scope, defaultLanguage);
         return fallback[key] || key;
     } catch (e) {
         return key;
     }
 }
 
-function translate(
+export function translate(
     key: string,
     {
         scope,
@@ -100,17 +103,17 @@ function translate(
         replacements
     }: { scope: keyof Scopes; language: string; replacements?: Record<string, string> }
 ): string {
-    const text = getText(key, { scope, language });
+    const text = getLocalizationText(key, { scope, language });
     return replaceNamedPlaceholders(text, replacements);
 }
 
-function allScopes(locale: string = defaultLanguage): Scope {
+export function allLocalizationScopes(locale: string = defaultLanguage): Scope {
     const out: Scope = {};
     (Object.keys(scopes) as (keyof Scopes)[]).forEach(scope => {
-        out[scope] = Object.assign({}, getScope(scope, locale)) as Messages;
+        out[scope] = Object.assign({}, getLocalizationScope(scope, locale)) as Messages;
         if (locale !== defaultLanguage) {
             // fill in empty keys with default language
-            const fallback = getScope(scope, defaultLanguage);
+            const fallback = getLocalizationScope(scope, defaultLanguage);
             Object.keys(out[scope] as Messages).forEach(key => {
                 if (!(out[scope] as Messages)[key] && fallback[key]) {
                     (out[scope] as Messages)[key] = DW_DEV_MODE
@@ -123,24 +126,15 @@ function allScopes(locale: string = defaultLanguage): Scope {
     return out;
 }
 
-function getUserLanguage(auth: RequestAuth): string {
+export function getUserLanguage(auth: RequestAuth): string {
     return auth.isAuthenticated && auth.artifacts && auth.artifacts.id
         ? auth.artifacts.language
         : get(auth.credentials, 'data.data.dw-lang') || 'en-US';
 }
 
-function getTranslate(
+export function getTranslate(
     request: Request
 ): (key: string, scope: keyof Scopes, replacements: Record<string, string>) => string {
     const language = getUserLanguage(request.auth);
     return (key, scope = 'core', replacements) => translate(key, { scope, language, replacements });
 }
-
-export = {
-    getScope,
-    addScope,
-    allScopes,
-    translate,
-    getUserLanguage,
-    getTranslate
-};

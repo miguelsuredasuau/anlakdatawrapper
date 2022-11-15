@@ -2,6 +2,8 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.loadLocaleMeta = exports.loadLocaleConfig = exports.loadVendorLocales = exports.loadVendorLocale = exports.loadLocales = void 0;
 const path_1 = __importDefault(require("path"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const lodash_1 = require("lodash");
@@ -25,6 +27,7 @@ async function loadLocales() {
         numeral: await loadLocalesForVendor('numeral')
     };
 }
+exports.loadLocales = loadLocales;
 async function loadVendorLocale(vendor, locale, team) {
     const locales = await loadLocales();
     const localeSettings = getVendorLocaleSettings(vendor, locale, locales);
@@ -35,6 +38,7 @@ async function loadVendorLocale(vendor, locale, team) {
         custom: (0, lodash_1.get)(team, `settings.locales.${vendor}.${locale.replace('_', '-')}`, {})
     };
 }
+exports.loadVendorLocale = loadVendorLocale;
 async function loadVendorLocales(vendor, locales) {
     const availableLocales = await loadLocales();
     return Object.fromEntries(locales
@@ -44,15 +48,18 @@ async function loadVendorLocales(vendor, locales) {
     ])
         .filter(([, settings]) => !!settings));
 }
+exports.loadVendorLocales = loadVendorLocales;
 async function loadLocaleConfig(locale) {
     const tryLocales = getLocaleCodeOptions(locale);
     const localeMeta = await loadLocaleMeta();
     const localeCode = tryLocales.find(l => l in localeMeta);
     return localeCode ? localeMeta[localeCode] : {};
 }
+exports.loadLocaleConfig = loadLocaleConfig;
 async function loadLocaleMeta() {
     return JSON.parse(await fs_extra_1.default.readFile(path_1.default.resolve(path_1.default.resolve(localeRoot, 'config.json')), 'utf-8'));
 }
+exports.loadLocaleMeta = loadLocaleMeta;
 function getLocaleCodeOptions(locale) {
     const culture = locale.replace('_', '-').toLowerCase();
     const tryLocales = [culture];
@@ -71,10 +78,3 @@ function getVendorLocaleSettings(vendor, locale, locales) {
     }
     return undefined;
 }
-module.exports = {
-    loadLocaleMeta,
-    loadLocales,
-    loadLocaleConfig,
-    loadVendorLocale,
-    loadVendorLocales
-};

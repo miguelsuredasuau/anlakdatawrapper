@@ -7,7 +7,7 @@ const get = require('lodash/get');
 const DEFAULT_SALT = 'uRPAqgUJqNuBdW62bmq3CLszRFkvq4RW';
 const MAX_SESSION_COOKIES_IN_REQ = 2;
 const generateToken = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 25);
-module.exports = function createAuth({ AccessToken, User, Session, Chart, Team }, { includeTeams } = {}) {
+exports.createAuth = function createAuth({ AccessToken, User, Session, Chart, Team }, { includeTeams } = {}) {
     function adminValidation({ artifacts } = {}) {
         if (artifacts.role !== 'admin') {
             throw Boom.unauthorized('ADMIN_ROLE_REQUIRED');

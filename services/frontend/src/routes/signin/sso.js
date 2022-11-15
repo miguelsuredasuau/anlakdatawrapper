@@ -1,17 +1,16 @@
 const Boom = require('@hapi/boom');
-const { User, Team, UserTeam } = require('@datawrapper/orm/models');
 const get = require('lodash/get');
 const Joi = require('joi');
 const { db } = require('@datawrapper/orm');
+const { createAuth } = require('@datawrapper/service-utils');
+const models = require('@datawrapper/orm/models');
+const { User, Team, UserTeam } = models;
+const { login, getStateOpts } = createAuth(models);
 const { Op } = db;
 const SSOProviders = {
     openId: require('./sso/OIDCProvider'),
     saml: require('./sso/SAMLProvider')
 };
-
-const { login, getStateOpts } = require('@datawrapper/service-utils/auth')(
-    require('@datawrapper/orm/models')
-);
 
 module.exports = {
     name: 'routes/signin/sso',

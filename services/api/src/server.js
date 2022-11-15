@@ -1,5 +1,13 @@
 const Boom = require('@hapi/boom');
-const initGCTrap = require('@datawrapper/service-utils/gcTrap.js');
+const {
+    initGCTrap,
+    registerFeatureFlag,
+    createRegisterVisualization,
+    computeFileHashPlugin,
+    addLocalizationScope,
+    translate,
+    getTranslate
+} = require('@datawrapper/service-utils');
 const Crumb = require('@hapi/crumb');
 const Hapi = require('@hapi/hapi');
 const HapiSwagger = require('hapi-swagger');
@@ -8,13 +16,9 @@ const ORM = require('@datawrapper/orm');
 const fs = require('fs-extra');
 const get = require('lodash/get');
 const path = require('path');
-const registerFeatureFlag = require('@datawrapper/service-utils/registerFeatureFlag');
-const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
 const Schemas = require('@datawrapper/schemas');
 const { ApiEventEmitter, eventList } = require('./utils/events');
-const { addScope, translate, getTranslate } = require('@datawrapper/service-utils/l10n');
-const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
-const getGitRevision = require('@datawrapper/service-utils/getGitRevision');
+const { findConfigPath, getGitRevision } = require('@datawrapper/backend-utils');
 const { generateToken, loadChart } = require('./utils');
 const {
     validateAPI,
@@ -241,14 +245,14 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
                 );
             }
         }
-        addScope('core', locales);
+        addLocalizationScope('core', locales);
     } catch (e) {
         server.logger.debug('Error while loading translations', e);
     }
     // Initialize the 'chart' scope, otherwise the app crashes when there are some visualization
     // plugins but none of them contain a chart-translations.json file (e.g. only the d3-bars
     // plugin).
-    addScope('chart', { 'en-US': {} });
+    addLocalizationScope('chart', { 'en-US': {} });
 
     await ORM.init(config);
     await ORM.registerPlugins(server.logger);
@@ -291,10 +295,10 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
     server.method('generateToken', generateToken);
     server.method('logAction', require('@datawrapper/orm/utils/action').logAction);
     server.method('createChartWebsite', require('./utils/publish/create-chart-website.js'));
-    server.method('registerVisualization', registerVisualizations(server));
+    server.method('registerVisualization', createRegisterVisualization(server));
     server.method('registerFeatureFlag', registerFeatureFlag(server));
 
-    await server.register(require('@datawrapper/service-utils/computeFileHash'));
+    await server.register(computeFileHashPlugin);
 
     server.method('getScopes', (admin = false) => {
         return admin

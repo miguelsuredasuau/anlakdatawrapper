@@ -47,6 +47,7 @@
         "doc": "docs"
     },
     "devDependencies": {
+        "@datawrapper/backend-utils": "file:../../libs/backend-utils",
         "@datawrapper/shared": "^0.27.6",
         "ava": "^3.5.0",
         "babel-eslint": "^10.0.1",

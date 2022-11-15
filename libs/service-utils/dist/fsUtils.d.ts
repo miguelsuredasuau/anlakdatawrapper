@@ -14,9 +14,9 @@ declare function isSymbolicLink(path: string): Promise<boolean>;
  * When the path doesn't exist, then this function does nothing.
  */
 declare function safeUnlink(path: string): Promise<void>;
-declare const _default: {
+export declare const fsUtils: {
     hasAccess: typeof hasAccess;
     isSymbolicLink: typeof isSymbolicLink;
     safeUnlink: typeof safeUnlink;
 };
-export = _default;
+export {};

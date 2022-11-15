@@ -49,8 +49,8 @@ async function registerVisualization(
     }
 }
 
-export = function createRegisterVisualization(server: Server) {
+export function createRegisterVisualization(server: Server) {
     server.app.visualizations = new Map<string, Visualization>();
     return (plugin: string, visualizations?: Visualization[]) =>
         registerVisualization(server, plugin, visualizations);
-};
+}

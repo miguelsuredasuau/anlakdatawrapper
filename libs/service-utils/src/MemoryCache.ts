@@ -1,7 +1,7 @@
 /**
  * Simple in-memory cache interface using a Map as storage.
  */
-export = class MemoryCache<T> {
+export class MemoryCache<T> {
     cache: Map<string, T>;
 
     constructor() {
@@ -50,4 +50,4 @@ export = class MemoryCache<T> {
         }
         return value;
     }
-};
+}

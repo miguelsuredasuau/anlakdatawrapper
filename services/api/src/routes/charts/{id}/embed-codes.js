@@ -1,6 +1,6 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const { translate } = require('@datawrapper/service-utils/l10n');
+const { translate } = require('@datawrapper/service-utils');
 const getEmbedCodes = require('../../../utils/getEmbedCodes');
 
 const { createResponseConfig } = require('../../../utils/schemas');

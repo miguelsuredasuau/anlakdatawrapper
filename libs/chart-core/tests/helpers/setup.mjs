@@ -5,7 +5,7 @@ import { dirname, join } from 'path';
 import { createHash } from 'crypto';
 import deepmerge from 'deepmerge';
 import { compileCSS } from '../../lib/styles/compile-css.js';
-import MemoryCache from '@datawrapper/service-utils/MemoryCache.js';
+import { MemoryCache } from '@datawrapper/service-utils';
 import { setTimeout } from 'timers/promises';
 
 const pathToChartCore = join(dirname(fileURLToPath(import.meta.url)), '../..');

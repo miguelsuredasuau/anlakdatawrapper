@@ -3,7 +3,7 @@ const Joi = require('joi');
 const chartCore = require('@datawrapper/chart-core');
 const fs = require('fs-extra');
 const path = require('path');
-const { allScopes } = require('@datawrapper/service-utils/l10n');
+const { allLocalizationScopes } = require('@datawrapper/service-utils');
 
 const ALLOWED_EXTS = [
     'css',
@@ -194,7 +194,7 @@ module.exports = {
                 async handler(request) {
                     const { auth } = request;
                     const lang = server.methods.getUserLanguage(auth);
-                    return allScopes(lang || 'en-US');
+                    return allLocalizationScopes(lang || 'en-US');
                 }
             },
             {

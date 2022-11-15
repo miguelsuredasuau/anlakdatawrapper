@@ -11,7 +11,7 @@ const { Op } = require('@datawrapper/orm').db;
 const { createResponseConfig } = require('../../../utils/schemas');
 const { getAdditionalMetadata, prepareChart } = require('../../../utils/index.js');
 const getEmbedCodes = require('../../../utils/getEmbedCodes');
-const { getScope } = require('@datawrapper/service-utils/l10n');
+const { getLocalizationScope } = require('@datawrapper/service-utils');
 const { getUserData, setUserData } = require('@datawrapper/orm/utils/userData');
 
 module.exports = server => {
@@ -418,7 +418,7 @@ async function publishData(request) {
     data.chartAfterHeadHTML = htmlHeadResults.join('\n');
 
     // chart translations
-    data.translations = getScope('chart', chart.language || 'en-US');
+    data.translations = getLocalizationScope('chart', chart.language || 'en-US');
 
     data.assets = [
         {

@@ -1,5 +1,5 @@
 const { byOrder } = require('./index');
-const { getUserLanguage } = require('@datawrapper/service-utils/l10n');
+const { getUserLanguage } = require('@datawrapper/service-utils');
 
 module.exports = {
     name: 'header-links',

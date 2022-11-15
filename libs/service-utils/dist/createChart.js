@@ -2,11 +2,13 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createChart = void 0;
 const boom_1 = __importDefault(require("@hapi/boom"));
 const assign_deep_1 = __importDefault(require("assign-deep"));
 const cloneDeep_1 = __importDefault(require("lodash/cloneDeep"));
-const defaultChartMetadata_1 = __importDefault(require("./defaultChartMetadata"));
-const findChartId_1 = __importDefault(require("./findChartId"));
+const defaultChartMetadata_1 = require("./defaultChartMetadata");
+const findChartId_1 = require("./findChartId");
 const get_1 = __importDefault(require("lodash/get"));
 const pick_1 = __importDefault(require("lodash/pick"));
 const humps_1 = require("humps");
@@ -21,7 +23,31 @@ const ALLOWED_PAYLOAD_KEYS = [
     'is_fork',
     'external_data'
 ];
-module.exports = async function createChart({ server, user, payload = {}, session: sessionId, token }, newChartId = null) {
+/**
+ * Creates a new visualization
+ * @exports createChart
+ * @kind function
+ *
+ * @param {object} options.server     - instance of API or Frontend service
+ * @param {object} options.user       - instance of authenticated user
+ * @param {object} options.session    - instance of current session
+ * @param {object} options.payload    - presets for the new visualization
+ * @param {object} options.payload.title    - visualization title
+ * @param {object} options.payload.theme   - visualization theme
+ * @param {object} options.payload.type     - visualization type
+ * @param {object} options.payload.language         - visualization language
+ * @param {object} options.payload.last_edit_step   - visualization last_edit_step
+ * @param {object} options.payload.forkable          - should vis be forkable
+ * @param {object} options.payload.forked_from      - chart id of source for forks
+ * @param {object} options.payload.is_fork           - chart id of source for forks
+ * @param {object} options.payload.external_data    - chart id of source for forks
+ * @param {object} options.payload.folderId          - folder id, will be checked and used to determine team
+ * @param {object} options.payload.teamId            - team id will be used to determine defaults
+ * @param {string} [newChartId]         - when supplied, new chart is created with this ID instead of auto-generated one
+ *
+ * @returns {Chart} -- instance of new chart object
+ */
+async function createChart({ server, user, payload = {}, session: sessionId, token }, newChartId = null) {
     const Chart = server.methods.getModel('chart');
     const Session = server.methods.getModel('session');
     const Theme = server.methods.getModel('theme');
@@ -83,14 +109,14 @@ module.exports = async function createChart({ server, user, payload = {}, sessio
             throw boom_1.default.badRequest('Invalid visualization type');
         }
     }
-    const id = newChartId ?? (await (0, findChartId_1.default)(server));
+    const id = newChartId ?? (await (0, findChartId_1.findChartId)(server));
     const chart = await Chart.create({
         title: `[ ${__('Insert title here', { scope: 'core', language })} ]`,
         theme: defaults.theme,
         type: defaults.type,
         language: user.language.replace('_', '-'),
         ...(0, humps_1.decamelizeKeys)(allowedPayload),
-        metadata: (0, cloneDeep_1.default)(defaultChartMetadata_1.default),
+        metadata: (0, cloneDeep_1.default)(defaultChartMetadata_1.defaultChartMetadata),
         author_id: user.id,
         id
     });
@@ -171,4 +197,5 @@ module.exports = async function createChart({ server, user, payload = {}, sessio
     }
     await chart.save();
     return chart;
-};
+}
+exports.createChart = createChart;

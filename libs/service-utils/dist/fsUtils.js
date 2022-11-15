@@ -2,6 +2,8 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fsUtils = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 /**
  * Returns true if the user has access to `path`.
@@ -44,7 +46,7 @@ async function safeUnlink(path) {
         console.error(`Failed to unlink ${path}. The path doesn't exist or the user has insufficient permissions.`);
     }
 }
-module.exports = {
+exports.fsUtils = {
     hasAccess,
     isSymbolicLink,
     safeUnlink

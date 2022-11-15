@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { prepareChart } = require('../../../utils/index.js');
-const createChart = require('@datawrapper/service-utils/createChart');
+const { createChart } = require('@datawrapper/service-utils');
 const { ChartPublic } = require('@datawrapper/orm/models');
 const get = require('lodash/get');
 const set = require('lodash/set');

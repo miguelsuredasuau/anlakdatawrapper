@@ -15,7 +15,7 @@ const rootDir = path.join(__dirname, '..');
 //     path: path.resolve(rootDir, 'utils/docker/.datawrapper_env')
 // });
 
-const { requireConfig } = require('@datawrapper/service-utils/findConfig');
+const { requireConfig } = require('@datawrapper/backend-utils');
 const config = requireConfig();
 
 set(config, 'orm.skipTableTest', true);

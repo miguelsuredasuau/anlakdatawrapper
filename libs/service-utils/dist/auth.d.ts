@@ -1,4 +1,4 @@
-declare function _exports({ AccessToken, User, Session, Chart, Team }: {
+export function createAuth({ AccessToken, User, Session, Chart, Team }: {
     AccessToken: any;
     User: any;
     Session: any;
@@ -74,5 +74,4 @@ declare function _exports({ AccessToken, User, Session, Chart, Team }: {
     generateToken: () => string;
     login: (userId: any, session: any, keepSession?: boolean) => Promise<any>;
 };
-export = _exports;
 import Boom = require("@hapi/boom");

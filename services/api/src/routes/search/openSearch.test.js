@@ -1,6 +1,6 @@
 const test = require('ava');
 const OpenSearchClient = require('../../utils/openSearchClient.js');
-const { findConfigPath } = require('@datawrapper/service-utils/findConfig');
+const { findConfigPath } = require('@datawrapper/backend-utils');
 const { genRandomChartId } = require('../../../test/helpers/setup');
 
 const configPath = findConfigPath();

@@ -1,5 +1,5 @@
 import test from 'ava';
-import camelizeTopLevelKeys from './camelizeTopLevelKeys';
+import { camelizeTopLevelKeys } from './camelizeTopLevelKeys';
 import isEmpty from 'lodash/isEmpty';
 
 test('camelizeTopLevelKeys camelizes only top level keys in nested object', t => {

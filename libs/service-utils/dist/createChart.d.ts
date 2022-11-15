@@ -41,11 +41,11 @@ declare type Payload = AllowedPayload & {
  *
  * @returns {Chart} -- instance of new chart object
  */
-declare const _default: ({ server, user, payload, session: sessionId, token }: {
+export declare function createChart({ server, user, payload, session: sessionId, token }: {
     server: Server;
     user: TUser;
     payload: Payload;
     session: string;
     token: AccessToken;
-}, newChartId?: string | null) => Promise<TChart>;
-export = _default;
+}, newChartId?: string | null): Promise<TChart>;
+export {};

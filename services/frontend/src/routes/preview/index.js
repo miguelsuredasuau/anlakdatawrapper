@@ -1,5 +1,5 @@
 const { fakeBoolean, id: logoId } = require('@datawrapper/schemas/themeData/shared');
-const { loadVendorLocale, loadLocaleConfig } = require('@datawrapper/service-utils/loadLocales');
+const { loadVendorLocale, loadLocaleConfig } = require('@datawrapper/service-utils');
 const { Team } = require('@datawrapper/orm/models');
 const chartCore = require('@datawrapper/chart-core');
 const Joi = require('joi');

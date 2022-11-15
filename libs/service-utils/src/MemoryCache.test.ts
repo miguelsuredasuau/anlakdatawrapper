@@ -1,5 +1,5 @@
 import test from 'ava';
-import MemoryCache from './MemoryCache';
+import { MemoryCache } from './MemoryCache';
 import sinon from 'sinon';
 
 test('MemoryCache calls function only once for given key', async t => {

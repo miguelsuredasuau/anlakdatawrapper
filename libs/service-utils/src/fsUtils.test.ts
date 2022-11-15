@@ -1,6 +1,6 @@
 import fs from 'fs';
 import fsPromises from 'fs/promises';
-import fsUtils from './fsUtils';
+import { fsUtils } from './fsUtils';
 import path from 'path';
 import test from 'ava';
 import tmp from 'tmp';

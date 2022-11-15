@@ -9,5 +9,4 @@ import type { Chart, ChartDataValues, PreparedChart } from './chartModelTypes';
  * @param {Object} additionalData
  * @returns {Object}
  */
-declare const _default: (chart: Chart, additionalData?: Partial<ChartDataValues>) => Promise<PreparedChart>;
-export = _default;
+export declare function prepareChart(chart: Chart, additionalData?: Partial<ChartDataValues>): Promise<PreparedChart>;

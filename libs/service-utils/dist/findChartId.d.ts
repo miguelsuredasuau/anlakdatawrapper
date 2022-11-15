@@ -1,3 +1,2 @@
 import type { Server } from './serverTypes';
-declare const _default: (server: Server) => Promise<string>;
-export = _default;
+export declare function findChartId(server: Server): Promise<string>;

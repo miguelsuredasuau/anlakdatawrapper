@@ -1,7 +1,7 @@
 import assignDeep from 'assign-deep';
 import cloneDeep from 'lodash/cloneDeep';
-import defaultChartMetadata from './defaultChartMetadata';
-import camelizeTopLevelKeys from './camelizeTopLevelKeys';
+import { defaultChartMetadata } from './defaultChartMetadata';
+import { camelizeTopLevelKeys } from './camelizeTopLevelKeys';
 import type { Chart, ChartDataValues, PreparedChart } from './chartModelTypes';
 
 /**
@@ -14,7 +14,7 @@ import type { Chart, ChartDataValues, PreparedChart } from './chartModelTypes';
  * @param {Object} additionalData
  * @returns {Object}
  */
-export = async function prepareChart(
+export async function prepareChart(
     chart: Chart,
     additionalData: Partial<ChartDataValues> = {}
 ): Promise<PreparedChart> {
@@ -42,4 +42,4 @@ export = async function prepareChart(
         author: user ? { name: user.name, email: user.email } : undefined,
         guestSession: undefined
     };
-};
+}

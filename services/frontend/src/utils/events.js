@@ -1,4 +1,4 @@
-const FrontendEventEmitter = require('@datawrapper/service-utils/eventEmitter');
+const { ServiceEventEmitter: FrontendEventEmitter } = require('@datawrapper/backend-utils');
 
 const eventList = {
     PLUGINS_LOADED: 'PLUGINS_LOADED',

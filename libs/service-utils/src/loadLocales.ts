@@ -36,14 +36,14 @@ async function loadLocalesForVendor(vendor: keyof Vendors): Promise<Locales> {
     return locales;
 }
 
-async function loadLocales(): Promise<Vendors> {
+export async function loadLocales(): Promise<Vendors> {
     return {
         dayjs: await loadLocalesForVendor('dayjs'),
         numeral: await loadLocalesForVendor('numeral')
     };
 }
 
-async function loadVendorLocale(
+export async function loadVendorLocale(
     vendor: keyof Vendors,
     locale: Locale,
     team: Team
@@ -57,7 +57,10 @@ async function loadVendorLocale(
     };
 }
 
-async function loadVendorLocales(vendor: keyof Vendors, locales: Locale[]): Promise<Locales> {
+export async function loadVendorLocales(
+    vendor: keyof Vendors,
+    locales: Locale[]
+): Promise<Locales> {
     const availableLocales = await loadLocales();
     return Object.fromEntries(
         locales
@@ -69,14 +72,14 @@ async function loadVendorLocales(vendor: keyof Vendors, locales: Locale[]): Prom
     );
 }
 
-async function loadLocaleConfig(locale: Locale): Promise<LocaleConfig | undefined> {
+export async function loadLocaleConfig(locale: Locale): Promise<LocaleConfig | undefined> {
     const tryLocales = getLocaleCodeOptions(locale);
     const localeMeta = await loadLocaleMeta();
     const localeCode = tryLocales.find(l => l in localeMeta);
     return localeCode ? localeMeta[localeCode] : {};
 }
 
-async function loadLocaleMeta(): Promise<LocaleMeta> {
+export async function loadLocaleMeta(): Promise<LocaleMeta> {
     return JSON.parse(
         await fs.readFile(path.resolve(path.resolve(localeRoot, 'config.json')), 'utf-8')
     );
@@ -105,11 +108,3 @@ function getVendorLocaleSettings(
     }
     return undefined;
 }
-
-export = {
-    loadLocaleMeta,
-    loadLocales,
-    loadLocaleConfig,
-    loadVendorLocale,
-    loadVendorLocales
-};

@@ -1,10 +1,9 @@
 const fs = require('fs');
 const fsPromises = require('fs/promises');
-const fsUtils = require('@datawrapper/service-utils/fsUtils');
+const { addLocalizationScope, fsUtils } = require('@datawrapper/service-utils');
 const get = require('lodash/get');
 const models = require('@datawrapper/orm/models');
 const path = require('path');
-const { addScope } = require('@datawrapper/service-utils/l10n');
 
 module.exports = {
     name: 'plugin-loader',
@@ -95,7 +94,7 @@ module.exports = {
                                 );
                             }
                         }
-                        addScope(name, options.locales);
+                        addLocalizationScope(name, options.locales);
                     } catch (e) {
                         // do nothing
                     }

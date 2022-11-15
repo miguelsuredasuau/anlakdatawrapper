@@ -2,10 +2,10 @@ import path from 'path';
 import crypto from 'crypto';
 import fs from 'fs';
 import fg from 'fast-glob';
-import MemoryCache from './MemoryCache';
+import { MemoryCache } from './MemoryCache';
 import type { Plugin } from 'hapi';
 
-export = {
+export const computeFileHashPlugin = {
     name: 'utils/computeFileHash',
     version: '1.0.0',
     async register(server) {

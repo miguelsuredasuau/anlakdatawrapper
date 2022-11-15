@@ -1,11 +1,9 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { prepareChart } = require('../../../utils/index.js');
-const { translate } = require('@datawrapper/service-utils/l10n');
-const findChartId = require('@datawrapper/service-utils/findChartId');
+const { createChart, findChartId, translate } = require('@datawrapper/service-utils');
 const { Team, ChartPublic, ReadonlyChart } = require('@datawrapper/orm/models');
 const cloneDeep = require('lodash/cloneDeep');
-const createChart = require('@datawrapper/service-utils/createChart');
 
 // copy from plugins/social-sharing/src/v2/SharingSettings.html
 function getDirectChartUrl({ id }) {

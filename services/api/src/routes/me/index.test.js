@@ -1,11 +1,11 @@
 const test = require('ava');
 const { createSession, setup, withUser, withTeamWithUser } = require('../../../test/helpers/setup');
+const { createAuth } = require('@datawrapper/service-utils');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
-    t.context.legacyHash = require('@datawrapper/service-utils/auth')(
-        require('@datawrapper/orm')
-    ).legacyHash;
+    const { legacyHash } = createAuth(require('@datawrapper/orm/models'));
+    t.context.legacyHash = legacyHash;
 });
 
 test('User cannot change password without old password', async t => {

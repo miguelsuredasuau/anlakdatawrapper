@@ -21,8 +21,8 @@ function purge() {
     }
 }
 
-export = function init() {
+export function initGCTrap() {
     // use SIGALRM because it's an ancient C timer,
     // which is almost certainly not used in nodeJS
     process.on('SIGALRM', purge.bind(null));
-};
+}

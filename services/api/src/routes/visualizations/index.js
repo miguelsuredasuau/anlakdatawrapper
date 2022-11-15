@@ -1,7 +1,6 @@
 const get = require('lodash/get');
-const { translate } = require('@datawrapper/service-utils/l10n');
+const { prepareVisualization, translate } = require('@datawrapper/service-utils');
 const clone = require('lodash/cloneDeep');
-const prepareVisualization = require('@datawrapper/service-utils/prepareVisualization');
 
 module.exports = {
     name: 'routes/visualizations',

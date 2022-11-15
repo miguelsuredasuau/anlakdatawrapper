@@ -12,23 +12,22 @@ const {
     validateRedis,
     validatePlugins
 } = require('@datawrapper/schemas/config');
-const { requireConfig } = require('@datawrapper/service-utils/findConfig');
-const registerVisualizations = require('@datawrapper/service-utils/registerVisualizations');
-const registerFeatureFlag = require('@datawrapper/service-utils/registerFeatureFlag');
-const getGitRevision = require('@datawrapper/service-utils/getGitRevision');
-const initGCTrap = require('@datawrapper/service-utils/gcTrap.js');
+const { getGitRevision, requireConfig } = require('@datawrapper/backend-utils');
+const {
+    computeFileHashPlugin,
+    createRegisterVisualization,
+    initGCTrap,
+    registerFeatureFlag,
+    addLocalizationScope,
+    translate,
+    getTranslate,
+    getUserLanguage
+} = require('@datawrapper/service-utils');
 const config = requireConfig();
 const path = require('path');
 const { FrontendEventEmitter, eventList } = require('./utils/events');
 
 initGCTrap();
-
-const {
-    addScope,
-    translate,
-    getTranslate,
-    getUserLanguage
-} = require('@datawrapper/service-utils/l10n');
 
 const DW_DEV_MODE = !!JSON.parse(process.env.DW_DEV_MODE || 'false');
 
@@ -114,7 +113,7 @@ async function create() {
                 );
             }
         }
-        addScope('core', locales);
+        addLocalizationScope('core', locales);
     } catch (e) {
         // do nothing
     }
@@ -123,11 +122,11 @@ async function create() {
     server.method('isDevMode', () => DW_DEV_MODE);
 
     server.method('logAction', require('@datawrapper/orm/utils/action').logAction);
-    server.method('registerVisualization', registerVisualizations(server));
+    server.method('registerVisualization', createRegisterVisualization(server));
     server.method('registerFeatureFlag', registerFeatureFlag(server));
     server.method('getRedis', () => redis);
 
-    await server.register(require('@datawrapper/service-utils/computeFileHash'));
+    await server.register(computeFileHashPlugin);
 
     await server.register(require('./utils/api'));
     await server.register(require('./utils/header-links'));

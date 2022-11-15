@@ -1,5 +1,7 @@
 "use strict";
-module.exports = function registerFeatureFlag(server) {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.registerFeatureFlag = void 0;
+function registerFeatureFlag(server) {
     server.app.featureFlags = new Map();
     function registerFeatureFlag(id, attributes) {
         server.app.featureFlags.set(id, { id, ...attributes });
@@ -52,4 +54,5 @@ module.exports = function registerFeatureFlag(server) {
         group: 'layout'
     });
     return registerFeatureFlag;
-};
+}
+exports.registerFeatureFlag = registerFeatureFlag;

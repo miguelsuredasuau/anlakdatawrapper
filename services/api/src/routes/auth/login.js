@@ -1,11 +1,11 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { User, AccessToken, Action } = require('@datawrapper/orm/models');
 const { db } = require('@datawrapper/orm');
+const { createAuth } = require('@datawrapper/service-utils');
+const models = require('@datawrapper/orm/models');
+const { User, AccessToken, Action } = models;
+const { login, createSession, getStateOpts } = createAuth(models);
 const { Op } = db;
-const { login, createSession, getStateOpts } = require('@datawrapper/service-utils/auth')(
-    require('@datawrapper/orm/models')
-);
 const otpProviders = require('../../utils/auth/otp');
 
 module.exports = async server => {

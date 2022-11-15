@@ -25,6 +25,7 @@
         "url": "git+https://github.com/datawrapper/core.git"
     },
     "devDependencies": {
+        "@datawrapper/backend-utils": "file:libs/backend-utils",
         "@datawrapper/eslint-plugin-svelte3": "^4.1.1",
         "@datawrapper/orm": "file:libs/orm",
         "@datawrapper/service-utils": "file:libs/service-utils",
