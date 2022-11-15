@@ -20,10 +20,10 @@ module.exports = async server => {
         async handler(request) {
             const { auth, params } = request;
             const user = auth.artifacts;
-
             if (!user || !user.mayAdministrateTeam(params.id)) {
                 return Boom.unauthorized();
             }
+            const isAdmin = server.methods.isAdmin(request);
 
             const team = await Team.findByPk(params.id, {
                 attributes: ['id'],
@@ -38,7 +38,8 @@ module.exports = async server => {
             const products = team.products.map(product => ({
                 id: product.id,
                 name: product.name,
-                expires: product.team_product.expires
+                expires: product.team_product.expires,
+                ...(isAdmin ? { createdByAdmin: product.team_product.created_by_admin } : {})
             }));
 
             return {

@@ -8,7 +8,12 @@
 {#if products.length > 0}
 <TableDisplay columnHeaders="{productHeaders}">
     {#each products as product, i}
-    <tr>
+    <tr class:highlight-row="!product.createdByAdmin">
+        <td>
+            {#if !product.createdByAdmin}
+            <IconDisplay icon="link" />
+            {/if}
+        </td>
         <td>{ product.id }</td>
         <td>{ product.name }</td>
         <td>
@@ -38,6 +43,11 @@
     </tr>
     {/each}
 </TableDisplay>
+
+<p style="margin-bottom: 20px; margin-top: -10px; color: var(--color-dw-grey-darker)">
+    <IconDisplay valign="text-top" icon="link" /> =
+    <em>product is tied to team owner's subscription</em>
+</p>
 {/if}
 
 <!-- Add products: -->
@@ -55,17 +65,29 @@
 </button>
 {/if} {/if} {/if} {/if}
 
+<style>
+    .highlight-row {
+        background: var(--color-dw-grey-lightest);
+        color: var(--color-dw-grey-darker);
+    }
+    td {
+        vertical-align: middle;
+    }
+</style>
+
 <script>
     import TableDisplay from '@datawrapper/controls/TableDisplay.html';
+    import IconDisplay from '@datawrapper/controls/IconDisplay.html';
     import SelectControl from '@datawrapper/controls/SelectControl.html';
     import { __ } from '@datawrapper/shared/l10n.js';
     import httpReq from '@datawrapper/shared/httpReq.js';
 
     export default {
-        components: { TableDisplay, SelectControl },
+        components: { TableDisplay, IconDisplay, SelectControl },
         data() {
             return {
                 productHeaders: [
+                    { title: '' },
                     { title: __('teams / products / id'), width: '10%' },
                     { title: __('teams / products / name'), width: '30%' },
                     { title: __('teams / products / expires'), width: '30%' },

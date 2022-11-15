@@ -405,11 +405,12 @@ async function addPluginToProduct(plugin, product) {
     });
 }
 
-async function addProductToTeam(product, team) {
+async function addProductToTeam(product, team, props = {}) {
     const { TeamProduct } = require('@datawrapper/orm/models');
     return TeamProduct.create({
         organization_id: team.id,
-        productId: product.id
+        productId: product.id,
+        ...props
     });
 }
 
