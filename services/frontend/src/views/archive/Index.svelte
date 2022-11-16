@@ -26,6 +26,7 @@
     } from './stores';
     import { headerProps } from '_layout/stores';
     import { groupCharts } from '../../utils/charts.cjs';
+    import { getChartEditorPath } from '../../utils/chart-editor-path.mjs';
     import { onMount, getContext, setContext } from 'svelte';
     import { parseFolderTree, getFolderUri } from './shared';
     import { DEFAULT_SORT_ORDER } from './constants';
@@ -351,7 +352,8 @@
         const res = await httpReq.post(`/v3/charts/${chart.id}/copy`);
         trackEvent('archive', 'chart-duplicate', chart.id);
         if (openInNewTab) {
-            window.open(`/chart/${res.id}/visualize`, '_blank');
+            const editorPath = getChartEditorPath(chart.type);
+            window.open(`/${editorPath}/${res.id}/visualize`, '_blank');
         }
         $currentFolder.chartCount++;
         loadCharts();

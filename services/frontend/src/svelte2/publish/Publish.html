@@ -96,6 +96,7 @@
     import ConfirmationModal from '@datawrapper/controls/ConfirmationModal.html';
     import ShareEmbed from './ShareEmbed.html';
     import Action from './Action.html';
+    import { getChartEditorPath } from '../../utils/chart-editor-path';
 
     let initial_auto_publish = true;
 
@@ -370,7 +371,8 @@
                 trackEvent('Chart Editor', 'duplicate');
                 httpReq.post(`/v3/charts/${dw_chart.get('id')}/copy`).then(res => {
                     // redirect to copied chart
-                    window.location.href = `/chart/${res.id}/edit`;
+                    const editorPath = getChartEditorPath(dw_chart.get('type'));
+                    window.location.href = `/${editorPath}/${res.id}/edit`;
                 });
             }
         },

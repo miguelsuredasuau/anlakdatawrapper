@@ -16,6 +16,7 @@
     import merge from 'lodash/merge';
     import cloneDeep from 'lodash/cloneDeep';
     import { SubscriptionCollection } from '../../utils/rxjs-store.mjs';
+    import { getChartEditorPath } from '../../utils/chart-editor-path.mjs';
 
     export let workflow;
     export let __;
@@ -329,7 +330,8 @@
     async function duplicateChart() {
         const res = await httpReq.post(`/v3/charts/${$chart.id}/copy`);
         // redirect to copied chart
-        window.location.href = `/chart/${res.id}/edit`;
+        const editorPath = getChartEditorPath(chart.type);
+        window.location.href = `/${editorPath}/${res.id}/edit`;
     }
 </script>
 
