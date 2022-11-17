@@ -164,7 +164,8 @@ async function createTeam(props = {}) {
                     template: '%chart_id%'
                 },
                 preferred_embed: 'responsive'
-            }
+            },
+            waitForImagesDuringPublish: true
         },
         ...props
     });
