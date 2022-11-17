@@ -5,6 +5,7 @@ export { defaultChartMetadata } from './defaultChartMetadata';
 export { findChartId } from './findChartId';
 export { fsUtils } from './fsUtils';
 export { initGCTrap } from './gcTrap';
+export { JobsHelper } from './jobsHelper';
 export { addLocalizationScope, allLocalizationScopes, getLocalizationScope, getTranslate, getUserLanguage, translate } from './l10n';
 export { loadLocaleConfig, loadLocaleMeta, loadVendorLocale, loadVendorLocales } from './loadLocales';
 export { MemoryCache } from './MemoryCache';

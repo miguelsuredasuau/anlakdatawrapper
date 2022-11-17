@@ -29,6 +29,7 @@
         "@hapi/catbox": "^11.1.1",
         "@hapi/catbox-memory": "^5.0.1",
         "@hapi/catbox-redis": "^6.0.2",
+        "bullmq": "^1.91.1",
         "chalk": "^4.1.2",
         "d3-array": "^2.0.3",
         "got": "^11.8.5",

@@ -263,6 +263,8 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
         Object.keys(config.plugins)
     );
 
+    server.register(require('./utils/jobs'));
+
     server.validator(Joi);
 
     /**

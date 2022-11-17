@@ -5,6 +5,7 @@ export { defaultChartMetadata } from './defaultChartMetadata';
 export { findChartId } from './findChartId';
 export { fsUtils } from './fsUtils';
 export { initGCTrap } from './gcTrap';
+export { JobsHelper } from './jobsHelper';
 export {
     addLocalizationScope,
     allLocalizationScopes,
