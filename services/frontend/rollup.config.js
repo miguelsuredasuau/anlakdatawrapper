@@ -45,7 +45,7 @@ function createViewInput({ views, mode, replacements = {} }) {
         input: views.map(view => join(sourceDir, view.replace(/\.svelte$/, '.view.svelte'))),
         output: {
             dir: outputDir,
-            sourcemap: mode !== 'ssr',
+            sourcemap: true,
             format: mode === 'ssr' ? 'cjs' : 'amd',
             amd: {
                 forceJsExtensionForImports: true
