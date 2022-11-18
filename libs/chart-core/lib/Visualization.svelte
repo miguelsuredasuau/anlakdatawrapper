@@ -570,9 +570,13 @@ Please make sure you called __(key) with a key of type "string".
 
         if (!useFallbackImage) {
             // render chart
-            console.time('Chart rendered in'); // eslint-disable-line no-console
+            if (window.parent === window) {
+                console.time('Chart rendered in'); // eslint-disable-line no-console
+            }
             dwChart.render(outerContainer);
-            console.timeEnd('Chart rendered in'); // eslint-disable-line no-console
+            if (window.parent === window) {
+                console.timeEnd('Chart rendered in'); // eslint-disable-line no-console
+            }
 
             // await necessary reload triggers
             observeFonts(theme.fonts, theme.data.typography)
