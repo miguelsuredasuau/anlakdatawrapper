@@ -1,5 +1,5 @@
 const winston = require('winston');
-const stringify = require('json-stringify-safe');
+const stringify = require('safe-stable-stringify');
 const { combine, colorize, printf, timestamp } = winston.format;
 
 const myFormat = printf(info => {
