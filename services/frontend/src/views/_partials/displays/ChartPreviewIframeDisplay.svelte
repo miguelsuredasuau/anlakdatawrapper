@@ -158,6 +158,7 @@
         contentDocument = iframe.contentDocument;
         loading = false;
         dispatch('load');
+        updateIsDark(isDark);
     }
 
     function onMessage(event) {
