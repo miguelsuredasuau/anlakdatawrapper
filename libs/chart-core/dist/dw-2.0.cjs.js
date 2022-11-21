@@ -7212,6 +7212,14 @@ function populateVisAxes({ dataset, visAxes, userAxes, overrideKeys }) {
                             usedColumns[col.name()] = true;
                             axes[key] = col.name();
                         }
+                    } else if (indexOf(axisDef.accepts, 'number') >= 0) {
+                        // try to auto-populate missing number column
+                        const acceptedAllowUsed = filter(dataset.columns(), function (col) {
+                            return indexOf(axisDef.accepts, col.type()) >= 0;
+                        });
+                        if (acceptedAllowUsed.length) {
+                            axes[key] = acceptedAllowUsed[0].name();
+                        }
                     }
                 }
             } else {
