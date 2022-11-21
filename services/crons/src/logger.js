@@ -1,4 +1,5 @@
 const winston = require('winston');
+const stringify = require('json-stringify-safe');
 const { combine, colorize, printf, timestamp } = winston.format;
 
 const myFormat = printf(info => {
@@ -10,7 +11,7 @@ const myFormat = printf(info => {
     delete info.job;
     delete info.level;
     delete info.message;
-    if (Object.keys(info).length) s += ' ' + JSON.stringify(info);
+    if (Object.keys(info).length) s += ' ' + stringify(info);
     return s;
 });
 
