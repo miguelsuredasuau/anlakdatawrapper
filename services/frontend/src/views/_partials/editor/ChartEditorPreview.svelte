@@ -2,13 +2,12 @@
     import clone from 'lodash/cloneDeep';
     import debounce from 'lodash/debounce';
     import unset from 'lodash/unset';
-    import isEqual from 'lodash/isEqual';
     import objectDiff from '@datawrapper/shared/objectDiff.js';
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import sharedSet from '@datawrapper/shared/set.js';
     import get from '@datawrapper/shared/get.js';
     import { merge } from 'rxjs';
-    import { debounceTime, skip, tap } from 'rxjs/operators';
+    import { debounceTime, pairwise, skip, tap, map, filter } from 'rxjs/operators';
     import { getContext, onMount, onDestroy, createEventDispatcher } from 'svelte';
 
     import ChartPreviewIframeDisplay from '_partials/displays/ChartPreviewIframeDisplay.svelte';
@@ -242,7 +241,23 @@
      * since we don't want to wait for the server roundtrip
      * we inject the new metadata before re-rendering
      */
-    const RERENDER = ['metadata.visualize', 'metadata.data.changes'];
+    const RERENDER = ['metadata.data.changes'];
+
+    // Emits whenever a property in metadata.visualize changes
+    // When in edit mode, certain metadata changes don't require a re-render.
+    const visMetadataChanges$ = chart.bindKey('metadata.visualize').pipe(
+        pairwise(),
+        map(([prev, cur]) => objectDiff(prev, cur)),
+        map(visDiff => {
+            if (allowInlineEditing) {
+                ignoreVisualizeMetadataProps.forEach(key => {
+                    unset(visDiff, key);
+                });
+            }
+            return visDiff;
+        }),
+        filter(visDiff => Object.keys(visDiff).length)
+    );
 
     onMount(async () => {
         storeSubscriptions.add(
@@ -256,14 +271,13 @@
                 .subscribe()
         );
         storeSubscriptions.add(
-            merge(...RERENDER.map(key => chart.bindKey(key)))
+            merge(...RERENDER.map(key => chart.bindKey(key)), visMetadataChanges$, data)
                 .pipe(
                     debounceTime(100),
                     tap(() => rerender())
                 )
                 .subscribe()
         );
-        storeSubscriptions.add(data.subscribe(() => rerender(true)));
 
         if (allowInlineEditing) {
             // watch chart store for changes that make an
@@ -312,34 +326,19 @@
         }
     }
 
-    export async function rerender(force = false) {
+    export async function rerender() {
         await iframePreview.waitForVis();
         iframePreview.getContext(async (win, doc) => {
             // Re-render chart with new attributes:
-            const { metadata: oldMetadata } = win.__dw.vis.chart().get();
             const newMetadata = clone($chart.metadata);
-            const visualizeDiff = objectDiff(oldMetadata.visualize, newMetadata.visualize);
 
             // keep preview state in sync...
             win.__dw.vis.chart().set('metadata', newMetadata);
             await win.__dw.vis.chart().load($data || win.__dw.params.data);
 
-            // When a chart can not be edited the annotations need to updated manually.
-            // This is the case in the publish step.
-            if (allowInlineEditing) {
-                ignoreVisualizeMetadataProps.forEach(key => {
-                    unset(visualizeDiff, key);
-                });
-            }
+            // re-render
+            win.__dw.render();
 
-            if (
-                Object.keys(visualizeDiff).length ||
-                !isEqual(oldMetadata.data.changes, newMetadata.data.changes) ||
-                force
-            ) {
-                // ...but only re-render if necessary
-                win.__dw.render();
-            }
             if (allowInlineEditing) {
                 // re-enable inline editing since DOM elements may have
                 // been replaced due to re-rendering the vis
