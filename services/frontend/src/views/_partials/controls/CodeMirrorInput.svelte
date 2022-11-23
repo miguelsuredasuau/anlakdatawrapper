@@ -1,7 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { omit } from 'lodash';
-    import colorLightness from '@datawrapper/shared/colorLightness';
+    import chroma from 'chroma-js';
 
     export let value;
     let _value = value;
@@ -122,8 +122,12 @@
                 for (const el of refTextArea.parentNode.querySelectorAll('.cm-string,.cm-atom')) {
                     if (COLOR.test(el.innerHTML)) {
                         const color = el.innerHTML.replace(/"/g, '');
-                        el.style.background = color;
-                        el.style.color = colorLightness(color) < 60 ? 'white' : 'black';
+                        if (chroma.valid(color)) {
+                            el.style.background = color;
+                            const col = chroma(color);
+                            el.style.color =
+                                col.get('lab.l') < 60 && col.alpha() > 0.3 ? 'white' : 'black';
+                        }
                     }
                 }
             }

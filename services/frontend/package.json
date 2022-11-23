@@ -54,6 +54,7 @@
         "assign-deep": "^1.0.1",
         "async": "^3.2.0",
         "chokidar": "^3.5.1",
+        "chroma-js": "^2.4.2",
         "codemirror": "^5.65.2",
         "dayjs": "^1.10.7",
         "ejs": "^3.1.6",
