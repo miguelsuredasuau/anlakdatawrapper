@@ -1,6 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import { omit } from 'lodash';
+    import colorLightness from '@datawrapper/shared/colorLightness';
 
     export let value;
     let _value = value;
@@ -9,6 +10,11 @@
     export let height = '400px';
 
     export let mimeType = 'plain/text';
+
+    /**
+     * highlight css colors in editor content
+     */
+    export let highlightColors = false;
 
     const defaultOptions = {
         lineWrapping: true,
@@ -107,6 +113,21 @@
 
         // keep value in sync with codemirror value changes
         codemirror.on('change', cm => (_value = value = cm.getValue()));
+
+        const COLOR =
+            /"?(#([a-z0-9]{8}|[a-z0-9]{6}|[a-z0-9]{3})|((rgb|hsl)a?\(\s*(-?\d+)(\.\d+)?%?,\s*(-?\d+)(\.\d+)?%?\s*,\s*(-?\d+)(\.\d+)?%?\s*(,\s*(-?\d+)(\.\d+)?%?)?\)))"?/i;
+
+        codemirror.on('update', () => {
+            if (highlightColors) {
+                for (const el of refTextArea.parentNode.querySelectorAll('.cm-string,.cm-atom')) {
+                    if (COLOR.test(el.innerHTML)) {
+                        const color = el.innerHTML.replace(/"/g, '');
+                        el.style.background = color;
+                        el.style.color = colorLightness(color) < 60 ? 'white' : 'black';
+                    }
+                }
+            }
+        });
     });
 
     $: {
