@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRegisterVisualization = exports.registerFeatureFlag = exports.prepareVisualization = exports.prepareChart = exports.MemoryCache = exports.loadVendorLocales = exports.loadVendorLocale = exports.loadLocaleMeta = exports.loadLocaleConfig = exports.translate = exports.getUserLanguage = exports.getTranslate = exports.getLocalizationScope = exports.allLocalizationScopes = exports.addLocalizationScope = exports.JobsHelper = exports.initGCTrap = exports.fsUtils = exports.findChartId = exports.defaultChartMetadata = exports.createChart = exports.computeFileHashPlugin = exports.createAuth = void 0;
+exports.createRegisterVisualization = exports.registerFeatureFlag = exports.prepareVisualization = exports.prepareChart = exports.MemoryCache = exports.loadVendorLocales = exports.loadVendorLocale = exports.loadLocaleMeta = exports.loadLocaleConfig = exports.translate = exports.getUserLanguage = exports.getTranslate = exports.getLocalizationScope = exports.allLocalizationScopes = exports.addLocalizationScope = exports.JobsHelper = exports.initGCTrap = exports.fsUtils = exports.findChartId = exports.defaultChartMetadata = exports.createChart = exports.computeFileHashPlugin = exports.camelizeTopLevelKeys = exports.createAuth = void 0;
 var auth_1 = require("./auth");
 Object.defineProperty(exports, "createAuth", { enumerable: true, get: function () { return auth_1.createAuth; } });
+var camelizeTopLevelKeys_1 = require("./camelizeTopLevelKeys");
+Object.defineProperty(exports, "camelizeTopLevelKeys", { enumerable: true, get: function () { return camelizeTopLevelKeys_1.camelizeTopLevelKeys; } });
 var computeFileHash_1 = require("./computeFileHash");
 Object.defineProperty(exports, "computeFileHashPlugin", { enumerable: true, get: function () { return computeFileHash_1.computeFileHashPlugin; } });
 var createChart_1 = require("./createChart");

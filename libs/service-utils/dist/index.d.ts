@@ -1,4 +1,5 @@
 export { createAuth } from './auth';
+export { camelizeTopLevelKeys } from './camelizeTopLevelKeys';
 export { computeFileHashPlugin } from './computeFileHash';
 export { createChart } from './createChart';
 export { defaultChartMetadata } from './defaultChartMetadata';
