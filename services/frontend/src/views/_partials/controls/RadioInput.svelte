@@ -5,7 +5,7 @@
         }
     }
     /**
-     * array of available options as { value, label } pairs
+     * array of available options as { value, label, disabled } pairs
      */
     export let options = []; //
 
@@ -121,10 +121,10 @@
 
 <div class="control" class:inline class:indeterminate>
     {#each options as opt}
-        <label class="radio" disabled={disabled || null}>
+        <label class="radio" disabled={disabled || opt.disabled || null}>
             <input
                 type="radio"
-                disabled={disabled || null}
+                disabled={disabled || opt.disabled || null}
                 on:change
                 on:change={onChange}
                 on:click={onChange}

@@ -209,7 +209,11 @@
         'metadata.data.column-order',
         'metadata.data.column-format',
         'metadata.describe.computed-columns',
-        'metadata.axes'
+        'metadata.axes',
+        'metadata.visualize.basemap',
+        'metadata.visualize.basemapProjection',
+        'metadata.visualize.basemapRegions',
+        'metadata.visualize.layers'
     ];
     function reloadPreview() {
         onNextSave(() => {
@@ -243,6 +247,19 @@
      */
     const RERENDER = ['metadata.data.changes'];
 
+    /*
+     * we never want to trigger re-rendering when any of these basemap related
+     * props change. Instead we reload the preview.
+     */
+    const IGNORED_BASEMAP_PROPS = [
+        'basemap',
+        'basemapFilename',
+        'basemapProjection',
+        'basemapRegions',
+        'basemapShowExtraOptions',
+        'layers'
+    ];
+
     // Emits whenever a property in metadata.visualize changes
     // When in edit mode, certain metadata changes don't require a re-render.
     const visMetadataChanges$ = chart.bindKey('metadata.visualize').pipe(
@@ -254,6 +271,9 @@
                     unset(visDiff, key);
                 });
             }
+            IGNORED_BASEMAP_PROPS.forEach(key => {
+                unset(visDiff, key);
+            });
             return visDiff;
         }),
         filter(visDiff => Object.keys(visDiff).length)

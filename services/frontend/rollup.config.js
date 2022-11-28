@@ -9,12 +9,14 @@ const { default: resolve } = require('@rollup/plugin-node-resolve');
 const { findConfigPath } = require('@datawrapper/backend-utils');
 const { join, relative } = require('path');
 const { readFile } = require('fs/promises');
-const { terser } = require('rollup-plugin-terser');
+const terser = require('@rollup/plugin-terser');
 
 const configPath = findConfigPath();
 
 const sourceDir = 'src/views';
 const outputDir = process.env.OUTPUT_DIR || 'build/views';
+
+const stripCode = require('rollup-plugin-strip-code');
 
 const production = !process.env.ROLLUP_WATCH;
 const modes = process.env.NODE_ENV === 'test' ? ['ssr'] : ['csr', 'ssr'];
@@ -43,6 +45,7 @@ function createViewInput({ views, mode, replacements = {} }) {
     const ext = mode === 'ssr' ? '.ssr.js' : '.js';
     return {
         input: views.map(view => join(sourceDir, view.replace(/\.svelte$/, '.view.svelte'))),
+        external: ['Handsontable'],
         output: {
             dir: outputDir,
             sourcemap: true,
@@ -88,6 +91,14 @@ function createViewInput({ views, mode, replacements = {} }) {
                 preventAssignment: true,
                 delimiters: ['', '']
             }),
+            ...(mode === 'ssr'
+                ? [
+                      stripCode({
+                          start_comment: 'SSR_IGNORE_START',
+                          end_comment: 'SSR_IGNORE_END'
+                      })
+                  ]
+                : []),
             alias({
                 entries: {
                     _layout: join(__dirname, join(sourceDir, '_layout')),
@@ -111,12 +122,17 @@ function createViewInput({ views, mode, replacements = {} }) {
                     hydratable: true,
                     accessors: true
                 },
-                preprocess: sveltePreprocess(),
+                preprocess: sveltePreprocess({
+                    scss: {
+                        prependData: `@import 'src/styles/export.scss';`
+                    }
+                }),
                 emitCss: false
             }),
             resolve({
                 browser: true,
-                dedupe: ['svelte']
+                dedupe: ['svelte'],
+                preferBuiltins: false
             }),
             commonjs(),
             production && mode !== 'ssr' && terser()

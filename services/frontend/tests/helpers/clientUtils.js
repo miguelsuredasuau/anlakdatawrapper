@@ -65,7 +65,7 @@ export async function renderWithContext(view, props = {}, stores = {}) {
         }
     });
 
-    return { ...context, component: context.component.ref, stores };
+    return { ...context, component: context.component.ref, parent: context.component, stores };
 }
 
 export function delay(time) {

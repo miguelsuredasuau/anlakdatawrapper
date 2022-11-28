@@ -1,10 +1,11 @@
 <script>
     import Context from '../../utils/svelte-view/Context.svelte';
     import View from './Index.svelte';
+    import { ViewComponents } from '_utils/view-components.mjs';
 
     export let stores;
 
-    const viewComponents = new Map();
+    const viewComponents = new ViewComponents();
 
     import Base from './Base.svelte';
     viewComponents.set('edit/base', Base);

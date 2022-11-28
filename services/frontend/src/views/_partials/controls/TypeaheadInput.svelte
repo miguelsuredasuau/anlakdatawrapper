@@ -43,6 +43,7 @@
      * data sources (API calls etc)
      */
     export let search = query => {
+        if (!query) return options;
         query = query.toLowerCase();
         return options.filter(d => d.label.toLowerCase().includes(query));
     };
@@ -88,10 +89,23 @@
     export let delay = 200;
 
     /**
-     * matches contains the list of items matching
-     * the entered search query
+     * allow disabling the whole control
      */
-    let matches = [];
+    export let disabled = false;
+
+    /**
+     * provide additional classes to outermost container, e.g. "is-block"
+     */
+    let className = '';
+    export { className as class };
+
+    /**
+     * matches contains the list of options showing in the dropdown
+     * if matches is empty, we show the noResultsMsg
+     * we don't show the noResultsMsg if matches is falsy (e.g. null)
+     * (e.g. matched by the search query)
+     */
+    let matches = options || null;
 
     /**
      * selectedIndex is the index of the currently
@@ -121,14 +135,15 @@
      * the `searchQuery` value
      */
     let lastRunSig = null;
-    const handleInput = debounce(async function () {
+    const updateItemsDebounced = debounce(async query => {
         const sig = (lastRunSig = Math.round(Math.random() * 1e8));
-        if (value && searchQuery !== value.label) {
-            // user changed the query, so we remove the value
+        if (value && query !== value.label) {
+            // user changed the query, so we remove the value and open the options
             value = null;
+            open = true;
         }
         searching = true;
-        const results = await search(searchQuery);
+        const results = await search(query);
         if (sig !== lastRunSig) {
             // a newer search query has been triggered
             // since we started this one, so we're going
@@ -137,18 +152,18 @@
             return;
         }
         matches = results;
-        open = true;
         selectedIndex = 0;
         searching = false;
     }, delay);
+    $: updateItemsDebounced(searchQuery);
 
     /**
      *
      * @param item
      */
     function handleSelect(item) {
-        matches = [];
         value = item;
+        searchQuery = item.label;
         searching = false;
         open = false;
         dispatch('select', item);
@@ -161,9 +176,12 @@
      */
     function handleKeydown(event) {
         if (event.key === 'Enter') {
+            if (!matches || !matches.length) return;
             handleSelect(selectedItem);
         }
         if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+            if (!matches || !matches.length) return;
+            if (!open) open = true;
             if (isNaN(selectedIndex)) selectedIndex = -1;
             const len = matches.length || 0;
             if (event.key === 'ArrowUp') {
@@ -174,7 +192,6 @@
             }
         }
         if (event.key === 'Escape') {
-            matches = [];
             searching = false;
             open = false;
             refSearchInput.blur();
@@ -190,16 +207,11 @@
     }
 
     function handleFocus() {
-        if (searchQuery) {
-            handleInput();
-        } else if (options.length) {
-            matches = options.slice(0);
-            open = true;
-        }
+        open = true;
     }
 
     function handleWindowClick(event) {
-        if (!refDropdown.contains(event.target)) {
+        if (refDropdown && !refDropdown.contains(event.target)) {
             open = false;
         }
     }
@@ -211,16 +223,12 @@
         if (value !== _value) {
             if (value) {
                 searchQuery = value.label;
-            } else if (_value && searchQuery === _value.label) {
-                searchQuery = '';
             }
-            // reset matches
-            matches = [];
             _value = value;
         }
     });
 
-    $: selectedItem = matches[selectedIndex];
+    $: selectedItem = matches ? matches[selectedIndex] : null;
 
     // track changes of selectedIndex;
     let _selectedIndex;
@@ -271,7 +279,6 @@
 
 <style lang="scss">
     @import '../../../styles/export.scss';
-
     .dropdown-menu {
         width: 100%;
     }
@@ -290,14 +297,16 @@
         font-weight: $weight-medium;
         color: inherit;
     }
-    input.incomplete:not(:focus) {
-        color: $dw-grey;
-    }
 </style>
 
 <svelte:window on:click={handleWindowClick} />
 
-<div class="dropdown" bind:this={refDropdown} class:is-active={open || searching} data-uid={uid}>
+<div
+    class="dropdown {className}"
+    class:is-active={open || searching}
+    bind:this={refDropdown}
+    data-uid={uid}
+>
     <div class="dropdown-trigger">
         <div
             class="control has-icons-right"
@@ -313,16 +322,16 @@
                 aria-label={ariaLabel}
                 autocomplete="off"
                 bind:value={searchQuery}
-                on:input={handleInput}
                 on:focus={handleFocus}
                 on:keydown={handleKeydown}
                 class:incomplete={!value && !open && !searching && searchQuery}
                 {placeholder}
+                {disabled}
             />
             {#if icon}
                 <IconDisplay {icon} className="is-left" size="20px" />
             {/if}
-            {#if !searching && !value}
+            {#if !searching && !value && matches && matches.length}
                 <IconDisplay className="is-small is-right" size="16px" icon="expand-down-bold" />
             {:else if value}
                 <a
@@ -335,10 +344,10 @@
             {/if}
         </div>
     </div>
-    {#if open || searching}
+    {#if open}
         <div class="dropdown-menu" role="menu">
-            <div class="dropdown-content" bind:this={refDropdownMenu}>
-                {#if matches.length}
+            {#if matches && matches.length}
+                <div class="dropdown-content" bind:this={refDropdownMenu}>
                     {#each matches as match, i}
                         {#if customItemRenderer}
                             <svelte:component
@@ -361,16 +370,20 @@
                             </a>
                         {/if}
                     {/each}
-                {:else if searching}
+                </div>
+            {:else if searching}
+                <div class="dropdown-content" bind:this={refDropdownMenu}>
                     <div class="dropdown-item has-text-grey has-text-centered">
                         {searchingMsg || __('typeahead / searching')}
                     </div>
-                {:else}
+                </div>
+            {:else if searchQuery && matches && !matches.length}
+                <div class="dropdown-content" bind:this={refDropdownMenu}>
                     <div class="dropdown-item has-text-grey-dark has-text-centered">
                         {noResultsMsg || __('typeahead / no-results')}
                     </div>
-                {/if}
-            </div>
+                </div>
+            {/if}
         </div>
     {/if}
 </div>

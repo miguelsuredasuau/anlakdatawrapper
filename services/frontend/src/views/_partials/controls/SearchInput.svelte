@@ -1,20 +1,16 @@
 <script>
     import TextInput from '_partials/controls/TextInput.svelte';
-    import { getContext } from 'svelte';
     import debounce from 'lodash/debounce';
 
-    const msg = getContext('messages');
-    function createTranslate(msg, messages) {
-        return (key, scope = 'core', replacements) =>
-            msg.translate(key, scope, messages, replacements);
-    }
-    $: __ = createTranslate(msg, $msg);
-
+    export let __ = key => key;
     export let uid;
     export let value = '';
     export let onInput;
+    export let placeholder = __('Search');
+    let className;
+    export { className as class };
 
-    let isLoading = false;
+    export let isLoading = false;
 
     const handleInput = (() => {
         if (!onInput) return;
@@ -35,9 +31,11 @@
 
 <TextInput
     icon="search"
-    placeholder={__('Search')}
+    {placeholder}
     loading={isLoading}
     bind:value
     on:input={handleInput}
     {uid}
+    class={className}
+    deletable
 />

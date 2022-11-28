@@ -1182,5 +1182,7 @@
   "teams / total-pending / 1": "",
   "teams / total-pending": "",
   "teams / total / 1 / with-period": "Questo team ha un membro",
-  "teams / total / with-period": "Questo team ha %i% membri"
+  "teams / total / with-period": "Questo team ha %i% membri",
+  "upload / file / error / invalid-type": "",
+  "describe / search / single-result": ""
 }

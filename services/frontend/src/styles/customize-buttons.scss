@@ -1,0 +1,178 @@
+/*
+* CUSTOMIZE BULMA
+*/
+
+
+// Button
+
+.button {
+    font-weight: 500;
+
+    &:not(.is-white, .is-light, .is-ghost, .is-text, .is-outlined, .is-inline .tag) {
+        &:before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            right: -1px;
+            bottom: -1px;
+            left: -1px;
+            border-radius: $radius;
+            box-shadow: $shadow-small;
+        }
+        &.is-small {
+            border-radius: $radius-small;
+        }
+        &.is-circle {
+            &:before {
+                border-radius: 50%;
+            }
+        }
+    }
+    &.is-selected {
+        background-color: $dw-shade-lighter;
+    }
+    &.is-text:disabled {
+        color: inherit;
+    }
+    &.is-ghost:hover {
+        background-color: $dw-shade-lighter;
+    }
+    &.is-outlined {
+        background-color: transparent;
+        &.is-dark {
+            border-color: $dw-grey-light;
+            &.is-selected {
+                background-color: $dw-shade-light;
+            }
+        }
+    }
+    // is-selected styles, not a bulma default
+    &.is-selected {
+        background-color: $dw-grey-lightest;
+    }
+
+    // overrides for all colors
+    @each $name, $pair in $button-colors {
+        $color: nth($pair, 1);
+        $color-invert: nth($pair, 2);
+        $color-light-border: bulmaDarken(findLightColor($color),5%); // create light-border color, not a bulma default
+
+        &.is-#{$name} {
+
+            &.is-selected {
+                background-color: findDarkColor($color);
+                &:hover,
+                &.is-hovered {
+                    background-color: bulmaDarken(findDarkColor($color),2.5%);
+                }
+                &.is-outlined {
+                    background-color: bulmaDarken(findLightColor($color),2.5%);
+                    &:hover,
+                    &.is-hovered,
+                    &:focus,
+                    &.is-focused {
+                        background-color: bulmaDarken(findLightColor($color),5%);
+                    }
+                }
+            }
+            &.is-outlined {
+                &:hover,
+                &.is-hovered,
+                &:focus,
+                &.is-focused {
+                    background-color: transparent;
+                    border-color: bulmaDarken($color,1);
+                    color: bulmaDarken($color,2.5%);
+                }
+            }
+
+            &.is-light {
+                border-color: $color-light-border;
+            }
+        }
+
+    }
+
+    // is-inline styles, not a bulma default
+    &.is-inline {
+        padding: 0;
+        margin: 0;
+        height: auto;
+        border: 0;
+        background-color: transparent;
+        // line-height: inherit;
+        &:hover {
+            background-color: transparent;
+        }
+        .icon {
+            &:first-child:last-child {
+                margin:0;
+            }
+            &:first-child:not(:last-child) {
+                margin-left: 0;
+                margin-right: .15em;
+            }
+            &:last-child:not(:first-child) {
+                margin-left: .15em;
+                margin-right: 0;
+            }
+        }
+    }
+    .icon {
+        svg {
+            font-size: 1.429em; // = 20px in 14px buttons
+        }
+        &:first-child:last-child {
+            margin-left: calc(#{-0.5 * $button-padding-horizontal});
+            margin-right: calc(#{-0.5 * $button-padding-horizontal});
+        }
+        &:first-child:not(:last-child) {
+            margin-left: calc(#{-0.25 * $button-padding-horizontal} - #{$button-border-width});
+            margin-right: .35em;
+        }
+        &:last-child:not(:first-child) {
+            margin-left: .35em;
+            margin-right: calc(#{-0.25 * $button-padding-horizontal} - #{$button-border-width});
+        }
+    }
+
+    &[disabled] {
+        pointer-events: none;
+    }
+}
+
+// Button group
+.buttons {
+    &.has-addons {
+        &:not(.are-outlined) {
+            width: fit-content;
+            border-radius: $radius;
+            box-shadow: $shadow-small;
+            &.are-small {
+                border-radius: $radius-small;
+            }
+            .button {
+                &::before {
+                    display: none;
+                }
+                &:hover,
+                &.is-hovered {
+                    z-index: 4;
+                }
+            }
+        }
+        .button {
+            margin-bottom: 0;
+        }
+        .button,
+        .control { // also set this for control because we can use .field.has-addons.buttons
+            &:hover,
+            &.is-hovered {
+                z-index: 4;
+            }
+        }
+    }
+    &:last-child {
+        margin-bottom: 0; // overwrite bulma default negative margin
+    }
+}

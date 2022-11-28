@@ -228,3 +228,20 @@ test('Does not error when initialized without axes', t => {
             })
     );
 });
+
+test('Reacts to external metadata changes', t => {
+    new SelectAxisColumnControl({
+        target: t.context.target,
+        store: t.context.chart,
+        data: {
+            axis: 'x',
+            label: 'User selection'
+        }
+    });
+
+    t.is($('select', t.context.target).val(), 'more values');
+    t.context.chart.setMetadata('axes', { x: 'values' });
+    t.is($('select', t.context.target).val(), 'values');
+    t.context.chart.setMetadata('axes', { x: undefined });
+    t.is($('select', t.context.target).val(), '-');
+});

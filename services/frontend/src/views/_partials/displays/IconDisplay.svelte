@@ -1,5 +1,9 @@
 <script>
     import { getContext } from 'svelte';
+    import { version } from '../../../../../../libs/icons/package.json';
+
+    const LIB_ROOT_FALLBACK = '/lib/';
+
     export let icon = 'api';
     export let size = false;
     export let color = 'currentColor';
@@ -12,9 +16,9 @@
     export let timing = 'linear';
     export let duration = '2s';
 
-    const libRoot = getContext('libRoot');
+    const libRoot = getContext('libRoot') || LIB_ROOT_FALLBACK;
 
-    const iconsVersion = '1.12.0'; // @todo: read from package.json
+    const iconsVersion = version;
 </script>
 
 <style>

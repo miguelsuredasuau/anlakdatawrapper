@@ -284,7 +284,7 @@ module.exports = {
 
         ['chart', 'map', 'table', 'edit'].map(prefix => {
             editRoute(prefix);
-            if (prefix === 'edit' || prefix === 'map') {
+            if (prefix === 'edit') {
                 // add /v2/ alias for edit route
                 editRoute(prefix, true);
             }
@@ -421,6 +421,7 @@ module.exports = {
                                         chart,
                                         theme,
                                         team,
+                                        vis,
                                         productFeatures
                                     });
                                 })
@@ -485,6 +486,14 @@ module.exports = {
                         const mayAdministrateTeam =
                             team && (await user.mayAdministrateTeam(team.id));
 
+                        const workflowData =
+                            typeof workflow.data === 'function'
+                                ? await workflow.data({
+                                      request,
+                                      chart
+                                  })
+                                : {};
+
                         return h.view('edit/Index.svelte', {
                             htmlClass: 'has-background-white-bis',
                             analytics: {
@@ -501,7 +510,8 @@ module.exports = {
                                 breadcrumbPath,
                                 workflow: {
                                     ...workflow,
-                                    steps: workflowSteps
+                                    steps: workflowSteps,
+                                    data: workflowData
                                 },
                                 rawTheme: theme,
                                 visualizations: Array.from(server.app.visualizations.values())

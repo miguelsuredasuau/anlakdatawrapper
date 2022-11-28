@@ -42,7 +42,11 @@ export default {
                 dev: true,
                 accessors: true
             },
-            preprocess: sveltePreprocess(),
+            preprocess: sveltePreprocess({
+                scss: {
+                    prependData: `@import 'src/styles/export.scss';`
+                }
+            }),
             emitCss: false
         }),
         resolve({

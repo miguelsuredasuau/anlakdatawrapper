@@ -22,6 +22,12 @@
     export let disabled = false;
 
     /**
+     * custom class attribute
+     */
+    let className = '';
+    export { className as class };
+
+    /**
      * @export
      *
      * faded state. A faded checkbox looks like it's disabled
@@ -98,7 +104,12 @@
     }
 </style>
 
-<label class="checkbox" class:is-faded={faded} disabled={disabled || null} data-uid={uid}>
+<label
+    class="checkbox {className}"
+    class:is-faded={faded}
+    disabled={disabled || null}
+    data-uid={uid}
+>
     <input
         type="checkbox"
         aria-label={label || null}

@@ -32,6 +32,8 @@ import {
     take
 } from 'rxjs/operators';
 import { of, from, combineLatest, merge } from 'rxjs';
+import Column from '@datawrapper/chart-core/lib/dw/dataset/column.mjs';
+import Dataset from '@datawrapper/chart-core/lib/dw/dataset/index.mjs';
 
 const ALLOWED_CHART_KEYS = [
     'title',
@@ -70,6 +72,11 @@ export function initStores({
      * store for dark mode state
      */
     const isDark = new writable(false);
+
+    /**
+     * store to track current active edit step
+     */
+    const activeStepId = new SvelteSubject();
 
     const readonlyKeysSet$ = readonlyKeys$.pipe(
         distinctUntilChanged(),
@@ -238,6 +245,10 @@ export function initStores({
         }))
     );
 
+    // The latest raw table dataset without any transformations.
+    // Used as a column reference when the table is cleared.
+    let previousRawTableDataset = null;
+
     const tableDataset$ = combineLatest([
         data$,
         dataOptions$,
@@ -252,15 +263,35 @@ export function initStores({
                     chart,
                     addComputedColumns(
                         chart,
-                        delimited({
-                            csv: data,
-                            transpose: options.transpose,
-                            firstRowIsHeader: options['horizontal-header']
-                        }).parse()
+                        (() => {
+                            let dataset;
+
+                            // If the last row in the table is deleted, the resulting CSV is empty.
+                            // When this empty CSV is parsed to recreate the dataset, it returns an empty dataset without any columns (except for the default one).
+                            // To prevent columns from disappearing, we create a new dataset from the columns of the previous dataset whenever the data/CSV is empty.
+                            if (data.trim() === '' && previousRawTableDataset) {
+                                dataset = Dataset(
+                                    previousRawTableDataset
+                                        .columns()
+                                        .map(c => Column(c.name(), [], c.type()))
+                                );
+                            } else {
+                                dataset = delimited({
+                                    csv: data,
+                                    transpose: options.transpose,
+                                    firstRowIsHeader: options['horizontal-header'],
+                                    emptyValue: ''
+                                }).parse();
+                                previousRawTableDataset = dataset;
+                            }
+
+                            return dataset;
+                        })()
                     )
                 )
             );
-        })
+        }),
+        shareReplay(1)
     );
 
     const dataset$ = combineLatest([
@@ -291,7 +322,8 @@ export function initStores({
                             delimited({
                                 csv: data,
                                 transpose: options.transpose,
-                                firstRowIsHeader: options['horizontal-header']
+                                firstRowIsHeader: options['horizontal-header'],
+                                emptyValue: ''
                             }).parse()
                         )
                     )
@@ -469,7 +501,8 @@ export function initStores({
         syncExternalData: getExternalData$,
         syncExternalMetadata: getExternalMetadata$,
         syncChart: patchChart$,
-        readonlyKeys: readonlyKeysSet$
+        readonlyKeys: readonlyKeysSet$,
+        activeStepId
     };
 }
 

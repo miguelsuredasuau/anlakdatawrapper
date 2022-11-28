@@ -70,6 +70,12 @@
                     components: ['_partials/displays/SaveButtonDisplay.svelte']
                 },
                 {
+                    url: '#link',
+                    title: 'Link',
+                    view: sections.LinkSection,
+                    components: ['_partials/displays/Link.svelte']
+                },
+                {
                     url: '#form-field',
                     title: 'FormField',
                     view: sections.FormFieldSection,
@@ -152,6 +158,12 @@
                     title: 'Search Input',
                     view: sections.SearchInputSection,
                     components: ['_partials/controls/SearchInput.svelte']
+                },
+                {
+                    url: '#dropdowninput',
+                    title: 'DropdownInput',
+                    view: sections.DropdownInputSection,
+                    components: ['_partials/controls/DropdownInput.svelte']
                 },
                 {
                     url: '#setpassword',

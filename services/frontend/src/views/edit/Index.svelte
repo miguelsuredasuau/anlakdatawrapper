@@ -87,6 +87,7 @@
         syncChart,
         team,
         readonlyKeys,
+        activeStepId,
         ...stores
     } = initStores({
         rawChart,
@@ -111,6 +112,7 @@
         navigateTo,
         team,
         readonlyKeys,
+        activeStepId,
         ...stores
     });
 
@@ -193,6 +195,22 @@
      */
     const storeSubscriptions = new SubscriptionCollection();
 
+    // mimic old dw setup
+    /* SSR_IGNORE_START */
+    window.dw = merge(window.dw, dw, {
+        ...dw,
+        backend: {
+            __messages: $messages,
+            __api_domain: $config.apiDomain,
+            __userData: $userData,
+            hooks:
+                window && window.dw && window.dw.backend && window.dw.backend.hooks
+                    ? window.dw.backend.hooks
+                    : initHooks()
+        }
+    });
+    /* SSR_IGNORE_END */
+
     onMount(async () => {
         /*
          * Start the syncing of chart and data with the server.
@@ -207,19 +225,6 @@
         storeSubscriptions.add(syncExternalData.subscribe());
         storeSubscriptions.add(syncExternalMetadata.subscribe());
         storeSubscriptions.add(syncChart.subscribe());
-
-        // mimic old dw setup
-        window.dw = merge(window.dw, dw, {
-            backend: {
-                __messages: $messages,
-                __api_domain: $config.apiDomain,
-                __userData: $userData,
-                hooks:
-                    window && window.dw && window.dw.backend && window.dw.backend.hooks
-                        ? window.dw.backend.hooks
-                        : initHooks()
-            }
-        });
 
         if (!initUrlStep && rawChart.lastEditStep) {
             activeStep = steps[Math.max(1, Math.min(steps.length - 1, rawChart.lastEditStep - 1))];
@@ -255,7 +260,10 @@
     // injected script tags
     let stepLoaded = { upload: true };
     $: {
-        if (activeStep) stepLoaded = { ...stepLoaded, [activeStep.id]: true };
+        if (activeStep) {
+            stepLoaded = { ...stepLoaded, [activeStep.id]: true };
+            $activeStepId = activeStep.id;
+        }
     }
 
     async function navigateTo(step) {

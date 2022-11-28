@@ -6,6 +6,11 @@
 <div class="section pl-0 pt-0">
     <h3 id="dropdown" class="title is-3">Dropdown</h3>
 
+    <p>
+        The <tt>Dropdown</tt> is a generic component that, when clicked, opens another element, and if
+        clicked elsewhere, closes it again.
+    </p>
+
     <Dropdown>
         <button aria-haspopup="true" aria-controls="dropdown-menu" class="button" slot="trigger">
             Open drop-down menu

@@ -60,6 +60,17 @@
                 });
 
                 return typeof filter === 'function' ? columns.filter(c => !!filter(c)) : columns;
+            },
+            normalizedMetadataAxisValue({ axis, $metadata }) {
+                // If axis key is not found in metadata, return `undefined`, which we won't try to save to `selected`.
+                if (!(axis in $metadata.axes)) return undefined;
+                let value = $metadata.axes[axis];
+                // Normalize metadata axis value to fit the internal `selected` value.
+                // When axis is currently unselected, the corresponding `selected` value is `-`.
+                if (value === undefined || value === null || value === false) {
+                    value = '-';
+                }
+                return value;
             }
         },
         oncreate() {
@@ -86,6 +97,25 @@
                 const columns = current.columns.map(({ value }) => value);
                 if (!columns.includes(current.selected)) {
                     this.set({ selected: columns[0] || false });
+                }
+            }
+
+            // React to external metadata changes:
+            if (
+                previous &&
+                changed.$metadata &&
+                !changed.selected &&
+                current.normalizedMetadataAxisValue &&
+                current.selected &&
+                current.isInitialized
+            ) {
+                const normalizedMetadataAxisValue = current.normalizedMetadataAxisValue;
+                if (current.selected !== normalizedMetadataAxisValue) {
+                    // Check that axis value we're about to set actually exists in the options.
+                    const { columns } = this.get();
+                    if (columns.some(column => column.value === normalizedMetadataAxisValue)) {
+                        this.set({ selected: normalizedMetadataAxisValue });
+                    }
                 }
             }
         }

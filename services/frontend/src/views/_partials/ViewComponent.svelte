@@ -6,12 +6,8 @@
     export let __;
 
     const viewComponents = getContext('viewComponents');
-
-    if (!viewComponents.has(id)) throw new Error(`View component '${id}' is not registered`);
-
-    const component = viewComponents.get(id);
 </script>
 
-{#if component}
-    <svelte:component this={component} {...props} {__} on:change><slot /></svelte:component>
-{/if}
+<svelte:component this={viewComponents.get(id)} {...props} {__} on:change>
+    <slot />
+</svelte:component>

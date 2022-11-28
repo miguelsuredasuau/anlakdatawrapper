@@ -2,6 +2,8 @@
     import { createEventDispatcher } from 'svelte';
     export let options; // [{ value, label }, ...] or [value, value, ...]
     export let value;
+    export let uid = null;
+    export let disabled = false;
 
     const dispatch = createEventDispatcher();
 
@@ -15,7 +17,7 @@
 </script>
 
 <div class="select {className}">
-    <select bind:value on:change={() => dispatch('select', value)}>
+    <select data-uid={uid} {disabled} bind:value on:change={() => dispatch('select', value)}>
         {#if placeholder}
             <option disabled value={null}>{placeholder}</option>
         {/if}

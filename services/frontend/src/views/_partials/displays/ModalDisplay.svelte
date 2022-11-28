@@ -1,7 +1,12 @@
 <script>
+    import { createEventDispatcher } from 'svelte';
+
     export let open = false;
     export let closeable = true;
-    import { createEventDispatcher } from 'svelte';
+    export let maxWidth = null;
+    export let backgroundOpacity = 0.5;
+    export let uid;
+
     const dispatch = createEventDispatcher();
 
     function close() {
@@ -11,14 +16,11 @@
         }
     }
 
-    export let maxWidth = null;
-    export let backgroundOpacity = 0.5;
-
     $: isModalCard = $$slots.header || $$slots.footer;
 </script>
 
 {#if open}
-    <div class="modal is-active">
+    <div class="modal is-active" data-uid={uid}>
         <div class="modal-background" style={`opacity: ${backgroundOpacity}`} on:click={close} />
         <div
             class={isModalCard ? 'modal-card' : 'modal-content'}

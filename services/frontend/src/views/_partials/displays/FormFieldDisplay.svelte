@@ -50,6 +50,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
+        max-width: 100%;
     }
     :global(:not(.field-body) > .field.compact:not(:last-child)) {
         margin-bottom: 0.5rem;
@@ -62,6 +63,7 @@
     }
     .control {
         flex-basis: 100%;
+        max-width: 100%;
     }
 </style>
 

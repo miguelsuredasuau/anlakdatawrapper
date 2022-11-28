@@ -1,5 +1,6 @@
 <script>
     import { onMount } from 'svelte';
+    import { fade } from 'svelte/transition';
     import IconDisplay from '_partials/displays/IconDisplay.svelte';
 
     export let value = '';
@@ -41,9 +42,21 @@
      */
     export let loading = false;
 
+    /**
+     * allow for input to be cleared by clicking on an "✕" icon
+     */
+    export let deletable = false;
+
+    /**
+     * Additional class names for customizing the presentation
+     */
+    let className = '';
+    export { className as class };
+
     let scroll = false;
 
     let textarea;
+    let input;
 
     function resize() {
         const { lineHeight } = window.getComputedStyle(textarea);
@@ -59,6 +72,12 @@
         const scrollHeight = element.scrollHeight - 12; // Deduct 12px to account for padding & borders
         element.style.height = actualHeight; // Reset to original height
         return scrollHeight;
+    }
+
+    function clearValue() {
+        value = '';
+        if (textarea) textarea.focus();
+        if (input) input.focus();
     }
 
     onMount(() => {
@@ -83,6 +102,14 @@
 <style>
     .text-container {
         display: flex;
+    }
+
+    .clear-button {
+        /* make sure clear button is clickable even when input has focus */
+        z-index: 5 !important;
+        pointer-events: all !important;
+        cursor: pointer;
+        right: 0;
     }
 
     input,
@@ -114,13 +141,13 @@
     class="control"
     class:is-loading={loading}
     class:has-icons-left={!!icon}
-    class:has-icons-right={loading || checked}
+    class:has-icons-right={loading || checked || (!!value && deletable)}
 >
     <div class="text-container" style="width:{width}" data-uid={uid}>
         {#if expandable}
             <textarea
                 bind:this={textarea}
-                class="input"
+                class="input {className}"
                 class:scroll
                 class:is-danger={error}
                 aria-label={ariaLabel}
@@ -138,8 +165,9 @@
             />
         {:else}
             <input
+                bind:this={input}
                 type="text"
-                class="input"
+                class="input {className}"
                 class:is-danger={error}
                 aria-label={ariaLabel}
                 bind:value
@@ -157,6 +185,15 @@
         {/if}
         {#if !loading && checked}
             <IconDisplay icon="checkmark-bold" className="is-right" />
+        {/if}
+        {#if !loading && !!value && deletable}
+            <button
+                on:click={clearValue}
+                class="clear-button icon button is-ghost"
+                in:fade={{ duration: 200 }}
+            >
+                <IconDisplay icon="close-circle" size="16px" color="#a7a7a7" />
+            </button>
         {/if}
     </div>
 </div>

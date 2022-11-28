@@ -1182,5 +1182,7 @@
   "teams / total-pending / 1": "",
   "teams / total-pending": "",
   "teams / total / 1 / with-period": "此团队只有一名成员",
-  "teams / total / with-period": "此团队有%i%名成员"
+  "teams / total / with-period": "此团队有%i%名成员",
+  "upload / file / error / invalid-type": "",
+  "describe / search / single-result": ""
 }

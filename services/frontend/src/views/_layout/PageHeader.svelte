@@ -4,6 +4,9 @@
     import NavBar from '_partials/navbar/NavBar.svelte';
     import { headerProps } from './stores';
 
+    const HEADER_FULL_HEIGHT = 107;
+    const SCROLL_THRESHOLD = 20;
+
     const config = getContext('config');
     const msg = getContext('messages');
 
@@ -15,12 +18,12 @@
 
     let isActive = false;
     let scrollY = 0;
-    $: scrolledDown = scrollY > 0;
+    $: scrolledDown = scrollY > SCROLL_THRESHOLD;
 
     let innerHeight = 0;
     let headerHeight;
     $: stickyHeaderThreshold = $config.stickyHeaderThreshold;
-    $: isHeaderSticky = innerHeight > stickyHeaderThreshold;
+    $: isHeaderSticky = innerHeight ? innerHeight > stickyHeaderThreshold : true;
     $: $headerProps = {
         isSticky: isHeaderSticky,
         height: headerHeight
@@ -38,14 +41,17 @@
         padding: 0 1.5rem;
     }
     header.is-sticky {
-        position: sticky !important;
+        position: fixed !important;
         top: 0px;
+        left: 0;
+        right: 0;
         z-index: 1000;
     }
     .navbar {
         min-height: 2em;
         padding-top: 2em;
         padding-bottom: 2em;
+        transition: padding 250ms;
     }
     .navbar-burger > span {
         height: 2px;
@@ -111,3 +117,7 @@
         </nav>
     </div>
 </header>
+
+{#if isHeaderSticky}
+    <div style="height: {HEADER_FULL_HEIGHT}px;" />
+{/if}

@@ -8,6 +8,7 @@
     export let body = 'Do you want to proceed?';
 
     export let closeable = true;
+    export let uid = 'confirmation-modal';
 
     export let yesOption = 'Yes';
     export let yesIcon = null;
@@ -28,7 +29,7 @@
     }
 </style>
 
-<ModalDisplay maxWidth="40em" backgroundOpacity={0.8} open={true} closeable={false}>
+<ModalDisplay maxWidth="40em" backgroundOpacity={0.8} open={true} closeable={false} {uid}>
     <div class="box pt-5 px-5 pb-4">
         {#if closeable}
             <button aria-label="close" class="delete" on:click={() => dispatch('cancel')} />
@@ -45,14 +46,20 @@
                 <IconButton
                     on:click={() => dispatch('cancel')}
                     class={noType ? `is-${noType}` : null}
-                    icon={noIcon}>{noOption}</IconButton
+                    icon={noIcon}
+                    uid="{uid}-no"
                 >
+                    {noOption}
+                </IconButton>
             {/if}
             <IconButton
                 on:click={() => dispatch('confirm')}
                 class={yesType ? `is-${yesType}` : null}
-                icon={yesIcon}>{yesOption}</IconButton
+                icon={yesIcon}
+                uid="{uid}-yes"
             >
+                {yesOption}
+            </IconButton>
         </div>
     </div>
 </ModalDisplay>

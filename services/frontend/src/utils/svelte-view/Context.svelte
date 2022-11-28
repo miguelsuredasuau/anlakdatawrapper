@@ -11,6 +11,7 @@
     import { loadScript } from '@datawrapper/shared/fetch.js';
     import { translate } from '@datawrapper/shared/l10n.js';
     import ConfirmationModalDisplay from '_partials/displays/ConfirmationModalDisplay.svelte';
+    import ActionsModalDisplay from '_partials/displays/ActionsModalDisplay.svelte';
 
     import dayjs from 'dayjs';
     import relativeTime from 'dayjs/plugin/relativeTime';
@@ -121,6 +122,9 @@
     let confirmationModal;
     const confirmationResult = new Subject();
 
+    let actionsModal;
+    const actionsResult = new Subject();
+
     setContext('main', {
         /**
          * displays a confirmation modal
@@ -132,6 +136,19 @@
                 confirmationResult.pipe(
                     take(1),
                     tap(() => (confirmationModal = null))
+                )
+            );
+        },
+        /**
+         * displays an actions modal
+         * @returns {string} - "primary" or "secondary" depending on which action should be performed
+         */
+        async showActionsModal(modalOptions) {
+            actionsModal = modalOptions;
+            return lastValueFrom(
+                actionsResult.pipe(
+                    take(1),
+                    tap(() => (actionsModal = null))
                 )
             );
         }
@@ -146,5 +163,14 @@
         {...confirmationModal}
         on:cancel={() => confirmationResult.next(false)}
         on:confirm={() => confirmationResult.next(true)}
+    />
+{/if}
+
+{#if actionsModal}
+    <ActionsModalDisplay
+        {...actionsModal}
+        on:cancel={() => actionsResult.next(false)}
+        on:primary={() => actionsResult.next('primary')}
+        on:secondary={() => actionsResult.next('secondary')}
     />
 {/if}

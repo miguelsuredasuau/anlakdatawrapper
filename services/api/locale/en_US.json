@@ -212,7 +212,7 @@
   "describe / search / placeholder": "Search data table",
   "describe / search / of": "of",
   "describe / search / results": "results",
-  "describe / search / no-matches": "No matches",
+  "describe / search / no-matches": "Not found",
   "describe / info-table-header": "Click on table header<br>to edit column properties",
   "describe / sort-by": "Sort view by",
   "describe / no-sorting": "No sorting",
@@ -1182,5 +1182,7 @@
   "teams / total-pending / 1": "One additional member has a pending invite.",
   "teams / total-pending": "%i% additional members have pending invites.",
   "teams / total / 1 / with-period": "This team has one member.",
-  "teams / total / with-period": "This team has %i% members."
+  "teams / total / with-period": "This team has %i% members.",
+  "upload / file / error / invalid-type": "<strong>File type not recognized.</strong> <br>\nThe file has to be a CSV or Excel document.",
+  "describe / search / single-result": "1 result"
 }

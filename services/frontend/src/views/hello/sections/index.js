@@ -11,6 +11,7 @@ export { default as WelcomeSection } from './WelcomeSection.svelte';
 export { default as ButtonGroupSection } from './controls/ButtonGroupSection.svelte';
 export { default as CheckboxSection } from './controls/CheckboxSection.svelte';
 export { default as CodeMirrorInputSection } from './controls/CodeMirrorInputSection.svelte';
+export { default as DropdownInputSection } from './controls/DropdownInputSection.svelte';
 export { default as FileInputSection } from './controls/FileInputSection.svelte';
 export { default as MarkdownInputSection } from './controls/MarkdownInputSection.svelte';
 export { default as NumberInputSection } from './controls/NumberInputSection.svelte';
@@ -29,5 +30,6 @@ export { default as IconsSection } from './displays/IconsSection.svelte';
 export { default as MessageSection } from './displays/MessageSection.svelte';
 export { default as ModalSection } from './displays/ModalSection.svelte';
 export { default as SaveButtonSection } from './displays/SaveButtonSection.svelte';
+export { default as LinkSection } from './displays/LinkSection.svelte';
 // editor
 export { default as ToolbarSection } from './editor/ToolbarSection.svelte';

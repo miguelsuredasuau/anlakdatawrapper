@@ -42,6 +42,14 @@
                 <TextInput icon="search" placeholder="Waiting for results..." loading />
             </HorizontalFormFieldDisplay>
 
+            <HorizontalFormFieldDisplay label="deleteable" compact>
+                <TextInput icon="search" bind:value deletable />
+            </HorizontalFormFieldDisplay>
+
+            <HorizontalFormFieldDisplay label="expandable & deleteable" compact>
+                <TextInput icon="search" bind:value deletable expandable />
+            </HorizontalFormFieldDisplay>
+
             <HorizontalFormFieldDisplay label="right-to-left" compact>
                 <TextInput bind:value textDirection="rtl" />
             </HorizontalFormFieldDisplay>
@@ -88,7 +96,7 @@
     </div>
 </div>
 
-<!-- 
+<!--
 export let value = '';
     export let id = '';
     export let uid = '';

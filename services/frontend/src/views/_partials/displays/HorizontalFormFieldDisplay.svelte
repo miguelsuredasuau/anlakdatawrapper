@@ -58,9 +58,12 @@
     }
     .field-label {
         text-align: left;
+        min-width: 110px;
+        line-height: 1.3em;
     }
     .field-body {
         flex-grow: 3;
+        min-width: 50%;
     }
     .field-help {
         width: 2em;
@@ -77,7 +80,7 @@
             class:is-medium={labelPadding === 'medium'}
             class:is-large={labelPadding === 'large'}
         >
-            <label for={id} class="label">{label}</label>
+            <label for={id} class="label">{@html purifyHtml(label)}</label>
         </div>
     {/if}
     <div class="field-body">
