@@ -83,6 +83,8 @@
         >
     </div>
 
+    <hr />
+
     <h4 class="subtitle is-4">Breadcrumb</h4>
     <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
@@ -92,6 +94,8 @@
         </ul>
     </nav>
 
+    <hr />
+
     <h4 id="progress" class="subtitle is-4">Progress bar</h4>
 
     <progress class="progress is-primary" value="15" max="100">15%</progress>
@@ -99,6 +103,8 @@
     <progress class="progress is-success" value="60" max="100">60%</progress>
     <progress class="progress is-warning" value="75" max="100">75%</progress>
     <progress class="progress is-danger" max="100">90%</progress>
+
+    <hr />
 
     <form action="/create" method="post" target="_blank">
         <div class="field">
@@ -113,4 +119,13 @@
             </div>
         </div>
     </form>
+
+    <hr />
+
+    <div class="select">
+        <select>
+            <option>Select dropdown</option>
+            <option>With options</option>
+        </select>
+    </div>
 </div>

@@ -8,7 +8,7 @@
 .button {
     font-weight: 500;
 
-    &:not(.is-white, .is-light, .is-ghost, .is-text, .is-outlined, .is-inline .tag) {
+    &:not(.is-white, .is-light, .is-ghost, .is-text, .is-outlined, .is-inline, .tag) {
         &:before {
             content: '';
             position: absolute;

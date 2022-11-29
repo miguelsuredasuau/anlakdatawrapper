@@ -64,11 +64,30 @@
     }
 </script>
 
-<style>
-    .trigger-content {
-        max-width: calc(100% - 20px);
-        overflow: hidden;
-        text-overflow: ellipsis;
+<style lang="scss">
+    .trigger {
+        &:before {
+            box-shadow: none; // remove button custom shadow
+        }
+        &-content {
+            max-width: calc(100% - 1em);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        :global(.icon) {
+            color: $grey;
+        }
+        &:hover {
+            :global(.icon) {
+                color: $black;
+            }
+        }
+    }
+    .dropdown {
+        &-item {
+            border: none;
+            background-color: transparent;
+        }
     }
 </style>
 
@@ -76,7 +95,7 @@
 
 <Dropdown bind:active bind:disabled {uid} class={block ? 'is-block' : ''}>
     <button
-        class="button is-justify-content-space-between has-text-weight-normal"
+        class="button trigger is-justify-content-space-between has-text-weight-normal"
         aria-haspopup="true"
         aria-controls="dropdown-menu"
         slot="trigger"
@@ -95,14 +114,12 @@
                 <span class="has-text-grey-light is-italic">{placeholder}</span>
             {/if}
         </span>
-        <span class="icon is-small">
-            <IconDisplay icon="expand-down-bold" size="16px" />
-        </span>
+        <IconDisplay icon="expand-down-bold" className="ml-2" size="1em" />
     </button>
     <div class="dropdown-content" slot="content">
         {#each options as option}
             <button
-                class="dropdown-item button is-white has-text-weight-normal"
+                class="dropdown-item"
                 class:is-active={selectedItem === option}
                 on:click={() => handleOptionClick(option)}
             >

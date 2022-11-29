@@ -4,6 +4,25 @@
 
     const options = [
         {
+            value: 'Alpha',
+            label: 'Alpha'
+        },
+        {
+            value: 'Beta',
+            label: 'Beta'
+        },
+        {
+            value: 'Gamma',
+            label: 'Gamma'
+        },
+        {
+            value: 'Delta',
+            label: 'Delta'
+        }
+    ];
+    let value = 'Alpha';
+    const optionsStyle = [
+        {
             value: '#c71e1d',
             label: '<b style="color:#c71e1d">firebrick</b>'
         },
@@ -20,7 +39,7 @@
             label: '<b style="color:#cf4870">red</b>'
         }
     ];
-    let value = '#c71e1d';
+    let valueStyle = '#c71e1d';
 
     async function passiveDemoHandler(event) {
         passiveDemo = `You changed the value to <b style="color:${event.detail.value}">${event.detail.value}</b>!`;
@@ -47,7 +66,7 @@
                 When the component is <b>block</b>, it will fill the entire container. You can also
                 set the <b>width</b> to <tt>100%</tt>.
             </p>
-            <DropdownInput bind:value {options} block width="100%" />
+            <DropdownInput bind:value={valueStyle} options={optionsStyle} block width="100%" />
         </div>
         <div class="column">
             <p class="mb-3">
@@ -55,8 +74,8 @@
                 update the value manually.
             </p>
             <DropdownInput
-                bind:value
-                {options}
+                bind:value={valueStyle}
+                options={optionsStyle}
                 passive
                 width="200px"
                 on:change={passiveDemoHandler}
@@ -70,7 +89,11 @@
                 You can also use a custom <b>itemRenderer</b> component to avoid writing too much inline
                 HTML/CSS or if you want to add interactivity within the dropdown items.
             </p>
-            <DropdownInput bind:value itemRenderer={CustomDropdownItemRenderer} {options} />
+            <DropdownInput
+                bind:value={valueStyle}
+                itemRenderer={CustomDropdownItemRenderer}
+                options={optionsStyle}
+            />
         </div>
     </div>
 </div>
