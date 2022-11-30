@@ -1,122 +1,80 @@
 const fs = require('fs');
-const path = require('path');
+const { fetchAllPlugins } = require('@datawrapper/backend-utils');
 const models = require('@datawrapper/orm/models');
-const get = require('lodash/get');
 const { promisify } = require('util');
 const { addLocalizationScope } = require('@datawrapper/service-utils');
 const readFile = promisify(fs.readFile);
-const readDir = promisify(fs.readdir);
 
 module.exports = {
     name: 'plugin-loader',
     version: '1.0.0',
     register: async server => {
         const config = server.methods.config();
-        const root = config.general.localPluginRoot || path.join(process.cwd(), 'plugins');
+        const pluginsInfo = Object.entries(await fetchAllPlugins(config));
 
-        const plugins = Object.keys(config.plugins || [])
-            .reduce(getPluginPath, [])
-            .map(registerPlugin);
-
-        function getPluginPath(plugins, name) {
-            // If available, use .cjs file (ES Module plugin):
-            const cjsPath = path.join(root, name, 'api.cjs');
-            if (fs.existsSync(cjsPath)) {
-                plugins.push({ name, pluginPath: cjsPath });
-                return plugins;
+        const loadedPlugins = {};
+        for (const [name, { entryPoints }] of pluginsInfo) {
+            if (!entryPoints.api) {
+                continue;
             }
 
-            // Else, use .js file (legacy plugin):
-            const jsPath = path.join(root, name, 'api.js');
-            if (fs.existsSync(jsPath)) {
-                plugins.push({ name, pluginPath: jsPath });
-                return plugins;
-            }
-
-            // No plugin file found — don't add anything:
-            return plugins;
-        }
-
-        function registerPlugin({ name, pluginPath }) {
             try {
-                const { options = {}, ...plugin } = require(pluginPath);
-                const { routes, ...opts } = options;
-                return [
-                    {
-                        name,
-                        plugin,
-                        options: {
-                            models,
-                            config: get(config, ['plugins', name], {}),
-                            tarball: `https://api.github.com/repos/datawrapper/plugin-${name}/tarball`,
-                            ...opts
-                        }
-                    },
-                    { routes }
-                ];
+                loadedPlugins[name] = require(entryPoints.api);
             } catch (error) {
-                return [{ name, error }];
+                server.logger.warn(
+                    `[Plugin] ${name}\n\nCouldn't load ${entryPoints.api}.\n\nMaybe this error is helpful:\n${error.stack}`
+                );
+                server.logger.warn(error);
             }
         }
 
-        if (plugins.length) {
-            for (const [{ plugin, options, error, name }, pluginOptions] of plugins) {
-                if (error) {
-                    server.logger.warn(`[Plugin] ${name}\n\n${logError(root, name, error)}`);
-                    server.logger.warn(error);
-                } else {
-                    const version = get(plugin, ['pkg', 'version'], plugin.version);
-                    server.logger.info(`[Plugin] ${name}@${version}`);
-                    // try to load locales
-                    try {
-                        const localePath = path.join(root, name, 'locale');
-                        const locales = await readDir(localePath);
-                        options.locales = {};
-                        for (let i = 0; i < locales.length; i++) {
-                            const file = locales[i];
-                            if (file === 'chart-translations.json') {
-                                // chart translations are special because they need to be passed
-                                // to the chart-core so they are availabe in rendered charts
-                                addLocalizationScope(
-                                    'chart',
-                                    JSON.parse(await readFile(path.join(localePath, file)))
-                                );
-                            } else if (/[a-z]+_[a-z]+\.json/i.test(file)) {
-                                options.locales[file.split('.')[0]] = JSON.parse(
-                                    await readFile(path.join(localePath, file))
-                                );
-                            }
-                        }
-                        addLocalizationScope(name, options.locales);
-                    } catch (error) {
-                        server.logger.debug(`Error while loading translations for ${name}`, error);
-                    }
-                    await server.register({ plugin, options }, pluginOptions);
-                }
+        for (const [pluginName, { getLocalesPaths, manifest, pluginConfig }] of pluginsInfo) {
+            if (!(pluginName in loadedPlugins)) {
+                continue;
             }
+
+            const { name, version } = manifest;
+            const { options: loadedOptions = {}, ...loadedPlugin } = loadedPlugins[pluginName];
+            const { routes, ...opts } = loadedOptions;
+            const plugin = {
+                name,
+                version,
+                ...loadedPlugin
+            };
+            const options = {
+                models,
+                config: pluginConfig,
+                tarball: `https://api.github.com/repos/datawrapper/plugin-${pluginName}/tarball`,
+                ...opts
+            };
+
+            server.logger.info(`[Plugin] ${pluginName}@${version}`);
+            // try to load locales
+            try {
+                const localesPaths = await getLocalesPaths();
+
+                if (localesPaths.chartTranslations) {
+                    // chart translations are special because they need to be passed
+                    // to the chart-core so they are availabe in rendered charts
+                    addLocalizationScope(
+                        'chart',
+                        JSON.parse(await readFile(localesPaths.chartTranslations))
+                    );
+                }
+
+                options.locales = {};
+                for (const [locale, localePath] of Object.entries(localesPaths.locales)) {
+                    options.locales[locale] = JSON.parse(await readFile(localePath));
+                }
+                addLocalizationScope(pluginName, options.locales);
+            } catch (error) {
+                server.logger.debug(`Error while loading translations for ${name}`, error);
+            }
+            await server.register({ plugin, options }, { routes });
         }
+
         // emit PLUGINS_LOADED event so plugins who depend on other
         // plugins can safely initialize
-        await server.app.events.emit(server.app.event.PLUGINS_LOADED, { plugins });
+        await server.app.events.emit(server.app.event.PLUGINS_LOADED);
     }
 };
-
-function logError(root, name, error) {
-    if (error.code === 'MODULE_NOT_FOUND') {
-        return `- skipped
-    Reason: \`api.[cjs,js]\` doesn't exist or a dependency is not installed (${error})`;
-    }
-
-    return `
-
-Loading plugin [${name}] failed! Maybe it is not properly installed.
-
-Is it available in "plugins/"?
-    Tip: run "ls ${root} | grep "${name}"
-Possible mistakes:
-    * Plugin config key doesn't match the plugin folder.
-    * Plugin is missing from ${root}.
-
-Maybe this error is helpful:
-${error.stack}`;
-}

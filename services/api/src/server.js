@@ -18,7 +18,7 @@ const get = require('lodash/get');
 const path = require('path');
 const Schemas = require('@datawrapper/schemas');
 const { ApiEventEmitter, eventList } = require('./utils/events');
-const { findConfigPath, getGitRevision } = require('@datawrapper/backend-utils');
+const { getGitRevision, requireConfig } = require('@datawrapper/backend-utils');
 const { generateToken, loadChart } = require('./utils');
 const {
     validateAPI,
@@ -31,15 +31,18 @@ const {
 initGCTrap();
 
 const pkg = require('../package.json');
-const configPath = findConfigPath();
-const config = require(configPath);
-
 const DW_DEV_MODE = !!JSON.parse(process.env.DW_DEV_MODE || 'false');
 
 /**
  * Instantiate a Hapi Server instance and configure it.
  */
-async function create({ usePlugins = true, useOpenAPI = true } = {}) {
+async function create({
+    usePlugins = true,
+    useOpenAPI = true,
+    testsConfigPatcher = config => config
+} = {}) {
+    const config = testsConfigPatcher(requireConfig());
+
     const CSRF_COOKIE_NAME = 'crumb';
     const CSRF_COOKIE_OPTIONS = {
         domain: '.' + config.api.domain,
@@ -224,7 +227,6 @@ async function create({ usePlugins = true, useOpenAPI = true } = {}) {
     server.logger.info(
         {
             VERSION: revShort,
-            CONFIG_FILE: configPath,
             NODE_ENV: process.env.NODE_ENV,
             NODE_VERSION: process.version,
             PID: process.pid

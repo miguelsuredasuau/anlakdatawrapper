@@ -5,7 +5,7 @@ module.exports = {
     },
     plugins: {
         'orm-test': {},
-        lul: {}
+        'orm-test-skip': {}
     },
     orm: {
         chartIdSalt: 'TEST_SALT',

@@ -13,7 +13,6 @@ const routes = {
 
 module.exports = {
     name: '@datawrapper/plugin-api-v1',
-    version: '1.0.0',
     register(server) {
         for (const [prefix, route] of Object.entries(routes)) {
             server.register(route, {

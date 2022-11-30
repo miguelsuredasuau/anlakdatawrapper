@@ -6,12 +6,9 @@ const replace = require('@rollup/plugin-replace');
 const svelte = require('rollup-plugin-svelte');
 const sveltePreprocess = require('svelte-preprocess');
 const { default: resolve } = require('@rollup/plugin-node-resolve');
-const { findConfigPath } = require('@datawrapper/backend-utils');
+const { fetchAllPlugins, requireConfig } = require('@datawrapper/backend-utils');
 const { join, relative } = require('path');
-const { readFile } = require('fs/promises');
 const terser = require('@rollup/plugin-terser');
-
-const configPath = findConfigPath();
 
 const sourceDir = 'src/views';
 const outputDir = process.env.OUTPUT_DIR || 'build/views';
@@ -205,25 +202,11 @@ async function main() {
         );
 
     // Find all view components by reading plugin.json files.
-    const config = require(configPath);
-    const pluginRoot = config.general.localPluginRoot || join(process.cwd(), '../plugins');
-    const viewComponents = [];
-    for (const pluginName of Object.keys(config.plugins || [])) {
-        let pluginJSONData;
-        try {
-            pluginJSONData = await readFile(join(pluginRoot, pluginName, 'plugin.json'));
-        } catch (e) {
-            if (e.code === 'ENOENT') {
-                // Skip the plugin, because it has no plugin.json file.
-                continue;
-            }
-            throw e;
-        }
-        const pluginJSON = JSON.parse(pluginJSONData);
-        if (Array.isArray(pluginJSON?.viewComponents)) {
-            viewComponents.push(...pluginJSON.viewComponents);
-        }
-    }
+    const config = requireConfig();
+    const pluginsInfo = await fetchAllPlugins(config);
+    const viewComponents = Object.values(pluginsInfo).flatMap(
+        ({ manifest }) => manifest?.viewComponents ?? []
+    );
 
     // Inject view component import statements into view files.
     const viewComponentReplacements = Object.fromEntries(

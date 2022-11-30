@@ -1,10 +1,9 @@
 const test = require('ava');
 const OpenSearchClient = require('../../utils/openSearchClient.js');
-const { findConfigPath } = require('@datawrapper/backend-utils');
+const { requireConfig } = require('@datawrapper/backend-utils');
 const { genRandomChartId } = require('../../../test/helpers/setup');
 
-const configPath = findConfigPath();
-const config = require(configPath);
+const config = requireConfig();
 
 test.before(async t => {
     t.context.openSearchClient = new OpenSearchClient(config.opensearch);

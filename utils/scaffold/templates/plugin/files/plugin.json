@@ -1,3 +1,8 @@
 {
-    "name": "my-new-plugin"
+    "name": "my-new-plugin",
+    "version": "0.0.1",
+    "entryPoints": {
+        "api": "api.js",
+        "frontend": "frontend.js"
+    }
 }

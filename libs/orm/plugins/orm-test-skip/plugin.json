@@ -1,0 +1,6 @@
+{
+    "name": "orm-test-skip-plugin",
+    "version": "test",
+    "entryPoints": {
+    }
+}

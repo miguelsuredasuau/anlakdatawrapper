@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const { fetchAllPlugins } = require('@datawrapper/backend-utils');
 const { findPlugins, createRegisterPlugins } = require('./utils/plugins');
 
 let retries = 0;
@@ -7,11 +8,8 @@ const ORM = {
     async create(config) {
         const dbConfig = config.orm && config.orm.db ? config.orm.db : config.db;
 
-        let configuredPlugins = {};
-
-        if (config.general && config.general.localPluginRoot && config.plugins) {
-            configuredPlugins = await findPlugins(config.general.localPluginRoot, config.plugins);
-        }
+        const pluginsInfo = await fetchAllPlugins(config);
+        const configuredPlugins = await findPlugins(pluginsInfo);
 
         const sequelize = new Sequelize(dbConfig.database, dbConfig.user, dbConfig.password, {
             host: dbConfig.host,

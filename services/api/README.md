@@ -112,20 +112,6 @@ module.exports = {
 
 > **The server will crash during start, if a route is already defined!**
 
-### Updating a Plugin
-
-> This guide is for updating a plugin in a server environment (_staging_, _production_).
-
-The easiest way to fully update is by connecting to the server with ssh and navigating to the desired plugins location. There you can pull the latest changes with (eg. `git pull`) and then restart the running API server with PM2.
-
-**This way of updating is necessary every time the server code of a plugin changes (usually located in `api.cjs`).**
-
-Some plugins register visualizations and provide static assets like JS and CSS to render charts. If only the static assets change, a full server restart is not necessary. In this case, the API provides admin endpoints to update the static files of a plugin. By calling `POST /v3/admin/plugins/update` with the name and branch of the plugin `{ "name": "d3-lines", "branch": "master" }`, the API will download the new static files and replace them. Now the new files are served and used for chart previews and publishing. The following folders inside a plugins directory will get replaced: `less/, locale/, static/`.
-
-> **Note**: The process of updating only static files is not ideal and could cause inconsistent states in the API server. In practice this should not be a problem.
->
-> With our implementation of zero downtime API reloads, thanks to PM2, we should be able to programmatically trigger full plugin updates in the future. So far our special case for visualizations solves the problem.
-
 ### Development
 
 #### Unit tests

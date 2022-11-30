@@ -1,8 +1,4 @@
-const { version, name } = require('./package.json');
-
 module.exports = {
-    name,
-    version,
     register: (server, options) => {
         const { events, event } = server.app;
         const { config, models } = options;

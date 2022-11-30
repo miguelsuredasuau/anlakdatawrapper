@@ -1,6 +1,5 @@
 const cron = require('node-cron');
-const fs = require('fs');
-const path = require('path');
+const { fetchAllPlugins } = require('@datawrapper/backend-utils');
 const { validateRedis } = require('@datawrapper/schemas/config');
 const Catbox = require('@hapi/catbox');
 const CatboxRedis = require('@hapi/catbox-redis');
@@ -104,37 +103,19 @@ module.exports = async function () {
     // plugins may define crons as well
 
     // load plugins
-    const pluginRoot =
-        config.general.localPluginRoot || config.api.localPluginRoot || process.cwd() + '/plugins';
+    const pluginsInfo = await fetchAllPlugins(config);
 
-    Object.keys(config.plugins || [])
-        .reduce(getPluginPath, [])
-        .forEach(registerPlugin);
+    Object.entries(pluginsInfo).forEach(registerPlugin);
 
-    function getPluginPath(plugins, name) {
-        // If available, use .cjs file (ES Module plugin):
-        const cjsPath = path.join(pluginRoot, name, 'crons.cjs');
-        if (fs.existsSync(cjsPath)) {
-            plugins.push({ name, pluginPath: cjsPath });
-            return plugins;
+    function registerPlugin([name, { pluginConfig, entryPoints }]) {
+        if (!entryPoints.crons) {
+            return;
         }
 
-        // Else, use .js file (legacy plugin):
-        const jsPath = path.join(pluginRoot, name, 'crons.js');
-        if (fs.existsSync(jsPath)) {
-            plugins.push({ name, pluginPath: jsPath });
-            return plugins;
-        }
-
-        // No plugin file — don't add anything:
-        return plugins;
-    }
-
-    function registerPlugin({ name, pluginPath }) {
         // load the plugin
         let plugin;
         try {
-            plugin = require(pluginPath);
+            plugin = require(entryPoints.crons);
         } catch (e) {
             logger.error(`error while importing cron plugin ${name}: ${e}`);
             return;
@@ -142,16 +123,10 @@ module.exports = async function () {
 
         // call the hook
         if (typeof plugin.register === 'function') {
-            let pluginConfig = {};
-            try {
-                // load plugin default config
-                pluginConfig = require(`${pluginRoot}/${name}/config`);
-            } catch (e) {
-                // no default config, do nothing
-            }
+            const pluginDefaultConfig = entryPoints.config ? require(entryPoints.config) : {};
 
             // extend default plugin cfg with our custom config
-            Object.assign(pluginConfig, config.plugins[name]);
+            const pluginFinalConfig = Object.assign(pluginDefaultConfig, pluginConfig);
 
             logger.info(`hooked in plugin ${name}...`);
             plugin.register({
@@ -164,9 +139,13 @@ module.exports = async function () {
                 redis,
                 config: {
                     global: config,
-                    plugin: pluginConfig
+                    plugin: pluginFinalConfig
                 }
             });
+        } else {
+            logger.error(
+                `plugin ${name} has crons module but the module does not export 'register'`
+            );
         }
     }
 

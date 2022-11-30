@@ -1,8 +1,4 @@
-const { name, version } = require('./package.json');
-
 module.exports = {
-    name,
-    version,
     register: server => {
         // add a new frontend server route
         server.route({

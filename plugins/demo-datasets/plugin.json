@@ -2,5 +2,8 @@
     "name": "demo-datasets",
     "version": "1.0.0",
     "author": "Datawrapper GmbH",
-    "description": "Demo datasets for charts, including private plugins"
+    "description": "Demo datasets for charts, including private plugins",
+    "entryPoints": {
+        "frontend": "frontend.js"
+    }
 }

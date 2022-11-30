@@ -2,5 +2,8 @@
     "name": "api-v1",
     "version": "1.0.0",
     "author": "Datawrapper GmbH",
+    "entryPoints": {
+        "api": "api.js"
+    },
     "description": "Compatibility layer for Datawrapper's v1 API"
 }
