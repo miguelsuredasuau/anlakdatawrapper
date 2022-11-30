@@ -105,7 +105,8 @@ export async function render(page, props, delay = 0) {
     });
 
     const state = {
-        ...props
+        ...props,
+        visualization: props.visMeta
     };
 
     await page.addScriptTag({
