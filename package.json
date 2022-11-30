@@ -10,6 +10,7 @@
         "format": "scripts/format",
         "lint": "scripts/lint",
         "test": "cd utils/e2e-tests && npm test -- $@",
+        "test:vis": "(cd libs/chart-core && npm test) && (cd plugins/d3-bars && npm test) && (cd plugins/d3-lines && npm test) && (cd plugins/d3-maps && npm test) && (cd plugins/d3-pies && npm test) && (cd plugins/d3-scatter-plot && npm test) && (cd plugins/locator-maps && npm test) && (cd plugins/tables && npm test) && (cd plugins/visualization-column-charts && npm test) && (cd plugins/visualization-pie-chart && npm test)",
         "test:ci": "cd utils/e2e-tests && npm run test:ci -- $@",
         "sync": "datawrapper-orm-sync",
         "api": "datawrapper-api",
