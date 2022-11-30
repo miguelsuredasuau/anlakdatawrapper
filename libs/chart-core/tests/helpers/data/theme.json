@@ -137,8 +137,17 @@
             }
         },
         "typography": {
+            "links": {
+                "color": "#3399cc"
+            },
+            "headline": {
+                "fontSize": 20
+            },
+            "description": {
+                "fontSize": 14
+            },
             "chart": {
-                "color": "#F81818",
+                "color": "#181818",
                 "fontSize": 12,
                 "typeface": "Roboto,sans-serif"
             },

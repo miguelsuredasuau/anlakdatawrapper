@@ -12,9 +12,7 @@ const pathToChartCore = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
 const emptyPage = `<html>
         <body>
-            <div class="dw-chart" id="__svelte-dw">
-                <div id="chart" class="dw-chart-body"></div>
-            </div>
+            <div class="dw-chart" id="__svelte-dw"></div>
         </body>
     </html>`;
 
@@ -91,7 +89,15 @@ export async function render(page, props, delay = 0) {
     const baseTheme = JSON.parse(
         await readFile(join(pathToChartCore, 'tests/helpers/data/theme.json'), 'utf-8')
     );
-    props.theme = deepmerge(props.theme || {}, baseTheme.data);
+    if (props.theme) {
+        console.warn('Warning: `theme` is deprecated, please use `themeData` instead');
+        props.themeData = props.theme;
+    }
+    props.theme = baseTheme;
+    if (props.themeData) {
+        props.theme.data = deepmerge.all([{}, baseTheme.data, props.themeData]);
+    }
+
     props.translations = props.translations || { 'en-US': {} };
 
     await page.addStyleTag({
@@ -112,6 +118,10 @@ export async function render(page, props, delay = 0) {
         logs.push({ type: event.type(), text: event.text() });
     });
 
+    await page.addScriptTag({
+        content: await readFile(join(pathToChartCore, 'dist/main.js'), 'utf-8')
+    });
+
     await page.evaluate(
         async ({ chart, dataset, visMeta, theme, flags, translations, textDirection, assets }) => {
             /* eslint-env browser */
@@ -130,7 +140,7 @@ export async function render(page, props, delay = 0) {
                 .chart(chart)
                 .locale((chart.language || 'en-US').substr(0, 2))
                 .translations(translations)
-                .theme({ ...theme })
+                .theme({ ...theme.data })
                 .flags({ isIframe: true, ...flags });
 
             if (assets) {
@@ -185,13 +195,13 @@ async function getCSS(props) {
         .update(
             JSON.stringify({
                 vis: props.visMeta.less,
-                theme: props.theme
+                theme: props.theme.data
             })
         )
         .digest('hex');
     return styleCache.withCache(key, () => {
         return compileCSS({
-            theme: { id: 'test', data: props.theme },
+            theme: { id: 'test', data: props.theme.data },
             filePaths: [join(pathToChartCore, 'lib/styles.less'), props.visMeta.less].filter(d => d)
         });
     });
@@ -215,8 +225,13 @@ export function getElementClasses(page, selector) {
  * @param {string} style css property, e.g. "marginTop"
  * @returns {string}
  */
-export function getElementStyle(page, selector, style) {
-    return page.$eval(selector, (node, style) => getComputedStyle(node)[style], style);
+export function getElementStyle(page, selector, style, pseudo = undefined) {
+    return page.$eval(
+        selector,
+        (node, style, pseudo) => getComputedStyle(node, pseudo)[style],
+        style,
+        pseudo
+    );
 }
 
 /**
@@ -239,6 +254,25 @@ export function getElementAttribute(page, selector, attr) {
  */
 export function getElementsAttribute(page, selector, attr) {
     return page.$$eval(selector, (nodes, attr) => nodes.map(node => node.getAttribute(attr)), attr);
+}
+
+/**
+ * Returns the innerHTML property for the element matching the given CSS `selector`.
+ * @param {Page} page
+ * @param {string} selector
+ * @returns {string[]} innerHTML
+ */
+export function getElementInnerHtml(page, selector) {
+    return page.$eval(selector, node => node.innerHTML);
+}
+/**
+ * Returns the innerText property for the element matching the given CSS `selector`.
+ * @param {Page} page
+ * @param {string} selector
+ * @returns {string[]} innerText
+ */
+export function getElementInnerText(page, selector) {
+    return page.$eval(selector, node => node.innerText);
 }
 
 /**
