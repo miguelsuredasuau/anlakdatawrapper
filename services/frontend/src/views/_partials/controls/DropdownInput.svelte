@@ -100,6 +100,7 @@
         aria-controls="dropdown-menu"
         slot="trigger"
         style:width
+        {disabled}
     >
         <span class="trigger-content">
             {#if curValueItem}
