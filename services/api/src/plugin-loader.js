@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { fetchAllPlugins } = require('@datawrapper/backend-utils');
-const models = require('@datawrapper/orm/models');
+const { models } = require('@datawrapper/orm/db');
 const { promisify } = require('util');
 const { addLocalizationScope } = require('@datawrapper/service-utils');
 const readFile = promisify(fs.readFile);

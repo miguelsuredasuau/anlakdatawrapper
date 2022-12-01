@@ -1,7 +1,8 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const orm = require('@datawrapper/orm');
-const { Chart, User, Folder } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { Chart, User, Folder } = require('@datawrapper/orm/db');
 
 const { listResponse } = require('../../utils/schemas');
 
@@ -21,7 +22,6 @@ const routes = [
         async handler(request) {
             const compact = request.query.compact !== undefined;
             const { auth } = request;
-            const { Op } = orm.db;
 
             const teams = await auth.artifacts.getAcceptedTeams();
 

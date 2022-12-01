@@ -1,4 +1,4 @@
-const { setUserData, unsetUserData } = require('@datawrapper/orm/utils/userData');
+const { UserData } = require('@datawrapper/orm/db');
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
 
@@ -43,9 +43,9 @@ module.exports = async server => {
                     const key = keys[i];
                     if (/^[a-z0-9_-]+$/.test(key)) {
                         if (request.payload[key] === null) {
-                            await unsetUserData(userId, key);
+                            await UserData.unsetUserData(userId, key);
                         } else {
-                            await setUserData(userId, key, request.payload[key]);
+                            await UserData.setUserData(userId, key, request.payload[key]);
                         }
                     } else {
                         return Boom.badRequest(

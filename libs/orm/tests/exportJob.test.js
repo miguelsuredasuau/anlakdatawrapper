@@ -3,7 +3,7 @@ const { createChart, createJob, createUser, destroy } = require('./helpers/fixtu
 const { init } = require('./helpers/orm');
 
 test.before(async t => {
-    t.context.orm = await init();
+    t.context.db = await init();
 
     t.context.chart = await createChart();
     t.context.user = await createUser();
@@ -11,7 +11,7 @@ test.before(async t => {
 
 test.after.always(async t => {
     await destroy(t.context.user, t.context.chart);
-    await t.context.orm.db.close();
+    await t.context.db.close();
 });
 
 test('task exists', async t => {

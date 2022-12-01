@@ -1,18 +1,25 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const ReadonlyChart = require('@datawrapper/orm/models/ReadonlyChart');
 const get = require('lodash/get');
 const injectSafe = require('../../../utils/inject.js');
 const set = require('lodash/set');
 const uniq = require('lodash/uniq');
 const pick = require('lodash/pick');
-const { Action, Chart, ChartAccessToken, ChartPublic, User } = require('@datawrapper/orm/models');
-const { Op } = require('@datawrapper/orm').db;
+const {
+    Action,
+    Chart,
+    ChartAccessToken,
+    ChartPublic,
+    ReadonlyChart,
+    User,
+    UserData
+} = require('@datawrapper/orm/db');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
 const { createResponseConfig } = require('../../../utils/schemas');
 const { getAdditionalMetadata, prepareChart } = require('../../../utils/index.js');
 const getEmbedCodes = require('../../../utils/getEmbedCodes');
 const { getLocalizationScope } = require('@datawrapper/service-utils');
-const { getUserData, setUserData } = require('@datawrapper/orm/utils/userData');
 
 module.exports = server => {
     // POST /v3/charts/{id}/publish
@@ -242,10 +249,10 @@ async function publishChart(request) {
     // log recently published charts
     try {
         const recentlyPublished = JSON.parse(
-            await getUserData(user.id, 'recently_published', '[]')
+            await UserData.getUserData(user.id, 'recently_published', '[]')
         );
         if (recentlyPublished[0] !== chart.id) {
-            await setUserData(
+            await UserData.setUserData(
                 user.id,
                 'recently_published',
                 JSON.stringify(uniq([chart.id, ...recentlyPublished]).slice(0, 500))

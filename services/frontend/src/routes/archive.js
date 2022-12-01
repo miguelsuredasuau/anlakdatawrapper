@@ -1,6 +1,6 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const { db } = require('@datawrapper/orm');
+const { SQ } = require('@datawrapper/orm');
 const { groupCharts } = require('../utils/charts.cjs');
 const keyBy = require('lodash/keyBy');
 const mapValues = require('lodash/mapValues');
@@ -251,24 +251,24 @@ module.exports = {
                 .map(d => d.theme_id)
                 .concat(defaultThemes);
             // query background colors for each theme
-            const bgColQuery = db.fn(
+            const bgColQuery = SQ.fn(
                 'json_extract',
-                db.col('data'),
-                db.literal('"$.style.body.background"')
+                SQ.col('data'),
+                SQ.literal('"$.style.body.background"')
             );
             const bgColors = (
                 await Theme.findAll({
                     attributes: ['id', [bgColQuery, 'bg']],
                     where: {
-                        [db.Op.and]: [
+                        [SQ.Op.and]: [
                             {
                                 id: themeIds
                             },
-                            db.where(bgColQuery, {
-                                [db.Op.not]: null
+                            SQ.where(bgColQuery, {
+                                [SQ.Op.not]: null
                             }),
-                            db.where(bgColQuery, {
-                                [db.Op.ne]: 'transparent'
+                            SQ.where(bgColQuery, {
+                                [SQ.Op.ne]: 'transparent'
                             })
                         ]
                     }
@@ -289,7 +289,7 @@ module.exports = {
                 ...(
                     await Folder.findAll({
                         where: {
-                            [db.Op.or]: [
+                            [SQ.Op.or]: [
                                 { user_id: user.id },
                                 {
                                     org_id: teams.map(t => t.id)
@@ -323,12 +323,12 @@ module.exports = {
                 attributes: [
                     'in_folder',
                     'organization_id',
-                    [db.fn('count', db.literal('*')), 'cnt']
+                    [SQ.fn('count', SQ.literal('*')), 'cnt']
                 ],
                 where: {
-                    last_edit_step: { [db.Op.gte]: minLastEditStep },
+                    last_edit_step: { [SQ.Op.gte]: minLastEditStep },
                     deleted: false,
-                    [db.Op.or]: [
+                    [SQ.Op.or]: [
                         { author_id: user.id },
                         {
                             organization_id: teams.map(t => t.id)

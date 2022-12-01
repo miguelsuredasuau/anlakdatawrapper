@@ -3,17 +3,14 @@ const { createPlugin, destroy } = require('./helpers/fixtures');
 const { init } = require('./helpers/orm');
 
 test.before(async t => {
-    t.context.orm = await init();
-
-    const { PluginData } = require('../models');
-    t.context.PluginData = PluginData;
-
+    t.context.db = await init();
+    t.context.PluginData = t.context.db.models.plugin_data;
     t.context.plugin = await createPlugin();
 });
 
 test.after.always(async t => {
     await destroy(t.context.plugin);
-    await t.context.orm.db.close();
+    await t.context.db.close();
 });
 
 test('store plugin data', async t => {

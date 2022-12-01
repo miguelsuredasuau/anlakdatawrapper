@@ -8,6 +8,9 @@ const get = require('lodash/get');
 const partition = require('lodash/partition');
 const assignDeep = require('assign-deep');
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { Chart, UserTeam } = require('@datawrapper/orm/db');
 const { prepareChart } = require('@datawrapper/service-utils');
 const utils = {};
 
@@ -103,9 +106,6 @@ utils.generateToken = (length = 25) => {
 utils.noop = () => {};
 
 utils.loadChart = async function (id) {
-    const { Op } = require('@datawrapper/orm').db;
-    const { Chart } = require('@datawrapper/orm/models');
-
     const chart = await Chart.findOne({
         where: {
             id,
@@ -136,8 +136,6 @@ utils.getAdditionalMetadata = async (chart, { server }) => {
         });
 
     if (chart.forked_from && chart.is_fork) {
-        const { Chart } = require('@datawrapper/orm/models');
-
         const forkedFromChart = await Chart.findByPk(chart.forked_from, {
             attributes: ['metadata']
         });
@@ -179,8 +177,6 @@ utils.updateChartsAndMoveToNewTeam = async function ({
     chartUpdate,
     transaction
 }) {
-    const { Chart } = require('@datawrapper/orm/models');
-
     const [mayAccess, mayNotAccess] = await utils.checkChartAuthorsMayAccessTeam(
         charts,
         chartUpdate.organization_id
@@ -234,7 +230,6 @@ utils.getNewChartAuthor = async function (requestingUser, targetTeamId) {
     if (!requestingUser.isAdmin()) return requestingUser.id;
 
     // for admins, assign chart to target team's owner
-    const { UserTeam } = require('@datawrapper/orm/models');
     const owner = await UserTeam.findOne({
         where: {
             organization_id: targetTeamId,

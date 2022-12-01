@@ -3,12 +3,13 @@ const Boom = require('@hapi/boom');
 const { decamelize, camelizeKeys } = require('humps');
 const set = require('lodash/set');
 const keyBy = require('lodash/keyBy');
-const { User, Chart, Team } = require('@datawrapper/orm/models');
+const { User, Chart, Team } = require('@datawrapper/orm/db');
 const { queryUsers } = require('../../utils/raw-queries');
 const { serializeTeam } = require('../teams/utils');
 const { listResponse } = require('../../utils/schemas.js');
 
-const { Op } = require('@datawrapper/orm').db;
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
 const attributes = ['id', 'email', 'name', 'role', 'language'];
 
 const { createUserPayload } = require('../../utils/schemas');

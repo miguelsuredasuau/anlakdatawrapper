@@ -1,5 +1,6 @@
 const test = require('ava');
 const assign = require('assign-deep');
+const { Chart, Folder, UserTeam } = require('@datawrapper/orm/db');
 const {
     BASE_URL,
     createTeamWithUser,
@@ -16,7 +17,6 @@ const { randomInt } = require('crypto');
 const fetch = require('node-fetch');
 
 function createFolder(props) {
-    const { Folder } = require('@datawrapper/orm/models');
     return Folder.create({
         ...props,
         name: String(randomInt(99999))
@@ -24,13 +24,10 @@ function createFolder(props) {
 }
 
 function findChartById(id) {
-    const { Chart } = require('@datawrapper/orm/models');
     return Chart.findByPk(id);
 }
 
 async function addUserToTeam(user, team, role = 'member') {
-    const { UserTeam } = require('@datawrapper/orm/models');
-
     await UserTeam.create({
         user_id: user.id,
         organization_id: team.id,

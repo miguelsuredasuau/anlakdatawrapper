@@ -2,8 +2,9 @@ const Boom = require('@hapi/boom');
 const Joi = require('joi');
 const OpenSearchClient = require('../../utils/openSearchClient.js');
 const set = require('lodash/set');
-const { Chart, Folder, ReadonlyChart, Team, User } = require('@datawrapper/orm/models');
-const { Op } = require('@datawrapper/orm').db;
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { Chart, Folder, ReadonlyChart, Team, User } = require('@datawrapper/orm/db');
 const { chartListResponse } = require('../../utils/schemas');
 const { prepareChart } = require('../../utils/index.js');
 

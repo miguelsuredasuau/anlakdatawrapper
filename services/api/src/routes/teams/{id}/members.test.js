@@ -1,4 +1,5 @@
 const test = require('ava');
+const { UserTeam } = require('@datawrapper/orm/db');
 const {
     createTeamWithUser,
     createUser,
@@ -149,7 +150,6 @@ test('owners can not get removed', async t => {
 });
 
 test('owners can change a members status', async t => {
-    const { UserTeam } = require('@datawrapper/orm/models');
     let userObj;
     try {
         userObj = await t.context.teamObj.addUser('member');
@@ -230,7 +230,6 @@ test('admins can add new members to a team', async t => {
 });
 
 test('members can leave teams but can not remove other members', async t => {
-    const { UserTeam } = require('@datawrapper/orm/models');
     const { team, addUser } = t.context.teamObj;
     let memberObj1;
     let memberObj2;
@@ -289,7 +288,6 @@ test('members can leave teams but can not remove other members', async t => {
 });
 
 test('admins can remove members, themselves but not owners', async t => {
-    const { UserTeam } = require('@datawrapper/orm/models');
     const { team, addUser } = t.context.teamObj;
     let adminObj;
     let memberObj;
@@ -397,7 +395,6 @@ test('DELETE /teams/{id}/members/{id} removes a team member with no charts even 
 });
 
 test('Datawrapper admins can not change their own role if they are the team owner', async t => {
-    const { UserTeam } = require('@datawrapper/orm/models');
     let adminObj;
     let teamObj;
     try {
@@ -483,7 +480,6 @@ test('users not part of a team can not change a team members role', async t => {
 });
 
 test('Datawrapper admins can change member roles', async t => {
-    const { UserTeam } = require('@datawrapper/orm/models');
     let userObj;
     let teamObj;
     try {

@@ -1,11 +1,12 @@
 const test = require('ava');
 const { ValidationError } = require('sequelize');
+const { Folder } = require('../db');
 const { createTeam, createUser, destroy } = require('./helpers/fixtures');
 const { init } = require('./helpers/orm');
 const { randomInt } = require('crypto');
 
 test.before(async t => {
-    t.context.orm = await init();
+    t.context.db = await init();
 });
 
 test('Folder validation fails when both team and user are set', async t => {
@@ -13,7 +14,6 @@ test('Folder validation fails when both team and user are set', async t => {
     try {
         const team = await createTeam();
         const user = await createUser();
-        const Folder = require('../models/Folder');
         await t.throwsAsync(
             async () => {
                 folder = await Folder.create({
@@ -32,8 +32,7 @@ test('Folder validation fails when both team and user are set', async t => {
 test('Folder validation succeeds when neither team nor user are set', async t => {
     let folder;
     try {
-        const Folder = require('../models/Folder');
-        await Folder.create();
+        folder = await Folder.create();
         t.pass();
     } finally {
         await destroy(folder);

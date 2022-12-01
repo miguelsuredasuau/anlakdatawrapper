@@ -1,6 +1,7 @@
 // Important: use serial since all themes created in each test are available to admin users
 // --> tests influence each other if run in parallel
 const { serial: test } = require('ava');
+const { Theme } = require('@datawrapper/orm/db');
 const {
     setup,
     destroy,
@@ -21,7 +22,6 @@ test.before(async t => {
 });
 
 test('GET /admin/themes returns all existing themes for admins', async t => {
-    const { Theme } = require('@datawrapper/orm/models');
     let themes;
     let userObj;
     try {
@@ -85,7 +85,6 @@ test("GET /admin/themes returns an error if admin does not have scope 'theme:rea
 });
 
 test('GET /admin/themes returns themes correctly paginated', async t => {
-    const { Theme } = require('@datawrapper/orm/models');
     let createdThemes;
     let team;
     let userObj = {};

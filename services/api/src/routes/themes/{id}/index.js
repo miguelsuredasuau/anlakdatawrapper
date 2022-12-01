@@ -3,7 +3,7 @@ const Boom = require('@hapi/boom');
 const assign = require('assign-deep');
 const { compileFontCSS } = require('@datawrapper/chart-core/lib/styles/compile-css.js');
 
-const { Theme, User, Team, Chart } = require('@datawrapper/orm/models');
+const { Theme, User, Team, Chart } = require('@datawrapper/orm/db');
 const { get, set, cloneDeep } = require('lodash');
 const chroma = require('chroma-js');
 const invertColor = require('@datawrapper/shared/invertColor.js');

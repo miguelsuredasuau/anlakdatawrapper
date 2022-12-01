@@ -1,6 +1,8 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const { Product, ProductPlugin } = require('@datawrapper/orm/models');
+const { Product, ProductPlugin } = require('@datawrapper/orm/db');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
 
 module.exports = {
     name: 'routes/products/{id}/plugins',
@@ -39,7 +41,6 @@ module.exports = {
                 }
 
                 const pluginIds = payload.map(pluginId => ({ pluginId }));
-                const { Op } = server.methods.getDB();
                 await ProductPlugin.destroy({
                     where: {
                         productId: params.id,

@@ -1,5 +1,7 @@
 const test = require('ava');
 
+const { UserData } = require('@datawrapper/orm/db');
+
 const {
     createTeamWithUser,
     createUser,
@@ -79,7 +81,6 @@ test('GET /users/:id/recently-edited-charts - admins can access different users 
 
 test('GET /users/:id/recently-edited-charts - returns charts', async t => {
     const { server } = t.context;
-    const { setUserData } = require('@datawrapper/orm/utils/userData');
 
     let userObj, userObj2, charts, teamObj;
 
@@ -98,7 +99,7 @@ test('GET /users/:id/recently-edited-charts - returns charts', async t => {
             { author_id: teamObj.user.id, organization_id: teamObj.team.id } // access through team
         ]);
 
-        await setUserData(
+        await UserData.setUserData(
             user.id,
             'recently_edited',
             JSON.stringify(charts.map(chart => chart.id))
@@ -125,7 +126,6 @@ test('GET /users/:id/recently-edited-charts - returns charts', async t => {
 
 test('GET /users/:id/recently-published-charts - returns charts', async t => {
     const { server } = t.context;
-    const { setUserData } = require('@datawrapper/orm/utils/userData');
 
     let userObj, userObj2, charts, teamObj;
 
@@ -148,7 +148,7 @@ test('GET /users/:id/recently-published-charts - returns charts', async t => {
             } // access through team
         ]);
 
-        await setUserData(
+        await UserData.setUserData(
             user.id,
             'recently_published',
             JSON.stringify(charts.map(chart => chart.id))
@@ -177,7 +177,6 @@ test('GET /users/:id/recently-published-charts - returns charts', async t => {
 
 test('GET /users/:id/recently-edited-charts - only returns charts user has access to', async t => {
     const { server } = t.context;
-    const { setUserData } = require('@datawrapper/orm/utils/userData');
 
     let charts, teamObj1, teamObj2;
 
@@ -190,7 +189,7 @@ test('GET /users/:id/recently-edited-charts - only returns charts user has acces
         charts = await createCharts([{ author_id: user1.id, organization_id: team2.id }]);
 
         // add to recently edited for user1
-        await setUserData(
+        await UserData.setUserData(
             user1.id,
             'recently_edited',
             JSON.stringify(charts.map(chart => chart.id))

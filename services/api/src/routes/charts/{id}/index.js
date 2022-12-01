@@ -1,9 +1,15 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const ReadonlyChart = require('@datawrapper/orm/models/ReadonlyChart');
-const { Op } = require('@datawrapper/orm').db;
-const { Chart, ChartPublic, User, Folder } = require('@datawrapper/orm/models');
-const { getUserData, setUserData } = require('@datawrapper/orm/utils/userData');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const {
+    Chart,
+    ChartPublic,
+    ReadonlyChart,
+    User,
+    Folder,
+    UserData
+} = require('@datawrapper/orm/db');
 const uniq = require('lodash/uniq');
 const set = require('lodash/set');
 const get = require('lodash/get');
@@ -408,10 +414,10 @@ async function editChart(request) {
             // log recently edited charts
             try {
                 const recentlyEdited = JSON.parse(
-                    await getUserData(user.id, 'recently_edited', '[]')
+                    await UserData.getUserData(user.id, 'recently_edited', '[]')
                 );
                 if (recentlyEdited[0] !== chart.id) {
-                    await setUserData(
+                    await UserData.setUserData(
                         user.id,
                         'recently_edited',
                         JSON.stringify(uniq([chart.id, ...recentlyEdited]).slice(0, 500))

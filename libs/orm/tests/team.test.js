@@ -1,9 +1,10 @@
 const test = require('ava');
+const { Team, TeamProduct, UserProduct, UserTeam } = require('../db');
 const { createProduct, createTeam, createUser, destroy } = require('./helpers/fixtures');
 const { init } = require('./helpers/orm');
 
 test.before(async t => {
-    t.context.orm = await init();
+    t.context.db = await init();
 
     t.context.team = await createTeam();
 
@@ -15,7 +16,7 @@ test.before(async t => {
 
 test.after.always(async t => {
     await destroy(t.context.users, t.context.team);
-    await t.context.orm.db.close();
+    await t.context.db.close();
 });
 
 test('team.getUsers returns three users', async t => {
@@ -26,7 +27,6 @@ test('team.getUsers returns three users', async t => {
 });
 
 test('Team.countTeamAndOwnerProducts counts all products', async t => {
-    const { Team, TeamProduct, UserProduct, UserTeam } = require('../models');
     const team = await createTeam();
     // Team products
     for (let i = 0; i < 3; i++) {
@@ -70,7 +70,6 @@ test('Team.countTeamAndOwnerProducts counts all products', async t => {
 });
 
 test('Team.countTeamAndOwnerProducts returns zeros when there are no products', async t => {
-    const { Team } = require('../models');
     const team = await createTeam();
     const [numTeamProducts, numTeamOwnerProducts] = await Team.countTeamAndOwnerProducts(team.id);
     t.is(numTeamProducts, 0);

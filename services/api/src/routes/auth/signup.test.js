@@ -1,4 +1,5 @@
 const test = require('ava');
+const { Chart, User } = require('@datawrapper/orm/db');
 const {
     createGuestSession,
     createUser,
@@ -20,8 +21,6 @@ test.after.always(async t => {
 });
 
 test('Guest charts are associated after signup', async t => {
-    const { Chart, User } = require('@datawrapper/orm/models');
-
     const session = await createGuestSession(t.context.server);
 
     /* Create chart as guest */

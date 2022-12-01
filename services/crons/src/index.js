@@ -4,7 +4,8 @@ const { validateRedis } = require('@datawrapper/schemas/config');
 const Catbox = require('@hapi/catbox');
 const CatboxRedis = require('@hapi/catbox-redis');
 const CatboxMemory = require('@hapi/catbox-memory');
-const ORM = require('@datawrapper/orm');
+const { initORM } = require('@datawrapper/orm');
+const { Plugin } = require('@datawrapper/orm/db');
 const Redis = require('ioredis');
 
 // initialize database
@@ -13,14 +14,11 @@ const config = require('./config');
 module.exports = async function () {
     const logger = require('./logger');
 
-    await ORM.init(config);
-    await ORM.registerPlugins(logger);
+    const { db, registerPlugins } = await initORM(config);
+    await registerPlugins(logger);
 
     // register api plugins with core db
-    require('@datawrapper/orm/models/Plugin').register(
-        'datawrapper-api',
-        Object.keys(config.plugins)
-    );
+    Plugin.register('datawrapper-api', Object.keys(config.plugins));
 
     let redis;
     if (config.redis) {
@@ -132,7 +130,7 @@ module.exports = async function () {
             plugin.register({
                 cron,
                 logger,
-                db: ORM.db,
+                db,
                 createCache(options, segment) {
                     return new Catbox.Policy(options, cacheConnection, segment);
                 },

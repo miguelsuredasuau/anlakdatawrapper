@@ -1,4 +1,4 @@
-const { Theme } = require('@datawrapper/orm/models');
+const { Theme } = require('@datawrapper/orm/db');
 const { listResponse } = require('../../utils/schemas');
 const Joi = require('joi');
 

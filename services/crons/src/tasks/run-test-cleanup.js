@@ -1,6 +1,6 @@
-const { db } = require('@datawrapper/orm');
-const { Op } = db;
-const { User, Chart, AccessToken } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { User, Chart, AccessToken } = require('@datawrapper/orm/db');
 const got = require('got');
 const {
     api: apiConfig,
@@ -103,12 +103,12 @@ const getTestUserID = async mail => {
 const getTestUserCharts = async uid => {
     //TIMESTAMPDIFF(MINUTE, ageColumn, NOW());
     const chartAgeMinute = () =>
-        db.fn('TIMESTAMPDIFF', db.literal('MINUTE'), db.col('created_at'), db.fn('NOW'));
+        SQ.fn('TIMESTAMPDIFF', SQ.literal('MINUTE'), SQ.col('created_at'), SQ.fn('NOW'));
 
     const charts = await Chart.findAll({
         attributes: ['id'],
         where: {
-            [Op.and]: [{ author_id: uid }, db.where(chartAgeMinute(), Op.gt, MIN_AGE_MINUTES)]
+            [Op.and]: [{ author_id: uid }, SQ.where(chartAgeMinute(), Op.gt, MIN_AGE_MINUTES)]
         }
     });
 

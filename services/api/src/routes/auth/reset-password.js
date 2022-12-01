@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { User } = require('@datawrapper/orm/models');
+const { User } = require('@datawrapper/orm/db');
 
 module.exports = async server => {
     // POST /v3/auth/reset-password

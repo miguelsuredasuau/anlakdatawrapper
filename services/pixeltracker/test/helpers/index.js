@@ -1,5 +1,22 @@
 const { customAlphabet, nanoid } = require('nanoid');
-const { ForeignKeyConstraintError } = require('sequelize');
+const { SQ } = require('@datawrapper/orm');
+const {
+    AccessToken,
+    Action,
+    Chart,
+    ChartPublic,
+    Folder,
+    Session,
+    Team,
+    TeamProduct,
+    TeamTheme,
+    Theme,
+    User,
+    UserData,
+    UserPluginCache,
+    UserProduct,
+    UserTeam
+} = require('@datawrapper/orm/db');
 
 /* bcrypt hash for string "test-password" */
 const PASSWORD_HASH = '$2a$05$6B584QgS5SOXi1m.jM/H9eV.2tCaqNc5atHnWfYlFe5riXVW9z7ja';
@@ -131,7 +148,6 @@ const genRandomChartId = customAlphabet(
 );
 
 function createChart(props = {}) {
-    const { Chart } = require('@datawrapper/orm/models');
     return Chart.create({
         metadata: {
             axes: [],
@@ -153,7 +169,6 @@ function createCharts(propsArray) {
 }
 
 async function createUser() {
-    const { User } = require('@datawrapper/orm/models');
     const email = `test-${nanoid(5)}@pixeltracker.de`;
     const pwd = PASSWORD_HASH;
     const role = 'editor';
@@ -166,8 +181,6 @@ async function createUser() {
 }
 
 async function createTeam(props = {}) {
-    const { Team } = require('@datawrapper/orm/models');
-
     return await Team.create({
         id: `test-${nanoid(5)}`,
         name: 'Test Team',
@@ -195,14 +208,12 @@ async function createTeam(props = {}) {
 }
 
 async function destroyChart(chart) {
-    const { Chart, ChartPublic } = require('@datawrapper/orm/models');
     await ChartPublic.destroy({ where: { id: chart.id }, force: true });
     await Chart.destroy({ where: { forked_from: chart.id }, force: true });
     await chart.destroy({ force: true });
 }
 
 async function destroyTeam(team) {
-    const { Chart, TeamProduct, UserTeam, Folder } = require('@datawrapper/orm/models');
     const charts = await Chart.findAll({ where: { organization_id: team.id } });
     for (const chart of charts) {
         await destroyChart(chart);
@@ -214,17 +225,6 @@ async function destroyTeam(team) {
 }
 
 async function destroyUser(user) {
-    const {
-        AccessToken,
-        Action,
-        Chart,
-        Folder,
-        Session,
-        UserData,
-        UserPluginCache,
-        UserProduct,
-        UserTeam
-    } = require('@datawrapper/orm/models');
     await AccessToken.destroy({ where: { user_id: user.id }, force: true });
     await Action.destroy({ where: { user_id: user.id }, force: true });
     await Session.destroy({ where: { user_id: user.id }, force: true });
@@ -240,7 +240,7 @@ async function destroyUser(user) {
     try {
         await user.destroy({ force: true });
     } catch (e) {
-        if (e instanceof ForeignKeyConstraintError) {
+        if (e instanceof SQ.ForeignKeyConstraintError) {
             // TODO Don't just log and ignore this error, but rather figure out how to delete the
             // associated model instances correctly.
             console.error(e);
@@ -249,13 +249,11 @@ async function destroyUser(user) {
 }
 
 async function destroyTheme(theme) {
-    const { TeamTheme } = require('@datawrapper/orm/models');
     await TeamTheme.destroy({ where: { theme_id: theme.id } });
     await theme.destroy({ force: true });
 }
 
 async function destroy(...instances) {
-    const { Chart, Team, User, Theme, ChartPublic } = require('@datawrapper/orm/models');
     for (const instance of instances) {
         if (!instance) {
             continue;

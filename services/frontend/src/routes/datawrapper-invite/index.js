@@ -1,6 +1,6 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const { User, Team } = require('@datawrapper/orm/models');
+const { User, Team } = require('@datawrapper/orm/db');
 
 module.exports = {
     name: 'datawrapper-invite',

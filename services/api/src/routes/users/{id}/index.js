@@ -1,10 +1,8 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { decamelizeKeys, camelizeKeys } = require('humps');
-const { logAction } = require('@datawrapper/orm/utils/action');
-const { User, Chart, UserTeam, Session } = require('@datawrapper/orm/models');
+const { Action, Chart, Session, User, UserData, UserTeam } = require('@datawrapper/orm/db');
 const { serializeTeam } = require('../../teams/utils');
-const { getUserData } = require('@datawrapper/orm/utils/userData');
 const { noContentResponse, userResponse, createUserNameSchema } = require('../../../utils/schemas');
 
 const attributes = ['id', 'email', 'name', 'role', 'language'];
@@ -145,7 +143,7 @@ async function getUser(request) {
     const { charts, ...data } = user.dataValues;
     const teams = await user.getAcceptedTeams();
 
-    const activeTeam = await getUserData(user.id, 'active_team');
+    const activeTeam = await UserData.getUserData(user.id, 'active_team');
 
     if (teams) {
         data.teams = teams
@@ -218,7 +216,7 @@ async function editUser(request, h) {
                 // set activate token (will be set in User.update call below)
                 data.activate_token = token;
                 // log new email to actions
-                await logAction(userId, 'email-change-request', {
+                await Action.logAction(userId, 'email-change-request', {
                     'old-email': oldUser.email,
                     'new-email': payload.email,
                     token

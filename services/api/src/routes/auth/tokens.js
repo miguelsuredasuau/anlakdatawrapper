@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { listResponse, noContentResponse, createResponseConfig } = require('../../utils/schemas');
 const { camelizeKeys } = require('humps');
-const { AccessToken } = require('@datawrapper/orm/models');
+const { AccessToken } = require('@datawrapper/orm/db');
 const set = require('lodash/set');
 
 module.exports = async server => {

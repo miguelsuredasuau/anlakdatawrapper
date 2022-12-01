@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const { serial: test } = require('ava');
 const { randomInt } = require('crypto');
+const { Chart, Folder } = require('@datawrapper/orm/db');
 const {
     BASE_URL,
     createUser,
@@ -14,12 +15,10 @@ const {
 } = require('../../../test/helpers/setup');
 
 function findFolderByName(name) {
-    const { Folder } = require('@datawrapper/orm/models');
     return Folder.findOne({ where: { name } });
 }
 
 function findChartsByIds(ids) {
-    const { Chart } = require('@datawrapper/orm/models');
     return Chart.findAll({ where: { id: ids } });
 }
 

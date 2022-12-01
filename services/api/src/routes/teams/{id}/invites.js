@@ -1,12 +1,12 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { Op } = require('@datawrapper/orm').db;
-const { User, Team, UserTeam } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { Action, User, Team, UserTeam } = require('@datawrapper/orm/db');
 const crypto = require('crypto');
 const get = require('lodash/get');
 
 const { createResponseConfig } = require('../../../utils/schemas.js');
-const { logAction } = require('@datawrapper/orm/utils/action');
 
 const {
     ROLE_OWNER,
@@ -108,7 +108,7 @@ module.exports = async server => {
         await UserTeam.destroy({
             where: {
                 invited_by: id,
-                invite_token: { [User.sequelize.Op.ne]: '' }
+                invite_token: { [Op.ne]: '' }
             }
         });
     });
@@ -167,7 +167,7 @@ async function acceptTeamInvitation(request, h) {
     // access to new products now
     await clearPluginCache(user.id);
 
-    logAction(userTeam.invited_by, 'team/invite/accept', params.id);
+    Action.logAction(userTeam.invited_by, 'team/invite/accept', params.id);
 
     return h.response().code(201);
 }
@@ -203,7 +203,7 @@ async function rejectTeamInvitation(request, h) {
         // and log email hash for future spam detection
         const hmac = crypto.createHash('sha256');
         hmac.update(user.email);
-        logAction(userTeam.invited_by, 'team/invite/reject', hmac.digest('hex'));
+        Action.logAction(userTeam.invited_by, 'team/invite/reject', hmac.digest('hex'));
     }
 
     return h.response().code(204);
@@ -323,7 +323,7 @@ async function inviteTeamMember(request, h) {
         }
     });
 
-    await logAction(user.id, 'team/invite', { team: params.id, invited: invitee.id });
+    await Action.logAction(user.id, 'team/invite', { team: params.id, invited: invitee.id });
 
     return h.response().code(201);
 }

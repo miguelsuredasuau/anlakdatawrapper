@@ -4,7 +4,7 @@ const S3 = require('aws-sdk/clients/s3');
 const stream = require('stream');
 const uniq = require('lodash/uniq');
 const { themeId, validateThemeData, validateThemeLess } = require('../../utils/themes');
-const { Theme, TeamTheme } = require('@datawrapper/orm/models');
+const { Theme, TeamTheme } = require('@datawrapper/orm/db');
 const { listResponse } = require('../../utils/schemas');
 
 module.exports = {

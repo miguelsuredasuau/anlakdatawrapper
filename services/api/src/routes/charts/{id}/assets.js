@@ -3,7 +3,7 @@ const mime = require('mime');
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { noContentResponse } = require('../../../utils/schemas');
-const { ChartAccessToken } = require('@datawrapper/orm/models');
+const { Chart, ChartAccessToken } = require('@datawrapper/orm/db');
 
 module.exports = server => {
     // GET /v3/charts/{id}/assets/{asset}
@@ -213,7 +213,6 @@ async function deleteChartAssests(request, h) {
     const { auth, server } = request;
     const user = auth.artifacts;
 
-    const { Chart } = require('@datawrapper/orm/models');
     const chart = await Chart.findByPk(request.params.id);
     if (!chart) {
         return Boom.notFound();

@@ -1,5 +1,6 @@
 const test = require('ava');
 const { decamelize } = require('humps');
+const { Action, Product, UserProduct } = require('@datawrapper/orm/db');
 const {
     createUser,
     destroy,
@@ -53,7 +54,6 @@ test('Users endpoints should return 404 if no user was found', async t => {
 });
 
 test('Users endpoints should return products for admins', async t => {
-    const { Product, UserProduct } = require('@datawrapper/orm/models');
     let product;
     let userProduct;
     try {
@@ -139,7 +139,6 @@ test("Users can't change protected fields using PATCH", async t => {
 });
 
 test('Users can change allowed fields', async t => {
-    const { Action } = require('@datawrapper/orm/models');
     return withUser(t.context.server, {}, async ({ session, user }) => {
         const oldEmail = user.email;
 

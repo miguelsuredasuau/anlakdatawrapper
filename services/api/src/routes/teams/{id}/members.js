@@ -1,9 +1,10 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { Op } = require('@datawrapper/orm').db;
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
 const set = require('lodash/set');
 const { decamelize } = require('humps');
-const { Chart, Team, User, UserTeam } = require('@datawrapper/orm/models');
+const { Chart, Team, User, UserTeam } = require('@datawrapper/orm/db');
 
 const {
     ROLE_OWNER,

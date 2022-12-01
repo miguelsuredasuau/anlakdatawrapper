@@ -1,8 +1,9 @@
 const path = require('path');
 const { readdir } = require('fs').promises;
 const fastGlob = require('fast-glob');
-const { Op } = require('@datawrapper/orm').db;
-const { Chart, Theme } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { Chart, Theme } = require('@datawrapper/orm/db');
 const { getInfo } = require('@el3um4s/svelte-get-component-info');
 
 module.exports = {

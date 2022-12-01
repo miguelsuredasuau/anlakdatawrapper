@@ -1,93 +1,76 @@
 const Sequelize = require('sequelize');
 const { fetchAllPlugins } = require('@datawrapper/backend-utils');
+const { setDB } = require('./internal-orm-state');
 const { initModels } = require('./models/init');
 const { findPlugins, createRegisterPlugins } = require('./utils/plugins');
 
-let retries = 0;
+async function create(config) {
+    const dbConfig = config.orm && config.orm.db ? config.orm.db : config.db;
 
-const ORM = {
-    async create(config) {
-        const dbConfig = config.orm && config.orm.db ? config.orm.db : config.db;
+    const pluginsInfo = await fetchAllPlugins(config);
+    const configuredPlugins = await findPlugins(pluginsInfo);
 
-        const pluginsInfo = await fetchAllPlugins(config);
-        const configuredPlugins = await findPlugins(pluginsInfo);
+    const db = new Sequelize(dbConfig.database, dbConfig.user, dbConfig.password, {
+        host: dbConfig.host,
+        port: dbConfig.port,
+        dialect: dbConfig.dialect,
+        logging: process.env.DEV ? s => process.stdout.write(s + '\n') : false,
+        define: {
+            timestamps: true,
+            updatedAt: false,
+            underscored: true
+        }
+    });
+    return {
+        db,
+        chartIdSalt: config.orm.chartIdSalt,
+        hashPublishing: config.orm.hashPublishing,
+        registerPlugins: createRegisterPlugins({ db }, configuredPlugins)
+    };
+}
 
-        const sequelize = new Sequelize(dbConfig.database, dbConfig.user, dbConfig.password, {
-            host: dbConfig.host,
-            port: dbConfig.port,
-            dialect: dbConfig.dialect,
-            logging: process.env.DEV ? s => process.stdout.write(s + '\n') : false,
-            define: {
-                timestamps: true,
-                updatedAt: false,
-                underscored: true
-            }
-        });
-        ORM.db = sequelize;
-        ORM.db.Op = Sequelize.Op;
-        ORM.db.Sequelize = Sequelize;
-        ORM.token_salt = config.secure_auth_salt || '';
-        ORM.chartIdSalt = config.orm.chartIdSalt;
-        ORM.hashPublishing = config.orm.hashPublishing;
-        ORM.plugins = configuredPlugins;
-        ORM.registerPlugins = createRegisterPlugins(ORM, configuredPlugins);
-    },
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(() => resolve(), ms));
+}
 
-    /**
-     * attempts to initialize the ORM. if it fails and
-     * `config.orm.retry`` is true, it will retry connecting after
-     * 10 seconds.
-     */
-    async connect(config) {
-        const retryInterval = config.orm.retryInterval ? config.orm.retryInterval * 1000 : 3000;
+/**
+ * attempts to initialize the ORM. if it fails and
+ * `config.orm.retry`` is true, it will retry connecting after
+ * 10 seconds.
+ */
+async function connect(config, { db }) {
+    if (config.orm.skipTableTest) {
+        return;
+    }
+
+    const retrySeconds = config.orm.retryInterval || 3;
+    const retryInterval = retrySeconds * 1000;
+    for (let remainingAttempts = config.orm.retryLimit ?? 1000000; ; remainingAttempts--) {
         try {
-            if (!config.orm.skipTableTest) {
-                await ORM.db.query('SELECT id FROM chart LIMIT 1');
-            }
+            await db.query('SELECT id FROM chart LIMIT 1');
+            return;
         } catch (err) {
             if (err.name.substr(0, 9) === 'Sequelize' && config.orm && config.orm.retry) {
                 console.warn(err.message);
-                console.warn(
-                    `database is not ready, yet. retrying in ${retryInterval / 1000} seconds...`
-                );
-                if (!config.orm.retryLimit || retries < config.orm.retryLimit) {
-                    retries++;
-                    await wait(() => this.connect(config), retryInterval);
-                } else {
+                console.warn(`database is not ready, yet. retrying in ${retrySeconds} seconds...`);
+                if (remainingAttempts <= 0) {
                     throw err;
                 }
             } else {
                 throw err;
             }
         }
-        return ORM;
-    },
 
-    async init(config) {
-        await this.create(config);
-        await this.connect(config);
-        initModels(ORM);
-        return ORM;
-    },
-
-    db: {
-        define() {
-            console.error('you need to initialize the database first!');
-            process.exit(-1);
-        }
+        await sleep(retryInterval);
     }
+}
+
+exports.initORM = async config => {
+    const { db, chartIdSalt, hashPublishing, registerPlugins } = await create(config);
+    await connect(config, { db });
+    initModels({ db, chartIdSalt, hashPublishing });
+    setDB(db);
+    return { db, registerPlugins };
 };
 
-module.exports = ORM;
-
-function wait(f, ms) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            try {
-                resolve(f());
-            } catch (error) {
-                reject(error);
-            }
-        }, ms);
-    });
-}
+exports.SQ = Sequelize;

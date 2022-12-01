@@ -1,8 +1,8 @@
 const test = require('ava');
-const { init } = require('./helpers/orm');
+const { initWithPlugins } = require('./helpers/orm');
 
 test.before(async t => {
-    t.context.orm = await init();
+    t.context.orm = await initWithPlugins();
 });
 
 test.after.always(t => t.context.orm.db.close());
@@ -12,14 +12,11 @@ test('"orm-test" plugin registration', async t => {
     let ORMTest;
     let row;
     try {
-        // Test that "orm-test" is available.
-        t.truthy(orm.plugins['orm-test']);
-
-        const TestPlugin = require(orm.plugins['orm-test'].requirePath);
-        ORMTest = await TestPlugin.register(orm);
+        await orm.registerPlugins();
+        ORMTest = orm.db.models.orm_test;
 
         // Test that '"orm-test" is registered.
-        t.is(orm.db.models.orm_test, ORMTest);
+        t.truthy(ORMTest);
 
         row = await ORMTest.create({ data: 'Test' });
 

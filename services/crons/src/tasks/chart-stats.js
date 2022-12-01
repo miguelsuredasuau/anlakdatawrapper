@@ -1,5 +1,6 @@
-const { Op } = require('@datawrapper/orm').db;
-const { Chart, Stats } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { Chart, Stats } = require('@datawrapper/orm/db');
 
 const duration = {
     minutely: 6e4, // analyze last minute

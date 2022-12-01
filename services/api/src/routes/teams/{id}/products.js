@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { Team, TeamProduct, Product } = require('@datawrapper/orm/models');
+const { Team, TeamProduct, Product } = require('@datawrapper/orm/db');
 
 module.exports = async server => {
     // GET /v3/teams/{id}/products

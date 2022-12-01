@@ -1,4 +1,5 @@
 const test = require('ava');
+const { Chart, Session } = require('@datawrapper/orm/db');
 const { createGuestSession, createUser, destroy, setup } = require('../../../test/helpers/setup');
 
 function parseSetCookie(string) {
@@ -229,7 +230,6 @@ test('Login sets correct cookie', async t => {
         t.is(maxAge, 30);
     } finally {
         if (sessionId) {
-            const { Session } = require('@datawrapper/orm/models');
             const session = await Session.findByPk(sessionId);
             await destroy(session);
         }
@@ -269,7 +269,6 @@ test('Login sets crumb cookie with SameSite: Lax', async t => {
         t.is(crumbCookie.SameSite, 'Lax');
     } finally {
         if (sessionId) {
-            const { Session } = require('@datawrapper/orm/models');
             const session = await Session.findByPk(sessionId);
             await destroy(session);
         }
@@ -305,8 +304,6 @@ test('Logout errors with token', async t => {
 });
 
 test('Guest charts are associated after login', async t => {
-    const { Chart } = require('@datawrapper/orm/models');
-
     const session = await createGuestSession(t.context.server);
 
     /* Create chart as guest */
@@ -363,7 +360,6 @@ test('Guest charts are associated after login', async t => {
 });
 
 test('Login and logout updates session fields', async t => {
-    const { Session } = require('@datawrapper/orm/models');
     let session;
     try {
         let res = await t.context.server.inject({

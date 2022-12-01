@@ -2,6 +2,7 @@ const get = require('lodash/get');
 const has = require('lodash/has');
 const set = require('lodash/set');
 const test = require('ava');
+const { Team } = require('@datawrapper/orm/db');
 const {
     addUserToTeam,
     createFolder,
@@ -562,7 +563,6 @@ test('DELETE /teams/{id} deletes a team with nested folders', async t => {
         });
         t.is(res.statusCode, 204);
 
-        const { Team } = require('@datawrapper/orm/models');
         t.is(await Team.findByPk(team.id), null);
     } finally {
         if (teamObj) {

@@ -1,6 +1,6 @@
-const { Action, UserTeam, UserPluginCache } = require('@datawrapper/orm/models');
-const { db } = require('@datawrapper/orm');
-const { Op } = db;
+const { Action, UserTeam, UserPluginCache } = require('@datawrapper/orm/db');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
 const Boom = require('@hapi/boom');
 
 const ROLE_OWNER = 'owner';

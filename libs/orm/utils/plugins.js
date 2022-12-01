@@ -8,7 +8,7 @@ async function findPlugins(dwPluginsInfo) {
     return plugins;
 }
 
-function createRegisterPlugins(ORM, plugins) {
+function createRegisterPlugins({ db }, plugins) {
     return async function registerPlugins(logger) {
         for (const [name, config] of Object.entries(plugins)) {
             const { pluginConfig, requirePath } = config;
@@ -16,7 +16,7 @@ function createRegisterPlugins(ORM, plugins) {
                 logger.info(`Registering ORM plugin ${name}...`);
             }
             const Plugin = require(requirePath);
-            await Plugin.register(ORM, pluginConfig);
+            await Plugin.register({ db }, pluginConfig);
         }
     };
 }

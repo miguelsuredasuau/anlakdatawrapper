@@ -1,8 +1,8 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { User, Action } = require('@datawrapper/orm/models');
+const { User, Action } = require('@datawrapper/orm/db');
 const get = require('lodash/get');
-const { Op } = require('@datawrapper/orm').db;
+const { SQ } = require('@datawrapper/orm');
 
 module.exports = async server => {
     // POST /v3/auth/resend-activation
@@ -43,7 +43,7 @@ async function resendActivation(request) {
     }
 
     const user = await User.findOne({
-        where: { email: email, activate_token: { [Op.not]: null } },
+        where: { email: email, activate_token: { [SQ.Op.not]: null } },
         attributes: ['id', 'email', 'language', 'activate_token']
     });
 

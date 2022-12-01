@@ -1,4 +1,5 @@
 const test = require('ava');
+const { Action, ChartAccessToken, ChartPublic } = require('@datawrapper/orm/db');
 const { createChart, createUser, destroy, setup } = require('../../../../test/helpers/setup');
 
 test.before(async t => {
@@ -248,7 +249,6 @@ test('GET /charts/{id}/publish/data returns error 401 for unpublished chart when
 
 test('GET /charts/{id}/publish/data returns the data when requested as another user with ott', async t => {
     const { chart } = t.context;
-    const { ChartAccessToken } = require('@datawrapper/orm/models');
     const token = 'test-token';
     await ChartAccessToken.create({
         chart_id: chart.id,
@@ -327,7 +327,6 @@ test('POST /charts/{id}/publish updates chart properties', async t => {
 test('POST /charts/{id}/publish updates embed codes', async t => {
     let chart;
     const { userObj } = t.context;
-    const { ChartPublic } = require('@datawrapper/orm/models');
     try {
         chart = await createChart({ author_id: userObj.user.id });
 
@@ -574,7 +573,6 @@ test('GET /charts/{id}/publish returns error 403 when the scope is insufficient'
 });
 
 test('GET /charts/{id}/publish/status/0 returns progress based on the actions table', async t => {
-    const { Action } = require('@datawrapper/orm/models');
     let chart;
     try {
         chart = await createChart({ author_id: t.context.userObj.user.id });

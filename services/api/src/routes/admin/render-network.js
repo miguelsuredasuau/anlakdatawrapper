@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { ExportJob } = require('@datawrapper/orm/models');
+const { ExportJob } = require('@datawrapper/orm/db');
 
 module.exports = {
     name: 'routes/admin/render-network',

@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { Theme } = require('@datawrapper/orm/models');
+const { Theme } = require('@datawrapper/orm/db');
 const stream = require('stream');
 const { getCaches, dropCache, themeId } = require('../../../utils/themes');
 

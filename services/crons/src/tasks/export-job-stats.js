@@ -1,6 +1,6 @@
-const { db } = require('@datawrapper/orm');
-const { Op } = db;
-const { ExportJob, Stats } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { ExportJob, Stats } = require('@datawrapper/orm/db');
 const { groupBy } = require('lodash');
 const { quantile } = require('d3-array');
 
@@ -57,7 +57,7 @@ module.exports = {
 
 async function queuedJobs(stats, time) {
     const res = await ExportJob.findAll({
-        attributes: ['key', [db.fn('count', db.literal('*')), 'cnt']],
+        attributes: ['key', [SQ.fn('count', SQ.literal('*')), 'cnt']],
         group: ['key'],
         where: { status: 'queued' }
     });
@@ -71,7 +71,7 @@ async function queuedJobs(stats, time) {
 
 async function newlyCreatedJobs(stats, time) {
     const res = await ExportJob.findAll({
-        attributes: ['key', [db.fn('count', db.literal('*')), 'cnt']],
+        attributes: ['key', [SQ.fn('count', SQ.literal('*')), 'cnt']],
         group: ['key'],
         where: {
             created_at: { [Op.gt]: new Date(new Date() - duration[time]) }
@@ -87,7 +87,7 @@ async function newlyCreatedJobs(stats, time) {
 
 async function completedJobs(stats, time) {
     const res = await ExportJob.findAll({
-        attributes: ['key', [db.fn('count', db.literal('*')), 'cnt']],
+        attributes: ['key', [SQ.fn('count', SQ.literal('*')), 'cnt']],
         group: ['key'],
         where: {
             status: 'done',
@@ -104,7 +104,7 @@ async function completedJobs(stats, time) {
 
 async function failedJobs(stats, time) {
     const res = await ExportJob.findAll({
-        attributes: ['key', [db.fn('count', db.literal('*')), 'cnt']],
+        attributes: ['key', [SQ.fn('count', SQ.literal('*')), 'cnt']],
         group: ['key'],
         where: {
             status: 'failed',
@@ -124,11 +124,11 @@ async function completedJobsTime(stats, time) {
         attributes: [
             'key',
             [
-                db.fn(
+                SQ.fn(
                     'TIMESTAMPDIFF',
-                    db.literal('SECOND'),
-                    db.col('created_at'),
-                    db.col('done_at')
+                    SQ.literal('SECOND'),
+                    SQ.col('created_at'),
+                    SQ.col('done_at')
                 ),
                 'processing_time'
             ]

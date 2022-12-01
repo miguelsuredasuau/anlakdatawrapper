@@ -2,7 +2,7 @@
 const { requireConfig } = require('@datawrapper/service-utils/findConfig');
 const Api = require('../src/api');
 const config = requireConfig();
-const ORM = require('@datawrapper/orm');
+const { initORM } = require('@datawrapper/orm');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
@@ -34,7 +34,7 @@ describe('Pixeltracker Performance', function () {
             resultsFile,
             toCSVString(['noOfCharts', 'fetchChartInfo', 'createInserts', 'runInserts'])
         );
-        await ORM.init(config);
+        await initORM(config);
         connectionPool = await waitForDb(config.orm.db);
     });
 

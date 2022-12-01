@@ -1,4 +1,4 @@
-const { UserTeam, Team } = require('@datawrapper/orm/models');
+const { UserTeam, Team } = require('@datawrapper/orm/db');
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const got = require('got');

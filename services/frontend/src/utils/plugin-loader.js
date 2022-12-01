@@ -2,7 +2,7 @@ const fs = require('fs');
 const fsPromises = require('fs/promises');
 const { fetchAllPlugins } = require('@datawrapper/backend-utils');
 const { addLocalizationScope, fsUtils } = require('@datawrapper/service-utils');
-const models = require('@datawrapper/orm/models');
+const { models } = require('@datawrapper/orm/db');
 const path = require('path');
 
 module.exports = {

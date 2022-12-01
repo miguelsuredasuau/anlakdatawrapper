@@ -1,5 +1,6 @@
 const test = require('ava');
 const sortBy = require('lodash/sortBy');
+const { User } = require('@datawrapper/orm/db');
 const { createUser, destroy, getCredentials, setup } = require('../../../test/helpers/setup');
 
 test.before(async t => {
@@ -70,7 +71,6 @@ test('It should be possible to create a user, login and logout', async t => {
         t.false(res.headers['set-cookie'].join().includes(cookieString));
     } finally {
         if (userId) {
-            const { User } = require('@datawrapper/orm/models');
             const user = await User.findByPk(userId);
             await destroy(user);
         }
@@ -78,7 +78,6 @@ test('It should be possible to create a user, login and logout', async t => {
 });
 
 test('New user passwords should be saved as bcrypt hash', async t => {
-    const { User } = require('@datawrapper/orm/models');
     let userId;
     try {
         const credentials = getCredentials();
@@ -107,7 +106,6 @@ test('New user passwords should be saved as bcrypt hash', async t => {
 });
 
 test("New users can't set their role to admin", async t => {
-    const { User } = require('@datawrapper/orm/models');
     let userId;
     try {
         const credentials = getCredentials();
@@ -285,7 +283,6 @@ test('Users endpoint searches in email field', async t => {
 });
 
 test('It should be possible to resend the activation link up to two times', async t => {
-    const { User } = require('@datawrapper/orm/models');
     let userId;
     try {
         const credentials = getCredentials();

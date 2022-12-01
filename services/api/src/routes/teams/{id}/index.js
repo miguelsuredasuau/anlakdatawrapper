@@ -9,9 +9,9 @@ const {
     UserTeam,
     Folder,
     TeamProduct,
-    TeamTheme
-} = require('@datawrapper/orm/models');
-const { db } = require('@datawrapper/orm');
+    TeamTheme,
+    withTransaction
+} = require('@datawrapper/orm/db');
 
 const { noContentResponse, teamResponse } = require('../../../utils/schemas.js');
 
@@ -267,7 +267,7 @@ async function deleteTeam(request, h) {
         }
     }
 
-    const destroyedRows = await db.transaction(async t => {
+    const destroyedRows = await withTransaction(async t => {
         const query = {
             where: {
                 organization_id: params.id

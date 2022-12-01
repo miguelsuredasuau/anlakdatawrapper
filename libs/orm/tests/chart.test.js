@@ -1,9 +1,10 @@
 const test = require('ava');
+const { Chart } = require('../db');
 const { createChart, destroy } = require('./helpers/fixtures');
 const { init } = require('./helpers/orm');
 
 test.before(async t => {
-    t.context.orm = await init();
+    t.context.db = await init();
 
     t.context.chart = await createChart({
         metadata: {
@@ -19,7 +20,7 @@ test.before(async t => {
 
 test.after.always(async t => {
     await destroy(t.context.chart);
-    await t.context.orm.db.close();
+    await t.context.db.close();
 });
 
 test('metadata is object', t => {
@@ -44,7 +45,6 @@ test('getThumbnailHash returns an md5 hash', async t => {
 });
 
 test('getThumbnailHash throws an error when createdAt is not available', async t => {
-    const Chart = require('../models/Chart');
     const chart = await Chart.findByPk(t.context.chart.id, { attributes: ['id'] });
     t.throws(() => chart.getThumbnailHash());
 });

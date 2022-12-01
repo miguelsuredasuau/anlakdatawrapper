@@ -1,6 +1,6 @@
-const { Chart, Team, User } = require('@datawrapper/orm/models');
-const { db } = require('@datawrapper/orm');
-const { getUserData } = require('@datawrapper/orm/utils/userData');
+const { Chart, Team, User, UserData } = require('@datawrapper/orm/db');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
 const uniq = require('lodash/uniq');
 const get = require('lodash/get');
 const flatten = require('lodash/flatten');
@@ -93,10 +93,10 @@ module.exports = {
                     const user = request.auth.artifacts;
 
                     const recentlyEditedIds = JSON.parse(
-                        await getUserData(user.id, 'recently_edited', '[]')
+                        await UserData.getUserData(user.id, 'recently_edited', '[]')
                     );
                     const recentlyPublishedIds = JSON.parse(
-                        await getUserData(user.id, 'recently_published', '[]')
+                        await UserData.getUserData(user.id, 'recently_published', '[]')
                     );
 
                     if (recentlyEditedIds.length < numCharts) {
@@ -118,7 +118,7 @@ module.exports = {
                             where: {
                                 author_id: user.id,
                                 deleted: false,
-                                published_at: { [db.Op.not]: null }
+                                published_at: { [Op.not]: null }
                             },
                             order: [['published_at', 'DESC']],
                             limit: 30
@@ -185,7 +185,7 @@ module.exports = {
                         through: {
                             attributes: ['invite_token', 'invited_by'],
                             where: {
-                                invite_token: { [User.sequelize.Op.ne]: '' }
+                                invite_token: { [Op.ne]: '' }
                             }
                         }
                     }

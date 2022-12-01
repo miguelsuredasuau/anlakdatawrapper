@@ -1,4 +1,5 @@
 const test = require('ava');
+const { User, Team, UserTeam } = require('@datawrapper/orm/db');
 const {
     createTeamWithUser,
     createUser,
@@ -7,7 +8,6 @@ const {
 } = require('../../../../test/helpers/setup');
 
 async function inviteUser(context, teamObj, email, invitingUser) {
-    const { User, Team } = require('@datawrapper/orm/models');
     const res = await context.server.inject({
         method: 'POST',
         url: `/v3/teams/${teamObj.team.id}/invites`,
@@ -27,7 +27,6 @@ async function inviteUser(context, teamObj, email, invitingUser) {
 }
 
 async function getUserTeam(user, team, inviteToken) {
-    const { UserTeam } = require('@datawrapper/orm/models');
     return await UserTeam.findOne({
         where: {
             invite_token: inviteToken,

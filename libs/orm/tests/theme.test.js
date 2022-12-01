@@ -4,10 +4,9 @@ const { findWhere } = require('underscore');
 const { init } = require('./helpers/orm');
 
 test.before(async t => {
-    t.context.orm = await init();
+    t.context.db = await init();
 
-    const { Theme } = require('../models');
-    t.context.Theme = Theme;
+    t.context.Theme = t.context.db.models.theme;
 
     t.context.grandparentTheme = await createTheme({
         data: {
@@ -49,8 +48,7 @@ test.before(async t => {
     });
     t.context.theme2 = await createTheme();
 
-    const { getAllMergedThemes } = require('../utils/theme');
-    t.context.themes = await getAllMergedThemes();
+    t.context.themes = await t.context.Theme.getAllMergedThemes();
 });
 
 test.after.always(async t => {
@@ -60,7 +58,7 @@ test.after.always(async t => {
         t.context.parentTheme,
         t.context.grandparentTheme
     );
-    await t.context.orm.db.close();
+    await t.context.db.close();
 });
 
 test('get theme.data', t => {

@@ -2,7 +2,7 @@ const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { prepareChart } = require('../../../utils/index.js');
 const { createChart, findChartId, translate } = require('@datawrapper/service-utils');
-const { Team, ChartPublic, ReadonlyChart } = require('@datawrapper/orm/models');
+const { Team, ChartPublic, ReadonlyChart } = require('@datawrapper/orm/db');
 const cloneDeep = require('lodash/cloneDeep');
 
 // copy from plugins/social-sharing/src/v2/SharingSettings.html

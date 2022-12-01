@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { literal } = require('@datawrapper/orm').db;
+const { SQ } = require('@datawrapper/orm');
 const keyBy = require('lodash/keyBy');
 const groupBy = require('lodash/groupBy');
 
@@ -86,7 +86,7 @@ module.exports = {
                     },
                     group: [
                         'organization_id',
-                        [literal("invite_token = '' OR invite_token is NULL"), 'emptyInvite']
+                        [SQ.literal("invite_token = '' OR invite_token is NULL"), 'emptyInvite']
                     ]
                 }),
                 'organization_id'

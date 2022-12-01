@@ -1,5 +1,5 @@
 const { authenticator } = require('otplib');
-const { getUserData, setUserData, unsetUserData } = require('@datawrapper/orm/utils/userData');
+const { UserData } = require('@datawrapper/orm/db');
 const Boom = require('@hapi/boom');
 const USER_DATA_KEY = '.otp_authenticator';
 
@@ -15,7 +15,7 @@ module.exports = {
     },
 
     async isEnabledForUser({ user }) {
-        return getUserData(user.id, USER_DATA_KEY);
+        return UserData.getUserData(user.id, USER_DATA_KEY);
     },
 
     /*
@@ -24,7 +24,7 @@ module.exports = {
      */
     async verify({ user, otp }) {
         // check if the user has configured an OTP
-        const userOTP = await getUserData(user.id, USER_DATA_KEY);
+        const userOTP = await UserData.getUserData(user.id, USER_DATA_KEY);
         if (userOTP) {
             // user has enabled OTP, so we require it
             return authenticator.verify({ token: otp, secret: userOTP });
@@ -41,14 +41,14 @@ module.exports = {
             throw Boom.unauthorized('Invalid OTP');
         }
         // store authenticator secret
-        await setUserData(user.id, USER_DATA_KEY, secret);
+        await UserData.setUserData(user.id, USER_DATA_KEY, secret);
     },
 
     /*
      * Disable OTP login for a given user
      */
     async disable({ user }) {
-        await unsetUserData(user.id, USER_DATA_KEY);
+        await UserData.unsetUserData(user.id, USER_DATA_KEY);
     },
 
     data() {

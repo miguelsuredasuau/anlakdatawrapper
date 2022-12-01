@@ -1,6 +1,6 @@
-const { db } = require('@datawrapper/orm');
-const { Op } = db;
-const { ExportJob } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { ExportJob } = require('@datawrapper/orm/db');
 const config = require('../config');
 const { createJobsHelper } = require('../jobs');
 const logger = require('../logger');
@@ -12,7 +12,7 @@ module.exports = async () => {
     const jobsHelper = createJobsHelper();
 
     // prepare statement to compute seconds since job completion
-    const nowMinus70Seconds = db.fn('DATE_ADD', db.fn('NOW'), db.literal('INTERVAL -70 SECOND'));
+    const nowMinus70Seconds = SQ.fn('DATE_ADD', SQ.fn('NOW'), SQ.literal('INTERVAL -70 SECOND'));
 
     const jobs = await ExportJob.findAll({
         where: {
@@ -22,7 +22,7 @@ module.exports = async () => {
                 // job was successful
                 { status: 'done' },
                 // job has been completed within last 70 seconds
-                db.where(db.col('done_at'), Op.gt, nowMinus70Seconds)
+                SQ.where(SQ.col('done_at'), Op.gt, nowMinus70Seconds)
             ]
         }
     });

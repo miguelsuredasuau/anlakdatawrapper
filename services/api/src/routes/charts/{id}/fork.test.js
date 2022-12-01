@@ -1,5 +1,6 @@
 const assignDeep = require('assign-deep');
 const cloneDeep = require('lodash/cloneDeep');
+const { Chart, ChartPublic } = require('@datawrapper/orm/db');
 const { defaultChartMetadata } = require('@datawrapper/service-utils');
 const fetch = require('node-fetch');
 const test = require('ava');
@@ -20,8 +21,6 @@ test.before(async t => {
 });
 
 test('POST /charts/{id}/fork returns 401 when the original chart is not forkable', async t => {
-    const { Chart } = require('@datawrapper/orm/models');
-
     let userObj = {};
     let chart;
     try {
@@ -74,8 +73,6 @@ test('POST /charts/{id}/fork returns 401 when the original chart is not forkable
 });
 
 test('POST /charts/{id}/fork returns 404 when the original chart is not published', async t => {
-    const { Chart } = require('@datawrapper/orm/models');
-
     let userObj = {};
     let chart;
     try {
@@ -127,8 +124,6 @@ test('POST /charts/{id}/fork returns 404 when the original chart is not publishe
 });
 
 test('POST /charts/{id}/fork forks a fork-protected chart and the attributes match', async t => {
-    const { Chart, ChartPublic } = require('@datawrapper/orm/models');
-
     let userObj = {};
     let chart;
     let publicChart;
@@ -249,8 +244,6 @@ test('POST /charts/{id}/fork forks a fork-protected chart and the attributes mat
 });
 
 test('POST /charts/{id}/fork forks an unprotected chart and the attributes match', async t => {
-    const { Chart, ChartPublic } = require('@datawrapper/orm/models');
-
     let userObj = {};
     let chart;
     let publicChart;
@@ -370,8 +363,6 @@ test('POST /charts/{id}/fork forks an unprotected chart and the attributes match
 });
 
 test('POST /charts/{id}/fork forks a chart and the assets match', async t => {
-    const { ChartPublic, Chart } = require('@datawrapper/orm/models');
-
     let userObj = {};
     let chart;
     let publicChart;

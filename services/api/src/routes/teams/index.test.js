@@ -1,5 +1,6 @@
 const test = require('ava');
 const { nanoid } = require('nanoid');
+const { Team } = require('@datawrapper/orm/db');
 const { createTeamWithUser, createUser, destroy, setup } = require('../../../test/helpers/setup');
 
 test.before(async t => {
@@ -229,7 +230,6 @@ test('admins can create teams', async t => {
         if (userObj) {
             await destroy(...Object.values(userObj));
         }
-        const { Team } = require('@datawrapper/orm/models');
         const team = await Team.findByPk(teamId);
         await destroy(team);
     }
@@ -263,7 +263,6 @@ test('admins cant create teams with id "null"', async t => {
         if (userObj) {
             await destroy(...Object.values(userObj));
         }
-        const { Team } = require('@datawrapper/orm/models');
         const team = await Team.findByPk(teamId);
         await destroy(team);
     }
@@ -286,7 +285,6 @@ test('users can create teams', async t => {
         t.is(res.result.name, 'Test');
         t.is(res.statusCode, 201);
     } finally {
-        const { Team } = require('@datawrapper/orm/models');
         const team = await Team.findByPk(teamId);
         await destroy(team);
     }

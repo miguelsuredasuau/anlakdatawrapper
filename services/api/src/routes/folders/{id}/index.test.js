@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const test = require('ava');
 const { randomInt } = require('crypto');
+const { Chart, Folder } = require('@datawrapper/orm/db');
 const {
     BASE_URL,
     createUser,
@@ -24,7 +25,6 @@ function nonExistentId() {
 }
 
 function createFolder(props) {
-    const { Folder } = require('@datawrapper/orm/models');
     return Folder.create({
         name: randomId(),
         ...props
@@ -32,12 +32,10 @@ function createFolder(props) {
 }
 
 function findFolderById(id) {
-    const { Folder } = require('@datawrapper/orm/models');
     return Folder.findByPk(id);
 }
 
 function findChartById(id) {
-    const { Chart } = require('@datawrapper/orm/models');
     return Chart.findByPk(id);
 }
 

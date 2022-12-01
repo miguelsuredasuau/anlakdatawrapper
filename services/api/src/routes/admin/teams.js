@@ -1,8 +1,9 @@
 const Joi = require('joi');
-const { Op } = require('@datawrapper/orm').db;
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
 const set = require('lodash/set');
 const { camelizeKeys, decamelize } = require('humps');
-const { Team, User } = require('@datawrapper/orm/models');
+const { Team, User } = require('@datawrapper/orm/db');
 
 module.exports = {
     name: 'routes/admin/teams',

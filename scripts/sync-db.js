@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /* eslint no-console: "off" */
 const { white, green, yellow, red } = require('chalk');
-const ORM = require('@datawrapper/orm');
+const { initORM } = require('@datawrapper/orm');
+const { Schema } = require('@datawrapper/orm/db');
 const glob = require('fast-glob');
 const path = require('path');
 const groupBy = require('lodash/groupBy');
@@ -20,9 +21,8 @@ const config = requireConfig();
 
 set(config, 'orm.skipTableTest', true);
 
-ORM.init(config).then(async () => {
+initORM(config).then(async ({ db }) => {
     // add missing tables without touching existing ones
-    const { Schema } = require('@datawrapper/orm/models');
     const addedModels = new Map();
 
     try {
@@ -43,7 +43,7 @@ ORM.init(config).then(async () => {
     } catch (error) {
         console.error(error);
     } finally {
-        ORM.db.close();
+        db.close();
     }
 
     async function applyMigrations(scope, migrations) {
@@ -60,7 +60,7 @@ ORM.init(config).then(async () => {
                 for (const query of migration.up) {
                     // console.log({ query });
                     try {
-                        await ORM.db.query(query);
+                        await db.query(query);
                     } catch (err) {
                         console.error(red(query));
                     }

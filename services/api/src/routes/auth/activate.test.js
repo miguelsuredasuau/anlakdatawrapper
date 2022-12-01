@@ -1,4 +1,5 @@
 const test = require('ava');
+const { User } = require('@datawrapper/orm/db');
 const {
     createGuestSession,
     createTeamWithUser,
@@ -21,7 +22,6 @@ test.after.always(async t => {
 });
 
 test('user activation after team invite', async t => {
-    const { User } = require('@datawrapper/orm/models');
     let teamObj;
     let invitee;
     try {

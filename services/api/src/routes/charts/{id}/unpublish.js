@@ -1,6 +1,6 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const { Chart, ChartPublic } = require('@datawrapper/orm/models');
+const { Chart, ChartPublic } = require('@datawrapper/orm/db');
 
 module.exports = server => {
     // POST /v3/charts/{id}/unpublish

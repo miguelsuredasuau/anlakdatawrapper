@@ -1,6 +1,8 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { Theme, User, Team } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { Theme, Team } = require('@datawrapper/orm/db');
 const { themeId } = require('../../../utils/themes');
 
 module.exports = server => {
@@ -24,8 +26,6 @@ module.exports = server => {
                 include: [Team]
             });
             if (!theme) return Boom.notFound();
-
-            const { Op } = User.sequelize;
 
             const teams = await Team.findAll({
                 where: {
@@ -62,8 +62,6 @@ module.exports = server => {
             const { params, payload } = request;
             const theme = await Theme.findByPk(params.id);
             if (!theme) return Boom.notFound();
-
-            const { Op } = User.sequelize;
 
             const teams = await Team.findAll({
                 where: {

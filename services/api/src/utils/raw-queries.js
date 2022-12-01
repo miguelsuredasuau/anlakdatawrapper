@@ -1,8 +1,9 @@
-const { db } = require('@datawrapper/orm');
+const { SQ } = require('@datawrapper/orm');
+const { rawQuery } = require('@datawrapper/orm/db');
 
 const queries = {};
 
-function SQL(strings, ...values) {
+function wrapQuery(strings, ...values) {
     let str = '';
 
     strings.forEach((string, i) => {
@@ -25,7 +26,7 @@ queries.queryUsers = async function ({
 }) {
     search = search ? `%${search}%` : search;
 
-    const WHERE = SQL`WHERE
+    const WHERE = wrapQuery`WHERE
 user.deleted IS NOT TRUE
 ${search ? 'AND (user.email LIKE :search OR user.name LIKE :search)' : ''}
 ${
@@ -35,7 +36,7 @@ ${
 }
 `;
 
-    const userQuery = SQL`SELECT ${attributes.join(',')}
+    const userQuery = wrapQuery`SELECT ${attributes.join(',')}
 FROM \`user\`
 LEFT JOIN \`chart\` ON user.id = chart.author_id
 ${WHERE}
@@ -44,21 +45,21 @@ ORDER BY ${orderBy} ${order}
 LIMIT ${offset}, ${limit}
   `;
 
-    const countQuery = SQL`SELECT COUNT(user.id) AS count
+    const countQuery = wrapQuery`SELECT COUNT(user.id) AS count
 FROM \`user\`
 ${WHERE}
   `;
 
     const [rows, count] = await Promise.all([
-        db.query(userQuery, {
-            type: db.QueryTypes.SELECT,
+        rawQuery(userQuery, {
+            type: SQ.QueryTypes.SELECT,
             replacements: {
                 search,
                 teamId
             }
         }),
-        db.query(countQuery, {
-            type: db.QueryTypes.SELECT,
+        rawQuery(countQuery, {
+            type: SQ.QueryTypes.SELECT,
             replacements: {
                 search,
                 teamId

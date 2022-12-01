@@ -1,5 +1,4 @@
-const { Team } = require('@datawrapper/orm/models');
-const { setUserData } = require('@datawrapper/orm/utils/userData');
+const { Team, UserData } = require('@datawrapper/orm/db');
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
 
@@ -55,7 +54,7 @@ module.exports = async server => {
                     else return Boom.notFound('there is no team with that id');
                 }
 
-                await setUserData(userId, 'active_team', teamId);
+                await UserData.setUserData(userId, 'active_team', teamId);
                 result.activeTeam = teamId !== '%none%' ? teamId : null;
             }
 

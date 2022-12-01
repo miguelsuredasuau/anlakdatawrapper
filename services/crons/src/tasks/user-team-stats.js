@@ -1,5 +1,6 @@
-const { Op } = require('@datawrapper/orm').db;
-const { User, Team, UserTeam, Stats } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { User, Team, UserTeam, Stats } = require('@datawrapper/orm/db');
 
 const duration = {
     daily: 864e5, // analyze last day

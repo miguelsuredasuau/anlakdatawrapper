@@ -1,19 +1,19 @@
-const ORM = require('../../index');
+const { initORM } = require('../../index');
 const { requireConfig } = require('@datawrapper/backend-utils');
 
 const config = requireConfig();
 
-function init() {
-    return ORM.init(config);
-}
+exports.init = async function init() {
+    const { db } = await initORM(config);
+    return db;
+};
 
-async function sync() {
-    const { db } = await init();
-    require('../../models');
+exports.initWithPlugins = async function initWithPlugins() {
+    const { db, registerPlugins } = await initORM(config);
+    return { db, registerPlugins };
+};
+
+exports.sync = async function sync() {
+    const { db } = await initORM(config);
     await db.sync();
-}
-
-module.exports = {
-    init,
-    sync
 };

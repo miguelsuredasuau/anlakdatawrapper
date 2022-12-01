@@ -3,21 +3,16 @@ const { createUser, destroy } = require('./helpers/fixtures');
 const { init } = require('./helpers/orm');
 
 test.before(async t => {
-    t.context.orm = await init();
-
-    const { Action } = require('../models');
-    t.context.Action = Action;
-
-    const { logAction } = require('../utils/action');
-    t.context.logAction = logAction;
-
+    t.context.db = await init();
+    t.context.Action = t.context.db.models.action;
+    t.context.logAction = t.context.Action.logAction;
     t.context.user1 = await createUser();
     t.context.user2 = await createUser();
 });
 
 test.after.always(async t => {
     await destroy(t.context.user2, t.context.user1);
-    await t.context.orm.db.close();
+    await t.context.db.close();
 });
 
 test('log a new action', async t => {

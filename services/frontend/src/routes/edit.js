@@ -4,8 +4,9 @@ const get = require('lodash/get');
 const set = require('lodash/set');
 const cloneDeep = require('lodash/cloneDeep');
 const { getNestedObjectKeys, byOrder } = require('../utils');
-const { Op } = require('@datawrapper/orm').db;
-const { Chart, User, Folder, Team, Theme } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { Chart, User, Folder, Team, Theme } = require('@datawrapper/orm/db');
 const {
     loadLocaleMeta,
     loadVendorLocales,

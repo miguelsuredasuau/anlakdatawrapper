@@ -1,10 +1,10 @@
-const ORM = require('../index');
+const { initORM } = require('../index');
 const config = require('./config');
-ORM.init(config);
 
-const { Plugin } = require('../models');
+const { Plugin } = require('../db');
 
 (async () => {
+    const { db } = await initORM(config);
     // await Plugin.register('orm', ['test-plugin']);
 
     //    let pd = await PluginData.findAll({where: {key:'installed_by'}});
@@ -35,5 +35,5 @@ const { Plugin } = require('../models');
 
     // console.log( (await Plugin.findAll()).map(p => p.id));
 
-    await ORM.db.close();
+    await db.close();
 })();

@@ -1,7 +1,18 @@
 const { randomInt } = require('crypto');
+const {
+    Chart,
+    ExportJob,
+    Plugin,
+    Product,
+    Team,
+    TeamProduct,
+    Theme,
+    User,
+    UserProduct,
+    UserTeam
+} = require('../../db');
 
 function createChart(props = {}) {
-    const { Chart } = require('../../models');
     const id = String(randomInt(99999));
     return Chart.create({
         id,
@@ -10,7 +21,6 @@ function createChart(props = {}) {
 }
 
 function createPlugin(props = {}) {
-    const { Plugin } = require('../../models');
     const id = String(randomInt(99999));
     return Plugin.create({
         id,
@@ -19,7 +29,6 @@ function createPlugin(props = {}) {
 }
 
 function createProduct({ ...props } = {}) {
-    const { Product } = require('../../models');
     const id = randomInt(2 ** 16);
     const name = String(randomInt(99999));
     return Product.create({
@@ -30,14 +39,12 @@ function createProduct({ ...props } = {}) {
 }
 
 async function createTeam({ product, ...props } = {}) {
-    const { Team } = require('../../models');
     const id = String(randomInt(99999));
     const team = await Team.create({
         id,
         ...props
     });
     if (product) {
-        const { TeamProduct } = require('../../models');
         await TeamProduct.create({
             organization_id: team.id,
             productId: product.id
@@ -47,7 +54,6 @@ async function createTeam({ product, ...props } = {}) {
 }
 
 function createTheme({ data = {}, assets = {}, ...props } = {}) {
-    const { Theme } = require('../../models');
     const id = String(randomInt(99999));
     return Theme.create({
         id,
@@ -58,7 +64,6 @@ function createTheme({ data = {}, assets = {}, ...props } = {}) {
 }
 
 async function createUser({ teams, product, ...props } = {}) {
-    const { User } = require('../../models');
     const id = randomInt(2 ** 16);
     const user = await User.create({
         id,
@@ -68,7 +73,6 @@ async function createUser({ teams, product, ...props } = {}) {
     });
     if (teams) {
         for (const team of teams) {
-            const { UserTeam } = require('../../models');
             await UserTeam.create({
                 user_id: user.id,
                 organization_id: team.id,
@@ -77,7 +81,6 @@ async function createUser({ teams, product, ...props } = {}) {
         }
     }
     if (product) {
-        const { UserProduct } = require('../../models');
         await UserProduct.create({
             userId: user.id,
             productId: product.id
@@ -87,7 +90,6 @@ async function createUser({ teams, product, ...props } = {}) {
 }
 
 async function createTeamInvite({ user, team }) {
-    const { UserTeam } = require('../../models');
     await UserTeam.create({
         user_id: user.id,
         organization_id: team.id,
@@ -97,7 +99,6 @@ async function createTeamInvite({ user, team }) {
 }
 
 function createJob({ chart, user }) {
-    const { ExportJob } = require('../../models');
     return ExportJob.create({
         chart_id: chart.id,
         user_id: user.id,
@@ -110,21 +111,17 @@ function createJob({ chart, user }) {
 }
 
 async function destroyTeam(team) {
-    const { TeamProduct } = require('../../models');
     await TeamProduct.destroy({ where: { organization_id: team.id }, force: true });
     await team.destroy({ force: true });
 }
 
 async function destroyUser(user) {
-    const { UserProduct } = require('../../models');
     await UserProduct.destroy({ where: { user_id: user.id }, force: true });
-    const { UserTeam } = require('../../models');
     await UserTeam.destroy({ where: { user_id: user.id }, force: true });
     await user.destroy({ force: true });
 }
 
 async function destroy(...instances) {
-    const { Team, User } = require('../../models');
     for (const instance of instances) {
         if (!instance) {
             continue;

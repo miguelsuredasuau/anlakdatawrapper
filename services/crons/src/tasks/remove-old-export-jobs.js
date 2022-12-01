@@ -1,13 +1,13 @@
-const { db } = require('@datawrapper/orm');
-const { Op } = db;
-const { ExportJob } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { ExportJob } = require('@datawrapper/orm/db');
 const logger = require('../logger');
 
 module.exports = async () => {
-    const createdAgo = db.fn('DATEDIFF', db.fn('NOW'), db.col('created_at'));
+    const createdAgo = SQ.fn('DATEDIFF', SQ.fn('NOW'), SQ.col('created_at'));
 
     const oldExportJobs = {
-        where: db.where(createdAgo, Op.gt, 5)
+        where: SQ.where(createdAgo, Op.gt, 5)
     };
 
     const numDeleted = await ExportJob.destroy(oldExportJobs);

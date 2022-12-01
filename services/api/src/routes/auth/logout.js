@@ -1,4 +1,4 @@
-const { Session } = require('@datawrapper/orm/models');
+const { Session } = require('@datawrapper/orm/db');
 
 module.exports = async server => {
     // POST /v3/auth/logout

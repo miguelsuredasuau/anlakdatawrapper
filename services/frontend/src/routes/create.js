@@ -3,8 +3,9 @@ const Boom = require('@hapi/boom');
 const get = require('lodash/get');
 const set = require('lodash/set');
 const { createChart } = require('@datawrapper/service-utils');
-const { Op } = require('@datawrapper/orm').db;
-const { Chart, ChartPublic, Team } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { Chart, ChartPublic, Team } = require('@datawrapper/orm/db');
 
 module.exports = {
     name: 'routes/create',

@@ -1,4 +1,5 @@
 const test = require('ava');
+const { Chart } = require('@datawrapper/orm/db');
 const {
     BASE_URL,
     createChart,
@@ -18,7 +19,6 @@ function delay(ms) {
 }
 
 function findChartById(id) {
-    const { Chart } = require('@datawrapper/orm/models');
     return Chart.findByPk(id);
 }
 

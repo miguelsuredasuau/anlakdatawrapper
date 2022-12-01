@@ -10,24 +10,12 @@ Add the package to your repository using:
 npm i --save "@datawrapper/orm"
 ```
 
-Then you can load the models using:
-
-```js
-const { Chart, User } = require('@datawrapper/orm/models');
-```
-
-or
-
-```js
-const User = require('@datawrapper/orm/models/User');
-```
-
 In your app you need to initialize the ORM before you can actually use it. It's a good idea to do this in your apps main entry point:
 
 ```js
-const orm = require('@datawrapper/orm');
+const { initORM } = require('@datawrapper/orm');
 
-orm.init({
+const { db } = await initORM({
     dialect: 'mysql',
     host: '127.0.0.1',
     port: 3306,
@@ -38,6 +26,18 @@ orm.init({
 ```
 
 Note that this will initialize the entire model, which assumes that your database user has access to all the database tables.
+
+Then you can load the models using:
+
+```js
+const Chart = db.models.chart
+```
+
+or
+
+```js
+const { Chart, User } = require('@datawrapper/orm/db');
+```
 
 ### Plugins
 
@@ -54,35 +54,38 @@ plugins: {
 }
 
 /* orm.js */
+const { SQ } = require('@datawrapper/orm');
+
 module.exports = {
-    register: async (ORM, config) => {
+    register: async ({ db }, config) => {
         console.log(`Hi I am ${config.my_name}!`)
         // logs "Hi I am Steve!" on registration
+
+        db.define(
+            'custom_plugin_model',
+            {
+                id: {
+                    type: SQ.INTEGER,
+                    primaryKey: true,
+                    autoIncrement: true
+                },
+
+                type: SQ.STRING(64),
+            },
+            {
+                tableName: 'custom_plugin_table'
+            }
+        );
+        // defines custom_plugin_model for custom_plugin_table
     }
 }
 ```
 
-There are 2 interesting properties on the `ORM` object that help with plugin access.
-
-* `ORM.plugins` is an object with all configured plugins. They are **not** registered by default.
-
-This is how you register a plugin:
+`registerPlugins` will register all plugins.
 
 ```js
-await ORM.init()
-const { plugins } = ORM
-
-const MyORMPlugin = require(plugins['my-orm-plugin'].requirePath)
-await MyORMPlugin.register(ORM, plugins['my-orm-plugin'])
-```
-
-This method is very useful for tests where you only need a special plugin. There is also a helper method to register all plugins. It is in functionality similar to requiring all models with `require('@datawrapper/orm/models')`.
-
-* `ORM.registerPlugins` will register all plugins.
-
-```js
-await ORM.init()
-await ORM.registerPlugins()
+const { registerPlugins } = await initORM()
+await registerPlugins();
 ```
 
 ### Development

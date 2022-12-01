@@ -5,6 +5,7 @@ const Team = require('./Team');
 const chartAttributes = require('./chartAttributes');
 const crypto = require('crypto');
 const get = require('lodash/get');
+const { runAndIgnoreParseErrors } = require('../utils/run');
 
 module.exports.dwORM$setInitializer(({ db, chartIdSalt, hashPublishing }) => {
     const Chart = db.define('chart', chartAttributes, {
@@ -83,6 +84,18 @@ module.exports.dwORM$setInitializer(({ db, chartIdSalt, hashPublishing }) => {
             .createHash('md5')
             .update(`${this.id}--${this.createdAt.getTime() / 1000}`)
             .digest('hex');
+    };
+
+    // Use `runAndIgnoreParseErrors()`, so that the query doesn't crash when the user-provided
+    // search string is not a valid MySQL full-text search string.
+    Chart.findAndCountAllFullText = async function (options) {
+        const { count = 0, rows = [] } =
+            (await runAndIgnoreParseErrors(() => Chart.findAndCountAll(options))) ?? {};
+        return { count, rows };
+    };
+
+    Chart.countFullText = async function (options) {
+        return (await runAndIgnoreParseErrors(() => Chart.count(options))) ?? 0;
     };
 
     return Chart;

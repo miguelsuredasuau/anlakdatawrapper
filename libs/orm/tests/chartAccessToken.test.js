@@ -3,19 +3,15 @@ const { createChart, createUser, destroy } = require('./helpers/fixtures');
 const { init } = require('./helpers/orm');
 
 test.before(async t => {
-    t.context.orm = await init();
-
+    t.context.db = await init();
     t.context.chart = await createChart();
-
-    const { ChartAccessToken } = require('../models');
-    t.context.ChartAccessToken = ChartAccessToken;
-
+    t.context.ChartAccessToken = t.context.db.models.chart_access_token;
     t.context.user = await createUser();
 });
 
 test.after.always(async t => {
     await destroy(t.context.user, t.context.chart);
-    await t.context.orm.db.close();
+    await t.context.db.close();
 });
 
 test('create a new ChartAccessToken', async t => {

@@ -12,10 +12,9 @@ const {
 const { init } = require('./helpers/orm');
 
 test.before(async t => {
-    t.context.orm = await init();
+    t.context.db = await init();
 
-    const { Chart, UserPluginCache } = require('../models');
-    t.context.Chart = Chart;
+    t.context.Chart = t.context.db.models.chart;
 
     t.context.defaultProduct = await createProduct({
         priority: -50
@@ -86,7 +85,7 @@ test.before(async t => {
         enabled: true,
         is_private: true
     });
-    t.context.userPluginCache = await UserPluginCache.create({
+    t.context.userPluginCache = await t.context.db.models.user_plugin_cache.create({
         user_id: t.context.adminUser.id,
         plugins: [t.context.publicPlugin.id, t.context.privatePluginCached.id].join(',')
     });
@@ -113,7 +112,7 @@ test.after.always(async t => {
         t.context.defaultProduct,
         t.context.pendingTeamUser
     );
-    await t.context.orm.db.close();
+    await t.context.db.close();
 });
 
 test('admin user has role admin', t => {

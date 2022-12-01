@@ -1,4 +1,5 @@
 const test = require('ava');
+const { Theme } = require('@datawrapper/orm/db');
 const { createUser, destroy, setup } = require('../../../../test/helpers/setup');
 const { darkModeTestTheme, darkModeTestBgTheme } = require('../../../../test/data/testThemes.js');
 const { findDarkModeOverrideKeys } = require('../../../utils/themes');
@@ -19,7 +20,6 @@ test.before(async t => {
         credentials: t.context.userObj.session,
         artifacts: t.context.userObj.user
     };
-    const { Theme } = require('@datawrapper/orm/models');
     t.context.themes = await Promise.all([
         await Theme.findOrCreate({
             where: { id: 'my-theme-1' },

@@ -12,7 +12,8 @@ const Crumb = require('@hapi/crumb');
 const Hapi = require('@hapi/hapi');
 const HapiSwagger = require('hapi-swagger');
 const Joi = require('joi');
-const ORM = require('@datawrapper/orm');
+const { initORM } = require('@datawrapper/orm');
+const { Action, Plugin } = require('@datawrapper/orm/db');
 const fs = require('fs-extra');
 const get = require('lodash/get');
 const path = require('path');
@@ -256,14 +257,11 @@ async function create({
     // plugin).
     addLocalizationScope('chart', { 'en-US': {} });
 
-    await ORM.init(config);
-    await ORM.registerPlugins(server.logger);
+    const { db, registerPlugins } = await initORM(config);
+    await registerPlugins(server.logger);
 
     /* register api plugins with core db */
-    require('@datawrapper/orm/models/Plugin').register(
-        'datawrapper-api',
-        Object.keys(config.plugins)
-    );
+    Plugin.register('datawrapper-api', Object.keys(config.plugins));
 
     server.register(require('./utils/jobs'));
 
@@ -294,10 +292,10 @@ async function create({
     server.app.scopes = new Set();
     server.app.adminScopes = new Set();
 
-    server.method('getDB', () => ORM.db);
-    server.method('getModel', name => ORM.db.models[name]);
+    server.method('getDB', () => db);
+    server.method('getModel', name => db.models[name]);
     server.method('generateToken', generateToken);
-    server.method('logAction', require('@datawrapper/orm/utils/action').logAction);
+    server.method('logAction', (...args) => Action.logAction(...args));
     server.method('createChartWebsite', require('./utils/publish/create-chart-website.js'));
     server.method('registerVisualization', createRegisterVisualization(server));
     server.method('registerFeatureFlag', registerFeatureFlag(server));

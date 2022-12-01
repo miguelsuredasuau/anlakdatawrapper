@@ -1,10 +1,11 @@
 const test = require('ava');
 const { createSession, setup, withUser, withTeamWithUser } = require('../../../test/helpers/setup');
 const { createAuth } = require('@datawrapper/service-utils');
+const { AccessToken, User, Session, Chart, Team } = require('@datawrapper/orm/db');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
-    const { legacyHash } = createAuth(require('@datawrapper/orm/models'));
+    const { legacyHash } = createAuth({ AccessToken, User, Session, Chart, Team });
     t.context.legacyHash = legacyHash;
 });
 
@@ -85,8 +86,6 @@ test('User cannot change password without old password (legacy)', async t => {
 
 test('Password change leads to invalidation of all sessions', async t => {
     return withUser(t.context.server, {}, async ({ session, user }) => {
-        const { Session } = require('@datawrapper/orm/models');
-
         // create some more sessions for the user
         await createSession(t.context.server, user);
         await createSession(t.context.server, user);

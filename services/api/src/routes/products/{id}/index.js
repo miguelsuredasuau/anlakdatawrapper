@@ -1,6 +1,6 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const { Product, Team, User } = require('@datawrapper/orm/models');
+const { Product, Team, User } = require('@datawrapper/orm/db');
 const { serializeProduct } = require('../utils.js');
 
 module.exports = {

@@ -1,16 +1,16 @@
 const Joi = require('joi');
 const { createChart } = require('@datawrapper/service-utils');
 const set = require('lodash/set');
-const { Op } = require('@datawrapper/orm').db;
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
 const { decamelizeKeys, decamelize } = require('humps');
-const { Chart, User, Folder, Team } = require('@datawrapper/orm/models');
+const { Chart, User, Folder, Team } = require('@datawrapper/orm/db');
 const { chartListResponse, chartResponse } = require('../../utils/schemas');
 const {
     prepareChart,
     GET_CHARTS_ATTRIBUTES,
     updateChartsAndMoveToNewTeam
 } = require('../../utils/index.js');
-const { runAndIgnoreParseErrors } = require('@datawrapper/orm/utils/run');
 const Boom = require('@hapi/boom');
 
 const authorIdFormats = [
@@ -413,11 +413,7 @@ async function getAllCharts(request) {
             return Boom.notImplemented('Please filter the query by folderId, teamId or search');
         }
         // Count search results.
-        // Use `runAndIgnoreParseErrors()`, so that the query doesn't crash when the user-provided
-        // search string is not a valid MySQL full-text search string.
-        const resultCount = await runAndIgnoreParseErrors(() =>
-            Chart.count({ where: options.where })
-        );
+        const resultCount = await Chart.countFullText({ where: options.where });
         if (resultCount > 10000) {
             return Boom.badRequest('Please provide a more specific search query');
         } else if (resultCount > 1000) {
@@ -433,8 +429,7 @@ async function getAllCharts(request) {
         request
     });
 
-    const { count = 0, rows = [] } =
-        (await runAndIgnoreParseErrors(() => Chart.findAndCountAll(options))) || {};
+    const { count, rows } = await Chart.findAndCountAllFullText(options);
 
     const charts = [];
 

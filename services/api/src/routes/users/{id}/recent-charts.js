@@ -1,8 +1,8 @@
-const { Chart } = require('@datawrapper/orm/models');
+const { Chart, UserData } = require('@datawrapper/orm/db');
 const Joi = require('joi');
-const { getUserData } = require('@datawrapper/orm/utils/userData');
 const { chartListResponse } = require('../../../utils/schemas');
-const { Op } = require('@datawrapper/orm').db;
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
 const { prepareChart, GET_CHARTS_ATTRIBUTES } = require('../../../utils/index.js');
 
 module.exports = async server => {
@@ -58,7 +58,7 @@ function getRecentChartHandler(type) {
         const { events, event } = request.server.app;
         const { offset, limit } = request.query;
         const general = request.server.methods.config('general');
-        const chartIds = JSON.parse(await getUserData(userId, `recently_${type}`, '[]'));
+        const chartIds = JSON.parse(await UserData.getUserData(userId, `recently_${type}`, '[]'));
 
         const options = {
             attributes: GET_CHARTS_ATTRIBUTES,

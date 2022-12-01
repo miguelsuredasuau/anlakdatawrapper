@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { Product } = require('@datawrapper/orm/models');
+const { Product } = require('@datawrapper/orm/db');
 const { listResponse } = require('../../utils/schemas');
 const { serializeProduct } = require('./utils.js');
 

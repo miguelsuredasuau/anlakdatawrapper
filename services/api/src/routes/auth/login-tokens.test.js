@@ -1,4 +1,5 @@
 const test = require('ava');
+const { AccessToken } = require('@datawrapper/orm/db');
 const { createUser, destroy, setup } = require('../../../test/helpers/setup');
 
 function parseSetCookie(string) {
@@ -217,7 +218,6 @@ test('Login token expires after five minutes', async t => {
     t.is(res.statusCode, 201);
     t.is(typeof res.result.token, 'string');
 
-    const { AccessToken } = require('@datawrapper/orm/models');
     await AccessToken.update(
         {
             createdAt: new Date().getTime() - 6 * 60 * 1000 // 6m ago

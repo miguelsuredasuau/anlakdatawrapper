@@ -1,4 +1,5 @@
 const test = require('ava');
+const { Chart } = require('@datawrapper/orm/db');
 const {
     createPublicChart,
     createUser,
@@ -90,7 +91,6 @@ test('User can write chart asset with almost 2MB', async t => {
         t.is(res.statusCode, 413);
     } finally {
         if (chart) {
-            const { Chart } = require('@datawrapper/orm/models');
             await Chart.destroy({ where: { id: chart.id } });
         }
     }
@@ -151,7 +151,6 @@ test('Public asset can be read', async t => {
         t.is(nonPublicAsset.statusCode, 403);
     } finally {
         if (chartId) {
-            const { Chart } = require('@datawrapper/orm/models');
             const chart = await Chart.findByPk(chartId);
             await destroy(chart);
         }
@@ -177,7 +176,6 @@ test('GET /charts/{id}/assets/{asset} returns error 400 when the asset is not in
         t.is(resAsset.statusCode, 400);
     } finally {
         if (chartId) {
-            const { Chart } = require('@datawrapper/orm/models');
             const chart = await Chart.findByPk(chartId);
             await destroy(chart);
         }
@@ -203,7 +201,6 @@ test('GET /charts/{id}/assets/{asset} returns error 404 when the asset was not f
         t.is(resAsset.statusCode, 404);
     } finally {
         if (chartId) {
-            const { Chart } = require('@datawrapper/orm/models');
             const chart = await Chart.findByPk(chartId);
             await destroy(chart);
         }

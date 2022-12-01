@@ -1,4 +1,5 @@
 const test = require('ava');
+const { AccessToken } = require('@datawrapper/orm/db');
 const { createUser, destroy, setup } = require('../../../test/helpers/setup');
 
 test.before(async t => {
@@ -63,7 +64,6 @@ test('Tokens can be created, fetched and deleted', async t => {
 });
 
 test('The scope of newly created tokens cannot exceed the session scopes', async t => {
-    const { AccessToken } = require('@datawrapper/orm/models');
     let userObj;
     const tokenIds = [];
     try {

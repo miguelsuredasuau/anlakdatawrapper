@@ -1,5 +1,6 @@
-const { Op } = require('@datawrapper/orm').db;
-const { UserProduct, TeamProduct } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { UserProduct, TeamProduct } = require('@datawrapper/orm/db');
 const logger = require('../logger');
 
 module.exports = async () => {

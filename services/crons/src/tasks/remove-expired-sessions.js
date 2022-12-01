@@ -1,6 +1,6 @@
-const { db } = require('@datawrapper/orm');
-const { Op } = db;
-const { Session } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { Session } = require('@datawrapper/orm/db');
 const logger = require('../logger');
 
 /*
@@ -13,13 +13,13 @@ const logger = require('../logger');
  * checkbox "remember login" checked.
  */
 module.exports = async () => {
-    const lastUpdatedAgo = db.fn('DATEDIFF', db.fn('NOW'), db.col('last_updated'));
+    const lastUpdatedAgo = SQ.fn('DATEDIFF', SQ.fn('NOW'), SQ.col('last_updated'));
 
     const expiredSessions = {
         where: {
             [Op.and]: [
                 // last updated 90 days ago, AND...
-                db.where(lastUpdatedAgo, Op.gt, 90),
+                SQ.where(lastUpdatedAgo, Op.gt, 90),
                 {
                     [Op.or]: [
                         // either not persistent OR...

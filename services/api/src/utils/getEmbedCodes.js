@@ -4,7 +4,7 @@ const sanitizeHtml = require('sanitize-html');
 const fs = require('fs-extra');
 const path = require('path');
 const chartCore = require('@datawrapper/chart-core');
-const { getUserData } = require('@datawrapper/orm/utils/userData');
+const { UserData } = require('@datawrapper/orm/db');
 
 let embedJS;
 
@@ -43,7 +43,7 @@ module.exports = async function getEmbedCodes({
     const preferred = user.id
         ? team && get(team, 'settings.embed.preferred_embed')
             ? get(team, 'settings.embed.preferred_embed')
-            : await getUserData(user.id, 'embed_type', 'responsive')
+            : await UserData.getUserData(user.id, 'embed_type', 'responsive')
         : 'responsive';
 
     const templates = [

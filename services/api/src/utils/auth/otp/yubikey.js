@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 const yub = require('yub');
 const yubVerify = promisify(yub.verify);
-const { getUserData, setUserData, unsetUserData } = require('@datawrapper/orm/utils/userData');
+const { UserData } = require('@datawrapper/orm/db');
 const Boom = require('@hapi/boom');
 const get = require('lodash/get');
 
@@ -20,7 +20,7 @@ module.exports = {
     },
 
     async isEnabledForUser({ user }) {
-        return getUserData(user.id, USER_DATA_KEY);
+        return UserData.getUserData(user.id, USER_DATA_KEY);
     },
 
     /*
@@ -32,7 +32,7 @@ module.exports = {
 
         yub.init(api.otp.yubikey.clientId, api.otp.yubikey.secretKey);
         // check if the user has configured an OTP
-        const userOTP = await getUserData(user.id, USER_DATA_KEY);
+        const userOTP = await UserData.getUserData(user.id, USER_DATA_KEY);
         if (userOTP) {
             // user has enabled OTP, so we require it
             const otpRes = await yubVerify(otp);
@@ -55,13 +55,13 @@ module.exports = {
             throw Boom.unauthorized('Invalid OTP');
         }
         // otp is valid, store device identity
-        await setUserData(user.id, USER_DATA_KEY, otpRes.identity);
+        await UserData.setUserData(user.id, USER_DATA_KEY, otpRes.identity);
     },
 
     /*
      * Disable OTP login for a given user
      */
     async disable({ user }) {
-        await unsetUserData(user.id, USER_DATA_KEY);
+        await UserData.unsetUserData(user.id, USER_DATA_KEY);
     }
 };

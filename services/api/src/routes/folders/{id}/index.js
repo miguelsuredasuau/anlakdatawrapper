@@ -1,8 +1,8 @@
 const { folderResponse, noContentResponse } = require('../../../utils/schemas');
-const { Folder, User, Chart } = require('@datawrapper/orm/models');
+const { Folder, User, Chart, withTransaction } = require('@datawrapper/orm/db');
 const omit = require('lodash/omit');
-const { db } = require('@datawrapper/orm');
-const { Op } = require('@datawrapper/orm').db;
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { updateChartsAndMoveToNewTeam } = require('../../../utils/index.js');
@@ -93,7 +93,7 @@ const routes = [
                 return Boom.forbidden('Cannot delete a folder with sub-folders.');
             }
             // Move charts of folder to parent
-            await db.transaction(async t => {
+            await withTransaction(async t => {
                 await Chart.update(
                     { in_folder: folder.parent_id },
                     {
@@ -240,8 +240,8 @@ async function updateFolder(request) {
         }
     }
 
-    return await db
-        .transaction(async t => {
+    try {
+        await withTransaction(async t => {
             // ownership has changed
             if (folder.org_id !== update.teamId || folder.user_id !== update.userId) {
                 await propagateOwnershipChange(folder, update.teamId, update.userId, user, t);
@@ -253,12 +253,12 @@ async function updateFolder(request) {
             await folder.save({
                 transaction: t
             });
-        })
-        .then(() => serialize(folder))
-        .catch(err => {
-            if (err.isBoom) return err;
-            return Boom.badImplementation();
         });
+        return serialize(folder);
+    } catch (err) {
+        if (err.isBoom) return err;
+        return Boom.badImplementation();
+    }
 }
 
 async function propagateOwnershipChange(folder, newTeamId, newUserId, user, transaction) {

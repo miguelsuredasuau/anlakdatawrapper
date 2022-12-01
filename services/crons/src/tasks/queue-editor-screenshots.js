@@ -1,12 +1,12 @@
-const { db } = require('@datawrapper/orm');
-const { Op } = db;
-const { Chart, ExportJob } = require('@datawrapper/orm/models');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
+const { Chart, ExportJob } = require('@datawrapper/orm/db');
 const config = require('../config');
 // const logger = require('../logger');
 
 module.exports = async () => {
     // prepare statement to compute seconds since last edit
-    const nowMinus70Seconds = db.fn('DATE_ADD', db.fn('NOW'), db.literal('INTERVAL -70 SECOND'));
+    const nowMinus70Seconds = SQ.fn('DATE_ADD', SQ.fn('NOW'), SQ.literal('INTERVAL -70 SECOND'));
 
     // retreive charts
     const editedCharts = await Chart.findAll({
@@ -15,13 +15,13 @@ module.exports = async () => {
             'author_id',
             'organization_id',
             [
-                db.fn(
+                SQ.fn(
                     'MD5',
-                    db.fn(
+                    SQ.fn(
                         'CONCAT',
-                        db.col('id'),
+                        SQ.col('id'),
                         '--',
-                        db.fn('UNIX_TIMESTAMP', db.col('created_at'))
+                        SQ.fn('UNIX_TIMESTAMP', SQ.col('created_at'))
                     )
                 ),
                 'hash'
@@ -36,7 +36,7 @@ module.exports = async () => {
                 // not a guest chart
                 { guest_session: null },
                 // chart edited within last N seconds
-                db.where(db.col('last_modified_at'), Op.gt, nowMinus70Seconds)
+                SQ.where(SQ.col('last_modified_at'), Op.gt, nowMinus70Seconds)
             ]
         }
     });

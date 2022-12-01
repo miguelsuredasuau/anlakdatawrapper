@@ -3,14 +3,13 @@ const { createUser, destroy } = require('./helpers/fixtures');
 const { init } = require('./helpers/orm');
 
 test.before(async t => {
-    t.context.orm = await init();
+    t.context.db = await init();
 
-    const { getUserData, setUserData, unsetUserData } = require('../utils/userData');
-    t.context.getUserData = getUserData;
-    t.context.setUserData = setUserData;
-    t.context.unsetUserData = unsetUserData;
+    const UserData = t.context.db.models.user_data;
+    t.context.getUserData = UserData.getUserData;
+    t.context.setUserData = UserData.setUserData;
+    t.context.unsetUserData = UserData.unsetUserData;
 
-    const { UserData } = require('../models');
     t.context.user1 = await createUser();
     t.context.user2 = await createUser();
     t.context.userData = await UserData.create({
@@ -22,7 +21,7 @@ test.before(async t => {
 
 test.after.always(async t => {
     await destroy(t.context.userData, t.context.user2, t.context.user1);
-    await t.context.orm.db.close();
+    await t.context.db.close();
 });
 
 test('default for missing userdata', async t => {

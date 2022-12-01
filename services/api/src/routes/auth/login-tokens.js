@@ -1,8 +1,8 @@
 const Boom = require('@hapi/boom');
 const Joi = require('joi');
-const { db } = require('@datawrapper/orm');
-const { AccessToken } = require('@datawrapper/orm/models');
-const { Op } = db;
+const { SQ } = require('@datawrapper/orm');
+const { AccessToken } = require('@datawrapper/orm/db');
+const { Op } = SQ;
 const { camelizeKeys } = require('humps');
 const set = require('lodash/set');
 
@@ -127,10 +127,10 @@ module.exports = async server => {
                     [Op.and]: [
                         { type: 'login-token' },
                         { user_id: auth.artifacts.id },
-                        db.where(
-                            db.col('created_at'),
+                        SQ.where(
+                            SQ.col('created_at'),
                             Op.gt,
-                            db.fn('DATE_ADD', db.fn('NOW'), db.literal('INTERVAL -5 MINUTE'))
+                            SQ.fn('DATE_ADD', SQ.fn('NOW'), SQ.literal('INTERVAL -5 MINUTE'))
                         )
                     ]
                 },

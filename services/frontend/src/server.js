@@ -1,7 +1,8 @@
 const Hapi = require('@hapi/hapi');
 const Vision = require('@hapi/vision');
 const Inert = require('@hapi/inert');
-const ORM = require('@datawrapper/orm');
+const { initORM } = require('@datawrapper/orm');
+const { Action } = require('@datawrapper/orm/db');
 const fs = require('fs-extra');
 const Pug = require('pug');
 const Redis = require('ioredis');
@@ -83,8 +84,8 @@ async function create() {
         });
     }
 
-    await ORM.init(config);
-    await ORM.registerPlugins(server.logger);
+    const { db, registerPlugins } = await initORM(config);
+    await registerPlugins(server.logger);
     await server.register(Vision);
     await server.register(Inert);
 
@@ -121,7 +122,7 @@ async function create() {
     server.method('config', key => (key ? config[key] : config));
     server.method('isDevMode', () => DW_DEV_MODE);
 
-    server.method('logAction', require('@datawrapper/orm/utils/action').logAction);
+    server.method('logAction', (...args) => Action.logAction(...args));
     server.method('registerVisualization', createRegisterVisualization(server));
     server.method('registerFeatureFlag', registerFeatureFlag(server));
     server.method('getRedis', () => redis);
@@ -161,8 +162,8 @@ async function create() {
     server.method('getUserLanguage', getUserLanguage);
     server.method('translate', translate);
     server.method('getTranslate', getTranslate);
-    server.method('getDB', () => ORM.db);
-    server.method('getModel', name => ORM.db.models[name]);
+    server.method('getDB', () => db);
+    server.method('getModel', name => db.models[name]);
 
     await server.register({
         plugin: require('./utils/sentry'),

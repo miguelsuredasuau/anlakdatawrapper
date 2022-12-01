@@ -1,12 +1,11 @@
 const test = require('ava');
 const { ValidationError } = require('sequelize');
+const { Chart, ChartPublic, ReadonlyChart } = require('../db');
 const { createChart, createTeam, createUser, destroy } = require('./helpers/fixtures');
 const { init } = require('./helpers/orm');
 
 test.before(async t => {
-    t.context.orm = await init();
-
-    const { ChartPublic } = require('../models');
+    t.context.db = await init();
 
     t.context.chartTeam = await createTeam();
     t.context.chartUser = await createUser({ teams: [t.context.chartTeam] });
@@ -51,7 +50,7 @@ test.before(async t => {
 
 test.after.always(async t => {
     await destroy(t.context.publicChart, t.context.chart);
-    await t.context.orm.db.close();
+    await t.context.db.close();
 });
 
 test('associated chart exists', async t => {
@@ -64,7 +63,6 @@ test('associated chart exists', async t => {
 });
 
 test('ReadonlyChart.fromChart builds a new chart instance with values from passed chart', async t => {
-    const ReadonlyChart = require('../models/ReadonlyChart');
     const { chart, chartTeam, chartUser } = t.context;
     const readonlyChart = await ReadonlyChart.fromChart(chart);
 
@@ -93,7 +91,6 @@ test('ReadonlyChart.fromChart builds a new chart instance with values from passe
 });
 
 test('ReadonlyChart.fromPublicChart builds a new chart instance with values from passed public chart', async t => {
-    const ReadonlyChart = require('../models/ReadonlyChart');
     const { chart, publicChart, publicChartTeam, publicChartUser } = t.context;
     const readonlyChart = await ReadonlyChart.fromPublicChart(chart, publicChart);
 
@@ -125,8 +122,6 @@ test('ReadonlyChart.fromPublicChart builds a new chart instance with values from
 });
 
 test('ReadonlyChart.fromChart copies included model from passed chart', async t => {
-    const Chart = require('../models/Chart');
-    const ReadonlyChart = require('../models/ReadonlyChart');
     const { chart, chartUser } = t.context;
 
     const readonlyChart = await ReadonlyChart.fromChart(chart);
@@ -140,8 +135,6 @@ test('ReadonlyChart.fromChart copies included model from passed chart', async t 
 });
 
 test('ReadonlyChart.fromPublicChart copies included model from passed chart', async t => {
-    const Chart = require('../models/Chart');
-    const ReadonlyChart = require('../models/ReadonlyChart');
     const { chart, chartUser, publicChart } = t.context;
 
     const readonlyChart = await ReadonlyChart.fromPublicChart(chart, publicChart);
@@ -157,7 +150,6 @@ test('ReadonlyChart.fromPublicChart copies included model from passed chart', as
 });
 
 test('ReadonlyChart cannot be saved', async t => {
-    const ReadonlyChart = require('../models/ReadonlyChart');
     const { chart } = t.context;
     const readonlyChart = await ReadonlyChart.fromChart(chart);
 

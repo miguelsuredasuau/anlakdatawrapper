@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const ORM = require('@datawrapper/orm');
+const { initORM } = require('@datawrapper/orm');
 const config = require('../src/config');
 
-ORM.init(config).then(function() {
+initORM(config).then(function({ db }) {
 	const task = process.argv[2];
 	const sub = process.argv[3] || false;
 
@@ -12,7 +12,7 @@ ORM.init(config).then(function() {
 	if (sub) mod[sub](); else mod();
 
 	setTimeout(() => {
-	    ORM.db.close();
+	    db.close();
 	}, 100);
 });
 

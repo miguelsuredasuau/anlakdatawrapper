@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const assign = require('assign-deep');
+const { Theme } = require('@datawrapper/orm/db');
 const { compileCSS } = require('@datawrapper/chart-core/lib/styles/compile-css.js');
 const deepmerge = require('deepmerge');
 const get = require('lodash/get');
@@ -39,8 +40,6 @@ module.exports.getCaches = function (server) {
 };
 
 async function findDescendants(theme) {
-    const { Theme } = require('@datawrapper/orm/models');
-
     let checkNext = [theme];
     const descendants = [theme];
 

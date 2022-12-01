@@ -1,11 +1,16 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
-const { db } = require('@datawrapper/orm');
+const { SQ } = require('@datawrapper/orm');
+const { Op } = SQ;
 const { createAuth } = require('@datawrapper/service-utils');
-const models = require('@datawrapper/orm/models');
-const { User, AccessToken, Action } = models;
-const { login, createSession, getStateOpts } = createAuth(models);
-const { Op } = db;
+const { AccessToken, User, Session, Chart, Team, Action } = require('@datawrapper/orm/db');
+const { login, createSession, getStateOpts } = createAuth({
+    AccessToken,
+    User,
+    Session,
+    Chart,
+    Team
+});
 const otpProviders = require('../../utils/auth/otp');
 
 module.exports = async server => {
@@ -56,10 +61,10 @@ module.exports = async server => {
                     [Op.and]: [
                         { type: 'login-token' },
                         { token: params.token },
-                        db.where(
-                            db.col('created_at'),
+                        SQ.where(
+                            SQ.col('created_at'),
                             Op.gt,
-                            db.fn('DATE_ADD', db.fn('NOW'), db.literal('INTERVAL -5 MINUTE'))
+                            SQ.fn('DATE_ADD', SQ.fn('NOW'), SQ.literal('INTERVAL -5 MINUTE'))
                         )
                     ]
                 }
@@ -126,7 +131,7 @@ async function loginUser(request, h) {
             key: 'login/invalid',
             user_id: user.id,
             action_time: {
-                [Op.gt]: db.fn('DATE_SUB', db.fn('NOW'), db.literal('INTERVAL 5 MINUTE'))
+                [Op.gt]: SQ.fn('DATE_SUB', SQ.fn('NOW'), SQ.literal('INTERVAL 5 MINUTE'))
             }
         }
     });
