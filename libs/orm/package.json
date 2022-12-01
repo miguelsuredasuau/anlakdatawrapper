@@ -14,8 +14,8 @@
     "scripts": {
         "lint": "cd ../.. && scripts/lint libs/orm",
         "format": "cd ../.. && scripts/format libs/orm",
-        "test": "DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} ava --verbose",
-        "test:coverage": "DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} nyc --reporter=html --reporter=text ava --verbose"
+        "test": "DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} ava --serial --verbose",
+        "test:coverage": "DW_CONFIG_PATH=${DW_CONFIG_PATH-tests/config.local.js} nyc --reporter=html --reporter=text ava --serial --verbose"
     },
     "repository": {
         "type": "git",

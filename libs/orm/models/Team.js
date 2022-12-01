@@ -1,7 +1,14 @@
+const { createExports } = require('../utils/wrap');
+module.exports = createExports();
+
 const SQ = require('sequelize');
-const { db } = require('../index');
 const merge = require('merge-deep');
 const { clone, pick } = require('underscore');
+const TeamProduct = require('./TeamProduct');
+const Theme = require('./Theme');
+const UserPluginCache = require('./UserPluginCache');
+const UserProduct = require('./UserProduct');
+const UserTeam = require('./UserTeam');
 
 /* make sure to keep in sync with services/php/lib/core/build/classes/datawrapper/Organization.php */
 const defaultSettings = {
@@ -82,91 +89,85 @@ const defaultSettings = {
     }
 };
 
-const Team = db.define(
-    'team',
-    {
-        id: {
-            type: SQ.STRING(128),
-            primaryKey: true
+module.exports.dwORM$setInitializer(({ db }) => {
+    const Team = db.define(
+        'team',
+        {
+            id: {
+                type: SQ.STRING(128),
+                primaryKey: true
+            },
+
+            name: SQ.STRING,
+            settings: {
+                type: SQ.JSON,
+                get() {
+                    const settings = this.getDataValue('settings') || {};
+                    return merge(clone(defaultSettings), settings);
+                }
+            }
         },
-
-        name: SQ.STRING,
-        settings: {
-            type: SQ.JSON,
-            get() {
-                const settings = this.getDataValue('settings') || {};
-                return merge(clone(defaultSettings), settings);
-            }
+        {
+            tableName: 'organization'
         }
-    },
-    {
-        tableName: 'organization'
-    }
-);
+    );
 
-Team.countTeamAndOwnerProducts = async function (teamId) {
-    const TeamProduct = require('./TeamProduct');
-    const UserProduct = require('./UserProduct');
-    const UserTeam = require('./UserTeam');
-
-    const teamOwner = await UserTeam.findOne({
-        where: {
-            organization_id: teamId,
-            organization_role: 'owner'
-        }
-    });
-
-    return Promise.all([
-        TeamProduct.count({
+    Team.countTeamAndOwnerProducts = async function (teamId) {
+        const teamOwner = await UserTeam.findOne({
             where: {
-                organization_id: teamId
+                organization_id: teamId,
+                organization_role: 'owner'
             }
-        }),
-        teamOwner
-            ? UserProduct.count({
-                  where: {
-                      user_id: teamOwner.user_id
-                  }
-              })
-            : Promise.resolve(0)
-    ]);
-};
-
-Team.prototype.invalidatePluginCache = async function () {
-    const UserTeam = require('./UserTeam');
-    const UserPluginCache = require('./UserPluginCache');
-
-    const userTeams = await UserTeam.findAll({
-        where: {
-            organization_id: this.id
-        }
-    });
-
-    const userQuery = { [SQ.Op.or]: [] };
-
-    for (const userTeam of userTeams) {
-        userQuery[SQ.Op.or].push({
-            user_id: userTeam.user_id
         });
-    }
 
-    await UserPluginCache.destroy({
-        where: userQuery
-    });
-};
+        return Promise.all([
+            TeamProduct.count({
+                where: {
+                    organization_id: teamId
+                }
+            }),
+            teamOwner
+                ? UserProduct.count({
+                      where: {
+                          user_id: teamOwner.user_id
+                      }
+                  })
+                : Promise.resolve(0)
+        ]);
+    };
 
-Team.prototype.getPublicSettings = function () {
-    return pick(this.settings, 'downloadDataLocalized');
-};
+    Team.prototype.invalidatePluginCache = async function () {
+        const userTeams = await UserTeam.findAll({
+            where: {
+                organization_id: this.id
+            }
+        });
 
-const Theme = require('./Theme');
-Team.belongsTo(Theme, { foreignKey: 'default_theme' });
+        const userQuery = { [SQ.Op.or]: [] };
 
-Team.prototype.serialize = function () {
-    const d = this.toJSON();
-    // delete non-safe properties
-    delete d.settings;
-    return d;
-};
+        for (const userTeam of userTeams) {
+            userQuery[SQ.Op.or].push({
+                user_id: userTeam.user_id
+            });
+        }
 
-module.exports = Team;
+        await UserPluginCache.destroy({
+            where: userQuery
+        });
+    };
+
+    Team.prototype.getPublicSettings = function () {
+        return pick(this.settings, 'downloadDataLocalized');
+    };
+
+    Team.belongsTo(Theme, { foreignKey: 'default_theme' });
+
+    Team.prototype.serialize = function () {
+        const d = this.toJSON();
+        // delete non-safe properties
+        delete d.settings;
+        return d;
+    };
+
+    return Team;
+});

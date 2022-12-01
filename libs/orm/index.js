@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const { fetchAllPlugins } = require('@datawrapper/backend-utils');
+const { initModels } = require('./models/init');
 const { findPlugins, createRegisterPlugins } = require('./utils/plugins');
 
 let retries = 0;
@@ -64,7 +65,9 @@ const ORM = {
 
     async init(config) {
         await this.create(config);
-        return this.connect(config);
+        await this.connect(config);
+        initModels(ORM);
+        return ORM;
     },
 
     db: {

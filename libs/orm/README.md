@@ -10,7 +10,19 @@ Add the package to your repository using:
 npm i --save "@datawrapper/orm"
 ```
 
-In your app you need to initialize the ORM before you can do anything else with it. It's a good idea to do this in your apps main entry point:
+Then you can load the models using:
+
+```js
+const { Chart, User } = require('@datawrapper/orm/models');
+```
+
+or
+
+```js
+const User = require('@datawrapper/orm/models/User');
+```
+
+In your app you need to initialize the ORM before you can actually use it. It's a good idea to do this in your apps main entry point:
 
 ```js
 const orm = require('@datawrapper/orm');
@@ -25,17 +37,7 @@ orm.init({
 });
 ```
 
-Then you can load the models using:
-
-```js
-const { Chart, User } = require('@datawrapper/orm/models');
-```
-
-Note that this will initialize the entire model, which assumes that your database user has access to all the database tables. If this is not the case you can load individual models using
-
-```js
-const User = require('@datawrapper/orm/models/User');
-```
+Note that this will initialize the entire model, which assumes that your database user has access to all the database tables.
 
 ### Plugins
 
@@ -62,7 +64,7 @@ module.exports = {
 
 There are 2 interesting properties on the `ORM` object that help with plugin access.
 
-* `ORM.plugins` is an object with all configured plugins. They are **not** registered by default. Since standard `Models` are not defined after `ORM.init()` either, it wouldn't make sense to do that for plugins.
+* `ORM.plugins` is an object with all configured plugins. They are **not** registered by default.
 
 This is how you register a plugin:
 

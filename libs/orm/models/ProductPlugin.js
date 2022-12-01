@@ -1,25 +1,28 @@
-const { db } = require('../index');
-
-const ProductPlugin = db.define(
-    'product_plugin',
-    {},
-    {
-        tableName: 'product_plugin',
-        timestamps: false
-    }
-);
+const { createExports } = require('../utils/wrap');
+module.exports = createExports();
 
 const Plugin = require('./Plugin');
 const Product = require('./Product');
 
-Plugin.belongsToMany(Product, {
-    through: ProductPlugin,
-    timestamps: false
-});
+module.exports.dwORM$setInitializer(({ db }) => {
+    const ProductPlugin = db.define(
+        'product_plugin',
+        {},
+        {
+            tableName: 'product_plugin',
+            timestamps: false
+        }
+    );
 
-Product.belongsToMany(Plugin, {
-    through: ProductPlugin,
-    timestamps: false
-});
+    Plugin.belongsToMany(Product, {
+        through: ProductPlugin,
+        timestamps: false
+    });
 
-module.exports = ProductPlugin;
+    Product.belongsToMany(Plugin, {
+        through: ProductPlugin,
+        timestamps: false
+    });
+
+    return ProductPlugin;
+});
