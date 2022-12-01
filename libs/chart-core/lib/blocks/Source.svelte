@@ -18,7 +18,7 @@
 </script>
 
 {#if sourceName}
-    <span class="source-caption">{caption}:</span>
+    {#if caption}<span class="source-caption">{caption}:</span>{/if}
     {#if sourceUrl && allowedSourceUrl}
         <a
             on:click={handleClick}

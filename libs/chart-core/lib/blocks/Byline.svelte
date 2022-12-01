@@ -31,7 +31,7 @@
         (needBrackets ? ')' : '');
 </script>
 
-<span class="byline-caption">{bylineCaption}</span>
+{#if bylineCaption}<span class="byline-caption">{bylineCaption}</span>{/if}
 <span class="byline-content">{byline}</span>
 {#if chart.basedOnByline}
     {@html purifyHtml(basedOnByline)}
