@@ -1,7 +1,7 @@
-const { initOrm } = require('../index');
+const { initOrm } = require('../lib/dist');
 const config = require('./config');
 
-const { Plugin } = require('../db');
+const { Plugin } = require('../lib/dist/db');
 
 (async () => {
     const { db } = await initOrm(config);

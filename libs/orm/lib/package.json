@@ -1,0 +1,15 @@
+{
+    "name": "@datawrapper/orm-lib",
+    "exports": {
+        ".": "./dist/index.js",
+        "./db": "./dist/db.js"
+    },
+    "scripts": {
+        "build": "rm -Rf dist/* && tsc",
+        "typecheck": "tsc --noEmit"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/datawrapper/orm.git"
+    }
+}

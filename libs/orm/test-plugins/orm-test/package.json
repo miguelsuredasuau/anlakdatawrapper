@@ -1,0 +1,11 @@
+{
+    "name": "@datawrapper/orm-test-plugin",
+    "main": "dist/orm.js",
+    "scripts": {
+        "build": "rm -Rf dist/* && tsc",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@datawrapper/orm-lib": "file:../../lib"
+    }
+}

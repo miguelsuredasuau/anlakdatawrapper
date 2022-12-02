@@ -1,3 +1,3 @@
-const { sync } = require('../tests/helpers/orm');
+const { sync } = require('../tests/dist/helpers/orm');
 
 sync().then();

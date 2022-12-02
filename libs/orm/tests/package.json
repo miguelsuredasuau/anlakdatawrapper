@@ -1,0 +1,10 @@
+{
+    "scripts": {
+        "build": "rm -Rf dist/* && tsc",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@datawrapper/orm-lib": "file:../lib",
+        "@datawrapper/orm-test-plugin": "file:../test-plugins/orm-test"
+    }
+}

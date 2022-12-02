@@ -1,4 +1,4 @@
-export DW_CONFIG_PATH ?= tests/config.docker.js
+export DW_CONFIG_PATH ?= tests/dist/config.docker.js
 
 m ?= *
 
@@ -16,7 +16,8 @@ test-coverage: | test-setup  ## Run unit tests with coverage report
 	$(MAKE) test-run cmd="sh -c 'npm run test:coverage -- -m \"$(m)\"'"
 
 .PHONY: test-setup
-test-setup:  ## Create tables and run migrations in the testing database
+test-setup:  ## Build TS, create tables and run migrations in the testing database
+	npm run build
 	$(MAKE) test-run cmd="sh -c 'node /app/scripts/db-initialized.js || node /app/libs/orm/script/sync-db.js'"
 
 .PHONY: test-teardown

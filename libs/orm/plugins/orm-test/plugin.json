@@ -1,7 +1,0 @@
-{
-    "name": "orm-test-plugin",
-    "version": "test",
-    "entryPoints": {
-        "orm": "orm.js"
-    }
-}
