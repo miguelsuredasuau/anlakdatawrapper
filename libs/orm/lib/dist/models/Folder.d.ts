@@ -1,7 +1,8 @@
 declare const exported: import("../utils/wrap").ExportedLite<"folder", typeof Folder>;
 export default exported;
 export type FolderModel = InstanceType<typeof Folder>;
-import { CreationOptional, ForeignKey, HasManyGetAssociationsMixin, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
+import { CreationOptional, ForeignKey, HasManyGetAssociationsMixin, HasOneGetAssociationMixin, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
+import type { TeamModel } from './Team';
 import type { UserModel } from './User';
 declare class Folder extends Model<InferAttributes<Folder>, InferCreationAttributes<Folder>> {
     id: CreationOptional<number>;
@@ -10,6 +11,7 @@ declare class Folder extends Model<InferAttributes<Folder>, InferCreationAttribu
     org_id: ForeignKey<string>;
     parent_id: ForeignKey<number> | null;
     getChildren: HasManyGetAssociationsMixin<Folder>;
+    getTeam: HasOneGetAssociationMixin<TeamModel>;
     isWritableBy(user: UserModel): Promise<boolean>;
     hasDescendant(folderId: number): Promise<boolean>;
     hasParent(parentId: number): Promise<boolean>;

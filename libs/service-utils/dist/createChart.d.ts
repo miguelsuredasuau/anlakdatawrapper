@@ -1,7 +1,5 @@
-import type { AccessToken } from './accessTokenModelTypes';
-import type { Chart as TChart } from './chartModelTypes';
+import type { AccessTokenModel, ChartModel, UserModel } from '@datawrapper/orm';
 import type { Server } from './serverTypes';
-import type { User as TUser } from './userModelTypes';
 declare type AllowedPayload = {
     title?: string;
     theme?: string;
@@ -43,9 +41,9 @@ declare type Payload = AllowedPayload & {
  */
 export declare function createChart({ server, user, payload, session: sessionId, token }: {
     server: Server;
-    user: TUser;
+    user: UserModel;
     payload: Payload;
     session: string;
-    token: AccessToken;
-}, newChartId?: string | null): Promise<TChart>;
+    token: AccessTokenModel;
+}, newChartId?: string | null): Promise<ChartModel>;
 export {};

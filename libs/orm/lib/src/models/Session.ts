@@ -3,21 +3,14 @@ const exported = createExports('session')<typeof Session>();
 export default exported;
 export type SessionModel = InstanceType<typeof Session>;
 
-import SQ, { InferAttributes, InferCreationAttributes, Model, NonAttribute } from 'sequelize';
+import SQ, { InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 import { serializeSession, unserializeSession } from '../utils/phpSerialize';
 
-interface AdditionalRawAttributes {
-    data: string;
-}
-
-class Session extends Model<
-    InferAttributes<Session> & AdditionalRawAttributes,
-    InferCreationAttributes<Session> & AdditionalRawAttributes
-> {
+class Session extends Model<InferAttributes<Session>, InferCreationAttributes<Session>> {
     declare id: string;
     declare user_id: number | null;
     declare persistent: boolean;
-    declare data: NonAttribute<Record<string, unknown>>;
+    declare data: Record<string, unknown>;
 }
 
 setInitializer(exported, ({ initOptions }) => {
@@ -44,14 +37,18 @@ setInitializer(exported, ({ initOptions }) => {
                 get() {
                     const d = this.getDataValue('data');
                     if (d) {
-                        const data = unserializeSession(d);
+                        // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const data = unserializeSession(d as any);
                         return data;
                     }
                     return {};
                 },
                 set(data) {
                     // WARNING, this will destroy parts of our sessions
-                    this.setDataValue('data', serializeSession(data));
+                    // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    this.setDataValue('data', serializeSession(data) as any);
                 }
             }
         },

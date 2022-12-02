@@ -1,7 +1,12 @@
 // load translations
+import assign from 'assign-deep';
 import path from 'path';
 import fs from 'fs-extra';
-import { addLocalizationScope, allLocalizationScopes } from '@datawrapper/service-utils';
+
+const scopes = {
+    core: {},
+    plugin: {}
+};
 
 /**
  * loads locales so they are available in frontend tests.
@@ -30,12 +35,21 @@ async function loadLocalesForScope(scope, localePath) {
                 );
             }
         }
-        addLocalizationScope(scope, locales);
+        scopes[scope] = assign(scopes[scope], locales);
     } catch (e) {
         console.error('error loading locales for scope ' + scope, e);
     }
 }
 
+function getLocalizationScope(scope, locale) {
+    const normalizedLocale = locale.replace('-', '_');
+    return scopes[scope][normalizedLocale];
+}
+
 export function getLocale(language = 'en-US') {
-    return allLocalizationScopes(language);
+    const out = {};
+    Object.keys(scopes).forEach(scope => {
+        out[scope] = getLocalizationScope(scope, language) ?? {};
+    });
+    return out;
 }

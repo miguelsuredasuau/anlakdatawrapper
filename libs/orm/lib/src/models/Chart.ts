@@ -28,23 +28,24 @@ class Chart extends Model<InferAttributes<Chart>, InferCreationAttributes<Chart>
     declare type: string;
     declare title: string;
     declare theme: string;
-    declare guest_session: string;
-    declare last_edit_step: number;
-    declare published_at: Date;
-    declare public_url: string;
-    declare public_version: number;
-    declare deleted: boolean;
-    declare deleted_at: Date;
-    declare forkable: boolean;
-    declare is_fork: boolean;
+    declare guest_session: string | null;
+    declare last_edit_step: number | null;
+    declare published_at: Date | null;
+    declare public_url: string | null;
+    declare public_version: number | null;
+    declare deleted: boolean | null;
+    declare deleted_at: Date | null;
+    declare forkable: boolean | null;
+    declare is_fork: boolean | null;
 
     declare metadata: Metadata;
     declare language: string;
-    declare external_data: string;
-    declare utf8: boolean;
+    declare external_data: string | null;
+    declare utf8: boolean | null;
     declare createdAt: CreationOptional<Date>;
-    declare author_id: ForeignKey<number>;
-    declare organization_id: ForeignKey<string>;
+    declare author_id: ForeignKey<number> | null;
+    declare organization_id: ForeignKey<string> | null;
+    declare in_folder: ForeignKey<number> | null;
 
     declare getUser: HasOneGetAssociationMixin<UserModel>;
     declare getTeam: HasOneGetAssociationMixin<TeamModel>;

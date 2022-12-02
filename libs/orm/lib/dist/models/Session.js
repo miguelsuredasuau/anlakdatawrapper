@@ -50,6 +50,8 @@ class Session extends sequelize_1.Model {
             get() {
                 const d = this.getDataValue('data');
                 if (d) {
+                    // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const data = (0, phpSerialize_1.unserializeSession)(d);
                     return data;
                 }
@@ -57,6 +59,8 @@ class Session extends sequelize_1.Model {
             },
             set(data) {
                 // WARNING, this will destroy parts of our sessions
+                // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 this.setDataValue('data', (0, phpSerialize_1.serializeSession)(data));
             }
         }

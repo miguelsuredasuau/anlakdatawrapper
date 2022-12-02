@@ -1,8 +1,8 @@
 const Boom = require('@hapi/boom');
 const Bell = require('@hapi/bell');
 const { createAuth } = require('@datawrapper/service-utils');
-const { AccessToken, User, Session, Chart, Team } = require('@datawrapper/orm/db');
-const { login, getStateOpts } = createAuth({ AccessToken, User, Session, Chart, Team });
+const { User } = require('@datawrapper/orm/db');
+const { login, getStateOpts } = createAuth();
 
 module.exports = {
     name: 'routes/signin/oauth',

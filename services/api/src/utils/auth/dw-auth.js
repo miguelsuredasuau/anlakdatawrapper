@@ -2,7 +2,6 @@ const Boom = require('@hapi/boom');
 const get = require('lodash/get');
 const AuthBearer = require('hapi-auth-bearer-token');
 const { createAuth } = require('@datawrapper/service-utils');
-const { AccessToken, User, Session, Chart, Team } = require('@datawrapper/orm/db');
 const {
     adminValidation,
     bearerValidation,
@@ -11,7 +10,7 @@ const {
     createCookieAuthScheme,
     createHashPassword,
     userValidation
-} = createAuth({ AccessToken, User, Session, Chart, Team });
+} = createAuth();
 const cookieAuthScheme = createCookieAuthScheme(false);
 
 const DWAuth = {

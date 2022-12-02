@@ -3,8 +3,8 @@ const get = require('lodash/get');
 const Joi = require('joi');
 const { SQ } = require('@datawrapper/orm');
 const { createAuth } = require('@datawrapper/service-utils');
-const { AccessToken, User, Session, Chart, Team, UserTeam } = require('@datawrapper/orm/db');
-const { login, getStateOpts } = createAuth({ AccessToken, User, Session, Chart, Team });
+const { User, Team, UserTeam } = require('@datawrapper/orm/db');
+const { login, getStateOpts } = createAuth();
 const { Op } = SQ;
 const SSOProviders = {
     openId: require('./sso/OIDCProvider'),

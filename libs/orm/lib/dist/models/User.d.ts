@@ -11,34 +11,32 @@ import { type TeamModel } from './Team';
 import type { ThemeModel } from './Theme';
 import { type UserDataModel } from './UserData';
 import type { UserPluginCacheModel } from './UserPluginCache';
-interface AdditionalRawAttributes {
-    role: number;
-}
-declare class User extends Model<InferAttributes<User> & AdditionalRawAttributes, InferCreationAttributes<User> & AdditionalRawAttributes> {
+declare class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     id: CreationOptional<number>;
-    email: string;
-    pwd: string;
-    activate_token: string;
-    reset_password_token: string;
-    role: NonAttribute<'admin' | 'editor' | 'pending' | 'guest' | 'sysadmin' | 'graphic-editor'>;
-    deleted: boolean;
+    email: string | null;
+    pwd: string | null;
+    activate_token: string | null;
+    reset_password_token: string | null;
+    role: 'admin' | 'editor' | 'pending' | 'guest' | 'sysadmin' | 'graphic-editor';
+    deleted: boolean | null;
     language: string;
-    created_at: Date;
-    name: string;
-    website: string;
-    sm_profile: string;
-    oauth_signin: string;
-    customer_id: string;
+    created_at: CreationOptional<Date>;
+    name: string | null;
+    website: string | null;
+    sm_profile: string | null;
+    oauth_signin: string | null;
+    customer_id: string | null;
     getProducts: HasManyGetAssociationsMixin<ProductModel>;
     getTeams: HasManyGetAssociationsMixin<TeamModel>;
     getUserPluginCache: HasOneGetAssociationMixin<UserPluginCacheModel>;
     getFolders: HasManyGetAssociationsMixin<FolderModel>;
     getThemes: HasManyGetAssociationsMixin<ThemeModel>;
     getUserData: HasOneGetAssociationMixin<UserDataModel>;
+    teams?: NonAttribute<TeamModel[]>;
     getCharts: HasManyGetAssociationsMixin<any>;
     serialize(): Pick<SQ.InferAttributes<User, {
         omit: never;
-    }> & AdditionalRawAttributes, "id" | "name" | "email" | "role" | "language" | "website" | "sm_profile" | "oauth_signin">;
+    }>, "id" | "name" | "email" | "role" | "language" | "website" | "sm_profile" | "oauth_signin">;
     isAdmin(): boolean;
     isActivated(): boolean;
     mayEditChart(chart: ChartModel): Promise<boolean>;
@@ -49,6 +47,6 @@ declare class User extends Model<InferAttributes<User> & AdditionalRawAttributes
     getPlugins(): Promise<PluginModel[]>;
     getActiveProduct(): Promise<ProductModel | null>;
     getAcceptedTeams(): Promise<TeamModel[]>;
-    getActiveTeam(session?: SessionModel): Promise<TeamModel | null | undefined>;
+    getActiveTeam(session?: SessionModel | null): Promise<TeamModel | null | undefined>;
     getActiveTeamIds(): Promise<string[]>;
 }

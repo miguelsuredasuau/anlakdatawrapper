@@ -1,8 +1,8 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const { createAuth } = require('@datawrapper/service-utils');
-const { AccessToken, User, Session, Chart, Team } = require('@datawrapper/orm/db');
-const { createSession, getStateOpts } = createAuth({ AccessToken, User, Session, Chart, Team });
+const { User } = require('@datawrapper/orm/db');
+const { createSession, getStateOpts } = createAuth();
 
 module.exports = async server => {
     server.route({

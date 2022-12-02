@@ -44,12 +44,16 @@ class UserTeam extends sequelize_1.Model {
             allowNull: false,
             defaultValue: 2,
             get() {
+                // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const teamRole = this.getDataValue('team_role');
                 return teamRoleValues[teamRole];
             },
             set(val) {
                 if (typeof val === 'string') {
                     const index = teamRoleValues.indexOf(val);
+                    // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     if (index > -1)
                         this.setDataValue('team_role', index);
                 }

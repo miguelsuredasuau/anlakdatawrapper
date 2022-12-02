@@ -153,7 +153,10 @@ test('ReadonlyChart.fromChart copies included model from passed chart', async t 
     // ReadonlyChart is incompatible with the way Sequelize currently works with TS
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     t.is(readonlyChartWithUser.user?.id, (readonlyChartWithUser.dataValues as any).user.id);
-    t.is(readonlyChartWithUser.user?.id, readonlyChartWithUser.author_id);
+    t.is(
+        readonlyChartWithUser.user?.id as number | null | undefined,
+        readonlyChartWithUser.author_id
+    );
 });
 
 test('ReadonlyChart.fromPublicChart copies included model from passed chart', async t => {

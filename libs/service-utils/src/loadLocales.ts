@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import { get } from 'lodash';
-import type { Team } from './teamModelTypes';
+import type { TeamModel } from '@datawrapper/orm';
 
 const localeRoot = path.join(__dirname, '../node_modules/@datawrapper/locales/locales/');
 
@@ -46,7 +46,7 @@ export async function loadLocales(): Promise<Vendors> {
 export async function loadVendorLocale(
     vendor: keyof Vendors,
     locale: Locale,
-    team: Team
+    team: TeamModel
 ): Promise<{ base: LocaleContent | undefined; custom: unknown } | 'null'> {
     const locales = await loadLocales();
     const localeSettings = getVendorLocaleSettings(vendor, locale, locales);

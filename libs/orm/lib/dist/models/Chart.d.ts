@@ -13,28 +13,29 @@ declare class Chart extends Model<InferAttributes<Chart>, InferCreationAttribute
     type: string;
     title: string;
     theme: string;
-    guest_session: string;
-    last_edit_step: number;
-    published_at: Date;
-    public_url: string;
-    public_version: number;
-    deleted: boolean;
-    deleted_at: Date;
-    forkable: boolean;
-    is_fork: boolean;
+    guest_session: string | null;
+    last_edit_step: number | null;
+    published_at: Date | null;
+    public_url: string | null;
+    public_version: number | null;
+    deleted: boolean | null;
+    deleted_at: Date | null;
+    forkable: boolean | null;
+    is_fork: boolean | null;
     metadata: Metadata;
     language: string;
-    external_data: string;
-    utf8: boolean;
+    external_data: string | null;
+    utf8: boolean | null;
     createdAt: CreationOptional<Date>;
-    author_id: ForeignKey<number>;
-    organization_id: ForeignKey<string>;
+    author_id: ForeignKey<number> | null;
+    organization_id: ForeignKey<string> | null;
+    in_folder: ForeignKey<number> | null;
     getUser: HasOneGetAssociationMixin<UserModel>;
     getTeam: HasOneGetAssociationMixin<TeamModel>;
     static [chartIdSaltSymbol]: string | undefined;
     static [hashPublishingSymbol]: string | undefined;
     getPublicId(): Promise<string>;
-    isEditableBy(user: UserModel, session: string): Promise<boolean | "">;
+    isEditableBy(user: UserModel, session: string): Promise<boolean | "" | null>;
     /**
      * Checks whether or not the authenticated user may edit the data
      * of the chart

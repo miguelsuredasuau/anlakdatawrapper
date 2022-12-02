@@ -1,6 +1,5 @@
 const { createAuth } = require('@datawrapper/service-utils');
-const { AccessToken, User, Session, Chart, Team } = require('@datawrapper/orm/db');
-const { createSession, getStateOpts } = createAuth({ AccessToken, User, Session, Chart, Team });
+const { createSession, getStateOpts } = createAuth();
 
 module.exports = async server => {
     // POST /v3/auth/session

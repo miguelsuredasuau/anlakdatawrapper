@@ -1,4 +1,5 @@
-import type { Chart, ChartDataValues, PreparedChart } from './chartModelTypes';
+import type { ChartDataValues, PreparedChart } from './chartModelTypes';
+import type { ChartModel } from '@datawrapper/orm';
 /**
  * Prepares a chart before it gets send to client
  *
@@ -9,4 +10,4 @@ import type { Chart, ChartDataValues, PreparedChart } from './chartModelTypes';
  * @param {Object} additionalData
  * @returns {Object}
  */
-export declare function prepareChart(chart: Chart, additionalData?: Partial<ChartDataValues>): Promise<PreparedChart>;
+export declare function prepareChart(chart: ChartModel, additionalData?: Partial<ChartDataValues>): Promise<PreparedChart>;

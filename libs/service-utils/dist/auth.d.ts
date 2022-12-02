@@ -1,77 +1,83 @@
-export function createAuth({ AccessToken, User, Session, Chart, Team }: {
-    AccessToken: any;
-    User: any;
-    Session: any;
-    Chart: any;
-    Team: any;
-}, { includeTeams }?: {
-    includeTeams: any;
-}): {
-    getUser: (userId: any, { credentials, strategy, logger }?: {
-        credentials: any;
-        strategy: any;
-        logger: any;
-    }) => Promise<{
-        isValid: boolean;
-        message: Boom.Boom<any>;
-        credentials?: never;
-        artifacts?: never;
-    } | {
-        isValid: boolean;
-        credentials: any;
-        artifacts: any;
-        message?: never;
-    }>;
-    adminValidation: ({ artifacts }?: {
-        artifacts: any;
-    }) => void;
-    userValidation: ({ artifacts }?: {
-        artifacts: any;
-    }) => void;
-    cookieTTL: (days: any) => number;
-    cookieValidation: (request: any, sessionIds: any) => Promise<{
-        isValid: boolean;
-        message: Boom.Boom<any>;
-        credentials?: never;
-        artifacts?: never;
-    } | {
-        isValid: boolean;
-        credentials: any;
-        artifacts: any;
-        message?: never;
-    } | {
-        error: Boom.Boom<any>;
-    }>;
-    createCookieAuthScheme: (createGuestSessions: any) => (server: any, options: any) => {
-        authenticate: (request: any, h: any) => Promise<any>;
+import type { SessionModel, TeamModel, UserModel } from '@datawrapper/orm';
+import Boom from '@hapi/boom';
+import type { ResponseToolkit } from 'hapi';
+import type { Request, Server } from './serverTypes';
+declare type Artifacts = {
+    role: string;
+};
+declare type ExtendedTeamModel = TeamModel & {
+    active?: boolean;
+    dataValues: TeamModel['dataValues'] & {
+        active?: boolean;
     };
-    bearerValidation: (request: any, token: any) => Promise<{
-        isValid: boolean;
-        message: Boom.Boom<any>;
-        credentials?: never;
-        artifacts?: never;
+};
+declare type ExtendedUserModel = Omit<UserModel, 'getActiveTeam' | 'teams'> & {
+    activeTeam?: ExtendedTeamModel | null | undefined;
+    getActiveTeam(): Promise<ExtendedTeamModel | null | undefined>;
+    teams?: ExtendedTeamModel[];
+};
+export declare function createAuth({ includeTeams }?: {
+    includeTeams?: boolean | undefined;
+}): {
+    adminValidation: ({ artifacts }: {
+        artifacts: Artifacts;
+    }) => void;
+    userValidation: ({ artifacts }: {
+        artifacts: Artifacts;
+    }) => void;
+    cookieValidation: (request: Request, sessionIds: string[]) => Promise<{
+        error: Boom.Boom<unknown>;
+    } | {
+        sessionType: unknown;
+        isValid: true;
+        credentials: {
+            data?: {
+                data?: Record<string, unknown>;
+            };
+            scope?: string[];
+            session?: string;
+            token?: string;
+        };
+        artifacts: ExtendedUserModel | null;
+        message?: never;
+        error?: never;
+    }>;
+    createCookieAuthScheme: (createGuestSessions: boolean) => (server: Server, options: Record<string, unknown>) => {
+        authenticate: (request: Request, h: ResponseToolkit) => Promise<Boom.Boom<unknown> | import("hapi").Auth>;
+    };
+    bearerValidation: (request: Request, token: string) => Promise<{
+        isValid: true;
+        credentials: {
+            data?: {
+                data?: Record<string, unknown>;
+            };
+            scope?: string[];
+            session?: string;
+            token?: string;
+        };
+        artifacts: ExtendedUserModel | null;
+        message?: never;
     } | {
         isValid: boolean;
-        credentials: any;
-        artifacts: any;
-        message?: never;
+        message: Boom.Boom<unknown>;
     }>;
     legacyHash: (pwhash: string, secret?: string) => string;
-    createHashPassword: (hashRounds: number) => (password: any) => Promise<any>;
-    createComparePassword: (server: any) => (password: string, passwordHash: string, { userId }: {
+    createHashPassword: (hashRounds: number) => (password: string) => Promise<string>;
+    createComparePassword: (server: Server) => (password: string, passwordHash: string, { userId }: {
         userId: number;
-    }) => boolean;
-    getStateOpts: (server: any, ttl: any, sameSite?: string) => {
-        isSecure: any;
+    }) => Promise<boolean>;
+    getStateOpts: (server: Server, ttl: number, sameSite?: 'Lax' | 'Strict' | false | undefined) => {
+        isSecure: boolean | undefined;
         strictHeader: boolean;
         domain: string;
-        isSameSite: string;
+        isSameSite: false | "Lax" | "Strict";
         path: string;
         ttl: number;
     };
-    associateChartsWithUser: (sessionId: any, userId: any) => Promise<any>;
-    createSession: (id: any, userId: any, keepSession?: boolean, type?: string) => Promise<any>;
-    generateToken: () => string;
-    login: (userId: any, session: any, keepSession?: boolean) => Promise<any>;
+    associateChartsWithUser: (sessionId: string, userId: number) => Promise<number[]>;
+    createSession: (id: string, userId: number, keepSession?: boolean, type?: string) => Promise<any>;
+    login: (userId: number, inputSession: {
+        data?: SessionModel;
+    }, keepSession?: boolean) => Promise<any>;
 };
-import Boom = require("@hapi/boom");
+export {};

@@ -1,4 +1,4 @@
-import type { Team } from './teamModelTypes';
+import type { TeamModel } from '@datawrapper/orm';
 declare type Locale = string;
 declare type LocaleContent = string;
 declare type Locales = Map<Locale, LocaleContent>;
@@ -11,7 +11,7 @@ declare type LocaleMeta = {
     [local: Locale]: LocaleConfig;
 };
 export declare function loadLocales(): Promise<Vendors>;
-export declare function loadVendorLocale(vendor: keyof Vendors, locale: Locale, team: Team): Promise<{
+export declare function loadVendorLocale(vendor: keyof Vendors, locale: Locale, team: TeamModel): Promise<{
     base: LocaleContent | undefined;
     custom: unknown;
 } | 'null'>;

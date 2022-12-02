@@ -25,36 +25,28 @@ import UserData, { type UserDataModel } from './UserData';
 import type { UserPluginCacheModel } from './UserPluginCache';
 import UserTeam from './UserTeam';
 
-interface AdditionalRawAttributes {
-    role: number;
-}
-
-class User extends Model<
-    InferAttributes<User> & AdditionalRawAttributes,
-    InferCreationAttributes<User> & AdditionalRawAttributes
-> {
+class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare id: CreationOptional<number>;
-    declare email: string;
-    declare pwd: string;
-    declare activate_token: string;
-    declare reset_password_token: string;
-    declare role: NonAttribute<
-        'admin' | 'editor' | 'pending' | 'guest' | 'sysadmin' | 'graphic-editor'
-    >;
-    declare deleted: boolean;
+    declare email: string | null;
+    declare pwd: string | null;
+    declare activate_token: string | null;
+    declare reset_password_token: string | null;
+    declare role: 'admin' | 'editor' | 'pending' | 'guest' | 'sysadmin' | 'graphic-editor';
+    declare deleted: boolean | null;
     declare language: string;
-    declare created_at: Date;
-    declare name: string;
-    declare website: string;
-    declare sm_profile: string;
-    declare oauth_signin: string;
-    declare customer_id: string;
+    declare created_at: CreationOptional<Date>;
+    declare name: string | null;
+    declare website: string | null;
+    declare sm_profile: string | null;
+    declare oauth_signin: string | null;
+    declare customer_id: string | null;
     declare getProducts: HasManyGetAssociationsMixin<ProductModel>;
     declare getTeams: HasManyGetAssociationsMixin<TeamModel>;
     declare getUserPluginCache: HasOneGetAssociationMixin<UserPluginCacheModel>;
     declare getFolders: HasManyGetAssociationsMixin<FolderModel>;
     declare getThemes: HasManyGetAssociationsMixin<ThemeModel>;
     declare getUserData: HasOneGetAssociationMixin<UserDataModel>;
+    declare teams?: NonAttribute<TeamModel[]>;
 
     // TODO: figure out types without breaking TS with circular dependencies
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -100,7 +92,7 @@ class User extends Model<
         // the user has admin privilegen
         if (this.role === 'admin' || this.role === 'sysadmin') return true;
         // the user is member of a team the chart belongs to
-        return await this.hasActivatedTeam(chart.organization_id);
+        return !!chart.organization_id && (await this.hasActivatedTeam(chart.organization_id));
     }
 
     async hasActivatedTeam(teamId: string) {
@@ -131,7 +123,12 @@ class User extends Model<
         });
 
         if (!team) return false;
-        if (team.dataValues.team_role === 2) return false;
+        // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+        // so we shouldn't use dataValues anywhere, and this line would be
+        // `if (team.team_role === 'member') return false`,
+        // but this change might have unintended consequences.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (team.dataValues.team_role === (2 as any)) return false;
 
         return true;
     }
@@ -296,7 +293,7 @@ class User extends Model<
     /*
      * returns the currently active team, or null if it doesn't exist
      */
-    async getActiveTeam(session?: SessionModel): Promise<TeamModel | null | undefined> {
+    async getActiveTeam(session?: SessionModel | null): Promise<TeamModel | null | undefined> {
         const teams = await this.getAcceptedTeams();
         if (teams.length < 1) return null;
 
@@ -351,13 +348,17 @@ setInitializer(exported, ({ initOptions }) => {
                 allowNull: false,
                 defaultValue: 2, // pending
                 get() {
-                    const role = this.getDataValue('role');
+                    // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const role: number = this.getDataValue('role') as any;
                     return roleValues[role];
                 },
                 set(val) {
                     if (typeof val === 'string') {
                         const index = roleValues.indexOf(val);
-                        if (index > -1) this.setDataValue('role', index);
+                        // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        if (index > -1) this.setDataValue('role', index as any);
                     }
                 }
             },

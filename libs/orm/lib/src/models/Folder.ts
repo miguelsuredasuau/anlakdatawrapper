@@ -7,10 +7,12 @@ import SQ, {
     CreationOptional,
     ForeignKey,
     HasManyGetAssociationsMixin,
+    HasOneGetAssociationMixin,
     InferAttributes,
     InferCreationAttributes,
     Model
 } from 'sequelize';
+import type { TeamModel } from './Team';
 import type { UserModel } from './User';
 
 class Folder extends Model<InferAttributes<Folder>, InferCreationAttributes<Folder>> {
@@ -20,6 +22,7 @@ class Folder extends Model<InferAttributes<Folder>, InferCreationAttributes<Fold
     declare org_id: ForeignKey<string>;
     declare parent_id: ForeignKey<number> | null;
     declare getChildren: HasManyGetAssociationsMixin<Folder>;
+    declare getTeam: HasOneGetAssociationMixin<TeamModel>;
 
     async isWritableBy(user: UserModel) {
         if (user.role === 'admin') return true;

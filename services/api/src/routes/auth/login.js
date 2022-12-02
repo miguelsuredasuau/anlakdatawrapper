@@ -3,14 +3,8 @@ const Boom = require('@hapi/boom');
 const { SQ } = require('@datawrapper/orm');
 const { Op } = SQ;
 const { createAuth } = require('@datawrapper/service-utils');
-const { AccessToken, User, Session, Chart, Team, Action } = require('@datawrapper/orm/db');
-const { login, createSession, getStateOpts } = createAuth({
-    AccessToken,
-    User,
-    Session,
-    Chart,
-    Team
-});
+const { AccessToken, User, Action } = require('@datawrapper/orm/db');
+const { login, createSession, getStateOpts } = createAuth();
 const otpProviders = require('../../utils/auth/otp');
 
 module.exports = async server => {

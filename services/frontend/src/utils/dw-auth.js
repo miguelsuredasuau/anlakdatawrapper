@@ -2,11 +2,9 @@ const Boom = require('@hapi/boom');
 const Bell = require('@hapi/bell');
 const get = require('lodash/get');
 const { createAuth } = require('@datawrapper/service-utils');
-const { AccessToken, User, Session, Chart, Team } = require('@datawrapper/orm/db');
-const { cookieValidation, adminValidation, userValidation, createCookieAuthScheme } = createAuth(
-    { AccessToken, User, Session, Chart, Team },
-    { includeTeams: true }
-);
+const { cookieValidation, adminValidation, userValidation, createCookieAuthScheme } = createAuth({
+    includeTeams: true
+});
 const cookieAuthScheme = createCookieAuthScheme(true);
 
 const DWAuth = {

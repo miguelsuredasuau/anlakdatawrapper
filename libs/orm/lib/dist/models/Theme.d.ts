@@ -2,15 +2,19 @@ declare const exported: import("../utils/wrap").ExportedLite<"theme", typeof The
 export default exported;
 export type ThemeModel = InstanceType<typeof Theme>;
 import SQ, { ForeignKey, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
-import type { Theme as ThemeData } from '@datawrapper/shared/themeTypes';
+import type { Metadata as ChartMetadata } from '@datawrapper/shared/chartTypes';
+import type { Theme as BasicThemeData } from '@datawrapper/shared/themeTypes';
 type Asset = Record<string, unknown> & {
     type: string;
 };
 type Assets = Record<string, Asset>;
+type ThemeData = BasicThemeData & {
+    metadata?: ChartMetadata;
+};
 declare class Theme extends Model<InferAttributes<Theme>, InferCreationAttributes<Theme>> {
     id: string;
     title: string;
-    data: ThemeData;
+    data: BasicThemeData;
     less: string;
     assets: Assets;
     extend: ForeignKey<string>;

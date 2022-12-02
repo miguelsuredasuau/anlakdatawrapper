@@ -1,14 +1,14 @@
 declare const exported: import("../utils/wrap").ExportedLite<"team", typeof Team>;
 export default exported;
 export type TeamModel = InstanceType<typeof Team>;
-import SQ, { HasManyGetAssociationsMixin, InferAttributes, InferCreationAttributes, Model, NonAttribute } from 'sequelize';
+import SQ, { ForeignKey, HasManyGetAssociationsMixin, HasManyHasAssociationMixin, InferAttributes, InferCreationAttributes, Model, NonAttribute } from 'sequelize';
 import type { ProductModel } from './Product';
 import { type UserTeamModel } from './UserTeam';
 declare const defaultSettings: {
     folders: string;
     default: {
-        folder: null;
-        locale: null;
+        folder: string | null;
+        locale: string | null;
     };
     webhook_url: string;
     webhook_enabled: boolean;
@@ -84,14 +84,16 @@ declare class Team extends Model<InferAttributes<Team>, InferCreationAttributes<
     settings: typeof defaultSettings;
     getProducts: HasManyGetAssociationsMixin<ProductModel>;
     user_team: NonAttribute<UserTeamModel>;
+    default_theme: ForeignKey<string>;
     getUsers: HasManyGetAssociationsMixin<any>;
+    hasUser: HasManyHasAssociationMixin<any, number>;
     static countTeamAndOwnerProducts(teamId: string): Promise<[number, number]>;
     invalidatePluginCache(): Promise<void>;
     getPublicSettings(): Partial<{
         folders: string;
         default: {
-            folder: null;
-            locale: null;
+            folder: string | null;
+            locale: string | null;
         };
         webhook_url: string;
         webhook_enabled: boolean;
@@ -163,5 +165,5 @@ declare class Team extends Model<InferAttributes<Team>, InferCreationAttributes<
     }>;
     serialize(): Pick<SQ.InferAttributes<Team, {
         omit: never;
-    }>, "id" | "name">;
+    }>, "id" | "name" | "default_theme">;
 }

@@ -1,6 +1,7 @@
 import { createExports, setInitializer } from '../utils/wrap';
 const exported = createExports('access_token')<typeof AccessToken>();
 export default exported;
+export type AccessTokenModel = InstanceType<typeof AccessToken>;
 
 import SQ, {
     CreationOptional,
@@ -22,7 +23,7 @@ class AccessToken extends Model<
     declare type: string;
     declare token: string;
     declare last_used_at: CreationOptional<Date>;
-    declare data: unknown;
+    declare data: Record<string, unknown>;
     declare user_id: ForeignKey<number>;
 
     static async newToken({
@@ -32,7 +33,7 @@ class AccessToken extends Model<
     }: {
         user_id: number;
         type: string;
-        data?: unknown;
+        data?: Record<string, unknown>;
     }) {
         return AccessToken.create({
             user_id,

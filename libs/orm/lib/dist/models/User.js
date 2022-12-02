@@ -69,7 +69,7 @@ class User extends sequelize_1.Model {
         if (this.role === 'admin' || this.role === 'sysadmin')
             return true;
         // the user is member of a team the chart belongs to
-        return await this.hasActivatedTeam(chart.organization_id);
+        return !!chart.organization_id && (await this.hasActivatedTeam(chart.organization_id));
     }
     async hasActivatedTeam(teamId) {
         const team = await UserTeam_1.default.findOne({
@@ -98,6 +98,11 @@ class User extends sequelize_1.Model {
         });
         if (!team)
             return false;
+        // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+        // so we shouldn't use dataValues anywhere, and this line would be
+        // `if (team.team_role === 'member') return false`,
+        // but this change might have unintended consequences.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (team.dataValues.team_role === 2)
             return false;
         return true;
@@ -300,12 +305,16 @@ class User extends sequelize_1.Model {
             allowNull: false,
             defaultValue: 2,
             get() {
+                // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const role = this.getDataValue('role');
                 return roleValues[role];
             },
             set(val) {
                 if (typeof val === 'string') {
                     const index = roleValues.indexOf(val);
+                    // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     if (index > -1)
                         this.setDataValue('role', index);
                 }

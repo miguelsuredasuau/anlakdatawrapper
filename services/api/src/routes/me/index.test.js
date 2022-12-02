@@ -1,11 +1,11 @@
 const test = require('ava');
 const { createSession, setup, withUser, withTeamWithUser } = require('../../../test/helpers/setup');
 const { createAuth } = require('@datawrapper/service-utils');
-const { AccessToken, User, Session, Chart, Team } = require('@datawrapper/orm/db');
+const { Session } = require('@datawrapper/orm/db');
 
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
-    const { legacyHash } = createAuth({ AccessToken, User, Session, Chart, Team });
+    const { legacyHash } = createAuth();
     t.context.legacyHash = legacyHash;
 });
 

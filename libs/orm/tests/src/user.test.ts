@@ -266,7 +266,11 @@ test('team user has one team', async t => {
     const result = await teamUser.getTeams();
     t.is(result.length, 1);
     t.is(result[0]?.name, 'Team No. 1');
-    t.is(result[0]?.user_team.getDataValue('team_role'), 0); // owner
+    t.is(result[0]?.user_team.team_role, 'owner');
+    // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+    // so we shouldn't use getDataValue in production code outside of getters and setters
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    t.is(result[0]?.user_team.getDataValue('team_role'), 0 as any); // owner
 });
 
 test('product user has two charts', async t => {

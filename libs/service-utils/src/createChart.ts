@@ -1,3 +1,4 @@
+import type { AccessTokenModel, ChartModel, SessionModel, UserModel } from '@datawrapper/orm';
 import Boom from '@hapi/boom';
 import assignDeep from 'assign-deep';
 import cloneDeep from 'lodash/cloneDeep';
@@ -6,14 +7,8 @@ import { findChartId } from './findChartId';
 import get from 'lodash/get';
 import pick from 'lodash/pick';
 import { decamelizeKeys } from 'humps';
-import type { AccessToken } from './accessTokenModelTypes';
-import type { Chart as TChart, ChartDataValues } from './chartModelTypes';
-import type { Folder as TFolder } from './folderModelTypes';
+import type { ChartDataValues } from './chartModelTypes';
 import type { Server } from './serverTypes';
-import type { Session as TSession } from './sessionModelTypes';
-import type { Team as TTeam } from './teamModelTypes';
-import type { Theme as TTheme } from './themeModelTypes';
-import type { User as TUser } from './userModelTypes';
 
 type AllowedPayload = {
     title?: string;
@@ -77,21 +72,21 @@ export async function createChart(
         token
     }: {
         server: Server;
-        user: TUser;
+        user: UserModel;
         payload: Payload;
         session: string;
-        token: AccessToken;
+        token: AccessTokenModel;
     },
     newChartId: string | null = null
-): Promise<TChart> {
-    const Chart = server.methods.getModel<typeof TChart>('chart');
-    const Session = server.methods.getModel<typeof TSession>('session');
-    const Theme = server.methods.getModel<typeof TTheme>('theme');
-    const Team = server.methods.getModel<typeof TTeam>('team');
-    const Folder = server.methods.getModel<typeof TFolder>('folder');
+): Promise<ChartModel> {
+    const Chart = server.methods.getModel('chart');
+    const Session = server.methods.getModel('session');
+    const Theme = server.methods.getModel('theme');
+    const Team = server.methods.getModel('team');
+    const Folder = server.methods.getModel('folder');
     const __ = server.methods.translate;
 
-    let session: TSession | null = null;
+    let session: SessionModel | null = null;
     if (sessionId) {
         session = await Session.findByPk(sessionId);
         if (!session) throw new Error('Unknown session id');
@@ -100,7 +95,7 @@ export async function createChart(
     const language =
         user && user.role !== 'guest' ? user.language : get(session, 'data.dw-lang') || 'en-US';
 
-    const defaults = (server.methods.config('general')['defaults'] || {
+    const defaults = (server.methods.config('general')?.['defaults'] || {
         type: 'bar-chart',
         theme: 'default'
     }) as ChartDataValues;
@@ -108,7 +103,10 @@ export async function createChart(
     let folderTeam = null;
     let payloadTeam = null;
 
-    const allowedPayload: Partial<ChartDataValues> = pick(payload, ALLOWED_PAYLOAD_KEYS);
+    const allowedPayload: Partial<ChartDataValues> & AllowedPayload = pick(
+        payload,
+        ALLOWED_PAYLOAD_KEYS
+    );
 
     if ((session || token) && user.role !== 'guest') {
         if (payload.teamId && payload.teamId !== 'null') {
@@ -156,7 +154,7 @@ export async function createChart(
         theme: defaults.theme,
         type: defaults.type,
         language: user.language.replace('_', '-'),
-        ...decamelizeKeys(allowedPayload),
+        ...(decamelizeKeys(allowedPayload) as typeof allowedPayload),
         metadata: cloneDeep(defaultChartMetadata),
         author_id: user.id,
         id

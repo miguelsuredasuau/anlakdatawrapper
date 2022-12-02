@@ -7,17 +7,19 @@ import assign from 'assign-deep';
 import merge from 'merge-deep';
 import SQ, { ForeignKey, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 import { indexBy } from 'underscore';
-import type { Theme as ThemeData } from '@datawrapper/shared/themeTypes';
+import type { Metadata as ChartMetadata } from '@datawrapper/shared/chartTypes';
+import type { Theme as BasicThemeData } from '@datawrapper/shared/themeTypes';
 
 const MAX_EXTEND_DEPTH = 10;
 
 type Asset = Record<string, unknown> & { type: string };
 type Assets = Record<string, Asset>;
+type ThemeData = BasicThemeData & { metadata?: ChartMetadata };
 
 class Theme extends Model<InferAttributes<Theme>, InferCreationAttributes<Theme>> {
     declare id: string;
     declare title: string;
-    declare data: ThemeData;
+    declare data: BasicThemeData;
     declare less: string;
     declare assets: Assets;
     declare extend: ForeignKey<string>;

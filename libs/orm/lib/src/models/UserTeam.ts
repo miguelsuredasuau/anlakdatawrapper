@@ -3,29 +3,16 @@ const exported = createExports('user_team')<typeof UserTeam>();
 export default exported;
 export type UserTeamModel = InstanceType<typeof UserTeam>;
 
-import SQ, {
-    ForeignKey,
-    InferAttributes,
-    InferCreationAttributes,
-    Model,
-    NonAttribute
-} from 'sequelize';
+import SQ, { ForeignKey, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 import User from './User';
 import Team from './Team';
 
 const teamRoleValues = ['owner', 'admin', 'member'] as const;
 
-interface AdditionalRawAttributes {
-    team_role: number | typeof teamRoleValues[number];
-}
-
-class UserTeam extends Model<
-    InferAttributes<UserTeam> & AdditionalRawAttributes,
-    InferCreationAttributes<UserTeam> & AdditionalRawAttributes
-> {
+class UserTeam extends Model<InferAttributes<UserTeam>, InferCreationAttributes<UserTeam>> {
     declare user_id: ForeignKey<number>;
     declare organization_id: ForeignKey<string>;
-    declare team_role: NonAttribute<typeof teamRoleValues[number]>;
+    declare team_role: typeof teamRoleValues[number];
     declare invite_token: string | undefined;
 }
 
@@ -39,13 +26,17 @@ setInitializer(exported, ({ initOptions }) => {
                 allowNull: false,
                 defaultValue: 2, // member
                 get() {
-                    const teamRole = this.getDataValue('team_role') as number;
+                    // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const teamRole: number = this.getDataValue('team_role') as any;
                     return teamRoleValues[teamRole];
                 },
                 set(val) {
                     if (typeof val === 'string') {
                         const index = (teamRoleValues as readonly string[]).indexOf(val);
-                        if (index > -1) this.setDataValue('team_role', index);
+                        // Sequelize v6 types do not support model field and DB field having different types https://github.com/sequelize/sequelize/issues/13522
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        if (index > -1) this.setDataValue('team_role', index as any);
                     }
                 }
             },

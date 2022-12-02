@@ -1,13 +1,7 @@
 const Boom = require('@hapi/boom');
 const { createAuth } = require('@datawrapper/service-utils');
-const { AccessToken, User, Session, Chart, Team } = require('@datawrapper/orm/db');
-const { associateChartsWithUser, createSession, getStateOpts } = createAuth({
-    AccessToken,
-    User,
-    Session,
-    Chart,
-    Team
-});
+const { Session } = require('@datawrapper/orm/db');
+const { associateChartsWithUser, createSession, getStateOpts } = createAuth();
 const { createUserPayload } = require('../../utils/schemas');
 
 module.exports = async server => {

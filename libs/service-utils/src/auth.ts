@@ -1,8 +1,15 @@
-const Boom = require('@hapi/boom');
-const { customAlphabet } = require('nanoid');
-const crypto = require('crypto');
-const bcrypt = require('bcryptjs');
-const get = require('lodash/get');
+import type { SessionModel, TeamModel, UserModel } from '@datawrapper/orm';
+import { AccessToken, Chart, Session, Team, User } from '@datawrapper/orm/db';
+import Boom from '@hapi/boom';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import type { ResponseToolkit } from 'hapi';
+import get from 'lodash/get';
+// TODO: submit bug report to TS about import from nanoid incorrectly causing TS errors when moduleResolution set to "node16"
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { customAlphabet } from 'nanoid';
+import type { Request, Server } from './serverTypes';
 
 const DEFAULT_SALT = 'uRPAqgUJqNuBdW62bmq3CLszRFkvq4RW';
 const MAX_SESSION_COOKIES_IN_REQ = 2;
@@ -12,28 +19,62 @@ const generateToken = customAlphabet(
     25
 );
 
-exports.createAuth = function createAuth(
-    { AccessToken, User, Session, Chart, Team },
-    { includeTeams } = {}
-) {
-    function adminValidation({ artifacts } = {}) {
+type GetUserParams = {
+    credentials: {
+        data?: {
+            data?: Record<string, unknown>;
+        };
+        scope?: string[];
+        session?: string;
+        token?: string;
+    };
+    logger?:
+        | {
+              warn(message: string): void;
+          }
+        | undefined;
+    strategy?: string;
+};
+
+type Artifacts = {
+    role: string;
+};
+
+type ExtendedTeamModel = TeamModel & {
+    active?: boolean;
+    dataValues: TeamModel['dataValues'] & {
+        active?: boolean;
+    };
+};
+
+type ExtendedUserModel = Omit<UserModel, 'getActiveTeam' | 'teams'> & {
+    activeTeam?: ExtendedTeamModel | null | undefined;
+    getActiveTeam(): Promise<ExtendedTeamModel | null | undefined>;
+    teams?: ExtendedTeamModel[];
+};
+
+export function createAuth({ includeTeams = false } = {}) {
+    function adminValidation({ artifacts }: { artifacts: Artifacts }) {
         if (artifacts.role !== 'admin') {
             throw Boom.unauthorized('ADMIN_ROLE_REQUIRED');
         }
     }
 
-    function userValidation({ artifacts } = {}) {
+    function userValidation({ artifacts }: { artifacts: Artifacts }) {
         if (artifacts.role === 'guest') {
             throw Boom.unauthorized('USER_ROLE_REQUIRED');
         }
     }
 
-    function cookieTTL(days) {
+    function cookieTTL(days: number) {
         return 1000 * 3600 * 24 * days; // 1000ms = 1s -> 3600s = 1h -> 24h = 1d
     }
 
-    async function getUser(userId, { credentials, strategy, logger } = {}) {
-        let user = await User.findByPk(userId, {
+    async function getUser(
+        userId: number | 'guest',
+        { credentials, strategy, logger }: GetUserParams
+    ) {
+        let user: ExtendedUserModel | null = await User.findByPk(userId, {
             attributes: [
                 'id',
                 'email',
@@ -50,9 +91,9 @@ exports.createAuth = function createAuth(
                 : {})
         });
         if (user && includeTeams) {
-            const activeTeam = await user.getActiveTeam();
+            const activeTeam: ExtendedTeamModel | undefined | null = await user.getActiveTeam();
             if (activeTeam)
-                user.teams.forEach(team => {
+                user.teams?.forEach(team => {
                     if (activeTeam.id === team.id) {
                         team.active = true;
                         team.dataValues.active = true;
@@ -62,30 +103,34 @@ exports.createAuth = function createAuth(
         }
 
         if (user && user.deleted) {
-            return { isValid: false, message: Boom.unauthorized('User not found', strategy) };
+            return {
+                isValid: false as const,
+                message: Boom.unauthorized('User not found', strategy as string)
+            };
         }
 
-        if (!user && credentials.session) {
-            const notSupported = name => {
-                return () => {
+        if (!user && credentials?.session) {
+            const notSupported = (name: string) => {
+                return (): never => {
                     logger && logger.warn(`user.${name} is not supported for guests`);
-                    return false;
+                    return false as never;
                 };
             };
             // use non-persistant User model instance
-            user = User.build({
+            const newUser = User.build({
                 role: 'guest',
                 id: undefined,
-                language: get(credentials, 'data.data.dw-lang', 'en-US')
+                language: get(credentials, 'data.data.dw-lang', 'en-US') as string
             });
             // make sure it never ends up in our DB
-            user.save = notSupported('save');
-            user.update = notSupported('update');
-            user.destroy = notSupported('destroy');
-            user.reload = notSupported('reload');
+            newUser.save = notSupported('save');
+            newUser.update = notSupported('update');
+            newUser.destroy = notSupported('destroy');
+            newUser.reload = notSupported('reload');
+            user = newUser;
         }
 
-        return { isValid: true, credentials, artifacts: user };
+        return { isValid: true as const, credentials, artifacts: user };
     }
 
     /**
@@ -96,7 +141,7 @@ exports.createAuth = function createAuth(
      * @param {string} secret - salt to hash the value with
      * @returns {string}
      */
-    function legacyHash(pwhash, secret = DEFAULT_SALT) {
+    function legacyHash(pwhash: string, secret = DEFAULT_SALT) {
         const hmac = crypto.createHmac('sha256', secret);
         hmac.update(pwhash);
         return hmac.digest('hex');
@@ -116,7 +161,12 @@ exports.createAuth = function createAuth(
      * @param {string} secretAuthSalt - defined in config.js
      * @returns {boolean}
      */
-    function legacyLogin(password, passwordHash, authSalt, secretAuthSalt) {
+    function legacyLogin(
+        password: string,
+        passwordHash: string,
+        authSalt?: string,
+        secretAuthSalt?: string
+    ) {
         let serverHash = secretAuthSalt ? legacyHash(password, secretAuthSalt) : password;
 
         if (serverHash === passwordHash) return true;
@@ -133,7 +183,7 @@ exports.createAuth = function createAuth(
      * @param {string} password - User password
      * @param {number} hashRounds - Iteration amout for bcrypt
      */
-    async function migrateHashToBcrypt(userId, password, hashRounds) {
+    async function migrateHashToBcrypt(userId: number, password: string, hashRounds: number) {
         const hash = await bcrypt.hash(password, hashRounds);
 
         await User.update(
@@ -153,13 +203,13 @@ exports.createAuth = function createAuth(
      *
      * @param {number} hashRounds - Number of rounds for the brypt algorithm
      */
-    function createHashPassword(hashRounds) {
-        return async function hashPassword(password) {
+    function createHashPassword(hashRounds: number) {
+        return async function hashPassword(password: string) {
             return password === '' ? password : bcrypt.hash(password, hashRounds);
         };
     }
 
-    function createComparePassword(server) {
+    function createComparePassword(server: Server) {
         /**
          * Check validity of a password against the saved password hash
          *
@@ -169,7 +219,11 @@ exports.createAuth = function createAuth(
          * @param {number} options.userId - User ID for hash migration
          * @returns {Boolean}
          */
-        return async function comparePassword(password, passwordHash, { userId }) {
+        return async function comparePassword(
+            password: string,
+            passwordHash: string,
+            { userId }: { userId: number }
+        ) {
             const { api } = server.methods.config();
             let isValid = false;
             /**
@@ -186,7 +240,7 @@ exports.createAuth = function createAuth(
                  */
                 if (!isValid) {
                     isValid = await bcrypt.compare(
-                        legacyHash(password, api.authSalt),
+                        legacyHash(password, api?.authSalt),
                         passwordHash
                     );
                 }
@@ -195,32 +249,38 @@ exports.createAuth = function createAuth(
                  * The user password hash was created by the PHP API and is not a bcrypt hash. That means
                  * the API needs to use the old comparison method with double sha256 hashes.
                  */
-                isValid = legacyLogin(password, passwordHash, api.authSalt, api.secretAuthSalt);
+                isValid = legacyLogin(password, passwordHash, api?.authSalt, api?.secretAuthSalt);
 
                 /**
                  * When the old method works, the API migrates the old hash to a bcrypt hash for more
                  * security. This ensures a seemless migration for users.
                  */
-                if (isValid && userId && api.enableMigration) {
-                    await migrateHashToBcrypt(userId, password, api.hashRounds);
+                if (isValid && userId && api?.enableMigration) {
+                    // TODO: what if hashRounds is not defined?
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    await migrateHashToBcrypt(userId, password, api.hashRounds!);
                 }
             }
             return isValid;
         };
     }
 
-    function getStateOpts(server, ttl, sameSite = 'Lax') {
+    function getStateOpts(
+        server: Server,
+        ttl: number,
+        sameSite: 'Lax' | 'Strict' | false | undefined = 'Lax'
+    ) {
         return {
-            isSecure: server.methods.config('frontend').https,
+            isSecure: server.methods.config('frontend')?.https,
             strictHeader: false,
-            domain: `.${server.methods.config('api').domain}`,
+            domain: `.${server.methods.config('api')?.domain}`,
             isSameSite: sameSite,
             path: '/',
             ttl: cookieTTL(ttl)
         };
     }
 
-    async function associateChartsWithUser(sessionId, userId) {
+    async function associateChartsWithUser(sessionId: string, userId: number) {
         /* Sequelize returns [0] when no row was updated */
         if (!sessionId) return [0];
 
@@ -238,7 +298,16 @@ exports.createAuth = function createAuth(
         );
     }
 
-    async function createSession(id, userId, keepSession = true, type = 'password') {
+    // Cannot refer to SessionModel here because of TS + Sequelize + monorepo issue:
+    // https://github.com/microsoft/TypeScript/issues/48212
+    // https://github.com/microsoft/TypeScript/issues/47663
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async function createSession(
+        id: string,
+        userId: number,
+        keepSession = true,
+        type = 'password'
+    ): Promise<any> {
         return Session.create({
             id,
             user_id: userId,
@@ -252,7 +321,7 @@ exports.createAuth = function createAuth(
         });
     }
 
-    async function bearerValidation(request, token) {
+    async function bearerValidation(request: Request, token: string) {
         const row = await AccessToken.findOne({ where: { token, type: 'api-token' } });
 
         if (!row) {
@@ -265,20 +334,20 @@ exports.createAuth = function createAuth(
             credentials: { token },
             strategy: 'Token'
         });
-        if (!auth.artifacts.isActivated()) {
+        if (!auth.artifacts?.isActivated()) {
             // only activated users may authenticate through bearer tokens
             return { isValid: false, message: Boom.unauthorized('User not activated', 'Token') };
         }
         if (auth.isValid) {
             auth.credentials.scope =
-                !row.data.scopes || row.data.scopes.includes('all')
+                !row.data.scopes || (row.data.scopes as string[]).includes('all')
                     ? request.server.methods.getScopes(auth.artifacts.isAdmin())
-                    : row.data.scopes;
+                    : (row.data.scopes as string[]);
         }
         return auth;
     }
 
-    async function cookieValidation(request, sessionIds) {
+    async function cookieValidation(request: Request, sessionIds: string[]) {
         const sessions = await Session.findAll({ where: { id: sessionIds } });
 
         if (!sessions.length) {
@@ -293,7 +362,7 @@ exports.createAuth = function createAuth(
                 }
             });
 
-            const auth = await getUser(session.data['dw-user-id'], {
+            const auth = await getUser(session.data['dw-user-id'] as number, {
                 credentials: { session: session.id, data: session },
                 strategy: 'Session',
                 logger:
@@ -303,29 +372,34 @@ exports.createAuth = function createAuth(
             if (auth.isValid) {
                 if (typeof request.server.methods.getScopes === 'function') {
                     // add all scopes to cookie session
-                    auth.credentials.scope = request.server.methods.getScopes(
-                        auth.artifacts.isAdmin()
+                    // TODO: figure out why TS does not narrow down the type knowing that auth is valid
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    auth.credentials!.scope = request.server.methods.getScopes(
+                        auth.artifacts?.isAdmin()
                     );
                 }
 
-                auth.sessionType = session.data.type;
-
-                return auth;
+                return {
+                    ...auth,
+                    sessionType: session.data.type
+                };
             }
         }
 
         return { error: Boom.unauthorized(null, 'Session') };
     }
 
-    function createCookieAuthScheme(createGuestSessions) {
-        return function cookieAuth(server, options) {
+    function createCookieAuthScheme(createGuestSessions: boolean) {
+        return function cookieAuth(server: Server, options: Record<string, unknown>) {
             const api = server.methods.config('api');
-            const opts = { cookie: api.sessionID, ...options };
+            // TODO: what if sessionID is not defined?
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const opts = { cookie: api!.sessionID!, ...options };
 
             server.state(opts.cookie, getStateOpts(server, 90));
 
             const scheme = {
-                authenticate: async (request, h) => {
+                authenticate: async (request: Request, h: ResponseToolkit) => {
                     const cookieValueOrArray = request.state[opts.cookie];
                     const sessionIds = [];
                     if (Array.isArray(cookieValueOrArray)) {
@@ -336,22 +410,30 @@ exports.createAuth = function createAuth(
                         sessionIds.push(cookieValueOrArray);
                     }
 
-                    const { error, credentials, artifacts, sessionType } = await cookieValidation(
-                        request,
-                        sessionIds
-                    );
+                    const cookieValidationResult = await cookieValidation(request, sessionIds);
 
-                    if (!error) {
+                    if (!cookieValidationResult.error) {
+                        const { credentials, artifacts, sessionType } = cookieValidationResult;
                         const cookieOpts = getStateOpts(
                             server,
                             90,
-                            sessionType === 'token' ? 'None' : undefined
+                            // TODO: fix the type mismatch
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            sessionType === 'token' ? ('None' as any) : undefined
                         );
-                        h.state(opts.cookie, credentials.session, cookieOpts);
-                        return h.authenticated({ credentials, artifacts });
+                        // TODO: figure out explicit types
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        h.state(opts.cookie, credentials!.session!, cookieOpts);
+                        return h.authenticated({
+                            credentials,
+                            artifacts: artifacts as NonNullable<typeof artifacts> | undefined
+                        });
                     }
 
                     if (createGuestSessions) {
+                        // TODO: figure out the types; sessionType is going to always be empty here?
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const { sessionType } = cookieValidationResult as any;
                         // no cookie or session expired, let's create a new session
                         const sessionId = generateToken();
 
@@ -369,7 +451,9 @@ exports.createAuth = function createAuth(
                         const cookieOpts = getStateOpts(
                             server,
                             90,
-                            sessionType === 'token' ? 'None' : undefined
+                            // TODO: fix the type mismatch
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            sessionType === 'token' ? ('None' as any) : undefined
                         );
                         h.state(opts.cookie, sessionId, cookieOpts);
 
@@ -378,10 +462,12 @@ exports.createAuth = function createAuth(
                             strategy: 'Session'
                         });
 
-                        return h.authenticated(auth);
+                        // TODO: fix the type mismatch
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        return h.authenticated(auth as any);
                     }
 
-                    return error;
+                    return cookieValidationResult.error;
                 }
             };
 
@@ -389,9 +475,13 @@ exports.createAuth = function createAuth(
         };
     }
 
-    async function login(userId, session, keepSession = false) {
-        if (session && session.data) {
-            session = session.data;
+    async function login(
+        userId: number,
+        inputSession: { data?: SessionModel },
+        keepSession = false
+    ) {
+        if (inputSession && inputSession.data) {
+            const session = inputSession.data;
             /* associate guest session with newly created user */
             await Promise.all([
                 session.update({
@@ -406,18 +496,15 @@ exports.createAuth = function createAuth(
                 }),
                 associateChartsWithUser(session.id, userId)
             ]);
+            return session;
         } else {
-            session = await createSession(generateToken(), userId, keepSession);
+            return await createSession(generateToken(), userId, keepSession);
         }
-
-        return session;
     }
 
     return {
-        getUser,
         adminValidation,
         userValidation,
-        cookieTTL,
 
         cookieValidation,
         createCookieAuthScheme,
@@ -429,7 +516,6 @@ exports.createAuth = function createAuth(
         getStateOpts,
         associateChartsWithUser,
         createSession,
-        generateToken,
         login
     };
-};
+}

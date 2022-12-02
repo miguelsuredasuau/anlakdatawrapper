@@ -4,7 +4,9 @@ export default exported;
 export type TeamModel = InstanceType<typeof Team>;
 
 import SQ, {
+    ForeignKey,
     HasManyGetAssociationsMixin,
+    HasManyHasAssociationMixin,
     InferAttributes,
     InferCreationAttributes,
     Model,
@@ -24,8 +26,8 @@ import UserTeam, { type UserTeamModel } from './UserTeam';
 const defaultSettings = {
     folders: 'expanded',
     default: {
-        folder: null,
-        locale: null
+        folder: null as string | null,
+        locale: null as string | null
     },
     webhook_url: '',
     webhook_enabled: false,
@@ -105,10 +107,13 @@ class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
     declare settings: typeof defaultSettings;
     declare getProducts: HasManyGetAssociationsMixin<ProductModel>;
     declare user_team: NonAttribute<UserTeamModel>;
+    declare default_theme: ForeignKey<string>;
 
     // TODO: figure out types without breaking TS with circular dependencies
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     declare getUsers: HasManyGetAssociationsMixin<any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    declare hasUser: HasManyHasAssociationMixin<any, number>;
 
     static async countTeamAndOwnerProducts(teamId: string) {
         const teamOwner = await UserTeam.findOne({

@@ -8,6 +8,8 @@
         "allowSyntheticDefaultImports": true,
         "allowJs": true,
         "checkJs": false,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "moduleResolution": "node16",
+        "noPropertyAccessFromIndexSignature": false
     }
 }

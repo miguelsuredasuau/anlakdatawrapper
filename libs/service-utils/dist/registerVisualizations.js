@@ -7,7 +7,7 @@ exports.createRegisterVisualization = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 async function registerVisualization(server, plugin, visualizations = []) {
-    const pluginRoot = server.methods.config('general')['localPluginRoot'];
+    const pluginRoot = server.methods.config('general')?.['localPluginRoot'];
     if (!pluginRoot) {
         throw new Error('localPluginRoot must be defined to register visualization');
     }

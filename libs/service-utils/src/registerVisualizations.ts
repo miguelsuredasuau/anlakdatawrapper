@@ -8,7 +8,7 @@ async function registerVisualization(
     plugin: string,
     visualizations: Visualization[] = []
 ) {
-    const pluginRoot = server.methods.config('general')['localPluginRoot'] as string;
+    const pluginRoot = server.methods.config('general')?.['localPluginRoot'] as string;
     if (!pluginRoot) {
         throw new Error('localPluginRoot must be defined to register visualization');
     }

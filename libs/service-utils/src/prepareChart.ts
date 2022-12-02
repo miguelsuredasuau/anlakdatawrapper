@@ -2,7 +2,8 @@ import assignDeep from 'assign-deep';
 import cloneDeep from 'lodash/cloneDeep';
 import { defaultChartMetadata } from './defaultChartMetadata';
 import { camelizeTopLevelKeys } from './camelizeTopLevelKeys';
-import type { Chart, ChartDataValues, PreparedChart } from './chartModelTypes';
+import type { ChartDataValues, PreparedChart } from './chartModelTypes';
+import type { ChartModel, UserModel } from '@datawrapper/orm';
 
 /**
  * Prepares a chart before it gets send to client
@@ -15,10 +16,14 @@ import type { Chart, ChartDataValues, PreparedChart } from './chartModelTypes';
  * @returns {Object}
  */
 export async function prepareChart(
-    chart: Chart,
+    chart: ChartModel,
     additionalData: Partial<ChartDataValues> = {}
 ): Promise<PreparedChart> {
-    const { user, in_folder: folderId, ...dataValues } = chart.dataValues;
+    const {
+        user,
+        in_folder: folderId,
+        ...dataValues
+    } = chart.dataValues as typeof chart.dataValues & { user: UserModel };
 
     const publicId =
         typeof chart.getPublicId === 'function' ? await chart.getPublicId() : undefined;
