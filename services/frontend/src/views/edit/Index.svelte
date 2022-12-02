@@ -16,6 +16,7 @@
     import merge from 'lodash/merge';
     import cloneDeep from 'lodash/cloneDeep';
     import { SubscriptionCollection } from '../../utils/rxjs-store.mjs';
+    import { distinctUntilChanged, filter } from 'rxjs/operators';
     import { getChartEditorPath } from '../../utils/chart-editor-path.mjs';
 
     export let workflow;
@@ -113,6 +114,7 @@
         team,
         readonlyKeys,
         activeStepId,
+        onEditorStepChange,
         ...stores
     });
 
@@ -262,8 +264,17 @@
     $: {
         if (activeStep) {
             stepLoaded = { ...stepLoaded, [activeStep.id]: true };
-            $activeStepId = activeStep.id;
+            if (activeStep.id) $activeStepId = activeStep.id;
         }
+    }
+
+    function onEditorStepChange(step, callback) {
+        return activeStepId
+            .pipe(
+                distinctUntilChanged(),
+                filter(stepId => stepId === step)
+            )
+            .subscribe(callback);
     }
 
     async function navigateTo(step) {
