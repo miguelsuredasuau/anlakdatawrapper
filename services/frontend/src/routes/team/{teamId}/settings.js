@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const Boom = require('@hapi/boom');
 const get = require('lodash/get');
+const { SQ } = require('@datawrapper/orm');
 
 function getSystemDefaultTheme(config) {
     return get(config, 'general.defaults.theme') || 'default';
@@ -29,7 +30,7 @@ function getLocales(config) {
     }));
 }
 
-async function getThemes({ Team, Theme, db, config, team }) {
+async function getThemes({ Team, Theme, config, team }) {
     const publicThemeIds = config.general?.defaultThemes ?? ['default'];
     return (
         await Theme.findAll({
@@ -39,7 +40,7 @@ async function getThemes({ Team, Theme, db, config, team }) {
                 attributes: ['id']
             },
             where: {
-                [db.Op.or]: [{ '$teams.id$': team.id }, { id: publicThemeIds }]
+                [SQ.Op.or]: [{ '$teams.id$': team.id }, { id: publicThemeIds }]
             }
         })
     ).map(theme => ({ value: theme.id, label: theme.title }));
@@ -207,7 +208,6 @@ module.exports = {
                     const Theme = server.methods.getModel('theme');
                     const __ = server.methods.getTranslate(request);
                     const config = server.methods.config();
-                    const db = server.methods.getDB();
 
                     // fetch team from DB as auth.artifacts.teams[]
                     // doesn't include team.settings
@@ -232,7 +232,7 @@ module.exports = {
                                           .team_role
                             },
                             team,
-                            themes: await getThemes({ Team, Theme, config, db, team })
+                            themes: await getThemes({ Team, Theme, config, team })
                         }
                     });
                 }
