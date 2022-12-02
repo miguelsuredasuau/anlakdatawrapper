@@ -2,25 +2,10 @@
     import DropdownInput from '_partials/controls/DropdownInput.svelte';
     import CustomDropdownItemRenderer from './CustomDropdownItemRenderer.svelte';
 
-    const options = [
-        {
-            value: 'Alpha',
-            label: 'Alpha'
-        },
-        {
-            value: 'Beta',
-            label: 'Beta'
-        },
-        {
-            value: 'Gamma',
-            label: 'Gamma'
-        },
-        {
-            value: 'Delta',
-            label: 'Delta'
-        }
-    ];
+    const options = ['Alpha', 'Beta', 'Gamma', 'Delta'].map(s => ({ value: s, label: s }));
+
     let value = 'Alpha';
+
     const optionsStyle = [
         {
             value: '#c71e1d',
@@ -34,6 +19,7 @@
             value: '#FFB327',
             label: '<b style="color:#FFB327">orange</b>'
         },
+        { divider: true },
         {
             value: '#cf4870',
             label: '<b style="color:#cf4870">red</b>'
@@ -94,6 +80,12 @@
                 itemRenderer={CustomDropdownItemRenderer}
                 options={optionsStyle}
             />
+        </div>
+        <div class="column">
+            <p>
+                To add in <b>dividing lines</b>, insert <code>{'{ divider: true }'}</code> objects into
+                the options array.
+            </p>
         </div>
     </div>
 </div>

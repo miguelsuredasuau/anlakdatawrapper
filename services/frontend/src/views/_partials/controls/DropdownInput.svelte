@@ -46,9 +46,14 @@
     function onKeyDown(event) {
         if (active) {
             if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-                const newIndex =
-                    (selectedItemIndex + (event.key === 'ArrowDown' ? 1 : -1) + options.length) %
-                    options.length;
+                const direction = event.key === 'ArrowDown' ? 1 : -1;
+                let jump = 0;
+                let newIndex;
+                // find next item that is not a divider
+                do {
+                    jump += direction;
+                    newIndex = (selectedItemIndex + jump + options.length) % options.length;
+                } while (options[newIndex].divider);
                 selectedItem = options[newIndex];
                 event.preventDefault(); // prevent page from scrolling up/down
             }
@@ -119,17 +124,21 @@
     </button>
     <div class="dropdown-content" slot="content">
         {#each options as option}
-            <button
-                class="dropdown-item"
-                class:is-active={selectedItem === option}
-                on:click={() => handleOptionClick(option)}
-            >
-                {#if itemRenderer}
-                    <svelte:component this={itemRenderer} item={option} />
-                {:else}
-                    {@html purifyHtml(option.label)}
-                {/if}
-            </button>
+            {#if option.divider}
+                <hr class="dropdown-divider" />
+            {:else}
+                <button
+                    class="dropdown-item"
+                    class:is-active={selectedItem === option}
+                    on:click={() => handleOptionClick(option)}
+                >
+                    {#if itemRenderer}
+                        <svelte:component this={itemRenderer} item={option} />
+                    {:else}
+                        {@html purifyHtml(option.label)}
+                    {/if}
+                </button>
+            {/if}
         {/each}
     </div>
 </Dropdown>
