@@ -1,5 +1,9 @@
 import { readFile } from 'fs/promises';
+import { URL } from 'url';
+import { join } from 'path';
 import { createBrowser, createPage, render, takeTestScreenshot } from './setup.mjs';
+
+const __dirname = new URL('.', import.meta.url).pathname;
 
 const visMeta = {
     axes: {}
@@ -15,8 +19,7 @@ export async function before(t) {
 
 export async function beforeEach(t) {
     t.context.page = await createPage(t.context.browser);
-
-    const js = await readFile('./tests/helpers/data/dummy.vis.js', 'utf-8');
+    const js = await readFile(join(__dirname, 'data/dummy.vis.js'), 'utf-8');
     await Promise.all([t.context.page.addScriptTag({ content: js })]);
 }
 

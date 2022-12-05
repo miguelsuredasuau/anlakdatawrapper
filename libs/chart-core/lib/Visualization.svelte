@@ -50,7 +50,6 @@
     export let origin;
     export let externalDataUrl;
     export let outerContainer;
-
     // transparent style means no background is set on body
     export let isStyleTransparent = false;
     // plain style means no header and footer
@@ -289,6 +288,7 @@
             await Promise.all(
                 blocks.map(d => {
                     return new Promise(resolve => {
+                        if (d.preloaded) return resolve(); // in puppeteer tests, js and css files are preloaded
                         const p = [loadScript(getUrl(d.source.js))];
 
                         if (d.source.css) {
@@ -454,7 +454,6 @@ Please make sure you called __(key) with a key of type "string".
                 locales[vendor] = deepmerge(localeBase, locales[vendor].custom);
             }
         });
-
         // read flags
         const newFlags = isIframe ? parseFlagsFromURL(window.location.search, FLAG_TYPES) : {}; // TODO parseFlagsFromElement(scriptEl, FLAG_TYPES);
         Object.assign(flags, newFlags);

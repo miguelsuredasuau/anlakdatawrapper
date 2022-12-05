@@ -106,8 +106,20 @@ export async function render(page, props, delay = 0) {
 
     const state = {
         ...props,
+        blocks: [],
+        assets: {},
         visualization: props.visMeta
     };
+
+    const loadPlugins = [];
+    if (props.blocksPlugins) {
+        for (const plugin of props.blocksPlugins) {
+            state.blocks.push(plugin.blocks);
+            loadPlugins.push(page.addScriptTag({ content: await readFile(plugin.js, 'utf-8') }));
+            loadPlugins.push(page.addStyleTag({ content: await readFile(plugin.css, 'utf-8') }));
+        }
+    }
+    await Promise.all(loadPlugins);
 
     await page.addScriptTag({
         content: `window.__DW_SVELTE_PROPS__ = ${JSON.stringify(state)};`
@@ -116,6 +128,8 @@ export async function render(page, props, delay = 0) {
     const logs = [];
 
     page.on('console', event => {
+        const text = event.text();
+        if (text.startsWith('Chart rendered in')) return;
         logs.push({ type: event.type(), text: event.text() });
     });
 
