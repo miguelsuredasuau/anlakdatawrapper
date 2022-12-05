@@ -52,7 +52,7 @@ describe('login and logout', () => {
         await getPasswordInput().setValue(password);
         await expect(getLoginButton()).toBeEnabled();
         await getLoginButton().click();
-        await browser.waitForUrl('/', 20000);
+        await browser.waitForUrl('/', { timeout: 20000 });
 
         // Then it logs the user out and sets the ref parameter.
         await browser.url('/archive/recently-edited');

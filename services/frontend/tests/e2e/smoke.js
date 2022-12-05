@@ -40,7 +40,6 @@ Protests of Islam critical PEGIDA movement in Dresden;3;37;4;41;15
 Financial Crisis in Greece;4;31;2;46;17
 Ukraine conflict between Russia and Western Countries;2;30;2;52;14`
         );
-        await browser.waitForChartSync();
         const $uploadProceed = await $('>>>[data-uid="upload-proceed-button"]');
         await expect($uploadProceed).toBeDisplayed();
         await $uploadProceed.click(); // Go to the next step.
@@ -79,17 +78,14 @@ Ukraine conflict between Russia and Western Countries;2;30;2;52;14`
         await expect($annotatePreviewHeadline).toBeDisplayed();
         await expect($annotatePreviewHeadline).toHaveTextContaining(chartTitle); // Check the chart title in the iframe.
         await browser.switchToParentFrame();
-        await browser.waitForChartSync(); // If we don't do this, then the chart has still the old title on the Publish step for some reason.
         const $annotatePublishStep = await $('a[href="publish"]');
         await expect($annotatePublishStep).toBeDisplayed();
         await $annotatePublishStep.click(); // Go to the Publish step.
 
         // Publish
-        await browser.waitForChartSync();
         const $publishButton = await $('>>>.button-publish');
         await $publishButton.waitForDisplayed();
         await $publishButton.click();
-        await browser.waitForChartSync();
         const $publishUrl = await $('>>>#share-url');
         await $publishUrl.waitForDisplayed({ timeout: 20000 }); // Wait for publishing with increased timeout, because it can take long on staging.
         await expect($publishUrl).toHaveValueContaining('/1/');
@@ -98,7 +94,7 @@ Ukraine conflict between Russia and Western Countries;2;30;2;52;14`
         await expect(publishHtml).toContain(chartTitle); // Check that the published HTML page contains the rendered chart.
 
         // Archive
-        await browser.url('/archive/recently-published');
+        await browser.leavePage('/archive/recently-published');
         const $archiveBox = await $('.box');
         await $archiveBox.waitForDisplayed();
         await expect($archiveBox).toHaveTextContaining(chartTitle); // Check that the first box in the Archive is our chart.
