@@ -1,6 +1,6 @@
 import test from 'ava';
 import { before, beforeEach, after, afterEach, renderDummy } from '../helpers/utils.mjs';
-import { getElementInnerText, getElementStyle } from '../helpers/setup.mjs';
+import { getElementInnerText, getElementStyle, getElementsInnerHtml } from '../helpers/setup.mjs';
 
 test.before(before);
 test.beforeEach(beforeEach);
@@ -19,6 +19,7 @@ test('default separator', async t => {
     });
     t.is(await getElementInnerText(page, '.byline-block'), 'Chart: Foo ');
     t.is(await getElementInnerText(page, '.source-block'), 'Source: Source Name');
+    t.is((await getElementsInnerHtml(page, '.footer-left .separator')).length, 1);
     t.is(await getElementStyle(page, '.footer-left .separator', 'content', ':before'), '"•"');
 });
 
@@ -35,6 +36,7 @@ test('custom separator text', async t => {
             options: { footer: { separator: { text: "' ~ '" } } }
         }
     });
+    t.is((await getElementsInnerHtml(page, '.footer-left .separator')).length, 1);
     t.is(await getElementStyle(page, '.footer-left .separator', 'content', ':before'), '" ~ "');
 });
 
@@ -51,5 +53,6 @@ test('custom separator margin', async t => {
             options: { footer: { separator: { margin: '0 20px' } } }
         }
     });
+    t.is((await getElementsInnerHtml(page, '.footer-left .separator')).length, 1);
     t.is(await getElementStyle(page, '.footer-left .separator', 'margin', ':before'), '0px 20px');
 });

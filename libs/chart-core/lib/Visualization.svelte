@@ -763,6 +763,12 @@ Please make sure you called __(key) with a key of type "string".
             regions.footerRight.length ||
             regions.belowFooter.length ||
             regions.afterBody.length);
+
+    $: footerRegionLayout = {
+        Left: get(theme.data, 'options.footer.left.layout', 'inline'),
+        Center: get(theme.data, 'options.footer.center.layout', 'inline'),
+        Right: get(theme.data, 'options.footer.right.layout', 'inline')
+    };
 </script>
 
 {#if !isStylePlain}
@@ -827,9 +833,11 @@ Please make sure you called __(key) with a key of type "string".
 
     <div id="footer" class="dw-chart-footer">
         {#each ['Left', 'Center', 'Right'] as orientation}
-            <div class="footer-{orientation.toLowerCase()}">
+            <div
+                class="footer-{orientation.toLowerCase()} layout-{footerRegionLayout[orientation]}"
+            >
                 {#each regions['footer' + orientation] as block, i}
-                    {#if i}
+                    {#if i && footerRegionLayout[orientation] === 'inline'}
                         <span class="separator separator-before-{block.id}" />
                     {/if}
                     <span class="footer-block {block.id}-block">

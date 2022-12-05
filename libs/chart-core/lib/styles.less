@@ -360,6 +360,8 @@ body, .web-component-body {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        align-items: @options_footer_alignItems;
+        gap: @options_footer_gap;
 
         padding: @style_footer_padding;
         margin: @style_footer_margin;
@@ -383,13 +385,7 @@ body, .web-component-body {
         text-decoration: if(@typography_footer_underlined = 1 or @typography_footer_underlined = true, underline, none);
         color: @typography_footer_color;
 
-        & > div > .footer-block {
-            display: inline;
-
-            &.hidden {
-                display: none;
-            }
-
+        .footer-block {
             a[href=''] {
                 /* empty links should look like text */
                 color: @typography_footer_color;
@@ -398,10 +394,60 @@ body, .web-component-body {
                 padding: 0;
                 border-bottom: 0;
             }
+
+            &.hidden {
+                display: none;
+            }
         }
 
-        .footer-right {
-            text-align:right;
+        .layout-inline > .footer-block {
+            display: inline;
+        }
+        .layout-flex-row, .layout-flex-column {
+            display: flex;
+        }
+        .layout-flex-row {
+            flex-direction: row;
+        }
+        .layout-flex-column {
+            flex-direction: column;
+        }
+        /** flex footer gaps **/
+        .footer-left.layout-flex-row, .footer-left.layout-flex-column {
+            gap: 5px;
+            gap: @options_footer_left_gap;
+        }
+        .footer-center.layout-flex-row, .footer-center.layout-flex-column {
+            gap: 5px;
+            gap: @options_footer_center_gap;
+        }
+        .footer-right.layout-flex-row, .footer-right.layout-flex-column {
+            gap: 5px;
+            gap: @options_footer_right_gap;
+        }
+        /** flex-column alignments **/
+        .footer-center.layout-flex-column {
+            align-items: center;
+        }
+        .footer-right.layout-flex-column {
+            align-items: flex-end;
+        }
+        /**  block alignments **/
+        .footer-center.layout-inline {
+            text-align: center;
+        }
+        .footer-right.layout-inline {
+            text-align: right;
+        }
+        /** flex-row alignments **/
+        .footer-left.layout-flex-row {
+            align-items: @options_footer_left_alignItems;
+        }
+        .footer-center.layout-flex-row {
+            align-items: @options_footer_center_alignItems;
+        }
+        .footer-right.layout-flex-row {
+            align-items: @options_footer_right_alignItems;
         }
 
         .separator {
