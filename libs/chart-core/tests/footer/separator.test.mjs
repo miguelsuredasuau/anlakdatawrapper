@@ -13,11 +13,7 @@ test('default separator', async t => {
     await renderDummy(t, {
         chart: {
             metadata: {
-                describe: {
-                    'source-name': 'Source Name',
-                    byline: 'Foo'
-                },
-                visualize: {}
+                describe: { 'source-name': 'Source Name', byline: 'Foo' }
             }
         }
     });
@@ -26,26 +22,34 @@ test('default separator', async t => {
     t.is(await getElementStyle(page, '.footer-left .separator', 'content', ':before'), '"•"');
 });
 
-test('custom separator', async t => {
+test('custom separator text', async t => {
     const { page } = t.context;
 
     await renderDummy(t, {
         chart: {
             metadata: {
-                describe: {
-                    'source-name': 'Source Name',
-                    byline: 'Foo'
-                },
-                visualize: {}
+                describe: { 'source-name': 'Source Name', byline: 'Foo' }
             }
         },
         themeData: {
-            options: {
-                footer: {
-                    separator: "' ~ '"
-                }
-            }
+            options: { footer: { separator: { text: "' ~ '" } } }
         }
     });
     t.is(await getElementStyle(page, '.footer-left .separator', 'content', ':before'), '" ~ "');
+});
+
+test('custom separator margin', async t => {
+    const { page } = t.context;
+
+    await renderDummy(t, {
+        chart: {
+            metadata: {
+                describe: { 'source-name': 'Source Name', byline: 'Foo' }
+            }
+        },
+        themeData: {
+            options: { footer: { separator: { margin: '0 20px' } } }
+        }
+    });
+    t.is(await getElementStyle(page, '.footer-left .separator', 'margin', ':before'), '0px 20px');
 });
