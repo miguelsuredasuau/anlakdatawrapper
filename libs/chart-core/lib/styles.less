@@ -79,10 +79,15 @@ body, .web-component-body {
         position: relative;
         overflow: auto;
 
-        .header-right {
-            position: absolute;
-            right: 10px;
-            z-index: 20;
+        &.has-header-right {
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+            gap: @options_header_gap;
+
+            &.has-menu > :last-child {
+                margin-right: 25px;
+            }
         }
 
         padding: @style_header_padding;

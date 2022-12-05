@@ -236,6 +236,19 @@ export function getElementStyle(page, selector, style, pseudo = undefined) {
 }
 
 /**
+ * Returns the bounding box for a given selector
+ * @param {Page} page
+ * @param {string} selector
+ * @returns {object}
+ */
+export function getElementBoundingBox(page, selector) {
+    return page.$eval(selector, node => {
+        const bbox = node.getBoundingClientRect();
+        return { left: bbox.left, right: bbox.right, top: bbox.top, bottom: bbox.bottom };
+    });
+}
+
+/**
  * Returns the value of `attr` for the first element matching the given CSS `selector`.
  * @param {Page} page
  * @param {string} selector

@@ -368,6 +368,8 @@
     // build all the region
     $: regions = {
         header: getBlocks(allBlocks, 'header', { chart, theme, isStyleStatic }),
+        headerRight: getBlocks(allBlocks, 'headerRight', { chart, theme, isStyleStatic }),
+        belowHeader: getBlocks(allBlocks, 'belowHeader', { chart, theme, isStyleStatic }),
         aboveFooter: getBlocks(allBlocks, 'aboveFooter', {
             chart,
             theme,
@@ -765,7 +767,19 @@ Please make sure you called __(key) with a key of type "string".
 </script>
 
 {#if !isStylePlain}
-    <BlocksRegion name="dw-chart-header" blocks={regions.header} id="header" />
+    {#if !regions.headerRight.length}
+        <BlocksRegion name="dw-chart-header" blocks={regions.header} id="header" />
+    {:else}
+        <div
+            class="dw-chart-header has-header-right"
+            class:has-menu={!isStyleStatic && regions.menu.length}
+        >
+            <BlocksRegion name="dw-chart-header-left" blocks={regions.header} id="header" />
+            <BlocksRegion name="dw-chart-header-right" blocks={regions.headerRight} />
+        </div>
+    {/if}
+
+    <BlocksRegion name="dw-below-header" blocks={regions.belowHeader} />
 
     {#if !isStyleStatic}
         <Menu name="dw-chart-menu" props={menu} blocks={regions.menu} />
