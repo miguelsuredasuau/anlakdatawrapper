@@ -15,6 +15,7 @@ const BLOCKS = {
                 {
                     id: 't',
                     title: 't',
+                    height: 30,
                     imgSrc: 'https://dummyimage.com/60x30/e6335f/ffffff.png&text=logo'
                 }
             ]

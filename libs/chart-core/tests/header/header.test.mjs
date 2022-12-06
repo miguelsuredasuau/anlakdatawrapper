@@ -42,7 +42,7 @@ test('custom header styles', async t => {
                     margin: '5px 0 10px',
                     background: '#ffffff',
                     border: {
-                        left: '5px solid red'
+                        left: '5px solid #ff0000'
                     }
                 }
             }

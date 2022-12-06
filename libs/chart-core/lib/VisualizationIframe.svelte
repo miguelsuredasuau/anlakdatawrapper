@@ -19,6 +19,7 @@
     export let outerContainer;
     export let themeDataDark = {};
     export let themeDataLight = {};
+    export let renderFlags = {}; // allow tests to pass flags directly
 
     // transparent style means background is set on body
     export let isStyleTransparent = false;
@@ -87,4 +88,5 @@
     {previewId}
     {outerContainer}
     {textDirection}
+    {renderFlags}
 />

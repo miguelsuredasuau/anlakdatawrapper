@@ -64,6 +64,7 @@
     export let logoId = null;
     export let isEditingAllowed = false;
     export let previewId = null;
+    export let renderFlags = {};
 
     export let frontendDomain = 'app.datawrapper.de';
 
@@ -456,7 +457,7 @@ Please make sure you called __(key) with a key of type "string".
         });
         // read flags
         const newFlags = isIframe ? parseFlagsFromURL(window.location.search, FLAG_TYPES) : {}; // TODO parseFlagsFromElement(scriptEl, FLAG_TYPES);
-        Object.assign(flags, newFlags);
+        Object.assign(flags, newFlags, renderFlags);
 
         const useDwCdn = get(chart, 'metadata.data.use-datawrapper-cdn', true);
 

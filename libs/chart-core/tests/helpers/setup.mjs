@@ -2,11 +2,16 @@ import { readFile, mkdir } from 'fs/promises';
 import puppeteer from 'puppeteer';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import get from '@datawrapper/shared/get.js';
+import slugify from '@datawrapper/shared/slugify.js';
 import { createHash } from 'crypto';
 import deepmerge from 'deepmerge';
 import { compileCSS } from '../../lib/styles/compile-css.js';
-import { MemoryCache } from '@datawrapper/service-utils';
+import { MemoryCache, defaultChartMetadata } from '@datawrapper/service-utils';
 import { setTimeout } from 'timers/promises';
+import Schemas from '../../../schemas/index.js';
+
+const schemas = new Schemas();
 
 const pathToChartCore = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -54,19 +59,6 @@ export async function createPage(browser, viewportOpts = {}) {
         content: await readFile(join(pathToChartCore, 'dist/dw-2.0.min.js'), 'utf-8')
     });
 
-    // load emotion
-    await page.addScriptTag({
-        content: await readFile(
-            join(
-                pathToChartCore,
-                'node_modules',
-                '@emotion/css/create-instance',
-                'dist/emotion-css-create-instance.umd.min.js'
-            ),
-            'utf-8'
-        )
-    });
-
     return page;
 }
 
@@ -81,112 +73,102 @@ export async function createPage(browser, viewportOpts = {}) {
  * @param {Object} props.translations
  * @param {Object} props.visMeta
  * @param {Object} props.flags
+ * @param {Object} props.assets
  * @param {Object} props.textDirection
  * @param {number} delay further delay render promise (useful for debugging)
  * @returns {Object[]} console log messages
  */
 export async function render(page, props, delay = 0) {
-    const baseTheme = JSON.parse(
-        await readFile(join(pathToChartCore, 'tests/helpers/data/theme.json'), 'utf-8')
-    );
+    if (!props.visMeta) throw new Error('need to provide visMeta');
     if (props.theme) {
         console.warn('Warning: `theme` is deprecated, please use `themeData` instead');
         props.themeData = props.theme;
     }
+    // extend theme from baseTheme
+    const baseTheme = JSON.parse(
+        await readFile(join(pathToChartCore, 'tests/helpers/data/theme.json'), 'utf-8')
+    );
     props.theme = baseTheme;
     if (props.themeData) {
         props.theme.data = deepmerge.all([{}, baseTheme.data, props.themeData]);
     }
-
+    // validate theme data
+    await schemas.validateThemeData(props.theme.data);
+    // extend chart metadata from default chart metadata
+    props.chart.metadata = deepmerge.all([{}, defaultChartMetadata, props.chart.metadata]);
+    props.chart.theme = props.theme.id;
+    // default translations
     props.translations = props.translations || { 'en-US': {} };
 
+    // compile and load LESS styles
     await page.addStyleTag({
         content: await getCSS(props)
     });
 
-    const state = {
-        ...props,
-        blocks: [],
-        assets: {},
-        visualization: props.visMeta
+    // preload chart assets
+    const assets = {
+        [`dataset.${get(props.chart, 'metadata.data.json', false) ? 'json' : 'csv'}`]: {
+            load: true,
+            value: props.dataset
+        },
+        ...Object.fromEntries(
+            Object.entries(props.assets || {}).map(([filename, content]) => [
+                filename,
+                { load: true, value: content }
+            ])
+        )
     };
 
+    // load plugin chart-core blocks
+    const blocks = [];
     const loadPlugins = [];
     if (props.blocksPlugins) {
         for (const plugin of props.blocksPlugins) {
-            state.blocks.push(plugin.blocks);
+            blocks.push(plugin.blocks);
             loadPlugins.push(page.addScriptTag({ content: await readFile(plugin.js, 'utf-8') }));
             loadPlugins.push(page.addStyleTag({ content: await readFile(plugin.css, 'utf-8') }));
         }
     }
     await Promise.all(loadPlugins);
 
+    const state = {
+        ...props,
+        blocks,
+        assets,
+        visualization: props.visMeta,
+        renderFlags: props.flags || {}
+    };
+
+    // inject state to page
     await page.addScriptTag({
         content: `window.__DW_SVELTE_PROPS__ = ${JSON.stringify(state)};`
     });
 
+    // collect console.logs
     const logs = [];
-
     page.on('console', event => {
         const text = event.text();
         if (text.startsWith('Chart rendered in')) return;
         logs.push({ type: event.type(), text: event.text() });
     });
 
+    // set container classes
+    await page.evaluate(async ({ chart, textDirection }) => {
+        /* eslint-env browser */
+        const container = document.querySelector('.dw-chart');
+        container.setAttribute(
+            'class',
+            `dw-chart chart theme-${chart.theme} vis-${chart.type} ${
+                textDirection === 'rtl' ? 'dir-rtl' : ''
+            }`
+        );
+    }, props);
+
+    // render the chart using chart-core/Visualization.svelte
     await page.addScriptTag({
         content: await readFile(join(pathToChartCore, 'dist/main.js'), 'utf-8')
     });
-
-    await page.evaluate(
-        async ({ chart, dataset, visMeta, theme, flags, translations, textDirection, assets }) => {
-            /* eslint-env browser */
-            /* global dw, createEmotion */
-            const target = document.querySelector('.dw-chart-body');
-            const container = document.querySelector('.dw-chart');
-
-            container.setAttribute(
-                'class',
-                `dw-chart chart theme-test vis-${chart.type} ${
-                    textDirection === 'rtl' ? 'dir-rtl' : ''
-                }`
-            );
-
-            const dwChart = dw
-                .chart(chart)
-                .locale((chart.language || 'en-US').substr(0, 2))
-                .translations(translations)
-                .theme({ ...theme.data })
-                .flags({ isIframe: true, ...flags });
-
-            if (assets) {
-                Object.entries(assets).forEach(([name, content]) => dwChart.asset(name, content));
-            }
-
-            const vis = dw.visualization(chart.type, target);
-
-            vis.meta = visMeta;
-            vis.lang = chart.language || 'en-US';
-            vis.textDirection = textDirection || 'ltr';
-            // load chart data and assets
-            if (!dwChart.emotion) {
-                dwChart.emotion = createEmotion({
-                    key: `datawrapper-${chart.id}`,
-                    container: document.head
-                });
-            }
-
-            await dwChart.load(dataset);
-            dwChart.locales = {};
-            dwChart.vis(vis);
-            dwChart.render(container);
-
-            await vis.rendered();
-        },
-        props
-    );
-
     if (delay) await setTimeout(delay);
-
     return logs;
 }
 
@@ -312,6 +294,7 @@ export function getElementInnerText(page, selector) {
 export function getElementsInnerHtml(page, selector) {
     return page.$$eval(selector, nodes => nodes.map(node => node.innerHTML));
 }
+
 /**
  * Takes a screenshot of `t.context.page` and saves it in directory `path`.
  */
@@ -320,15 +303,4 @@ export async function takeTestScreenshot(t, path) {
     await t.context.page.screenshot({
         path: join(path, `${slugify(t.title.split('hook for')[1])}.png`)
     });
-}
-
-function slugify(text) {
-    return text
-        .toString()
-        .toLowerCase()
-        .replace(/\s+/g, '-') // Replace spaces with -
-        .replace(/[^\w-]+/g, '') // Remove all non-word chars
-        .replace(/--+/g, '-') // Replace multiple - with single -
-        .replace(/^-+/, '') // Trim - from start of text
-        .replace(/-+$/, ''); // Trim - from end of text
 }
