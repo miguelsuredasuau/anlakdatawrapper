@@ -41,7 +41,11 @@ test('custom header styles', async t => {
                     padding: '12px',
                     margin: '5px 0 10px',
                     background: '#ffffff',
+                    textAlign: 'center',
                     border: {
+                        top: '5px solid #ff0000',
+                        right: '5px solid #ff0000',
+                        bottom: '5px solid #ff0000',
                         left: '5px solid #ff0000'
                     }
                 }
@@ -51,6 +55,16 @@ test('custom header styles', async t => {
     t.is(await getElementStyle(page, '.dw-chart-header', 'padding'), '12px');
     t.is(await getElementStyle(page, '.dw-chart-header', 'margin'), '5px 0px 10px');
     t.is(await getElementStyle(page, '.dw-chart-header', 'background-color'), 'rgb(255, 255, 255)');
+    t.is(await getElementStyle(page, '.dw-chart-header', 'text-align'), 'center');
+    t.is(await getElementStyle(page, '.dw-chart-header', 'border-top'), '5px solid rgb(255, 0, 0)');
+    t.is(
+        await getElementStyle(page, '.dw-chart-header', 'border-right'),
+        '5px solid rgb(255, 0, 0)'
+    );
+    t.is(
+        await getElementStyle(page, '.dw-chart-header', 'border-bottom'),
+        '5px solid rgb(255, 0, 0)'
+    );
     t.is(
         await getElementStyle(page, '.dw-chart-header', 'border-left'),
         '5px solid rgb(255, 0, 0)'

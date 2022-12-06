@@ -38,7 +38,12 @@ test('headline typography', async t => {
                     fontSize: 30,
                     fontWeight: 400,
                     typeface: 'serif',
-                    color: '#660000'
+                    color: '#660000',
+                    letterSpacing: 2,
+                    lineHeight: 25,
+                    textTransform: 'lowercase',
+                    underlined: true,
+                    fontStretch: 'expanded'
                 }
             }
         }
@@ -48,6 +53,11 @@ test('headline typography', async t => {
     t.is(await getElementStyle(page, 'h3', 'font-family'), 'serif');
     t.is(await getElementStyle(page, 'h3', 'font-style'), 'italic');
     t.is(await getElementStyle(page, 'h3', 'color'), 'rgb(102, 0, 0)');
+    t.is(await getElementStyle(page, 'h3', 'letter-spacing'), '2px');
+    t.is(await getElementStyle(page, 'h3', 'line-height'), '25px');
+    t.is(await getElementStyle(page, 'h3', 'text-transform'), 'lowercase');
+    t.is(await getElementStyle(page, 'h3', 'text-decoration-line'), 'underline');
+    t.is(await getElementStyle(page, 'h3', 'font-stretch'), '125%');
 });
 
 test('headline styles', async t => {
@@ -67,8 +77,12 @@ test('headline styles', async t => {
                         background: '#ffccee',
                         textAlign: 'center',
                         padding: '4px 10px',
+                        margin: '0 0 20px',
                         border: {
-                            bottom: '2px solid #990000'
+                            top: '2px solid #990000',
+                            right: '2px solid #990000',
+                            bottom: '2px solid #990000',
+                            left: '2px solid #990000'
                         }
                     }
                 }
@@ -79,7 +93,11 @@ test('headline styles', async t => {
     t.is(await getElementStyle(page, 'h3', 'background-color'), 'rgb(255, 204, 238)');
     t.is(await getElementStyle(page, 'h3', 'text-align'), 'center');
     t.is(await getElementStyle(page, 'h3', 'padding'), '4px 10px');
+    t.is(await getElementStyle(page, 'h3', 'margin-bottom'), '20px');
+    t.is(await getElementStyle(page, 'h3', 'border-top'), '2px solid rgb(153, 0, 0)');
+    t.is(await getElementStyle(page, 'h3', 'border-right'), '2px solid rgb(153, 0, 0)');
     t.is(await getElementStyle(page, 'h3', 'border-bottom'), '2px solid rgb(153, 0, 0)');
+    t.is(await getElementStyle(page, 'h3', 'border-left'), '2px solid rgb(153, 0, 0)');
 });
 
 test('move headline into footer', async t => {

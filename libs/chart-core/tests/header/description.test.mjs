@@ -45,19 +45,29 @@ test('description typography', async t => {
         themeData: {
             typography: {
                 description: {
+                    typeface: 'Arial',
                     fontSize: 13,
+                    cursive: 1,
                     lineHeight: 20,
                     fontWeight: 300,
-                    cursive: 1,
+                    fontStretch: 'condensed',
+                    letterSpacing: 1,
+                    underlined: true,
+                    textTransform: 'uppercase',
                     color: '#999999'
                 }
             }
         }
     });
+    t.is(await getElementStyle(page, '.description-block', 'font-family'), 'Arial');
     t.is(await getElementStyle(page, '.description-block', 'font-size'), '13px');
     t.is(await getElementStyle(page, '.description-block', 'font-style'), 'italic');
     t.is(await getElementStyle(page, '.description-block', 'line-height'), '20px');
     t.is(await getElementStyle(page, '.description-block', 'font-weight'), '300');
+    t.is(await getElementStyle(page, '.description-block', 'font-stretch'), '75%');
+    t.is(await getElementStyle(page, '.description-block', 'letter-spacing'), '1px');
+    t.is(await getElementStyle(page, '.description-block', 'text-decoration-line'), 'underline');
+    t.is(await getElementStyle(page, '.description-block', 'text-transform'), 'uppercase');
     t.is(await getElementStyle(page, '.description-block', 'color'), 'rgb(153, 153, 153)');
 });
 
@@ -83,7 +93,10 @@ test('description styles', async t => {
                         padding: '4px 10px',
                         margin: '0 0 20px',
                         border: {
-                            top: '1px solid #990000'
+                            top: '1px solid #990000',
+                            right: '1px solid #990000',
+                            bottom: '1px solid #990000',
+                            left: '1px solid #990000'
                         }
                     }
                 }
@@ -100,6 +113,18 @@ test('description styles', async t => {
     t.is(await getElementStyle(page, '.description-block', 'margin-bottom'), '20px');
     t.is(
         await getElementStyle(page, '.description-block', 'border-top'),
+        '1px solid rgb(153, 0, 0)'
+    );
+    t.is(
+        await getElementStyle(page, '.description-block', 'border-right'),
+        '1px solid rgb(153, 0, 0)'
+    );
+    t.is(
+        await getElementStyle(page, '.description-block', 'border-bottom'),
+        '1px solid rgb(153, 0, 0)'
+    );
+    t.is(
+        await getElementStyle(page, '.description-block', 'border-left'),
         '1px solid rgb(153, 0, 0)'
     );
 });
