@@ -143,6 +143,24 @@ test('footer-left: flex-column is left aligned', async t => {
     t.is(bboxSource.top - bboxByline.bottom, 5);
 });
 
+test('footer-left: custom item alignment with flex-row', async t => {
+    const { page } = t.context;
+
+    await renderDummy(t, {
+        chart: {
+            metadata: {
+                describe: { 'source-name': 'Source Name', byline: 'Foo' }
+            }
+        },
+        themeData: {
+            options: {
+                footer: { left: { layout: 'flex-row', alignItems: 'flex-end' } }
+            }
+        }
+    });
+    t.is(await getElementStyle(page, '.footer-left', 'align-items'), 'flex-end');
+});
+
 test('footer-center: flex-column is center aligned', async t => {
     const { page } = t.context;
 
@@ -166,6 +184,25 @@ test('footer-center: flex-column is center aligned', async t => {
         Math.round(bboxByline.left - bboxSource.left),
         Math.round(bboxSource.right - bboxByline.right)
     );
+});
+
+test('footer-center: custom item alignment with flex-row', async t => {
+    const { page } = t.context;
+
+    await renderDummy(t, {
+        chart: {
+            metadata: {
+                describe: { 'source-name': 'Source Name', byline: 'Foo' }
+            }
+        },
+        themeData: {
+            options: {
+                blocks: { source: { region: 'footerCenter' }, byline: { region: 'footerCenter' } },
+                footer: { center: { layout: 'flex-row', alignItems: 'flex-end' } }
+            }
+        }
+    });
+    t.is(await getElementStyle(page, '.footer-center', 'align-items'), 'flex-end');
 });
 
 test('footer-right: flex-column is right aligned', async t => {

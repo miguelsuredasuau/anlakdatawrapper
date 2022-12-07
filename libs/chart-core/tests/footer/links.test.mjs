@@ -34,11 +34,15 @@ test('custom footer link style', async t => {
     await renderDummy(t, {
         chart: { metadata },
         themeData: {
-            style: { footer: { links: { border: { bottom: '2px solid #3399cc' } } } }
+            style: {
+                footer: { links: { border: { bottom: '2px solid #3399cc' }, padding: '0 0 5px' } }
+            }
         }
     });
     t.is(await getElementStyle(page, '.description-block a', 'color'), 'rgb(51, 153, 204)');
     t.is(await getElementStyle(page, '.description-block a', 'border-bottom-width'), '0px');
+    t.is(await getElementStyle(page, '.description-block a', 'padding-bottom'), '0px');
     t.is(await getElementStyle(page, '.notes-block a', 'color'), 'rgb(51, 153, 204)');
     t.is(await getElementStyle(page, '.notes-block a', 'border-bottom-width'), '2px');
+    t.is(await getElementStyle(page, '.notes-block a', 'padding-bottom'), '5px');
 });
