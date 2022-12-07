@@ -52,3 +52,18 @@ Everytime `npm install` is called after that, the link is removed. Usually it is
 ## Publishing
 
 To publish this package run `npm version {major|minor|patch}`  and `npm publish`. To publish you have to be part of the Datawrapper organization on npm.
+
+## Testing
+
+To run the tests in chart-core, run 
+
+```sh
+npm test
+```
+
+To run only a specific test file, run
+
+```sh
+npm test -- lib/shared.tests.mjs
+npm test -- tests/header/headline.test.mjs
+```
