@@ -90,7 +90,9 @@ export async function render(page, props, delay = 0) {
     );
     props.theme = baseTheme;
     if (props.themeData) {
-        props.theme.data = deepmerge.all([{}, baseTheme.data, props.themeData]);
+        props.theme.data = deepmerge.all([{}, baseTheme.data, props.themeData], {
+            arrayMerge: (target, source) => source
+        });
     }
     // validate theme data
     await schemas.validateThemeData(props.theme.data);
