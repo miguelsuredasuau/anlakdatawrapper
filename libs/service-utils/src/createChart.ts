@@ -190,7 +190,7 @@ export async function createChart(
             chart.organization_id = chartTeam.id;
             if (!allowedPayload.in_folder && get(chartTeam.settings, 'default.folder')) {
                 const folder = await Folder.findByPk(
-                    get(chartTeam.settings, 'default.folder') as string
+                    get(chartTeam.settings, 'default.folder') as number | undefined
                 );
 
                 if (folder && folder.org_id === chartTeam.id) {

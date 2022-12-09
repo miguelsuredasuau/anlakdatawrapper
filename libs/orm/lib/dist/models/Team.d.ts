@@ -5,34 +5,34 @@ import SQ, { ForeignKey, HasManyGetAssociationsMixin, HasManyHasAssociationMixin
 import type { ProductModel } from './Product';
 import { type UserTeamModel } from './UserTeam';
 declare const defaultSettings: {
-    folders: string;
-    default: {
-        folder: string | null;
+    readonly folders: "expanded" | "collapsed" | null | undefined;
+    readonly default: {
+        folder: number | null;
         locale: string | null;
-    };
-    webhook_url: string;
-    webhook_enabled: boolean;
-    slack_webhook_url: string;
-    slack_enabled: boolean;
-    msteams_webhook_url: string;
-    msteams_enabled: boolean;
-    ga_enabled: boolean;
-    ga_id: string;
-    downloadImageFormat: string;
-    downloadFilenameTemplate: string;
-    embed: {
-        preferred_embed: string;
+    } | undefined;
+    readonly webhook_url: string | undefined;
+    readonly webhook_enabled: boolean | undefined;
+    readonly slack_webhook_url: string | undefined;
+    readonly slack_enabled: boolean | undefined;
+    readonly msteams_webhook_url: string | undefined;
+    readonly msteams_enabled: boolean | undefined;
+    readonly ga_enabled: boolean | undefined;
+    readonly ga_id: string | undefined;
+    readonly downloadImageFormat: string | undefined;
+    readonly downloadFilenameTemplate: string | undefined;
+    readonly embed: {
+        preferred_embed: string | undefined;
         custom_embed: {
             title: string;
             text: string;
             template: string;
-        };
+        } | undefined;
     };
-    customFields: never[];
-    sso: {
-        enabled: boolean;
-        protocol: string;
-        automaticProvisioning: boolean;
+    readonly customFields: unknown[] | undefined;
+    readonly sso: {
+        enabled: boolean | undefined;
+        protocol: string | undefined;
+        automaticProvisioning: boolean | undefined;
         openId: {
             domain: string;
             clientId: string;
@@ -43,14 +43,14 @@ declare const defaultSettings: {
             entityId: string;
             certificate: string;
             disableRequestedAuthnContext: boolean;
-        };
-    };
-    disableVisualizations: {
+        } | undefined;
+    } | undefined;
+    readonly disableVisualizations: {
         enabled: boolean;
-        visualizations: {};
+        visualizations: never[];
         allowAdmins: boolean;
-    };
-    pdfUpload: {
+    } | undefined;
+    readonly pdfUpload: {
         ftp: {
             enabled: boolean;
             server: string;
@@ -58,7 +58,7 @@ declare const defaultSettings: {
             password: string;
             directory: string;
             filename: string;
-        };
+        } | undefined;
         s3: {
             enabled: boolean;
             bucket: string;
@@ -67,16 +67,16 @@ declare const defaultSettings: {
             secret: string;
             prefix: string;
             filename: string;
-        };
-    };
-    restrictDefaultThemes: boolean;
-    css: string;
-    flags: {};
-    displayLocale: boolean;
-    displayCustomField: {
+        } | undefined;
+    } | undefined;
+    readonly restrictDefaultThemes: boolean | undefined;
+    readonly css: string | undefined;
+    readonly flags: Record<string, boolean> | undefined;
+    readonly displayLocale: boolean | undefined;
+    readonly displayCustomField: {
         enabled: boolean;
         key: string;
-    };
+    } | undefined;
 };
 declare class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
     id: string;
@@ -90,34 +90,34 @@ declare class Team extends Model<InferAttributes<Team>, InferCreationAttributes<
     static countTeamAndOwnerProducts(teamId: string): Promise<[number, number]>;
     invalidatePluginCache(): Promise<void>;
     getPublicSettings(): Partial<{
-        folders: string;
-        default: {
-            folder: string | null;
+        readonly folders: "expanded" | "collapsed" | null | undefined;
+        readonly default: {
+            folder: number | null;
             locale: string | null;
-        };
-        webhook_url: string;
-        webhook_enabled: boolean;
-        slack_webhook_url: string;
-        slack_enabled: boolean;
-        msteams_webhook_url: string;
-        msteams_enabled: boolean;
-        ga_enabled: boolean;
-        ga_id: string;
-        downloadImageFormat: string;
-        downloadFilenameTemplate: string;
-        embed: {
-            preferred_embed: string;
+        } | undefined;
+        readonly webhook_url: string | undefined;
+        readonly webhook_enabled: boolean | undefined;
+        readonly slack_webhook_url: string | undefined;
+        readonly slack_enabled: boolean | undefined;
+        readonly msteams_webhook_url: string | undefined;
+        readonly msteams_enabled: boolean | undefined;
+        readonly ga_enabled: boolean | undefined;
+        readonly ga_id: string | undefined;
+        readonly downloadImageFormat: string | undefined;
+        readonly downloadFilenameTemplate: string | undefined;
+        readonly embed: {
+            preferred_embed: string | undefined;
             custom_embed: {
                 title: string;
                 text: string;
                 template: string;
-            };
+            } | undefined;
         };
-        customFields: never[];
-        sso: {
-            enabled: boolean;
-            protocol: string;
-            automaticProvisioning: boolean;
+        readonly customFields: unknown[] | undefined;
+        readonly sso: {
+            enabled: boolean | undefined;
+            protocol: string | undefined;
+            automaticProvisioning: boolean | undefined;
             openId: {
                 domain: string;
                 clientId: string;
@@ -128,14 +128,14 @@ declare class Team extends Model<InferAttributes<Team>, InferCreationAttributes<
                 entityId: string;
                 certificate: string;
                 disableRequestedAuthnContext: boolean;
-            };
-        };
-        disableVisualizations: {
+            } | undefined;
+        } | undefined;
+        readonly disableVisualizations: {
             enabled: boolean;
-            visualizations: {};
+            visualizations: never[];
             allowAdmins: boolean;
-        };
-        pdfUpload: {
+        } | undefined;
+        readonly pdfUpload: {
             ftp: {
                 enabled: boolean;
                 server: string;
@@ -143,7 +143,7 @@ declare class Team extends Model<InferAttributes<Team>, InferCreationAttributes<
                 password: string;
                 directory: string;
                 filename: string;
-            };
+            } | undefined;
             s3: {
                 enabled: boolean;
                 bucket: string;
@@ -152,16 +152,16 @@ declare class Team extends Model<InferAttributes<Team>, InferCreationAttributes<
                 secret: string;
                 prefix: string;
                 filename: string;
-            };
-        };
-        restrictDefaultThemes: boolean;
-        css: string;
-        flags: {};
-        displayLocale: boolean;
-        displayCustomField: {
+            } | undefined;
+        } | undefined;
+        readonly restrictDefaultThemes: boolean | undefined;
+        readonly css: string | undefined;
+        readonly flags: Record<string, boolean> | undefined;
+        readonly displayLocale: boolean | undefined;
+        readonly displayCustomField: {
             enabled: boolean;
             key: string;
-        };
+        } | undefined;
     }>;
     serialize(): Pick<SQ.InferAttributes<Team, {
         omit: never;

@@ -38,83 +38,88 @@ const Theme_1 = __importDefault(require("./Theme"));
 const UserPluginCache_1 = __importDefault(require("./UserPluginCache"));
 const UserProduct_1 = __importDefault(require("./UserProduct"));
 const UserTeam_1 = __importDefault(require("./UserTeam"));
+const required = (defaultValue, ..._rest) => defaultValue;
+const optional = (defaultValue, ..._rest) => defaultValue;
+const number = 0;
+const string = '';
+const boolean = false;
 /* make sure to keep in sync with services/php/lib/core/build/classes/datawrapper/Organization.php */
 const defaultSettings = {
-    folders: 'expanded',
-    default: {
-        folder: null,
-        locale: null
-    },
-    webhook_url: '',
-    webhook_enabled: false,
-    slack_webhook_url: '',
-    slack_enabled: false,
-    msteams_webhook_url: '',
-    msteams_enabled: false,
-    ga_enabled: false,
-    ga_id: '',
-    downloadImageFormat: 'full',
-    downloadFilenameTemplate: '{{ LOWER(title) }}',
-    embed: {
-        preferred_embed: 'responsive',
-        custom_embed: {
-            title: '',
-            text: '',
-            template: ''
-        }
-    },
-    customFields: [],
-    sso: {
-        enabled: false,
-        protocol: 'openId',
-        automaticProvisioning: true,
-        openId: {
-            domain: '',
-            clientId: '',
-            clientSecret: ''
-        },
-        saml: {
-            url: '',
-            entityId: '',
-            certificate: '',
-            disableRequestedAuthnContext: false
-        }
-    },
-    disableVisualizations: {
-        enabled: false,
-        visualizations: {},
-        allowAdmins: false
-    },
-    pdfUpload: {
-        ftp: {
-            enabled: false,
-            server: '',
-            user: '',
-            password: '',
-            directory: '',
-            filename: ''
-        },
-        s3: {
-            enabled: false,
-            bucket: '',
-            region: '',
-            accessKeyId: '',
-            secret: '',
-            prefix: '',
-            filename: ''
-        }
-    },
-    restrictDefaultThemes: false,
-    css: '',
+    folders: optional('expanded', 'collapsed', null),
+    default: optional({
+        folder: required(null, number),
+        locale: required(null, string)
+    }),
+    webhook_url: optional('', string),
+    webhook_enabled: optional(false, boolean),
+    slack_webhook_url: optional('', string),
+    slack_enabled: optional(false, boolean),
+    msteams_webhook_url: optional('', string),
+    msteams_enabled: optional(false, boolean),
+    ga_enabled: optional(false, boolean),
+    ga_id: optional('', string),
+    downloadImageFormat: optional('full', string),
+    downloadFilenameTemplate: optional('{{ LOWER(title) }}', string),
+    embed: required({
+        preferred_embed: optional('responsive', 'iframe', 'responsive-iframe', 'custom'),
+        custom_embed: optional({
+            title: required('', string),
+            text: required('', string),
+            template: required('', string)
+        })
+    }),
+    customFields: optional([]),
+    sso: optional({
+        enabled: optional(false, boolean),
+        protocol: optional('openId', 'saml', ''),
+        automaticProvisioning: optional(true, boolean),
+        openId: required({
+            domain: required('', string),
+            clientId: required('', string),
+            clientSecret: required('', string)
+        }),
+        saml: optional({
+            url: required('', string),
+            entityId: required('', string),
+            certificate: required('', string),
+            disableRequestedAuthnContext: required(false, boolean)
+        })
+    }),
+    disableVisualizations: optional({
+        enabled: required(false, boolean),
+        visualizations: ({}, []),
+        allowAdmins: required(false, boolean)
+    }),
+    pdfUpload: optional({
+        ftp: optional({
+            enabled: required(false, boolean),
+            server: required('', string),
+            user: required('', string),
+            password: required('', string),
+            directory: required('', string),
+            filename: required('', string)
+        }),
+        s3: optional({
+            enabled: required(false, boolean),
+            bucket: required('', string),
+            region: required('', string),
+            accessKeyId: required('', string),
+            secret: required('', string),
+            prefix: required('', string),
+            filename: required('', string)
+        })
+    }),
+    restrictDefaultThemes: optional(false, boolean),
+    css: optional('', string),
     // Note that these flags do not include the default feature flags
     // which are set during server initialization and can also be
     // defined by plugins
-    flags: {},
-    displayLocale: false,
-    displayCustomField: {
-        enabled: false,
-        key: ''
-    }
+    flags: optional({}),
+    displayLocale: optional(false, boolean),
+    displayCustomField: optional({
+        enabled: required(false, boolean),
+        key: required('', string)
+    })
 };
 class Team extends sequelize_1.Model {
     static async countTeamAndOwnerProducts(teamId) {
