@@ -20,7 +20,7 @@
         "format": "cd ../.. && scripts/format libs/service-utils"
     },
     "dependencies": {
-        "@datawrapper/locales": "^1.2.13",
+        "@datawrapper/locales": "^1.2.14",
         "@datawrapper/orm": "file:../orm",
         "@hapi/boom": "^9.1.0",
         "assign-deep": "^1.0.1",
