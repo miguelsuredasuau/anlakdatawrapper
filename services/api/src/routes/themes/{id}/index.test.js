@@ -1,6 +1,14 @@
 const test = require('ava');
-const { Theme } = require('@datawrapper/orm/db');
-const { createUser, destroy, setup } = require('../../../../test/helpers/setup');
+const { Theme, TeamTheme, Team } = require('@datawrapper/orm/db');
+const {
+    createUser,
+    createTeamWithUser,
+    createChart,
+    createTheme,
+    addThemeToTeam,
+    destroy,
+    setup
+} = require('../../../../test/helpers/setup');
 const { darkModeTestTheme, darkModeTestBgTheme } = require('../../../../test/data/testThemes.js');
 const { findDarkModeOverrideKeys } = require('../../../utils/themes');
 
@@ -15,6 +23,7 @@ function getDarkTheme(t, themeId) {
 test.before(async t => {
     t.context.server = await setup({ usePlugins: false });
     t.context.userObj = await createUser(t.context.server);
+    t.context.teamObj = await createTeamWithUser(t.context.server);
     t.context.auth = {
         strategy: 'session',
         credentials: t.context.userObj.session,
@@ -108,7 +117,11 @@ test.before(async t => {
 
 test.after.always(async t => {
     if (t.context.themes) {
-        await destroy(...t.context.themes);
+        await destroy(
+            ...t.context.themes,
+            ...Object.values(t.context.teamObj),
+            ...Object.values(t.context.userObj)
+        );
     }
 });
 
@@ -410,4 +423,209 @@ test("Shouldn't be possible to update theme with invalid color groups", async t 
     });
 
     t.is(res.statusCode, 400);
+});
+
+test('Should be possible to delete a theme', async t => {
+    const { teamObj } = t.context;
+    let theme, chart;
+    const themeId = 'theme-to-delete';
+    try {
+        theme = await createTheme({
+            id: themeId,
+            title: 'Theme to delete'
+        });
+
+        await addThemeToTeam(theme, teamObj.team);
+
+        await Team.update({ default_theme: themeId }, { where: { id: teamObj.team.id } });
+
+        let teamThemes = await TeamTheme.findAll({
+            where: {
+                theme_id: themeId,
+                organization_id: teamObj.team.id
+            }
+        });
+
+        t.is(teamThemes.length, 1);
+
+        chart = await createChart({
+            theme: themeId,
+            author_id: teamObj.user.id,
+            organization_id: teamObj.team.id
+        });
+
+        let res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                authorization: `Bearer ${teamObj.token}`
+            }
+        });
+
+        t.is(res.result.theme, themeId);
+
+        res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/themes/${themeId}`,
+            auth: t.context.auth
+        });
+
+        t.is(res.statusCode, 200);
+
+        res = await t.context.server.inject({
+            method: 'DELETE',
+            url: `/v3/themes/${themeId}`,
+            auth: t.context.auth
+        });
+
+        t.is(res.statusCode, 200);
+
+        t.is(res.result.removedForTeams, 1);
+        t.is(res.result.removedForUsers, 0);
+        t.is(res.result.updatedCharts, 1);
+        t.is(res.result.updatedTeamDefaultTheme, 1);
+
+        res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/themes/${themeId}`,
+            auth: t.context.auth
+        });
+
+        t.is(res.statusCode, 404);
+
+        res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                authorization: `Bearer ${teamObj.token}`
+            }
+        });
+
+        t.is(res.result.theme, 'default');
+
+        teamThemes = await TeamTheme.findAll({
+            where: {
+                theme_id: themeId,
+                organization_id: teamObj.team.id
+            }
+        });
+
+        t.is(teamThemes.length, 0);
+    } finally {
+        await destroy(theme, chart);
+    }
+});
+
+test('Should be possible to delete a theme and migrate charts to a specific new theme', async t => {
+    const { teamObj, themes } = t.context;
+    let theme, chart;
+    const themeId = 'theme-to-delete-2';
+    try {
+        theme = await createTheme({
+            id: themeId,
+            title: 'Theme to delete'
+        });
+
+        await addThemeToTeam(theme, teamObj.team);
+
+        chart = await createChart({
+            theme: themeId,
+            author_id: teamObj.user.id,
+            organization_id: teamObj.team.id
+        });
+
+        let res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                authorization: `Bearer ${teamObj.token}`
+            }
+        });
+
+        t.is(res.result.theme, themeId);
+
+        res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/themes/${themeId}`,
+            auth: t.context.auth
+        });
+
+        t.is(res.statusCode, 200);
+
+        res = await t.context.server.inject({
+            method: 'DELETE',
+            url: `/v3/themes/${themeId}?newChartTheme=${themes[0][0].id}`,
+            auth: t.context.auth
+        });
+
+        t.is(res.statusCode, 200);
+
+        res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/themes/${themeId}`,
+            auth: t.context.auth
+        });
+
+        t.is(res.statusCode, 404);
+
+        res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                authorization: `Bearer ${teamObj.token}`
+            }
+        });
+
+        t.is(res.result.theme, themes[0][0].id);
+    } finally {
+        await destroy(theme, chart);
+    }
+});
+
+test("Not possible to delete theme when specified newChartTheme doesn't exist", async t => {
+    const { teamObj } = t.context;
+    let theme, chart;
+    const themeId = 'theme-to-delete-3';
+    try {
+        theme = await createTheme({
+            id: themeId,
+            title: 'Theme to delete'
+        });
+
+        await addThemeToTeam(theme, teamObj.team);
+
+        chart = await createChart({
+            theme: themeId,
+            author_id: teamObj.user.id,
+            organization_id: teamObj.team.id
+        });
+
+        let res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/charts/${chart.id}`,
+            headers: {
+                authorization: `Bearer ${teamObj.token}`
+            }
+        });
+
+        t.is(res.result.theme, themeId);
+
+        res = await t.context.server.inject({
+            method: 'GET',
+            url: `/v3/themes/${themeId}`,
+            auth: t.context.auth
+        });
+
+        t.is(res.statusCode, 200);
+
+        res = await t.context.server.inject({
+            method: 'DELETE',
+            url: `/v3/themes/${themeId}?newChartTheme=lalalalalala`,
+            auth: t.context.auth
+        });
+
+        t.is(res.statusCode, 404);
+    } finally {
+        await destroy(theme, chart);
+    }
 });

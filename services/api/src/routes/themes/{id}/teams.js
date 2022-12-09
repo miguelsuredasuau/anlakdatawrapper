@@ -71,7 +71,6 @@ module.exports = server => {
                 }
             });
             await theme.removeTeams(teams);
-
             return h
                 .response({
                     teams: teams.map(t => t.serialize())

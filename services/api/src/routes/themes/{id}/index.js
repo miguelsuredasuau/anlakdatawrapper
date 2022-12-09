@@ -21,6 +21,7 @@ module.exports = {
     version: '1.0.0',
     register: server => {
         const config = server.methods.config();
+        const defaultTheme = get(config, 'general.defaults.theme', 'default');
         const useThemeCache = get(config, 'general.cache.themes');
         const { styleCache, themeCache } = getCaches(server);
 
@@ -113,32 +114,57 @@ module.exports = {
                 validate: {
                     params: Joi.object({
                         id: themeId().required()
+                    }),
+                    query: Joi.object({
+                        newChartTheme: themeId()
                     })
                 }
             },
             async handler(request, h) {
-                const { params } = request;
+                const { params, query } = request;
                 const theme = await Theme.findByPk(params.id, {
                     include: [User, Team]
                 });
+
                 if (!theme) return Boom.notFound();
+                let newChartTheme = defaultTheme;
+
+                if (query.newChartTheme) {
+                    const newTheme = await Theme.findByPk(query.newChartTheme);
+                    if (!newTheme) return Boom.notFound();
+                    newChartTheme = newTheme.id;
+                }
 
                 // remove associations
-                await theme.setUsers([]);
-                await theme.setTeams([]);
-                await Chart.update(
-                    // todo: get default theme from config file
-                    { theme: 'default' },
+                const removedForUsers = await theme.setUsers([]);
+                const removedForTeams = await theme.setTeams([]);
+                const updatedCharts = await Chart.update(
+                    { theme: newChartTheme },
                     {
                         where: {
                             theme: theme.id
                         }
                     }
                 );
+                const updatedTeamDefaultTheme = await Team.update(
+                    { default_theme: defaultTheme },
+                    {
+                        where: {
+                            default_theme: theme.id
+                        }
+                    }
+                );
                 await theme.destroy();
                 await themeCache.drop(`${theme.id}`);
                 await themeCache.drop(`${theme.id}/dark`);
-                return h.response().code(204);
+                return h
+                    .response({
+                        removedForTeams: removedForTeams[0] || 0,
+                        removedForUsers: removedForUsers[0] || 0,
+                        updatedCharts: updatedCharts[0],
+                        updatedTeamDefaultTheme: updatedTeamDefaultTheme[0]
+                    })
+                    .code(200);
             }
         });
 
