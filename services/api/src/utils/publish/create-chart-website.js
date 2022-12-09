@@ -5,6 +5,7 @@ const os = require('os');
 const pug = require('pug');
 const { Team } = require('@datawrapper/orm/db');
 const chartCore = require('@datawrapper/chart-core');
+const purifyHtml = require('@datawrapper/shared/purifyHtml');
 const { loadVendorLocale, loadLocaleConfig } = require('@datawrapper/service-utils');
 const dwChart = require('@datawrapper/chart-core/dist/dw-2.0.cjs.js').dw.chart;
 const get = require('lodash/get');
@@ -234,6 +235,10 @@ module.exports = async function createChartWebsite(
             ? get(chart, 'metadata.publish.autoDarkMode', false)
             : themeAutoDark;
 
+    const CHART_AFTER_HEAD_HTML = [getMetaTags(publishData), publishData.chartAfterHeadHTML]
+        .filter(Boolean)
+        .join('\n');
+
     /**
      * Render the visualizations entry: "index.html"
      */
@@ -243,7 +248,7 @@ module.exports = async function createChartWebsite(
         META_ROBOTS: 'noindex, indexifembedded, nofollow',
         CHART_HTML: html,
         CHART_HEAD: head,
-        CHART_AFTER_HEAD_HTML: publishData.chartAfterHeadHTML,
+        CHART_AFTER_HEAD_HTML,
         POLYFILL_SCRIPT: getAssetLink(`../../lib/${polyfillScript}`),
         CORE_SCRIPT: getAssetLink(`../../lib/${coreScript}`),
         CSS: getAssetLink(`../../lib/vis/${cssFile}`),
@@ -322,3 +327,18 @@ module.exports = async function createChartWebsite(
 
     return { data: publishData, chartData, outDir, fileMap, cleanup };
 };
+
+function getMetaTags(publishData) {
+    const chartDescription = purifyHtml(get(publishData.chart, 'describe.intro', ''), []);
+    const chartTitle = purifyHtml(publishData.chart.title || '', []);
+    return [
+        ['property', 'og:type', 'website'],
+        ['property', 'og:title', chartTitle],
+        ['property', 'og:url', publishData.nextPublicUrl],
+        ['property', 'og:description', chartDescription],
+        ['name', 'twitter:title', chartTitle],
+        ['name', 'twitter:description', chartDescription]
+    ]
+        .map(([attr, attrVal, content]) => `<meta ${attr}="${attrVal}" content="${content}">`)
+        .join('\n');
+}

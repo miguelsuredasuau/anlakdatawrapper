@@ -493,6 +493,7 @@ async function publishData(request) {
                 embedCodes[`embed-method-${embed.id}`] = embed.code;
             });
             set(data.chart, 'metadata.publish.embed-codes', embedCodes);
+            data.nextPublicUrl = publicUrl;
         }
     }
 
