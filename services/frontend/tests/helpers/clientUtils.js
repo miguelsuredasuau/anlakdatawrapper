@@ -22,7 +22,8 @@ export const defaultStores = {
         footerLinks: [],
         languages: ['en-US'],
         headerLinks: [],
-        stickyHeaderThreshold: 800
+        stickyHeaderThreshold: 800,
+        handsontableLicenseKey: '71da9-c5f9d-77852-c4004-ca113'
     },
     messages: getLocale(),
     browser: {
