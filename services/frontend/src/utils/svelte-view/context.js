@@ -34,7 +34,8 @@ module.exports = async function (request) {
                     typeof server.app.GITHEAD === 'string'
                         ? server.app.GITHEAD.substr(0, 8)
                         : undefined,
-                chartLocales: generalConfig.locales
+                chartLocales: generalConfig.locales,
+                handsontableLicenseKey: frontendConfig.handsontableLicenseKey
             },
             browser: {
                 isIE: userAgent && (userAgent.includes('MSIE') || userAgent.includes('Trident'))
