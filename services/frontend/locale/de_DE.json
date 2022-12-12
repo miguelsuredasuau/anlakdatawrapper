@@ -1214,5 +1214,6 @@
   "controls / legend / size-legend-title-position-left": "links",
   "controls / legend / size-legend-title-position-right": "rechts",
   "controls / legend / size-legend-title-position": "Position",
-  "controls / legend / invalid-shape-nested-warning": ""
+  "controls / legend / invalid-shape-nested-warning": "Das verschachtelte Layout ist nicht für alle Symbolformen verfügbar.",
+  "controls / legend / size-legend-label-position-left": ""
 }

@@ -1,0 +1,422 @@
+<div class="size-legend-editor">
+    <SwitchControl
+        label="{__('controls / legend / show-size-legend')}"
+        bind:value="value.enabled"
+        disabled="{disabled}"
+        {uid}
+    >
+        <div class="mt-1"></div>
+
+        {#if tooSmallForLegend}
+        <div class="alert">{__('controls / legend / max-size-warning')}</div>
+        {/if}
+
+        <SelectButtonsControl
+            bind:value="value.legendType"
+            labelWidth="{labelWidth}"
+            options="{typeOptions}"
+            label="{__('controls / legend / size-legend-layout')}"
+            inline="{false}"
+            disabled="{!validShapeForNested}"
+            miniHelp="{!validShapeForNested && __('controls / legend / invalid-shape-nested-warning')}"
+        />
+        {#if value.legendType === 'stacked'}
+        <RadioControl
+            bind:value="value.labelPosition"
+            {labelWidth}
+            label="{__('controls / legend / size-legend-label-position')}"
+            options="{labelPositionOptions}"
+        />
+        {/if}
+
+        <hr />
+
+        <RadioControl
+            bind:value="value.legendValues"
+            {labelWidth}
+            label="{__('controls / legend / size-legend-values')}"
+            options="{legendValuesOptions}"
+        />
+
+        {#if value.legendValues === 'custom'}
+        <TextControl
+            label="{__('controls / legend / size-legend-custom-values')}"
+            placeholder="1,3,10"
+            bind:value="legendValuesCustom"
+        />
+        {/if}
+        <CustomFormatControl
+            bind:value="value.labelFormat"
+            auto
+            selected="auto"
+            type="number"
+            label="{__('controls / legend / size-legend-label-format')}"
+            {labelWidth}
+        />
+
+        <hr />
+
+        {#if allowPositionInside}
+        <SelectControl
+            {labelWidth}
+            bind:value="value.position"
+            label="{__('controls / legend / size-legend-position')}"
+            options="{positionOptions}"
+        />
+        {:else}
+        <RadioControl
+            bind:value="value.position"
+            {labelWidth}
+            label="{__('controls / legend / size-legend-position')}"
+            options="{positionOptions.filter(o => !o.inside)}"
+        />
+
+        {/if}
+
+        <!-- allow settting an offset for legends  -->
+
+        {#if !outsideLegend}
+        <ControlGroup {labelWidth} label="{__('controls / legend / offset')}">
+            <div class="flex">
+                <label>
+                    <NumberInput
+                        bind:value="value.legendOffsetX"
+                        slider="{false}"
+                        min="{0}"
+                        max="{50}"
+                        unit="%"
+                    />
+                    <span>{__('controls / legend / offset / h')}</span>
+                </label>
+                <label>
+                    <NumberInput
+                        bind:value="value.legendOffsetY"
+                        slider="{false}"
+                        min="{0}"
+                        max="{50}"
+                        unit="%"
+                    />
+                    <span>{__('controls / legend / offset / v')}</span>
+                </label>
+            </div>
+        </ControlGroup>
+        {/if}
+
+        <!-- show mobile positioning help  -->
+        {#if allowPositionInside}
+        <p class="mini-help">{@html __('controls / legend / mobile-note')}</p>
+        {/if}
+        <!-- end: if allowPosition -->
+
+        <SwitchControl
+            label="{__('controls / legend / size-legend-show-title')}"
+            bind:value="value.showTitle"
+            {uid}
+        >
+            <TextControl
+                {labelWidth}
+                placeholder="{defaultTitle || 'Legend title here'}"
+                bind:value="title"
+                label="{__('controls / legend / size-legend-title')}"
+                textDirection="{$textDirection}"
+            />
+            <SelectControl
+                {labelWidth}
+                bind:value="value.titlePosition"
+                label="{__('controls / legend / size-legend-title-position')}"
+                options="{titlePositionOptions}"
+            />
+
+            <NumberControl
+                bind:value="value.titleWidth"
+                label="{__('controls / legend / size-legend-title-width')}"
+                labelWidth="{labelWidth}"
+                unit="px"
+                min="50"
+                max="300"
+                step="5"
+                slider="{true}"
+            />
+        </SwitchControl>
+    </SwitchControl>
+    {#if !value.enabled}
+    <p class="mini-help">{__('controls / legend / size-legend-disabled-message')}</p>
+    {/if}
+</div>
+
+<script>
+    import ControlGroup from './ControlGroup.html';
+    import HelpDisplay from './HelpDisplay.html';
+    import TextControl from './TextControl.html';
+    import NumberInput from './NumberInput.html';
+    import RadioControl from './RadioControl.html';
+    import SelectControl from './SelectControl.html';
+    import SwitchControl from './SwitchControl.html';
+    import NumberControl from './NumberControl.html';
+    import CustomFormatControl from './CustomFormatControl.html';
+    import ListInput from './ListInput.html';
+    import SelectButtonsControl from './SelectButtonsControl.html';
+    import { __ } from '@datawrapper/shared/l10n';
+    import purifyHtml from '@datawrapper/shared/purifyHtml';
+
+    export default {
+        components: {
+            ControlGroup,
+            TextControl,
+            HelpDisplay,
+            NumberInput,
+            RadioControl,
+            SelectControl,
+            SwitchControl,
+            NumberControl,
+            CustomFormatControl,
+            ListInput,
+            SelectButtonsControl
+        },
+        data() {
+            return {
+                rtl: false,
+                allowPositionInside: true,
+                labelWidth: '100px',
+                disabled: false,
+                value: {},
+                uid: '',
+                defaultTitle: null,
+                title: null,
+                initialTitle: null,
+                legendValuesCustom: null,
+                maxSize: null,
+                shape: 'symbolCircle'
+            };
+        },
+        helpers: {
+            __,
+            typeOptions: [
+                {
+                    value: 'stacked',
+                    label: `
+                        <?xml version="1.0" encoding="utf-8"?>
+    <svg class="size-legend-type-icon" width="32" height="18px" fill="none" viewBox="0 0 32 18" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="3" cy="12.5" r="2.5" fill-opacity="0.1" />
+      <circle cx="12.5" cy="11" r="4" fill-opacity="0.1" />
+      <circle cx="25.5" cy="9" r="6" fill-opacity="0.1" />
+    </svg>
+    `
+                },
+                {
+                    value: 'nested',
+                    label: `
+                        <?xml version="1.0" encoding="utf-8"?>
+    <svg class="size-legend-type-icon" width="32px" height="18px" viewBox="0 0 32 18" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="15" r="2.5" fill-opacity="0.1" />
+      <circle cx="16" cy="12" r="5.5" fill-opacity="0.1" />
+      <circle cx="16" cy="9" r="8.5" fill-opacity="0.1" />
+    </svg>
+    `
+                }
+            ],
+            legendValuesOptions: [
+                {
+                    value: 'auto',
+                    label: __('controls / legend / size-legend-values-auto')
+                },
+                {
+                    value: 'custom',
+                    label: __('controls / legend / size-legend-values-custom')
+                }
+            ]
+        },
+        computed: {
+            outsideLegend({ value }) {
+                return value.position && !value.position.includes('inside');
+            },
+            tooSmallForLegend({ maxSize, value }) {
+                const sizeLimit = value.legendType === 'nested' ? 25 : 10;
+                return maxSize < sizeLimit;
+            },
+            validShapeForNested({ shape }) {
+                return ['symbolSquare', 'symbolCircle', 'symbolSpike'].includes(shape);
+            },
+            positionOptions: ({ rtl }) => [
+                {
+                    value: 'above',
+                    label: __('controls / legend / size-legend-position-above')
+                },
+                {
+                    value: 'below',
+                    label: __('controls / legend / size-legend-position-below')
+                },
+                {
+                    value: 'inside-left-top',
+                    label: rtl
+                        ? __('controls / legend / size-legend-position-inside-right-top')
+                        : __('controls / legend / size-legend-position-inside-left-top'),
+                    inside: true
+                },
+                {
+                    value: 'inside-center-top',
+                    label: __('controls / legend / size-legend-position-inside-center-top'),
+                    inside: true
+                },
+                {
+                    value: 'inside-right-top',
+                    label: rtl
+                        ? __('controls / legend / size-legend-position-inside-left-top')
+                        : __('controls / legend / size-legend-position-inside-right-top'),
+                    inside: true
+                },
+                {
+                    value: 'inside-left-bottom',
+                    label: rtl
+                        ? __('controls / legend / size-legend-position-inside-right-bottom')
+                        : __('controls / legend / size-legend-position-inside-left-bottom'),
+                    inside: true
+                },
+                {
+                    value: 'inside-center-bottom',
+                    label: __('controls / legend / size-legend-position-inside-center-bottom'),
+                    inside: true
+                },
+                {
+                    value: 'inside-right-bottom',
+                    label: rtl
+                        ? __('controls / legend / size-legend-position-inside-left-bottom')
+                        : __('controls / legend / size-legend-position-inside-right-bottom'),
+                    inside: true
+                }
+            ],
+            labelPositionOptions: ({ rtl }) => [
+                {
+                    value: 'below',
+                    label: __('controls / legend / size-legend-label-position-below')
+                },
+                {
+                    value: 'right',
+                    label: rtl
+                        ? __('controls / legend / size-legend-label-position-left')
+                        : __('controls / legend / size-legend-label-position-right')
+                }
+            ],
+            titlePositionOptions: ({ rtl }) => [
+                {
+                    value: 'above',
+                    label: __('controls / legend / size-legend-title-position-above')
+                },
+                {
+                    value: 'below',
+                    label: __('controls / legend / size-legend-title-position-below')
+                },
+                {
+                    value: 'left',
+                    label: rtl
+                        ? __('controls / legend / size-legend-title-position-right')
+                        : __('controls / legend / size-legend-title-position-left')
+                },
+                {
+                    value: 'right',
+                    label: rtl
+                        ? __('controls / legend / size-legend-title-position-left')
+                        : __('controls / legend / size-legend-title-position-right')
+                }
+            ]
+        },
+        onupdate({ changed, current }) {
+            const value = { ...current.value };
+
+            // load saved values back into input on init
+            if (Array.isArray(value.legendValuesCustom) && !current.legendValuesCustom) {
+                this.set({
+                    legendValuesCustom: purifyHtml(value.legendValuesCustom.join(','))
+                });
+            }
+
+            if (
+                (current.value.legendValues === 'custom' || changed.legendValuesCustom) &&
+                current.legendValuesCustom
+            ) {
+                const legendValuesCustom = purifyHtml(current.legendValuesCustom)
+                    .split(',')
+                    .map(str => {
+                        return parseFloat(str, 10);
+                    })
+                    .filter(n => Number.isFinite(n));
+
+                value.legendValuesCustom = legendValuesCustom;
+            } else if (
+                (changed.legendValuesCustom && !current.legendValuesCustom) ||
+                current.value.legendValues === 'auto'
+            ) {
+                // unset custom values
+                value.legendValuesCustom = null;
+            }
+
+            // set type to stacked if not square or circle
+            if (current.validShapeForNested === false) {
+                value.legendType = 'stacked';
+            }
+
+            // work out if default title should be used
+            if (current.value.showTitle && current.title) {
+                value.title = current.title || current.defaultTitle;
+            } else if (current.value.showTitle) {
+                value.title = current.defaultTitle;
+            } else {
+                value.title = null;
+            }
+
+            // purify user input
+            if (value.title) {
+                value.title = purifyHtml(value.title);
+            }
+
+            this.set({
+                value
+            });
+
+            // set title from parent
+            if (changed.initialTitle && changed.value) {
+                this.set({
+                    title: current.initialTitle
+                });
+            }
+        }
+    };
+</script>
+
+<style>
+    .flex {
+        display: flex;
+    }
+    .labels {
+    }
+    .labels label {
+        display: inline-block;
+        width: 50px;
+        margin-right: 1em;
+    }
+    .labels label input {
+        max-width: 90%;
+        margin-bottom: 0;
+    }
+    label span {
+        width: 7em;
+        color: #777;
+        font-size: 11px;
+        text-transform: uppercase;
+        display: block;
+    }
+    :global(.size-legend-type-icon) {
+        display: block;
+        fill: black;
+        stroke: #555555;
+        padding: 0 4px;
+    }
+    :global(.btn-toggled .size-legend-type-icon) {
+        fill: #fff;
+        stroke: #fff;
+    }
+    hr {
+        border-color: #e0e0e0;
+        margin: 15px 0 10px 0;
+    }
+</style>

@@ -92,6 +92,8 @@ import SelectButtonsControlView from './SelectButtonsControlView.html';
 import SelectButtonsControlDocs from '../SelectButtonsControl.md';
 import SelectHighlightsEditorView from './SelectHighlightsEditorView.html';
 import SelectHighlightsControlDocs from '../SelectHighlightsEditor.md';
+import SizeLegendEditorView from './SizeLegendEditorView.html';
+import SizeLegendEditorDocs from '../SizeLegendEditor.md';
 import SwitchControlView from './SwitchControlView.html';
 import SwitchControlDocs from '../SwitchControl.md';
 import TableDisplayView from './TableDisplayView.html';
@@ -326,6 +328,11 @@ addStory('SelectButtonsControl', SelectButtonsControlDocs, () => ({
 
 addStory('SelectHighlightsEditor', SelectHighlightsControlDocs, () => ({
     Component: SelectHighlightsEditorView
+}));
+
+addStory('SizeLegendEditor', SizeLegendEditorDocs, () => ({
+    Component: SizeLegendEditorView,
+    data: {}
 }));
 
 addStory('SwitchControl', SwitchControlDocs, () => ({

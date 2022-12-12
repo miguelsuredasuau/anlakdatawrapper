@@ -1,0 +1,72 @@
+<SizeLegendEditor
+    bind:value="value"
+    {allowPositionInside}
+    labelWidth="80px"
+    defaultTitle="Default Title"
+    maxSize="{maxSize}"
+    shape="{shape}"
+    {rtl}
+/>
+
+<hr style="margin-top: 5em" />
+<div class="helper">
+    <CheckboxControl label="allow positioning inside" bind:value="allowPositionInside" />
+    <NumberControl label="max size" bind:value="maxSize" />
+    <SelectControl bind:value="shape" label="shape" options="{shapeOptions}" />
+    <CheckboxControl label="RTL locale" bind:value="rtl" />
+
+    <p class="mini-help">stored value</p>
+    <pre>
+    {JSON.stringify(value, null, 4)}
+    </pre>
+</div>
+
+<script>
+    import SizeLegendEditor from '../SizeLegendEditor.html';
+    import CheckboxControl from '../CheckboxControl.html';
+    import NumberControl from '../NumberControl.html';
+    import SelectControl from '../SelectControl.html';
+    import { simpleTheme } from './lib/themeStore';
+
+    export default {
+        components: { CheckboxControl, NumberControl, SizeLegendEditor, SelectControl },
+        data() {
+            return {
+                maxSize: 30,
+                shape: 'symbolCircle',
+                shapeOptions: [
+                    { value: 'symbolCircle', label: 'circle' },
+                    { value: 'symbolSquare', label: 'square' },
+                    { value: 'symbolSpike', label: 'spike' },
+                    { value: 'symbolStar', label: 'star' }
+                ],
+                rtl: false,
+                value: {
+                    enabled: true,
+                    legendType: 'stacked',
+                    legendValues: 'auto',
+                    position: 'above',
+                    legendOffsetX: 0,
+                    legendOffsetY: 0,
+                    showValueLabels: true,
+                    labelPosition: 'below',
+                    showTitle: false,
+                    title: '',
+                    titlePosition: 'above',
+                    titleWidth: 50,
+                    labelFormat: 'auto'
+                }
+            };
+        },
+        store: () => simpleTheme
+    };
+</script>
+
+<style>
+    .helper {
+        opacity: 0.4;
+    }
+    .helper:hover {
+        opacity: 1;
+    }
+</style>

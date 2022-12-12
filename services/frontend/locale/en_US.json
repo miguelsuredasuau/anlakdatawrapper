@@ -760,7 +760,7 @@
   "right": "right",
   "controls / legend / above-vis": "above visualization",
   "controls / legend / below-vis": "below visualization",
-  "controls / legend / mobile-note": "Note that orientation, position, size, and offset settings are being ignored on mobile devices where the legend is always positioned outside of the visualization.",
+  "controls / legend / mobile-note": "On mobile devices, legends are positioned outside the visualization.",
   "controls / legend / def-group": "Group",
   "controls / legend / disabled-note": "Your visualization is using colors, so we recommend you add a legend to explain what the colors mean.",
   "controls / annotations / text-annotations": "Text annotations",
@@ -1214,5 +1214,6 @@
   "controls / legend / size-legend-title-position-left": "Left",
   "controls / legend / size-legend-title-position-right": "Right",
   "controls / legend / size-legend-title-position": "Position",
-  "controls / legend / invalid-shape-nested-warning": "Nested layout is not supported for all shapes."
+  "controls / legend / invalid-shape-nested-warning": "Nested layout is not supported for all shapes.",
+  "controls / legend / size-legend-label-position-left": "Left"
 }

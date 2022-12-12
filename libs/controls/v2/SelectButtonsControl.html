@@ -6,6 +6,7 @@
     {label}
     {labelWidth}
     {help}
+    {miniHelp}
     {uid}
     helpClass="mt-1"
 >
@@ -21,7 +22,7 @@
             <span>{@html option.label}</span>
             {/if} {#if option.svg}
             <svg
-                height="16"
+                height="{option.height || 16}"
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
                 fill-rule="evenodd"
@@ -61,6 +62,7 @@
                 options: [],
                 optgroups: [],
                 help: false,
+                miniHelp: null,
                 uid: ''
             };
         },

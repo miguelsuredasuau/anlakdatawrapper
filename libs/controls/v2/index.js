@@ -41,6 +41,7 @@ export { default as SelectInput } from './SelectInput.html';
 export { default as SelectAxisColumnControl } from './SelectAxisColumnControl.html';
 export { default as SelectButtonsControl } from './SelectButtonsControl.html';
 export { default as SelectHighlightsEditor } from './SelectHighlightsEditor.html';
+export { default as SizeLegendEditor } from './SizeLegendEditor.html';
 export { default as SwitchControl } from './SwitchControl.html';
 export { default as TableDisplay } from './TableDisplay.html';
 export { default as TemplateEditor } from './TemplateEditor.html';
