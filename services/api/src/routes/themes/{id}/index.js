@@ -8,9 +8,10 @@ const { get, set, cloneDeep } = require('lodash');
 const chroma = require('chroma-js');
 const invertColor = require('@datawrapper/shared/invertColor.js');
 const {
-    findDarkModeOverrideKeys,
     dropCache,
+    findDarkModeOverrideKeys,
     getCaches,
+    getThemeCacheKey,
     themeId,
     validateThemeData,
     validateThemeLess
@@ -155,8 +156,13 @@ module.exports = {
                     }
                 );
                 await theme.destroy();
-                await themeCache.drop(`${theme.id}`);
-                await themeCache.drop(`${theme.id}/dark`);
+
+                await dropCache({
+                    theme,
+                    themeCache,
+                    styleCache,
+                    visualizations: server.app.visualizations
+                });
                 return h
                     .response({
                         removedForTeams: removedForTeams[0] || 0,
@@ -175,7 +181,10 @@ module.exports = {
 
         async function getTheme(request) {
             const { server, params, query, url } = request;
-            const themeCacheKey = `${params.id}?dark=${query.dark}&extend=${query.extend}`;
+            const themeCacheKey = getThemeCacheKey(params.id, {
+                dark: query.dark,
+                extend: query.extend
+            });
             if (useThemeCache) {
                 const cachedTheme = await themeCache.get(themeCacheKey);
                 if (cachedTheme) return cachedTheme;

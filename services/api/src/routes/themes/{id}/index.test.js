@@ -1,3 +1,5 @@
+const cloneDeep = require('lodash/cloneDeep');
+const set = require('lodash/set');
 const test = require('ava');
 const { Theme, TeamTheme, Team } = require('@datawrapper/orm/db');
 const {
@@ -7,7 +9,8 @@ const {
     createTheme,
     addThemeToTeam,
     destroy,
-    setup
+    setup,
+    withTheme
 } = require('../../../../test/helpers/setup');
 const { darkModeTestTheme, darkModeTestBgTheme } = require('../../../../test/data/testThemes.js');
 const { findDarkModeOverrideKeys } = require('../../../utils/themes');
@@ -628,4 +631,78 @@ test("Not possible to delete theme when specified newChartTheme doesn't exist", 
     } finally {
         await destroy(theme, chart);
     }
+});
+
+test('GET /themes/{id} caches its return values', async t => {
+    const server = await setup({
+        usePlugins: false,
+        testsConfigPatcher(config) {
+            const result = cloneDeep(config);
+            set(result, 'general.cache.themes', true);
+            return result;
+        },
+        db: t.context.server.methods.getDB()
+    });
+    await withTheme(
+        {
+            title: 'Test theme cache'
+        },
+        async theme => {
+            const res = await server.inject({
+                method: 'GET',
+                url: `/v3/themes/${theme.id}`,
+                auth: t.context.auth
+            });
+            t.is(res.statusCode, 200);
+
+            await Theme.update({ title: 'Test theme cache NEW' }, { where: { id: theme.id } });
+
+            // Test that a second GET returns the cached title without "NEW".
+            const resAfterEdit = await server.inject({
+                method: 'GET',
+                url: `/v3/themes/${theme.id}`,
+                auth: t.context.auth
+            });
+            t.is(resAfterEdit.result.title, 'Test theme cache');
+        }
+    );
+});
+
+test('DELETE /themes/{id} drops cache', async t => {
+    const server = await setup({
+        usePlugins: false,
+        testsConfigPatcher(config) {
+            const result = cloneDeep(config);
+            set(result, 'general.cache.themes', true);
+            return result;
+        },
+        db: t.context.server.methods.getDB()
+    });
+    await withTheme(
+        {
+            title: 'Test theme cache'
+        },
+        async theme => {
+            const res = await server.inject({
+                method: 'GET',
+                url: `/v3/themes/${theme.id}`,
+                auth: t.context.auth
+            });
+            t.is(res.statusCode, 200);
+
+            await server.inject({
+                method: 'DELETE',
+                url: `/v3/themes/${theme.id}`,
+                auth: t.context.auth
+            });
+
+            // Test that a second GET returns error 404 and not a cached theme.
+            const resAfterDelete = await server.inject({
+                method: 'GET',
+                url: `/v3/themes/${theme.id}`,
+                auth: t.context.auth
+            });
+            t.is(resAfterDelete.statusCode, 404);
+        }
+    );
 });

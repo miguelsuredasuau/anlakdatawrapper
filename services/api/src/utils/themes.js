@@ -6,6 +6,12 @@ const { compileCSS } = require('@datawrapper/chart-core/lib/styles/compile-css.j
 const deepmerge = require('deepmerge');
 const get = require('lodash/get');
 
+function getThemeCacheKey(id, { dark = false, extend = false } = {}) {
+    return `${id}?dark=${dark}&extend=${extend}`;
+}
+
+module.exports.getThemeCacheKey = getThemeCacheKey;
+
 module.exports.dropCache = async function ({ theme, themeCache, styleCache, visualizations }) {
     const descendants = await findDescendants(theme);
 
@@ -20,10 +26,10 @@ module.exports.dropCache = async function ({ theme, themeCache, styleCache, visu
         }
 
         if (themeCache) {
-            await themeCache.drop(`${t.id}?dark=false&extend=false`);
-            await themeCache.drop(`${t.id}?dark=false&extend=true`);
-            await themeCache.drop(`${t.id}?dark=true&extend=false`);
-            await themeCache.drop(`${t.id}?dark=true&extend=true`);
+            await themeCache.drop(getThemeCacheKey(t.id));
+            await themeCache.drop(getThemeCacheKey(t.id, { dark: true }));
+            await themeCache.drop(getThemeCacheKey(t.id, { extend: true }));
+            await themeCache.drop(getThemeCacheKey(t.id, { dark: true, extend: true }));
         }
     }
 };

@@ -40,7 +40,8 @@ const DW_DEV_MODE = !!JSON.parse(process.env.DW_DEV_MODE || 'false');
 async function create({
     usePlugins = true,
     useOpenAPI = true,
-    testsConfigPatcher = config => config
+    testsConfigPatcher = config => config,
+    db = undefined
 } = {}) {
     const config = testsConfigPatcher(requireConfig());
 
@@ -257,8 +258,11 @@ async function create({
     // plugin).
     addLocalizationScope('chart', { 'en-US': {} });
 
-    const { db, registerPlugins } = await initORM(config);
-    await registerPlugins(server.logger);
+    if (!db) {
+        const orm = await initORM(config);
+        db = orm.db;
+        await orm.registerPlugins(server.logger);
+    }
 
     /* register api plugins with core db */
     Plugin.register('datawrapper-api', Object.keys(config.plugins));

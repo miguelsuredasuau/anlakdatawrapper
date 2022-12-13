@@ -50,6 +50,8 @@ const ALL_SCOPES = [
     'visualization:read'
 ];
 
+const themeNanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz-', 16);
+
 function getCredentials() {
     return {
         email: `test-${nanoid(5)}@ava.de`,
@@ -352,12 +354,22 @@ function createTheme(props = {}) {
         assets: {},
         title: 'Theme Title',
         ...props,
-        id: props.id || nanoid(5)
+        // Notice that the generated id must not start or end with a "-" character.
+        id: props.id || `test-${themeNanoid(5)}-theme`
     });
 }
 
 function createThemes(propsArray) {
     return Promise.all(propsArray.map(createTheme));
+}
+
+async function withTheme(props, func) {
+    const theme = await createTheme(props);
+    try {
+        return await func(theme);
+    } finally {
+        await destroy(theme);
+    }
 }
 
 async function addUserToTeam(user, team, role = 'member') {
@@ -517,5 +529,6 @@ module.exports = {
     withChart,
     withTeam,
     withTeamWithUser,
+    withTheme,
     withUser
 };
