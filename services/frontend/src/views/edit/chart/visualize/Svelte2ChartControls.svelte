@@ -8,6 +8,7 @@
     import clone from 'lodash/cloneDeep';
     import get from 'lodash/get';
     import set from 'lodash/set';
+    import debounce from 'lodash/debounce';
     import assign from 'assign-deep';
     import { logError, waitFor } from '../../../../utils';
     import { combineLatest } from 'rxjs';
@@ -163,22 +164,39 @@
     let controlsReady = false;
     let notifications = [];
 
-    $: {
-        if (controlsReady && !isEqual(storeData, prevStoreData)) {
-            const newChart = clone(storeData);
-            // remove anything that's not originally from chart
-            delete newChart.vis;
-            delete newChart.visualization;
-            delete newChart.teamSettings;
-            delete newChart.dataset;
-            delete newChart.themeData;
-            delete newChart.computedThemeData;
-            // check if remaining object is still different from $chart
-            if (!isEqual($chart, newChart)) {
-                $chart = newChart;
-            }
-            prevStoreData = clone(storeData);
+    function getChartFromStoreData(data) {
+        const newChart = { ...data };
+        delete newChart.vis;
+        delete newChart.visualization;
+        delete newChart.teamSettings;
+        delete newChart.dataset;
+        delete newChart.themeData;
+        delete newChart.computedThemeData;
+        return newChart;
+    }
+
+    function updateChart(data) {
+        const newChart = getChartFromStoreData(data);
+
+        if (!isEqual($chart, newChart)) {
+            $chart = newChart;
         }
+
+        storeData = clone(data);
+        prevStoreData = clone(data);
+    }
+
+    const updateChartDebounced = debounce(updateChart, 0);
+
+    function onStoreDataUpdate(event) {
+        const newStoreData = event.detail.store;
+        if (isEqual(newStoreData, prevStoreData)) return;
+
+        // We need to debounce the updateChart call to prevent an issue with simple-maps where old chart data is emitted
+        // immediately after the chart has been changed from outside the svelte2 controls (e.g. via the datatable).
+        // This old data would then replace the changes that triggered the update in the first place.
+        // See: https://www.notion.so/ed3657720eb741e5b5d1dc6f1087f99f
+        updateChartDebounced(event.detail.store);
     }
 </script>
 
@@ -195,7 +213,8 @@
         js="/lib/plugins/{$visualization.controls.js}?sha={$visualization.__controlsHash}"
         css="/lib/plugins/{$visualization.controls.css}?sha={$visualization.__controlsHash}"
         module={controlsModule}
-        bind:storeData
+        {storeData}
+        on:update={onStoreDataUpdate}
         storeMethods={{ getMetadata, setMetadata, observeDeep }}
         bind:data={state}
         on:init={evt => {
