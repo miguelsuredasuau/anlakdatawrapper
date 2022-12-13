@@ -1,4 +1,4 @@
-import get from '@datawrapper/shared/get';
+import get from '@datawrapper/shared/get.js';
 import * as d3 from 'd3-color';
 
 export function mergeWithTheme(defaultProps, themeData, computedThemeData, key) {

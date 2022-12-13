@@ -5,7 +5,7 @@ import $ from 'cash-dom';
 import chroma from 'chroma-js';
 
 import ColorPickerInput from './ColorPickerInput.html';
-import Chart from '@datawrapper/chart-core/lib/dw/svelteChart';
+import Chart from '@datawrapper/chart-core/lib/dw/svelteChart.mjs';
 
 const themeData = {
     colors: {

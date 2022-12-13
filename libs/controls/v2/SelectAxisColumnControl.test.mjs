@@ -4,9 +4,9 @@ import test from 'ava';
 import $ from 'cash-dom';
 
 import SelectAxisColumnControl from './SelectAxisColumnControl.html';
-import Dataset from '@datawrapper/chart-core/lib/dw/dataset';
-import Column from '@datawrapper/chart-core/lib/dw/dataset/column';
-import Chart from '@datawrapper/chart-core/lib/dw/svelteChart';
+import Dataset from '@datawrapper/chart-core/lib/dw/dataset/index.mjs';
+import Column from '@datawrapper/chart-core/lib/dw/dataset/column.mjs';
+import Chart from '@datawrapper/chart-core/lib/dw/svelteChart.mjs';
 
 const dataset = Dataset([
     Column('titles', ['foo', 'bar', 'baz'], 'text'),

@@ -73,11 +73,11 @@
 </div>
 
 <script>
-    import { __ } from '@datawrapper/shared/l10n';
-    import truncate from '@datawrapper/shared/truncate';
+    import { __ } from '@datawrapper/shared/l10n.js';
+    import truncate from '@datawrapper/shared/truncate.js';
     import DropdownListInput from './DropdownListInput.html';
-    import formats from './utils/formats';
-    import htmlTemplate from '@datawrapper/chart-core/lib/dw/utils/htmlTemplate';
+    import formats from './utils/formats.mjs';
+    import htmlTemplate from '@datawrapper/chart-core/lib/dw/utils/htmlTemplate.mjs';
     import { isDate, debounce } from 'underscore';
 
     const PLACEHOLDER_REG = /{{[^}]*}}/g;

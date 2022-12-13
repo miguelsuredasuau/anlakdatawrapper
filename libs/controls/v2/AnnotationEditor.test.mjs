@@ -6,8 +6,8 @@ import $ from 'cash-dom';
 import { clickEvent } from './test/helpers/utils.mjs';
 
 import AnnotationEditor from './AnnotationEditor.html';
-import Chart from '@datawrapper/chart-core/lib/dw/svelteChart';
-import clone from '@datawrapper/shared/clone';
+import Chart from '@datawrapper/chart-core/lib/dw/svelteChart.mjs';
+import clone from '@datawrapper/shared/clone.js';
 import metadata from './stories/lib/annotationMetadata.mjs';
 
 const themeData = {

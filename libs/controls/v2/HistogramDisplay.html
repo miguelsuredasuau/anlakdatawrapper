@@ -37,13 +37,13 @@
 <GradientDisplay height="0" width="0" bind:id="gradientId" stops="{gradientStops}" />
 
 <script>
-    import _countBy from 'lodash-es/countBy';
-    import _keys from 'lodash-es/keys';
-    import _range from 'lodash-es/range';
-    import _uniq from 'lodash-es/uniq';
+    import _countBy from 'lodash-es/countBy.js';
+    import _keys from 'lodash-es/keys.js';
+    import _range from 'lodash-es/range.js';
+    import _uniq from 'lodash-es/uniq.js';
 
     import GradientDisplay from './GradientDisplay.html';
-    import toFixed from '@datawrapper/shared/toFixed';
+    import toFixed from '@datawrapper/shared/toFixed.js';
     import { scaleLinear, scaleBand } from 'd3-scale';
     import { histogram, extent, max, mean } from 'd3-array';
     import { area, line, curveBasis } from 'd3-shape';
