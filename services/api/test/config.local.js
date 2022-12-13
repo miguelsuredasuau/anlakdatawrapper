@@ -1,12 +1,12 @@
 const path = require('path');
 
 require('dotenv').config({
-    path: path.resolve('../../.datawrapper_env')
+    path: path.resolve(path.join(__dirname, '../../../.datawrapper_env'))
 });
 
 module.exports = {
     general: {
-        localPluginRoot: path.join(process.cwd(), '../../plugins'),
+        localPluginRoot: path.join(__dirname, '../../../plugins'),
         localChartAssetRoot: '/tmp/data',
         localChartPublishRoot: '/tmp/charts',
         imageDomain: process.env.DW_THUMBNAIL_URL,

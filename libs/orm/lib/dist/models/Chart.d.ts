@@ -16,6 +16,7 @@ declare class Chart extends Model<InferAttributes<Chart>, InferCreationAttribute
     guest_session: string | null;
     last_edit_step: number | null;
     published_at: Date | null;
+    last_modified_at: CreationOptional<Date>;
     public_url: string | null;
     public_version: number | null;
     deleted: boolean | null;
@@ -35,7 +36,7 @@ declare class Chart extends Model<InferAttributes<Chart>, InferCreationAttribute
     static [chartIdSaltSymbol]: string | undefined;
     static [hashPublishingSymbol]: string | undefined;
     getPublicId(): Promise<string>;
-    isEditableBy(user: UserModel, session: string): Promise<boolean | "" | null>;
+    isEditableBy(user: UserModel | null, session: string | null): Promise<boolean>;
     /**
      * Checks whether or not the authenticated user may edit the data
      * of the chart

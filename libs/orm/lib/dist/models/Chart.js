@@ -42,7 +42,7 @@ class Chart extends sequelize_1.Model {
             return user.mayEditChart(this);
         }
         else if (session) {
-            return this.guest_session && this.guest_session === session;
+            return !!this.guest_session && this.guest_session === session;
         }
         return false;
     }

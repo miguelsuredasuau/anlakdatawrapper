@@ -3,7 +3,7 @@ import { AccessToken, Chart, Session, Team, User } from '@datawrapper/orm/db';
 import Boom from '@hapi/boom';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import type { ResponseToolkit } from 'hapi';
+import type { ResponseToolkit } from '@hapi/hapi';
 import get from 'lodash/get';
 // TODO: submit bug report to TS about import from nanoid incorrectly causing TS errors when moduleResolution set to "node16"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -71,10 +71,10 @@ export function createAuth({ includeTeams = false } = {}) {
     }
 
     async function getUser(
-        userId: number | 'guest',
+        userId: number | 'guest' | null | undefined,
         { credentials, strategy, logger }: GetUserParams
     ) {
-        let user: ExtendedUserModel | null = await User.findByPk(userId, {
+        let user: ExtendedUserModel | null = await User.findByPk(userId ?? undefined, {
             attributes: [
                 'id',
                 'email',
@@ -362,7 +362,7 @@ export function createAuth({ includeTeams = false } = {}) {
                 }
             });
 
-            const auth = await getUser(session.data['dw-user-id'] as number, {
+            const auth = await getUser(session.data['dw-user-id'], {
                 credentials: { session: session.id, data: session },
                 strategy: 'Session',
                 logger:

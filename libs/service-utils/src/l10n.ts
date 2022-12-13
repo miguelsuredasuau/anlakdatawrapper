@@ -1,6 +1,5 @@
 import assign from 'assign-deep';
 import escapeHtml from '@datawrapper/shared/escapeHtml';
-import get from 'lodash/get';
 import type { Request, RequestAuth } from './serverTypes';
 
 type Messages = Record<string, string>;
@@ -129,7 +128,7 @@ export function allLocalizationScopes(locale: string = defaultLanguage): Scope {
 export function getUserLanguage(auth: RequestAuth): string {
     return auth.isAuthenticated && auth.artifacts && auth.artifacts.id
         ? auth.artifacts.language
-        : get(auth.credentials, 'data.data.dw-lang') || 'en-US';
+        : auth.credentials?.data?.data?.['dw-lang'] || 'en-US';
 }
 
 export function getTranslate(

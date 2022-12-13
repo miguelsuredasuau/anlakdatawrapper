@@ -14,3 +14,4 @@ export { prepareChart } from './prepareChart';
 export { prepareVisualization } from './prepareVisualization';
 export { registerFeatureFlag } from './registerFeatureFlag';
 export { createRegisterVisualization } from './registerVisualizations';
+export type { APIServer, APIServerPlugin, FrontendServerPlugin, Request } from './serverTypes';

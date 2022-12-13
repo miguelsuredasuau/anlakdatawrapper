@@ -17,9 +17,9 @@ class ExportJob extends Model<InferAttributes<ExportJob>, InferCreationAttribute
     declare id: CreationOptional<number>;
     declare key: string;
     declare priority: number;
-    declare status: 'queued' | 'in_progress' | 'done' | 'failed';
+    declare status: CreationOptional<'queued' | 'in_progress' | 'done' | 'failed'>;
     declare processed_at: Date | undefined;
-    declare created_at: Date;
+    declare created_at: CreationOptional<Date>;
     declare done_at: Date | undefined;
     declare last_task: number | undefined;
     declare tasks: unknown[];

@@ -6,12 +6,12 @@ function purge() {
     if (typeof global.gc === 'function') {
         available = true;
         console.log('Before GC:', process.memoryUsage());
-    }
 
-    try {
-        global.gc();
-    } catch (e) {
-        available = false;
+        try {
+            global.gc();
+        } catch (e) {
+            available = false;
+        }
     }
 
     if (!available) {

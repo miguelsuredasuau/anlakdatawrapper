@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTranslate = exports.getUserLanguage = exports.allLocalizationScopes = exports.translate = exports.addLocalizationScope = exports.getLocalizationScope = void 0;
 const assign_deep_1 = __importDefault(require("assign-deep"));
 const escapeHtml_1 = __importDefault(require("@datawrapper/shared/escapeHtml"));
-const get_1 = __importDefault(require("lodash/get"));
 const scopes = {
     core: {},
     plugin: {},
@@ -103,7 +102,7 @@ exports.allLocalizationScopes = allLocalizationScopes;
 function getUserLanguage(auth) {
     return auth.isAuthenticated && auth.artifacts && auth.artifacts.id
         ? auth.artifacts.language
-        : (0, get_1.default)(auth.credentials, 'data.data.dw-lang') || 'en-US';
+        : auth.credentials?.data?.data?.['dw-lang'] || 'en-US';
 }
 exports.getUserLanguage = getUserLanguage;
 function getTranslate(request) {

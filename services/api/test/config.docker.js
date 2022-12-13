@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
     general: {
-        localPluginRoot: path.join(process.cwd(), '../../plugins'),
+        localPluginRoot: path.join(__dirname, '../../../plugins'),
         localChartAssetRoot: '/tmp/data',
         localChartPublishRoot: '/tmp/charts',
         imageDomain: 'charts.datawrapper.local/preview',

@@ -26,5 +26,6 @@ export const chartAttributes = {
 
     utf8: SQ.BOOLEAN,
 
-    createdAt: SQ.DATE
+    createdAt: SQ.DATE,
+    last_modified_at: SQ.DATE
 } as const;

@@ -10,7 +10,14 @@ class Session extends Model<InferAttributes<Session>, InferCreationAttributes<Se
     declare id: string;
     declare user_id: number | null;
     declare persistent: boolean;
-    declare data: Record<string, unknown>;
+    declare data: {
+        'dw-lang'?: string | null;
+        'dw-user-id': number | null;
+        'dw-user-organization'?: string | null;
+        persistent: boolean;
+        last_action_time: number;
+        type?: string;
+    };
 }
 
 setInitializer(exported, ({ initOptions }) => {

@@ -1,6 +1,6 @@
 import type { SessionModel, TeamModel, UserModel } from '@datawrapper/orm';
 import Boom from '@hapi/boom';
-import type { ResponseToolkit } from 'hapi';
+import type { ResponseToolkit } from '@hapi/hapi';
 import type { Request, Server } from './serverTypes';
 declare type Artifacts = {
     role: string;
@@ -28,7 +28,7 @@ export declare function createAuth({ includeTeams }?: {
     cookieValidation: (request: Request, sessionIds: string[]) => Promise<{
         error: Boom.Boom<unknown>;
     } | {
-        sessionType: unknown;
+        sessionType: string | undefined;
         isValid: true;
         credentials: {
             data?: {
@@ -43,7 +43,7 @@ export declare function createAuth({ includeTeams }?: {
         error?: never;
     }>;
     createCookieAuthScheme: (createGuestSessions: boolean) => (server: Server, options: Record<string, unknown>) => {
-        authenticate: (request: Request, h: ResponseToolkit) => Promise<Boom.Boom<unknown> | import("hapi").Auth>;
+        authenticate: (request: Request, h: ResponseToolkit) => Promise<Boom.Boom<unknown> | import("@hapi/hapi").Auth<import("@hapi/hapi").UserCredentials, import("@hapi/hapi").AppCredentials, Record<string, unknown>, Record<string, unknown>>>;
     };
     bearerValidation: (request: Request, token: string) => Promise<{
         isValid: true;

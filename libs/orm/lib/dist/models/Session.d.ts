@@ -6,5 +6,12 @@ declare class Session extends Model<InferAttributes<Session>, InferCreationAttri
     id: string;
     user_id: number | null;
     persistent: boolean;
-    data: Record<string, unknown>;
+    data: {
+        'dw-lang'?: string | null;
+        'dw-user-id': number | null;
+        'dw-user-organization'?: string | null;
+        persistent: boolean;
+        last_action_time: number;
+        type?: string;
+    };
 }

@@ -7,16 +7,21 @@ const svelte = require('rollup-plugin-svelte');
 const sveltePreprocess = require('svelte-preprocess');
 const { default: resolve } = require('@rollup/plugin-node-resolve');
 const { fetchAllPlugins, requireConfig } = require('@datawrapper/backend-utils');
-const { join, relative } = require('path');
+const path = require('path');
 const terser = require('@rollup/plugin-terser');
 
 const sourceDir = 'src/views';
 const outputDir = process.env.OUTPUT_DIR || 'build/views';
 
+const sourceDirFullPath = path.resolve(path.join(__dirname, sourceDir));
+const pluginsDirFullPath = path.resolve(path.join(__dirname, '../../plugins'));
+
 const stripCode = require('rollup-plugin-strip-code');
 
 const production = !process.env.ROLLUP_WATCH;
 const modes = process.env.NODE_ENV === 'test' ? ['ssr'] : ['csr', 'ssr'];
+
+const viewRegexp = /^(?<path>.+)\.view\.svelte/;
 
 function onwarn(warning, handler) {
     if (
@@ -29,6 +34,14 @@ function onwarn(warning, handler) {
     handler(warning);
 }
 
+function relativeIfSubpath(from, to) {
+    if (to.startsWith(from + path.sep)) {
+        return path.relative(from, to);
+    }
+
+    return null;
+}
+
 /**
  * Creates a rollup input object for passed views.
  *
@@ -38,10 +51,10 @@ function onwarn(warning, handler) {
  * @param {Object} [opt.replacements={}] - Values to replace in all view files
  * @return {Object} Rollup input object
  */
-function createViewInput({ views, mode, replacements = {} }) {
+function createViewInput({ views, mode, replacements = {}, pluginsInfo }) {
     const ext = mode === 'ssr' ? '.ssr.js' : '.js';
     return {
-        input: views.map(view => join(sourceDir, view.replace(/\.svelte$/, '.view.svelte'))),
+        input: views.map(view => path.join(sourceDir, view.replace(/\.svelte$/, '.view.svelte'))),
         external: ['Handsontable'],
         output: {
             dir: outputDir,
@@ -58,24 +71,39 @@ function createViewInput({ views, mode, replacements = {} }) {
              */
             entryFileNames({ facadeModuleId, isEntry }) {
                 if (isEntry) {
-                    const relPath = relative(__dirname, facadeModuleId);
-
-                    const viewMatch = new RegExp(`^${sourceDir}/(?<path>.+)\\.view\\.svelte`).exec(
-                        relPath
-                    );
-                    if (viewMatch) {
-                        return viewMatch.groups['path'] + '.svelte' + ext;
-                    }
-
-                    const pluginViewMatch = relPath.match(
-                        /^..\/..\/plugins\/(?<plugin>[^/]+)\/src\/frontend\/views\/(?<path>.+)\.view\.svelte/
-                    );
-                    if (pluginViewMatch) {
-                        return join(
-                            '_plugins',
-                            pluginViewMatch.groups['plugin'],
-                            pluginViewMatch.groups['path'] + '.svelte' + ext
+                    const relativePath = relativeIfSubpath(sourceDirFullPath, facadeModuleId);
+                    if (relativePath !== null) {
+                        const viewMatch = relativePath.match(viewRegexp);
+                        if (viewMatch) {
+                            return viewMatch.groups['path'] + '.svelte' + ext;
+                        }
+                    } else {
+                        const relativeToPluginsPath = relativeIfSubpath(
+                            pluginsDirFullPath,
+                            facadeModuleId
                         );
+                        if (relativeToPluginsPath !== null) {
+                            const pluginName = relativeToPluginsPath.split(path.sep)[0];
+                            const viewsPath = pluginsInfo[pluginName].viewsPath;
+                            const relativeToPluginPath = relativeIfSubpath(
+                                viewsPath,
+                                facadeModuleId
+                            );
+                            if (relativeToPluginPath !== null) {
+                                const viewMatch = relativeToPluginPath.match(viewRegexp);
+                                if (viewMatch) {
+                                    return path.join(
+                                        '_plugins',
+                                        pluginName,
+                                        viewMatch.groups['path'] + '.svelte' + ext
+                                    );
+                                }
+                            } else {
+                                console.warn(`Could not resolve facadeModuleId: ${facadeModuleId}`);
+                            }
+                        } else {
+                            console.warn(`Could not resolve facadeModuleId: ${facadeModuleId}`);
+                        }
                     }
                 }
                 return `[name]${ext}`;
@@ -98,10 +126,10 @@ function createViewInput({ views, mode, replacements = {} }) {
                 : []),
             alias({
                 entries: {
-                    _layout: join(__dirname, join(sourceDir, '_layout')),
-                    _partials: join(__dirname, join(sourceDir, '_partials')),
-                    _plugins: join(__dirname, join(sourceDir, '_plugins')),
-                    _utils: join(__dirname, join(sourceDir, '..', 'utils')),
+                    _layout: path.join(sourceDirFullPath, '_layout'),
+                    _partials: path.join(sourceDirFullPath, '_partials'),
+                    _plugins: path.join(sourceDirFullPath, '_plugins'),
+                    _utils: path.join(sourceDirFullPath, '..', 'utils'),
                     ...(mode === 'ssr' && {
                         '@datawrapper/shared/decodeHtml.js':
                             '@datawrapper/shared/decodeHtml.ssr.js',
@@ -149,9 +177,9 @@ function createViewInput({ views, mode, replacements = {} }) {
 function createCustomElementInput({ customElement, mode }) {
     const ext = mode === 'ssr' ? '.ssr.js' : '.js';
     return {
-        input: join(sourceDir, customElement),
+        input: path.join(sourceDir, customElement),
         output: {
-            file: join(outputDir, customElement + ext),
+            file: path.join(outputDir, customElement + ext),
             sourcemap: mode !== 'ssr',
             format: 'iife',
             name: 'App'
@@ -190,13 +218,15 @@ function createCustomElementInput({ customElement, mode }) {
 
 async function main() {
     // Find all views by searching for *.view.svelte files.
-    const views = (await fastGlob(join(sourceDir, '**/*.view.svelte')))
-        .map(path => relative(sourceDir, path).replace(/\.view\.svelte$/, '.svelte'))
+    const views = (await fastGlob(path.join(sourceDir, '**/*.view.svelte')))
+        .map(absolutePath =>
+            path.relative(sourceDir, absolutePath).replace(/\.view\.svelte$/, '.svelte')
+        )
         .filter(view => !process.env.TARGET || view.startsWith(process.env.TARGET));
 
     // Find all custom elements by searching for *.element.svelte files.
-    const customElements = (await fastGlob(join(sourceDir, '**/*.element.svelte')))
-        .map(path => relative(sourceDir, path))
+    const customElements = (await fastGlob(path.join(sourceDir, '**/*.element.svelte')))
+        .map(absolutePath => path.relative(sourceDir, absolutePath))
         .filter(
             customElement => !process.env.TARGET || customElement.startsWith(process.env.TARGET)
         );
@@ -216,7 +246,7 @@ async function main() {
                 .filter(({ page }) => page === view)
                 .map(({ id, view }, i) => {
                     const viewVar = `view_component_${i}`;
-                    const viewPath = join('../../views', view);
+                    const viewPath = path.join('../../views', view);
                     return [
                         `import ${viewVar} from '${viewPath}';`,
                         `viewComponents.set('${id}', ${viewVar});`
@@ -235,6 +265,7 @@ async function main() {
                 createViewInput({
                     views,
                     mode,
+                    pluginsInfo,
                     replacements: viewComponentReplacements
                 })
             );

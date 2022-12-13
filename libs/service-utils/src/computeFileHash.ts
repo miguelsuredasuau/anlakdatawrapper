@@ -3,9 +3,9 @@ import crypto from 'crypto';
 import fs from 'fs';
 import fg from 'fast-glob';
 import { MemoryCache } from './MemoryCache';
-import type { Plugin } from 'hapi';
+import type { Plugin } from '@hapi/hapi';
 
-export const computeFileHashPlugin = {
+export const computeFileHashPlugin: Plugin<undefined> = {
     name: 'utils/computeFileHash',
     version: '1.0.0',
     async register(server) {
@@ -64,4 +64,4 @@ export const computeFileHashPlugin = {
             (await computeFileGlobHash(fileGlob)).substring(0, 8)
         );
     }
-} as Plugin<undefined>;
+};

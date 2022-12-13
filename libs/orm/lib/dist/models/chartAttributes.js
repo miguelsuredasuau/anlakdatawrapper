@@ -23,5 +23,6 @@ exports.chartAttributes = {
     language: sequelize_1.default.STRING(5),
     external_data: sequelize_1.default.STRING(),
     utf8: sequelize_1.default.BOOLEAN,
-    createdAt: sequelize_1.default.DATE
+    createdAt: sequelize_1.default.DATE,
+    last_modified_at: sequelize_1.default.DATE
 };

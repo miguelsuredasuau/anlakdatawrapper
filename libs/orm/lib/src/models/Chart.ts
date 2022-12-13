@@ -31,6 +31,7 @@ class Chart extends Model<InferAttributes<Chart>, InferCreationAttributes<Chart>
     declare guest_session: string | null;
     declare last_edit_step: number | null;
     declare published_at: Date | null;
+    declare last_modified_at: CreationOptional<Date>;
     declare public_url: string | null;
     declare public_version: number | null;
     declare deleted: boolean | null;
@@ -78,13 +79,13 @@ class Chart extends Model<InferAttributes<Chart>, InferCreationAttributes<Chart>
         return this.id;
     }
 
-    async isEditableBy(user: UserModel, session: string) {
+    async isEditableBy(user: UserModel | null, session: string | null) {
         if (this.deleted) return false;
 
         if (user && user.role !== 'guest') {
             return user.mayEditChart(this);
         } else if (session) {
-            return this.guest_session && this.guest_session === session;
+            return !!this.guest_session && this.guest_session === session;
         }
         return false;
     }

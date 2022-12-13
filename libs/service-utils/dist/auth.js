@@ -31,7 +31,7 @@ function createAuth({ includeTeams = false } = {}) {
         return 1000 * 3600 * 24 * days; // 1000ms = 1s -> 3600s = 1h -> 24h = 1d
     }
     async function getUser(userId, { credentials, strategy, logger }) {
-        let user = await db_1.User.findByPk(userId, {
+        let user = await db_1.User.findByPk(userId ?? undefined, {
             attributes: [
                 'id',
                 'email',

@@ -21,4 +21,5 @@ export declare const chartAttributes: {
     readonly external_data: SQ.StringDataType;
     readonly utf8: SQ.AbstractDataTypeConstructor;
     readonly createdAt: SQ.DateDataTypeConstructor;
+    readonly last_modified_at: SQ.DateDataTypeConstructor;
 };
