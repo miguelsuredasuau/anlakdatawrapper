@@ -90,7 +90,7 @@ Ukraine conflict between Russia and Western Countries;2;30;2;52;14`
         await $publishButton.waitForDisplayed();
         await $publishButton.click();
         const $publishUrl = await $('>>>#share-url');
-        await $publishUrl.waitForDisplayed({ timeout: 20000 }); // Wait for publishing with increased timeout, because it can take long on staging.
+        await $publishUrl.waitForDisplayed({ timeout: 40000 }); // Wait for publishing with increased timeout, because it can take long on staging.
         await expect($publishUrl).toHaveValueContaining('/1/');
         const publishUrl = await $publishUrl.getValue();
         const publishHtml = await got.get(publishUrl, { resolveBodyOnly: true }); // Get the published chart HTML.
