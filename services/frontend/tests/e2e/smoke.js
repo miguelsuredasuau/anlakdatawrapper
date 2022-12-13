@@ -55,15 +55,18 @@ Ukraine conflict between Russia and Western Countries;2;30;2;52;14`
         await $describeProceed.click(); // Go to the next step.
 
         // Visualize
+        await browser.switchToFrameById('iframe-vis');
+        const $visualizePreviewLines = await $('.dw-chart.vis-d3-lines');
+        await $visualizePreviewLines.waitForDisplayed(); // Wait for the default line chart to load before switching the type.
+        await browser.switchToParentFrame();
         const $visualizeChartTypeTab = await $('a[href="#select-vis"]');
-        await $visualizeChartTypeTab.waitForDisplayed();
         await $visualizeChartTypeTab.click(); // Switch to the Chart type tab.
         const $visualizeChartTypeButton = await $('.title=Stacked Bars');
         await $visualizeChartTypeButton.waitForDisplayed();
         await $visualizeChartTypeButton.parentElement().click(); // Change chart type.
         await browser.switchToFrameById('iframe-vis');
-        const $visualizePreviewChart = await $('.dw-chart.vis-d3-bars-stacked');
-        await $visualizePreviewChart.waitForDisplayed(); // Check the chart type in the iframe.
+        const $visualizePreviewBars = await $('.dw-chart.vis-d3-bars-stacked');
+        await $visualizePreviewBars.waitForDisplayed(); // Check the chart type in the iframe.
         await browser.switchToParentFrame();
         const $visualizeAnnotateTab = await $('a[href="#annotate"]');
         await expect($visualizeAnnotateTab).toBeDisplayed();
