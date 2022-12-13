@@ -8,9 +8,9 @@ module.exports = {
             }
         });
 
-        await server.register(require('./dashboard'));
+        await server.register(require('./dashboard.js'));
 
-        await server.register(require('./admin'), {
+        await server.register(require('./admin.js'), {
             routes: {
                 prefix: '/admin'
             }
@@ -22,27 +22,27 @@ module.exports = {
             }
         });
 
-        await server.register(require('./preview/index.js'), {
+        await server.register(require('./preview'), {
             routes: {
                 prefix: '/preview'
             }
         });
 
-        await server.register(require('./lib'), {
+        await server.register(require('./lib.js'), {
             routes: {
                 prefix: '/lib'
             }
         });
 
         if (server.methods.isDevMode()) {
-            await server.register(require('./hello'), {
+            await server.register(require('./hello.js'), {
                 routes: {
                     prefix: '/v2/hello'
                 }
             });
         }
 
-        await server.register(require('./edit'));
+        await server.register(require('./edit.js'));
 
         await server.register(require('./datawrapper-invite/index.js'), {
             routes: {
@@ -50,7 +50,7 @@ module.exports = {
             }
         });
 
-        await server.register(require('./create'), {
+        await server.register(require('./create.js'), {
             routes: {
                 prefix: '/create'
             }
@@ -68,7 +68,7 @@ module.exports = {
             }
         });
 
-        await server.register(require('./web-components'), {
+        await server.register(require('./web-components.js'), {
             routes: {
                 prefix: '/v2/web-components'
             }

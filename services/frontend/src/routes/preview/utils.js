@@ -1,6 +1,51 @@
 const get = require('lodash/get');
+const Boom = require('@hapi/boom');
 
 module.exports = {
+    async getChart(server, request) {
+        const api = server.methods.createAPI(request);
+        const { query, params } = request;
+        const { chartId } = params;
+
+        const queryString = Object.entries({
+            published: query.published,
+            ott: query.ott,
+            theme: query.theme,
+            transparent: query.transparent
+        })
+            .filter(([, value]) => Boolean(value))
+            .map(([key, value]) => `${key}=${value}`)
+            .join('&');
+
+        let props;
+
+        try {
+            props = await api(`/charts/${chartId}/publish/data?${queryString}`);
+        } catch (ex) {
+            throw Boom.notFound();
+        }
+
+        // also load dark mode theme & styles
+        const themeDark = {};
+        const themeId = props.chart.theme;
+
+        if (!server.app.visualizations.has(props.chart.type)) {
+            throw Boom.badRequest('Invalid visualization type');
+        }
+
+        const darkThemePromises = [
+            `/themes/${themeId}?extend=true&dark=true`,
+            `/visualizations/${props.chart.type}/styles.css?theme=${themeId}&dark=true`
+        ].map((url, i) =>
+            api(url, { json: i === 0 }).then(res => {
+                themeDark[i === 0 ? 'json' : 'css'] = res;
+            })
+        );
+
+        await Promise.all(darkThemePromises);
+
+        return { props, themeDark };
+    },
     initCaches(server) {
         const config = server.methods.config();
 
