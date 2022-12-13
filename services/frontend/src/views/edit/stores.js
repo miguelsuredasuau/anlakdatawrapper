@@ -183,7 +183,7 @@ export function initStores({
     );
 
     const vendorLocales$ = combineLatest([locale$, team$]).pipe(
-        map(([{ id: locale = {} }, team]) => {
+        map(([{ id: locale = {} } = {}, team]) => {
             return Object.fromEntries(
                 Object.entries(rawVendorLocales).map(([vendor, locales]) => {
                     const settings = locales[locale];
