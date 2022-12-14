@@ -153,6 +153,9 @@ export async function render(page, props, delay = 0) {
         if (text.startsWith('Chart rendered in')) return;
         logs.push({ type: event.type(), text: event.text() });
     });
+    page.on('pageerror', ({ message }) => {
+        logs.push({ type: 'error', text: message });
+    });
 
     // set container classes
     await page.evaluate(async ({ chart, textDirection }) => {
