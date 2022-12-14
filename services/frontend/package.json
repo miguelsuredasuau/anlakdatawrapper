@@ -5,7 +5,7 @@
     "type": "commonjs",
     "scripts": {
         "build": "npm run build:js && npm run build:css",
-        "build:js": "NODE_OPTIONS=--max-old-space-size=8192 OUTPUT_DIR=build/views.new rollup -c && mv build/views build/views.bak && mv build/views.new build/views && rm -r build/views.bak",
+        "build:js": "NODE_OPTIONS=--max-old-space-size=8192 OUTPUT_DIR=build/views.new rollup -c && if [[ -e build/views ]]; then mv build/views build/views.bak; fi && mv build/views.new build/views && rm -rf build/views.bak",
         "build:css": "sass --no-source-map src/styles/index.scss static/datawrapper.css",
         "build:css-bulma-polyfill": "sass --no-source-map src/styles/index-bulma-polyfill.scss static/css/bulma-polyfill.css",
         "build:svelte2": "cd src/svelte2 && npm run build",
