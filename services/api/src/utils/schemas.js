@@ -160,7 +160,11 @@ const chartResponse = createResponseConfig({
             .allow(null)
             .optional(),
         keywords: Joi.string().optional().description('Keywords'),
-        utf8: Joi.boolean().optional().description('UTF-8')
+        utf8: Joi.boolean().optional().description('UTF-8'),
+        river: Joi.object({
+            source: Joi.string().allow('', null),
+            sourceUrl: Joi.string().allow('', null)
+        }).optional()
     })
 });
 
