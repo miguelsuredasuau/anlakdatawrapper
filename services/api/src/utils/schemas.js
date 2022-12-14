@@ -1,10 +1,11 @@
 const Joi = require('joi');
 
 const DW_DEV_MODE = !!JSON.parse(process.env.DW_DEV_MODE || 'false');
+const responseValidationEnabled = DW_DEV_MODE || process.env.NODE_ENV === 'test';
 
 function createResponseConfig(schema) {
     return {
-        sample: DW_DEV_MODE ? 100 : 0,
+        sample: responseValidationEnabled ? 100 : 0,
         ...schema
     };
 }
@@ -164,7 +165,8 @@ const chartResponse = createResponseConfig({
         river: Joi.object({
             source: Joi.string().allow('', null),
             sourceUrl: Joi.string().allow('', null)
-        }).optional()
+        }).optional(),
+        basedOnByline: Joi.string().optional()
     })
 });
 

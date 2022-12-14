@@ -200,6 +200,8 @@ test('POST /charts/{id}/fork forks a fork-protected chart and the attributes mat
             headers
         });
 
+        t.is(allMetadata.statusCode, 200);
+
         t.is(forkedChart.authorId, user.id);
         t.is(forkedChart.forkedFrom, chart.id);
         t.is(allMetadata.result.externalData, attributes.externalData);

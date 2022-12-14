@@ -245,7 +245,9 @@ module.exports = {
                             )
                     })
                 },
-                response: chartResponse
+                response: {
+                    schema: Joi.array().items(chartResponse.schema)
+                }
             },
             handler: patchChartsHandler
         });

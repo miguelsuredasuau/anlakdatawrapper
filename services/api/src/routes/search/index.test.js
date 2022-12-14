@@ -67,6 +67,7 @@ test('GET /search/charts searches in multiple fields', async t => {
             source_name: 'strawberry',
             source_url: 'https://rasberry.com',
             notes: 'pear',
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T13:00:00.000Z'),
             deleted: false
         },
@@ -74,6 +75,7 @@ test('GET /search/charts searches in multiple fields', async t => {
             id: genRandomChartId(),
             author_id: userObj.user.id,
             title: 'spam',
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T13:00:00.000Z'),
             deleted: false
         }
@@ -105,7 +107,9 @@ test('GET /search/charts searches custom fields', async t => {
             custom_fields: {
                 my_field: `${prefix} my value`
             },
-            deleted: false
+            deleted: false,
+            last_modified_at: new Date(),
+            created_at: new Date()
         }
     ];
     try {
@@ -132,7 +136,9 @@ test('GET /search/charts searches custom fields that are not text', async t => {
             custom_fields: {
                 my_boolean_field: true
             },
-            deleted: false
+            deleted: false,
+            last_modified_at: new Date(),
+            created_at: new Date()
         },
         {
             id: genRandomChartId(),
@@ -140,7 +146,9 @@ test('GET /search/charts searches custom fields that are not text', async t => {
             custom_fields: {
                 my_boolean_field: false
             },
-            deleted: false
+            deleted: false,
+            last_modified_at: new Date(),
+            created_at: new Date()
         }
     ];
     try {
@@ -217,6 +225,7 @@ test('GET /search/charts orders results by authorId and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} 9`,
             author_id: 9,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T13:00:00.000Z'),
             deleted: false
         },
@@ -224,6 +233,7 @@ test('GET /search/charts orders results by authorId and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} 1 older`,
             author_id: 1,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T09:00:00.000Z'),
             deleted: false
         },
@@ -231,6 +241,7 @@ test('GET /search/charts orders results by authorId and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} 1 newer`,
             author_id: 1,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T12:00:00.000Z'),
             deleted: false
         },
@@ -238,6 +249,7 @@ test('GET /search/charts orders results by authorId and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} 5`,
             author_id: 5,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T11:00:00.000Z'),
             deleted: false
         }
@@ -278,18 +290,21 @@ test('GET /search/charts orders results by createdAt', async t => {
         {
             id: genRandomChartId(),
             title: `${prefix} 13:00`,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T13:00:00.000Z'),
             deleted: false
         },
         {
             id: genRandomChartId(),
             title: `${prefix} 09:00`,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T09:00:00.000Z'),
             deleted: false
         },
         {
             id: genRandomChartId(),
             title: `${prefix} 11:00`,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T11:00:00.000Z'),
             deleted: false
         }
@@ -331,6 +346,7 @@ test('GET /search/charts orders results by lastEditStep and createdAt', async t 
             id: genRandomChartId(),
             title: `${prefix} 3`,
             last_edit_step: 3,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T13:00:00.000Z'),
             deleted: false
         },
@@ -338,6 +354,7 @@ test('GET /search/charts orders results by lastEditStep and createdAt', async t 
             id: genRandomChartId(),
             title: `${prefix} 1 older`,
             last_edit_step: 1,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T09:00:00.000Z'),
             deleted: false
         },
@@ -345,6 +362,7 @@ test('GET /search/charts orders results by lastEditStep and createdAt', async t 
             id: genRandomChartId(),
             title: `${prefix} 2`,
             last_edit_step: 2,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T12:00:00.000Z'),
             deleted: false
         },
@@ -352,6 +370,7 @@ test('GET /search/charts orders results by lastEditStep and createdAt', async t 
             id: genRandomChartId(),
             title: `${prefix} 1 newer`,
             last_edit_step: 1,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T11:00:00.000Z'),
             deleted: false
         }
@@ -448,6 +467,7 @@ test('GET /search/charts orders results by publishedAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} 22:00`,
             published_at: new Date('2022-04-10T22:00:00.000Z'),
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T13:00:00.000Z'),
             deleted: false
         },
@@ -455,6 +475,7 @@ test('GET /search/charts orders results by publishedAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} 21:00`,
             published_at: new Date('2022-04-10T21:00:00.000Z'),
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T12:00:00.000Z'),
             deleted: false
         },
@@ -462,6 +483,7 @@ test('GET /search/charts orders results by publishedAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} 23:00`,
             published_at: new Date('2022-04-10T23:00:00.000Z'),
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T11:00:00.000Z'),
             deleted: false
         }
@@ -503,6 +525,7 @@ test('GET /search/charts orders results by title and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} A`,
             language: `${prefix} A`, // Use language to store some identifying information about the chart.
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T13:00:00.000Z'),
             deleted: false
         },
@@ -510,6 +533,7 @@ test('GET /search/charts orders results by title and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} C`,
             language: `${prefix} C older`,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T09:00:00.000Z'),
             deleted: false
         },
@@ -517,6 +541,7 @@ test('GET /search/charts orders results by title and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} B`,
             language: `${prefix} B`,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T12:00:00.000Z'),
             deleted: false
         },
@@ -524,6 +549,7 @@ test('GET /search/charts orders results by title and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} C`,
             language: `${prefix} C newer`,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T11:00:00.000Z'),
             deleted: false
         }
@@ -565,6 +591,7 @@ test('GET /search/charts orders results by type and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} d3-bars`,
             type: 'd3-bars',
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T13:00:00.000Z'),
             deleted: false
         },
@@ -572,6 +599,7 @@ test('GET /search/charts orders results by type and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} locator-maps older`,
             type: 'locator-maps',
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T09:00:00.000Z'),
             deleted: false
         },
@@ -579,6 +607,7 @@ test('GET /search/charts orders results by type and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} locator-maps newer`,
             type: 'locator-maps',
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T12:00:00.000Z'),
             deleted: false
         },
@@ -586,6 +615,7 @@ test('GET /search/charts orders results by type and createdAt', async t => {
             id: genRandomChartId(),
             title: `${prefix} visualization-column-charts`,
             type: 'visualization-column-charts',
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T11:00:00.000Z'),
             deleted: false
         }
@@ -650,6 +680,7 @@ test('GET /search/charts filters by author when the user is admin', async t => {
                 id: genRandomChartId(),
                 title: `${prefix} admin`,
                 author_id: t.context.adminObj.user.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T14:00:00.000Z'),
                 deleted: false
             },
@@ -657,6 +688,7 @@ test('GET /search/charts filters by author when the user is admin', async t => {
                 id: genRandomChartId(),
                 title: `${prefix} other`,
                 author_id: otherUserObj.user.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T13:00:00.000Z'),
                 deleted: false
             }
@@ -734,6 +766,7 @@ test('GET /search/charts filters by author when the user is not an admin', async
                 id: genRandomChartId(),
                 title: `${prefix} user`,
                 author_id: t.context.userObj.user.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T14:00:00.000Z'),
                 deleted: false
             },
@@ -741,6 +774,7 @@ test('GET /search/charts filters by author when the user is not an admin', async
                 id: genRandomChartId(),
                 title: `${prefix} other`,
                 author_id: otherUserObj.user.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T13:00:00.000Z'),
                 deleted: false
             }
@@ -823,6 +857,7 @@ test('GET /search/charts filters by team when the user is admin', async t => {
                 title: `${prefix} my chart in my first team`,
                 author_id: adminObj.user.id,
                 team_id: adminTeam1.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T19:00:00.000Z'),
                 deleted: false
             },
@@ -831,6 +866,7 @@ test('GET /search/charts filters by team when the user is admin', async t => {
                 title: `${prefix} my chart in my second team`,
                 author_id: adminObj.user.id,
                 team_id: adminTeam2.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T18:00:00.000Z'),
                 deleted: false
             },
@@ -839,6 +875,7 @@ test('GET /search/charts filters by team when the user is admin', async t => {
                 title: `${prefix} my chart in no team`,
                 author_id: adminObj.user.id,
                 team_id: null,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T17:00:00.000Z'),
                 deleted: false
             },
@@ -847,6 +884,7 @@ test('GET /search/charts filters by team when the user is admin', async t => {
                 title: `${prefix} other user's chart in my first team`,
                 author_id: otherUserObj.user.id,
                 team_id: adminTeam1.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T16:00:00.000Z'),
                 deleted: false
             },
@@ -855,6 +893,7 @@ test('GET /search/charts filters by team when the user is admin', async t => {
                 title: `${prefix} other user's chart in another team`,
                 author_id: otherUserObj.user.id,
                 team_id: otherTeam.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T15:00:00.000Z'),
                 deleted: false
             },
@@ -863,6 +902,7 @@ test('GET /search/charts filters by team when the user is admin', async t => {
                 title: `${prefix} other user's chart in no team`,
                 author_id: otherUserObj.user.id,
                 team_id: null,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T14:00:00.000Z'),
                 deleted: false
             }
@@ -999,6 +1039,7 @@ test('GET /search/charts filters by team when the user is not admin', async t =>
                 title: `${prefix} my chart in my first team`,
                 author_id: userObj.user.id,
                 team_id: userTeam1.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T19:00:00.000Z'),
                 deleted: false
             },
@@ -1007,6 +1048,7 @@ test('GET /search/charts filters by team when the user is not admin', async t =>
                 title: `${prefix} my chart in my second team`,
                 author_id: userObj.user.id,
                 team_id: userTeam2.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T18:00:00.000Z'),
                 deleted: false
             },
@@ -1015,6 +1057,7 @@ test('GET /search/charts filters by team when the user is not admin', async t =>
                 title: `${prefix} my chart in no team`,
                 author_id: userObj.user.id,
                 team_id: null,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T17:00:00.000Z'),
                 deleted: false
             },
@@ -1023,6 +1066,7 @@ test('GET /search/charts filters by team when the user is not admin', async t =>
                 title: `${prefix} other user's chart in my first team`,
                 author_id: otherUserObj.user.id,
                 team_id: userTeam1.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T16:00:00.000Z'),
                 deleted: false
             },
@@ -1031,6 +1075,7 @@ test('GET /search/charts filters by team when the user is not admin', async t =>
                 title: `${prefix} other user's chart in another team`,
                 author_id: otherUserObj.user.id,
                 team_id: otherTeam.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T15:00:00.000Z'),
                 deleted: false
             },
@@ -1039,6 +1084,7 @@ test('GET /search/charts filters by team when the user is not admin', async t =>
                 title: `${prefix} other user's chart in no team`,
                 author_id: otherUserObj.user.id,
                 team_id: null,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T14:00:00.000Z'),
                 deleted: false
             }
@@ -1144,6 +1190,7 @@ test('GET /search/charts filters charts by folder', async t => {
                 id: genRandomChartId(),
                 title: `${prefix} 1`,
                 in_folder: folder1.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T14:00:00.000Z'),
                 deleted: false
             },
@@ -1151,6 +1198,7 @@ test('GET /search/charts filters charts by folder', async t => {
                 id: genRandomChartId(),
                 title: `${prefix} 2`,
                 in_folder: folder2.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T13:00:00.000Z'),
                 deleted: false
             },
@@ -1158,6 +1206,7 @@ test('GET /search/charts filters charts by folder', async t => {
                 id: genRandomChartId(),
                 title: `${prefix} root`,
                 in_folder: null,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T12:00:00.000Z'),
                 deleted: false
             }
@@ -1197,6 +1246,7 @@ test('GET /search/charts returns error 403 when the folder does not exist', asyn
         {
             id: genRandomChartId(),
             title: `${prefix} filter non-existent folder`,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T14:00:00.000Z'),
             deleted: false
         }
@@ -1225,6 +1275,7 @@ test('GET /search/charts returns error 403 when the folder is not writable by th
                 title: `${prefix} user`,
                 in_folder: folder.id,
                 author_id: t.context.userObj.user.id,
+                last_modified_at: new Date(),
                 created_at: new Date('2022-03-29T14:00:00.000Z'),
                 deleted: false
             }
@@ -1265,6 +1316,7 @@ test('GET /search/charts filters charts by minLastEditStep', async t => {
             id: genRandomChartId(),
             title: `${prefix} 1`,
             last_edit_step: 1,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T14:00:00.000Z'),
             deleted: false
         },
@@ -1272,6 +1324,7 @@ test('GET /search/charts filters charts by minLastEditStep', async t => {
             id: genRandomChartId(),
             title: `${prefix} 2`,
             last_edit_step: 2,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T13:00:00.000Z'),
             deleted: false
         },
@@ -1279,6 +1332,7 @@ test('GET /search/charts filters charts by minLastEditStep', async t => {
             id: genRandomChartId(),
             title: `${prefix} 3`,
             last_edit_step: 3,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T12:00:00.000Z'),
             deleted: false
         }
@@ -1328,6 +1382,7 @@ test('GET /search/charts paginates results', async t => {
             id: genRandomChartId(),
             title: `${prefix} ${i}`,
             last_edit_step: 1,
+            last_modified_at: new Date(),
             created_at: new Date(`2022-03-29T10:00:${59 - i}.000Z`),
             deleted: false
         }));
@@ -1484,12 +1539,14 @@ test('GET /search/charts does not return deleted charts', async t => {
         {
             id: genRandomChartId(),
             title: `${prefix} deleted`,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T13:00:00.000Z'),
             deleted: true
         },
         {
             id: genRandomChartId(),
             title: `${prefix} not deleted`,
+            last_modified_at: new Date(),
             created_at: new Date('2022-03-29T09:00:00.000Z'),
             deleted: false
         }

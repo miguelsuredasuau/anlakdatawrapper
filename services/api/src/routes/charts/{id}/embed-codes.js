@@ -33,7 +33,9 @@ module.exports = async server => {
                     Joi.object({
                         id: Joi.string(),
                         preferred: Joi.boolean(),
-                        title: Joi.string(),
+                        // TODO Don't allow empty title once the Team Settings UI validates it and
+                        // the db is migrated.
+                        title: Joi.string().allow(''),
                         template: Joi.string(),
                         text: Joi.string(),
                         code: Joi.string()
