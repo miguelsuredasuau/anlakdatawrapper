@@ -84,22 +84,32 @@ function createViewInput({ views, mode, replacements = {}, pluginsInfo }) {
                         );
                         if (relativeToPluginsPath !== null) {
                             const pluginName = relativeToPluginsPath.split(path.sep)[0];
-                            const viewsPath = pluginsInfo[pluginName].viewsPath;
-                            const relativeToPluginPath = relativeIfSubpath(
-                                viewsPath,
-                                facadeModuleId
-                            );
-                            if (relativeToPluginPath !== null) {
-                                const viewMatch = relativeToPluginPath.match(viewRegexp);
-                                if (viewMatch) {
-                                    return path.join(
-                                        '_plugins',
-                                        pluginName,
-                                        viewMatch.groups['path'] + '.svelte' + ext
+                            if (pluginsInfo[pluginName]) {
+                                const viewsPath = pluginsInfo[pluginName].viewsPath;
+                                const relativeToPluginPath = relativeIfSubpath(
+                                    viewsPath,
+                                    facadeModuleId
+                                );
+                                if (relativeToPluginPath !== null) {
+                                    const viewMatch = relativeToPluginPath.match(viewRegexp);
+                                    if (viewMatch) {
+                                        return path.join(
+                                            '_plugins',
+                                            pluginName,
+                                            viewMatch.groups['path'] + '.svelte' + ext
+                                        );
+                                    }
+                                } else {
+                                    console.warn(
+                                        `Could not resolve facadeModuleId: ${facadeModuleId}`
                                     );
                                 }
                             } else {
-                                console.warn(`Could not resolve facadeModuleId: ${facadeModuleId}`);
+                                console.warn(
+                                    `Could not resolve facadeModuleId: ${facadeModuleId}, ` +
+                                        `because there is a symlink for plugin ${pluginName} but ` +
+                                        "the plugin doesn't appear in config.js"
+                                );
                             }
                         } else {
                             console.warn(`Could not resolve facadeModuleId: ${facadeModuleId}`);
