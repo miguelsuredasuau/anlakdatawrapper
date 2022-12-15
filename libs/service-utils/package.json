@@ -33,7 +33,7 @@
     },
     "devDependencies": {
         "@datawrapper/backend-utils": "file:../backend-utils",
-        "@datawrapper/shared": "^1.6.3",
+        "@datawrapper/shared": "^1.6.7",
         "@tsconfig/node18-strictest": "^1.0.0",
         "@types/bcryptjs": "^2.4.2",
         "@types/fs-extra": "^9.0.13",

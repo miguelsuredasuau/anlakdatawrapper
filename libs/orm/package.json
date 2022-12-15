@@ -38,7 +38,7 @@
         "underscore": "1.9.1"
     },
     "devDependencies": {
-        "@datawrapper/shared": "^1.6.3",
+        "@datawrapper/shared": "^1.6.7",
         "@tsconfig/node18-strictest": "^1.0.0",
         "@types/merge-deep": "^3.0.0",
         "@types/nanoid": "^2.1.0",
