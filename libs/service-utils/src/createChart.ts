@@ -6,6 +6,7 @@ import { defaultChartMetadata } from './defaultChartMetadata';
 import { findChartId } from './findChartId';
 import get from 'lodash/get';
 import pick from 'lodash/pick';
+import set from 'lodash/set';
 import { decamelizeKeys } from 'humps';
 import type { ChartDataValues } from './chartModelTypes';
 import type { Server } from './serverTypes';
@@ -241,7 +242,23 @@ export async function createChart(
         chart.metadata = assignDeep(chart.metadata, payloadMetadata);
     }
 
-    if (payloadMetadata || themeData.metadata || teamDefaultMetadata) {
+    // set default basemap if it's not set yet
+    const chartType = get(chart, 'type');
+    // @todo remove this ugly temporary hack for d3-maps
+    if (
+        typeof chartType === 'string' &&
+        chartType.startsWith('d3-maps-') &&
+        !get(chart, 'metadata.visualize.basemap')
+    ) {
+        set(chart, 'metadata.visualize.basemap', 'world-2019');
+    }
+
+    const basemapId = get(chart, 'metadata.visualize.basemap');
+    if (basemapId) {
+        set(chart, 'metadata.visualize.map-type-set', true);
+    }
+
+    if (payloadMetadata || themeData.metadata || teamDefaultMetadata || basemapId) {
         chart.changed('metadata', true);
     }
 

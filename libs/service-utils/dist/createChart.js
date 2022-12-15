@@ -11,6 +11,7 @@ const defaultChartMetadata_1 = require("./defaultChartMetadata");
 const findChartId_1 = require("./findChartId");
 const get_1 = __importDefault(require("lodash/get"));
 const pick_1 = __importDefault(require("lodash/pick"));
+const set_1 = __importDefault(require("lodash/set"));
 const humps_1 = require("humps");
 const ALLOWED_PAYLOAD_KEYS = [
     'title',
@@ -192,7 +193,19 @@ async function createChart({ server, user, payload = {}, session: sessionId, tok
     if (payloadMetadata) {
         chart.metadata = (0, assign_deep_1.default)(chart.metadata, payloadMetadata);
     }
-    if (payloadMetadata || themeData.metadata || teamDefaultMetadata) {
+    // set default basemap if it's not set yet
+    const chartType = (0, get_1.default)(chart, 'type');
+    // @todo remove this ugly temporary hack for d3-maps
+    if (typeof chartType === 'string' &&
+        chartType.startsWith('d3-maps-') &&
+        !(0, get_1.default)(chart, 'metadata.visualize.basemap')) {
+        (0, set_1.default)(chart, 'metadata.visualize.basemap', 'world-2019');
+    }
+    const basemapId = (0, get_1.default)(chart, 'metadata.visualize.basemap');
+    if (basemapId) {
+        (0, set_1.default)(chart, 'metadata.visualize.map-type-set', true);
+    }
+    if (payloadMetadata || themeData.metadata || teamDefaultMetadata || basemapId) {
         chart.changed('metadata', true);
     }
     await chart.save();
