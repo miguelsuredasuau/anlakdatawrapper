@@ -50,7 +50,7 @@ const ALL_SCOPES = [
     'visualization:read'
 ];
 
-const themeNanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz-', 16);
+const themeNanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 16);
 
 function getCredentials() {
     return {
