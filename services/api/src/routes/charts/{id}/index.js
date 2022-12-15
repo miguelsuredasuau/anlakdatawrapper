@@ -5,10 +5,11 @@ const { Op } = SQ;
 const {
     Chart,
     ChartPublic,
+    Folder,
     ReadonlyChart,
     User,
-    Folder,
-    UserData
+    UserData,
+    withTransaction
 } = require('@datawrapper/orm/db');
 const uniq = require('lodash/uniq');
 const set = require('lodash/set');
@@ -402,31 +403,55 @@ async function editChart(request) {
     if (hasChanged) {
         // only update and log edit if something has changed
         await Chart.update(
-            { ...decamelizeKeys(newData), metadata: newData.metadata },
-            { where: { id: chart.id }, limit: 1 }
+            {
+                ...decamelizeKeys(newData),
+                metadata: newData.metadata
+            },
+            {
+                where: { id: chart.id },
+                limit: 1
+            }
         );
-        await chart.reload();
 
         // log chart/edit
         await request.server.methods.logAction(user.id, `chart/edit`, chart.id);
 
         if (user.role !== 'guest') {
-            // log recently edited charts
-            try {
-                const recentlyEdited = JSON.parse(
-                    await UserData.getUserData(user.id, 'recently_edited', '[]')
+            // update recently edited charts
+            await withTransaction(async t => {
+                const recentlyEditedStr = await UserData.getUserData(
+                    user.id,
+                    'recently_edited',
+                    '[]',
+                    {
+                        transaction: t
+                    }
                 );
+                let recentlyEdited;
+                try {
+                    recentlyEdited = JSON.parse(recentlyEditedStr);
+                } catch (e) {
+                    // Do nothing.
+                }
+                if (!Array.isArray(recentlyEdited)) {
+                    request.logger.warn(
+                        `Broken user_data 'recently_edited' for user ${user.id}, resetting it`
+                    );
+                    recentlyEdited = [];
+                }
                 if (recentlyEdited[0] !== chart.id) {
                     await UserData.setUserData(
                         user.id,
                         'recently_edited',
-                        JSON.stringify(uniq([chart.id, ...recentlyEdited]).slice(0, 500))
+                        JSON.stringify(uniq([chart.id, ...recentlyEdited]).slice(0, 500)),
+                        {
+                            transaction: t
+                        }
                     );
                 }
-            } catch (err) {
-                request.logger.error(`Broken user_data 'recently_edited' for user [${user.id}]`);
-            }
+            });
         }
+        await chart.reload();
     }
     return {
         ...(await prepareChart(chart)),

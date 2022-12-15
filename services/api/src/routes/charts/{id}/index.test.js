@@ -1,15 +1,17 @@
 const test = require('ava');
-const { Chart } = require('@datawrapper/orm/db');
+const { Chart, UserData } = require('@datawrapper/orm/db');
 const {
     BASE_URL,
+    addUserToTeam,
     createChart,
-    createUser,
+    createFolder,
     createTeamWithUser,
+    createUser,
     destroy,
     genNonExistentFolderId,
     setup,
-    addUserToTeam,
-    createFolder
+    withChart,
+    withUser
 } = require('../../../../test/helpers/setup');
 const fetch = require('node-fetch');
 const get = require('lodash/get');
@@ -921,6 +923,130 @@ test('PATCH with null value removes key from metadata', async t => {
     } finally {
         destroy(chart, ...Object.values(userObj));
     }
+});
+
+test('PATCH /charts/{id} updates recently_edited user data when several charts have been edited', async t => {
+    await withUser(t.context.server, {}, async ({ token, user }) => {
+        await withChart(
+            {
+                author_id: user.id
+            },
+            async chart1 => {
+                const res = await t.context.server.inject({
+                    method: 'PATCH',
+                    url: `/v3/charts/${chart1.id}`,
+                    headers: {
+                        authorization: `Bearer ${token}`
+                    },
+                    payload: {
+                        title: 'New title 1'
+                    }
+                });
+                t.is(res.statusCode, 200);
+
+                await withChart(
+                    {
+                        author_id: user.id
+                    },
+                    async chart2 => {
+                        const res = await t.context.server.inject({
+                            method: 'PATCH',
+                            url: `/v3/charts/${chart2.id}`,
+                            headers: {
+                                authorization: `Bearer ${token}`
+                            },
+                            payload: {
+                                title: 'New title 2'
+                            }
+                        });
+                        t.is(res.statusCode, 200);
+
+                        const recentlyEdited = await UserData.getUserData(
+                            user.id,
+                            'recently_edited'
+                        );
+                        t.deepEqual(JSON.parse(recentlyEdited), [chart2.id, chart1.id]);
+                    }
+                );
+            }
+        );
+    });
+});
+
+test('PATCH /charts/{id} updates recently_edited user data when it is empty', async t => {
+    await withUser(t.context.server, {}, async ({ token, user }) => {
+        await withChart(
+            {
+                author_id: user.id
+            },
+            async chart => {
+                const res = await t.context.server.inject({
+                    method: 'PATCH',
+                    url: `/v3/charts/${chart.id}`,
+                    headers: {
+                        authorization: `Bearer ${token}`
+                    },
+                    payload: {
+                        title: 'New title'
+                    }
+                });
+                t.is(res.statusCode, 200);
+
+                const recentlyEdited = await UserData.getUserData(user.id, 'recently_edited');
+                t.deepEqual(JSON.parse(recentlyEdited), [chart.id]);
+            }
+        );
+    });
+});
+
+test('PATCH /charts/{id} overwrites malformed recently_edited user data', async t => {
+    await withUser(t.context.server, {}, async ({ token, user }) => {
+        await withChart(
+            {
+                author_id: user.id
+            },
+            async chart => {
+                await UserData.setUserData(user.id, 'recently_edited', '{malformed');
+                const resMalformed = await t.context.server.inject({
+                    method: 'PATCH',
+                    url: `/v3/charts/${chart.id}`,
+                    headers: {
+                        authorization: `Bearer ${token}`
+                    },
+                    payload: {
+                        title: 'New title 1'
+                    }
+                });
+                t.is(resMalformed.statusCode, 200);
+
+                const recentlyEditedMalformed = await UserData.getUserData(
+                    user.id,
+                    'recently_edited'
+                );
+                t.deepEqual(JSON.parse(recentlyEditedMalformed), [chart.id]);
+
+                await UserData.setUserData(user.id, 'recently_edited', '"not array"');
+
+                const resNotArray = await t.context.server.inject({
+                    method: 'PATCH',
+                    url: `/v3/charts/${chart.id}`,
+                    headers: {
+                        authorization: `Bearer ${token}`
+                    },
+                    payload: {
+                        title: 'New title 2'
+                    }
+                });
+                t.is(resNotArray.statusCode, 200);
+
+                const recentlyEditedNotArray = await UserData.getUserData(
+                    user.id,
+                    'recently_edited'
+                );
+                t.deepEqual(JSON.parse(recentlyEditedNotArray), [chart.id]);
+            }
+        );
+    });
 });
 
 test('PHP GET /charts/{id} returns chart', async t => {

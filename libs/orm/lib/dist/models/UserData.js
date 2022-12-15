@@ -37,11 +37,14 @@ class UserData extends sequelize_1.Model {
      * @param {number} userId
      * @param {string} key
      * @param {string} _default - fallback value to be used if key not set yet
-     * @returns the stored value
+     * @param {object} [options] - options object
+     * @param {object} [options.transaction=null] - database transactiosn
+     * @returns {string} the stored value or `_default`
      */
-    static async getUserData(userId, key, _default) {
+    static async getUserData(userId, key, _default, options) {
         const row = await UserData.findOne({
-            where: { user_id: userId, key }
+            where: { user_id: userId, key },
+            ...options
         });
         return row ? row.data : _default;
     }
@@ -50,11 +53,17 @@ class UserData extends sequelize_1.Model {
      * @param {number} userId
      * @param {string} key
      * @param {string} value
+     * @param {object} [options] - options object
+     * @param {object} [options.transaction=null] - database transactiosn
      */
-    static async setUserData(userId, key, value) {
+    static async setUserData(userId, key, value, options) {
         // TODO: Clean up this function, so that we don't need to disable `no-non-null-assertion`.
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return UserData.sequelize.query('INSERT INTO user_data(user_id, `key`, value, stored_at) VALUES (:userId, :key, :value, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE value = :value, stored_at = CURRENT_TIMESTAMP', { replacements: { userId, key, value } });
+        return UserData.sequelize.query('INSERT INTO user_data(user_id, `key`, value, stored_at) VALUES (:userId, :key, :value, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE value = :value, stored_at = CURRENT_TIMESTAMP', {
+            replacements: { userId, key, value },
+            type: sequelize_1.QueryTypes.RAW,
+            ...options
+        });
     }
     /**
      * a quick way to remove user setting in user_data

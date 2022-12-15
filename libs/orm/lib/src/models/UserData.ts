@@ -5,10 +5,13 @@ export type UserDataModel = InstanceType<typeof UserData>;
 
 import SQ, {
     CreationOptional,
+    FindOptions,
     ForeignKey,
     InferAttributes,
     InferCreationAttributes,
-    Model
+    Model,
+    QueryTypes,
+    QueryOptionsWithType
 } from 'sequelize';
 import User from './User';
 
@@ -23,11 +26,19 @@ class UserData extends Model<InferAttributes<UserData>, InferCreationAttributes<
      * @param {number} userId
      * @param {string} key
      * @param {string} _default - fallback value to be used if key not set yet
-     * @returns the stored value
+     * @param {object} [options] - options object
+     * @param {object} [options.transaction=null] - database transactiosn
+     * @returns {string} the stored value or `_default`
      */
-    static async getUserData(userId: number, key: string, _default?: string) {
+    static async getUserData(
+        userId: number,
+        key: string,
+        _default?: string,
+        options?: Pick<FindOptions<InferAttributes<UserData>>, 'transaction'>
+    ) {
         const row = await UserData.findOne({
-            where: { user_id: userId, key }
+            where: { user_id: userId, key },
+            ...options
         });
         return row ? row.data : _default;
     }
@@ -37,13 +48,24 @@ class UserData extends Model<InferAttributes<UserData>, InferCreationAttributes<
      * @param {number} userId
      * @param {string} key
      * @param {string} value
+     * @param {object} [options] - options object
+     * @param {object} [options.transaction=null] - database transactiosn
      */
-    static async setUserData(userId: number, key: string, value: string) {
+    static async setUserData(
+        userId: number,
+        key: string,
+        value: string,
+        options?: Pick<QueryOptionsWithType<QueryTypes.RAW>, 'transaction'>
+    ) {
         // TODO: Clean up this function, so that we don't need to disable `no-non-null-assertion`.
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return UserData.sequelize!.query(
             'INSERT INTO user_data(user_id, `key`, value, stored_at) VALUES (:userId, :key, :value, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE value = :value, stored_at = CURRENT_TIMESTAMP',
-            { replacements: { userId, key, value } }
+            {
+                replacements: { userId, key, value },
+                type: QueryTypes.RAW,
+                ...options
+            }
         );
     }
 
