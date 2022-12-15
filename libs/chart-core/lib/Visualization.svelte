@@ -950,7 +950,8 @@ Please make sure you called __(key) with a key of type "string".
             display: none;
         }
 
-        :global(.hidden) {
+        :global(.hidden),
+        :global(.hide) {
             display: none;
         }
 
