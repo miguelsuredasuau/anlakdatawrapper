@@ -4,10 +4,10 @@
     // external props
     export let props;
     const { __, get, purifyHtml } = props;
-    $: ({ chart, theme, postEvent } = props);
+    $: ({ chart, themeData, postEvent } = props);
 
     // internal props
-    $: caption = get(theme, 'data.options.blocks.source.data.caption', __('Source'));
+    $: caption = get(themeData, 'options.blocks.source.data.caption', __('Source'));
     $: sourceName = get(chart, 'metadata.describe.source-name');
     $: sourceUrl = get(chart, 'metadata.describe.source-url');
     $: allowedSourceUrl = isAllowedSourceUrl(sourceUrl);

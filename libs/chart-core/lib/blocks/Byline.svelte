@@ -3,21 +3,21 @@
     export let props;
     const { get, purifyHtml, __ } = props;
     $: chart = props.chart;
-    $: theme = props.theme;
+    $: themeData = props.themeData;
     $: caption = props.caption;
 
     // internal props
     $: bylineCaption = get(
-        theme,
-        `data.options.blocks.byline.data.${caption}Caption`,
+        themeData,
+        `options.blocks.byline.data.${caption}Caption`,
         __(caption === 'map' ? 'Map:' : caption === 'table' ? 'Table:' : 'Chart:')
     );
 
     $: byline = get(chart, 'metadata.describe.byline', false);
 
     $: forkCaption = get(
-        theme,
-        'data.options.blocks.byline.data.forkCaption',
+        themeData,
+        'options.blocks.byline.data.forkCaption',
         __('footer / based-on')
     );
 

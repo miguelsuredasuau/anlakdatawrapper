@@ -2,13 +2,13 @@
     // external props
     export let props;
     const { get, __ } = props;
-    $: ({ chart, theme, config } = props);
+    $: ({ chart, themeData, config } = props);
 
     // internal props
     $: forkable = get(chart, 'forkable', false);
     $: showEditInDatawrapperLink = get(chart, 'metadata.publish.blocks.edit-in-datawrapper', false);
 
-    $: caption = get(theme, 'data.options.blocks.edit.data.caption', 'edit-in-datawrapper');
+    $: caption = get(themeData, 'options.blocks.edit.data.caption', 'edit-in-datawrapper');
 
     function editInDatawrapper() {
         const form = document.createElement('form');

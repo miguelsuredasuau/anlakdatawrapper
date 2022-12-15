@@ -3,13 +3,13 @@
     import LogoInner from './LogoInner.svelte';
 
     const { get, purifyHtml } = props;
-    $: ({ chart, theme, logoId } = props);
+    $: ({ chart, themeData, theme, logoId } = props);
 
     let logo;
 
     $: {
         const metadataLogo = get(chart, 'metadata.publish.blocks.logo');
-        const themeLogoOptions = get(theme, 'data.options.blocks.logo.data.options', []);
+        const themeLogoOptions = get(themeData, 'options.blocks.logo.data.options', []);
         const thisLogoId = logoId || metadataLogo.id;
         logo = themeLogoOptions.find(logo => logo.id === thisLogoId);
         // fallback to first logo in theme options

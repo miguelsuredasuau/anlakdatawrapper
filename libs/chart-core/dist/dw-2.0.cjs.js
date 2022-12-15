@@ -3723,7 +3723,7 @@ function outerHeight(element, withMargin = false) {
 function getNonChartHeight() {
     let h = 0;
 
-    const chart = document.querySelector('.dw-chart');
+    const chart = document.querySelector('.dw-chart .dw-chart-styles');
     for (let i = 0; i < chart.children.length; i++) {
         const el = chart.children[i];
         const tagName = el.tagName.toLowerCase();
@@ -3759,7 +3759,7 @@ function getNonChartHeight() {
         return getComputedStyle(document.querySelector(selector))[property].replace('px', '');
     }
 
-    const selectors = ['.dw-chart', '.dw-chart-body', 'body'];
+    const selectors = ['.dw-chart', '.dw-chart-styles', '.dw-chart-body', 'body'];
     const properties = [
         'padding-top',
         'padding-bottom',
@@ -7652,8 +7652,8 @@ function theme(id) {
     return __themes[id];
 }
 
-theme.register = function (id, props) {
-    __themes[id] = props;
+theme.register = function (id, themeData) {
+    __themes[id] = themeData;
 };
 
 const __blocks = {};

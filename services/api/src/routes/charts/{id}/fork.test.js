@@ -220,6 +220,10 @@ test('POST /charts/{id}/fork forks a fork-protected chart and the attributes mat
                     'source-url': '',
                     'aria-description': '',
                     byline: '' // byline gets cleared since it's a protected fork
+                },
+                visualize: {
+                    basemap: 'us-counties',
+                    'map-type-set': true
                 }
             })
         };
@@ -339,6 +343,10 @@ test('POST /charts/{id}/fork forks an unprotected chart and the attributes match
                     'source-url': '',
                     'aria-description': '',
                     byline: 'Lorem Ipsum' // byline remains
+                },
+                visualize: {
+                    basemap: 'us-counties',
+                    'map-type-set': true
                 }
             })
         };

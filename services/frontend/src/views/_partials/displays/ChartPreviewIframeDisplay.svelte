@@ -220,6 +220,7 @@
         try {
             await waitForVis();
             contentWindow.__dw.vis.darkMode(isDark);
+            contentWindow.__dwUpdate({ isStyleDark: isDark });
         } catch (e) {
             // ignore waitFor timeouts
             if (e.message !== 'waitFor timeout exceeded') throw e;

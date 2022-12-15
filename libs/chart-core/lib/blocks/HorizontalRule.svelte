@@ -2,9 +2,9 @@
     // external props
     export let props;
     const { get } = props;
-    $: theme = props.theme;
+    $: themeData = props.themeData;
 
-    $: data = get(theme, `data.options.blocks.${props.id}.data`, {});
+    $: data = get(themeData, `options.blocks.${props.id}.data`, {});
     $: border = get(data, 'border', '1px solid #cccccc');
     $: margin = get(data, 'margin', '0px');
 </script>

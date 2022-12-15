@@ -4,10 +4,10 @@
     // external props
     export let props;
     const { get, __ } = props;
-    $: ({ chart, theme, postEvent } = props);
+    $: ({ chart, themeData, postEvent } = props);
 
     // internal props
-    $: embed = get(theme, 'data.options.blocks.embed.data', {});
+    $: embed = get(themeData, 'options.blocks.embed.data', {});
     $: embedCode = get(
         chart,
         'metadata.publish.embed-codes.embed-method-responsive',

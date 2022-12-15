@@ -58,7 +58,7 @@ module.exports = server => {
             set(theme, 'data.style.body.background', 'transparent');
         }
 
-        const filePaths = [chartCore.less, vis.less];
+        const filePaths = [vis.less];
 
         if (chartCore.css) filePaths.push(chartCore.css);
 

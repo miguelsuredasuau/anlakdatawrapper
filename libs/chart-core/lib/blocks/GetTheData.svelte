@@ -1,10 +1,10 @@
 <script>
     export let props;
     const { get, __, purifyHtml } = props;
-    $: ({ chart, dwChart, teamPublicSettings, theme, postEvent } = props);
+    $: ({ chart, dwChart, teamPublicSettings, themeData, postEvent } = props);
 
     $: externalData = get(chart, 'externalData');
-    $: caption = get(theme, 'data.options.blocks.get-the-data.data.caption', __('Get the data'));
+    $: caption = get(themeData, 'options.blocks.get-the-data.data.caption', __('Get the data'));
 
     function createCSV() {
         const opts = {};
@@ -17,7 +17,7 @@
 
     function getFilename() {
         const defaultFilename = `data-${chart.id}.csv`;
-        const filename = get(theme, 'data.options.blocks.get-the-data.data.filename', '')
+        const filename = get(themeData, 'options.blocks.get-the-data.data.filename', '')
             .replace(/%custom_(.*?)%/g, (match, key) => get(chart, `metadata.custom.${key}`, ''))
             .replace(/%chart_id%/g, chart.id);
         return filename && filename !== '.csv' ? filename : defaultFilename;

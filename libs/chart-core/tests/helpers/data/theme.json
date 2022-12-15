@@ -42,6 +42,9 @@
                 },
                 "rowCount": 6
             },
+            "mode": {
+                "rotateLimit": 0
+            },
             "neutral": "#CCCCCC",
             "palette": [
                 "#18a1cd",

@@ -1,8 +1,7 @@
 const { fakeBoolean, id: logoId } = require('@datawrapper/schemas/themeData/shared');
 const { loadVendorLocale, loadLocaleConfig } = require('@datawrapper/service-utils');
 const { Team } = require('@datawrapper/orm/db');
-const { getChart } = require('../utils.js');
-const chartCore = require('@datawrapper/chart-core');
+const { getChart, renderChart } = require('../utils.js');
 const Joi = require('joi');
 const jsesc = require('jsesc');
 const get = require('lodash/get');
@@ -96,7 +95,13 @@ module.exports = {
 
                 props.frontendDomain = config.frontend.domain;
 
-                const { html, head } = chartCore.svelte.render(props);
+                const {
+                    html,
+                    head,
+                    css: emotionCSSLight
+                } = renderChart({ ...props, isStyleDark: false });
+                // render again for dark mode styles
+                const { css: emotionCSSDark } = renderChart({ ...props, isStyleDark: true });
 
                 const response = h.view('preview.pug', {
                     __DW_SVELTE_PROPS__: jsesc(JSON.stringify(props), {
@@ -113,8 +118,8 @@ module.exports = {
                     DEPS: ['/lib/chart-core/dw-2.0.min.js'],
                     LIBRARIES: libraries,
                     FONT_CSS: fonts,
-                    CSS: css,
-                    CSS_DARK: themeDark.css,
+                    CSS: `${css}\n${emotionCSSLight}`,
+                    CSS_DARK: `${themeDark.css}\n${emotionCSSDark}`,
                     DARK_MODE: request.query.dark,
                     CHART_CLASS: [
                         `vis-height-${get(props.visualization, 'height', 'fit')}`,

@@ -62,6 +62,9 @@ test('footer vertical align items', async t => {
         themeData: { options: { blocks: BLOCKS, footer: { alignItems: 'flex-start' } } }
     });
     await setTimeout(1000); // wait for image to be loaded
+
+    t.is(await getElementStyle(page, '.dw-chart-footer', 'align-items'), 'flex-start');
+
     const bboxSource = await getElementBoundingBox(page, '.source-block');
     const bboxLogo = await getElementBoundingBox(page, '.logo-block img');
     // check that logo is top-aligned

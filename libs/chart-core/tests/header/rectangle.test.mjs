@@ -25,13 +25,7 @@ test('rectangle', async t => {
                 visualize: {}
             }
         },
-        themeData: {
-            options: {
-                blocks: {
-                    rectangle
-                }
-            }
-        }
+        themeData: { options: { blocks: { rectangle } } }
     });
     t.is(await getElementStyle(page, '.rectangle-block .export-rect', 'width'), '100px');
     t.is(await getElementStyle(page, '.rectangle-block .export-rect', 'height'), '4px');

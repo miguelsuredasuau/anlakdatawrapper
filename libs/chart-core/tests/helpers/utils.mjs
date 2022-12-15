@@ -1,11 +1,14 @@
 import { readFile } from 'fs/promises';
 import { URL } from 'url';
 import { join } from 'path';
+import { setTimeout } from 'timers/promises';
 import { createBrowser, createPage, render, takeTestScreenshot } from './setup.mjs';
 
 const __dirname = new URL('.', import.meta.url).pathname;
+const DEBUG = process.env.DEBUG;
 
 const visMeta = {
+    id: 'dummy',
     axes: {}
 };
 
@@ -13,7 +16,7 @@ export async function before(t) {
     t.context.translations = {};
 
     t.context.browser = await createBrowser({
-        // devtools: true
+        devtools: DEBUG
     });
 }
 
@@ -32,6 +35,7 @@ export async function afterEach(t) {
         console.error({ body: await t.context.page.$eval('body', n => n.innerHTML.trim()) });
         await takeTestScreenshot(t, './tests/failed');
     }
+    if (DEBUG) await setTimeout(60000);
     await t.context.page.close();
 }
 

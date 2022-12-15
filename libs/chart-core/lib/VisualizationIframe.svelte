@@ -20,6 +20,7 @@
     export let themeDataDark = {};
     export let themeDataLight = {};
     export let renderFlags = {}; // allow tests to pass flags directly
+    export let emotion;
 
     // transparent style means background is set on body
     export let isStyleTransparent = false;
@@ -42,6 +43,9 @@
     window.__dwUpdate = newAttrs => {
         Object.assign(chart, newAttrs.chart);
         chart = chart; // to force re-rendering
+        if (newAttrs.isStyleDark !== undefined) {
+            isStyleDark = newAttrs.isStyleDark;
+        }
     };
 
     onMount(async () => {
@@ -59,7 +63,7 @@
 <svelte:head>
     <title>{purifyHtml(chart.title, [])}</title>
     <meta name="description" content={get(chart, 'metadata.describe.intro')} />
-    {@html purifyHtml(`<style>${customCSS}</style>`, ['style'])}
+    {@html purifyHtml('<st' + `yle>${customCSS}</sty` + 'le>', ['style'])}
 </svelte:head>
 
 <Visualization
@@ -89,4 +93,5 @@
     {outerContainer}
     {textDirection}
     {renderFlags}
+    {emotion}
 />

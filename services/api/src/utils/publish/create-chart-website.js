@@ -17,6 +17,9 @@ const {
     noop
 } = require('../index.js');
 const renderHTML = pug.compileFile(path.resolve(__dirname, './index.pug'));
+const createEmotion = require('@emotion/css/create-instance').default;
+const createEmotionServer = require('@emotion/server/create-instance').default;
+const { JSDOM } = require('jsdom');
 
 /**
  * @typedef {Object} Options
@@ -116,7 +119,9 @@ module.exports = async function createChartWebsite(
 
     log('rendering');
 
-    const { html, head } = chartCore.svelte.render(publishData);
+    const { html, head, css: emotionCSSLight } = renderChart(publishData);
+    // render again to extract emotion css for dark mode
+    const { css: emotionCSSDark } = renderChart({ ...publishData, isStyleDark: true });
 
     let dependencies = ['dw-2.0.min.js'].map(file => path.join(chartCore.path.dist, file));
 
@@ -219,13 +224,13 @@ module.exports = async function createChartWebsite(
 
     const cssFile = await writeFileHashed(
         `${chart.type}.${chart.theme}.css`,
-        `${fonts}\n${css}`,
+        `${fonts}\n${css}\n${emotionCSSLight}`,
         outDir
     );
 
     const cssFileDark = await writeFileHashed(
         `${chart.type}.${chart.theme}-dark.css`,
-        `${fonts}\n${cssDark}`,
+        `${fonts}\n${cssDark}\n${emotionCSSDark}`,
         outDir
     );
 
@@ -327,6 +332,22 @@ module.exports = async function createChartWebsite(
 
     return { data: publishData, chartData, outDir, fileMap, cleanup };
 };
+
+/**
+ * Server-side renders the Visualization component and extracts emotion styles
+ */
+function renderChart(publishData) {
+    const dom = new JSDOM(`<!DOCTYPE html><head /><body />`);
+    const emotion = createEmotion({
+        key: `datawrapper`,
+        container: dom.window.document.head
+    });
+    const { html, head } = chartCore.svelte.render({ ...publishData, emotion });
+
+    const { extractCritical } = createEmotionServer(emotion.cache);
+    const { css } = extractCritical(html);
+    return { html, head, css };
+}
 
 function getMetaTags(publishData) {
     const chartDescription = purifyHtml(get(publishData.chart, 'describe.intro', ''), []);

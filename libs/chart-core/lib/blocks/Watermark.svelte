@@ -3,14 +3,14 @@
 
     export let props;
     const { get, purifyHtml } = props;
-    $: ({ chart, theme } = props);
+    $: ({ chart, themeData } = props);
 
-    $: monospace = get(theme, 'data.options.watermark.monospace', false);
-    $: field = get(theme, 'data.options.watermark.custom-field');
-    $: text = get(theme, 'data.options.watermark')
+    $: monospace = get(themeData, 'options.watermark.monospace', false);
+    $: field = get(themeData, 'options.watermark.custom-field');
+    $: text = get(themeData, 'options.watermark')
         ? field
             ? get(chart, `metadata.custom.${field}`, '')
-            : get(theme, 'data.options.watermark.text', 'CONFIDENTIAL')
+            : get(themeData, 'options.watermark.text', 'CONFIDENTIAL')
         : false;
 
     let width;
@@ -22,7 +22,7 @@
     $: diagonal = Math.sqrt(width * width + height * height);
 
     // estimateTextWidth works reasonable well for normal fonts
-    // set theme.data.options.watermark.monospace to true if you
+    // set themeData.options.watermark.monospace to true if you
     // have a monospace font
     $: estWidth = monospace ? text.length * 20 : estimateTextWidth(text, 20);
     $: fontSize = `${Math.round(20 * ((diagonal * 0.75) / estWidth))}px`;

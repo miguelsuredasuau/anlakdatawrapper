@@ -3,13 +3,18 @@ import puppeteer from 'puppeteer';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import get from '@datawrapper/shared/get.js';
+import set from '@datawrapper/shared/set.js';
+import clone from '@datawrapper/shared/clone.js';
 import slugify from '@datawrapper/shared/slugify.js';
+import chartCore from '../../index.js';
 import { createHash } from 'crypto';
 import deepmerge from 'deepmerge';
 import { compileCSS } from '../../lib/styles/compile-css.js';
 import { MemoryCache, defaultChartMetadata } from '@datawrapper/service-utils';
-import { setTimeout } from 'timers/promises';
 import Schemas from '../../../schemas/index.js';
+import { JSDOM } from 'jsdom';
+import createEmotion from '@emotion/css/create-instance';
+import createEmotionServer from '@emotion/server/create-instance';
 
 const schemas = new Schemas();
 
@@ -78,7 +83,7 @@ export async function createPage(browser, viewportOpts = {}) {
  * @param {number} delay further delay render promise (useful for debugging)
  * @returns {Object[]} console log messages
  */
-export async function render(page, props, delay = 0) {
+export async function render(page, props) {
     if (!props.visMeta) throw new Error('need to provide visMeta');
     if (props.theme) {
         console.warn('Warning: `theme` is deprecated, please use `themeData` instead');
@@ -91,21 +96,26 @@ export async function render(page, props, delay = 0) {
     props.theme = baseTheme;
     if (props.themeData) {
         props.theme.data = deepmerge.all([{}, baseTheme.data, props.themeData], {
+            // don't try to merge arrays, just overwrite them
             arrayMerge: (target, source) => source
         });
     }
     // validate theme data
     await schemas.validateThemeData(props.theme.data);
     // extend chart metadata from default chart metadata
-    props.chart.metadata = deepmerge.all([{}, defaultChartMetadata, props.chart.metadata]);
+    props.chart.id = '00000';
+    props.chart.metadata = deepmerge.all([{}, defaultChartMetadata, props.chart.metadata || {}]);
     props.chart.theme = props.theme.id;
     // default translations
     props.translations = props.translations || { 'en-US': {} };
 
     // compile and load LESS styles
-    await page.addStyleTag({
-        content: await getCSS(props)
-    });
+    const css = await getCSS(props);
+    if (css) {
+        await page.addStyleTag({
+            content: css
+        });
+    }
 
     // preload chart assets
     const assets = {
@@ -133,13 +143,45 @@ export async function render(page, props, delay = 0) {
     }
     await Promise.all(loadPlugins);
 
+    const flags = props.flags || {};
+
     const state = {
         ...props,
         blocks,
         assets,
         visualization: props.visMeta,
-        renderFlags: props.flags || {}
+        renderFlags: flags,
+        // hack for dark mode
+        themeDataLight: props.theme.data,
+        themeDataDark: getThemeDataDark(props.theme.data),
+        // translate flags into props
+        isStylePlain: !!flags.plain,
+        isStyleStatic: !!flags.static,
+        isStyleTransparent: !!flags.transparent,
+        isAutoDark: flags.dark === 'auto'
     };
+
+    if (!props.skipSSR) {
+        // ssr pre-rendering
+        // server-side emotion
+        const dom = new JSDOM(`<!DOCTYPE html><head /><body />`);
+        const emotion = (props.emotion = createEmotion.default({
+            key: `datawrapper`,
+            container: dom.window.document.head
+        }));
+        const { html } = chartCore.svelte.render({ ...state, emotion });
+        const { extractCritical } = createEmotionServer.default(emotion.cache);
+        const { css: emotionCSS } = extractCritical(html);
+
+        await page.evaluate(
+            async ({ html }) => {
+                document.querySelector('#__svelte-dw').innerHTML = html;
+            },
+            { html }
+        );
+
+        await page.addStyleTag({ content: emotionCSS });
+    }
 
     // inject state to page
     await page.addScriptTag({
@@ -173,7 +215,6 @@ export async function render(page, props, delay = 0) {
     await page.addScriptTag({
         content: await readFile(join(pathToChartCore, 'dist/main.js'), 'utf-8')
     });
-    if (delay) await setTimeout(delay);
     return logs;
 }
 
@@ -204,7 +245,7 @@ async function getCSS(props) {
     return styleCache.withCache(key, () => {
         return compileCSS({
             theme: { id: 'test', data: props.theme.data },
-            filePaths: [join(pathToChartCore, 'lib/styles.less'), props.visMeta.less].filter(d => d)
+            filePaths: [props.visMeta.less].filter(d => d)
         });
     });
 }
@@ -308,4 +349,16 @@ export async function takeTestScreenshot(t, path) {
     await t.context.page.screenshot({
         path: join(path, `${slugify(t.title.split('hook for')[1])}.png`)
     });
+}
+
+function getThemeDataDark(themeData) {
+    const themeDataDark = clone(themeData);
+    get(themeData, 'overrides', [])
+        .filter(({ type }) => type === 'darkMode')
+        .forEach(({ settings }) => {
+            Object.entries(settings).forEach(([key, value]) => {
+                set(themeDataDark, key, value);
+            });
+        });
+    return themeDataDark;
 }

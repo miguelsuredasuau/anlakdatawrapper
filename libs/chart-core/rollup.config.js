@@ -1,13 +1,14 @@
-import alias from '@rollup/plugin-alias';
-import babel from 'rollup-plugin-babel';
-import commonjs from '@rollup/plugin-commonjs';
-import json from '@rollup/plugin-json';
-import path from 'path';
-import postcss from 'rollup-plugin-postcss';
-import replace from '@rollup/plugin-replace';
-import resolve from '@rollup/plugin-node-resolve';
-import svelte from 'rollup-plugin-svelte';
-import { terser } from 'rollup-plugin-terser';
+const alias = require('@rollup/plugin-alias');
+const babel = require('rollup-plugin-babel');
+const commonjs = require('@rollup/plugin-commonjs');
+const json = require('@rollup/plugin-json');
+const path = require('path');
+const postcss = require('rollup-plugin-postcss');
+const replace = require('@rollup/plugin-replace');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const svelte = require('rollup-plugin-svelte');
+const { terser } = require('rollup-plugin-terser');
+const sveltePreprocess = require('svelte-preprocess');
 
 const NODE_BUILTINS = [
     'assert',
@@ -71,6 +72,9 @@ module.exports = [
                 compilerOptions: {
                     customElement: true
                 },
+                preprocess: sveltePreprocess({
+                    scss: true
+                }),
                 include: /\.wc\.svelte$/
             }),
             svelte({
@@ -78,7 +82,10 @@ module.exports = [
                     customElement: false
                 },
                 exclude: /\.wc\.svelte$/,
-                emitCss: true
+                emitCss: true,
+                preprocess: sveltePreprocess({
+                    scss: true
+                })
             }),
             postcss({
                 extract: true,
@@ -90,7 +97,7 @@ module.exports = [
                 },
                 preventAssignment: true
             }),
-            resolve({
+            nodeResolve({
                 browser: true
             }),
             commonjs(),
@@ -123,7 +130,10 @@ module.exports = [
                 compilerOptions: {
                     hydratable: true
                 },
-                emitCss: false
+                emitCss: false,
+                preprocess: sveltePreprocess({
+                    scss: true
+                })
             }),
             replace({
                 values: {
@@ -131,7 +141,7 @@ module.exports = [
                 },
                 preventAssignment: true
             }),
-            resolve({
+            nodeResolve({
                 browser: true
             }),
             commonjs(),
@@ -160,6 +170,9 @@ module.exports = [
                     generate: 'ssr',
                     hydratable: true
                 },
+                preprocess: sveltePreprocess({
+                    scss: true
+                }),
                 emitCss: false
             }),
             replace({
@@ -168,7 +181,7 @@ module.exports = [
                 },
                 preventAssignment: true
             }),
-            resolve({
+            nodeResolve({
                 preferBuiltins: true // Hides warning `preferring built-in module 'punycode/'` and `string_decoder`.
             }),
             commonjs({
@@ -195,7 +208,7 @@ module.exports = [
     {
         input: path.resolve(__dirname, 'load-polyfills.js'),
         plugins: [
-            resolve(),
+            nodeResolve(),
             commonjs(),
             babel({
                 ...babelConfig,
@@ -214,7 +227,7 @@ module.exports = [
     {
         input: path.resolve(__dirname, 'lib/embed.js'),
         plugins: [
-            resolve(),
+            nodeResolve(),
             commonjs(),
             babel({
                 ...babelConfig,
@@ -232,7 +245,7 @@ module.exports = [
     {
         input: path.resolve(__dirname, 'lib/dw/index.mjs'),
         plugins: [
-            resolve({
+            nodeResolve({
                 browser: true
             }),
             commonjs(),
@@ -268,7 +281,7 @@ module.exports = [
                     }
                 ]
             }),
-            resolve({
+            nodeResolve({
                 modulesOnly: true
             }),
             commonjs(),

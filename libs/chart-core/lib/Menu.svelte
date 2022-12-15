@@ -6,6 +6,7 @@
     export let name;
     export let blocks;
     export let props;
+    export let emotion;
 
     let open = false;
 
@@ -90,6 +91,6 @@
     </div>
 
     <div class="menu-content container" on:click|stopPropagation class:hidden={!open}>
-        <BlocksRegion {id} {name} {blocks} />
+        <BlocksRegion {id} {emotion} {name} {blocks} />
     </div>
 {/if}

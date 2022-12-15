@@ -1,5 +1,9 @@
 const get = require('lodash/get');
 const Boom = require('@hapi/boom');
+const createEmotion = require('@emotion/css/create-instance').default;
+const createEmotionServer = require('@emotion/server/create-instance').default;
+const { JSDOM } = require('jsdom');
+const chartCore = require('@datawrapper/chart-core');
 
 module.exports = {
     async getChart(server, request) {
@@ -114,5 +118,17 @@ module.exports = {
                 return theme;
             }
         };
+    },
+    renderChart(props) {
+        // server-side emotion
+        const dom = new JSDOM(`<!DOCTYPE html><head /><body />`);
+        const emotion = createEmotion({
+            key: `datawrapper`,
+            container: dom.window.document.head
+        });
+        const { html, head } = chartCore.svelte.render({ ...props, emotion });
+        const { extractCritical } = createEmotionServer(emotion.cache);
+        const { css } = extractCritical(html);
+        return { html, head, css };
     }
 };

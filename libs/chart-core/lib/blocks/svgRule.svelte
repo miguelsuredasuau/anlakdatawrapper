@@ -16,9 +16,9 @@
         });
     }
 
-    $: theme = props.theme;
+    $: themeData = props.themeData;
 
-    $: data = get(theme, `data.options.blocks.${props.id}.data`, {});
+    $: data = get(themeData, `options.blocks.${props.id}.data`, {});
     $: margin = get(data, 'margin', '0px');
     $: color = get(data, 'color', '#000000');
     $: width = get(data, 'width', 1);
@@ -26,7 +26,7 @@
     $: strokeLinecap = get(data, 'strokeLinecap', 'butt');
 </script>
 
-<style type="text/css">
+<style lang="css">
     svg {
         width: 100%;
 

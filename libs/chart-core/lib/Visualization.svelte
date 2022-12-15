@@ -1,13 +1,16 @@
 <script>
     /* globals dw */
-    import { onMount, afterUpdate } from 'svelte';
+    import { onMount, tick, afterUpdate, beforeUpdate } from 'svelte';
     import BlocksRegion from './BlocksRegion.svelte';
     import Menu from './Menu.svelte';
     import Headline from './blocks/Headline.svelte';
+    import HeadlineStyles from './blocks/Headline.styles.js';
     import Description from './blocks/Description.svelte';
+    import DescriptionStyles from './blocks/Description.styles.js';
     import Source from './blocks/Source.svelte';
     import Byline from './blocks/Byline.svelte';
     import Notes from './blocks/Notes.svelte';
+    import NotesStyles from './blocks/Notes.styles.js';
     import GetTheData from './blocks/GetTheData.svelte';
     import EditInDatawrapper from './blocks/EditInDatawrapper.svelte';
     import Embed from './blocks/Embed.svelte';
@@ -17,10 +20,20 @@
     import HorizontalRule from './blocks/HorizontalRule.svelte';
     import svgRule from './blocks/svgRule.svelte';
     import migrate from './migrate';
+    import {
+        aboveFooterStyles,
+        belowFooterStyles,
+        belowHeaderStyles,
+        chartBodyStyles,
+        chartFooterStyles,
+        chartHeaderStyles,
+        chartStyles,
+        globalStyles,
+        updateGlobalStyles
+    } from './themeStyles.js';
 
     import { domReady, width } from './dw/utils/index.mjs';
     import observeFonts from '@datawrapper/shared/observeFonts.js';
-    import createEmotion from '@emotion/css/create-instance/dist/emotion-css-create-instance.cjs.js';
     import deepmerge from 'deepmerge';
     import get from '@datawrapper/shared/get.js';
     import set from '@datawrapper/shared/set.js';
@@ -28,9 +41,10 @@
     import purifyHtml from '@datawrapper/shared/purifyHtml.js';
     import invertColor from '@datawrapper/shared/invertColor.js';
     import { getBrowser } from '@datawrapper/polyfills/src/getBrowser';
-    import { clean, isTransparentColor, parseFlagsFromURL } from './shared.mjs';
+    import { clean, isTransparentColor, parseFlagsFromURL, computeThemeData } from './shared.mjs';
     import { isObject } from 'underscore';
     import chroma from 'chroma-js';
+    import { outerWidth, themeData } from './stores';
 
     export let chart;
     export let visualization = {};
@@ -66,12 +80,14 @@
     export let previewId = null;
     export let renderFlags = {};
 
+    export let emotion;
+
     export let frontendDomain = 'app.datawrapper.de';
 
     // .dw-chart-body
     let target, dwChart, vis;
     let postEvent = () => {};
-    const flags = { isIframe, isEditingAllowed, previewId };
+    let flags = { isIframe, isEditingAllowed, previewId };
 
     let useFallbackImage = false;
 
@@ -95,7 +111,7 @@
 
     $: if (!get(chart, 'metadata.publish.blocks')) {
         // no footer settings found in metadata, apply theme defaults
-        set(chart, 'metadata.publish.blocks', get(theme.data, 'metadata.publish.blocks'));
+        set(chart, 'metadata.publish.blocks', get($themeData, 'metadata.publish.blocks'));
     }
 
     const allowedAriaDescriptionTags = [
@@ -125,6 +141,34 @@
     $: ariaDescription = get(chart, 'metadata.describe.aria-description', '');
 
     $: customCSS = purifyHtml(get(chart, 'metadata.publish.custom-css', ''), []);
+    $: metadataFields = {
+        custom: get(chart, 'metadata.custom', {}),
+        publish: get(chart, 'metadata.publish', {}),
+        describe: get(chart, 'metadata.describe', {})
+    };
+
+    $: overrideContext = {
+        type: chart.type,
+        title: chart.title,
+        team: chart.organizationId,
+        width: $outerWidth,
+        mode: {
+            plain: isStylePlain,
+            static: isStyleStatic,
+            print: !!flags.svgonly
+        },
+        ...metadataFields,
+        blocks: Object.fromEntries(
+            [...coreBlocks, ...pluginBlocks]
+                .filter(({ includeInContext }) => includeInContext)
+                .map(block => [
+                    block.id,
+                    !block.test || block.test({ chart, isStyleStatic, dwChart })
+                ])
+        )
+    };
+
+    $: $themeData = computeThemeData(isStyleDark ? themeDataDark : themeDataLight, overrideContext);
 
     const coreBlocks = [
         {
@@ -132,6 +176,9 @@
             tag: 'h3',
             region: 'header',
             priority: 10,
+            // we can only include blocks whose presence does not depend on themeData
+            includeInContext: true,
+            styles: HeadlineStyles,
             test: ({ chart }) => chart.title && !get(chart, 'metadata.describe.hide-title'),
             component: Headline
         },
@@ -140,6 +187,8 @@
             tag: 'p',
             region: 'header',
             priority: 20,
+            includeInContext: true,
+            styles: DescriptionStyles,
             test: ({ chart }) => get(chart, 'metadata.describe.intro'),
             component: Description
         },
@@ -147,6 +196,8 @@
             id: 'notes',
             region: 'aboveFooter',
             priority: 10,
+            styles: NotesStyles,
+            includeInContext: true,
             test: ({ chart }) => get(chart, 'metadata.annotate.notes'),
             component: Notes
         },
@@ -156,6 +207,7 @@
             test: ({ chart }) =>
                 get(chart, 'metadata.describe.byline', false) || chart.basedOnByline,
             priority: 10,
+            includeInContext: true,
             component: Byline
         },
         {
@@ -163,6 +215,7 @@
             region: 'footerLeft',
             test: ({ chart }) => get(chart, 'metadata.describe.source-name'),
             priority: 20,
+            includeInContext: true,
             component: Source
         },
         {
@@ -173,6 +226,7 @@
                 !isStyleStatic &&
                 chart.type !== 'locator-map',
             priority: 30,
+            includeInContext: true,
             component: GetTheData
         },
         {
@@ -183,6 +237,7 @@
                 get(chart, 'metadata.publish.blocks.edit-in-datawrapper', false) &&
                 !isStyleStatic,
             priority: 31,
+            includeInContext: true,
             component: EditInDatawrapper
         },
         {
@@ -191,16 +246,17 @@
             test: ({ chart, isStyleStatic }) =>
                 get(chart, 'metadata.publish.blocks.embed') && !isStyleStatic,
             priority: 40,
+            includeInContext: true,
             component: Embed
         },
         {
             id: 'logo',
             region: 'footerRight',
-            test: ({ chart, theme }) => {
+            test: ({ chart, themeData }) => {
                 const metadataLogo = get(chart, 'metadata.publish.blocks.logo', {
                     enabled: false
                 });
-                const themeLogoOptions = get(theme, 'data.options.blocks.logo.data.options', []);
+                const themeLogoOptions = get(themeData, 'options.blocks.logo.data.options', []);
                 const thisLogoId = logoId || metadataLogo.id;
                 let logo = themeLogoOptions.find(logo => logo.id === thisLogoId);
                 // fallback to first logo in theme options
@@ -213,27 +269,30 @@
                 return isObject(metadataLogo) ? metadataLogo.enabled : metadataLogo;
             },
             priority: 10,
+            includeInContext: false,
             component: Logo
         },
         {
             id: 'rectangle',
             region: 'header',
-            test: ({ theme }) => !!get(theme, 'data.options.blocks.rectangle'),
+            test: ({ themeData }) => !!get(themeData, 'options.blocks.rectangle'),
             priority: 1,
+            includeInContext: false,
             component: Rectangle
         },
         {
             id: 'watermark',
             region: 'afterBody',
-            test: ({ theme }) => {
-                const field = get(theme, 'data.options.watermark.custom-field');
-                return get(theme, 'data.options.watermark')
+            test: ({ themeData }) => {
+                const field = get(themeData, 'options.watermark.custom-field');
+                return get(themeData, 'options.watermark')
                     ? field
                         ? get(chart, `metadata.custom.${field}`, '')
-                        : get(theme, 'data.options.watermark.text', 'CONFIDENTIAL')
+                        : get(themeData, 'options.watermark.text', 'CONFIDENTIAL')
                     : false;
             },
             priority: 1,
+            includeInContext: false,
             component: Watermark
         },
         hr(0, 'hr'),
@@ -249,15 +308,16 @@
         return {
             id,
             region: 'header',
-            test: ({ theme }) => !!get(theme, `data.options.blocks.${id}`),
+            test: ({ themeData }) => !!get(themeData, `options.blocks.${id}`),
             priority: 0,
+            includeInContext: false,
             component: type === 'hr' ? HorizontalRule : svgRule
         };
     }
 
     let pluginBlocks = [];
 
-    $: allBlocks = applyThemeBlockConfig([...coreBlocks, ...pluginBlocks], theme, blockProps);
+    $: allBlocks = applyThemeBlockConfig([...coreBlocks, ...pluginBlocks], $themeData, blockProps);
 
     $: blockProps = {
         __,
@@ -265,6 +325,9 @@
         get,
         postEvent,
         teamPublicSettings,
+        themeData: $themeData,
+        // @todo: in theory we should remove `theme` from blockProps as all blocks should only
+        // use `themeData`, but the logo block still needs the theme title as fallback text
         theme,
         chart,
         dwChart,
@@ -346,7 +409,7 @@
             .sort(byPriority);
     }
 
-    function applyThemeBlockConfig(blocks, theme, blockProps) {
+    function applyThemeBlockConfig(blocks, themeData, blockProps) {
         return blocks.map(block => {
             block.props = {
                 ...(block.data || {}),
@@ -357,7 +420,7 @@
             if (block.component.test) {
                 block.test = block.component.test;
             }
-            const options = get(theme, 'data.options.blocks', {})[block.id];
+            const options = get(themeData, 'options.blocks', {})[block.id];
             if (!options) return block;
             return {
                 ...block,
@@ -368,43 +431,51 @@
 
     // build all the region
     $: regions = {
-        header: getBlocks(allBlocks, 'header', { chart, theme, isStyleStatic }),
-        headerRight: getBlocks(allBlocks, 'headerRight', { chart, theme, isStyleStatic }),
-        belowHeader: getBlocks(allBlocks, 'belowHeader', { chart, theme, isStyleStatic }),
+        header: getBlocks(allBlocks, 'header', { chart, themeData: $themeData, isStyleStatic }),
+        headerRight: getBlocks(allBlocks, 'headerRight', {
+            chart,
+            themeData: $themeData,
+            isStyleStatic
+        }),
+        belowHeader: getBlocks(allBlocks, 'belowHeader', {
+            chart,
+            themeData: $themeData,
+            isStyleStatic
+        }),
         aboveFooter: getBlocks(allBlocks, 'aboveFooter', {
             chart,
-            theme,
+            themeData: $themeData,
             isStyleStatic
         }),
         footerLeft: getBlocks(allBlocks, 'footerLeft', {
             chart,
-            theme,
+            themeData: $themeData,
             isStyleStatic
         }),
         footerCenter: getBlocks(allBlocks, 'footerCenter', {
             chart,
-            theme,
+            themeData: $themeData,
             isStyleStatic
         }),
         footerRight: getBlocks(allBlocks, 'footerRight', {
             chart,
-            theme,
+            themeData: $themeData,
             isStyleStatic
         }),
         belowFooter: getBlocks(allBlocks, 'belowFooter', {
             chart,
-            theme,
+            themeData: $themeData,
             isStyleStatic
         }),
         afterBody: getBlocks(allBlocks, 'afterBody', {
             chart,
-            theme,
+            themeData: $themeData,
             isStyleStatic
         }),
-        menu: getBlocks(allBlocks, 'menu', { chart, theme, isStyleStatic })
+        menu: getBlocks(allBlocks, 'menu', { chart, themeData: $themeData, isStyleStatic })
     };
 
-    $: menu = get(theme, 'data.options.menu', {});
+    $: menu = get($themeData, 'options.menu', {});
 
     function getCaption(id) {
         if (id === 'd3-maps-choropleth' || id === 'd3-maps-symbols' || id === 'locator-map')
@@ -441,7 +512,12 @@ Please make sure you called __(key) with a key of type "string".
     async function run() {
         if (typeof dw === 'undefined') return;
 
-        // register theme
+        // initialize $outerWidth to compute reactive theme data
+        $outerWidth = outerContainer.clientWidth;
+        await tick();
+
+        // register theme, including overrides
+        theme.data = $themeData;
         dw.theme.register(theme.id, theme.data);
 
         // register locales
@@ -458,6 +534,7 @@ Please make sure you called __(key) with a key of type "string".
         // read flags
         const newFlags = isIframe ? parseFlagsFromURL(window.location.search, FLAG_TYPES) : {}; // TODO parseFlagsFromElement(scriptEl, FLAG_TYPES);
         Object.assign(flags, newFlags, renderFlags);
+        flags = flags;
 
         const useDwCdn = get(chart, 'metadata.data.use-datawrapper-cdn', true);
 
@@ -492,6 +569,8 @@ Please make sure you called __(key) with a key of type "string".
             .translations(translations)
             .theme(dw.theme(chart.theme))
             .flags(flags);
+
+        dwChart.emotion = emotion;
 
         // register chart assets
         const assetPromises = [];
@@ -536,14 +615,6 @@ Please make sure you called __(key) with a key of type "string".
 
         // load & register blocks
         await loadBlocks(blocks);
-
-        // initialize emotion instance
-        if (!dwChart.emotion) {
-            dwChart.emotion = createEmotion({
-                key: `datawrapper-${chart.id}`,
-                container: isIframe ? document.head : styleHolder
-            });
-        }
 
         // add theme._computed to theme.data for better dark mode support
         theme.data._computed = theme._computed;
@@ -602,22 +673,28 @@ Please make sure you called __(key) with a key of type "string".
         }
 
         function updateDarkModeState(isDark) {
+            isStyleDark = isDark;
             if (!browserSupportsPrefersColorScheme) updateActiveCSS(isDark);
             vis.darkMode(isDark);
         }
 
-        function onDarkModeChange(isDark) {
+        async function updateChartThemeData() {
+            // wait for reactive themeData to be ready
+            await tick();
             /*
              * Preserve pre-existing theme object,
              * as render code generally captures vis.theme() in variable just once.
              *
              * @todo: Implement more foolproof solution. E.g using svelte/store
              */
-            const newThemeData = isDark ? themeDataDark : themeDataLight;
             Object.keys(theme.data).forEach(key => {
                 if (key !== '_computed') delete theme.data[key];
-                if (newThemeData[key]) theme.data[key] = newThemeData[key];
+                if ($themeData[key]) theme.data[key] = $themeData[key];
             });
+        }
+
+        async function onDarkModeChange(isDark) {
+            await updateChartThemeData();
 
             // swap active css
             if (isPreview || !isAutoDark || (isAutoDark && !browserSupportsPrefersColorScheme)) {
@@ -637,7 +714,9 @@ Please make sure you called __(key) with a key of type "string".
 
             function resize() {
                 clearTimeout(reloadTimer);
-                reloadTimer = setTimeout(function () {
+                $outerWidth = outerContainer.clientWidth;
+                reloadTimer = setTimeout(async function () {
+                    await updateChartThemeData();
                     dwChart.vis().fire('resize');
                     dwChart.render(outerContainer);
                 }, 200);
@@ -705,6 +784,31 @@ Please make sure you called __(key) with a key of type "string".
                 }
             });
 
+            /*
+             * Swap emotion class on .dw-chart-body via classList.toggle instead of directly on element
+             * to prevent entire class attribute getting updated when emotion class changes,
+             * since that removes classes set on .dw-chart-body by render code.
+             *
+             * TODO: resolve the issue of conflicting class name toggles by
+             *
+             * - toggling "global" classes like `.dir-rtl` on parent container (.dw-chart)
+             *   whose `class` property is not set/managed by Svelte
+             *
+             * - make sure that vis render code (such as d3-bars) is not toggling
+             *   classes on elements that are managed by this Svelte component,
+             *   e.g. by passing these visualizations a new div to render the
+             *   charts into.
+             *
+             */
+            beforeUpdate(() => {
+                if (prevChartBodyEmotionClass !== chartBodyEmotionClass) {
+                    [prevChartBodyEmotionClass, chartBodyEmotionClass].forEach((cl, i) => {
+                        if (cl) target.classList.toggle(cl, !!i);
+                    });
+                    prevChartBodyEmotionClass = chartBodyEmotionClass;
+                }
+            });
+
             // provide external APIs
             window.__dw = window.__dw || {};
             window.__dw.params = {
@@ -716,6 +820,22 @@ Please make sure you called __(key) with a key of type "string".
                 dwChart.render(outerContainer);
             };
             window.fontsJSON = theme.fonts;
+            window.getThemeData = key => get(themeDataLight, key);
+            window.setThemeData = (key, value) => {
+                set(themeDataLight, key, value);
+                themeDataLight = themeDataLight;
+            };
+            window.setTheme = async id => {
+                const res = await fetch(`http://api.datawrapper.local/v3/themes/${id}?extend=true`);
+                const { data, fontsCSS } = await res.json();
+                themeDataLight = data;
+                theme.data = data;
+                document.querySelector('style').innerText = fontsCSS;
+                dwChart.render(outerContainer);
+                // const st = document.createElement('style');
+                // st.innerHTML = fontsCSS;
+                // document.head.appendChild(st);
+            };
         }
     });
 
@@ -755,7 +875,6 @@ Please make sure you called __(key) with a key of type "string".
         };
     }
 
-    let contentBelowChart;
     $: contentBelowChart =
         !isStylePlain &&
         (regions.aboveFooter.length ||
@@ -766,52 +885,310 @@ Please make sure you called __(key) with a key of type "string".
             regions.afterBody.length);
 
     $: footerRegionLayout = {
-        Left: get(theme.data, 'options.footer.left.layout', 'inline'),
-        Center: get(theme.data, 'options.footer.center.layout', 'inline'),
-        Right: get(theme.data, 'options.footer.right.layout', 'inline')
+        Left: get($themeData, 'options.footer.left.layout', 'inline'),
+        Center: get($themeData, 'options.footer.center.layout', 'inline'),
+        Right: get($themeData, 'options.footer.right.layout', 'inline')
     };
+
+    $: if (emotion) updateGlobalStyles(globalStyles(emotion, $themeData));
+
+    let prevChartBodyEmotionClass = '';
+    $: chartBodyEmotionClass = emotion ? chartBodyStyles(emotion, $themeData) : '';
 </script>
 
-{#if !isStylePlain}
-    {#if !regions.headerRight.length}
-        <BlocksRegion name="dw-chart-header" blocks={regions.header} id="header" />
-    {:else}
-        <div
-            class="dw-chart-header has-header-right"
-            class:has-menu={!isStyleStatic && regions.menu.length}
-        >
-            <BlocksRegion name="dw-chart-header-left" blocks={regions.header} id="header" />
-            <BlocksRegion name="dw-chart-header-right" blocks={regions.headerRight} />
+<style lang="scss">
+    :global(body),
+    :global(.web-component-body) {
+        margin: 0;
+        padding: 0;
+        &.in-editor {
+            padding-bottom: 10px;
+        }
+    }
+
+    .dw-chart-styles {
+        height: 100%;
+    }
+
+    :global(.chart) {
+        height: 100%;
+
+        &.dir-rtl {
+            :global(.dw-chart-header),
+            :global(.dw-below-header),
+            :global(.dw-above-footer),
+            :global(.dw-below-footer),
+            .dw-chart-footer {
+                direction: rtl;
+                unicode-bidi: embed;
+            }
+        }
+        &.is-dark-mode :global(.hide-in-dark) {
+            display: none;
+        }
+
+        &:not(.is-dark-mode) :global(.hide-in-light) {
+            display: none;
+        }
+
+        &.vis-height-fit {
+            overflow: hidden;
+            .dw-chart-styles {
+                overflow: hidden;
+            }
+        }
+        :global(.sr-only) {
+            position: absolute;
+            left: -9999px;
+            height: 1px;
+        }
+        &.plain #footer {
+            height: 10px;
+        }
+
+        &.js :global(.noscript) {
+            display: none;
+        }
+
+        :global(.hidden) {
+            display: none;
+        }
+
+        :global(.filter-ui) {
+            &.filter-links {
+                height: 30px;
+                overflow-x: hidden;
+                overflow-y: hidden;
+                line-height: 28px;
+
+                :global(a) {
+                    height: 28px;
+                    padding: 10px;
+                    text-decoration: none;
+
+                    &.active {
+                        box-shadow: none;
+                        cursor: default;
+                        text-decoration: none;
+                        padding: 10px 10px 6px 10px;
+                    }
+                }
+            }
+
+            &.filter-select {
+                vertical-align: middle;
+            }
+
+            :global(.point) {
+                display: inline-block;
+                position: absolute;
+                cursor: pointer;
+                z-index: 100;
+
+                height: 20px;
+                width: 20px;
+                border-radius: 20px;
+                top: 20px;
+
+                &.active {
+                    height: 20px;
+                    width: 20px;
+                    border-radius: 20px;
+                    top: 20px;
+                }
+            }
+
+            :global(.point-label) {
+                position: absolute;
+            }
+
+            :global(.line) {
+                height: 1px;
+                position: absolute;
+                left: 0px;
+                top: 30px;
+                z-index: 1;
+            }
+        }
+    }
+
+    :global(.dw-chart-header) {
+        min-height: 1px;
+        position: relative;
+        overflow: auto;
+
+        .header-right {
+            position: absolute;
+            right: 10px;
+            z-index: 20;
+        }
+
+        &.has-header-right {
+            display: flex;
+            justify-content: space-between;
+
+            &.has-menu > :last-child {
+                margin-right: 25px;
+            }
+        }
+    }
+
+    .dw-chart-footer {
+        display: flex;
+        justify-content: space-between;
+
+        .footer-block {
+            display: inline;
+
+            &.hidden {
+                display: none;
+            }
+
+            a[href=''] {
+                pointer-events: none;
+                text-decoration: none;
+                padding: 0;
+                border-bottom: 0;
+            }
+        }
+
+        .layout-inline > .footer-block {
+            display: inline;
+        }
+        .layout-flex-row,
+        .layout-flex-column {
+            display: flex;
+        }
+        .layout-flex-row {
+            flex-direction: row;
+        }
+        .layout-flex-column {
+            flex-direction: column;
+        }
+
+        /** flex-column alignments **/
+        .footer-center.layout-flex-column {
+            align-items: center;
+        }
+        .footer-right.layout-flex-column {
+            align-items: flex-end;
+        }
+        /**  block alignments **/
+        .footer-center.layout-inline {
+            text-align: center;
+        }
+        .footer-right.layout-inline {
+            text-align: right;
+        }
+
+        .separator {
+            display: inline-block;
+            font-style: initial;
+
+            &:before {
+                display: inline-block;
+            }
+        }
+
+        & > div > :global(a:first-child::before),
+        & > div > :global(.source-block:first-child::before),
+        & > div > .footer-block:first-child::before {
+            content: '';
+            display: none;
+        }
+
+        .footer-right {
+            text-align: right;
+        }
+    }
+
+    :global(.dw-above-footer),
+    :global(.dw-below-footer) {
+        position: relative;
+    }
+
+    // static style (make links look like normal text)
+    :global(.static .chart a) {
+        color: currentColor;
+        text-decoration: none;
+        border-bottom: none;
+        font-weight: unset;
+        font-style: unset;
+    }
+
+    :global(a img) {
+        border: 0px;
+    }
+
+    .hide {
+        display: none;
+    }
+
+    .dw-after-body {
+        position: absolute;
+    }
+
+    :global(svg rect) {
+        shape-rendering: crispEdges;
+    }
+</style>
+
+<div
+    class:static={isStyleStatic}
+    class="dw-chart-styles {emotion ? chartStyles(emotion, $themeData) : ''}"
+>
+    {#if !isStylePlain}
+        {#if !regions.headerRight.length}
+            <BlocksRegion
+                name="dw-chart-header"
+                blocks={regions.header}
+                id="header"
+                {emotion}
+                styles={chartHeaderStyles}
+            />
+        {:else}
+            <div
+                class="dw-chart-header has-header-right {emotion
+                    ? chartHeaderStyles(emotion, $themeData)
+                    : ''}"
+                class:has-menu={!isStyleStatic && regions.menu.length}
+            >
+                <BlocksRegion
+                    name="dw-chart-header-left"
+                    {emotion}
+                    blocks={regions.header}
+                    id="header"
+                />
+                <BlocksRegion name="dw-chart-header-right" {emotion} blocks={regions.headerRight} />
+            </div>
+        {/if}
+
+        <BlocksRegion
+            name="dw-below-header"
+            blocks={regions.belowHeader}
+            {emotion}
+            styles={belowHeaderStyles}
+        />
+
+        {#if !isStyleStatic}
+            <Menu name="dw-chart-menu" props={menu} blocks={regions.menu} {emotion} />
+        {/if}
+    {/if}
+
+    {#if ariaDescription}
+        <div class="sr-only">
+            {@html purifyHtml(ariaDescription, allowedAriaDescriptionTags)}
         </div>
     {/if}
 
-    <BlocksRegion name="dw-below-header" blocks={regions.belowHeader} />
-
-    {#if !isStyleStatic}
-        <Menu name="dw-chart-menu" props={menu} blocks={regions.menu} />
-    {/if}
-{/if}
-
-{#if ariaDescription}
-    <div class="sr-only">
-        {@html purifyHtml(ariaDescription, allowedAriaDescriptionTags)}
-    </div>
-{/if}
-
-<div
-    id="chart"
-    bind:this={target}
-    class:content-below-chart={contentBelowChart}
-    aria-hidden={!!ariaDescription}
-    class="dw-chart-body"
->
-    {#if useFallbackImage}
-        <img style="max-width: 100%" src="../plain.png" aria-hidden="true" alt="fallback image" />
-        <p style="opacity:0.6;padding:1ex; text-align:center">
-            {__('fallback-image-note')}
-        </p>
-    {:else}
-        <noscript>
+    <div
+        id="chart"
+        bind:this={target}
+        class:content-below-chart={contentBelowChart}
+        aria-hidden={!!ariaDescription}
+        class="dw-chart-body"
+    >
+        {#if useFallbackImage}
             <img
                 style="max-width: 100%"
                 src="../plain.png"
@@ -821,55 +1198,86 @@ Please make sure you called __(key) with a key of type "string".
             <p style="opacity:0.6;padding:1ex; text-align:center">
                 {__('fallback-image-note')}
             </p>
-        </noscript>
+        {:else}
+            <noscript>
+                <img
+                    style="max-width: 100%"
+                    src="../plain.png"
+                    aria-hidden="true"
+                    alt="fallback image"
+                />
+                <p style="opacity:0.6;padding:1ex; text-align:center">
+                    {__('fallback-image-note')}
+                </p>
+            </noscript>
+        {/if}
+    </div>
+
+    {#if get(theme, 'data.template.afterChart')}
+        {@html theme.data.template.afterChart}
     {/if}
-</div>
 
-{#if get(theme, 'data.template.afterChart')}
-    {@html theme.data.template.afterChart}
-{/if}
+    {#if !isStylePlain}
+        <BlocksRegion
+            name="dw-above-footer"
+            blocks={regions.aboveFooter}
+            {emotion}
+            styles={aboveFooterStyles}
+        />
 
-{#if !isStylePlain}
-    <BlocksRegion name="dw-above-footer" blocks={regions.aboveFooter} />
-
-    <div id="footer" class="dw-chart-footer">
-        {#each ['Left', 'Center', 'Right'] as orientation}
-            <div
-                class="footer-{orientation.toLowerCase()} layout-{footerRegionLayout[orientation]}"
-            >
-                {#each regions['footer' + orientation] as block, i}
-                    {#if i && footerRegionLayout[orientation] === 'inline'}
-                        <span class="separator separator-before-{block.id}" />
-                    {/if}
-                    <span class="footer-block {block.id}-block">
-                        {#if block.prepend}
-                            <span class="prepend">
-                                {@html clean(block.prepend)}
-                            </span>
+        <div
+            id="footer"
+            class="dw-chart-footer {emotion ? chartFooterStyles(emotion, $themeData) : ''}"
+        >
+            {#each ['Left', 'Center', 'Right'] as orientation}
+                <div
+                    class="footer-{orientation.toLowerCase()}  layout-{footerRegionLayout[
+                        orientation
+                    ]}"
+                >
+                    {#each regions['footer' + orientation] as block, i}
+                        {#if i && footerRegionLayout[orientation] === 'inline'}
+                            <span class="separator separator-before-{block.id}" />
                         {/if}
-                        <span class="block-inner">
-                            <svelte:component this={block.component} props={block.props} />
+                        <span
+                            class="footer-block {block.id}-block {emotion && block.styles
+                                ? block.styles(emotion, $themeData)
+                                : ''}"
+                        >
+                            {#if block.prepend}
+                                <span class="prepend">
+                                    {@html clean(block.prepend)}
+                                </span>
+                            {/if}
+                            <span class="block-inner">
+                                <svelte:component this={block.component} props={block.props} />
+                            </span>
+                            {#if block.append}
+                                <span class="append">
+                                    {@html clean(block.append)}
+                                </span>
+                            {/if}
                         </span>
-                        {#if block.append}
-                            <span class="append">
-                                {@html clean(block.append)}
-                            </span>
-                        {/if}
-                    </span>
-                {/each}
-            </div>
+                    {/each}
+                </div>
+            {/each}
+        </div>
+
+        <BlocksRegion
+            name="dw-below-footer"
+            blocks={regions.belowFooter}
+            {emotion}
+            styles={belowFooterStyles}
+        />
+    {/if}
+
+    <div class="dw-after-body">
+        {#each regions.afterBody as block}
+            <svelte:component this={block.component} props={block.props} />
         {/each}
     </div>
 
-    <BlocksRegion name="dw-below-footer" blocks={regions.belowFooter} />
-{/if}
-
-<div class="dw-after-body">
-    {#each regions.afterBody as block}
-        <svelte:component this={block.component} props={block.props} />
-    {/each}
+    {#if chartAfterBodyHTML}
+        {@html chartAfterBodyHTML}
+    {/if}
 </div>
-
-{#if chartAfterBodyHTML}
-    {@html chartAfterBodyHTML}
-{/if}
