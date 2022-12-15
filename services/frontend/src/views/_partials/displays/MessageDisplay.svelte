@@ -30,7 +30,7 @@
                 {/if}
             </div>
         {/if}
-        <div class="message-body is-flex is-flex-direction-column">
+        <div class="message-body">
             {#if !title && deletable}
                 <button class="delete" on:click={deleteMessage} aria-label="delete" />
             {/if}
