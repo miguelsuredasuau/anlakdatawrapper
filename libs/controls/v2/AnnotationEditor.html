@@ -505,13 +505,11 @@
 
             // push state updates from controls to render layer
             if (previous && current.annotationLayer) {
-                const textAnnotationData = clone(
-                    this.store.getMetadata('visualize.text-annotations', [])
-                );
+                const { $metadata, editorState, annotationLayer } = this.get();
+                const textAnnotationData = clone(get($metadata, 'visualize.text-annotations', []));
                 const rangeAnnotationData = clone(
-                    this.store.getMetadata('visualize.range-annotations', [])
+                    get($metadata, 'visualize.range-annotations', [])
                 );
-                const { editorState, annotationLayer } = this.get();
                 const editorStateData = clone(editorState);
                 // Somehow – under mysterious circumstances – setAnnotationState is undefined.
                 // Hence this extra check.
