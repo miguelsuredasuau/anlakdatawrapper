@@ -1196,7 +1196,7 @@
   "controls / legend / size-legend-show-title": "Show title",
   "controls / legend / size-legend-title": "Title",
   "controls / legend / size-legend-title-width": "Max width",
-  "controls / legend / size-legend-disabled-message": "We recommend you add a legend to explain what the size of the symbols mean.",
+  "controls / legend / size-legend-disabled-message": "We recommend you add a legend to explain what the sizes of the symbols mean.",
   "controls / legend / size-legend-values-auto": "Auto",
   "controls / legend / size-legend-values-custom": "Custom",
   "controls / legend / size-legend-position-above": "Above",
