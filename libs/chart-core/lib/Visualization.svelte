@@ -714,8 +714,8 @@ Please make sure you called __(key) with a key of type "string".
 
             function resize() {
                 clearTimeout(reloadTimer);
-                $outerWidth = outerContainer.clientWidth;
                 reloadTimer = setTimeout(async function () {
+                    $outerWidth = outerContainer.clientWidth;
                     await updateChartThemeData();
                     dwChart.vis().fire('resize');
                     dwChart.render(outerContainer);
