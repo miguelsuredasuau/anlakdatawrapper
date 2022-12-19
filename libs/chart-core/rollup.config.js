@@ -156,6 +156,7 @@ module.exports = [
         onwarn,
         output: {
             format: 'iife',
+            sourcemap: true,
             entryFileNames: 'main.js',
             ...output
         }

@@ -132,7 +132,14 @@ module.exports = {
                         ...sentryConfig,
                         src: `https://js.sentry-cdn.com/${
                             sentryConfig.client.dsn.match(/\/\/([^@]+)/)[1]
-                        }.min.js`
+                        }.min.js`,
+                        tags: {
+                            chartId: props.chart.id,
+                            themeId: props.chart.theme,
+                            teamId: props.chart.organizationId,
+                            visualization: get(props.visualization, 'id'),
+                            visPlugin: get(props.visualization, '__plugin')
+                        }
                     },
                     GITHEAD: server.app.GITHEAD
                 });
