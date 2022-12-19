@@ -103,6 +103,8 @@ module.exports = {
                 // render again for dark mode styles
                 const { css: emotionCSSDark } = renderChart({ ...props, isStyleDark: true });
 
+                const sentryConfig = config.frontend?.sentry?.visPreview;
+
                 const response = h.view('preview.pug', {
                     __DW_SVELTE_PROPS__: jsesc(JSON.stringify(props), {
                         isScriptContext: true,
@@ -125,7 +127,14 @@ module.exports = {
                         `vis-height-${get(props.visualization, 'height', 'fit')}`,
                         `theme-${get(props.theme, 'id')}`,
                         `vis-${get(props.visualization, 'id')}`
-                    ]
+                    ],
+                    SENTRY: sentryConfig && {
+                        ...sentryConfig,
+                        src: `https://js.sentry-cdn.com/${
+                            sentryConfig.client.dsn.match(/\/\/([^@]+)/)[1]
+                        }.min.js`
+                    },
+                    GITHEAD: server.app.GITHEAD
                 });
                 response.header('X-Robots-Tag', 'noindex, nofollow');
                 return response;

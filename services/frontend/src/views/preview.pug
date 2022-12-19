@@ -12,6 +12,20 @@ html(lang=CHART_LOCALE)
       style(id="css-light")!=CSS
     | !{CHART_HEAD}
 
+    if SENTRY
+      script(src=SENTRY.src crossorigin="anonymous")
+      script.
+        if (window.Sentry !== undefined) { // Check that Sentry is defined, because it could have been blocked by an ad blocker.
+            Sentry.onLoad(function () {
+                Sentry.init({
+                    release: '!{GITHEAD}',
+                    serverName: 'frontend',
+                    tracesSampleRate: !{SENTRY.client.tracesSampleRate || 1},
+                    environment: '!{SENTRY.client.environment || ''}'
+                });
+            });
+        }
+
   body
     div(class="dw-chart chart" class=CHART_CLASS id="__svelte-dw")
       | !{CHART_HTML}
