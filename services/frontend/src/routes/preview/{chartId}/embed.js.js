@@ -86,9 +86,7 @@ module.exports = {
                     dependencies: [
                         `${frontendBase}/lib/chart-core/dw-2.0.min.js`,
                         ...props.visualization.libraries.map(lib => `${frontendBase}${lib.uri}`),
-                        `${config.api.https ? 'https' : 'http'}://${config.api.subdomain}.${
-                            config.api.domain
-                        }/v3/visualizations/${props.visualization.id}/script.js`
+                        `${frontendBase}/lib/plugins/${props.visualization.__plugin}/static/${props.visualization.id}.js`
                     ],
                     blocks: props.blocks.map(block => {
                         block.source.js = `${frontendBase}${block.source.js}`;
@@ -99,6 +97,7 @@ module.exports = {
 
                 return h
                     .response(
+                        // TODO: find a way to keep sourcemaps working for this
                         webComponentJS + `\n\nwindow.datawrapper.render(${JSON.stringify(props)});`
                     )
                     .header('Content-Type', 'application/javascript');

@@ -11,9 +11,6 @@ module.exports = {
     version: '1.0.0',
     register: async server => {
         const config = server.methods.config();
-        const apiBase = `${config.api.https ? 'https' : 'http'}://${config.api.subdomain}.${
-            config.api.domain
-        }/v3`;
 
         server.route({
             method: 'GET',
@@ -114,7 +111,7 @@ module.exports = {
                     CHART_HTML: html,
                     CHART_HEAD: head,
                     CHART_LOCALE: chartLocale,
-                    VIS_SCRIPT: `${apiBase}/visualizations/${props.visualization.id}/script.js`,
+                    VIS_SCRIPT: `/lib/plugins/${props.visualization.__plugin}/static/${props.visualization.id}.js`,
                     MAIN_SCRIPT: '/lib/chart-core/main.js',
                     POLYFILL_SCRIPT: '/lib/chart-core/load-polyfills.js',
                     DEPS: ['/lib/chart-core/dw-2.0.min.js'],

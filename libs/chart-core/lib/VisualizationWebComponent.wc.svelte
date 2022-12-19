@@ -1,6 +1,7 @@
 <svelte:options tag={null} />
 
 <script>
+    import createEmotion from '@emotion/css/create-instance';
     import Visualization from './Visualization.svelte';
     import { loadScript } from '@datawrapper/shared/fetch.js';
     const DEPENDENCY_STATE = {
@@ -13,6 +14,8 @@
     export let chart = {};
     export let visualization = {};
     export let theme = {};
+    export let themeDataDark = {};
+    export let themeDataLight = {};
     export let locales = {};
     export let translations;
     export let blocks = {};
@@ -30,6 +33,8 @@
     let stylesLoaded = false;
     let dependenciesLoaded = false;
     let styleHolder;
+    let emotion;
+
     // ensure styles are loaded before the vis is rendered to prevent flickering
     $: {
         if (typeof document !== 'undefined') {
@@ -38,6 +43,10 @@
                 style.type = 'text/css';
                 style.innerHTML = styles;
                 styleHolder.appendChild(style);
+                emotion = createEmotion({
+                    key: `datawrapper-${chart.id}`,
+                    container: styleHolder
+                });
                 stylesLoaded = true;
             }
         }
@@ -95,6 +104,8 @@
                 {chart}
                 {visualization}
                 {theme}
+                {themeDataDark}
+                {themeDataLight}
                 {locales}
                 {translations}
                 {blocks}
@@ -108,6 +119,7 @@
                 {isStylePlain}
                 {isStyleStatic}
                 {outerContainer}
+                {emotion}
             />
         </div>
     {/if}
