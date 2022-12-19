@@ -22,13 +22,16 @@ class ExportJob extends Model<InferAttributes<ExportJob>, InferCreationAttribute
     declare created_at: CreationOptional<Date>;
     declare done_at: Date | undefined;
     declare last_task: number | undefined;
-    declare tasks: unknown[];
+    declare tasks: {
+        action: string;
+        params: Record<string, unknown>;
+    }[];
     declare log?: {
         progress: Record<string, unknown>[];
         attempts: number;
     };
-    declare user_id: ForeignKey<number>;
-    declare chart_id: ForeignKey<string>;
+    declare user_id: ForeignKey<number> | null;
+    declare chart_id: ForeignKey<string> | null;
 
     private safeGetLog() {
         const { progress = [], attempts = 0, ...rest } = this.get('log') || {};

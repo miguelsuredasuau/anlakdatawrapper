@@ -1,24 +1,23 @@
-import type { InvalidateCloudflareJobData } from './types';
+import type { ExportJob } from '@datawrapper/orm/db';
+import { ExportChartJobData, InvalidateCloudflareJobData } from './types';
+declare type ExportJobType = typeof ExportJob;
 export declare type ExportJobOptions = {
     key: string;
     priority: number;
 };
-declare type ExportJobData = {
-    key: string;
-    priority: number;
-    chart_id?: string | undefined;
-    user_id?: string | undefined;
-    tasks: {
-        action: string;
-        params: Record<string, unknown>;
-    }[];
-};
-export declare type ExportJob = {
-    bulkCreate(data: ExportJobData[]): Promise<void>;
-};
 export declare class RenderNetworkClient {
     private readonly ExportJob;
-    constructor(ExportJob: ExportJob);
-    scheduleInvalidateCloudflareJobs(bulkJobData: InvalidateCloudflareJobData[], { key, priority }: ExportJobOptions): Promise<void>;
+    constructor(ExportJob: ExportJobType);
+    private bulkCreate;
+    private create;
+    scheduleInvalidateCloudflareJobs<TOptions extends ExportJobOptions>(bulkJobData: InvalidateCloudflareJobData[], options: TOptions): Promise<{
+        getResults(maxSecondsInQueue?: number | undefined): Promise<void>[];
+    }>;
+    scheduleInvalidateCloudflareJob<TOptions extends ExportJobOptions>({ chartId, userId, urls }: InvalidateCloudflareJobData, options: TOptions): Promise<{
+        getResult(maxSecondsInQueue?: number | undefined): Promise<void>;
+    }>;
+    scheduleChartExport<TOptions extends ExportJobOptions>(jobData: ExportChartJobData, options: TOptions): Promise<{
+        getResult(maxSecondsInQueue?: number | undefined): Promise<void>;
+    }>;
 }
 export {};

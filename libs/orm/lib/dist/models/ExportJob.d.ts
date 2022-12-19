@@ -11,13 +11,16 @@ declare class ExportJob extends Model<InferAttributes<ExportJob>, InferCreationA
     created_at: CreationOptional<Date>;
     done_at: Date | undefined;
     last_task: number | undefined;
-    tasks: unknown[];
+    tasks: {
+        action: string;
+        params: Record<string, unknown>;
+    }[];
     log?: {
         progress: Record<string, unknown>[];
         attempts: number;
     };
-    user_id: ForeignKey<number>;
-    chart_id: ForeignKey<string>;
+    user_id: ForeignKey<number> | null;
+    chart_id: ForeignKey<string> | null;
     private safeGetLog;
     /**
      * sets the processed_at timestamp, increments the attempts counter

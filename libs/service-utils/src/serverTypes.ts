@@ -1,4 +1,6 @@
-import type { pino } from 'pino';
+import type { Config, ServiceEventEmitter } from '@datawrapper/backend-utils';
+import type { ChartModel, DB, SessionModel, ThemeModel, UserModel } from '@datawrapper/orm';
+import type { models } from '@datawrapper/orm/db';
 import type {
     ServerApplicationState as HapiApplicationState,
     Request as HapiRequest,
@@ -12,12 +14,11 @@ import type {
     Lifecycle,
     RouteOptions
 } from '@hapi/hapi';
-import type { ChartModel, DB, SessionModel, ThemeModel, UserModel } from '@datawrapper/orm';
-import type { models } from '@datawrapper/orm/db';
+import type { pino } from 'pino';
 import type { FeatureFlag } from './featureFlagTypes';
-import type { Visualization } from './visualizationTypes';
+import type { JobsHelper } from './jobsHelper';
 import type { translate } from './l10n';
-import type { Config, ServiceEventEmitter } from '@datawrapper/backend-utils';
+import type { Visualization } from './visualizationTypes';
 
 type Extend<TOriginal, TExtension> = Omit<TOriginal, keyof TExtension> & TExtension;
 
@@ -60,6 +61,7 @@ export type Server = Extend<
             computeFileGlobHash(fileGlob: string): Promise<string>;
             config(): Config;
             config<TKey extends keyof Config>(key: TKey): Config[TKey];
+            getJobsHelper(): JobsHelper;
             getModel<TKey extends keyof DBModels>(name: TKey): DBModels[TKey];
             getScopes(admin?: boolean): string[];
             translate: typeof translate;

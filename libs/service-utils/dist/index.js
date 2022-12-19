@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRegisterVisualization = exports.registerFeatureFlag = exports.prepareVisualization = exports.prepareChart = exports.MemoryCache = exports.loadVendorLocales = exports.loadVendorLocale = exports.loadLocaleMeta = exports.loadLocaleConfig = exports.translate = exports.getUserLanguage = exports.getTranslate = exports.getLocalizationScope = exports.allLocalizationScopes = exports.addLocalizationScope = exports.JobsHelper = exports.initGCTrap = exports.fsUtils = exports.findChartId = exports.defaultChartMetadata = exports.createChart = exports.computeFileHashPlugin = exports.camelizeTopLevelKeys = exports.createAuth = void 0;
+exports.createRegisterVisualization = exports.registerFeatureFlag = exports.prepareVisualization = exports.prepareChart = exports.MemoryCache = exports.loadVendorLocales = exports.loadVendorLocale = exports.loadLocaleMeta = exports.loadLocaleConfig = exports.translate = exports.getUserLanguage = exports.getTranslate = exports.getLocalizationScope = exports.allLocalizationScopes = exports.addLocalizationScope = exports.JobsHelper = exports.JobCompletionError = exports.ExportFormat = exports.initGCTrap = exports.fsUtils = exports.findChartId = exports.defaultChartMetadata = exports.createChart = exports.computeFileHashPlugin = exports.camelizeTopLevelKeys = exports.createAuth = void 0;
 var auth_1 = require("./auth");
 Object.defineProperty(exports, "createAuth", { enumerable: true, get: function () { return auth_1.createAuth; } });
 var camelizeTopLevelKeys_1 = require("./camelizeTopLevelKeys");
@@ -18,6 +18,8 @@ Object.defineProperty(exports, "fsUtils", { enumerable: true, get: function () {
 var gcTrap_1 = require("./gcTrap");
 Object.defineProperty(exports, "initGCTrap", { enumerable: true, get: function () { return gcTrap_1.initGCTrap; } });
 var jobsHelper_1 = require("./jobsHelper");
+Object.defineProperty(exports, "ExportFormat", { enumerable: true, get: function () { return jobsHelper_1.ExportFormat; } });
+Object.defineProperty(exports, "JobCompletionError", { enumerable: true, get: function () { return jobsHelper_1.JobCompletionError; } });
 Object.defineProperty(exports, "JobsHelper", { enumerable: true, get: function () { return jobsHelper_1.JobsHelper; } });
 var l10n_1 = require("./l10n");
 Object.defineProperty(exports, "addLocalizationScope", { enumerable: true, get: function () { return l10n_1.addLocalizationScope; } });

@@ -1,5 +1,7 @@
 import type { WorkerTypes } from '@datawrapper/backend-utils';
+import type { BullmqJob } from '@datawrapper/backend-utils/dist/workerTypes';
 import type { QueueEvents } from 'bullmq';
+import type { JobCreationResult, JobsCreationResult } from './types';
 
 export type BullmqQueueEventsClass = typeof QueueEvents;
 
@@ -46,6 +48,15 @@ function getWorkerConfig(config: ServerConfig) {
     };
 }
 
+async function waitUntilFinished<TJob extends BullmqJob>(
+    job: TJob,
+    queueEvents: QueueEvents,
+    maxSecondsInQueue?: number
+) {
+    const ttl = maxSecondsInQueue ? maxSecondsInQueue * 1000 : undefined;
+    return await job.waitUntilFinished(queueEvents, ttl);
+}
+
 export class WorkerClient {
     private readonly Queue: WorkerTypes.BullmqQueueClass;
     private readonly QueueEvents: BullmqQueueEventsClass;
@@ -69,30 +80,44 @@ export class WorkerClient {
         queueName: string,
         jobType: TName,
         jobPayload: WorkerTypes.JobData<TName>
-    ) {
+    ): JobCreationResult<WorkerTypes.JobResult<TName>> {
         const { queueNames, connection } = this.workerConfig;
         if (!queueNames.includes(queueName)) {
             throw new Error('unsupported queue name');
         }
 
         const queue = new this.Queue(queueName, { connection });
-        const job = await queue.add(jobType, jobPayload);
-        return job;
+        const job = (await queue.add(jobType, jobPayload)) as BullmqJob<TName>;
+
+        return {
+            getResult: maxSecondsInQueue => {
+                const queueEvents = new this.QueueEvents(queueName, { connection });
+                return waitUntilFinished(job, queueEvents, maxSecondsInQueue);
+            }
+        };
     }
 
     async scheduleJobs<TName extends WorkerTypes.JobName>(
         queueName: string,
         jobType: TName,
         jobPayloads: WorkerTypes.JobData<TName>[]
-    ) {
+    ): JobsCreationResult<WorkerTypes.JobResult<TName>> {
         const { queueNames, connection } = this.workerConfig;
         if (!queueNames.includes(queueName)) {
             throw new Error('unsupported queue name');
         }
 
         const queue = new this.Queue(queueName, { connection });
-        const jobs = await queue.addBulk(jobPayloads.map(data => ({ name: jobType, data })));
-        return jobs;
+        const jobs = (await queue.addBulk(
+            jobPayloads.map(data => ({ name: jobType, data }))
+        )) as BullmqJob<TName>[];
+
+        return {
+            getResults: maxSecondsInQueue => {
+                const queueEvents = new this.QueueEvents(queueName, { connection });
+                return jobs.map(job => waitUntilFinished(job, queueEvents, maxSecondsInQueue));
+            }
+        };
     }
 
     async scheduleJobAndWaitForResults<TName extends WorkerTypes.JobName>(
@@ -101,9 +126,7 @@ export class WorkerClient {
         jobPayload: WorkerTypes.JobData<TName>
     ): Promise<WorkerTypes.JobResult<TName>> {
         const job = await this.scheduleJob(queueName, jobType, jobPayload);
-        const { connection } = this.workerConfig;
-        const queueEvents = new this.QueueEvents(queueName, { connection });
-        return await job.waitUntilFinished(queueEvents);
+        return await job.getResult();
     }
 
     async getQueueHealth(queueName: string, jobsSampleSize: number) {

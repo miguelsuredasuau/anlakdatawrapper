@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JobsHelper = void 0;
-const WorkerClient_1 = require("./WorkerClient");
 const RenderNetworkClient_1 = require("./RenderNetworkClient");
+const WorkerClient_1 = require("./WorkerClient");
 class JobsHelper {
     workerClient;
     renderNetworkClient;
@@ -23,7 +23,14 @@ class JobsHelper {
         return await this.renderNetworkClient.scheduleInvalidateCloudflareJobs(bulkJobData, renderNetworkParams);
     }
     async scheduleInvalidateCloudflareJob(jobData, renderNetworkParams) {
-        return await this.scheduleInvalidateCloudflareJobs([jobData], renderNetworkParams);
+        const queueName = 'compute';
+        if (this.workerClient && this.workerClient.queueNames.includes(queueName)) {
+            return await this.workerClient.scheduleJob(queueName, 'invalidateCloudflareCache', jobData);
+        }
+        return await this.renderNetworkClient.scheduleInvalidateCloudflareJob(jobData, renderNetworkParams);
+    }
+    async scheduleChartExport(jobData, renderNetworkParams) {
+        return await this.renderNetworkClient.scheduleChartExport(jobData, renderNetworkParams);
     }
 }
 exports.JobsHelper = JobsHelper;

@@ -1,11 +1,12 @@
-import type { pino } from 'pino';
-import type { ServerApplicationState as HapiApplicationState, Request as HapiRequest, RequestAuth as HapiRequestAuth, Server as HapiServer, ReqRef, ReqRefDefaults, ServerRoute, MergeRefs, ResponseToolkit, Lifecycle, RouteOptions } from '@hapi/hapi';
+import type { Config, ServiceEventEmitter } from '@datawrapper/backend-utils';
 import type { ChartModel, DB, SessionModel, ThemeModel, UserModel } from '@datawrapper/orm';
 import type { models } from '@datawrapper/orm/db';
+import type { ServerApplicationState as HapiApplicationState, Request as HapiRequest, RequestAuth as HapiRequestAuth, Server as HapiServer, ReqRef, ReqRefDefaults, ServerRoute, MergeRefs, ResponseToolkit, Lifecycle, RouteOptions } from '@hapi/hapi';
+import type { pino } from 'pino';
 import type { FeatureFlag } from './featureFlagTypes';
-import type { Visualization } from './visualizationTypes';
+import type { JobsHelper } from './jobsHelper';
 import type { translate } from './l10n';
-import type { Config, ServiceEventEmitter } from '@datawrapper/backend-utils';
+import type { Visualization } from './visualizationTypes';
 declare type Extend<TOriginal, TExtension> = Omit<TOriginal, keyof TExtension> & TExtension;
 export declare type RequestAuth = Extend<HapiRequestAuth, {
     artifacts: UserModel | null;
@@ -31,6 +32,7 @@ export declare type Server = Extend<HapiServer, {
         computeFileGlobHash(fileGlob: string): Promise<string>;
         config(): Config;
         config<TKey extends keyof Config>(key: TKey): Config[TKey];
+        getJobsHelper(): JobsHelper;
         getModel<TKey extends keyof DBModels>(name: TKey): DBModels[TKey];
         getScopes(admin?: boolean): string[];
         translate: typeof translate;

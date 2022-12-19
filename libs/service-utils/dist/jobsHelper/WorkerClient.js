@@ -21,6 +21,10 @@ function getWorkerConfig(config) {
         }
     };
 }
+async function waitUntilFinished(job, queueEvents, maxSecondsInQueue) {
+    const ttl = maxSecondsInQueue ? maxSecondsInQueue * 1000 : undefined;
+    return await job.waitUntilFinished(queueEvents, ttl);
+}
 class WorkerClient {
     Queue;
     QueueEvents;
@@ -39,8 +43,13 @@ class WorkerClient {
             throw new Error('unsupported queue name');
         }
         const queue = new this.Queue(queueName, { connection });
-        const job = await queue.add(jobType, jobPayload);
-        return job;
+        const job = (await queue.add(jobType, jobPayload));
+        return {
+            getResult: maxSecondsInQueue => {
+                const queueEvents = new this.QueueEvents(queueName, { connection });
+                return waitUntilFinished(job, queueEvents, maxSecondsInQueue);
+            }
+        };
     }
     async scheduleJobs(queueName, jobType, jobPayloads) {
         const { queueNames, connection } = this.workerConfig;
@@ -48,14 +57,17 @@ class WorkerClient {
             throw new Error('unsupported queue name');
         }
         const queue = new this.Queue(queueName, { connection });
-        const jobs = await queue.addBulk(jobPayloads.map(data => ({ name: jobType, data })));
-        return jobs;
+        const jobs = (await queue.addBulk(jobPayloads.map(data => ({ name: jobType, data }))));
+        return {
+            getResults: maxSecondsInQueue => {
+                const queueEvents = new this.QueueEvents(queueName, { connection });
+                return jobs.map(job => waitUntilFinished(job, queueEvents, maxSecondsInQueue));
+            }
+        };
     }
     async scheduleJobAndWaitForResults(queueName, jobType, jobPayload) {
         const job = await this.scheduleJob(queueName, jobType, jobPayload);
-        const { connection } = this.workerConfig;
-        const queueEvents = new this.QueueEvents(queueName, { connection });
-        return await job.waitUntilFinished(queueEvents);
+        return await job.getResult();
     }
     async getQueueHealth(queueName, jobsSampleSize) {
         const { queueNames, connection } = this.workerConfig;
