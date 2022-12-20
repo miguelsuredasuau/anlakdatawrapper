@@ -332,6 +332,9 @@
                 // re-sort annotations using the new order of items in list
                 const updatedAnnotationData = items.map(item => annotationData[item.id]);
                 this.store.setMetadata('visualize.text-annotations', updatedAnnotationData);
+                const { $metadata } = this.get();
+                set($metadata, 'visualize.text-annotations', updatedAnnotationData);
+                this.set({ $metadata });
 
                 // select dragged annotation
                 const selectedNew = items.findIndex(item => item.id === selectedPrev[0]);
@@ -371,6 +374,9 @@
                 newAnnotation.text += ' (copy)';
                 updatedAnnotationData.unshift(newAnnotation);
                 this.store.setMetadata('visualize.text-annotations', updatedAnnotationData);
+                const { $metadata } = this.get();
+                set($metadata, 'visualize.text-annotations', updatedAnnotationData);
+                this.set({ $metadata });
                 this.setEditorState({ selectedTextAnnotations: [0] });
             },
             handleWindowKeydown(event) {
