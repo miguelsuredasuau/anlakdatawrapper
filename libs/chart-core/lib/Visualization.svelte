@@ -957,21 +957,20 @@ Please make sure you called __(key) with a key of type "string".
 
         :global(.filter-ui) {
             &.filter-links {
-                height: 30px;
                 overflow-x: hidden;
                 overflow-y: hidden;
                 line-height: 28px;
 
                 :global(a) {
+                    display: inline-block;
                     height: 28px;
-                    padding: 10px;
+                    padding: 3px 10px;
                     text-decoration: none;
 
                     &.active {
                         box-shadow: none;
                         cursor: default;
                         text-decoration: none;
-                        padding: 10px 10px 6px 10px;
                     }
                 }
             }
