@@ -528,22 +528,24 @@
                 current.editorState.selectedAnnotationProps &&
                 current.editorState.selectedAnnotationProps.mobileFallback
             ) {
-                if (document.querySelector('#iframe-vis')) {
-                    try {
-                        const { lastKeysHeight } = this.get();
-                        const keysHeight = document
-                            .querySelector('#iframe-vis')
-                            .contentWindow.document.querySelector('.annotation-keys').offsetHeight;
+                setTimeout(() => {
+                    if (document.querySelector('#iframe-vis')) {
+                        try {
+                            const { lastKeysHeight } = this.get();
+                            const keysHeight = document
+                                .querySelector('#iframe-vis')
+                                .contentWindow.document.querySelector(
+                                    '.annotation-keys'
+                                ).offsetHeight;
 
-                        if (lastKeysHeight !== keysHeight) {
-                            setTimeout(() => {
+                            if (lastKeysHeight !== keysHeight) {
                                 document.querySelector('#iframe-vis').contentWindow.__dw.render();
                                 this.set({ lastKeysHeight: keysHeight });
-                            });
-                        }
-                        // eslint-disable-next-line no-empty
-                    } catch (ex) {}
-                }
+                            }
+                            // eslint-disable-next-line no-empty
+                        } catch (ex) {}
+                    }
+                });
             }
         }
     };
