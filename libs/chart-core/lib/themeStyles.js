@@ -178,6 +178,10 @@ export function chartStyles(emotion, themeData) {
         .filter-ui .line {
             background: ${getProp('style.filter.point.line.color', '#ccc')};
         }
+        .dw-tooltip {
+            /* d3-maps & d3-scatter-plot tooltips */
+            color: ${getProp('style.chart.tooltip.text.color', '#333333')};
+        }
     `;
 }
 
@@ -355,11 +359,6 @@ export function chartFooterStyles(emotion, themeData) {
             isTrue(get(themeData, 'typography.links.cursive'))
                 ? 'italic'
                 : 'normal'};
-        }
-
-        .dw-tooltip {
-            /* d3-maps & d3-scatter-plot tooltips */
-            color: ${getProp('style.chart.tooltip.text.color', '#333333')};
         }
     `;
 }

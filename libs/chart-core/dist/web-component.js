@@ -272,6 +272,10 @@ module=chroma$1,module.exports=function(){for(var e=function(e,t,r){return void 
         .filter-ui .line {
             background: ${n("style.filter.point.line.color","#ccc")};
         }
+        .dw-tooltip {
+            /* d3-maps & d3-scatter-plot tooltips */
+            color: ${n("style.chart.tooltip.text.color","#333333")};
+        }
     `}function chartHeaderStyles(e,t){const{css:r,getProp:n}=getThemeStyleHelpers(e,t);return r`
         background: ${n("style.header.background")};
         border-bottom: ${n("style.header.border.bottom")};
@@ -379,11 +383,6 @@ module=chroma$1,module.exports=function(){for(var e=function(e,t,r){return void 
             padding: ${n("style.footer.links.padding")};
             border-bottom: ${n("style.footer.links.border.bottom")};
             font-style: ${isTrue(get_1(t,"typography.footer.cursive"))||isTrue(get_1(t,"typography.links.cursive"))?"italic":"normal"};
-        }
-
-        .dw-tooltip {
-            /* d3-maps & d3-scatter-plot tooltips */
-            color: ${n("style.chart.tooltip.text.color","#333333")};
         }
     `}function belowFooterStyles(e,t){const{css:r,getProp:n}=getThemeStyleHelpers(e,t);return r`
         background: ${n("style.belowFooter.background")};
