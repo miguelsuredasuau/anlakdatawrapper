@@ -194,8 +194,12 @@ export async function render(page, props) {
         const text = event.text();
         if (text.startsWith('Chart rendered in')) return;
         logs.push({ type: event.type(), text: event.text() });
+        // log errors instantly
+        if (event.type() === 'error') console.error('ERROR: ' + event.text());
     });
     page.on('pageerror', ({ message }) => {
+        // log errors instantly
+        console.error('ERROR: ' + message);
         logs.push({ type: 'error', text: message });
     });
 

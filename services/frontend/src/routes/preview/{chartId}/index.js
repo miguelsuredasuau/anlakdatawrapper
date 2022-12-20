@@ -133,7 +133,7 @@ module.exports = {
                         tags: {
                             chartId: props.chart.id,
                             themeId: props.chart.theme,
-                            teamId: props.chart.organizationId,
+                            teamId: props.chart.organizationId || '(no team)',
                             visualization: get(props.visualization, 'id'),
                             visPlugin: get(props.visualization, '__plugin')
                         }

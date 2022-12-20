@@ -1132,6 +1132,22 @@ Please make sure you called __(key) with a key of type "string".
     :global(svg rect) {
         shape-rendering: crispEdges;
     }
+
+    :global(.error) {
+        background-color: #fbeff2;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05) inset;
+        margin: 2em;
+        :global(p) {
+            color: #b63057;
+            font-size: 14px;
+            padding: 1.25em 1.5em;
+            line-height: 1.5;
+            border-color: #cf4870;
+            border-style: solid;
+            border-width: 0 0 0 4px;
+            border-radius: 4px;
+        }
+    }
 </style>
 
 <div

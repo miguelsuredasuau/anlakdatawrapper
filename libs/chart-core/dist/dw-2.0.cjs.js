@@ -6875,6 +6875,7 @@ function chart (attributes) {
             const container = chart.vis().target();
 
             visualization.chart(chart);
+            visualization.container(container);
 
             // compute chart dimensions
             const w = width(container);
@@ -7406,6 +7407,16 @@ extend(base, {
         return me;
     },
 
+    /**
+     * Get or set the container element the vis was last rendered in
+     * @param {HTMLElement} el
+     * @returns {HTMLElement|void}
+     */
+    container(el) {
+        if (!arguments.length) return this.__container;
+        this.__container = el;
+    },
+
     axes(returnAsColumns, noCache) {
         const me = this;
         const userAxes = get__default["default"](me.chart().get(), 'metadata.axes', {});
@@ -7574,6 +7585,19 @@ extend(base, {
                 if (typeof cb === 'function') cb(data);
             });
         }
+    },
+
+    /**
+     * log error message
+     * @param {string} message
+     */
+    showError(message) {
+        const { isEditingAllowed } = this.chart().flags();
+        if (isEditingAllowed) {
+            // inside editor we show the error to the user directly
+            this.container().innerHTML = `<div class="error"><p>${message}</p></div>`;
+        }
+        console.warn(message);
     }
 });
 
