@@ -77,7 +77,7 @@ const defaultSettings = {
     }),
     disableVisualizations: optional({
         enabled: required(false, boolean),
-        visualizations: (<Record<string, boolean>>{}, []),
+        visualizations: required(<Record<string, boolean>>{}, []),
         allowAdmins: required(false, boolean)
     }),
     pdfUpload: optional({

@@ -47,7 +47,7 @@ declare const defaultSettings: {
     } | undefined;
     readonly disableVisualizations: {
         enabled: boolean;
-        visualizations: never[];
+        visualizations: never[] | Record<string, boolean>;
         allowAdmins: boolean;
     } | undefined;
     readonly pdfUpload: {
@@ -132,7 +132,7 @@ declare class Team extends Model<InferAttributes<Team>, InferCreationAttributes<
         } | undefined;
         readonly disableVisualizations: {
             enabled: boolean;
-            visualizations: never[];
+            visualizations: never[] | Record<string, boolean>;
             allowAdmins: boolean;
         } | undefined;
         readonly pdfUpload: {

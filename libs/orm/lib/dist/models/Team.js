@@ -87,7 +87,7 @@ const defaultSettings = {
     }),
     disableVisualizations: optional({
         enabled: required(false, boolean),
-        visualizations: ({}, []),
+        visualizations: required({}, []),
         allowAdmins: required(false, boolean)
     }),
     pdfUpload: optional({
