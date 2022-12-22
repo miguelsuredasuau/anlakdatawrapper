@@ -96,12 +96,16 @@ test('header right', async t => {
                         region: 'headerRight',
                         data: { options: [{ id: 't', text: 'LOGO', title: 't' }] }
                     }
+                },
+                header: {
+                    gap: 50
                 }
             }
         }
     });
     t.is(await getElementStyle(page, '.dw-chart-header', 'padding'), '10px');
     t.is(await getElementStyle(page, '.dw-chart-header', 'background-color'), 'rgb(238, 221, 221)');
+    t.is(await getElementStyle(page, '.dw-chart-header.has-header-right', 'gap'), '50px');
     t.is(await getElementInnerText(page, '.dw-chart-header .dw-chart-header-left'), title);
     t.is(await getElementInnerText(page, '.dw-chart-header .dw-chart-header-right'), 'LOGO');
     t.is(await getElementInnerText(page, '.dw-below-header'), 'Intro');

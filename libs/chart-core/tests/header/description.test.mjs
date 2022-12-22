@@ -128,3 +128,54 @@ test('description styles', async t => {
         '1px solid rgb(153, 0, 0)'
     );
 });
+
+test('link styles', async t => {
+    const { page } = t.context;
+
+    await renderDummy(t, {
+        chart: {
+            title: 'Hello world',
+            metadata: {
+                visualize: {},
+                describe: {
+                    intro: 'Reprehenderit laborum officia irure velit commodo Lorem est sint. <a href="#">This is a link</a>.Deserunt irure aute esse in veniam fugiat est.'
+                }
+            }
+        },
+        themeData: {
+            style: {
+                body: {
+                    links: {
+                        border: {
+                            bottom: '1px solid #ff0000'
+                        },
+                        padding: '5px'
+                    }
+                }
+            },
+            typography: {
+                links: {
+                    color: '#ff0000',
+                    cursive: 1,
+                    fontWeight: 300,
+                    hoverColor: '#0000ff',
+                    lineHeight: 20,
+                    typeface: 'Arial',
+                    underlined: true
+                }
+            }
+        }
+    });
+
+    t.is(await getElementStyle(page, 'a', 'border-bottom'), '1px solid rgb(255, 0, 0)');
+    t.is(await getElementStyle(page, 'a', 'padding'), '5px');
+    t.is(await getElementStyle(page, 'a', 'color'), 'rgb(255, 0, 0)');
+    t.is(await getElementStyle(page, 'a', 'font-style'), 'italic');
+    t.is(await getElementStyle(page, 'a', 'font-weight'), '300');
+    t.is(await getElementStyle(page, 'a', 'line-height'), '20px');
+    t.is(await getElementStyle(page, 'a', 'font-family'), 'Arial');
+    t.is(await getElementStyle(page, 'a', 'text-decoration-line'), 'underline');
+
+    await page.hover('a');
+    t.is(await getElementStyle(page, 'a', 'color'), 'rgb(0, 0, 255)');
+});
